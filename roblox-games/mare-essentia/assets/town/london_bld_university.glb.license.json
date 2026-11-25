@@ -1,0 +1,3271 @@
+{
+  "license": "CC0-1.0",
+  "author": "Kenney",
+  "source": "https://kenney.nl/assets/fantasy-town-kit",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "town/wall-door.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/wall-door.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "5798bc660cacc637fa428429bd3f32cc80bca64fd07ae01fd76dd17c5651fbbb",
+      "gitBlobSha1": "1cc940cfa77bf38b56386ea5b17f3c58d0767b97",
+      "registeredAssetId": "75188170325302"
+    },
+    {
+      "name": "town/wall-window-shutters.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/wall-window-shutters.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "248064b8fdd73ad564b25b820c5f639702bda18adff00cd983e6fa7b728e886c",
+      "gitBlobSha1": "5d528f7a4902089974e84ef8bcd40ea5c53401f3",
+      "registeredAssetId": "113578382896433"
+    },
+    {
+      "name": "town/roof-gable-end.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/roof-gable-end.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "8590a39fd4c4ceeb4f45579f56e08d6000bd71fe32f49ec9a38aef9e36b52d8b",
+      "gitBlobSha1": "c755b9a3b0e9b18c6462af96565d6bb6fb3db7d1",
+      "registeredAssetId": "109747763043950"
+    },
+    {
+      "name": "town/roof-gable.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/roof-gable.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "fe0a9301d73ef81c5834376636822b1a0802a935c02e31e9751beb748177fd3a",
+      "gitBlobSha1": "9279512118b469e19a310cdd7f55e869235903a1",
+      "registeredAssetId": "92399449110327"
+    },
+    {
+      "name": "town/chimney-base.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/chimney-base.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "f4e8babd642d32e4dea26eb7763719caae5913014ab5586ab0a2e82edafaf023",
+      "gitBlobSha1": "f8c9b7e18cf0670092fe81dfb32898cdcef22b02",
+      "registeredAssetId": "107195315884209"
+    },
+    {
+      "name": "town/chimney-top.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/chimney-top.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "201acdebca8bcc3dc2ff32a3e07b7738d45993776306b495a887e22dcb34a2db",
+      "gitBlobSha1": "a885ae025ef2c786a3eaf99f75cf435e1fcf6d8e",
+      "registeredAssetId": "120602074971507"
+    },
+    {
+      "name": "observatory-dome-source.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb",
+      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE",
+      "author": "Tim Steer / The Base Mesh; glTF conversion M3-org",
+      "license": "CC0-1.0",
+      "sha256": "549f4d814e9de41896583bd62496a138845ed58dc4c31aa6f8b4d5c1a99792ec",
+      "gitBlobSha1": "a4be7364e5074f13b779950e5e854531a6650091",
+      "registeredAssetId": "95801711528954",
+      "translation": [
+        0,
+        8.55,
+        8
+      ],
+      "scale": [
+        8.8,
+        8.8,
+        8.8
+      ]
+    }
+  ],
+  "modification": "Four two-storey university wings, quadrangle, open gate, eight two-part chimneys; registered original observatory dome on north central roof, existing mesh/material buffers preserved. Roof interface, appearance, historical PBR, collision and native visual review remain pending. Added a square masonry plinth and cornice from the already registered chimney base/top original meshes; elevated dome base from 7.3 to 8.55 studs, above measured roof ridge 8.000. Original BIN payload unchanged. Roof/plinth overlap is intentional; native appearance and collision QA remain pending.",
+  "placements": [
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_-1_0",
+      "translation": [
+        -8.571428571428571,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_1_0",
+      "translation": [
+        -8.571428571428571,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_-1_1",
+      "translation": [
+        -5.714285714285714,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_1_1",
+      "translation": [
+        -5.714285714285714,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_-1_2",
+      "translation": [
+        -2.8571428571428568,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_1_2",
+      "translation": [
+        -2.8571428571428568,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-door",
+      "label": "north_academic_facade_0_-1_3",
+      "translation": [
+        -2.7554552980815448e-17,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-door",
+      "label": "north_academic_facade_0_1_3",
+      "translation": [
+        -2.7554552980815448e-17,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_-1_4",
+      "translation": [
+        2.8571428571428577,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_1_4",
+      "translation": [
+        2.8571428571428577,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_-1_5",
+      "translation": [
+        5.714285714285715,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_1_5",
+      "translation": [
+        5.714285714285715,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_-1_6",
+      "translation": [
+        8.571428571428573,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_0_1_6",
+      "translation": [
+        8.571428571428573,
+        0,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_0_-1_0",
+      "translation": [
+        -9.55,
+        0,
+        6.9
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_0_-1_1",
+      "translation": [
+        -9.55,
+        0,
+        9.1
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_0_1_0",
+      "translation": [
+        9.55,
+        0,
+        6.9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_0_1_1",
+      "translation": [
+        9.55,
+        0,
+        9.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_0",
+      "translation": [
+        -8.571428571428571,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_0",
+      "translation": [
+        -8.571428571428571,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_1",
+      "translation": [
+        -5.714285714285714,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_1",
+      "translation": [
+        -5.714285714285714,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_2",
+      "translation": [
+        -2.8571428571428568,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_2",
+      "translation": [
+        -2.8571428571428568,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_3",
+      "translation": [
+        -2.7554552980815448e-17,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_3",
+      "translation": [
+        -2.7554552980815448e-17,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_4",
+      "translation": [
+        2.8571428571428577,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_4",
+      "translation": [
+        2.8571428571428577,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_5",
+      "translation": [
+        5.714285714285715,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_5",
+      "translation": [
+        5.714285714285715,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_-1_6",
+      "translation": [
+        8.571428571428573,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_facade_1_1_6",
+      "translation": [
+        8.571428571428573,
+        2.7,
+        10.649999999999999
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_1_-1_0",
+      "translation": [
+        -9.55,
+        2.7,
+        6.9
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_1_-1_1",
+      "translation": [
+        -9.55,
+        2.7,
+        9.1
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_1_1_0",
+      "translation": [
+        9.55,
+        2.7,
+        6.9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "north_academic_end_1_1_1",
+      "translation": [
+        9.55,
+        2.7,
+        9.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "north_academic_roof_0",
+      "translation": [
+        -8.571428571428571,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "north_academic_roof_1",
+      "translation": [
+        -5.714285714285714,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "north_academic_roof_2",
+      "translation": [
+        -2.8571428571428568,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "north_academic_roof_3",
+      "translation": [
+        0,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "north_academic_roof_4",
+      "translation": [
+        2.8571428571428577,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "north_academic_roof_5",
+      "translation": [
+        5.714285714285715,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "north_academic_roof_6",
+      "translation": [
+        8.571428571428573,
+        5.4,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_-1_0",
+      "translation": [
+        -8.571428571428571,
+        0,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_1_0",
+      "translation": [
+        -8.571428571428571,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_-1_1",
+      "translation": [
+        -5.714285714285714,
+        0,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_1_1",
+      "translation": [
+        -5.714285714285714,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_-1_2",
+      "translation": [
+        -2.8571428571428568,
+        0,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_1_2",
+      "translation": [
+        -2.8571428571428568,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_-1_4",
+      "translation": [
+        2.8571428571428577,
+        0,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_1_4",
+      "translation": [
+        2.8571428571428577,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_-1_5",
+      "translation": [
+        5.714285714285715,
+        0,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_1_5",
+      "translation": [
+        5.714285714285715,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_-1_6",
+      "translation": [
+        8.571428571428573,
+        0,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_0_1_6",
+      "translation": [
+        8.571428571428573,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_0_-1_0",
+      "translation": [
+        -9.55,
+        0,
+        -9.1
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_0_-1_1",
+      "translation": [
+        -9.55,
+        0,
+        -6.9
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_0_1_0",
+      "translation": [
+        9.55,
+        0,
+        -9.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_0_1_1",
+      "translation": [
+        9.55,
+        0,
+        -6.9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_0",
+      "translation": [
+        -8.571428571428571,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_0",
+      "translation": [
+        -8.571428571428571,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_1",
+      "translation": [
+        -5.714285714285714,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_1",
+      "translation": [
+        -5.714285714285714,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_2",
+      "translation": [
+        -2.8571428571428568,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_2",
+      "translation": [
+        -2.8571428571428568,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_3",
+      "translation": [
+        -2.7554552980815448e-17,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_3",
+      "translation": [
+        -2.7554552980815448e-17,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_4",
+      "translation": [
+        2.8571428571428577,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_4",
+      "translation": [
+        2.8571428571428577,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_5",
+      "translation": [
+        5.714285714285715,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_5",
+      "translation": [
+        5.714285714285715,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_-1_6",
+      "translation": [
+        8.571428571428573,
+        2.7,
+        -10.649999999999999
+      ],
+      "rotation": [
+        0,
+        -0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_facade_1_1_6",
+      "translation": [
+        8.571428571428573,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.857142857142857
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_1_-1_0",
+      "translation": [
+        -9.55,
+        2.7,
+        -9.1
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_1_-1_1",
+      "translation": [
+        -9.55,
+        2.7,
+        -6.9
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_1_1_0",
+      "translation": [
+        9.55,
+        2.7,
+        -9.1
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "south_gateway_end_1_1_1",
+      "translation": [
+        9.55,
+        2.7,
+        -6.9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "south_gateway_roof_0",
+      "translation": [
+        -8.571428571428571,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "south_gateway_roof_1",
+      "translation": [
+        -5.714285714285714,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "south_gateway_roof_2",
+      "translation": [
+        -2.8571428571428568,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "south_gateway_roof_3",
+      "translation": [
+        0,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "south_gateway_roof_4",
+      "translation": [
+        2.8571428571428577,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "south_gateway_roof_5",
+      "translation": [
+        5.714285714285715,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "south_gateway_roof_6",
+      "translation": [
+        8.571428571428573,
+        5.4,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.5974025974025974,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_0_-1_0",
+      "translation": [
+        -10.45,
+        0,
+        4.35
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_0_1_0",
+      "translation": [
+        -5.1499999999999995,
+        0,
+        4.35
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_0_-1_1",
+      "translation": [
+        -10.45,
+        0,
+        1.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_0_1_1",
+      "translation": [
+        -5.1499999999999995,
+        0,
+        1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-door",
+      "label": "west_library_facade_0_-1_2",
+      "translation": [
+        -10.45,
+        0,
+        -1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-door",
+      "label": "west_library_facade_0_1_2",
+      "translation": [
+        -5.1499999999999995,
+        0,
+        -1.45
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_0_-1_3",
+      "translation": [
+        -10.45,
+        0,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_0_1_3",
+      "translation": [
+        -5.1499999999999995,
+        0,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_0_-1_0",
+      "translation": [
+        -8.9,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_0_-1_1",
+      "translation": [
+        -6.699999999999999,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_0_1_0",
+      "translation": [
+        -8.9,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_0_1_1",
+      "translation": [
+        -6.699999999999999,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_-1_0",
+      "translation": [
+        -10.45,
+        2.7,
+        4.35
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_1_0",
+      "translation": [
+        -5.1499999999999995,
+        2.7,
+        4.35
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_-1_1",
+      "translation": [
+        -10.45,
+        2.7,
+        1.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_1_1",
+      "translation": [
+        -5.1499999999999995,
+        2.7,
+        1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_-1_2",
+      "translation": [
+        -10.45,
+        2.7,
+        -1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_1_2",
+      "translation": [
+        -5.1499999999999995,
+        2.7,
+        -1.45
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_-1_3",
+      "translation": [
+        -10.45,
+        2.7,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_facade_1_1_3",
+      "translation": [
+        -5.1499999999999995,
+        2.7,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_1_-1_0",
+      "translation": [
+        -8.9,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_1_-1_1",
+      "translation": [
+        -6.699999999999999,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_1_1_0",
+      "translation": [
+        -8.9,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "west_library_end_1_1_1",
+      "translation": [
+        -6.699999999999999,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "west_library_roof_0",
+      "translation": [
+        -7.8,
+        5.4,
+        4.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "west_library_roof_1",
+      "translation": [
+        -7.8,
+        5.4,
+        1.4500000000000002
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "west_library_roof_2",
+      "translation": [
+        -7.8,
+        5.4,
+        -1.4500000000000002
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "west_library_roof_3",
+      "translation": [
+        -7.8,
+        5.4,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_0_-1_0",
+      "translation": [
+        5.1499999999999995,
+        0,
+        4.35
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_0_1_0",
+      "translation": [
+        10.45,
+        0,
+        4.35
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_0_-1_1",
+      "translation": [
+        5.1499999999999995,
+        0,
+        1.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_0_1_1",
+      "translation": [
+        10.45,
+        0,
+        1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-door",
+      "label": "east_lecture_facade_0_-1_2",
+      "translation": [
+        5.1499999999999995,
+        0,
+        -1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-door",
+      "label": "east_lecture_facade_0_1_2",
+      "translation": [
+        10.45,
+        0,
+        -1.45
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_0_-1_3",
+      "translation": [
+        5.1499999999999995,
+        0,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_0_1_3",
+      "translation": [
+        10.45,
+        0,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_0_-1_0",
+      "translation": [
+        6.699999999999999,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_0_-1_1",
+      "translation": [
+        8.9,
+        0,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_0_1_0",
+      "translation": [
+        6.699999999999999,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_0_1_1",
+      "translation": [
+        8.9,
+        0,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_-1_0",
+      "translation": [
+        5.1499999999999995,
+        2.7,
+        4.35
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_1_0",
+      "translation": [
+        10.45,
+        2.7,
+        4.35
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_-1_1",
+      "translation": [
+        5.1499999999999995,
+        2.7,
+        1.45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_1_1",
+      "translation": [
+        10.45,
+        2.7,
+        1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_-1_2",
+      "translation": [
+        5.1499999999999995,
+        2.7,
+        -1.4500000000000004
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_1_2",
+      "translation": [
+        10.45,
+        2.7,
+        -1.45
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_-1_3",
+      "translation": [
+        5.1499999999999995,
+        2.7,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_facade_1_1_3",
+      "translation": [
+        10.45,
+        2.7,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        1,
+        0,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.9
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_1_-1_0",
+      "translation": [
+        6.699999999999999,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_1_-1_1",
+      "translation": [
+        8.9,
+        2.7,
+        5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_1_1_0",
+      "translation": [
+        6.699999999999999,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "wall-window-shutters",
+      "label": "east_lecture_end_1_1_1",
+      "translation": [
+        8.9,
+        2.7,
+        -5.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        1,
+        2.7,
+        2.2
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "east_lecture_roof_0",
+      "translation": [
+        7.8,
+        5.4,
+        4.35
+      ],
+      "rotation": [
+        0,
+        0.7071067811865476,
+        0,
+        -0.7071067811865475
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "east_lecture_roof_1",
+      "translation": [
+        7.8,
+        5.4,
+        1.4500000000000002
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable",
+      "label": "east_lecture_roof_2",
+      "translation": [
+        7.8,
+        5.4,
+        -1.4500000000000002
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "roof-gable-end",
+      "label": "east_lecture_roof_3",
+      "translation": [
+        7.8,
+        5.4,
+        -4.3500000000000005
+      ],
+      "rotation": [
+        0,
+        0.7071067811865475,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        2.6363636363636362,
+        4.5557288290024704,
+        4.109422719503881
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-6_8",
+      "translation": [
+        -6.40494673328,
+        7.25,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_6_8",
+      "translation": [
+        5.59505326672,
+        7.25,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-6_-8",
+      "translation": [
+        -6.40494673328,
+        7.25,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_6_-8",
+      "translation": [
+        5.59505326672,
+        7.25,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-7.8_-3",
+      "translation": [
+        -8.20494673328,
+        7.25,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_-7.8_3",
+      "translation": [
+        -8.20494673328,
+        7.25,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_7.8_-3",
+      "translation": [
+        7.39505326672,
+        7.25,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "chimney-base_7.8_3",
+      "translation": [
+        7.39505326672,
+        7.25,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1.6,
+        1.8,
+        1.1
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-6_8",
+      "translation": [
+        -6.72894858266,
+        9.05,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_6_8",
+      "translation": [
+        5.27105141734,
+        9.05,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-6_-8",
+      "translation": [
+        -6.72894858266,
+        9.05,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_6_-8",
+      "translation": [
+        5.27105141734,
+        9.05,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-7.8_-3",
+      "translation": [
+        -8.52894858266,
+        9.05,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_-7.8_3",
+      "translation": [
+        -8.52894858266,
+        9.05,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_7.8_-3",
+      "translation": [
+        7.07105141734,
+        9.05,
+        -3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "chimney-top_7.8_3",
+      "translation": [
+        7.07105141734,
+        9.05,
+        3
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        2.15,
+        0.85,
+        1.68
+      ]
+    },
+    {
+      "source": "chimney-base",
+      "label": "observatory_masonry_plinth",
+      "translation": [
+        -3.2389468133896657,
+        5.4,
+        8
+      ],
+      "scale": [
+        12.797522452299294,
+        2.8,
+        8.461538771905854
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "source": "chimney-top",
+      "label": "observatory_cornice",
+      "translation": [
+        -6.258480563468929,
+        8.2,
+        8
+      ],
+      "scale": [
+        18.459097843987205,
+        0.5599999999999999,
+        13.676470444379795
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "sha256": "ebb56a8c08174a3d8a8518667b38d02e143036f1a43f24d833c65055994ce6d8",
+  "bytes": 188820,
+  "triangles": 37340,
+  "sourceRevision": "187b8b73b87414c95be280cd76c8794597665ee3",
+  "productionVerified": false,
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
+  "validation": "SOURCE_SHA256_GIT_BLOB_REGISTERED_RIGHTS_GLB_SCENE_TRIANGLES_AND_ROOF_RIDGE_HEIGHT_VERIFIED",
+  "previousAssemblySha256": "8f498b65be21e3005204e2cc27d9d71664605e840643d0cd0b4f49f6ca5a3c1e",
+  "roofInterfaceGeometry": {
+    "roofRidgeY": 8.000003002348757,
+    "plinthBaseY": 5.4,
+    "plinthTopY": 8.2,
+    "corniceTopY": 8.55,
+    "domeBaseY": 8.55,
+    "oldDomeBaseY": 7.3,
+    "domeDiameter": 4.4,
+    "originalBinSha256": "adaf19bb2c10753fd1a531318f7e0d81ee7f6ed6a6a3c20fd85bb02a8bb2fa41"
+  },
+  "registrationReview": "Binary and original source rights revalidated; registration only. Native visual, collision, PBR and mobile QA remain unverified; no production quality approval."
+}
