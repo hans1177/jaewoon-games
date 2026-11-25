@@ -353615,11 +353615,159 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_62d1a903b3dced9d0dd6ced0",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15152",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "348d50924c45afe56a21d1849d414ac87f3a776e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15152,
+        "baseBranch": "main",
+        "headBranch": "fix/london-bridge-glb-1125",
+        "baseSha": "348d50924c45afe56a21d1849d414ac87f3a776e",
+        "headSha": "e979645b75e0deb05e99b524238e2445568a0b79",
+        "mergeCommitSha": "1d284eadcc53f1b77f8c68e61af62f8bc167bf12",
+        "mergedAt": "2026-11-25T03:06:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1b78a632b673ff2c528e1521a2f4d0acb30df3cd33b8afdf1a0dda66e54498a9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/london-bridge-glb-1125",
+        "candidateSha": "e979645b75e0deb05e99b524238e2445568a0b79"
+      },
+      "changeStats": {
+        "changedFileCount": 21,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 387,
+        "deletedLineCount": 276,
+        "changedFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_stall_coal.glb",
+          "roblox-games/mare-essentia/assets/town/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_stall_tin.glb",
+          "roblox-games/mare-essentia/assets/town/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_stall_wool.glb",
+          "roblox-games/mare-essentia/assets/town/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau",
+          "tools/company-development-roblox-studio-local-play.mjs"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_stall_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_stall_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_stall_wool.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau",
+          "tools/company-development-roblox-studio-local-play.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15152",
+        "merge-commit:1d284eadcc53f1b77f8c68e61af62f8bc167bf12",
+        "base-main:348d50924c45afe56a21d1849d414ac87f3a776e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2798
+    "total": 2799
   }
 }
