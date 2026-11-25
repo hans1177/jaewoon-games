@@ -1539,6 +1539,7 @@ return {
 	["Town/london_house_worker"] = 93317647478187,
 	["Town/london_scholar_1"] = 80241691845534,
 	["Town/london_scholar_2"] = 119570363369935,
+	["Town/london_street_lamp"] = 90565046530511,
 	["Town/london_tavern_1"] = 105398512266281,
 	["Town/london_tavern_2"] = 133265815778453,
 	["Town/london_tavern_3"] = 117483752321624,
