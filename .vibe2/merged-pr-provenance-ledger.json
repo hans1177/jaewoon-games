@@ -354704,11 +354704,170 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_bc58892cfab6be95c88650c6",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15175",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "30f7f1a48cd3a5a1f9ed338dd40661d9b36b441a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15175,
+        "baseBranch": "main",
+        "headBranch": "assets/london-tin-sluice-repair",
+        "baseSha": "30f7f1a48cd3a5a1f9ed338dd40661d9b36b441a",
+        "headSha": "56042c1dcba412782d1bda3203ba43e095c95c01",
+        "mergeCommitSha": "222f5f49b973827a522dfe5f61d1a1983f12bf34",
+        "mergedAt": "2026-11-25T04:17:21Z",
+        "authorLogin": "hans1177",
+        "titleHash": "c1281c831b9d441ba003406f20f28728a7a3ea76870fb7690d83d3cc72d17eab",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/london-tin-sluice-repair",
+        "candidateSha": "56042c1dcba412782d1bda3203ba43e095c95c01"
+      },
+      "changeStats": {
+        "changedFileCount": 30,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 3533,
+        "deletedLineCount": 3356,
+        "changedFiles": [
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-architrave-heritage-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-architrave-heritage-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-cartwheel-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-cartwheel-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-chisel-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-chisel-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-curved-stone-bench-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-curved-stone-bench-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-iron-flambeaux-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-iron-flambeaux-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-02-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-gate-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-gate-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_tannery.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_tannery.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_tannery.glb",
+          "roblox-games/mare-essentia/assets/town/london_bld_tannery.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_university.glb",
+          "roblox-games/mare-essentia/assets/town/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-architrave-heritage-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-cartwheel-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-chisel-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-curved-stone-bench-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-iron-flambeaux-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-gate-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_tannery.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_tannery.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_bld_university.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15175",
+        "merge-commit:222f5f49b973827a522dfe5f61d1a1983f12bf34",
+        "base-main:30f7f1a48cd3a5a1f9ed338dd40661d9b36b441a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2806
+    "total": 2807
   }
 }
