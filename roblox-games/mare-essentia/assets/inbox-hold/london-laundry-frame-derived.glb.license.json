@@ -1,0 +1,384 @@
+{
+  "license": "CC0-1.0",
+  "author": "Tim Steer / The Base Mesh; glTF conversion M3-org; composition by Mare Essentia; Kenney banner fabric",
+  "source": "https://github.com/M3-org/base-meshes/tree/2b944200d24c8a7caf698257a3047619d3ab9268",
+  "sourceLicense": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE",
+  "derived": true,
+  "commercialUseAllowed": true,
+  "originalFiles": [
+    {
+      "localPath": "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "265f8762ad170c01e1ef6709479c83c0a8a01a23",
+      "sha256": "050a49a660a02513bbe1198f9c6c72a9cb83197cb439baffd3f71383f464fffd",
+      "triangles": 60
+    },
+    {
+      "localPath": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "c7b7edb7eab0d42afa485583624a349e578bd704",
+      "sha256": "c3ebc671e176f6d9d70a6d994bd90ac0dadd9bf969c834b414dfaaa0e6966de5",
+      "triangles": 768
+    },
+    {
+      "localPath": "roblox-games/mare-essentia/assets/inbox-hold/london-clothes-peg-source.glb",
+      "sourceRevision": "a67b67e80a921c715914d7c2addc0afb8abee13d",
+      "gitBlobSha1": "3284e1fc2622d57d41998e42e4cf759ae2fbe11f",
+      "sha256": "18e92df16932be8277a5d9f6671f599aad8a8860d3d3c288dc45037314d823d6",
+      "triangles": 1880
+    },
+    {
+      "localPath": "roblox-games/mare-essentia/assets/town/kenney_banner_01.glb",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "ff65d79c8ef95a3f3e7e92e41a3cae29ebf199ff",
+      "sha256": "5b8b9f52afc405d55d9374d3557fc20519eb8aa9897bea79b0087a17a38183e9",
+      "source": "https://opengameart.org/content/medieval-town-base-3d-assets",
+      "license": "CC0-1.0",
+      "licenseEvidence": "roblox-games/mare-essentia/assets/SOURCES.md",
+      "sourceTriangles": 38,
+      "selectedPrimitiveIndices": [
+        0,
+        1
+      ],
+      "selectedTriangles": 26
+    }
+  ],
+  "modification": "Preserved original frame binary buffers, meshes and transforms. Added three repurposed CC0 banner fabric panels with original positions/normals/UV/indices, removed wooden primitive from composition only, applied linen color factors, and added one reused peg. Static laundry candidate; fabric visual historical suitability, PBR maps, animation, collision and Roblox runtime pending.",
+  "transforms": [
+    {
+      "name": "left timber post",
+      "mesh": 0,
+      "translation": [
+        -1.5,
+        0.9664965423785251,
+        0
+      ],
+      "rotation": [
+        -0.7071067811865475,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        65,
+        120,
+        153.28124597141777
+      ]
+    },
+    {
+      "name": "right timber post",
+      "mesh": 0,
+      "translation": [
+        1.5,
+        0.9664965423785251,
+        0
+      ],
+      "rotation": [
+        -0.7071067811865475,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        65,
+        120,
+        153.28124597141777
+      ]
+    },
+    {
+      "name": "rope section 1",
+      "mesh": 1,
+      "translation": [
+        -1.5,
+        1.76,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7692519460823242,
+        0.6389455715853715
+      ],
+      "scale": [
+        0.55,
+        3.8147744236436134,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 2",
+      "mesh": 1,
+      "translation": [
+        -1.125,
+        1.69,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7523841173533029,
+        0.6587246313555394
+      ],
+      "scale": [
+        0.55,
+        3.783186994970303,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 3",
+      "mesh": 1,
+      "translation": [
+        -0.75,
+        1.6400000000000001,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7347602405829027,
+        0.6783269041240773
+      ],
+      "scale": [
+        0.55,
+        3.7619813657163537,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 4",
+      "mesh": 1,
+      "translation": [
+        -0.375,
+        1.61,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7164695353743173,
+        0.697618380549502
+      ],
+      "scale": [
+        0.55,
+        3.75133359947358,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 5",
+      "mesh": 1,
+      "translation": [
+        0,
+        1.6,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6976183805495019,
+        0.7164695353743175
+      ],
+      "scale": [
+        0.55,
+        3.75133359947358,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 6",
+      "mesh": 1,
+      "translation": [
+        0.375,
+        1.61,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6783269041240771,
+        0.7347602405829027
+      ],
+      "scale": [
+        0.55,
+        3.7619813657163537,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 7",
+      "mesh": 1,
+      "translation": [
+        0.75,
+        1.6400000000000001,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6587246313555394,
+        0.7523841173533029
+      ],
+      "scale": [
+        0.55,
+        3.783186994970303,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 8",
+      "mesh": 1,
+      "translation": [
+        1.125,
+        1.69,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6389455715853715,
+        0.7692519460823242
+      ],
+      "scale": [
+        0.55,
+        3.8147744236436134,
+        0.55
+      ]
+    },
+    {
+      "name": "wooden clothes peg",
+      "mesh": 2,
+      "translation": [
+        -0.7,
+        1.6348444444444445,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        1,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "wooden clothes peg",
+      "mesh": 2,
+      "translation": [
+        0.7,
+        1.6348444444444445,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        1,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "hanging linen 1",
+      "mesh": 3,
+      "translation": [
+        -0.955,
+        1.5609999970197679,
+        0.018
+      ],
+      "rotation": [
+        -0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        0.51,
+        0.17,
+        0.25
+      ]
+    },
+    {
+      "name": "hanging linen 2",
+      "mesh": 4,
+      "translation": [
+        -0.23,
+        1.5339999973773957,
+        0.018
+      ],
+      "rotation": [
+        -0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        0.46,
+        0.17,
+        0.22
+      ]
+    },
+    {
+      "name": "hanging linen 3",
+      "mesh": 5,
+      "translation": [
+        0.44499999999999995,
+        1.5549999967813493,
+        0.018
+      ],
+      "rotation": [
+        -0.7071067811865476,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        0.51,
+        0.17,
+        0.27
+      ]
+    },
+    {
+      "name": "center wooden clothes peg",
+      "mesh": 2,
+      "translation": [
+        0,
+        1.6,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        1,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "sha256": "c80ac5e5b79356b9dcf5b56a4013b878b46733676c3b67bfd9337c303ac40b51",
+  "bytes": 86576,
+  "triangles": 11982,
+  "meshInstances": 16,
+  "intendedLondonTargets": [
+    "london_district_props"
+  ],
+  "validation": "SOURCE_SHA256_BINARY_BUFFER_PRESERVATION_GLB_INDEX_BOUNDS_POSITIVE_SCALE_CHECKED",
+  "registration": "HOLD_DERIVED_CANDIDATE_NOT_APPROVED_FOR_UPLOAD",
+  "productionVerified": false,
+  "visualQualityApproved": false,
+  "actualRobloxRuntimeVerified": false,
+  "gameBindingApproved": false,
+  "dependencyPullRequest": 15214,
+  "previousDerivedSha256": "462927ca3db0ef08cb37e9a09c5f8741f23fd2560ab62f4311e3c61a8c682ee5"
+}
