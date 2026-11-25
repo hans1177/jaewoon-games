@@ -3913,7 +3913,7 @@ test('Mare exploration sites, regional backgrounds and discovery quest routes ma
 });
 
 // [탐험 원본 검사] 22개 지역의 지상 장면·적 R15·무기·철수 정리와 정기검사 연결을 회귀검증한다.
-test('Mare scheduled Studio expeditions cover all 22 cultural regions without silent crashes',()=>{
+test('Mare Studio expedition suite covers all 22 cultural regions without silent crashes',()=>{
   const root='roblox-games/mare-essentia/';
   const steps=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-regions.json','utf8'));
   const field=fs.readFileSync(root+'src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
@@ -3945,10 +3945,12 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
   assert.ok(steps.some(row=>row.code?.includes('REGION_QA_CLEAN_EXIT_PASS')));
   const auto=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(auto.includes("cron: '*/10 * * * *'"));
-  assert.ok(auto.includes("2) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json"));
-  assert.ok(auto.includes("STUDIO_ROTATION_SKIP=RUNNER_BUSY"));
-  assert.ok(auto.includes("STUDIO_ROTATION_SLOT=$slot"));
-  assert.ok(auto.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.ok(auto.includes('STUDIO_WATCHDOG_SKIP=RUNNER_BUSY'));
+  assert.ok(auto.includes('STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED'));
+  assert.ok(auto.includes('STUDIO_WATCHDOG_RECOVERY=SOURCE_NOT_YET_CHECKED'));
+  assert.ok(auto.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.ok(runner.includes('      script:')&&runner.includes('|| inputs.script }}'),'dedicated region suite must remain directly executable');
   assert.ok(auto.includes('gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"'));
   assert.doesNotMatch(auto,/for script in|scripts\+=\(/);
   assert.equal(auto.split('gh workflow run devloop-studio.yml').length-1,1);
@@ -4015,7 +4017,7 @@ test('Mare quests and field encounters expose five meaningful difficulty grades'
 });
 
 // [현장 모션 회귀] R15 관절/실제 발보폭/진입·정지·회피/지연 회전은 기존 공용 모션 경로를 사용한다.
-test('Mare enemies and companions have grounded speed responsive R15 locomotion',()=>{
+test('Mare solo field enemies have grounded speed responsive R15 locomotion',()=>{
   const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const field=fs.readFileSync(base+'FieldScene.luau','utf8');
   const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
@@ -4039,18 +4041,19 @@ test('Mare enemies and companions have grounded speed responsive R15 locomotion'
   assert.ok(field.includes('kindId == "archer" or e.throwAsset ~= nil')&&
     field.includes('e.root.CFrame.RightVector:Dot(e.moveVel)'),
     'enemy strafe/backpedal must use physical velocity');
-  assert.ok(field.includes('a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))')&&
-    field.includes('a.moveVel.Magnitude * math.clamp(dt'),
-    'companions must accelerate and decelerate without snapping');
-  assert.ok(field.includes('a.gait = (a.gait or 0) + walked / 5.2')&&
-    field.includes('math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25)'),
-    'companion gait must advance by actual displacement and match the bounded walking speed');
+  assert.ok(field.includes('e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * enemyDt))')&&
+    field.includes('local delta = e.moveVel * enemyDt'),
+    'enemies must accelerate and decelerate without snapping');
+  assert.ok(field.includes('e.gait = (e.gait or 0) + traveled / (if e.boss then 7 else 5.2)')&&
+    field.includes('math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25)'),
+    'enemy gait must advance by actual displacement and match bounded walking speed');
+  assert.ok(field.includes('status:SetAttribute("CombatEnabled", false)')&&!field.includes('a.moveVel ='),'party remains UI-only in solo field combat');
   assert.ok(field.includes('AC.moveWish(e.ac, dist)')&&field.includes('AC.damageEnemy(')&&field.includes('AC.takeHit(pl,'),
     'original combat authority, attack/defense flows must remain');
 });
 
 // [무기별 모션 회귀] 적·동료는 동일한 공용 무기 원본+전신 모션을 통과하고 공격 차례별 자세를 순환한다.
-test('Mare enemy and companion weapon motions use grounded shared combo and recoil',()=>{
+test('Mare enemy weapon motions use grounded shared combo and recoil in solo field combat',()=>{
   const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
   const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
@@ -4062,9 +4065,8 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
   assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
     !scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
     'enemy can vary authored weapon poses but allies do not accrue three-hit combo beats');
-  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
-    !scene.includes('FM.sample(ac, math.min(ap * 1.6, 1)'),
-    'ally must no longer bypass planted feet, torso recoil and transition');
+  assert.ok(scene.includes('FM.actor(e.fm, st, ph, enemyDt')&&scene.includes('if e.throwAsset then nil else (e.weapon and e.weapon.motion)')&&
+    !scene.includes('FM.actor(a.fm,'),'enemy uses original full-body weapon path; no field ally animation');
   for(const marker of ['local gun = grip == "PISTOL" or grip == "RIFLE"',
     'elseif bow then','elseif crossbow then','elseif spear then','elseif dagger then',
     'elseif axe then','elseif blunt then','local point = grip == "RAPIER"',
@@ -4076,14 +4078,13 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
     motion.includes('local follow = if state == "ATTACK"')&&
     motion.includes('local returnGrip = if state == "RECOVERY"'),
     'weapon wind-up, strike, follow-through and recover must stay on original timing');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
-    scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
-    scene.includes('a.nextAt = now + 1.3 / aw.speed'),
-    'original attack authority, ally power and cooldown remain intact');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&
+    !scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&!scene.includes('a.nextAt = now + 1.3 / aw.speed'),
+    'original enemy attack authority remains; no ally damage or cooldown path');
 });
 
 // [무기 모션 연속성] 기존 공격 판정은 그대로 두고 준비·타격·착지·복귀 경계를 지킨다.
-test('Mare enemy and companion weapon motion transition and foot contact are continuous',()=>{
+test('Mare enemy weapon motion transition and foot contact are continuous',()=>{
   const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
   const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
@@ -4100,17 +4101,15 @@ test('Mare enemy and companion weapon motion transition and foot contact are con
   assert.ok(motion.includes('h.sideEffort = (h.sideEffort or side)')&&
     motion.includes('local inertia = if axe or blunt then 1'),
     'side steps must ease and weapon mass must drive torso recoil');
-  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
-    !scene.includes('math.min(ap * 1.6, 1) * 0.35'),
-    'companion weapon animation must not freeze before the original attack finishes');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
-    scene.includes('a.nextAt = now + 1.3 / aw.speed')&&
-    scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
-    'enemy authority and companion cooldown, range and damage are unchanged');
+  assert.ok(scene.includes('FM.actor(e.fm, st, ph, enemyDt')&&scene.includes('e.attackStep)')&&
+    !scene.includes('FM.actor(a.fm,'),'enemy full-body phase and attack advance stay continuous; party has no combat animation');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&
+    !scene.includes('a.nextAt = now + 1.3 / aw.speed')&&!scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
+    'enemy authority is unchanged and the retired ally attack path cannot return');
 });
 
 // [전투 모션 연속] 타격 이벤트 시 키프레임 접촉과 관절별 반응 속도가 같은 기존 공용 경로로 이어진다.
-test('Mare R15 enemy ally authored weapon impact matches strike event timing',()=>{
+test('Mare R15 enemy authored weapon impact matches strike event timing',()=>{
   const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
   const scene=fs.readFileSync(base+'FieldScene.luau','utf8');
@@ -4136,10 +4135,9 @@ test('Mare R15 enemy ally authored weapon impact matches strike event timing',()
   assert.ok(motion.includes('local beatSide = if (h.weaponBeat or 1) % 2 == 0 then -1 else 1')&&
     motion.includes('not (gun or bow or crossbow)'),
     'melee alternating sides must not disrupt ranged weapon aiming');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
-    scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
-    scene.includes('a.nextAt = now + 1.3 / aw.speed'),
-    'enemy combat authority and ally damage, speed, range and reward flow remain unchanged');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.damageEnemy(e.ac, BASE_DMG')&&
+    scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&!scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
+    'enemy damage and hit authority remain intact; party cannot contribute to combat');
 });
 
 // [무기 스킬·직업 회피] 무기별 스킬은 정확히 두 유형, 기본 회피/방어·카드·저장/게임 규칙은 독립적이다.
@@ -4203,8 +4201,8 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('(pl.cd.heavy or -100) <= os.clock()')&&
     scene.includes('pl.stamina >= AC.Moves.heavy.stamina')&&
     scene.includes('equipped.heavy, equipped.sweep = true, false')&&
-    scene.includes('aw.family == "axe", true, false, nil, aw'),
-    'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
+    scene.includes('status:SetAttribute("CombatEnabled", false)')&&!scene.includes('aw.family == "axe", true, false, nil, aw'),
+    'automatic skill must use original cooldown and stamina; party cannot contribute to owner streak');
   // [모바일 반원형 3메달] 기존 공격·회피 두 행동 + 주·보조 무기교체. 별도 스킬/방어 버튼 없음.
   assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
     scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
@@ -4297,15 +4295,16 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
     && active.includes('if stage == chain then')
     && !active.includes('strikeEnemy('),
     'bonus visual beats must be purely cinematic, use authored finishers and never add damage or experience');
-  assert.ok(field.includes('if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then')
-    && field.includes('a.skillCd[sid] = now + def.cooldown')
-    && field.includes('castEffect(sid, a.name')
-    && field.includes('if ally.healer then table.insert(activeHealers, ally) end'),
-    'companion skills and out-of-combat healer assistance must remain automatic');
+  assert.ok(field.includes('local party = if type(opts.allies) == "table" then opts.allies else {}')
+    && field.includes('status:SetAttribute("CompanionId", member.id)')
+    && field.includes('status:SetAttribute("CombatEnabled", false)')
+    && field.includes('FieldAllyPortrait')&&field.includes('local companionRows: { any } = {}')
+    && !field.includes('a.nextSkill')&&!field.includes('a.skillCd[sid]')&&!field.includes('castEffect(sid, a.name')&&!field.includes('activeHealers'),
+    'party IDs and portraits are preserved but party combat and healing must stay disabled');
   assert.ok(field.includes('not fieldStreakResult.credited[creditedSeq]')
     && field.includes('if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end')
     && field.includes('now - lastCombatAt >= 8')
-    && field.includes('0.12 + math.min(healers, 2) * 0.18'),
+    && field.includes('pl.hp = math.min(pl.maxHp, pl.hp + 0.12 * math.min(dt, 0.1))'),
     'cumulative streak must be scored per attack and passive healing must remain tiny and non-combat only');
   assert.ok(allies.includes('function JobSkills.allySkills'));
   // [투척병·접지 회귀] 기존 사수 체력/피해/재사용은 그대로, 승인된 메시만 궤도로 움직인다.
@@ -4331,9 +4330,11 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_FINAL_CLEAN_EXIT_PASS')));
   const daily=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(daily.includes("cron: '*/10 * * * *'"));
-  assert.ok(daily.includes("3) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json"));
-  assert.ok(daily.includes("0) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json"));
-  assert.ok(daily.includes("4) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json"));
+  assert.ok(daily.includes('STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED'));
+  assert.ok(daily.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  assert.ok(daily.includes('SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
+  const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.ok(runner.includes('      script:')&&runner.includes('|| inputs.script }}'),'dedicated weapon and town suites must remain directly executable');
 });
 
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
@@ -4659,11 +4660,12 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   const pose=fs.readFileSync(root+'src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync(root+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   const script=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-town.json','utf8'));
-  assert.match(pose,/gui\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/decal\.Texture = "rbxasset:\/\/textures\/face\.png"/);
   assert.match(pose,/faceHead\.CFrame\.LookVector:Dot\(faceTorso\.CFrame\.LookVector\) < -0\.35/);
   assert.match(pose,/model:SetAttribute\("NpcFaceReversed",/);
   assert.match(pose,/motor == m\.leftArm or motor == m\.rightArm/);
-  assert.match(pose,/pitch < -0\.30 then cf = CFrame\.Angles\(-pitch, yaw, roll\)/);
+  assert.match(pose,/pitch < 0 then cf = CFrame\.Angles\(-pitch, yaw, roll\)/);
   assert.match(pose,/motor == m\.neck and model:GetAttribute\("NpcFaceReversed"\)/);
   assert.match(pose,/joint == m\.neck and model:GetAttribute\("NpcFaceReversed"\)/);
   assert.match(pose,/state ~= "walk" and state ~= "run"/);
@@ -4686,7 +4688,8 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   assert.match(port,/for sample = 0, 7 do/);
   assert.match(port,/walker.cx \+= offset.X/);
   assert.match(port,/walker.model:PivotTo\(CFrame.new\(walker.cx \+ walker.r, safe.Position.Y, walker.cz\)/);
-  assert.equal(script.length,45,'existing town gameplay and capture sequence must remain unchanged');
+  assert.equal(script.length,46,'existing town gameplay and added ground measurement must remain');
+  assert.ok(script.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
 });
 
 test('Mare central plaza is reserved as empty walking space and all original civic structures moved outside',()=>{
@@ -4699,12 +4702,12 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(port,/local function house\(parent, pos, w, d, floors, style, rng, wallColor\)[\s\S]{0,250}CENTRAL_PLAZA_RADIUS/);
   assert.match(port,/folder:SetAttribute\("CentralPlazaClearRadius", CENTRAL_PLAZA_RADIUS\)/);
   assert.match(port,/folder:SetAttribute\("CentralPlazaReserved", true\)/);
-  for(const kept of ['disc(24, 0.17, plazaCol[sceneLevel], plazaMat[sceneLevel])','{ name = "교역소", tab = "trade"','{ name = "주점", tab = "quest"','local extraStalls =']){
+  for(const kept of ['part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())','{ name = "교역소", tab = "trade"','{ name = "주점", tab = "board"','local extraStalls =']){
     assert.ok(port.includes(kept),'plaza paving, facility access, and trading must remain intact: '+kept);
   }
   for(const marker of [
     'Vector3.new(-124, 0, 126)', 'local ax, az = -160, -128',
-    'CFrame.new(-106, 1, 122)', 'Vector3.new(-108, 0, 122)',
+    'importedModel(folder, "Town", "fountain-square", Vector3.new(-108, 0, 122), 7, true)',
     'Vector3.new(-94, 0, -13)', 'Vector3.new(-94, 0, 13)',
     'Vector3.new(-114, 0, -14)', 'Vector3.new(-114, 0, 14)',
     'Vector3.new(-136, 0, 14)', 'Vector3.new(-126, 0, 32)',
@@ -4724,5 +4727,7 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(check.code,/TOWN_CENTRAL_PLAZA_PART:/);
   assert.match(check.code,/CentralPlazaClearRadius/);
   assert.match(check.code,/plaza_structures=0 inspected=%d/);
-  assert.equal(town.length,45,'all existing town screenshots, game layout checks and capture stages must remain');
+  assert.equal(town.length,46,'all existing town screenshots, layout and ground checks must remain');
+  assert.ok(town.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
+  assert.ok(port.includes('CityPortPlazaAccessConnected')&&port.includes('CentralPlazaRemovedStructures'),'new plaza access and final occupancy cleanup must remain');
 });
