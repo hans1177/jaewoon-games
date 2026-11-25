@@ -1,16 +1,16 @@
 {
   "version": 3,
-  "provider": "OPENROUTER",
+  "provider": "MULTI_FREE_VISUAL",
   "gameId": "mare-essentia",
-  "sourceRevision": "7d7b17a962ccc6caaa6abcbf0d23d0f31c740411",
-  "status": "CANDIDATE_EDITED",
-  "selectedRole": "NPC",
+  "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "WORLD",
   "usageWindow": {
     "day": "2026-11-25",
     "calls": {
-      "NVIDIA": 4,
-      "GEMINI": 0,
-      "OPENROUTER": 4
+      "NVIDIA": 5,
+      "GEMINI": 1,
+      "OPENROUTER": 5
     },
     "windowIds": {
       "NVIDIA": "2026-11-25",
@@ -19,23 +19,26 @@
     },
     "firstCallAtByProvider": {
       "NVIDIA": "2026-11-25T04:20:31.778Z",
-      "OPENROUTER": "2026-11-25T04:19:01.042Z"
+      "OPENROUTER": "2026-11-25T04:19:01.042Z",
+      "GEMINI": "2026-11-25T08:50:27.658Z"
     }
   },
   "cooldowns": {
-    "NVIDIA_VL": "2026-11-25T08:48:18.196Z"
+    "GEMINI_FLASH": "2026-11-25T08:52:27.684Z",
+    "OPENROUTER_GEMMA26": "2026-11-25T08:52:58.882Z",
+    "NVIDIA_VL": "2026-11-25T09:22:10.764Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 4,
-      "remainingLocal": 8,
-      "effectiveRemaining": 8,
-      "regularWorkRemaining": 5,
+      "localUsed": 5,
+      "remainingLocal": 7,
+      "effectiveRemaining": 7,
+      "regularWorkRemaining": 4,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.76,
-      "estimatedHoursToLocalCap": 10.5,
+      "estimatedCallsPerHour": 0.88,
+      "estimatedHoursToLocalCap": 8,
       "nextLocalWindowAt": "2026-11-26T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -46,10 +49,10 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 0,
-      "remainingLocal": 12,
-      "effectiveRemaining": 12,
-      "regularWorkRemaining": 9,
+      "localUsed": 1,
+      "remainingLocal": 11,
+      "effectiveRemaining": 11,
+      "regularWorkRemaining": 8,
       "emergencyReserveRemaining": 3,
       "estimatedCallsPerHour": null,
       "estimatedHoursToLocalCap": null,
@@ -63,13 +66,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 4,
-      "remainingLocal": 26,
-      "effectiveRemaining": 26,
-      "regularWorkRemaining": 20,
+      "localUsed": 5,
+      "remainingLocal": 25,
+      "effectiveRemaining": 25,
+      "regularWorkRemaining": 19,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 0.75,
-      "estimatedHoursToLocalCap": 34.7,
+      "estimatedCallsPerHour": 0.88,
+      "estimatedHoursToLocalCap": 28.4,
       "nextLocalWindowAt": "2026-11-26T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -81,6 +84,18 @@
   "accountQuota": null,
   "attempts": [
     {
+      "id": "GEMINI_FLASH",
+      "status": "TRANSPORT_OR_TIMEOUT",
+      "provider": "GEMINI",
+      "model": "gemini-3.8-flash"
+    },
+    {
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-26b-a4b-it:free"
+    },
+    {
       "id": "NVIDIA_VL",
       "status": "OK",
       "provider": "NVIDIA",
@@ -89,127 +104,27 @@
     {
       "id": "NVIDIA_VL",
       "status": "REVIEW_INVALID",
-      "failureSignature": "EDIT_NOT_VISUAL_OR_NOT_IN_POLICY"
-    },
-    {
-      "id": "OPENROUTER_NEMOTRON",
-      "status": "OK",
-      "provider": "OPENROUTER",
-      "model": "nvidia/nemotron-3.5-super-vl:free"
+      "failureSignature": "ISSUE_EVIDENCE_INVALID"
     }
   ],
   "frames": [
     {
-      "name": "field_npc_ally_mob-0.jpg",
-      "sha256": "1d1180c57d2618fb283b53222cdec2ae74069f16c3a27899b4519de31c0c6917"
+      "name": "field_camera_normal-0.jpg",
+      "sha256": "b4e833df532bdd68852b2a64895506f65959979d3805a9db8b599ea6f00bf7ae"
     },
     {
-      "name": "harbor_npc_face_front-0.jpg",
-      "sha256": "56b6c68903f4f9cdb4a512b24a9c0bd034f637b80982a978710140a213600242"
+      "name": "field_entry-0.jpg",
+      "sha256": "e5f90e380568d2a7ad08d3ecd7e95b21e30b96bfa1990099213db7809b5d934c"
     },
     {
-      "name": "harbor_npc_sparring_01-0.jpg",
-      "sha256": "0794c2a98bffbac03b9123c7965d912c49c80efde0681ba66e0b90a9f7e5ea31"
+      "name": "field_ground_visible_extra-0.jpg",
+      "sha256": "949935e96e718b50079c7394c8e1f604fd4e603613e4452e4620d5becf7b5c0f"
     },
     {
-      "name": "harbor_npc_sparring_02-0.jpg",
-      "sha256": "640dd0a7ffa23a82a7bef9f4c8ee8c286c4f881dd3a21b6f3f15921c4646f15a"
+      "name": "field_notice_overlap-0.jpg",
+      "sha256": "3d17a0f8c2b2ac02f306c396d090b16dbe19b2d81903b2b73f77700406ed0667"
     }
   ],
-  "model": "nvidia/nemotron-3.5-super-vl:free",
-  "rawResponseSha256": "935dee1045cb7a72c4ca35490c3c770df8ff7f56c8a75b808aa93e9a3d6a2d0e",
-  "issues": [
-    {
-      "category": "npc-face",
-      "severity": "high",
-      "screenshot": "harbor_npc_face_front-0.jpg",
-      "evidenceSha256": "15b44bd6c1690193c95f5f1efb085b2478a6731ef0e1b1911b5653626948fbe0"
-    },
-    {
-      "category": "npc-hair",
-      "severity": "medium",
-      "screenshot": "harbor_npc_face_front-0.jpg",
-      "evidenceSha256": "96a7431495198576af08905d335612d3c9a808900a90d4e9431508179904df9f"
-    },
-    {
-      "category": "npc-clothing",
-      "severity": "medium",
-      "screenshot": "harbor_npc_face_front-0.jpg",
-      "evidenceSha256": "8d169ddc2737b9ed0afc045882c3e10fb56fbaf68399c423be765f35d0044c5d"
-    },
-    {
-      "category": "npc-face",
-      "severity": "high",
-      "screenshot": "harbor_npc_sparring_01-0.jpg",
-      "evidenceSha256": "73b7d68b1f80ed2d3ec417a87d2675558436de3a1fd9b94da3237565262cdbb6"
-    },
-    {
-      "category": "npc-hair",
-      "severity": "medium",
-      "screenshot": "harbor_npc_sparring_01-0.jpg",
-      "evidenceSha256": "d2d2c9ee941deaf31bca84a88c4ba467360dce48a4a028fde3b2c0d1b9c5ae0c"
-    },
-    {
-      "category": "npc-clothing",
-      "severity": "medium",
-      "screenshot": "harbor_npc_sparring_01-0.jpg",
-      "evidenceSha256": "2eb524e79332b77307690e45de4c51e5633555361b75851da0717d979ddc4345"
-    },
-    {
-      "category": "npc-face",
-      "severity": "high",
-      "screenshot": "harbor_npc_sparring_02-0.jpg",
-      "evidenceSha256": "87546c764c596a758d70a0136e9142088a7f14787b51255482e5177bb4491c05"
-    },
-    {
-      "category": "npc-hair",
-      "severity": "medium",
-      "screenshot": "harbor_npc_sparring_02-0.jpg",
-      "evidenceSha256": "de8e0e8cdabfb75fadf1ad9ecbfb680d08f36435a3da97c8f99fdf864276f4f5"
-    },
-    {
-      "category": "npc-clothing",
-      "severity": "medium",
-      "screenshot": "harbor_npc_sparring_02-0.jpg",
-      "evidenceSha256": "0e409b092db710cb6b73ec278bbd8ed116da1043a125249dd6faffd87832b176"
-    },
-    {
-      "category": "lighting",
-      "severity": "medium",
-      "screenshot": "field_npc_ally_mob-0.jpg",
-      "evidenceSha256": "6dcad46c6c989e7183a6877c196195ac476948d5c2aaec8993eba889c1324dec"
-    },
-    {
-      "category": "ui",
-      "severity": "medium",
-      "screenshot": "field_npc_ally_mob-0.jpg",
-      "evidenceSha256": "a800f0c277bbfc7e830e12ee69908badc7a661e305a359cb6c8b236bb84ab8a3"
-    }
-  ],
-  "edits": [
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
-      "category": "npc-clothing",
-      "screenshot": "harbor_npc_face_front-0.jpg",
-      "beforeSha256": "184502ff5e528639447ec5169ff970d5d3d10445a2d87956a33b9ae325a24d3f",
-      "afterSha256": "0b98f3849a40478cd599c099adaf495a9717556ce997f837f84c4ddfe735709c"
-    },
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
-      "category": "npc-clothing",
-      "screenshot": "harbor_npc_sparring_01-0.jpg",
-      "beforeSha256": "6a794d71ad0665bb5a0783e9416bf61d8e9d70b62cc35b7aacefe051c1aeb49c",
-      "afterSha256": "d4819807298824370d8fc1564eb3908922097f5b04ad761548120d1752b0cb8a"
-    }
-  ],
-  "sourceHashes": [
-    {
-      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
-      "beforeSha256": "8a843475bc8b5781084d2806aaf2dafe32fdd025daaf83d483e42962c28c22ba",
-      "afterSha256": "bc49dcb521b0bbb5c16c66d3409f78e1f8cb326782c5275e5a23b6ce7c6e6817"
-    }
-  ],
-  "candidateOnly": true,
   "independentQaPassed": false,
   "afterStudioPassed": false,
   "releasePassed": false
