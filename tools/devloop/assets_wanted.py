@@ -12,6 +12,7 @@ import re
 import struct
 import subprocess
 import sys
+import tempfile
 
 # 메인: 기존 부족 자산 장부 생성 책임 보존
 root = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "roblox-games/mare-essentia"
@@ -545,6 +546,115 @@ def animal_source_practice():
     return report
 
 
+# [시각 검수 준비] 이미 원본 무결성이 검증된 회사 보관 압축 모델만 실제 렌더한다.
+# 파일명/렌더/형상은 승인이 아니다. 기존 시각 검수 권한을 우회하지 않는다.
+def materialize_animal_review_member(data, filename, target, member, dest):
+    matches = inspect_animal_archive(data, filename, target)
+    if member not in matches or member["format"] not in ("GLB", "BLEND"):
+        raise ValueError("SOURCE_PREVIEW_MEMBER_UNVERIFIED")
+    name = member["member"]
+    texture = name.rsplit(".", 1)[0] + ".png"
+    if filename.endswith(".zip"):
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            body = archive.read(name)
+            image = archive.read(texture) if texture in archive.namelist() else None
+    else:
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
+            body = archive.extractfile(name).read(5_000_001)
+            info = archive.getmember(texture) if texture in archive.getnames() else None
+            image = archive.extractfile(info).read(5_000_001) if info and info.isfile() else None
+    if len(body) != member["bytes"] or hashlib.sha256(body).hexdigest() != member["sha256"]:
+        raise ValueError("SOURCE_PREVIEW_MEMBER_HASH_MISMATCH")
+    source = os.path.join(dest, os.path.basename(name))
+    with open(source, "wb") as handle:
+        handle.write(body)
+    if image is not None:
+        if len(image) > 5_000_000 or not image.startswith(b"\x89PNG\r\n\x1a\n"):
+            raise ValueError("SOURCE_PREVIEW_TEXTURE_INVALID")
+        with open(os.path.join(dest, os.path.basename(texture)), "wb") as handle:
+            handle.write(image)
+    return source
+
+
+def render_animal_review_candidates(report, out):
+    candidates = [row for row in report["candidates"] if row.get("modelMembers")]
+    report["sourcePreviewState"] = "NO_ARCHIVE_MODEL_CANDIDATES"
+    if not candidates:
+        return
+    import shutil
+    blender = shutil.which("blender")
+    if not blender:
+        report["sourcePreviewState"] = "BLENDER_UNAVAILABLE"
+        return
+    out = os.path.abspath(out)
+    os.makedirs(out, exist_ok=True)
+    report["sourcePreviewState"] = "RENDER_EVIDENCE_ONLY"
+    # 한 번에 세 건씩만 순환하고 원본별 렌더 시간을 제한한다.
+    import time
+    slot = int(time.time() // 3600) * 3
+    for i in range(min(3, len(candidates))):
+        row = candidates[(slot + i) % len(candidates)]
+        row["sourcePreview"] = {"state": "UNVERIFIED", "registrationApproved": False,
+                                "visualQualityApproved": False}
+        members = [m for m in row["modelMembers"] if m["format"] in ("BLEND", "GLB")]
+        if len(members) != 1:
+            continue
+        member = members[0]
+        key = row["sourceSha256"][:16] + "-" + member["sha256"][:16]
+        frame_dir = os.path.join(out, key)
+        try:
+            size = int(subprocess.check_output(["git", "cat-file", "-s", "HEAD:" + row["source"]],
+                                              timeout=30, stderr=subprocess.DEVNULL))
+            if size != row["bytes"] or not 0 < size <= 5_000_000:
+                raise ValueError("SOURCE_PREVIEW_SIZE")
+            data = subprocess.check_output(["git", "show", "HEAD:" + row["source"]],
+                                           timeout=45, stderr=subprocess.DEVNULL)
+            if len(data) != size or hashlib.sha256(data).hexdigest() != row["sourceSha256"]:
+                raise ValueError("SOURCE_PREVIEW_ARCHIVE_HASH")
+            with tempfile.TemporaryDirectory(prefix="mare-animal-review-") as temp:
+                source = materialize_animal_review_member(data, os.path.basename(row["source"]),
+                                                          row["name"], member, temp)
+                audit_path = os.path.join(temp, "audit.json")
+                # 외부 모델을 여는 파서는 자동 스크립트를 실행하지 않고 인증 환경도 넘기지 않는다.
+                safe_env = {"PATH": os.environ.get("PATH", ""), "HOME": temp, "TMPDIR": temp,
+                            "LANG": "C.UTF-8", "LIBGL_ALWAYS_SOFTWARE": "1"}
+                os.makedirs(frame_dir, exist_ok=True)
+                subprocess.run([blender, "--background", "--factory-startup", "--disable-autoexec",
+                                "--python-exit-code", "1", "--python",
+                                os.path.abspath("tools/vibe_mesh_audit.py"), "--",
+                                "--input", source, "--output", audit_path,
+                                "--source-preview-dir", frame_dir], cwd=temp, env=safe_env,
+                               timeout=180, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                audit = read_json(audit_path)
+                preview = audit["sourcePreview"]
+                if preview["sourceSha256"] != member["sha256"] or len(preview["frames"]) != 3:
+                    raise ValueError("SOURCE_PREVIEW_EVIDENCE")
+                frames = []
+                for frame in preview["frames"]:
+                    if frame["name"] not in ("front.png", "rear.png", "side.png"):
+                        raise ValueError("SOURCE_PREVIEW_FRAME_NAME")
+                    with open(os.path.join(frame_dir, frame["name"]), "rb") as handle:
+                        blob = handle.read(5_000_001)
+                    if (len(blob) != frame["bytes"] or len(blob) > 5_000_000
+                            or hashlib.sha256(blob).hexdigest() != frame["sha256"]
+                            or not blob.startswith(b"\x89PNG\r\n\x1a\n")):
+                        raise ValueError("SOURCE_PREVIEW_FRAME_HASH")
+                    frames.append(frame)
+                if len({f["name"] for f in frames}) != 3:
+                    raise ValueError("SOURCE_PREVIEW_FRAME_DUPLICATE")
+                row["sourcePreview"] = {"state": "RENDERED_AWAITING_VISUAL_REVIEW",
+                                        "artifactDirectory": key, "sourceMemberSha256": member["sha256"],
+                                        "triangles": audit["triangles"], "frames": frames,
+                                        "renderer": preview["renderer"],
+                                        "registrationApproved": False, "visualQualityApproved": False}
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
+                tarfile.TarError, zipfile.BadZipFile):
+            shutil.rmtree(frame_dir, ignore_errors=True)
+            row["sourcePreview"]["state"] = "RENDER_FAILED_RETRY"
+    print("MARE_ANIMAL_SOURCE_PREVIEWS=" + str(sum(
+        row.get("sourcePreview", {}).get("state") == "RENDERED_AWAITING_VISUAL_REVIEW" for row in candidates)))
+
+
 audit, failures, audit_3d = trade_goods_practice()
 if audit_3d:
     goal_3d = next((row for row in seed if row.get("id") == "trade-goods-3d-models"), None)
@@ -572,6 +682,9 @@ if audit_3d:
     out["tradeGoods3DPractice"] = audit_3d
 animal_audit = animal_source_practice()
 if animal_audit:
+    preview_arg = next((arg.split("=", 1)[1] for arg in sys.argv if arg.startswith("--animal-preview-dir=")), "")
+    if preview_arg:
+        render_animal_review_candidates(animal_audit, preview_arg)
     out["animalSourcePractice"] = animal_audit
     print("MARE_ANIMAL_COMPANY_ARCHIVE_CANDIDATES=" + str(len(animal_audit["candidates"])))
     print("MARE_ANIMAL_COMPANY_ARCHIVE_INVENTORY=" + animal_audit["archiveInventoryState"])

@@ -855,6 +855,46 @@ print('MARE_ANIMAL_ARCHIVE_FIXTURES=7')
 });
 
 
+test('Mare source preview uses bounded exact original member and never grants approval',()=>{
+  const script=String.raw`
+import ast,io,os,re,struct,hashlib,json,zipfile,tarfile,tempfile
+from pathlib import Path
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+tree=ast.parse(source)
+names={'inspect_animal_archive','materialize_animal_review_member'}
+exec(compile(ast.Module(body=[x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name in names],type_ignores=[]),'assets_wanted.py','exec'))
+body=b'BLENDER-v404'+b'original'
+png=b'\x89PNG\r\n\x1a\n'+b'texture'
+stream=io.BytesIO()
+with zipfile.ZipFile(stream,'w') as z:
+    z.writestr('models/goat.blend',body)
+    z.writestr('models/goat.png',png)
+data=stream.getvalue()
+member=inspect_animal_archive(data,'goat.zip','goat')[0]
+with tempfile.TemporaryDirectory() as dest:
+    path=materialize_animal_review_member(data,'goat.zip','goat',member,dest)
+    assert Path(path).read_bytes()==body
+    assert Path(dest,'goat.png').read_bytes()==png
+    try:
+        materialize_animal_review_member(data,'goat.zip','goat',{**member,'sha256':'0'*64},dest)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('wrong member digest accepted')
+print('MARE_SOURCE_PREVIEW_FIXTURES=3')
+`;
+  assert.match(execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000}),/MARE_SOURCE_PREVIEW_FIXTURES=3/);
+  const source=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  const mesh=fs.readFileSync('tools/vibe_mesh_audit.py','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.match(source,/--disable-autoexec/);
+  assert.match(source,/RENDERED_AWAITING_VISUAL_REVIEW/);
+  assert.match(mesh,/use_scripts=False/);
+  assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
+  assert.match(workflow,/--animal-preview-dir=/);
+  assert.match(workflow,/retention-days: 3/);
+});
+
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`
