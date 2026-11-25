@@ -353879,11 +353879,143 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_99c7acba19285ede7d657b21",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15156",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e30990f0c1ff5592569cc5951d8b325abde10a26",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15156,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-coal-adit-1125",
+        "baseSha": "e30990f0c1ff5592569cc5951d8b325abde10a26",
+        "headSha": "dd2e6ca94c0a0d49025d497dc05d24b352c6da37",
+        "mergeCommitSha": "57e999ec135c48231acb28436cd7834c89910f18",
+        "mergedAt": "2026-11-25T03:35:38Z",
+        "authorLogin": "hans1177",
+        "titleHash": "01ea49fc08f6f1e282be849131f0bd827294c047472555d8a032432c539fbe0f",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-coal-adit-1125",
+        "candidateSha": "dd2e6ca94c0a0d49025d497dc05d24b352c6da37"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 475,
+        "deletedLineCount": 396,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15156",
+        "merge-commit:57e999ec135c48231acb28436cd7834c89910f18",
+        "base-main:e30990f0c1ff5592569cc5951d8b325abde10a26"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2800
+    "total": 2801
   }
 }
