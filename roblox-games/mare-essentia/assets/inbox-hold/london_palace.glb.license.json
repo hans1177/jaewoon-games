@@ -1,0 +1,437 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius",
+  "source": "https://quaternius.com/packs/medievalvillage.html",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "village-house-3.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-3.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "cfa287a38da4c661457c2bb16cb2af3d65158361d7d9490f7c743eaf86e24d58",
+      "gitBlobSha1": "8beb250ade5125a93f9ce2e3a3c6bb3abfe3efec",
+      "registeredAssetId": "74413883847734"
+    },
+    {
+      "name": "quaternius_pointy_tower.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_pointy_tower.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "ff1228e36fe2f437bb1cfc7d06728f46512615670f53c346e7fab74d07ba7873",
+      "gitBlobSha1": "5ae33ada5b55486736f30adf7d1af2d17c9ad8d9",
+      "registeredAssetId": "104240272337514"
+    },
+    {
+      "name": "quaternius_wall_bricks.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_wall_bricks.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "d3839af65dcca6e457da620998cfc80ea0d5b3d690045f3d27cf60bcdda11d7b",
+      "gitBlobSha1": "03dc442cdc6a109611d1252265690a929af83efd",
+      "registeredAssetId": "87968906388569"
+    },
+    {
+      "name": "quaternius_wall_entrance_bricks.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_wall_entrance_bricks.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "0ce7b82bf50efa6dc324ba0ad1c3b076099973452cca7ecb6b0d685ced2c44bd",
+      "gitBlobSha1": "5e8216e3bd5ab6d1e508930db47367dd8d73545d",
+      "registeredAssetId": "130336326154995"
+    }
+  ],
+  "modification": "Tudor-inspired exterior candidate assembled from approved hall/house, roofed tower, brick enclosure and arched entrance meshes; red-brick tint in derived materials only. Original mesh, UV and binary chunks preserved. Four towers, two wings, great hall exterior and open courtyard. Not a historically verified palace; octagonal tower profile, interior, exact gate clearance, native collision and visual QA remain pending.",
+  "sha256": "ee5e11d6fd7bb8f728701d44000022acf3cccf36d495aa33f2fd8ba82e64b119",
+  "bytes": 312388,
+  "triangles": 18720,
+  "sceneTriangles": 18720,
+  "sourceRevision": "274eaef36a41e7b8e18f90c1607c3695182c630d",
+  "productionVerified": false,
+  "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_HISTORICAL_FINISH_QA",
+  "validation": "REGISTERED_CC0_SOURCE_HASH_ORIGINAL_BINARY_AND_STATIC_LAYOUT_BOUNDS_VERIFIED",
+  "geometry": {
+    "instances": 18,
+    "bounds": {
+      "min": [
+        -37,
+        0,
+        -27.25
+      ],
+      "max": [
+        37,
+        30,
+        27
+      ]
+    },
+    "courtyardClearance": [
+      20,
+      19
+    ],
+    "placed": [
+      {
+        "name": "Great hall exterior",
+        "mesh": 0,
+        "x": 0,
+        "z": 14,
+        "w": 42,
+        "h": 18,
+        "d": 19,
+        "ground": 0
+      },
+      {
+        "name": "Palace residential wing",
+        "mesh": 0,
+        "x": -27,
+        "z": 3,
+        "w": 12.000000000000002,
+        "h": 14,
+        "d": 26,
+        "ground": 0
+      },
+      {
+        "name": "Palace residential wing",
+        "mesh": 0,
+        "x": 27,
+        "z": 3,
+        "w": 12.000000000000002,
+        "h": 14,
+        "d": 26,
+        "ground": 0
+      },
+      {
+        "name": "Roofed corner tower",
+        "mesh": 1,
+        "x": -32,
+        "z": -22,
+        "w": 10,
+        "h": 30,
+        "d": 10,
+        "ground": 0
+      },
+      {
+        "name": "Roofed corner tower",
+        "mesh": 1,
+        "x": -32,
+        "z": 22,
+        "w": 10,
+        "h": 30,
+        "d": 10,
+        "ground": 0
+      },
+      {
+        "name": "Roofed corner tower",
+        "mesh": 1,
+        "x": 32,
+        "z": -22,
+        "w": 10,
+        "h": 30,
+        "d": 10,
+        "ground": 0
+      },
+      {
+        "name": "Roofed corner tower",
+        "mesh": 1,
+        "x": 32,
+        "z": 22,
+        "w": 10,
+        "h": 30,
+        "d": 10,
+        "ground": 0
+      },
+      {
+        "name": "Ceremonial gate arch",
+        "mesh": 3,
+        "x": 0,
+        "z": -25,
+        "w": 12,
+        "h": 12,
+        "d": 4.5,
+        "ground": 0
+      },
+      {
+        "name": "Front brick enclosure",
+        "mesh": 2,
+        "x": -23,
+        "z": -25,
+        "w": 11.2,
+        "h": 9,
+        "d": 3,
+        "ground": 0
+      },
+      {
+        "name": "Front brick enclosure",
+        "mesh": 2,
+        "x": -12,
+        "z": -25,
+        "w": 11.2,
+        "h": 9,
+        "d": 3,
+        "ground": 0
+      },
+      {
+        "name": "Front brick enclosure",
+        "mesh": 2,
+        "x": 12,
+        "z": -25,
+        "w": 11.2,
+        "h": 9,
+        "d": 3,
+        "ground": 0
+      },
+      {
+        "name": "Front brick enclosure",
+        "mesh": 2,
+        "x": 23,
+        "z": -25,
+        "w": 11.2,
+        "h": 9,
+        "d": 3,
+        "ground": 0
+      },
+      {
+        "name": "Side brick enclosure",
+        "mesh": 2,
+        "x": -34,
+        "z": -13,
+        "w": 3.000000000000001,
+        "h": 9,
+        "d": 11.2,
+        "ground": 0
+      },
+      {
+        "name": "Side brick enclosure",
+        "mesh": 2,
+        "x": -34,
+        "z": -2,
+        "w": 3.000000000000001,
+        "h": 9,
+        "d": 11.2,
+        "ground": 0
+      },
+      {
+        "name": "Side brick enclosure",
+        "mesh": 2,
+        "x": -34,
+        "z": 9,
+        "w": 3.000000000000001,
+        "h": 9,
+        "d": 11.2,
+        "ground": 0
+      },
+      {
+        "name": "Side brick enclosure",
+        "mesh": 2,
+        "x": 34,
+        "z": -13,
+        "w": 3.000000000000001,
+        "h": 9,
+        "d": 11.2,
+        "ground": 0
+      },
+      {
+        "name": "Side brick enclosure",
+        "mesh": 2,
+        "x": 34,
+        "z": -2,
+        "w": 3.000000000000001,
+        "h": 9,
+        "d": 11.2,
+        "ground": 0
+      },
+      {
+        "name": "Side brick enclosure",
+        "mesh": 2,
+        "x": 34,
+        "z": 9,
+        "w": 3.000000000000001,
+        "h": 9,
+        "d": 11.2,
+        "ground": 0
+      }
+    ]
+  },
+  "derivedMaterialChanges": [
+    {
+      "source": "village-house-3",
+      "material": "Stone_Dark",
+      "old": [
+        0.123761616647243,
+        0.146180182695389,
+        0.181264355778694,
+        1
+      ],
+      "new": [
+        0.075,
+        0.08,
+        0.095,
+        1
+      ]
+    },
+    {
+      "source": "village-house-3",
+      "material": "Stone",
+      "old": [
+        0.0776329860091209,
+        0.0818794593214989,
+        0.0954185053706169,
+        1
+      ],
+      "new": [
+        0.22,
+        0.064,
+        0.036,
+        1
+      ]
+    },
+    {
+      "source": "village-house-3",
+      "material": "Stone_Light",
+      "old": [
+        0.177224159240723,
+        0.211410626769066,
+        0.230633974075317,
+        1
+      ],
+      "new": [
+        0.4,
+        0.15,
+        0.09,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_pointy_tower",
+      "material": "LightRock.001",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.39,
+        0.12,
+        0.075,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_pointy_tower",
+      "material": "Celing.001",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.075,
+        0.085,
+        0.1,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_pointy_tower",
+      "material": "Black.001",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.045,
+        0.04,
+        0.035,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_pointy_tower",
+      "material": "DarkRock.001",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.2,
+        0.055,
+        0.035,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_wall_bricks",
+      "material": "LightRock",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.39,
+        0.12,
+        0.075,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_wall_bricks",
+      "material": "DarkRock",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.2,
+        0.055,
+        0.035,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_wall_entrance_bricks",
+      "material": "LightRock",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.39,
+        0.12,
+        0.075,
+        1
+      ]
+    },
+    {
+      "source": "quaternius_wall_entrance_bricks",
+      "material": "DarkRock",
+      "old": [
+        0.6399999856948853,
+        0.6399999856948853,
+        0.6399999856948853,
+        1
+      ],
+      "new": [
+        0.2,
+        0.055,
+        0.035,
+        1
+      ]
+    }
+  ]
+}
