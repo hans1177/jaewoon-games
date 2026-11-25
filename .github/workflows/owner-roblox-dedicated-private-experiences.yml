@@ -37,8 +37,7 @@ env:
 
 jobs:
   contract:
-    # [검사 환경 안정화] 메인 보호 검사와 동일한 검증된 24.04 LTS 환경을 사용한다.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.targets.outputs.matrix }}
       count: ${{ steps.targets.outputs.count }}
