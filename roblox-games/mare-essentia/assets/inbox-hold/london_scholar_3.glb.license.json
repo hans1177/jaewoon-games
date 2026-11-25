@@ -1,0 +1,132 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius; Tim Steer / The Base Mesh; glTF conversion M3-org",
+  "source": "https://quaternius.com/packs/medievalvillage.html",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "village-house-3.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-3.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "cfa287a38da4c661457c2bb16cb2af3d65158361d7d9490f7c743eaf86e24d58",
+      "gitBlobSha1": "8beb250ade5125a93f9ce2e3a3c6bb3abfe3efec",
+      "registeredAssetId": "74413883847734"
+    },
+    {
+      "name": "quaternius_tower.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_tower.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "d2418d4f261601a189b0080ec70674f46db3584ad1030d217ec6d52774cd5ee6",
+      "gitBlobSha1": "407c941b962f7c5d30265d6530a262a8dedb2b38",
+      "registeredAssetId": "73384909282643"
+    },
+    {
+      "name": "observatory-dome-source.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/observatory-dome-source.glb",
+      "originalUrl": "https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/dome/dome.glb",
+      "author": "Tim Steer / The Base Mesh; glTF conversion M3-org",
+      "license": "CC0-1.0",
+      "sha256": "549f4d814e9de41896583bd62496a138845ed58dc4c31aa6f8b4d5c1a99792ec",
+      "gitBlobSha1": "a4be7364e5074f13b779950e5e854531a6650091",
+      "registeredAssetId": "95801711528954"
+    },
+    {
+      "name": "quaternius_wall_bricks.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_wall_bricks.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "d3839af65dcca6e457da620998cfc80ea0d5b3d690045f3d27cf60bcdda11d7b",
+      "gitBlobSha1": "03dc442cdc6a109611d1252265690a929af83efd",
+      "registeredAssetId": "87968906388569"
+    }
+  ],
+  "modification": "Academy with observatory dome and octagonal tower; dome seating and native entrance clearance pending. Original source mesh, UV, materials and binary chunks retained; static source exterior candidate only.",
+  "sha256": "f623d91fd8cfbab8f656f3abebae68c46ddc2459b6a7f1b0558dab6c886e7295",
+  "bytes": 309588,
+  "triangles": 5812,
+  "sceneTriangles": 5812,
+  "sourceRevision": "bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5",
+  "productionVerified": false,
+  "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_BRIEF_DETAIL_QA",
+  "validation": "REGISTERED_CC0_SOURCE_BINARY_AND_STATIC_LAYOUT_BOUNDS_VERIFIED",
+  "geometry": {
+    "instances": 4,
+    "bounds": {
+      "min": [
+        -10.5,
+        0,
+        -8.55
+      ],
+      "max": [
+        10,
+        19.299999999999997,
+        7.000000000000001
+      ]
+    },
+    "placed": [
+      {
+        "name": "Academy hall",
+        "source": "Town/village-house-3",
+        "min": [
+          -9,
+          0,
+          -5.000000000000001
+        ],
+        "max": [
+          3.000000000000001,
+          14,
+          7.000000000000001
+        ]
+      },
+      {
+        "name": "Observatory octagonal tower",
+        "source": "Town/quaternius_tower",
+        "min": [
+          4,
+          0,
+          -1
+        ],
+        "max": [
+          10,
+          17,
+          5
+        ]
+      },
+      {
+        "name": "Observatory dome",
+        "source": "Town/observatory-dome-source",
+        "min": [
+          4.1,
+          16.4,
+          -0.8999999999999999
+        ],
+        "max": [
+          9.9,
+          19.299999999999997,
+          4.9
+        ]
+      },
+      {
+        "name": "Forecourt brick wall",
+        "source": "Town/quaternius_wall_bricks",
+        "min": [
+          -10.5,
+          0,
+          -8.55
+        ],
+        "max": [
+          -5.5,
+          2.6,
+          -7.45
+        ]
+      }
+    ],
+    "nativeCollisionVerified": false
+  }
+}

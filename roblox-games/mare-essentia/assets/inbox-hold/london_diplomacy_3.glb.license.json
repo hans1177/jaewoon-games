@@ -1,0 +1,150 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius; Kenney",
+  "source": "https://quaternius.com/packs/medievalvillage.html",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "village-house-3.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-3.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "cfa287a38da4c661457c2bb16cb2af3d65158361d7d9490f7c743eaf86e24d58",
+      "gitBlobSha1": "8beb250ade5125a93f9ce2e3a3c6bb3abfe3efec",
+      "registeredAssetId": "74413883847734"
+    },
+    {
+      "name": "village-house-4.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-4.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "e3f48621763c1314e1f4f2a98ed6c61b76dfa436cdde263d1014a0404c1ba935",
+      "gitBlobSha1": "74e71b5fd358ef9933e298b4ae6f89d86963505b",
+      "registeredAssetId": "125271656667445"
+    },
+    {
+      "name": "flag-high.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/naval/flag-high.glb",
+      "originalUrl": "https://kenney.nl/assets/pirate-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "5fb9d8e4f7dc42341a258e566fb9fbb9b7c2de2454c707a4e7301cfd1719f295",
+      "gitBlobSha1": "d27c2fc58d086ea82bb7834c31e66174184c7a2c",
+      "registeredAssetId": "71756813574450"
+    }
+  ],
+  "modification": "Three embassy-quarter buildings and three source flagpoles; national flag artwork, interior and native pedestrian access pending. Original source mesh, UV, materials and binary chunks retained; static source exterior candidate only.",
+  "sha256": "bf42ae9d51fdd5d80624ae308f722fb46cff93a198ba0cf76a8ce7707f0ae5bd",
+  "bytes": 488288,
+  "triangles": 12792,
+  "sceneTriangles": 12792,
+  "sourceRevision": "bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5",
+  "productionVerified": false,
+  "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_BRIEF_DETAIL_QA",
+  "validation": "REGISTERED_CC0_SOURCE_BINARY_AND_STATIC_LAYOUT_BOUNDS_VERIFIED",
+  "geometry": {
+    "instances": 6,
+    "bounds": {
+      "min": [
+        -11.25,
+        0,
+        -8.5
+      ],
+      "max": [
+        11.25,
+        19,
+        9.55
+      ]
+    },
+    "placed": [
+      {
+        "name": "Embassy house west",
+        "source": "Town/village-house-3",
+        "min": [
+          -11.25,
+          0,
+          -6.500000000000001
+        ],
+        "max": [
+          -1.7499999999999991,
+          19,
+          4.500000000000001
+        ]
+      },
+      {
+        "name": "Embassy house east",
+        "source": "Town/village-house-3",
+        "min": [
+          1.7499999999999991,
+          0,
+          -6.500000000000001
+        ],
+        "max": [
+          11.25,
+          19,
+          4.500000000000001
+        ]
+      },
+      {
+        "name": "Rear reception house",
+        "source": "Town/village-house-4",
+        "min": [
+          -5,
+          0,
+          4.049999999999999
+        ],
+        "max": [
+          5,
+          13,
+          9.55
+        ]
+      },
+      {
+        "name": "Embassy flagpole",
+        "source": "Naval/flag-high",
+        "min": [
+          -7.5,
+          0,
+          -8.5
+        ],
+        "max": [
+          -5.5,
+          7,
+          -7.5
+        ]
+      },
+      {
+        "name": "Embassy flagpole",
+        "source": "Naval/flag-high",
+        "min": [
+          5.5,
+          0,
+          -8.5
+        ],
+        "max": [
+          7.5,
+          7,
+          -7.5
+        ]
+      },
+      {
+        "name": "Reception flagpole",
+        "source": "Naval/flag-high",
+        "min": [
+          -0.7,
+          0,
+          3.1
+        ],
+        "max": [
+          0.7,
+          6,
+          3.9
+        ]
+      }
+    ],
+    "nativeCollisionVerified": false
+  }
+}

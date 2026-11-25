@@ -1,0 +1,202 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius; Kenney",
+  "source": "https://quaternius.com/packs/medievalvillage.html",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "village-house-3.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-3.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "cfa287a38da4c661457c2bb16cb2af3d65158361d7d9490f7c743eaf86e24d58",
+      "gitBlobSha1": "8beb250ade5125a93f9ce2e3a3c6bb3abfe3efec",
+      "registeredAssetId": "74413883847734"
+    },
+    {
+      "name": "quaternius_wall_bricks.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_wall_bricks.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "d3839af65dcca6e457da620998cfc80ea0d5b3d690045f3d27cf60bcdda11d7b",
+      "gitBlobSha1": "03dc442cdc6a109611d1252265690a929af83efd",
+      "registeredAssetId": "87968906388569"
+    },
+    {
+      "name": "veg_garden_hedge.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/terrain/veg_garden_hedge.glb",
+      "originalUrl": "https://kenney.nl/assets/nature-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "751f43bfb4b86d153a18a7a83db95e613e63f7ed74c9c8c9235dbc381f0e816a",
+      "gitBlobSha1": "0db62934855dd611a071aebcb41bb9cfafe7f838",
+      "registeredAssetId": "97604577040122"
+    },
+    {
+      "name": "flag-high.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/naval/flag-high.glb",
+      "originalUrl": "https://kenney.nl/assets/pirate-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "5fb9d8e4f7dc42341a258e566fb9fbb9b7c2de2454c707a4e7301cfd1719f295",
+      "gitBlobSha1": "d27c2fc58d086ea82bb7834c31e66174184c7a2c",
+      "registeredAssetId": "71756813574450"
+    }
+  ],
+  "modification": "Walled garden consulate with source hedges and central approach; national flag artwork pending. Original source mesh, UV, materials and binary chunks retained; static source exterior candidate only.",
+  "sha256": "3974073a8354c07cfbba279b42db20532516f1313c8decc475e4065219a0151f",
+  "bytes": 305280,
+  "triangles": 6332,
+  "sceneTriangles": 6332,
+  "sourceRevision": "bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5",
+  "productionVerified": false,
+  "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_BRIEF_DETAIL_QA",
+  "validation": "REGISTERED_CC0_SOURCE_BINARY_AND_STATIC_LAYOUT_BOUNDS_VERIFIED",
+  "geometry": {
+    "instances": 9,
+    "bounds": {
+      "min": [
+        -11,
+        0,
+        -8.8
+      ],
+      "max": [
+        11,
+        17,
+        8.8
+      ]
+    },
+    "placed": [
+      {
+        "name": "Consulate",
+        "source": "Town/village-house-3",
+        "min": [
+          -7.000000000000001,
+          0,
+          -1.200000000000001
+        ],
+        "max": [
+          7.000000000000001,
+          17,
+          8.8
+        ]
+      },
+      {
+        "name": "Garden front enclosure",
+        "source": "Town/quaternius_wall_bricks",
+        "min": [
+          -11,
+          0,
+          -8.8
+        ],
+        "max": [
+          -3,
+          2.8,
+          -7.800000000000001
+        ]
+      },
+      {
+        "name": "Garden front enclosure",
+        "source": "Town/quaternius_wall_bricks",
+        "min": [
+          3,
+          0,
+          -8.8
+        ],
+        "max": [
+          11,
+          2.8,
+          -7.800000000000001
+        ]
+      },
+      {
+        "name": "Garden side enclosure",
+        "source": "Town/quaternius_wall_bricks",
+        "min": [
+          -10.5,
+          0,
+          -8.5
+        ],
+        "max": [
+          -9.5,
+          2.8,
+          1.5
+        ]
+      },
+      {
+        "name": "Garden side enclosure",
+        "source": "Town/quaternius_wall_bricks",
+        "min": [
+          9.5,
+          0,
+          -8.5
+        ],
+        "max": [
+          10.5,
+          2.8,
+          1.5
+        ]
+      },
+      {
+        "name": "Garden hedge",
+        "source": "Terrain/veg_garden_hedge",
+        "min": [
+          -8.5,
+          0,
+          -6.6
+        ],
+        "max": [
+          -3.5,
+          1.4,
+          -5
+        ]
+      },
+      {
+        "name": "Garden hedge",
+        "source": "Terrain/veg_garden_hedge",
+        "min": [
+          3.5,
+          0,
+          -6.6
+        ],
+        "max": [
+          8.5,
+          1.4,
+          -5
+        ]
+      },
+      {
+        "name": "Ceremonial flagpole",
+        "source": "Naval/flag-high",
+        "min": [
+          -4.7,
+          0,
+          -5.9
+        ],
+        "max": [
+          -2.9,
+          6,
+          -5.1
+        ]
+      },
+      {
+        "name": "Ceremonial flagpole",
+        "source": "Naval/flag-high",
+        "min": [
+          2.9,
+          0,
+          -5.9
+        ],
+        "max": [
+          4.7,
+          6,
+          -5.1
+        ]
+      }
+    ],
+    "nativeCollisionVerified": false
+  }
+}
