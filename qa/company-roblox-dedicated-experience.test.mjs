@@ -15,6 +15,10 @@ import {
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
 
+// [검사 종료 진단] 시험 프로세스 강제 종료 시 마지막 시작 시험을 확인한다.
+test.beforeEach(({name})=>{fs.writeSync(2,'ROBLOX_CONTRACT_TEST_START='+name+'\n');});
+test.afterEach(({name})=>{fs.writeSync(2,'ROBLOX_CONTRACT_TEST_END='+name+'\n');});
+
 // [교역품 3D] 기존 생성기를 실행해 8종의 서로 다른 메시와 모바일 삼각면 예산을 검증한다.
 test('Mare trade cargo eight distinct 3D model silhouettes stay within mobile budget',()=>{
   const output=execFileSync(process.execPath,['roblox-games/mare-essentia/tools/make_cargo.mjs','--check'],{
