@@ -284,6 +284,27 @@ export async function requestGeminiFreePair({
   const routes=expert?expert.expertCandidates.flatMap(item=>normalRoutes.filter(route=>
     route.provider===item.provider&&route.model===item.model)):normalRoutes;
   const failures=[];
+  // 전문가 배정에서 제외된 승인 무료 슬롯도 복구 근거에는 남긴다. 호출 대상으로 되돌리지는 않는다.
+  const retryTimes=new Map();
+  const requestStarted=Date.now();
+  for(const route of normalRoutes){
+    const slot=route.provider==='GEMINI'?route.model:route.provider+':'+route.model;
+    if(routes.includes(route))continue;
+    const until=cooldownUntil.get(slot)||0;
+    if(until>requestStarted){
+      failures.push(slot+':COOLDOWN');
+      retryTimes.set(slot,until);
+    }else{
+      const quota=capacity[route.provider+':'+route.model];
+      const observedAt=Date.parse(quota?.observedAt||'');
+      if(quota?.verified===true&&quota.remaining===0&&Number.isFinite(observedAt)&&observedAt<=requestStarted&&requestStarted-observedAt<600000){
+        failures.push(slot+':VERIFIED_QUOTA_EXHAUSTED');
+        retryTimes.set(slot,observedAt+600000);
+      }else{
+        failures.push(slot+':EXPERT_INELIGIBLE');
+      }
+    }
+  }
   for(const route of routes){
     const model=route.model,provider=route.provider;
     const slot=provider==='GEMINI'?model:provider+':'+model;
@@ -445,8 +466,12 @@ export async function requestGeminiFreePair({
       throw error;
     }finally{clearTimeout(timeout);}
   }
-  const nextRetryAt=Math.min(...routes.map(route=>cooldownUntil.get(
-    route.provider==='GEMINI'?route.model:route.provider+':'+route.model)||Infinity));
+  const now=Date.now();
+  const nextRetryAt=Math.min(...normalRoutes.map(route=>{
+    const slot=route.provider==='GEMINI'?route.model:route.provider+':'+route.model;
+    const until=Math.max(cooldownUntil.get(slot)||0,retryTimes.get(slot)||0);
+    return until>now?until:Infinity;
+  }));
   const retryAt=Number.isFinite(nextRetryAt)?nextRetryAt:0;
   const suffix=retryAt?':NEXT_RETRY_AT='+new Date(retryAt).toISOString():'';
   throw infrastructureFailure('GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE_NO_LOCAL_FALLBACK:'+
