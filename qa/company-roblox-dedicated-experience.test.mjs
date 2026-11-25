@@ -1565,7 +1565,12 @@ test('Mare 150 regional card illustrations remain source complete and SHA-approv
   }
   // [기존 정식 등록기] 5개 덱의 원본 PNG만 받고 미승인 해시·차단 이미지·권한 미확인은 거절한다.
   assert.ok(uploader.includes("['event_title_ship.png', 'event_title_parchment.png']"));
-  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)\\.png'));
+  // 기존 150종 원본 목록은 유지하고 확장된 등록기 ID 범위도 실제 승인 경로와 일치시킨다.
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])\\.png'));
+  assert.ok(uploader.includes("const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])$/.test(item.name)"));
+  assert.match(uploader,/if \(\(!previous\?\.assetId \|\| !previous\.sourceSha256 \|\| previous\.sourceSha256 !== sourceSha256\)\s*&& modelOriginals\[id\]\?\.sourceSha256 !== sourceSha256\) \{[\s\S]*?MODEL_ORIGINAL_REVIEW_REQUIRED[\s\S]*?continue;/);
+  assert.match(uploader,/review\.sourceSha256 !== hash \|\| cardApprovalDocument\.approved\?\.\[id\] !== hash\s*\|\| blockedHashes\.has\(hash\)/);
+  assert.match(uploader,/!reviewChecks\.every\(key => review\[key\] === true\)/);
   assert.ok(uploader.includes("const regionalCardArt = item.kind === 'CardArt'"));
   assert.ok(uploader.includes("approvedImages[id] !== sourceSha256"));
   assert.ok(uploader.includes("REGIONAL_CARD_ART_NOT_APPROVED"));
