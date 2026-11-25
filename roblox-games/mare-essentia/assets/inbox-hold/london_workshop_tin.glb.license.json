@@ -66,13 +66,24 @@
       "registeredAssetId": "92124326683823"
     }
   ],
-  "modification": "London tin streaming workshop candidate: original timber house, two sluice boxes composed from original planks, raised sideboards and riffles, four support frames, two receiving crates, eight original silver ingots adapted to tin and three wash buckets. No water simulation or final historical finish claimed. Original meshes, UVs and node transforms preserved. Native visual, collision, slope and water interface review pending.",
-  "sha256": "c6215d3b2cfd906e01f33eb764536709cb4d1481229bb264cbc557fb6244ef04",
-  "bytes": 535852,
+  "modification": "London tin streaming workshop candidate: original timber house, two sluice boxes composed from original planks, raised sideboards and riffles, four support frames, two receiving crates, eight original silver ingots adapted to tin and three wash buckets. No water simulation or final historical finish claimed. Original meshes, UVs and node transforms preserved. Native visual, collision, slope and water interface review pending. Corrected both sluice assemblies to a 10% descending grade toward the existing receiving boxes, lowered riffles 0.04 studs to contact base, closed left sideboard gap 0.06 studs, adjusted existing timber support heights. Original BIN chunk, materials, UVs, all mesh buffers, building and other props unchanged. No water mesh or simulation, native collision or visual approval claimed.",
+  "sha256": "a07dab421351eac44ac76f522f7b32ef372952ea7c69ff6b175562540005bf0d",
+  "bytes": 537164,
   "triangles": 8170,
   "sceneTriangles": 8170,
   "sourceRevision": "8eb79f8fdc5f21a4ea88a2358b5d1adb2796ad72",
   "productionVerified": false,
   "registration": "HOLD_SLUICE_WATER_INTERFACE_AND_NATIVE_VISUAL_QA",
-  "validation": "SOURCE_GIT_BLOB_SHA256_RIGHTS_AND_GLB_SCENE_BUFFER_STRUCTURE_VERIFIED"
+  "validation": "SOURCE_GIT_BLOB_SHA256_RIGHTS_GLB_SCENE_BUFFER_STRUCTURE_AND_SLUICE_TRANSFORM_GEOMETRY_VERIFIED",
+  "previousAssemblySha256": "c6215d3b2cfd906e01f33eb764536709cb4d1481229bb264cbc557fb6244ef04",
+  "sluiceGeometry": {
+    "slopeGrade": 0.1,
+    "angleDegrees": 5.710593137499643,
+    "nominalDrop": 0.7313523348043421,
+    "riffleLowering": 0.04,
+    "leftBoardShift": 0.06,
+    "changedNodes": 26,
+    "unchangedBinaryChunkSha256": "930098cf2601a691eeba78b7d0dd72216c924c84a6c05fec5b0f7a1d1e3643f7",
+    "waterInterfacePending": true
+  }
 }
