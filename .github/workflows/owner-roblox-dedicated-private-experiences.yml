@@ -61,11 +61,33 @@ jobs:
           test "$(sha256sum roblox-games/mare-essentia/assets/animals/cow.fbx | cut -d' ' -f1)" = '0202789cad8c1debb8ae5b4a47d1a5d2e5f93a0875878bc0b05a80e42ae37e8d'
           test "$(sha256sum roblox-games/mare-essentia/assets/animals/horse.fbx | cut -d' ' -f1)" = '6db270ddc7591e9a013f96eab445031381fa6d5d68d2feba567f964e0fe68d90'
           test "$(sha256sum roblox-games/mare-essentia/assets/animals/chicken.fbx | cut -d' ' -f1)" = 'e5d51fa328f466fc74290c3fa51d769c9b254d771a4b066dd7947bae899a7794'
-      # [검사 서버 복구] 단일 시험 파일의 별도 Node 자식 프로세스와 결과 버퍼를 제거한다.
-      # 기존 모든 node:test 검사를 동일 프로세스에서 실행하며 실패 시 종료 코드를 그대로 전달한다.
-      - name: Run complete Roblox contract suite in process
+      # [검사 서버 복구] 동일 61개 검사를 겹치지 않는 4개 그룹으로 실행한다.
+      # 테스트 실패·미분류는 계약 실패로 처리하며 기존 원본 복원 및 게시 관문은 그대로 유지한다.
+      - name: Verify complete Roblox test group coverage
         if: github.event_name == 'pull_request'
-        run: node --test --experimental-test-isolation=none --test-reporter=tap qa/company-roblox-dedicated-experience.test.mjs
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const source=fs.readFileSync('qa/company-roblox-dedicated-experience.test.mjs','utf8');
+          const names=[...source.matchAll(/^test\('([^']+)'/gm)].map(m=>m[1]);
+          const all=(source.match(/^test\(/gm)||[]).length;
+          const groups=["^(?!Mare )","^Mare (?:trade|Essentia|publisher|facility|cultural|harbor|animals|Quaternius|donkey|R15|field|exploration|selected|existing)","^Mare (?:naval|registered|all 36|standalone|card|European|150|generated|first card)","^Mare (?:licensed|ship|external|V5)"].map(p=>new RegExp(p));
+          if(!all||names.length!==all||new Set(names).size!==all||names.some(n=>groups.filter(g=>g.test(n)).length!==1))throw Error('ROBLOX_CONTRACT_TEST_GROUP_COVERAGE_INVALID');
+          console.log('ROBLOX_CONTRACT_TESTS_COVERED='+all);
+          NODE
+      - name: API, owner and Forest contracts
+        if: github.event_name == 'pull_request'
+        run: node --test --test-name-pattern='^(?!Mare )' qa/company-roblox-dedicated-experience.test.mjs
+      - name: Mare trade, land and animal contracts
+        if: github.event_name == 'pull_request'
+        run: node --test --test-name-pattern='^Mare (?:trade|Essentia|publisher|facility|cultural|harbor|animals|Quaternius|donkey|R15|field|exploration|selected|existing)' qa/company-roblox-dedicated-experience.test.mjs
+      - name: Mare naval and card contracts
+        if: github.event_name == 'pull_request'
+        run: node --test --test-name-pattern='^Mare (?:naval|registered|all 36|standalone|card|European|150|generated|first card)' qa/company-roblox-dedicated-experience.test.mjs
+      - name: Mare original ship contracts
+        if: github.event_name == 'pull_request'
+        run: node --test --test-name-pattern='^Mare (?:licensed|ship|external|V5)' qa/company-roblox-dedicated-experience.test.mjs
       - name: Select exact owner publication targets
         id: targets
         env:
