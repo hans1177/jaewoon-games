@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {runInNewContext} from 'node:vm';
+import {createHash} from 'node:crypto';
 
 const workflow=fs.readFileSync('.github/workflows/company-development-roblox-post-runtime-qa.yml','utf8');
 
@@ -357,6 +358,31 @@ test('runtime foundation critical path reuses current-main contract QA instead o
   assert.match(vibe3,/qa\/company-tester-debug-intake\.test\.mjs/);
 });
 
+
+test('Roblox foundation preflight binds full canonical validation to all four documents and compiled fingerprints',()=>{
+  const start=workflow.indexOf("const integrity=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-worker-context.json','utf8'));");
+  const end=workflow.indexOf("console.log('ROBLOX_FOUNDATION_CANONICAL_CONSTITUTION=VERIFIED:'",start);
+  assert.ok(start>=0&&end>start);
+  const guard=workflow.slice(start,end);
+  const files={policy:'company-learning/platform-release-roadmap.json',logMap:'company-learning/company-log-map.json',architecture:'company-learning/company-architecture-map.json',securityPolicy:'company-learning/security-immune-system.json'};
+  const policy={version:611,developmentLifecycleMachine:{sharedWorkerContext:{workerLauncherWorkflows:['launcher']}},finalDevelopmentLock:{status:'LOCKED',sequenceLock:{status:'LOCKED'}}};
+  const data=Object.fromEntries(Object.values(files).map(file=>[file,file===files.policy?JSON.stringify(policy):file]));
+  const digest=value=>createHash('sha256').update(value).digest('hex');
+  const hashes=Object.fromEntries(Object.entries(files).map(([key,file])=>[key+'Sha256',digest(data[file])]));
+  const evidence={pass:true,version:2,documentIsCode:true,roadmapSynchronized:true,completionAuthority:'DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES',policyVersion:611,workerLaunchersValidated:1,files,hashes,constitution:{fingerprint:'constitution'},architectureProjection:{valid:true,fingerprint:'architecture'}};
+  const check=(value,contents=data)=>runInNewContext(guard,{
+    fs:{readFileSync:file=>file==='/tmp/roblox-foundation-worker-context.json'?JSON.stringify(value):contents[file]},
+    createHash,compileOwnerCanonicalConstitution:()=>({valid:true,fingerprint:'constitution'}),
+    compileCentralArchitectureProjection:()=>({valid:true,fingerprint:'architecture'})
+  });
+  assert.doesNotThrow(()=>check(evidence));
+  for(const key of Object.keys(hashes))assert.throws(()=>check({...evidence,hashes:{...hashes,[key]:'wrong'}}),/ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID/);
+  assert.throws(()=>check({...evidence,verificationMode:'PINNED_HASH_REUSE'}),/ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID/);
+  assert.throws(()=>check({...evidence,workerLaunchersValidated:0}),/ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID/);
+  assert.throws(()=>check({...evidence,pass:false}),/ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID/);
+  assert.throws(()=>check({...evidence,constitution:{fingerprint:'wrong'}}),/ROBLOX_FOUNDATION_COMPILED_CONTEXT_MISMATCH/);
+  assert.throws(()=>check({...evidence,architectureProjection:{valid:true,fingerprint:'wrong'}}),/ROBLOX_FOUNDATION_COMPILED_CONTEXT_MISMATCH/);
+});
 
 test('Open Cloud runtime stays automatic while official Studio is mandatory for F9',()=>{
   const studioPlanAt=workflow.indexOf('\n  studio-local-plan:');
