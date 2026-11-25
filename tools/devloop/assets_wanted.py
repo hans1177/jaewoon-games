@@ -2,6 +2,9 @@
 # 파일명: tools/devloop/assets_wanted.py
 # 임포트
 import hashlib
+import io
+import tarfile
+import zipfile
 import json
 import os
 import re
@@ -218,6 +221,70 @@ def trade_goods_practice():
 
 
 
+# [원본 내부 검사] 압축을 디스크에 풀지 않고 제한된 멤버만 읽는다.
+def inspect_animal_archive(data, filename, target):
+    model_extensions = {".glb", ".gltf", ".fbx", ".blend", ".obj"}
+    max_member = 5_000_000
+    max_total = 30_000_000
+    candidates = []
+    def safe_name(name):
+        parts = name.replace("\\", "/").split("/")
+        return (not name.startswith(("/", "\\")) and not re.match(r"^[A-Za-z]:", name)
+                and "\\" not in name and all(p not in ("..", "") for p in parts))
+    def member(name, size, read):
+        if not safe_name(name) or not 0 <= size <= max_member:
+            raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+        ext = os.path.splitext(name)[1].lower()
+        stem = os.path.splitext(os.path.basename(name))[0].lower().replace("-", "_").replace(" ", "_")
+        # 파일명은 검수 후보 선별에만 사용하고 종 일치나 시각 승인 증거로 사용하지 않는다.
+        if ext not in model_extensions or stem not in (target, target + "_model", target + "_animated"):
+            return
+        body = read()
+        if len(body) != size or not body:
+            raise ValueError("SOURCE_ARCHIVE_MEMBER_LENGTH")
+        if ext == ".glb":
+            if (len(body) < 20 or body[:4] != b"glTF"
+                    or struct.unpack("<II", body[4:12]) != (2, len(body))
+                    or body[16:20] != b"JSON"
+                    or not 0 < struct.unpack("<I", body[12:16])[0] <= len(body)-20):
+                raise ValueError("SOURCE_ARCHIVE_INVALID_GLB")
+        elif ext == ".blend" and not (body.startswith(b"BLENDER") or body.startswith(b"\x1f\x8b") or body.startswith(b"\x28\xb5\x2f\xfd")):
+            raise ValueError("SOURCE_ARCHIVE_INVALID_BLEND")
+        elif ext == ".gltf":
+            doc = json.loads(body)
+            if doc.get("asset", {}).get("version") != "2.0":
+                raise ValueError("SOURCE_ARCHIVE_INVALID_GLTF")
+        candidates.append({"member": name, "format": ext[1:].upper(),
+                           "bytes": len(body), "sha256": hashlib.sha256(body).hexdigest()})
+    if filename.endswith(".zip"):
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            items = archive.infolist()
+            if len(items) > 512 or sum(i.file_size for i in items) > max_total:
+                raise ValueError("SOURCE_ARCHIVE_EXPANSION_LIMIT")
+            for info in items:
+                mode = (info.external_attr >> 16) & 0o170000
+                if mode not in (0, 0o100000, 0o040000) or info.flag_bits & 1:
+                    raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+                if info.is_dir():
+                    if not safe_name(info.filename.rstrip("/")):
+                        raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+                    continue
+                member(info.filename, info.file_size, lambda i=info: archive.read(i))
+    else:
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r|gz") as archive:
+            total = count = 0
+            for info in archive:
+                count += 1
+                total += info.size
+                if count > 512 or total > max_total:
+                    raise ValueError("SOURCE_ARCHIVE_EXPANSION_LIMIT")
+                if not safe_name(info.name.rstrip("/")) or not (info.isdir() or info.isfile()):
+                    raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+                if info.isfile():
+                    member(info.name, info.size, lambda i=info: archive.extractfile(i).read(max_member + 1))
+    return sorted(candidates, key=lambda row: row["member"])
+
+
 # [동물 원본 충원] 회사에 이미 확보된 CC0 원본부터 가져온다. 복제 저장하지 않고
 # 기존 부족 장부에 실제 원본 경로·해시·검수 대기 상태를 기록한다.
 def animal_source_practice():
@@ -273,8 +340,8 @@ def animal_source_practice():
             "livingMotionVisualQualityContract"]["assetAdaptation"]["contentSafety"]
         if safety.get("enabled") is not True:
             raise ValueError("SOURCE_SAFETY_POLICY_DISABLED")
-        blocked_hashes = {h for row in safety["blockedAssets"] for h in row.get("sha256", [])}
-        blocked_paths = {p for row in safety["blockedAssets"] for p in row.get("sourcePaths", [])}
+        blocked_hashes = {h for row in safety["blockedAssets"] for h in (row.get("sha256") or [])}
+        blocked_paths = {p for row in safety["blockedAssets"] for p in (row.get("sourcePaths") or [])}
         archives = manifest["sharedOriginalArchives"]["packs"]
     except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError):
         return report
@@ -312,14 +379,18 @@ def animal_source_practice():
                 raise ValueError("SOURCE_HASH_MISMATCH")
             if not (data.startswith(b"PK\x03\x04") if file.endswith(".zip") else data.startswith(b"\x1f\x8b")):
                 raise ValueError("SOURCE_ARCHIVE_HEADER_INVALID")
-        except (OSError, subprocess.SubprocessError, ValueError):
-            report["rejected"].append({"name": name, "state": "SOURCE_BYTES_UNVERIFIED"})
+            members = inspect_animal_archive(data, file, name)
+        except (OSError, subprocess.SubprocessError, ValueError, TypeError, AttributeError,
+                EOFError, zipfile.BadZipFile, tarfile.TarError):
+            report["rejected"].append({"name": name, "state": "SOURCE_BYTES_OR_ARCHIVE_UNVERIFIED"})
             continue
         report["candidates"].append({
             "name": name, "targets": sorted(targets[name]), "source": source,
             "sourceSha256": digest, "bytes": size, "license": pack["licenseDeclared"],
             "sourceUrl": pack["sourceUrl"], "licenseEvidenceUrl": pack["licenseEvidenceUrl"],
-            "state": "ORIGINAL_ARCHIVE_BYTES_VERIFIED_SPECIES_VISUAL_REVIEW_PENDING",
+            "modelMembers": members,
+            "state": ("MODEL_MEMBER_BYTES_VERIFIED_SPECIES_VISUAL_REVIEW_PENDING" if members
+                      else "ORIGINAL_ARCHIVE_BYTES_VERIFIED_MODEL_MEMBER_UNRESOLVED"),
             "speciesVerified": False, "visualQualityApproved": False,
             "registrationApproved": False, "actualRobloxRuntimeVerified": False,
         })
