@@ -43,7 +43,8 @@ for (const dir of ['animals','inbox/Animals']) {
       || typeof proof.author!=='string' || !proof.author.trim() || typeof proof.sourceModelingMethod!=='string' || !proof.sourceModelingMethod.trim()
       || !/^https:\/\//.test(proof.sourcePage || '') || !/^[0-9a-f]{40}$/.test(proof.pinnedBlobSha || '')
       || !/^[0-9a-f]{64}$/.test(proof.sourceSha256 || '') || proof.originalSha256!==proof.sourceSha256
-      || review.sourceSha256!==proof.sourceSha256 || blockedHashes.has(proof.sourceSha256)
+      || review.sourceSha256!==proof.sourceSha256 || typeof review.method!=='string' || !review.method.trim()
+      || blockedHashes.has(proof.sourceSha256) || blockedPaths.has(path.join(ROOT,'assets/animals',name+'.glb'))
       || !Number.isSafeInteger(proof.bytes) || proof.bytes<20 || proof.bytes>5000000
       || !Number.isSafeInteger(proof.triangles) || proof.triangles<1000 || proof.triangles>3000) {
       console.log('MARE_ANIMAL_SOURCE_REVIEW_BLOCKED',name);
@@ -58,10 +59,21 @@ for (const dir of ['animals','inbox/Animals']) {
   }
 }
 if (process.argv.includes('--animal-source-preflight')) {
-  const pending = [...approvedAnimalOriginals.values()].filter(item=>{
+  const pending = [];
+  for (const item of approvedAnimalOriginals.values()) {
     const row=animalRegistry['Animals/'+item.name];
-    return !row || (row.sourceSha256===item.approvedProof.sourceSha256 && row.usePermissionGranted!==true);
-  });
+    if (!row?.assetId) { pending.push(item); continue; }
+    if (row.sourceSha256!==item.approvedProof.sourceSha256 || row.assetType!=='Model') {
+      console.log('MARE_ANIMAL_EXISTING_ID_SOURCE_CONFLICT',item.name);
+      continue;
+    }
+    let complete = true;
+    for (const suffix of ['', '.license.json']) {
+      try { await fs.access(path.join(ROOT,item.assetPath)+suffix); }
+      catch (error) { if (error.code!=='ENOENT') throw error; complete=false; }
+    }
+    if (!complete || row.usePermissionGranted!==true) pending.push(item);
+  }
   // 부족 목표를 순환 탐색한다. 검색 후보는 로그에만 남기고 별도 큐·자동 승인·유료 API를 만들지 않는다.
   const missing = [...new Set([...(farmGoal?.missing||[]).filter(name=>!animalRegistry['Animals/'+name]),
     ...[...animalMissing.matchAll(/^- (?:am|pac|zoo)_([a-z0-9_]+) /gm)].map(match=>match[1])])];
@@ -272,6 +284,24 @@ async function prepareLicensedOriginals() {
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
+    // [등록 장부 복구] 이전 실행에서 파일/증빙 중 하나만 저장된 경우 정확히 승인된 원본만 복구한다.
+    if (item.animalOriginal) {
+      const approved = item.approvedProof;
+      if (bytes && !evidence) {
+        const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+        const blob = crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+        if (hash!==approved.sourceSha256 || blob!==approved.pinnedBlobSha || bytes.length!==approved.bytes)
+          throw new Error('MARE_ANIMAL_PARTIAL_SOURCE_CONFLICT:'+name);
+        evidence=approved;
+        await fs.writeFile(proof,JSON.stringify(approved,null,2)+'\n');
+        console.log('MARE_ANIMAL_SOURCE_PROOF_RECOVERED',name);
+      } else if (!bytes && evidence) {
+        if (evidence.sourceSha256!==approved.sourceSha256 || evidence.pinnedBlobSha!==approved.pinnedBlobSha
+          || evidence.source!==approved.source || evidence.sourceVisualContentReview?.sourceSha256!==approved.sourceSha256)
+          throw new Error('MARE_ANIMAL_PARTIAL_PROOF_CONFLICT:'+name);
+        evidence=undefined; // 원본을 기존 고정 다운로드/등록 경로에서 복원한다.
+      }
+    }
     if (evidence && (!bytes || evidence.license !== license || evidence.author !== item.author
       || evidence.source !== source || evidence.sourcePage !== sourcePage
       || (item.pinnedBlobSha && evidence.pinnedBlobSha !== item.pinnedBlobSha)
