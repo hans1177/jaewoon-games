@@ -217,6 +217,115 @@ def trade_goods_practice():
     }, errors, three_d_audit
 
 
+
+# [동물 원본 충원] 회사에 이미 확보된 CC0 원본부터 가져온다. 복제 저장하지 않고
+# 기존 부족 장부에 실제 원본 경로·해시·검수 대기 상태를 기록한다.
+def animal_source_practice():
+    goal = next((row for row in seed if row.get("id") == "mare-farm-animals"), None)
+    if not goal:
+        return None
+    registry = read_json(os.path.join(root, "assets-registered.json"))["assets"]
+    with open(os.path.join(root, "docs", "discoveries", "MISSING.md"), encoding="utf-8") as handle:
+        discovery = re.findall(r"^- ((?:am|pac|zoo)_([a-z0-9_]+)) ", handle.read(), re.M)
+    targets = {}
+    for name in goal.get("missing", []):
+        if not registry.get("Animals/" + name, {}).get("assetId"):
+            targets.setdefault(name.replace("-", "_"), []).append("farm:" + name)
+    acquired_cards = set()
+    for name, row in registry.items():
+        if not name.startswith("Animals/") or not row.get("assetId"):
+            continue
+        model = os.path.join(root, "assets", "animals", name.split("/", 1)[1] + ".glb")
+        proof_path = model + ".license.json"
+        if os.path.isfile(proof_path):
+            proof = read_json(proof_path)
+            if row.get("sourceSha256") == proof.get("sourceSha256") and proof.get("discoveryCardId"):
+                acquired_cards.add(proof["discoveryCardId"])
+    for card, name in discovery:
+        if card not in acquired_cards:
+            targets.setdefault(name, []).append(card)
+
+    report = {"authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
+              "method": "COMPANY_ARCHIVE_EXACT_NAME_CC0_AND_PINNED_SOURCE_BYTES",
+              "nativeRuntimeVerified": False, "automaticRuntimePromotionAllowed": False,
+              "targetCount": len(targets), "candidates": [], "rejected": [],
+              "archiveInventoryState": "UNAVAILABLE"}
+    if not targets:
+        report["archiveInventoryState"] = "NO_MISSING_TARGETS"
+        return report
+
+    # 기존 sparse checkout에서 빠진 회사 공용 원본도 동일 체크아웃 HEAD에서만 읽는다.
+    # 외부 코드를 실행하거나 압축을 풀지 않는다. 선택된 부족 목표만 요청한다.
+    def pinned_file(name, max_bytes):
+        size = int(subprocess.check_output(
+            ["git", "cat-file", "-s", "HEAD:" + name], timeout=30, stderr=subprocess.DEVNULL))
+        if not 0 < size <= max_bytes:
+            raise ValueError("SOURCE_SIZE_LIMIT")
+        data = subprocess.check_output(["git", "show", "HEAD:" + name],
+                                       timeout=45, stderr=subprocess.DEVNULL)
+        if len(data) != size:
+            raise ValueError("SOURCE_SIZE_MISMATCH")
+        return data
+
+    try:
+        manifest = json.loads(pinned_file("assets/asset-manifest.json", 8_000_000))
+        safety = read_json("company-learning/platform-release-roadmap.json")[
+            "livingMotionVisualQualityContract"]["assetAdaptation"]["contentSafety"]
+        if safety.get("enabled") is not True:
+            raise ValueError("SOURCE_SAFETY_POLICY_DISABLED")
+        blocked_hashes = {h for row in safety["blockedAssets"] for h in row.get("sha256", [])}
+        blocked_paths = {p for row in safety["blockedAssets"] for p in row.get("sourcePaths", [])}
+        archives = manifest["sharedOriginalArchives"]["packs"]
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError):
+        return report
+
+    report["archiveInventoryState"] = "AVAILABLE"
+    seen = set()
+    for pack in archives:
+        file = pack.get("file", "")
+        if not re.fullmatch(r"[a-zA-Z0-9_-]+\.(?:tar\.gz|zip)", file):
+            continue
+        name = re.sub(r"\.(?:tar\.gz|zip)$", "", file).lower().replace("-", "_")
+        if name not in targets:
+            continue
+        source = pack.get("sourcePath", "")
+        digest = pack.get("sha256", "")
+        size = pack.get("bytes")
+        if (pack.get("licenseDeclared") not in ("CC0", "CC0-1.0")
+                or pack.get("sourceOnly") is not True
+                or not re.fullmatch(r"assets/external/[a-zA-Z0-9_./-]+", source)
+                or any(part in ("", ".", "..") for part in source.split("/"))
+                or os.path.basename(source) != file
+                or not re.fullmatch(r"[a-f0-9]{64}", digest)
+                or type(size) is not int or not 0 < size <= 5_000_000
+                or not str(pack.get("licenseEvidenceUrl", "")).startswith("https://")
+                or not str(pack.get("sourceUrl", "")).startswith("https://")
+                or digest in blocked_hashes or source in blocked_paths):
+            report["rejected"].append({"name": name, "state": "SOURCE_POLICY_OR_PROVENANCE_INVALID"})
+            continue
+        if digest in seen:
+            continue
+        seen.add(digest)
+        try:
+            data = pinned_file(source, size)
+            if len(data) != size or hashlib.sha256(data).hexdigest() != digest:
+                raise ValueError("SOURCE_HASH_MISMATCH")
+            if not (data.startswith(b"PK\x03\x04") if file.endswith(".zip") else data.startswith(b"\x1f\x8b")):
+                raise ValueError("SOURCE_ARCHIVE_HEADER_INVALID")
+        except (OSError, subprocess.SubprocessError, ValueError):
+            report["rejected"].append({"name": name, "state": "SOURCE_BYTES_UNVERIFIED"})
+            continue
+        report["candidates"].append({
+            "name": name, "targets": sorted(targets[name]), "source": source,
+            "sourceSha256": digest, "bytes": size, "license": pack["licenseDeclared"],
+            "sourceUrl": pack["sourceUrl"], "licenseEvidenceUrl": pack["licenseEvidenceUrl"],
+            "state": "ORIGINAL_ARCHIVE_BYTES_VERIFIED_SPECIES_VISUAL_REVIEW_PENDING",
+            "speciesVerified": False, "visualQualityApproved": False,
+            "registrationApproved": False, "actualRobloxRuntimeVerified": False,
+        })
+    return report
+
+
 audit, failures, audit_3d = trade_goods_practice()
 if audit_3d:
     goal_3d = next((row for row in seed if row.get("id") == "trade-goods-3d-models"), None)
@@ -242,6 +351,11 @@ if audit:
     out["tradeGoodsPractice"] = audit
 if audit_3d:
     out["tradeGoods3DPractice"] = audit_3d
+animal_audit = animal_source_practice()
+if animal_audit:
+    out["animalSourcePractice"] = animal_audit
+    print("MARE_ANIMAL_COMPANY_ARCHIVE_CANDIDATES=" + str(len(animal_audit["candidates"])))
+    print("MARE_ANIMAL_COMPANY_ARCHIVE_INVENTORY=" + animal_audit["archiveInventoryState"])
 with open(os.path.join(root, "assets-wanted.json"), "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=1)
     f.write("\n")
