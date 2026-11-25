@@ -533,7 +533,7 @@
     "CardArt/af_22": "6182df2453091eb3436e0711a7a750fdfe2cea6e34968be181cd10ff414247cf",
     "CardArt/af_23": "41fbaa4a87c0d4470c7122b3c6e67be9b8be4a4407aa3270109d56d5fafff7ff",
     "CardArt/af_24": "15f4073277ed31ab7a867d2f90c4660e0906f1001a0fd75862fea294607dfcf2",
-    "CardArt/af_25": "2af41beecfd25c426eda5d211a2fa8c05b624bddfb9ba68e9e7a5717fe5774da",
+    "CardArt/af_25": "8c11571e1d9d28c2dcc6f38fb75dbe8f308afb288666696df224000a1e6dd7ac",
     "CardArt/af_26": "2e356ebd39e9d33d505eb16726407774f9c1acca2123bcf89ba69aebf6dfe3bc",
     "CardArt/af_27": "920ac376b100654e1e4949a1811a12086b347579b07e64d5c831cd7fedad92e0",
     "CardArt/af_28": "0f3503160050f2b0471011b44e09b623512bea841a98933a6db86f8dc84721db",
@@ -932,6 +932,23 @@
       "commercialRights": true,
       "replacesSha256": "727c31c8d1e5444f1a1a248265b022cec4352d152cd3ae1bb830cd2042184cc9",
       "replacesAssetId": "137895732576949"
+    },
+    "CardArt/af_25": {
+      "sourceType": "IMAGE_GENERATION_MODEL",
+      "sourceFile": "assets/cardart/src/af_25-original.png",
+      "sourceSha256": "8c11571e1d9d28c2dcc6f38fb75dbe8f308afb288666696df224000a1e6dd7ac",
+      "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+      "reviewedAt": "2026-11-25",
+      "license": "PROJECT_ORIGINAL_ART",
+      "subjectMatch": true,
+      "historicalContext": true,
+      "houseStyle": true,
+      "singleFinishedScene": true,
+      "noPartsOrSprites": true,
+      "robloxSafety": true,
+      "commercialRights": true,
+      "replacesSha256": "2af41beecfd25c426eda5d211a2fa8c05b624bddfb9ba68e9e7a5717fe5774da",
+      "replacesAssetId": "123418860511107"
     }
   },
   "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지."
