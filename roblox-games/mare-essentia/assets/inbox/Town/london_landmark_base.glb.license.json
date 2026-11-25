@@ -290,17 +290,17 @@
       "repositoryPath": "roblox-games/mare-essentia/assets/terrain/kenney_stone_largeB.glb"
     }
   ],
-  "modification": "Half-built medieval stone bridge derived from 4 approved CC0 arch spans, five authentic timber braces, pulley-crane and stone materials",
-  "sha256": "e9fa405c35463a48ec25dce65e14880694b14e79492b2e5076eaa87099a26d67",
-  "bytes": 260544,
+  "modification": "Half-built medieval stone bridge derived from 4 approved CC0 arch spans, five authentic timber braces, pulley-crane and stone materials; removed three unreachable duplicate-parent nodes without changing the visible scene",
+  "sha256": "6770c15676a12258a5822669b56534f2084a452e48dab7999aed8505d137d944",
+  "bytes": 260256,
   "triangles": 2891,
-  "validation": "GLB_SCENE_TRIANGLES_AND_SOURCE_BLOB_VERIFIED__SOURCE_VISUAL_CONTENT_REVIEWED__STUDIO_VISUAL_AND_COLLISION_PENDING",
+  "validation": "GLB_SCENE_TREE_AND_EXACT_VISIBLE_SCENE_EQUIVALENCE_VERIFIED__STUDIO_VISUAL_AND_COLLISION_PENDING",
   "productionVerified": false,
   "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
   "sourcePage": "https://opengameart.org/content/lowpoly-medieval-buildings",
-  "sourceGitBlobSha1": "e6a9af671dd8e9cb4252eb676f720992ef708657",
-  "sourceSizeBytes": 260544,
-  "sourceSha256": "e9fa405c35463a48ec25dce65e14880694b14e79492b2e5076eaa87099a26d67",
+  "sourceGitBlobSha1": "fc302f756fdd8d2f58c607a05ec85e3f5df2acea",
+  "sourceSizeBytes": 260256,
+  "sourceSha256": "6770c15676a12258a5822669b56534f2084a452e48dab7999aed8505d137d944",
   "commercialUseAllowed": true,
   "sourceVisualContentReview": {
     "sourceRevision": "35cf6ea698c7edb687d46140eeddd4a58fa1118c",
@@ -313,5 +313,24 @@
   },
   "actualRobloxRuntimeVerified": false,
   "visualQualityApproved": false,
-  "robloxPublishedVerified": false
+  "robloxPublishedVerified": false,
+  "sourceRepair": {
+    "previous": {
+      "sha256": "e9fa405c35463a48ec25dce65e14880694b14e79492b2e5076eaa87099a26d67",
+      "gitBlobSha1": "e6a9af671dd8e9cb4252eb676f720992ef708657",
+      "bytes": 260544,
+      "revision": "348d50924c45afe56a21d1849d414ac87f3a776e"
+    },
+    "removedUnreachableNodes": [
+      20,
+      23,
+      26
+    ],
+    "visibleSceneTreeIdentical": true,
+    "binaryChunkSha256": "dcd1972c1b2eaf6f3810025dae277fa0819669b54fdd3513f5f03036361c62fc",
+    "meshAndMaterialDataUnchanged": true,
+    "triangleCount": 2891,
+    "previousVisualReviewPreserved": true,
+    "method": "Compared full recursively expanded active scene node tree before/after; all non-node JSON and binary chunk preserved. No new visual or native QA claim."
+  }
 }
