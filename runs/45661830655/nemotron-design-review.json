@@ -1,0 +1,182 @@
+{
+  "version": 3,
+  "provider": "NVIDIA",
+  "gameId": "mare-essentia",
+  "sourceRevision": "f0f4ddd5a55cb0d591512bb52e6761c5f9eadbbe",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "GENERAL",
+  "usageWindow": {
+    "day": "2026-11-25",
+    "calls": {
+      "NVIDIA": 7,
+      "GEMINI": 4,
+      "OPENROUTER": 9
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-25",
+      "GEMINI": "2026-11-25",
+      "OPENROUTER": "2026-11-25"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-25T04:20:31.778Z",
+      "GEMINI": "2026-11-25T08:50:27.658Z",
+      "OPENROUTER": "2026-11-25T04:19:01.042Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_LITE": "2026-11-25T17:28:28.120Z",
+    "OPENROUTER_GEMMA26": "2026-11-25T17:28:58.805Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 7,
+      "remainingLocal": 5,
+      "effectiveRemaining": 5,
+      "regularWorkRemaining": 2,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.46,
+      "estimatedHoursToLocalCap": 10.9,
+      "nextLocalWindowAt": "2026-11-26T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 4,
+      "remainingLocal": 8,
+      "effectiveRemaining": 8,
+      "regularWorkRemaining": 5,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.35,
+      "estimatedHoursToLocalCap": 22.9,
+      "nextLocalWindowAt": "2026-11-26T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 9,
+      "remainingLocal": 21,
+      "effectiveRemaining": 21,
+      "regularWorkRemaining": 15,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 0.61,
+      "estimatedHoursToLocalCap": 34.4,
+      "nextLocalWindowAt": "2026-11-26T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "GEMINI_LITE",
+      "status": "HTTP_503",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    },
+    {
+      "id": "OPENROUTER_GEMMA26",
+      "status": "HTTP_429",
+      "provider": "OPENROUTER",
+      "model": "google/gemma-4-26b-a4b-it:free"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    }
+  ],
+  "frames": [
+    {
+      "name": "b1_start-0.jpg",
+      "sha256": "23c956211c45a3909f97e24e9b55fd4f1f2d5ff55f4717a4ad9684c327dadb45"
+    },
+    {
+      "name": "b2_mid-0.jpg",
+      "sha256": "054f7f59e914ec4914dc0fc9d117d418ded334574a475723013e5e9b6f2ee0a0"
+    },
+    {
+      "name": "c00_start-0.jpg",
+      "sha256": "4fd59945416ca5cac590ddf6ca2b6f70e3e5ac6fc59fa44c29c01869c296d8af"
+    },
+    {
+      "name": "intro_center_early-0.jpg",
+      "sha256": "d4fe2f492e1c5c3295d0b71f21cf5f2e8cf2b911d9ebd7463e64f8bc7e5e8dfc"
+    }
+  ],
+  "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
+  "rawResponseSha256": "46a605b027fd20efd04b3445196ddae47c4121e86f2bd9f6e5faf7d299add4cf",
+  "issues": [
+    {
+      "category": "ui",
+      "severity": "medium",
+      "screenshot": "b1_start-0.jpg",
+      "evidenceSha256": "f9c47dff9ceb2367f3325f0406c8ddc5651f6d3e00cad688fe781230ddbe7561"
+    },
+    {
+      "category": "lighting",
+      "severity": "medium",
+      "screenshot": "b2_mid-0.jpg",
+      "evidenceSha256": "f5a88c26a0e5c613fcfd9079d18d77a8f58d696659a5a86c410c596656a38ef4"
+    },
+    {
+      "category": "ship-appearance",
+      "severity": "low",
+      "screenshot": "c00_start-0.jpg",
+      "evidenceSha256": "489cc8a2caaad9a63550070f608e0d89030dc0d8a983f85c87bf610951785290"
+    },
+    {
+      "category": "typography",
+      "severity": "medium",
+      "screenshot": "intro_center_early-0.jpg",
+      "evidenceSha256": "0b64d10fbc8f92a874541e883e6f61b14a2dd8a0dc5111483620ff165ac06a31"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "category": "lighting",
+      "screenshot": "b2_mid-0.jpg",
+      "beforeSha256": "fc011812fb9ba8059366bc5062c50dcf782b00c398fa3976ca06f52e66e9488f",
+      "afterSha256": "a10a482d2eef3e5e3dceac41184704f425d43dee0df08af1ba22e01d7fb3ace2"
+    },
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+      "category": "ui",
+      "screenshot": "b1_start-0.jpg",
+      "beforeSha256": "d9c8ee3c77d1e917e1c98b4d91780356ace742f05013f163ae94289dadb7efe4",
+      "afterSha256": "3a3a3d33b9f48f2dda0205f57f25de1e84fb9a58a2c835b6c669a46099c30c00"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+      "beforeSha256": "048a456c6c4635461fa5509a65d1df07ab95f38c23869544230ae20fd9b33a0f",
+      "afterSha256": "119e843882cd727f1d92bfdef8eb7ca4aa9da062341def217ff0779b91846fb2"
+    },
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+      "beforeSha256": "1f4786a4feac28be7e1fc0511ff7500a4d293502eef083a562eefa01373b4736",
+      "afterSha256": "a4d4e0b30912f9faad8e504d289e9838d29f11853457c878d63cf3193b3ade97"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
