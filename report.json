@@ -1,5 +1,5 @@
 {
- "sourceRevision": "e5000e03c9f4661cdcfe914076f7964bd2258748",
+ "sourceRevision": "e5867b411a38567d2e4d661fe63be9170a246635",
  "log": [
   {
    "step": 1,
@@ -166,87 +166,87 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28010
+   "elapsedMs": 28014
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1174
+   "elapsedMs": 1180
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 315
+   "elapsedMs": 217
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 207
+   "elapsedMs": 199
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 190
+   "elapsedMs": 200
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 408
+   "elapsedMs": 407
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 931
+   "elapsedMs": 946
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2000
+   "elapsedMs": 2001
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1159
+   "elapsedMs": 1171
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 209
+   "elapsedMs": 208
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 413
+   "elapsedMs": 400
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 1168
+   "elapsedMs": 948
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2005
+   "elapsedMs": 2011
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 896
+   "elapsedMs": 784
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 201
+   "elapsedMs": 173
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 408
+   "elapsedMs": 403
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 824
+   "elapsedMs": 847
   },
   {
    "step": 17,
@@ -256,105 +256,99 @@
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1492
+   "elapsedMs": 1176
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1806
+   "elapsedMs": 1814
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 4110
+   "elapsedMs": 3029
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1812
+   "elapsedMs": 1805
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 2330
+   "elapsedMs": 3001
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3706
+   "elapsedMs": 3701
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 3058
+   "elapsedMs": 2562
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 3539
+   "elapsedMs": 3043
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 686
+   "elapsedMs": 282
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2513
+   "elapsedMs": 2502
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1674
+   "elapsedMs": 1533
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1409
+   "elapsedMs": 1147
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 377
+   "elapsedMs": 320
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 354
+   "elapsedMs": 312
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2513
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 87
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1426
+   "elapsedMs": 1255
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 1384
+   "elapsedMs": 995
   }
  ],
  "consoleCapture": {
   "captured": true,
-  "errorCount": 1,
+  "errorCount": 0,
   "warningCount": 0,
-  "errors": [
-   {
-    "type": "studio-asset-load-error",
-    "actionId": null,
-    "signature": "[Game] call State true false 먼저 나라를 선택하세요 [QA] OK NewGame ottoman [QA] OK FEATURE Quest.Accept q_willow_field -> 퀘스트 수락: 강변의 버드나무 [QA] REJECTED Quest.Accept q_willow_notes -> 앞 단계 퀘스트를 먼저 끝내야 해요 Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info: Failed to load asset content ErrorCode: Internal). PBR textures may not be visible in game. Change a TextureId property to retry. Failed to upload TexturePack (Reason: PublishService AssetUpload failed. Info: Failed to load as"
-   }
-  ]
+  "errors": []
  },
  "summary": {
   "plannedSteps": 1000,
@@ -373,7 +367,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251298,
+      "bytes": 251367,
       "width": 0,
       "height": 0,
       "pass": true
@@ -396,7 +390,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250668,
+      "bytes": 250766,
       "width": 0,
       "height": 0,
       "pass": true
@@ -411,7 +405,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195431,
+      "bytes": 195420,
       "width": 0,
       "height": 0,
       "pass": true
@@ -426,7 +420,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 150215,
+      "bytes": 145192,
       "width": 0,
       "height": 0,
       "pass": true
@@ -450,7 +444,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163356,
+      "bytes": 163303,
       "width": 0,
       "height": 0,
       "pass": true
@@ -463,7 +457,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0163631439208984,
+    "brightness": 2.01566743850708,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -474,7 +468,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 105993,
+      "bytes": 108335,
       "width": 0,
       "height": 0,
       "pass": true
@@ -487,7 +481,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0192341804504395,
+    "brightness": 2.018751859664917,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -498,7 +492,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 141004,
+      "bytes": 124952,
       "width": 0,
       "height": 0,
       "pass": true
@@ -511,7 +505,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.023677110671997,
+    "brightness": 2.023036241531372,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -522,7 +516,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147815,
+      "bytes": 147293,
       "width": 0,
       "height": 0,
       "pass": true
@@ -535,7 +529,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0293240547180176,
+    "brightness": 2.02783203125,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -546,7 +540,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 136279,
+      "bytes": 166162,
       "width": 0,
       "height": 0,
       "pass": true
@@ -559,7 +553,7 @@
  "abortDiagnostics": {
   "step": 35,
   "type": "luau",
-  "elapsedMs": 375,
+  "elapsedMs": 346,
   "context": "Client",
   "lastScreenshot": "tab_harbor",
   "lastClick": "title03",
