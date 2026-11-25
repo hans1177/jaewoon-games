@@ -2329,3 +2329,10 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_workshop_coal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
 | `town/` | london_bld_tannery.glb | Quaternius; Kay Lousberg; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
 | `town/` | london_bld_university.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london-brick-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/brick/brick.glb |
+| `town/` | london-building-scaffolding-source.glb | Kay Lousberg · CC0-1.0 | https://kaylousberg.itch.io/kaykit-medieval-hexagon |
+| `town/` | london-rope-twist-02-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb |
+| `town/` | london-scroll-01-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/scroll_01/scroll_01.glb |
+| `town/` | london-wheelbarrow-source.glb | Kay Lousberg · CC0-1.0 | https://kaylousberg.itch.io/kaykit-medieval-hexagon |
+| `town/` | london-wood-stake-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_stake/wood_stake.glb |
+| `town/` | london-wooden-ladder-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_ladder/wooden_ladder.glb |

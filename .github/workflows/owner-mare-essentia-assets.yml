@@ -579,8 +579,22 @@ jobs:
               body["sha"] = current_sha
           pathlib.Path(output).write_text(json.dumps(body), encoding="utf-8")
           PYJSON
-            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" --silent
+            # [저장 검증] 응답 본문 오류와 실제 저장 실패를 구분한다. 동일 blob이 확인된 경우만 성공 처리한다.
+            expected_blob="$(git hash-object "$f")"
+            if ! gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" > /dev/null; then
+              echo "MARE_ASSET_WRITE_RESPONSE_ERROR $f" >&2
+            fi
             rm -f "$payload"
+            saved_blob=""
+            for attempt in 1 2 3; do
+              saved_blob="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"
+              [[ "$saved_blob" == "$expected_blob" ]] && break
+              sleep "$attempt"
+            done
+            if [[ "$saved_blob" != "$expected_blob" ]]; then
+              echo "::error::MARE_ASSET_WRITE_NOT_VERIFIED:$f" >&2
+              exit 1
+            fi
             echo "COMMITTED $f"
           done
           # [등록 완료 정리] 원본·라이선스·등록 ID 반영 후에만 동일 inbox 파일을 제거한다.
