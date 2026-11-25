@@ -127513,7 +127513,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -127548,7 +127548,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 27,
-      "previousReservationId": "system-ai:45538230994:1",
+      "previousReservationId": "system-ai:45543657368:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -127556,12 +127556,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:45543657368:1",
-      "reservedAt": "2026-11-25T04:03:39.369Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -128580,7 +128580,13 @@
         "actions-run:45506486248",
         "system-ai-handoff-to-reservation:system-ai:45538230994:1",
         "actions-run:45538230994",
-        "system-ai-handoff-to-reservation:system-ai:45543657368:1"
+        "system-ai-handoff-to-reservation:system-ai:45543657368:1",
+        "actions-run:45543657368",
+        "external-ai-raw-output-sha256:989bb3c005f1908414f904765cd57b1249ee3a682e6b0650c54b509856d0ace4",
+        "system-ai-applied-answer-sha256:989bb3c005f1908414f904765cd57b1249ee3a682e6b0650c54b509856d0ace4",
+        "repair-strategy-fingerprint:79a8d8cf0b475096513df134a5bd3e872cb30ed8dc5a10cf46f70ae66a93dc88",
+        "failed-strategy-fingerprint:79a8d8cf0b475096513df134a5bd3e872cb30ed8dc5a10cf46f70ae66a93dc88",
+        "model-output-sha256:989bb3c005f1908414f904765cd57b1249ee3a682e6b0650c54b509856d0ace4"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1946,
@@ -128595,7 +128601,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-25T04:03:39.369Z"
+      "updatedAt": "2026-11-25T04:08:58.771Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
