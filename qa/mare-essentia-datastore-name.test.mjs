@@ -2872,6 +2872,14 @@ test('네모트론 전체 시각 범주: 공식 Studio 증거·격리 브랜치�
   assert.match(workflow, /nemotron-mare-design-/);
   assert.match(workflow, /gh pr create --base main/);
   assert.match(workflow, /NEMOTRON_CANDIDATE=BLOCKED_UNAUTHORIZED_FILE_CHANGE/);
+  // 부분 체크아웃의 누락 blob 대신 서버 원본 tree와 정확한 parent를 사용한다.
+  assert.match(workflow, /base_tree = \[string\]\$baseCommit\.tree\.sha/);
+  assert.match(workflow, /parents = @\(\$candidateSource\)/);
+  assert.match(workflow, /NEMOTRON_CANDIDATE_SOURCE_IDENTITY_MISMATCH/);
+  assert.match(workflow, /NEMOTRON_CANDIDATE_UNEXPECTED_STAGED_CHANGE/);
+  assert.match(workflow, /NEMOTRON_CANDIDATE_REF_IDENTITY_MISMATCH/);
+  assert.match(workflow, /NEMOTRON_CANDIDATE_SERVER_TREE_PUBLISHED=1/);
+  assert.doesNotMatch(workflow, /git push[^\n]*\$designBranch/);
   assert.match(workflow, /node --test qa\/mare-essentia-datastore-name\.test\.mjs/);
   assert.equal(authorizedCandidateBranch('nemotron-mare-design-44238657398', '44238657398'), true);
   assert.equal(authorizedCandidateBranch('main', '44238657398'), false);
