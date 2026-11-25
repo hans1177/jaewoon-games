@@ -256,6 +256,11 @@ test('unrelated web commits do not starve the canonical Roblox owner publisher',
   assert.match(workflow,/OWNER_STALE_MAIN_REVISION=UNCHANGED_ROBLOX_SOURCE/);
   assert.match(workflow,/OWNER_STALE_MAIN_REVISION=SKIP_SUPERSEDED_SOURCE/);
   assert.match(workflow,/git diff --name-only "\$BEFORE_SHA" HEAD -- roblox-games\//);
+  assert.match(workflow,/group: owner-roblox-dedicated-private-experiences-\$\{\{ github\.event_name == 'pull_request' && format\('qa-pr-\{0\}', github\.event\.pull_request\.number\) \|\| inputs\.game_id \|\| 'main' \}\}/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+  assert.match(workflow,/publish:\s*\n[\s\S]*?if: github\.event_name != 'pull_request'/);
+  assert.match(workflow,/persist:\s*\n[\s\S]*?if: always\(\) && github\.event_name != 'pull_request'/);
+  assert.equal((workflow.match(/cancel-in-progress: false/g)||[]).length,2);
   assert.doesNotMatch(workflow,/git push --force/);
 });
 
