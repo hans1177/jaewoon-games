@@ -354150,11 +354150,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4a6fdec3afe5130ecc877e73",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15167",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "0ceed5b9f20e098a83c520a5bf7f162719ce3b67",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15167,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-studio-dock-order",
+        "baseSha": "0ceed5b9f20e098a83c520a5bf7f162719ce3b67",
+        "headSha": "98cdb8eb4f592860137939fbafe70fdef194e0a6",
+        "mergeCommitSha": "30f7f1a48cd3a5a1f9ed338dd40661d9b36b441a",
+        "mergedAt": "2026-11-25T03:47:28Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d0800f065ca89a5ace5fe87e5725b54f7d0e8ae60b0d51b684a7ab5d8a67f706",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-studio-dock-order",
+        "candidateSha": "98cdb8eb4f592860137939fbafe70fdef194e0a6"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 106,
+        "deletedLineCount": 2,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wall-open-scaffold-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wall-open-scaffold-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-water-drip-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-water-drip-source.glb.license.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wall-open-scaffold-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-water-drip-source.glb.license.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15167",
+        "merge-commit:30f7f1a48cd3a5a1f9ed338dd40661d9b36b441a",
+        "base-main:0ceed5b9f20e098a83c520a5bf7f162719ce3b67"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2802
+    "total": 2803
   }
 }
