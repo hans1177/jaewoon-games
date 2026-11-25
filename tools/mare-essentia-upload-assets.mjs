@@ -21,6 +21,77 @@ if (contentSafety?.enabled !== true) throw new Error('IMAGE_CONTENT_SAFETY_POLIC
 const blockedPaths = new Set(contentSafety.blockedAssets.flatMap(row => row.sourcePaths || []));
 const blockedHashes = new Set(contentSafety.blockedAssets.flatMap(row => row.sha256 || []));
 const blockedIds = new Set(contentSafety.blockedAssets.flatMap(row => row.assetIds || []).map(String));
+// [동물 원본 24시간] 기존 inbox의 main 검수 증빙만 신규 인입 권한으로 사용한다.
+// 검색 결과·파일명·저장소 라이선스만으로 원작/종/시각 검수를 자동 승인하지 않는다.
+const farmGoal = JSON.parse(await fs.readFile(ROOT + '/assets-wanted.seed.json','utf8')).find(row=>row.id==='mare-farm-animals');
+const animalMissing = await fs.readFile(ROOT + '/docs/discoveries/MISSING.md','utf8');
+const animalRegistry = JSON.parse(await fs.readFile(JSON_OUT,'utf8')).assets;
+const approvedAnimalOriginals = new Map();
+for (const dir of ['animals','inbox/Animals']) {
+  for (const file of await fs.readdir(path.join(ROOT,'assets',dir))) {
+    if (!/^[a-z][a-z0-9_-]*\.glb\.license\.json$/.test(file)) continue;
+    const name = file.slice(0,-'.glb.license.json'.length);
+    const proof = JSON.parse(await fs.readFile(path.join(ROOT,'assets',dir,file),'utf8'));
+    const review = proof.sourceVisualContentReview;
+    if (!review || review.reviewScope !== 'SOURCE_REGISTRATION_ONLY') continue;
+    const discovery = typeof proof.discoveryCardId === 'string' && /^(?:am|pac|zoo)_[a-z0-9_]+$/.test(proof.discoveryCardId)
+      && name.startsWith('discovery_') && (animalMissing.includes('- '+proof.discoveryCardId+' ') || animalRegistry['Animals/'+name]);
+    const farm = (farmGoal?.missing || []).includes(name) || (farmGoal?.sourceReady || []).includes(name);
+    if (!discovery && !farm) continue;
+    const pinned = /^https:\/\/raw\.githubusercontent\.com\/[\w.-]+\/[\w.-]+\/[0-9a-f]{40}\/[\w./%()-]+\.glb$/.test(proof.source || '');
+    if (!pinned || proof.license!=='CC0-1.0' || proof.commercialUseAllowed!==true || proof.originalModelHandcrafted!==true
+      || typeof proof.author!=='string' || !proof.author.trim() || typeof proof.sourceModelingMethod!=='string' || !proof.sourceModelingMethod.trim()
+      || !/^https:\/\//.test(proof.sourcePage || '') || !/^[0-9a-f]{40}$/.test(proof.pinnedBlobSha || '')
+      || !/^[0-9a-f]{64}$/.test(proof.sourceSha256 || '') || proof.originalSha256!==proof.sourceSha256
+      || review.sourceSha256!==proof.sourceSha256 || typeof review.method!=='string' || !review.method.trim()
+      || blockedHashes.has(proof.sourceSha256) || blockedPaths.has(path.join(ROOT,'assets/animals',name+'.glb'))
+      || !Number.isSafeInteger(proof.bytes) || proof.bytes<20 || proof.bytes>5000000
+      || !Number.isSafeInteger(proof.triangles) || proof.triangles<1000 || proof.triangles>3000) {
+      console.log('MARE_ANIMAL_SOURCE_REVIEW_BLOCKED',name);
+      continue;
+    }
+    const prior = approvedAnimalOriginals.get(name);
+    if (prior && prior.approvedProof.sourceSha256!==proof.sourceSha256) throw new Error('MARE_ANIMAL_REVIEW_CONFLICT:'+name);
+    approvedAnimalOriginals.set(name,{name,assetPath:'assets/animals/'+name+'.glb',author:proof.author,source:proof.source,
+      page:proof.sourcePage,pinnedBlobSha:proof.pinnedBlobSha,sourceModelingMethod:proof.sourceModelingMethod,
+      minBytes:proof.bytes,maxBytes:proof.bytes,minTriangles:proof.triangles,maxTriangles:proof.triangles,
+      animalOriginal:true,discoveryBird:discovery?proof.discoveryCardId:undefined,originalModel:proof.originalModel||name,approvedProof:proof});
+  }
+}
+if (process.argv.includes('--animal-source-preflight')) {
+  const pending = [];
+  for (const item of approvedAnimalOriginals.values()) {
+    const row=animalRegistry['Animals/'+item.name];
+    if (!row?.assetId) { pending.push(item); continue; }
+    if (row.sourceSha256!==item.approvedProof.sourceSha256 || row.assetType!=='Model') {
+      console.log('MARE_ANIMAL_EXISTING_ID_SOURCE_CONFLICT',item.name);
+      continue;
+    }
+    let complete = true;
+    for (const suffix of ['', '.license.json']) {
+      try { await fs.access(path.join(ROOT,item.assetPath)+suffix); }
+      catch (error) { if (error.code!=='ENOENT') throw error; complete=false; }
+    }
+    if (!complete || row.usePermissionGranted!==true) pending.push(item);
+  }
+  // 부족 목표를 순환 탐색한다. 검색 후보는 로그에만 남기고 별도 큐·자동 승인·유료 API를 만들지 않는다.
+  const missing = [...new Set([...(farmGoal?.missing||[]).filter(name=>!animalRegistry['Animals/'+name]),
+    ...[...animalMissing.matchAll(/^- (?:am|pac|zoo)_([a-z0-9_]+) /gm)].map(match=>match[1])])];
+  if (missing.length && process.env.GH_TOKEN) {
+    const start=Math.floor(Date.now()/3600000)*3;
+    for(let i=0;i<Math.min(3,missing.length);i++){
+      const name=missing[(start+i)%missing.length];
+      if(!/^[a-z0-9_]+$/.test(name)) continue;
+      try {
+        const result=JSON.parse(execFileSync('gh',['api','-X','GET','search/code','-f','q=filename:'+name+'.glb extension:glb','-f','per_page=5'],{encoding:'utf8',timeout:20000,maxBuffer:1000000,stdio:['ignore','pipe','pipe']}));
+        console.log('MARE_ANIMAL_SOURCE_CANDIDATES_UNREVIEWED',name,JSON.stringify((result.items||[]).map(x=>({url:x.html_url,blob:x.sha}))));
+      } catch { console.log('MARE_ANIMAL_SOURCE_SEARCH_RETRY_NEXT_CYCLE',name); }
+    }
+  }
+  console.log('MARE_ANIMAL_APPROVED_PENDING',pending.length,'UNREVIEWED_SEARCH_TARGETS',missing.length);
+  if(process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT,'pending='+(pending.length?'true':'false')+'\n');
+  process.exit(0);
+}
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
 // [스튜디오 실측 복구] 검증된 실패 ID만 기존 승인 API로 재확인한다. 재업로드는 금지한다.
 const studioRegrantArg = process.argv.find(arg => arg.startsWith('--studio-regrant='));
@@ -202,6 +273,8 @@ async function prepareLicensedOriginals() {
       rebuildCoastalShip:ship,
     })),
   ];
+  // 기존 고정 원본과 중복되지 않는 main 검수 원본만 동일 인입 루프로 추가한다.
+  for (const item of approvedAnimalOriginals.values()) if (!sources.some(source=>source.name===item.name)) sources.push(item);
   for (const item of sources) {
     const name = item.name, source = item.source, sourcePage = item.page;
     const license = item.license || 'CC0-1.0';
@@ -211,6 +284,24 @@ async function prepareLicensedOriginals() {
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
+    // [등록 장부 복구] 이전 실행에서 파일/증빙 중 하나만 저장된 경우 정확히 승인된 원본만 복구한다.
+    if (item.animalOriginal) {
+      const approved = item.approvedProof;
+      if (bytes && !evidence) {
+        const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+        const blob = crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+        if (hash!==approved.sourceSha256 || blob!==approved.pinnedBlobSha || bytes.length!==approved.bytes)
+          throw new Error('MARE_ANIMAL_PARTIAL_SOURCE_CONFLICT:'+name);
+        evidence=approved;
+        await fs.writeFile(proof,JSON.stringify(approved,null,2)+'\n');
+        console.log('MARE_ANIMAL_SOURCE_PROOF_RECOVERED',name);
+      } else if (!bytes && evidence) {
+        if (evidence.sourceSha256!==approved.sourceSha256 || evidence.pinnedBlobSha!==approved.pinnedBlobSha
+          || evidence.source!==approved.source || evidence.sourceVisualContentReview?.sourceSha256!==approved.sourceSha256)
+          throw new Error('MARE_ANIMAL_PARTIAL_PROOF_CONFLICT:'+name);
+        evidence=undefined; // 원본을 기존 고정 다운로드/등록 경로에서 복원한다.
+      }
+    }
     if (evidence && (!bytes || evidence.license !== license || evidence.author !== item.author
       || evidence.source !== source || evidence.sourcePage !== sourcePage
       || (item.pinnedBlobSha && evidence.pinnedBlobSha !== item.pinnedBlobSha)
@@ -265,7 +356,7 @@ async function prepareLicensedOriginals() {
         }
       }
       // [발견물 원본] 이미 확보한 inbox 바이너리를 우선 사용하고 동일한 원본 검증을 거친다.
-      if (item.discoveryBird) {
+      if (item.discoveryBird || item.animalOriginal) {
         const staged = path.join(ROOT,'assets/inbox/Animals',name+'.glb');
         try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
         if (bytes) {
@@ -273,7 +364,7 @@ async function prepareLicensedOriginals() {
           const digest = crypto.createHash('sha256').update(bytes).digest('hex');
           if (stagedProof.license !== license || stagedProof.author !== item.author
             || stagedProof.source !== source || stagedProof.sourcePage !== sourcePage
-            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || stagedProof.discoveryCardId !== item.discoveryBird
+            || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || (item.discoveryBird && stagedProof.discoveryCardId !== item.discoveryBird)
             || stagedProof.sourceSha256 !== digest || stagedProof.originalSha256 !== digest
             || stagedProof.commercialUseAllowed !== true || stagedProof.originalModelHandcrafted !== true)
             throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
@@ -940,23 +1031,25 @@ async function prepareLicensedOriginals() {
     }, 0);
     if (tris < item.minTriangles || tris > (item.maxTriangles || 30000))
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_WRONG_MODEL_GEOMETRY:' : 'MARE_LICENSED_WRONG_MODEL_GEOMETRY:') + name + ':' + tris);
+    if (item.animalOriginal && (crypto.createHash('sha256').update(bytes).digest('hex')!==item.approvedProof.sourceSha256 || tris!==item.approvedProof.triangles))
+      throw new Error('MARE_ANIMAL_APPROVED_BINARY_MISMATCH:'+name);
     if (!evidence) {
       const hash = crypto.createHash('sha256').update(bytes).digest('hex');
-      if ((item.discoveryBird || item.townOriginal) && (blockedHashes.has(hash) || blockedPaths.has(target)))
+      if ((item.discoveryBird || item.animalOriginal || item.townOriginal) && (blockedHashes.has(hash) || blockedPaths.has(target)))
         throw new Error('MARE_DISCOVERY_SOURCE_BLOCKED:' + name);
       // [원본 인입] 발견물과 건축 원본은 기존 종류별 inbox와 정식 등록기로 이동한다.
-      const stageKind = item.discoveryBird ? 'Animals' : item.townOriginal ? 'Town' : null;
+      const stageKind = (item.discoveryBird || item.animalOriginal) ? 'Animals' : item.townOriginal ? 'Town' : null;
       const writeTarget = stageKind ? path.join(ROOT,'assets/inbox',stageKind,name+'.glb') : target;
       if (stageKind) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
       await fs.writeFile(writeTarget, bytes);
-      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({...stagedTownProof, license, author:item.author, source,
+      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({...stagedTownProof,...item.approvedProof, license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         sourceBlend:item.sourceBlend || undefined, sourceModelingMethod:item.sourceModelingMethod || undefined,
-        sha256:item.townOriginal ? hash : undefined, bytes:item.townOriginal ? bytes.length : undefined,
-        commercialUseAllowed:item.townOriginal || item.discoveryBird ? true : undefined,
+        sha256:item.townOriginal || item.animalOriginal ? hash : undefined, bytes:item.townOriginal || item.animalOriginal ? bytes.length : undefined,
+        commercialUseAllowed:item.townOriginal || item.discoveryBird || item.animalOriginal ? true : undefined,
         attribution:item.attribution || null,
         discoveryCardId:item.discoveryBird || undefined,
-        originalModelHandcrafted:item.discoveryBird ? true : undefined,
+        originalModelHandcrafted:item.discoveryBird || item.animalOriginal ? true : undefined,
         sourceAsset:item.sourceAsset||null, originalMeshCount:item.originalMeshCount||null,
         derivedTriangleCount:item.derivedTriangleCount||null,
         authenticOriginalBinaryVerified:(item.rebuildNau||item.rebuildCoastalShip)?true:undefined,
@@ -966,11 +1059,11 @@ async function prepareLicensedOriginals() {
           item.rebuildCoastalShip?['wood','edge','linen','rope','carved']:undefined,
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
-        sourceVisualContentReview:item.townOriginal ? stagedTownProof?.sourceVisualContentReview : undefined,
+        sourceVisualContentReview:item.animalOriginal ? item.approvedProof.sourceVisualContentReview : item.townOriginal ? stagedTownProof?.sourceVisualContentReview : undefined,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
       if (stageKind) {
-        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
-        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+name],{stdio:'inherit',timeout:30000});
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+(item.animalOriginal ? name+'.glb' : name),'--dry-run'],{stdio:'inherit',timeout:30000});
+        execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+(item.animalOriginal ? name+'.glb' : name)],{stdio:'inherit',timeout:30000});
         if (crypto.createHash('sha256').update(await fs.readFile(target)).digest('hex') !== hash)
           throw new Error('MARE_DISCOVERY_REGISTERED_SOURCE_MISMATCH:' + name);
       }
@@ -1762,9 +1855,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb','london-wooden-ladder-source.glb','london-wood-stake-source.glb','london-brick-source.glb','london-scroll-01-source.glb','london-wheelbarrow-source.glb','london-building-scaffolding-source.glb','london-firewood-01-source.glb','london-wood-barrel-source.glb','london-clothes-peg-source.glb','london-noticeboard-source.glb','london-shovel-01-source.glb','london-chicken-coop-source.glb','london-awning-02-source.glb','london-column-leg-bench-source.glb','london-pick-axe-source.glb','london-saw-horse-source.glb','london-wooden-mallet-source.glb','london-wooden-produce-crate-source.glb','london-curved-stone-bench-source.glb','london-finger-post-sign-01-source.glb','london-flower-pot-source.glb','london-rustic-wood-hand-basket-source.glb','london-statue-base-source.glb','london-architrave-heritage-source.glb','london-awning-01-source.glb','london-brick-hammer-source.glb','london-brick-trowel-source.glb','london-cartwheel-source.glb','london-chisel-source.glb','london-english-bond-brick-source.glb','london-iron-flambeaux-01-source.glb','london-stone-archway-01-source.glb','london-stone-archway-02-source.glb','london-wall-open-scaffold-source.glb','london-water-drip-source.glb','london-wooden-gate-01-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
+    const reviewedAnimal = kind === 'Animals' && approvedAnimalOriginals.has(name);
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
     try {
-    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || townOriginal || discoveryBird || harborAnimalOriginal || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
+    if (kind === 'Cargo' || kind === 'Naval' || kind === 'Relics' || kind === 'Materials' || characterFinish || externalR15Item || portOriginalModel || townOriginal || discoveryBird || reviewedAnimal || harborAnimalOriginal || (kind === 'Terrain' && (f.startsWith('kenney_') || f.startsWith('veg_')))) {
       try { sourceLicense = JSON.parse(await fs.readFile(path.join(ROOT, 'assets', dir, sourceFileName + '.license.json'), 'utf8')); }
       catch (error) { if (error.code !== 'ENOENT') throw error; }
       // [검증 대기 원본 보호] 3D 도시 파생 모델은 CC0 원본 기록만 있고 검수·등록이
@@ -1824,6 +1918,15 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
         }
         if (triangles !== 2184 || triangles !== sourceLicense.triangles)
           throw new Error('MARE_HARBOR_ANIMAL_TRIANGLE_COUNT_MISMATCH:'+f);
+      }
+      if (reviewedAnimal) {
+        const proof = approvedAnimalOriginals.get(name).approvedProof;
+        const bytes = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
+        const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+        const blob = crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+        if (!sourceLicense || sourceLicense.license!=='CC0-1.0' || hash!==proof.sourceSha256 || blob!==proof.pinnedBlobSha
+          || sourceLicense.sourceSha256!==hash || sourceLicense.sourceVisualContentReview?.sourceSha256!==hash)
+          throw new Error('MARE_ANIMAL_SOURCE_PROOF_REQUIRED:'+f);
       }
       if (discoveryBird) {
         const original = await fs.readFile(path.join(ROOT,'assets',dir,sourceFileName));
@@ -2032,6 +2135,12 @@ for (const item of plan) {
     delete registry.assets[id];
     previousTypeAssets.delete(id); // 차단 원본은 이전 등록 ID로 되돌리지 않는다.
     console.log('REMOVED_IMAGE_SOURCE_EXCLUDED', id);
+    continue;
+  }
+  // [동물 원본] 등록된 이름의 다른 해시를 자동 교체하거나 중복 발급하지 않는다.
+  if (approvedAnimalOriginals.has(item.name) && item.kind==='Animals' && registry.assets[id]?.assetId
+    && registry.assets[id].sourceSha256!==sourceSha256) {
+    failures.push(id+': ANIMAL_EXISTING_ID_SOURCE_CONFLICT');
     continue;
   }
   // [교역품 자동 연습→수정] 승인 SHA가 달라졌을 때만 기존 Image 업로드를 갱신한다.

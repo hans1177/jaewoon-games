@@ -17,9 +17,9 @@ on:
       - 'tools/mare-essentia-upload-assets.mjs'
       - 'tools/mare-essentia-character-finish.mjs'
       - 'tools/mare-essentia-ship-v5.py'
-  # [자체 연습] 기존 무료 자산 등록 절차에서 하루 한 번 누락된 3D 원본만 재검사한다.
+  # [동물 원본] 매시간 기존 무료 등록 절차에서 부족 원본을 탐색·검증한다.
   schedule:
-    - cron: '20 19 * * *'
+    - cron: '20 * * * *'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -80,6 +80,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Check reviewed animal originals and rotate missing source search
+        id: animal_practice
+        if: ${{ github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/mare-essentia-upload-assets.mjs --animal-source-preflight
 
       # [풀컬러 원본 인입] 큰 PNG 전송 실패 시 동일 원본의 Base64 분할 파일을 정식 등록 직전에 복원한다.
       # 로블록스 등록기·이미지 승인 절차는 변경하지 않는다. 원본 SHA 불일치 시 실패한다.
@@ -256,8 +263,8 @@ jobs:
 
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
-        # 정기 연습은 무료 정적 진단만 수행한다. 신규/변경 승인 자산 업로드는 기존 push·수동 경로.
-        if: ${{ github.event_name != 'schedule' }}
+        # 검수 원본이 존재하는 정기 실행만 기존 정식 업로드 경로를 사용한다.
+        if: ${{ github.event_name != 'schedule' || steps.animal_practice.outputs.pending == 'true' }}
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           # 새 소유 계정(Anyanguy1980) 키만 사용한다. 제재 계정 쿠키는 넘기지 않는다.
@@ -349,7 +356,7 @@ jobs:
 
       - name: Verify external CC0 nau and three coastal merchant hulls with Roblox granted assets
         id: nau_check
-        if: ${{ steps.asset_registration.outcome == 'success' && github.event_name != 'schedule' }}
+        if: ${{ steps.asset_registration.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -483,7 +490,7 @@ jobs:
               london_files+=("$dest" "$dest.license.json")
             done < <(git diff --name-only --diff-filter=D)
           fi
-          for f in "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json "$asset_root"/relics/weapon-flintlock-pistol.glb "$asset_root"/relics/weapon-flintlock-pistol.glb.license.json "$asset_root"/relics/weapon-flintlock-musket.glb "$asset_root"/relics/weapon-flintlock-musket.glb.license.json "$asset_root"/naval/fishing-net.glb "$asset_root"/naval/fishing-net.glb.license.json "$asset_root"/naval/net-floats.glb "$asset_root"/naval/net-floats.glb.license.json "$asset_root"/naval/galleon-heritage.glb "$asset_root"/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png "$asset_root"/terrain/kenney_*.glb* "$asset_root"/SOURCES.md "$asset_root"/naval/*-v5*.glb* "$asset_root"/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* "$asset_root"/animals/discovery_{seagull,bald_eagle,panda,whale}.glb* "$asset_root"/town/{greenhouse-source,clock-tower-source,scarecrow-source,bread-oven-source,stage-curtain-source}.glb*; do
+          for f in "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json "$asset_root"/relics/weapon-flintlock-pistol.glb "$asset_root"/relics/weapon-flintlock-pistol.glb.license.json "$asset_root"/relics/weapon-flintlock-musket.glb "$asset_root"/relics/weapon-flintlock-musket.glb.license.json "$asset_root"/naval/fishing-net.glb "$asset_root"/naval/fishing-net.glb.license.json "$asset_root"/naval/net-floats.glb "$asset_root"/naval/net-floats.glb.license.json "$asset_root"/naval/galleon-heritage.glb "$asset_root"/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png "$asset_root"/terrain/kenney_*.glb* "$asset_root"/SOURCES.md "$asset_root"/naval/*-v5*.glb* "$asset_root"/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* "$asset_root"/animals/discovery_*.glb* "$asset_root"/animals/{goat,camel,turkey}.glb* "$asset_root"/town/{greenhouse-source,clock-tower-source,scarecrow-source,bread-oven-source,stage-curtain-source}.glb*; do
             if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${MARE_ASSET_OUTCOME}" != "success" || "${MARE_NAU_CHECK_OUTCOME}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue
@@ -543,7 +550,8 @@ jobs:
           PYTOWN
             fi
             # [발견물] 실제 원본과 로블록스 번호·Universe 사용권을 모두 대조한다.
-            if [[ "$f" == "$asset_root"/animals/discovery_*.glb* ]]; then
+            if [[ "$f" == "$asset_root"/animals/@(discovery_*|goat|camel|turkey).glb* ]]; then
+              if [[ ! -e "$f" ]]; then continue; fi
               if [[ "${MARE_ASSET_OUTCOME}" != "success" ]]; then
                 echo "SKIP_UNVERIFIED_DISCOVERY_MODEL $f"
                 continue
@@ -563,6 +571,10 @@ jobs:
                   and row.get('assetType')=='Model' and row.get('usePermissionGranted') is True
                   and str(row.get('assetId','')).isdigit() and int(row['assetId'])>0):
               raise SystemExit('MARE_DISCOVERY_ORIGINAL_REGISTRATION_UNVERIFIED:'+path.stem)
+          if path.stem not in {'discovery_seagull','discovery_bald_eagle','discovery_panda','discovery_whale'}:
+              review=proof.get('sourceVisualContentReview',{})
+              if review.get('sourceSha256')!=digest or review.get('reviewScope')!='SOURCE_REGISTRATION_ONLY' or proof.get('originalModelHandcrafted') is not True:
+                  raise SystemExit('MARE_ANIMAL_REVIEW_REQUIRED:'+path.stem)
           print('MARE_DISCOVERY_ORIGINAL_REGISTERED',path.stem,digest,row['assetId'])
           PYBIRD
             fi
