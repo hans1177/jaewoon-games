@@ -367,12 +367,12 @@
       }
     }
   ],
-  "modification": "Twelve named groups; original binary buffers and local source transforms preserved. Uniform scale, ground alignment, nonoverlapping display layout and selected historical tints. No PBR maps, visual or runtime verification. Chicken coop mirror publisher binary equivalence pending; laundry static; firewood single source model; pot empty.",
-  "sha256": "e954057cd7a64c6aa0785275cf0539056bcbd127601e0bba5a03cd5e60de2439",
-  "bytes": 610812,
+  "modification": "Twelve named groups; original binary buffers and local source transforms preserved. Uniform scale, ground alignment, nonoverlapping display layout and selected historical tints. No PBR maps, visual or runtime verification. Chicken coop mirror publisher binary equivalence pending; laundry static; firewood single source model; pot empty. Added box-projected UVs with seam-only vertex splitting to ten missing primitives; original triangle positions, normals, buffers, and nodes preserved. Nonmetal matte roughness factors adjusted; texture maps and visual approval still pending.",
+  "sha256": "364f8e3b6105ac95755d8dcc1a9f0c55e0fd873ed99bcd4e539b6ee0454c17d4",
+  "bytes": 805864,
   "triangles": 24343,
   "groupCount": 12,
-  "missingUVPrimitives": 10,
+  "missingUVPrimitives": 0,
   "bounds": {
     "min": [
       -7.64149842619358,
@@ -388,7 +388,7 @@
   "intendedLondonTargets": [
     "london_district_props"
   ],
-  "validation": "SOURCE_HASH_BUFFER_PRESERVATION_GLB_INDEX_BOUNDS_GROUND_NONOVERLAP_CHECKED",
+  "validation": "SOURCE_BUFFER_TRIANGLE_POSITION_NORMAL_UV_INDEX_BOUNDS_CHECKED",
   "registration": "HOLD_DERIVED_CANDIDATE_NOT_APPROVED_FOR_UPLOAD",
   "productionVerified": false,
   "visualQualityApproved": false,
@@ -398,5 +398,274 @@
     15214,
     15216,
     15217
+  ],
+  "previousDerivedSha256": "e954057cd7a64c6aa0785275cf0539056bcbd127601e0bba5a03cd5e60de2439",
+  "uvRepair": {
+    "primitives": [
+      {
+        "mesh": 7,
+        "primitive": 0,
+        "oldVertices": 347,
+        "newVertices": 347,
+        "triangles": 254,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 7,
+        "primitive": 1,
+        "oldVertices": 480,
+        "newVertices": 480,
+        "triangles": 240,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 7,
+        "primitive": 2,
+        "oldVertices": 422,
+        "newVertices": 422,
+        "triangles": 268,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 7,
+        "primitive": 3,
+        "oldVertices": 157,
+        "newVertices": 157,
+        "triangles": 118,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 7,
+        "primitive": 4,
+        "oldVertices": 108,
+        "newVertices": 108,
+        "triangles": 68,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 12,
+        "primitive": 0,
+        "oldVertices": 2169,
+        "newVertices": 2217,
+        "triangles": 1663,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 12,
+        "primitive": 1,
+        "oldVertices": 332,
+        "newVertices": 332,
+        "triangles": 248,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 12,
+        "primitive": 2,
+        "oldVertices": 228,
+        "newVertices": 228,
+        "triangles": 168,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 12,
+        "primitive": 3,
+        "oldVertices": 624,
+        "newVertices": 624,
+        "triangles": 316,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      },
+      {
+        "mesh": 12,
+        "primitive": 4,
+        "oldVertices": 264,
+        "newVertices": 280,
+        "triangles": 264,
+        "method": "face-dominant-axis seam split; source triangle position and normal equality checked"
+      }
+    ],
+    "sourceDegenerateTriangles": 0,
+    "newNondegenerateUvFailures": 0
+  },
+  "materialFactorAdjustments": [
+    {
+      "material": 7,
+      "name": "White",
+      "before": {
+        "metallic": 0,
+        "roughness": 0.6900347471237183
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 8,
+      "name": "LightRed",
+      "before": {
+        "metallic": 0,
+        "roughness": 0.6900347471237183
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 9,
+      "name": "Brown",
+      "before": {
+        "metallic": 0,
+        "roughness": 0.6900347471237183
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 10,
+      "name": "DarkRed",
+      "before": {
+        "metallic": 0,
+        "roughness": 0.6900347471237183
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 11,
+      "name": "RoofBlack",
+      "before": {
+        "metallic": 0,
+        "roughness": 0.6900347471237183
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.83
+      }
+    },
+    {
+      "material": 14,
+      "name": "Wood",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 15,
+      "name": "Bag",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 16,
+      "name": "RoofTiles_Red",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.83
+      }
+    },
+    {
+      "material": 17,
+      "name": "Stone_Dark",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.83
+      }
+    },
+    {
+      "material": 18,
+      "name": "Stone_Light",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.83
+      }
+    },
+    {
+      "material": 20,
+      "name": "Wood",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 21,
+      "name": "Red",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 22,
+      "name": "Beige",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 23,
+      "name": "DarkWood",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.88
+      }
+    },
+    {
+      "material": 24,
+      "name": "Stone_Dark",
+      "before": {
+        "metallic": 0.400000005960464,
+        "roughness": 0.415087103843689
+      },
+      "after": {
+        "metallic": 0,
+        "roughness": 0.83
+      }
+    }
   ]
 }
