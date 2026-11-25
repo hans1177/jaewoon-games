@@ -102,6 +102,18 @@ async function prepareLicensedOriginals() {
       source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_stake/wood_stake.glb", page:"https://thebasemesh.com",
       pinnedBlobSha:'265f8762ad170c01e1ef6709479c83c0a8a01a23', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
       townOriginal:true, requireSourceReview:true, minBytes:4408, maxBytes:4408, minTriangles:60, maxTriangles:60, originalModel:'Wood stake'},
+    {name:'london-brick-source', assetPath:'assets/town/london-brick-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/brick/brick.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'05b4c615038cefda3d20ce7b8911006607c97ae0', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:2700, maxBytes:2700, minTriangles:12, maxTriangles:12, originalModel:'Brick'},
+    {name:'london-scroll-01-source', assetPath:'assets/town/london-scroll-01-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/scroll_01/scroll_01.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'65bc82b137466bab8472faab08003de30f9f4dda', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:19976, maxBytes:19976, minTriangles:468, maxTriangles:468, originalModel:'Scroll 01'},
+    {name:'london-wheelbarrow-source', assetPath:'assets/town/london-wheelbarrow-source.glb', author:"Kay Lousberg",
+      source:"https://kaylousberg.itch.io/kaykit-medieval-hexagon", page:"https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+      pinnedBlobSha:'6eec4a6b2f96d9df83ecaccc7cdbf875d9b43844', sourceModelingMethod:'Kay Lousberg original glTF repackaged with byte-identical geometry and embedded PNG; pinned local GLB',
+      townOriginal:true, requireSourceReview:true, repackagedOriginalParts:[{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.gltf","gitBlobSha1":"497a01a2f101e6d351e4a4bf471ecad91d020682","sha256":"bb037662a3e5be1f4fe597ffc4927d2a6ad88d307da10388cfb178ca5fdae63d","bytes":3059},{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.bin","gitBlobSha1":"d694896837c76633c823005cf001ba8f3ade96a4","sha256":"72ca612b0dc940c856ed5abbbb9df9562c09bff52cfb2258375b16cbaad29e12","bytes":19016},{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/hexagons_medieval.png","gitBlobSha1":"14cdc253646e4dba3cb7a267a6f7399b78ba2231","sha256":"5301a06866ba3be68dcc14cc429bd6d0f69004b72884283715d7e233f2e9782e","bytes":15783}], minBytes:36196, maxBytes:36196, minTriangles:396, maxTriangles:396, originalModel:'Wheelbarrow'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -194,6 +206,15 @@ async function prepareLicensedOriginals() {
         || original.length!==1160296
         || original.toString('ascii',0,4)!=='glTF')
         throw new Error('MARE_COASTAL_SHIP_EXTERNAL_CC0_SOURCE_CHANGED:'+item.rebuildCoastalShip);
+    }
+    // [원본 재포장] 로컬 GLB 고정 해시를 외부 원본 GLB로 오인하지 않는다. 원본 구성 파일도 매번 대조한다.
+    if (item.repackagedOriginalParts) {
+      for (const part of item.repackagedOriginalParts) {
+        const data = await fs.readFile(part.repositoryPath);
+        if (data.length !== part.bytes || crypto.createHash('sha256').update(data).digest('hex') !== part.sha256
+          || crypto.createHash('sha1').update('blob '+data.length+'\0').update(data).digest('hex') !== part.gitBlobSha1)
+          throw new Error('MARE_TOWN_REPACKAGED_SOURCE_PART_MISMATCH:'+name+':'+part.repositoryPath);
+      }
     }
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
@@ -1706,7 +1727,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       }
     }
     const portOriginalModel = !stagedLondon && kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb','london-wooden-ladder-source.glb','london-wood-stake-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb','london-wooden-ladder-source.glb','london-wood-stake-source.glb','london-brick-source.glb','london-scroll-01-source.glb','london-wheelbarrow-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
