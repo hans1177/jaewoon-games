@@ -352930,11 +352930,140 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_19743ea6922f50bb339fc83c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15144",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "e5000e03c9f4661cdcfe914076f7964bd2258748",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15144,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-kaykit-originals-1125",
+        "baseSha": "e5000e03c9f4661cdcfe914076f7964bd2258748",
+        "headSha": "ae1514c6578563a5cfddcaf9c1a943e71208808e",
+        "mergeCommitSha": "e5867b411a38567d2e4d661fe63be9170a246635",
+        "mergedAt": "2026-11-25T02:11:53Z",
+        "authorLogin": "hans1177",
+        "titleHash": "fb1712558026a1110e3cc3237417f1740873d7fb7d3a804cd20840e93b7e194d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-kaykit-originals-1125",
+        "candidateSha": "ae1514c6578563a5cfddcaf9c1a943e71208808e"
+      },
+      "changeStats": {
+        "changedFileCount": 10,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 400,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/flag_red.bin",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/flag_red.bin.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/flag_red.gltf",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/flag_red.gltf.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/hexagons_medieval.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/hexagons_medieval.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.bin",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.bin.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.gltf",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.gltf.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/flag_red.bin.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/flag_red.gltf.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/hexagons_medieval.png.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.bin.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.gltf.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15144",
+        "merge-commit:e5867b411a38567d2e4d661fe63be9170a246635",
+        "base-main:e5000e03c9f4661cdcfe914076f7964bd2258748"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2794
+    "total": 2795
   }
 }
