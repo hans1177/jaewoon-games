@@ -1,0 +1,78 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius; Kay Lousberg; Kenney",
+  "source": "https://quaternius.com/packs/medievalvillage.html",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "village-house-1.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-1.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "74d4c91022414875ec61ab80835705a9c0e9415aa0dd413fc8e83cbfd861a5c9",
+      "gitBlobSha1": "b2733641f276a98615436b998d8f0d1c5e68a441",
+      "registeredAssetId": "84666050309773"
+    },
+    {
+      "name": "wood-plank-a.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/wood-plank-a.glb",
+      "originalUrl": "https://kaylousberg.itch.io/resource-bits",
+      "author": "Kay Lousberg",
+      "license": "CC0-1.0",
+      "sha256": "cf6f3f72f0359bb926b6d7c060dae2cfbcf772f0ac0551963d64cf97736cbc52",
+      "gitBlobSha1": "8f73d4ea384131b986ef1c5b9143e9b843bc9ecd",
+      "registeredAssetId": "79087208324933"
+    },
+    {
+      "name": "barrel-open.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/barrel-open.glb",
+      "originalUrl": "https://kenney.nl/assets/survival-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "15e8195b6edbca9a832f50a39d30db26608183e29c10fe9d0628a24612d2b0e9",
+      "gitBlobSha1": "10535836d704e0b42d3fdd8c42f980595225b733",
+      "registeredAssetId": "106472043362234"
+    },
+    {
+      "name": "rugrounded.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/interior/rugrounded.glb",
+      "originalUrl": "https://kenney.nl/assets/furniture-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "2ef5cc634bb1060a1a5774cfcaf6e11c235791c99d6b59da5fdbc09edfb95a68",
+      "gitBlobSha1": "4827425a7448104a65b9109f8c2fffa53af8c72c",
+      "registeredAssetId": "112260564128364"
+    },
+    {
+      "name": "wood-support.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/terrain/wood-support.glb",
+      "originalUrl": "https://kenney.nl/assets/mini-dungeon",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "9735088f960a9920cf139e25e6b07d5ddbae356ae85886a89ed40bd71a0e74dc",
+      "gitBlobSha1": "04ea1715b727af2f29d2ae8e55aeda8d6c24d62c",
+      "registeredAssetId": "108259457061538"
+    }
+  ],
+  "modification": "Tannery candidate composed of timber house, four open vat candidates, drying rack with four hanging recoloured textile-derived hide candidates, scraping bench and braces. Original source mesh buffers and UVs retained; no actual hide original, soaking liquid, historical finish, native visual or collision QA claimed. Deformed the existing CC0 rounded rug position geometry into a narrowed, lobed leather-hide silhouette for four hanging pieces and the bench piece. Derived four inset amber tanning bath surfaces from the same original rug, below the vat rim (1.5824 studs), preserving original BIN bytes, UVs and indices; no real animal hide source or liquid simulation claimed. Native visual, normals/material and collision QA pending.",
+  "sha256": "2c11208990bc38705443720263a90a0be8b5c73623e12eae758aace778d183cb",
+  "bytes": 519332,
+  "triangles": 9698,
+  "sceneTriangles": 9698,
+  "sourceRevision": "187b8b73b87414c95be280cd76c8794597665ee3",
+  "productionVerified": false,
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
+  "validation": "SOURCE_SHA256_GIT_BLOB_REGISTERED_RIGHTS_GLB_SCENE_TRIANGLES_AND_VAT_SURFACE_HEIGHT_VERIFIED",
+  "previousAssemblySha256": "49b19a9f4210dd3b95c367e7c7b069ecba2adf8d19d1b17be2aec96fcafdeedb",
+  "tanneryGeometry": {
+    "derivedHideInstances": 5,
+    "vatSurfaceInstances": 4,
+    "vatRimY": 1.5824,
+    "liquidY": 1.38,
+    "liquidRadiusMax": 1.16,
+    "originalBinSha256": "df6669d4b1e276c133aa412fe6ffe345dcd445d673e974a75c77a844938d5f21"
+  },
+  "registrationReview": "Binary and original source rights revalidated; registration only. Native visual, collision, PBR and mobile QA remain unverified; no production quality approval."
+}
