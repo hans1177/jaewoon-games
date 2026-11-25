@@ -18,7 +18,7 @@
       "originalUrl": "https://github.com/hans1177/jaewoon-games/blob/616dee6b48ab2ab64618c204e9f2afb33f90ad97/roblox-games/mare-essentia/assets/inbox-hold/london-wooden-crane-derived.glb.license.json"
     },
     {
-      "path": "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb",
+      "path": "roblox-games/mare-essentia/assets/inbox/Town/london-building-scaffolding-source.glb",
       "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
       "gitBlobSha1": "85d509fa807f97abcceea7cd9b0b8b6ecb3c60d6",
       "sha256": "d5d466e025c6f847ec75d455a57d647daa599c7f4d47481d78fe6ca1f2413d00",
@@ -26,8 +26,10 @@
       "source": "https://github.com/hans1177/jaewoon-games/blob/97ba748a3e897383dfe8b979b709b975aac4ce5f/roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb.license.json",
       "embeddedBinaryOffset": 104056,
       "embeddedBinaryBytes": 181320,
-      "repositoryPath": "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb",
-      "originalUrl": "https://kaylousberg.itch.io/kaykit-medieval-hexagon"
+      "repositoryPath": "roblox-games/mare-essentia/assets/inbox/Town/london-building-scaffolding-source.glb",
+      "originalUrl": "https://kaylousberg.itch.io/kaykit-medieval-hexagon",
+      "originalPreservedFrom": "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb",
+      "registrationPendingTarget": "roblox-games/mare-essentia/assets/town/london-building-scaffolding-source.glb"
     },
     {
       "path": "roblox-games/mare-essentia/assets/inbox/Town/london-wheelbarrow-source.glb",
@@ -152,7 +154,7 @@
       "originalUrl": "https://polyhaven.com/a/dry_mud_field_001"
     }
   ],
-  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified. Replaced six repeated decorative scaffold dioramas with six instances of one batched original timber floor mesh; 1/2/3 level groups, continuous support posts, cross braces, deck, side/back rails, front ladder opening and ladder seats. Original diorama bytes and separate source file retained. Existing geometry/texture bytes untouched. Shifted the crane root 0.65 units inward to keep its jib within the survey boundary. No mesh, animation or texture bytes changed. Rope original moved without byte changes into canonical Town inbox; registration proof and final path remain pending. Exact ladder and stake source blobs moved to existing Town inbox, with final registration path recorded; no kit binary changed. Brick, scroll and wheelbarrow originals moved byte-identically to existing Town inbox; the wheelbarrow remains a local repack of pinned upstream glTF, BIN and PNG. No kit binary changed.",
+  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified. Replaced six repeated decorative scaffold dioramas with six instances of one batched original timber floor mesh; 1/2/3 level groups, continuous support posts, cross braces, deck, side/back rails, front ladder opening and ladder seats. Original diorama bytes and separate source file retained. Existing geometry/texture bytes untouched. Shifted the crane root 0.65 units inward to keep its jib within the survey boundary. No mesh, animation or texture bytes changed. Rope original moved without byte changes into canonical Town inbox; registration proof and final path remain pending. Exact ladder and stake source blobs moved to existing Town inbox, with final registration path recorded; no kit binary changed. Brick, scroll and wheelbarrow originals moved byte-identically to existing Town inbox; the wheelbarrow remains a local repack of pinned upstream glTF, BIN and PNG. No kit binary changed. Exact scaffold GLB duplicate consolidated into the existing Town inbox without changing bytes; original pinned source and historical license sidecar retained; final registration path pending.",
   "triangles": 18756,
   "bytes": 870316,
   "sha256": "e1b92c7670e416f99feb032a6104d3ed26695aea8a9058766cf31d51930bfba3",
@@ -1648,7 +1650,7 @@
     "sourceRightsRegistryApproved": 2,
     "sourceRightsRegistryPending": [
       "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-crane-derived.glb",
-      "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb",
+      "roblox-games/mare-essentia/assets/inbox/Town/london-building-scaffolding-source.glb",
       "roblox-games/mare-essentia/assets/inbox/Town/london-wheelbarrow-source.glb",
       "roblox-games/mare-essentia/assets/inbox/Town/london-wooden-ladder-source.glb",
       "roblox-games/mare-essentia/assets/inbox/Town/london-wood-stake-source.glb",
