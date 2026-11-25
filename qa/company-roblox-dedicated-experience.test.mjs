@@ -1146,7 +1146,7 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = \(if MOBILE_VFX then 73 else 75\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
+  assert.match(battle,/cam\.FieldOfView = \(if opts\.cardOnly then \(if MOBILE_VFX then 73 else 75\) else \(if MOBILE_VFX then 69 else 71\)\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
@@ -1335,7 +1335,7 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
   assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
   assert.match(battle,/FX\.impact\(to, nc\.ball, style, nc\)/,'impact uses current weapon profile');
-  assert.match(battle,/FX\.splash\(to, style, nc\.ball\)/);
+  assert.match(battle,/local power = nc\.ball \* \(splashScale or 1\)\s*if MOBILE_VFX and splashScale and splashScale < 0\.8 then\s*FX\.waterColumn\(Vector3\.new\(to\.X, ORIGIN\.Y \+ 0\.35, to\.Z\), style, power\)\s*else\s*local flight = Vector3\.new\(velocity\.X, 0, velocity\.Z\)\s*FX\.splash\(to, style, power, if flight\.Magnitude > 0 then flight\.Unit else nil\)/);
   assert.match(battle,/FX\.flame\(ORIGIN \+ sunk\.pos \+ Vector3\.new\(0, 6 - k \* 8, 0\), 4\.8, sunk\.fx\)/);
   assert.match(battle,/function FX\.waterColumn\(pos, profile, power\)/);
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/);
@@ -2156,11 +2156,11 @@ test('Mare naval battle uses three approved original circular HUD images without
     assert.ok(upload.includes("'"+name+".png'"),name+':original-license');
     assert.ok(naval.includes('Menu/'+name),name+':image-binding');
   }
-  assert.match(naval,/local speedBtn = mkBtn\("가속"[\s\S]*?"Menu\/naval_speed"\)/);
+  assert.match(naval,/local speedBtn\s+do\s+local compact = MOBILE_VFX and \(battleViewport\.X < 520 or battleViewport\.X <= battleViewport\.Y\)\s+local size = if compact then 76 elseif MOBILE_VFX and battleViewport\.Y < 330 then 72\s+elseif MOBILE_VFX then 80 else 82\s+speedBtn = mkBtn\("가속", UDim2\.new\(1, -24, 1, -24\),\s*UDim2\.fromOffset\(size, size\), Vector2\.new\(1, 1\), "Menu\/naval_speed"\)\s+end/);
   assert.match(naval,/if sk\.id == "fire" then "Menu\/naval_fire" else "Menu\/naval_skill"/);
   assert.match(naval,/speedBtn\.Activated:Connect\(function\(\)/);
   assert.match(naval,/throttle = if throttle >= 1 then 0\.45 elseif throttle > 0\.4 then 0 else 1/);
-  assert.match(naval,/b\.Interactable = ready and phase == "duel"/);
+  assert.match(naval,/b\.Interactable = ready and phase == "duel" and not opts\.cardOnly and not opts\.card/);
   assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
   assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
 });
