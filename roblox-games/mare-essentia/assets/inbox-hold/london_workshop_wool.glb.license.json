@@ -66,14 +66,32 @@
       "registeredAssetId": "135901636584357"
     }
   ],
-  "modification": "London wool workshop candidate: timber house, freestanding wooden frame loom with reed slats and rollers, textile inspection bench, three dye vat candidates, three bale sacks and folded textile. Original mesh buffers, UVs and source transforms retained; no claim of functional loom, actual dye liquid, historical finish or native visual QA.; structural correction: four loom posts grounded, eight reed slats extended into two supporting cross rails using the exact existing registered plank mesh, folded cloth seated on bench. No new meshes/materials/UV or binary buffer changes. Native collision, yarn/loom motion and dye liquid remain unverified.",
-  "sha256": "1b94ffa5412a49207b76c4da11cf66b67eab3faef67be37ef3fbd7f927e360a0",
-  "bytes": 594628,
-  "triangles": 9088,
-  "sceneTriangles": 9088,
-  "sourceRevision": "30f7f1a48cd3a5a1f9ed338dd40661d9b36b441a",
+  "modification": "London wool workshop candidate: timber house, freestanding wooden frame loom with reed slats and rollers, textile inspection bench, three dye vat candidates, three bale sacks and folded textile. Original mesh buffers, UVs and source transforms retained; no claim of functional loom, actual dye liquid, historical finish or native visual QA.; structural correction: four loom posts grounded, eight reed slats extended into two supporting cross rails using the exact existing registered plank mesh, folded cloth seated on bench. No new meshes/materials/UV or binary buffer changes. Native collision, yarn/loom motion and dye liquid remain unverified. Added three dye surfaces derived from six existing upward-facing bucket base triangles per vat, scaled to fit below rim, new nonmetallic dye materials. Added source GLB reed demonstration cycle, ten existing reed/support nodes move together with five translation keys each; no claim of native Roblox animation playback, working yarn, or collision. Existing binary prefix, geometry, UVs and materials preserved.",
+  "sha256": "36b5dd187f7a95df0bc267e7616958359bc05535de073524d66ce633874a4e14",
+  "bytes": 599160,
+  "triangles": 9106,
+  "sceneTriangles": 9106,
+  "sourceRevision": "a1ef601d643b42c57a22374a37fb8e1b3e038cb3",
   "productionVerified": false,
   "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_LOOM_DETAIL_QA",
-  "validation": "EXACT_PARENT_SHA256_REGISTERED_CC0_RIGHTS_GLB_BINARY_PRESERVED_STATIC_CONTACT_BOUNDS_VERIFIED",
-  "previousDerivedSha256": "b2465cce804cf40cce1d60d73cac19ad5a816a754dd820420ec6755486eaeb8c"
+  "validation": "SOURCE_SHA256_ORIGINAL_BINARY_PREFIX_AND_BUCKET_FACE_REUSE_VERIFIED",
+  "previousDerivedSha256": "1b94ffa5412a49207b76c4da11cf66b67eab3faef67be37ef3fbd7f927e360a0",
+  "dyeSurfaceGeometry": {
+    "source": "bucket.glb",
+    "trianglesPerVat": 6,
+    "vats": 3,
+    "fillHeight": 0.5928,
+    "sourceRadius": 0.06,
+    "scaleXZ": 10.65,
+    "originalBinPrefixSha256": "27d686551ba3b29c7d4c8f81bebe0437b4a565e4684729c7ab7efe3c3793efc2",
+    "nativeVisualVerified": false
+  },
+  "loomSourceAnimation": {
+    "clip": "Loom reed demonstration cycle",
+    "durationSeconds": 1.6,
+    "channels": 10,
+    "keysPerChannel": 5,
+    "travel": 0.18,
+    "nativePlaybackVerified": false
+  }
 }
