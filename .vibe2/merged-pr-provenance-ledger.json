@@ -356601,11 +356601,134 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_e486e234f3daad1631abc071",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15207",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7d7b17a962ccc6caaa6abcbf0d23d0f31c740411",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15207,
+        "baseBranch": "main",
+        "headBranch": "mare-london-diplomacy-source",
+        "baseSha": "7d7b17a962ccc6caaa6abcbf0d23d0f31c740411",
+        "headSha": "b049968039b48fe550ff90074ec7fb62ad690efc",
+        "mergeCommitSha": "2d2ae4ae0d911ba4eca1c5a51158e6fbaa9029d4",
+        "mergedAt": "2026-11-25T08:28:06Z",
+        "authorLogin": "hans1177",
+        "titleHash": "24dfe4ffdf09c8c5e0b707d9c8228c9e80c8b54bb6150210a0035f66d2497cef",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-diplomacy-source",
+        "candidateSha": "b049968039b48fe550ff90074ec7fb62ad690efc"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 1267,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_1.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_2.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_3.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_3.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_3.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15207",
+        "merge-commit:2d2ae4ae0d911ba4eca1c5a51158e6fbaa9029d4",
+        "base-main:7d7b17a962ccc6caaa6abcbf0d23d0f31c740411"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2819
+    "total": 2820
   }
 }
