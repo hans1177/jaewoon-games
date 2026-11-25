@@ -1927,7 +1927,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
 }
 
 let registry = {schema: 1, universeId: UNIVERSE_ID, license: 'CC0-1.0', assets: {}};
-try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch {}
+try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch (error) {
+  if (error.code !== 'ENOENT') throw error; // 읽기 오류로 기존 번호를 잃거나 중복 등록하지 않는다.
+}
+const registryBefore = JSON.stringify(registry);
 for (const [name, row] of Object.entries(registry.assets)) {
   if (blockedPaths.has(row.source) || blockedIds.has(String(row.assetId))) delete registry.assets[name];
 }
@@ -2264,7 +2267,6 @@ if (failures.length && previousTypeAssets.size) {
   for (const [id, previous] of previousTypeAssets) registry.assets[id] = previous;
   console.log('MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED:' + previousTypeAssets.size);
 }
-if (failures.length === 0) registry.updatedAt = new Date().toISOString();
 registry.license = Object.values(registry.assets).every(a => a.license === 'CC0-1.0') ? 'CC0-1.0' : 'SEE_INDIVIDUAL_ASSET_LICENSES';
 // 권한 대기 중인 신규 건축·식생은 원격 번호를 보존하되 아직 남아 있는 inbox 원본을 가리킨다.
 // 다음 실행에서 동일 번호의 권한만 재확인하며 중복 업로드하지 않는다.
@@ -2278,7 +2280,13 @@ for (const item of plan) {
     row.source = inbox;
   } catch {} // 이미 정식 경로에 존재하는 식생의 기존 원본 경로는 그대로 유지한다.
 }
-await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
+// [장부 변경 감지] 등록 내용이 동일하면 시각만 갱신하지 않는다.
+if (JSON.stringify(registry) !== registryBefore) {
+  if (failures.length === 0) registry.updatedAt = new Date().toISOString();
+  await fs.writeFile(JSON_OUT, JSON.stringify(registry, null, 2) + '\n');
+} else {
+  console.log('MARE_ASSET_REGISTRY_UNCHANGED');
+}
 const lines = Object.entries(registry.assets).filter(([k, v]) =>
   !(k.startsWith('Terrain/veg_') || k.startsWith('Town/london_')) || v.usePermissionGranted === true
 ).sort().map(([k, v]) => `\t["${k}"] = ${v.assetId},`);

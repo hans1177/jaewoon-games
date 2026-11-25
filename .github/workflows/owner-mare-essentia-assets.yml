@@ -559,10 +559,11 @@ jobs:
             fi
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
-            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"
-            # 대용량 이미지의 base64를 명령행 인자로 넘기면 ARG_MAX를 초과한다.
-            # 기존 GitHub Contents API로 전송하되 JSON 본문을 임시 파일로 전달한다.
+            # [등록 장부 저장] 체크아웃 원본을 기준으로 재시도하며 동시 수정은 덮어쓰지 않는다.
+            sha="$(git rev-parse --verify "HEAD:$f" 2>/dev/null || true)"
+            expected_blob="$(git hash-object "$f")"
             payload="$(mktemp)"
+            read_error="$(mktemp)"
             python3 - "$f" "$sha" "$payload" <<'PYJSON'
           import base64
           import json
@@ -579,18 +580,35 @@ jobs:
               body["sha"] = current_sha
           pathlib.Path(output).write_text(json.dumps(body), encoding="utf-8")
           PYJSON
-            # [저장 검증] 응답 본문 오류와 실제 저장 실패를 구분한다. 동일 blob이 확인된 경우만 성공 처리한다.
-            expected_blob="$(git hash-object "$f")"
-            if ! gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" > /dev/null; then
-              echo "MARE_ASSET_WRITE_RESPONSE_ERROR $f" >&2
-            fi
-            rm -f "$payload"
+            # 최대 4회 저장, 매 시도 전 및 마지막에 원격 blob 확인. 502/응답 오류 뒤 성공한 저장은 반복하지 않는다.
             saved_blob=""
-            for attempt in 1 2 3; do
-              saved_blob="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"
+            for attempt in 1 2 3 4 5; do
+              if ! saved_blob="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>"$read_error")"; then
+                saved_blob=""
+                if [[ -n "$sha" ]] || ! grep -Fq 'HTTP 404' "$read_error"; then
+                  echo "MARE_ASSET_READ_RETRY $attempt $f" >&2
+                  if [[ "$attempt" -lt 5 ]]; then sleep "$((attempt * 3))"; fi
+                  continue
+                fi
+              elif [[ ! "$saved_blob" =~ ^[0-9a-f]{40}$ ]]; then
+                saved_blob=""
+                echo "MARE_ASSET_READ_INVALID_SHA $attempt $f" >&2
+                if [[ "$attempt" -lt 5 ]]; then sleep "$((attempt * 3))"; fi
+                continue
+              fi
               [[ "$saved_blob" == "$expected_blob" ]] && break
-              sleep "$attempt"
+              if [[ "$saved_blob" != "$sha" ]]; then
+                rm -f "$payload" "$read_error"
+                echo "::error::MARE_ASSET_CONCURRENT_WRITE:$f" >&2
+                exit 1
+              fi
+              [[ "$attempt" -lt 5 ]] || break
+              if ! gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" > /dev/null; then
+                echo "MARE_ASSET_WRITE_RESPONSE_ERROR $attempt $f" >&2
+                sleep "$((attempt * 3))"
+              fi
             done
+            rm -f "$payload" "$read_error"
             if [[ "$saved_blob" != "$expected_blob" ]]; then
               echo "::error::MARE_ASSET_WRITE_NOT_VERIFIED:$f" >&2
               exit 1
