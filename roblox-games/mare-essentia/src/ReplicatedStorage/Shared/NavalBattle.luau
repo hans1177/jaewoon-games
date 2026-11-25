@@ -1242,7 +1242,7 @@ function NavalBattle.play(opts)
 	tactic.AnchorPoint = Vector2.zero
 	tactic.Position = UDim2.fromOffset(16, 126)
 	-- [조타 안내] 전장 중앙을 비우고 한 줄만 사용한다.
-    tactic.Size = UDim2.fromOffset(math.min(168, math.floor(battleViewport.X * 0.42)), 26)
+    tactic.Size = UDim2.fromOffset(math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168), 26)
     tactic.TextSize = if battleViewport.X < 480 then 12 else 14
     tactic.Font = Enum.Font.GothamBold
     tactic.TextScaled = false
@@ -1317,11 +1317,11 @@ function NavalBattle.play(opts)
 	local flair, combo, dodged = 0, 0, 0
 	-- [포격 연타 안내] 중앙 전투 숫자 배너와 별개로 실제 연속 명중만 좌측에 크게 표시한다.
 	local navalHitStreak, navalHitAt, navalHitCueSerial = 0, -100, 0
-	local navalHitCue = label(gui, "", if battleViewport.X < 480 then 25 else 32, Color3.fromRGB(255, 223, 133), true)
+	local navalHitCue = label(gui, "", if battleViewport.X < 480 then 16 else 32, Color3.fromRGB(255, 223, 133), true)
 	navalHitCue.Name = "NavalHitStreak"
 	navalHitCue.AnchorPoint = Vector2.zero
-	navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.Y < 420 then 199 else 204)
-	navalHitCue.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(182, battleViewport.X - 32) else math.min(242, math.floor(battleViewport.X * 0.32)), if battleViewport.X < 480 then 46 else 54)
+	navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)
+	navalHitCue.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08))) else math.min(242, math.floor(battleViewport.X * 0.32)), if battleViewport.X < 480 then 46 else 54)
 	navalHitCue.Font = Enum.Font.GothamBlack
 	navalHitCue.TextScaled = false
 	navalHitCue.TextWrapped = false
@@ -1382,9 +1382,10 @@ function NavalBattle.play(opts)
 			-- [카드 지원 겹침 방지] 실제 효과/칩은 모두 유지하고 보이는 높이만 남은 조작 공간에 맞춘다.
 			local panel = Instance.new("ScrollingFrame")
 			panel.AnchorPoint = Vector2.new(1, 0)
-			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 720 then 173 else 122)
+			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 173 else 122)
 			local entriesHeight = 24 + #entries * 30
-			local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 520)
+			-- [세로 폰] 104px 포 사격 버튼의 상단보다 10px 위에서 스크롤 영역을 끝낸다.
+			local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 482)
 				elseif battleViewport.X < 720 then math.max(54, battleViewport.Y - 405)
 				else math.max(54, battleViewport.Y - 330)
 			panel.Size = UDim2.fromOffset(if battleViewport.X < 480 then 166 else 190,
