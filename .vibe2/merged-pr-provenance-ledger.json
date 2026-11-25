@@ -355441,11 +355441,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_7635fa2f3d969b411da1426c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15182",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ca809bc92556b6d9b1db4d00c5ebe978c081e5ac",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15182,
+        "baseBranch": "main",
+        "headBranch": "assets/london-source-conflict-repair",
+        "baseSha": "ca809bc92556b6d9b1db4d00c5ebe978c081e5ac",
+        "headSha": "1040c0f9ab2bf010e748faa175ddb450711f7f36",
+        "mergeCommitSha": "6f57223643778b4eed1fbc89adffe3da99f01da7",
+        "mergedAt": "2026-11-25T04:36:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "43366f495558b65f1be5a1edaab133df98220138e96e6611bfc26e39088d927d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/london-source-conflict-repair",
+        "candidateSha": "1040c0f9ab2bf010e748faa175ddb450711f7f36"
+      },
+      "changeStats": {
+        "changedFileCount": 9,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 85,
+        "deletedLineCount": 8,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-awning-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-awning-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-finger-post-sign-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-finger-post-sign-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-awning-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-finger-post-sign-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15182",
+        "merge-commit:6f57223643778b4eed1fbc89adffe3da99f01da7",
+        "base-main:ca809bc92556b6d9b1db4d00c5ebe978c081e5ac"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2810
+    "total": 2811
   }
 }
