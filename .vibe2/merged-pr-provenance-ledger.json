@@ -356461,11 +356461,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a656385557d8f3f17e2e8695",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15193",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "63c5af5f66432775f26491a2161f34af0a78426e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15193,
+        "baseBranch": "main",
+        "headBranch": "assets/london-bridge-full",
+        "baseSha": "63c5af5f66432775f26491a2161f34af0a78426e",
+        "headSha": "e183252d097496d871c2aa666819c65c2f71b965",
+        "mergeCommitSha": "6de7be0eba1b8ab6ca474295e0012e1c6083d7b3",
+        "mergedAt": "2026-11-25T08:06:43Z",
+        "authorLogin": "hans1177",
+        "titleHash": "622909a4c5dd974ea15b762fe2efe7e76d78af0853a51338a436d7679e6f34c9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/london-bridge-full",
+        "candidateSha": "e183252d097496d871c2aa666819c65c2f71b965"
+      },
+      "changeStats": {
+        "changedFileCount": 15,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 984,
+        "deletedLineCount": 23,
+        "changedFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/devloop-studio.yml",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_landmark_full.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_landmark_full.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_palace.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_palace.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_scholar_3.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_scholar_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          ".github/workflows/devloop-studio.yml",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_landmark_full.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_palace.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_scholar_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15193",
+        "merge-commit:6de7be0eba1b8ab6ca474295e0012e1c6083d7b3",
+        "base-main:63c5af5f66432775f26491a2161f34af0a78426e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2818
+    "total": 2819
   }
 }
