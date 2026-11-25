@@ -307,8 +307,13 @@ def inspect_held_animal_glb(data):
         raise ValueError("GLB_EXTERNAL_OR_INVALID_BUFFER")
 
     def accessor(index, allowed_types, shape):
+        if type(index) is not int or not 0 <= index < len(model["accessors"]):
+            raise ValueError("GLB_ACCESSOR_INDEX")
         a = model["accessors"][index]
-        v = model["bufferViews"][a["bufferView"]]
+        view_index = a["bufferView"]
+        if type(view_index) is not int or not 0 <= view_index < len(model["bufferViews"]):
+            raise ValueError("GLB_BUFFER_VIEW_INDEX")
+        v = model["bufferViews"][view_index]
         typ = a["componentType"]
         count = a["count"]
         if (a.get("sparse") is not None or typ not in allowed_types or a["type"] != shape
@@ -328,7 +333,7 @@ def inspect_held_animal_glb(data):
         return count, (struct.unpack_from("<" + fmt*(3 if shape == "VEC3" else 1),
                                            binary, start+offset+i*stride) for i in range(count))
 
-    triangles = 0
+    triangles = inspected_vertices = 0
     minimum = [math.inf]*3
     maximum = [-math.inf]*3
     for mesh in model["meshes"]:
@@ -336,6 +341,9 @@ def inspect_held_animal_glb(data):
             if primitive.get("mode", 4) != 4:
                 raise ValueError("GLB_NON_TRIANGLE")
             vertices, positions = accessor(primitive["attributes"]["POSITION"], {5126}, "VEC3")
+            inspected_vertices += vertices
+            if inspected_vertices > 1_000_000:
+                raise ValueError("GLB_GEOMETRY_INSPECTION_LIMIT")
             for pos in positions:
                 if not all(math.isfinite(x) for x in pos):
                     raise ValueError("GLB_NONFINITE_POSITION")
@@ -351,6 +359,8 @@ def inspect_held_animal_glb(data):
             if count % 3:
                 raise ValueError("GLB_TRIANGLE_LAYOUT")
             triangles += count//3
+            if triangles > 1_000_000:
+                raise ValueError("GLB_GEOMETRY_INSPECTION_LIMIT")
     if triangles <= 0 or any(not math.isfinite(x) for x in minimum+maximum) or not any(b>a for a,b in zip(minimum,maximum)):
         raise ValueError("GLB_EMPTY_GEOMETRY")
     skins = model.get("skins", [])
