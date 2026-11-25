@@ -1215,7 +1215,7 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
   assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\)\), 26\)/);
+  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\), if battleViewport\.X < 480 then math\.max\(80, battleViewport\.X - 206\) else 168\), 26\)/);
   assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
   assert.match(src,/l\.TextStrokeTransparency = 1/);
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
@@ -1260,33 +1260,53 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'if battleViewport.X < 480 then 56 else 96',
     'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
     'f.Visible = star or battleViewport.X >= 720',
-    'comboLabel.Visible = not opts.cardOnly',
+    'navalHitCue.Visible = false',
+    'navalHitCue.Name = "NavalHitStreak"',
+    'navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)',
+    'math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08)))',
+    'navalHitCueScale.Scale = 1.08',
     'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
-    'rangeLabel.Visible = battleViewport.X >= 720',
+    'tactic.Position = UDim2.fromOffset(16, 126)',
+    'math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168)',
+    'panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 173 else 122)',
+    'local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 482)',
+    'sk.x = -72',
+    'sk.y = if i == 1 then -300 else -184',
+    'if compact then 104 elseif MOBILE_VFX',
+    'if compact then 86 elseif MOBILE_VFX',
+    'local size = if compact then 76 elseif MOBILE_VFX',
+    'stickBase.Position = UDim2.new(0, 28, 1, -28)',
+    'stickBase.Size = UDim2.fromOffset(170, 170)',
     'distLabel.Visible = not opts.cardOnly and battleViewport.X >= 720',
     'skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)',
     'local panel = Instance.new("ScrollingFrame")',
     'panel.CanvasSize = UDim2.fromOffset(0, entriesHeight)',
     'panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)',
     'math.min(entriesHeight, availableHeight)',
-    'reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720',
-    'reloadText.Text = if not inRange then "포 — 사거리 밖"',
+    'reloadBack.Visible = not opts.cardOnly',
+    'local compactReload = battleViewport.X < 720 or battleViewport.Y < 420',
+    'reloadBack.Parent = if compactReload then skillBtn.fire else gui',
+    'reloadBack.Position = if compactReload then UDim2.new(0.5, 0, 0, 12)',
+    'reloadBack.Size = if compactReload then UDim2.new(1, -42, 0, 19)',
+    'reloadText.Text = if not inRange then "사거리 밖"',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
-  // [휴대전화 세로] 320~430폭에서 왼쪽 스틱, 2개 기술, 가속·건너뛰기가 서로 터치하지 않는다.
-  for(const [w,h] of [[320,640],[360,640],[390,844],[430,932]]){
+  // [휴대전화 세로] 실제 104/86/76px 버튼, 전술판·카드 지원판·연타 확대 좌표를 검증한다.
+  for(const w of [320,360,390,430]) for(const h of [520,560,640,844,932]) for(const entries of [1,4,12]){
     const stick={x:28,y:h-198,w:170,h:170};
-    const speed={x:w-120,y:h-120,w:96,h:96};
-    const skill1={x:w-107,y:h-285,w:70,h:70};
-    const skill2={x:w-107,y:h-205,w:70,h:70};
+    const speed={x:w-100,y:h-100,w:76,h:76};
+    const fire={x:w-124,y:h-352,w:104,h:104};
+    const special={x:w-115,y:h-227,w:86,h:86};
     const skip={x:12,y:181,w:56,h:36};
-    const tactic={x:w*.17,y:119,w:w*.66,h:54};
+    const tactic={x:16,y:126,w:Math.min(168,Math.floor(w*0.42),Math.max(80,w-206)),h:26};
     const fleetLeft={x:16,y:66,w:96,h:46},fleetRight={x:w-112,y:66,w:96,h:46};
     const wind={x:(w-Math.max(80,w-240))/2,y:69,w:Math.max(80,w-240),h:20};
-    const reload={x:(w-Math.min(260,w-40))/2,y:h-315,w:Math.min(260,w-40),h:20};
-    const panelHeight=Math.min(24+4*30,Math.max(34,h-520));
-    const cardPanel={x:w-182,y:173,w:166,h:panelHeight};
-    for(const [left,right] of [[stick,speed],[stick,skill1],[stick,skill2],[speed,skill1],[speed,skill2],[skill1,skill2],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,skill1],[reload,skill2],[reload,cardPanel]]){
+    const reload={x:fire.x+21,y:fire.y+12,w:62,h:19};
+    const panel={x:w-182,y:120,w:166,h:Math.min(24+entries*30,Math.max(34,h-482))};
+    const cue={x:16,y:225,w:Math.min(182,Math.max(80,Math.floor((w-206)/1.08)))*1.08,h:46*1.08};
+    assert.ok(reload.x>=fire.x&&reload.x+reload.w<=fire.x+fire.w&&reload.y>=fire.y&&reload.y+reload.h<=fire.y+fire.h,'reload gauge must stay inside fire button');
+    assert.ok(fire.y-(panel.y+panel.h)>=10,'scrolling panel must leave at least 10px before fire button');
+    for(const [left,right] of [[stick,speed],[stick,fire],[stick,special],[speed,fire],[speed,special],[fire,special],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,special],[reload,panel],[panel,fire],[panel,special],[panel,speed],[panel,stick],[panel,tactic],[panel,skip],[cue,skip],[cue,panel],[cue,fire],[cue,stick]]){
       assert.equal(intersects(left,right),false,'phone HUD overlap at '+w+'x'+h+': '+JSON.stringify([left,right]));
     }
   }
@@ -1295,11 +1315,19 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   const discovered=game.slice(seenStart,seenEnd);
   assert.ok(seenStart>0 && seenEnd>seenStart);
   assert.match(discovered,/H\.seenCards\[c\.id\] = true/,'real codex discovery bookkeeping remains');
-  assert.match(discovered,/local firstSnapshot = H\.seenCards == nil/,'reconnect preserves existing found-card baseline');
+  assert.match(discovered,/local firstKnowledgeSnapshot = H\.seenCards == nil/);
+  assert.match(discovered,/local firstCombatSnapshot = H\.seenCombatCards == nil/);
+  assert.match(discovered,/if not firstKnowledgeSnapshot then\s*table\.insert\(acquired, \{ card = c, extra = 0 \}\)/);
+  assert.match(discovered,/if not firstCombatSnapshot then[\s\S]*?amount > \(oldOwned\[id\] or 0\)\s*and not gainedIds\[id\]/);
+  assert.match(discovered,/H\.seenCombatCards = table\.clone\(owned\)/);
   assert.match(discovered,/H\.showCardGain\(found\.card, found\.extra\)/,'only genuine new discovery starts UI reveal');
   assert.match(discovered,/H\.cardGainQueue = H\.cardGainQueue or \{\}/,'multiple simultaneous gains are queued without modal scenes');
-  assert.match(discovered,/for _, gainedCard in acquired do/,'each genuinely new card retains its own registered grade');
-  assert.match(discovered,/table.insert\(H\.cardGainQueue, \{ card = gainedCard, extra = 0 \}\)/,'multiple gains use the existing nonblocking reveal queue');
+  assert.match(discovered,/rarity = if def\.hero then "Legendary" else "Common"/);
+  assert.match(discovered,/extra = math\.max\(0, amount - oldCount - 1\)/);
+  assert.match(discovered,/for _, entry in acquired do\s*table\.insert\(H\.cardGainQueue, entry\)/);
+  assert.match(discovered,/if H\.cardGainPlaying then return end/);
+  assert.match(discovered,/while player\.Parent and \(newGameMode or inField or sceneHold or H\.sceneBusy/);
+  assert.match(discovered,/local found = table\.remove\(H\.cardGainQueue, 1\)/);
   assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
   assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
   assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
