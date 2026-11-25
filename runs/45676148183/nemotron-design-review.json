@@ -1,0 +1,136 @@
+{
+  "version": 3,
+  "provider": "MULTI_FREE_VISUAL",
+  "gameId": "mare-essentia",
+  "sourceRevision": "40efc27976584d1e32a8f87a2b1b1b01e9ec6f3b",
+  "status": "REVIEWED_NO_VERIFIED_EDIT",
+  "selectedRole": "NPC",
+  "usageWindow": {
+    "day": "2026-11-25",
+    "calls": {
+      "NVIDIA": 8,
+      "GEMINI": 5,
+      "OPENROUTER": 10
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-25",
+      "GEMINI": "2026-11-25",
+      "OPENROUTER": "2026-11-25"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-25T04:20:31.778Z",
+      "GEMINI": "2026-11-25T08:50:27.658Z",
+      "OPENROUTER": "2026-11-25T04:19:01.042Z"
+    }
+  },
+  "cooldowns": {
+    "NVIDIA_VL": "2026-11-25T19:14:38.492Z",
+    "OPENROUTER_NEMOTRON": "2026-11-25T19:14:50.631Z",
+    "GEMINI_FLASH": "2026-11-25T18:45:25.128Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 8,
+      "remainingLocal": 4,
+      "effectiveRemaining": 4,
+      "regularWorkRemaining": 1,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.49,
+      "estimatedHoursToLocalCap": 8.2,
+      "nextLocalWindowAt": "2026-11-26T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 5,
+      "remainingLocal": 7,
+      "effectiveRemaining": 7,
+      "regularWorkRemaining": 4,
+      "emergencyReserveRemaining": 3,
+      "estimatedCallsPerHour": 0.4,
+      "estimatedHoursToLocalCap": 17.5,
+      "nextLocalWindowAt": "2026-11-26T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 10,
+      "remainingLocal": 20,
+      "effectiveRemaining": 20,
+      "regularWorkRemaining": 14,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 0.62,
+      "estimatedHoursToLocalCap": 32.3,
+      "nextLocalWindowAt": "2026-11-26T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "REVIEW_SCHEMA_INVALID"
+    },
+    {
+      "id": "OPENROUTER_NEMOTRON",
+      "status": "OK",
+      "provider": "OPENROUTER",
+      "model": "nvidia/nemotron-3.5-super-vl:free"
+    },
+    {
+      "id": "OPENROUTER_NEMOTRON",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "Expected_____or_____after_property_value_in_JSON_at_position_2973__line_1_column_2974_"
+    },
+    {
+      "id": "GEMINI_FLASH",
+      "status": "HTTP_503",
+      "provider": "GEMINI",
+      "model": "gemini-3.8-flash"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_npc_ally_mob-0.jpg",
+      "sha256": "4bb38a939088b34595afc118aa5179ca20cc750e226d374bf129171ed1ae4753"
+    },
+    {
+      "name": "harbor_npc_face_front-0.jpg",
+      "sha256": "4a922a0580b7dd88af714d64e63a27a02e17d693871e693a0e637c611b5cf7f2"
+    },
+    {
+      "name": "harbor_npc_sparring_01-0.jpg",
+      "sha256": "eb5600722920b0dfa66702d8e2da6f8fa979f6f775096afeb9e213d64f6b9fb1"
+    },
+    {
+      "name": "harbor_npc_sparring_02-0.jpg",
+      "sha256": "18b88488738eaf17ef8b06b9799f2d21cba0e1324f379d995471697f45262a9b"
+    }
+  ],
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
