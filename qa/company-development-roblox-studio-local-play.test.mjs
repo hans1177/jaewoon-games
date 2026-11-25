@@ -3766,7 +3766,10 @@ test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures
   assert.ok(workflow.includes('gh run cancel'));
   assert.equal(workflow.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(workflow.includes('group: studio-autoqa-dispatch-mare-essentia'));
-  assert.ok(workflow.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.ok(workflow.includes('STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope'));
+  assert.ok(workflow.includes('STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED'));
+  assert.ok(workflow.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  assert.ok(workflow.includes('SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
   assert.ok(workflow.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
   assert.doesNotMatch(workflow,/scripts\+=\(/);
   const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
@@ -3827,7 +3830,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,241);
+  assert.equal(steps.length,1000);
   assert.equal(steps.filter(step=>step.code?.includes('NPC_ROUTE_AUDIT_PASS checked=')).length,1);
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
@@ -3839,9 +3842,9 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.match(slowIntro[0].code,/stable>=3/);
   assert.doesNotMatch(slowIntro[0].code,/for attempt=1,120 do/);
   assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
-  assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
-  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,10);
-  assert.equal(steps.filter(step=>step.type==='capture').length,62);
+  assert.deepEqual(steps.filter(step=>step.timeoutMs!==undefined).map(step=>step.timeoutMs).sort((a,b)=>a-b),[65000,85000,90000]);
+  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,12);
+  assert.equal(steps.filter(step=>step.type==='capture').length,70);
   // [장면 생명주기] 카드판 스킵은 실제 입력으로 종료하고 전투 잠금이 해제된 뒤 항해/지상맵을 실행한다.
   const cardExitIndex=steps.findIndex(step=>step.label==='card_practice_exit');
   assert.ok(cardExitIndex>steps.findIndex(step=>step.type==='capture'&&step.name==='cb2'));
@@ -3954,7 +3957,7 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
 // [실제 무기별 평타·스킬] 데이터, 공용 원본 R15 클립, 기존 동료 자동스킬 및 공식 Studio 입력을 함께 확인한다.
 // [퀘스트 등급·병종 회귀] 원래 목표/보상은 유지하고 1~5단의 UI·현장 조합을 구분한다.
 // [지역 탐험 40단계] 실존 Sites 카드 연결, 항구별 자동완료, 이동 안내를 검증한다.
-test('Mare overseas exploration quests cover eight regions and forty real site card goals',()=>{
+test('Mare exploration quests cover ten routes and fifty real site card goals',()=>{
   const base='roblox-games/mare-essentia/src/';
   const quests=fs.readFileSync(base+'ReplicatedStorage/Shared/Quests.luau','utf8');
   const sites=fs.readFileSync(base+'ReplicatedStorage/Shared/Sites.luau','utf8');
@@ -3967,8 +3970,13 @@ test('Mare overseas exploration quests cover eight regions and forty real site c
   assert.ok(begin>=0 && end>begin,'regional quests must use the canonical quest pipeline');
   const block=quests.slice(begin,end);
   const items=[...block.matchAll(/^\s*\{ "[^"]+", "([^"]+)", "([^"]+)", "([^"]+)", "[^"]+", "[^"]+", "[^"]+" \},$/gm)];
-  assert.equal(items.length,40,'eight overseas regions must have five field quests each');
-  for(const region of ['red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific']){
+  assert.equal(items.length,50,'ten routes must have five field quests each');
+  const regions=['north_sea','baltic','red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific'];
+  const groups=[...block.matchAll(/^\s*\{ "([a-z_]+)", "[^"]+", \{\s*\n([\s\S]*?)^\s*\} \},$/gm)];
+  assert.equal(groups.length,regions.length);
+  assert.deepEqual(groups.map(group=>group[1]).sort(),[...regions].sort());
+  for(const group of groups)assert.equal([...group[2].matchAll(/^\s*\{ "[^"]+", "[^"]+", "[^"]+", "[^"]+", "[^"]+", "[^"]+", "[^"]+" \},$/gm)].length,5,'five stages per route: '+group[1]);
+  for(const region of ['north_sea','baltic','red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific']){
     assert.ok(block.includes('{ "'+region+'", '),'missing region: '+region);
   }
   const seen=new Set();
@@ -3984,7 +3992,7 @@ test('Mare overseas exploration quests cover eight regions and forty real site c
   assert.ok(block.includes('after = prev')&&block.includes('difficulty = stage')&&block.includes('kind = "discover_card"'));
   assert.ok(service.includes('if quest.exploreSite and quest.portId ~= state.portId then return false end'));
   assert.ok(view.includes('fieldQuest = fieldQuest')&&view.includes('view.quests.fieldRoutes = {}'));
-  assert.ok(client.includes('현장 의뢰: ')&&client.includes('세계 현장 탐험 · 8개 권역'));
+  assert.ok(client.includes('현장 의뢰: ')&&client.includes('세계 탐험 · %d대 항로')&&client.includes('view.quests.routeCount or 10')&&view.includes('for _ in routeIds do view.quests.routeCount += 1 end'));
 });
 
 test('Mare quests and field encounters expose five meaningful difficulty grades',()=>{
@@ -4389,13 +4397,18 @@ test('Mare official Studio QA records complete registered media, model loading a
   const activeSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   const active=new Map([...activeSource.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(m=>[m[1],m[2]]));
   assert.equal(active.size,Object.keys(registered).length);
-  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt']);
+  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt','Materials']);
+  assert.ok(model.includes('kind ~= "Materials"'),'material images must not enter model loading');
+  assert.ok(qa.includes('string.find(key, "Materials/", 1, true)'));
+  assert.ok(qa.includes('string.find(it.key, ".Materials/", 1, true)'));
+  assert.ok(script.includes('Goods|Menu|Portraits|CardArt|Materials'),'client media audit must include registered materials');
   const originals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
   const cardKeys=Object.keys(registered).filter(key=>key.startsWith('CardArt/'));
   assert.ok(cardKeys.length>=17,'Mare approved discovery/event illustrations must be registered');
   for(const [key,row] of Object.entries(registered)){
     const kind=key.split('/')[0];
     assert.equal(row.assetType,imageKinds.has(kind)?'Image':'Model','wrong Mare asset category: '+key);
+    if(kind==='Materials')assert.equal(row.usePermissionGranted,true,'material image usage permission missing: '+key);
     if(kind==='CardArt'){
       assert.equal(row.usePermissionGranted,true,'CardArt usage permission missing: '+key);
       const actualSha=crypto.createHash('sha256').update(fs.readFileSync(row.source)).digest('hex');
