@@ -48,12 +48,24 @@
   "sha256": "24a2a49df771465c26a11507e8d80e580499c299663b87b5347749b00ce3d54a",
   "bytes": 424588,
   "triangles": 5790,
-  "validation": "SOURCE_AND_GLB_SHA256_TRIS_VERIFIED; STUDIO_VISUAL_UNVERIFIED",
+  "validation": "GLB_SCENE_TRIANGLES_AND_SOURCE_BLOB_VERIFIED__SOURCE_VISUAL_CONTENT_REVIEWED__STUDIO_VISUAL_AND_COLLISION_PENDING",
   "productionVerified": false,
-  "registration": "PENDING_CANONICAL_ROBLOX_UPLOAD",
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
   "sourcePage": "https://quaternius.com/packs/medievalvillage.html",
   "sourceGitBlobSha1": "f50a5639878dedb18701f885b200a743877a3927",
   "sourceSizeBytes": 424588,
   "sourceSha256": "24a2a49df771465c26a11507e8d80e580499c299663b87b5347749b00ce3d54a",
-  "commercialUseAllowed": true
+  "commercialUseAllowed": true,
+  "sourceVisualContentReview": {
+    "sourceRevision": "35cf6ea698c7edb687d46140eeddd4a58fa1118c",
+    "sourceSha256": "24a2a49df771465c26a11507e8d80e580499c299663b87b5347749b00ce3d54a",
+    "method": "Exact indexed GLB scene geometry rendered from two angles; every embedded image inspected. No prohibited visual content observed. Flat-color preview does not verify Roblox material appearance or gameplay suitability.",
+    "reviewScope": "SOURCE_REGISTRATION_ONLY",
+    "nativeVisualQa": "PENDING",
+    "nativeCollisionQa": "PENDING",
+    "gameBindingApproved": false
+  },
+  "actualRobloxRuntimeVerified": false,
+  "visualQualityApproved": false,
+  "robloxPublishedVerified": false
 }
