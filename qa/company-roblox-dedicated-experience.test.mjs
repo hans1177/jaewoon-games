@@ -788,6 +788,55 @@ test('Mare animals and harbor life models retain exact CC0 source hashes without
 });
 
 
+
+// [동물 원본 자동 충원] 기존 Python 함수 자체를 실행한다. 게임·등록번호·시각 PASS는 부여하지 않는다.
+test('Mare animal archive candidates verify bounded original bytes without automatic visual approval',()=>{
+  const script=String.raw`
+import ast,io,os,re,struct,hashlib,json,zipfile,tarfile
+from pathlib import Path
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8')
+tree=ast.parse(source)
+fn=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='inspect_animal_archive')
+exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+def zip_data(entries):
+    stream=io.BytesIO()
+    with zipfile.ZipFile(stream,'w',compression=zipfile.ZIP_DEFLATED) as archive:
+        for name,body in entries:
+            archive.writestr(name,body)
+    return stream.getvalue()
+def tar_data(entries):
+    stream=io.BytesIO()
+    with tarfile.open(fileobj=stream,mode='w:gz') as archive:
+        for name,body in entries:
+            item=tarfile.TarInfo(name)
+            item.size=len(body)
+            archive.addfile(item,io.BytesIO(body))
+    return stream.getvalue()
+def rejected(fn):
+    try:
+        fn()
+    except ValueError:
+        return
+    raise AssertionError('expected rejection')
+body=b'{"asset":{"version":"2.0"}} '
+glb=b'glTF'+struct.pack('<III',2,20+len(body),len(body))+b'JSON'+body
+assert inspect_animal_archive(zip_data([('models/Goat.glb',glb),('cow.glb',glb)]),'goat.zip','goat')==[{'member':'models/Goat.glb','format':'GLB','bytes':len(glb),'sha256':hashlib.sha256(glb).hexdigest()}]
+assert inspect_animal_archive(zip_data([('cow.glb',glb)]),'goat.zip','goat')==[]
+rejected(lambda:inspect_animal_archive(zip_data([('../goat.glb',glb)]),'goat.zip','goat'))
+rejected(lambda:inspect_animal_archive(zip_data([('goat.glb',b'bad')]),'goat.zip','goat'))
+rejected(lambda:inspect_animal_archive(zip_data([('goat.glb',b'0'*5000001)]),'goat.zip','goat'))
+assert len(inspect_animal_archive(tar_data([('goat.glb',glb),('cow.glb',glb)]),'goat.tar.gz','goat'))==1
+rejected(lambda:inspect_animal_archive(tar_data([('../goat.glb',glb)]),'goat.tar.gz','goat'))
+print('MARE_ANIMAL_ARCHIVE_FIXTURES=7')
+`;
+  const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
+  assert.match(output,/MARE_ANIMAL_ARCHIVE_FIXTURES=7/);
+  const source=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  assert.match(source,/"registrationApproved": False/);
+  assert.match(source,/"visualQualityApproved": False/);
+  assert.match(source,/"actualRobloxRuntimeVerified": False/);
+});
+
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{
   const root='roblox-games/mare-essentia/assets/animals/';
   const obj=fs.readFileSync(root+'donkey-source.obj');
