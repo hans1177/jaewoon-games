@@ -1527,12 +1527,14 @@ test('Mare European card art hides unverified ratios and styles without deleting
   const approved = JSON.parse(fs.readFileSync(root+'assets/APPROVED_IMAGES.json','utf8'));
   const registered = JSON.parse(fs.readFileSync(root+'assets-registered.json','utf8'));
   const permitted = ['eu_18','eu_19','eu_20','eu_28'];
-  const exposed = [...art.matchAll(/^\\s*(eu_\\d\\d)\\s*=\\s*true,?\\s*$/gm)].map(m=>m[1]).sort();
+  const allowedBlock = art.match(/local ApprovedEuropeanArt: \{ \[string\]: boolean \} = \{([\s\S]*?)\n\}/);
+  assert.ok(allowedBlock,'explicit European review gate required');
+  const exposed = [...allowedBlock[1].matchAll(/^[ \t]*(eu_\d\d)[ \t]*=[ \t]*true,?[ \t]*(?:--[^\r\n]*)?$/gm)].map(m=>m[1]).sort();
   assert.deepEqual(exposed,permitted,'only portrait-verified European art may render');
-  assert.match(art,/not string\\.match\\(cardId, "\\^eu_%d%d\\$"\\) or ApprovedEuropeanArt\\[cardId\\]/);
-  assert.match(battle,/string\\.match\\(card\\.id, "\\^eu_%d%d\\$"\\) and not CardArt\\[card\\.id\\]/);
-  assert.match(battle,/if string\\.match\\(card\\.id, "\\^eu_%d%d\\$"\\) and not CardArt\\[card\\.id\\] then\\s*return nil/);
-  assert.match(client,/local imageId = if excludedEuropeanArt then nil else AssetIds\\["CardArt\\/" \\.\\. tostring\\(card\\.id\\)\\]/);
+  assert.match(art,/not string\.match\(cardId, "\^eu_%d%d\$"\) or ApprovedEuropeanArt\[cardId\]/);
+  assert.match(battle,/string\.match\(card\.id, "\^eu_%d%d\$"\) and not CardArt\[card\.id\]/);
+  assert.match(battle,/if string\.match\(card\.id, "\^eu_%d%d\$"\) and not CardArt\[card\.id\] then\s*return nil/);
+  assert.match(client,/local imageId = if excludedEuropeanArt then nil else AssetIds\["CardArt\/" \.\. tostring\(card\.id\)\]/);
   assert.match(client,/local artImage = if excludedEuropeanArt then "" elseif imageId/);
   for (let n=1;n<=45;n++){
     const id='eu_'+String(n).padStart(2,'0');
