@@ -1001,7 +1001,10 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/for clueIndex = 1, 2 do/);
   assert.match(field,/FieldRareTraceFound/);
   assert.match(field,/FieldEvidence/);
-  assert.match(field,/animal and AssetIds\["Animals\/" \.\. animal\[1\]\]/);
+  assert.match(field,/local template = animalShelf:FindFirstChild\(species\)\s*if AssetIds\["Animals\/" \.\. species\] and template and template:IsA\("Model"\) then\s*table.insert\(available, species\)/);
+  assert.match(field,/if #available == 0 then return end/);
+  assert.match(field,/local species = available\[wildlifeRng:NextInteger\(1, #available\)\]/);
+  assert.match(field,/local model = placeModel\(folder, "Animals", species, pos, visual.size, false, Color3.fromRGB\(table.unpack\(visual.coats\[coatIndex\]\)\)\)/);
   assert.match(field,/AssetIds\["CardArt\/" \.\. targetCard\.id\]/);
   assert.match(assets,/Animals\/elephant/);
   assert.match(assets,/Animals\/llama/);
