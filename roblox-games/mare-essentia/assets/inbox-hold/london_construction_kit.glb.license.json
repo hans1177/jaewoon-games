@@ -118,10 +118,10 @@
       "embeddedBinaryBytes": 339575
     }
   ],
-  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified. Replaced six repeated decorative scaffold dioramas with six instances of one batched original timber floor mesh; 1/2/3 level groups, continuous support posts, cross braces, deck, side/back rails, front ladder opening and ladder seats. Original diorama bytes and separate source file retained. Existing geometry/texture bytes untouched.",
+  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified. Replaced six repeated decorative scaffold dioramas with six instances of one batched original timber floor mesh; 1/2/3 level groups, continuous support posts, cross braces, deck, side/back rails, front ladder opening and ladder seats. Original diorama bytes and separate source file retained. Existing geometry/texture bytes untouched. Shifted the crane root 0.65 units inward to keep its jib within the survey boundary. No mesh, animation or texture bytes changed.",
   "triangles": 18756,
   "bytes": 870316,
-  "sha256": "a57730b33c823f53958c3a08426a65cc35b7526647b5f2180c8fe4af0d0430a8",
+  "sha256": "e1b92c7670e416f99feb032a6104d3ed26695aea8a9058766cf31d51930bfba3",
   "instances": [
     {
       "name": "scaffold_1_1",
@@ -1071,7 +1071,7 @@
   ],
   "productionVerified": false,
   "registration": "HOLD_SOURCE_CANDIDATE_ONLY",
-  "validation": "SOURCE_HASH_AND_BINARY_PREFIX_PRESERVED; INDEX_BOUNDS_NODE_REACHABILITY_POSITIVE_TRANSFORMS; MODULAR_SCAFFOLD_SOURCE_LAYOUT; NATIVE_QA_PENDING",
+  "validation": "SOURCE_LAYOUT_CROSS_GROUP_AABB_AND_360_ROTATING_SWEEP_PASS; ORIGINAL_BINARY_PRESERVED; NATIVE_QA_PENDING",
   "missing": [
     "historical/PBR finish",
     "actual collision and Roblox playback",
@@ -1588,5 +1588,25 @@
       }
     ],
     "validation": "source layout only; native collision and climbing unverified"
+  },
+  "sourcePlacementQa": {
+    "scope": "cross-group world AABB only; not native collision or intra-group clearance",
+    "staticCrossGroupOverlaps": 0,
+    "groundPenetrations": 0,
+    "rotatingAngles": 360,
+    "rotatingCrossGroupOverlaps": 0,
+    "minRotatingGroundClearance": 0.2809334371987342,
+    "minRotatingCrossGroupAabbGap": 3.5322107293653637,
+    "craneTranslationBefore": [
+      0,
+      0,
+      -4.7
+    ],
+    "craneTranslationAfter": [
+      0,
+      0,
+      -4.05
+    ],
+    "craneBoundaryClearance": 0.2749999999999986
   }
 }
