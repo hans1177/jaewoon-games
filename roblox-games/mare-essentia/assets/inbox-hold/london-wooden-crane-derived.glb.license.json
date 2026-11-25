@@ -58,13 +58,13 @@
       "license": "CC0-1.0"
     }
   ],
-  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged.",
+  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged. Adjusted existing mast, brace, crossbar and rope instance transforms to clear the wheel sweep; original binary data retained.",
   "triangles": 5544,
-  "bytes": 120292,
-  "sha256": "b9a63c9c2baec9e5a563c812e1d3c2c4c548b53e07b3e0beac6683a0686877c6",
+  "bytes": 120016,
+  "sha256": "fac0fbe5842be5c45e1e124bda6dcb9e3845c1fa8aff0659f1214f425177a4d9",
   "dimensions": [
     3,
-    6.777,
+    6.778,
     8.85
   ],
   "instances": [
@@ -104,7 +104,7 @@
       "dimensions": [
         0.34,
         0.34,
-        4.989307466973748
+        4.93
       ],
       "parent": "frame"
     },
@@ -114,7 +114,7 @@
       "dimensions": [
         0.25,
         0.25,
-        4.7209839016882915
+        4.658261478277062
       ],
       "parent": "frame"
     },
@@ -154,7 +154,7 @@
       "dimensions": [
         0.34,
         0.34,
-        4.989307466973748
+        4.93
       ],
       "parent": "frame"
     },
@@ -164,7 +164,7 @@
       "dimensions": [
         0.25,
         0.25,
-        4.7209839016882915
+        4.658261478277062
       ],
       "parent": "frame"
     },
@@ -212,9 +212,9 @@
       "name": "mast_cross_1.1",
       "source": "plank",
       "dimensions": [
-        0.26,
-        0.24,
-        1.32
+        0.2600000154972086,
+        0.2399999904632572,
+        2.65
       ],
       "parent": "frame"
     },
@@ -222,9 +222,9 @@
       "name": "mast_cross_3.3",
       "source": "plank",
       "dimensions": [
-        0.26,
-        0.24,
-        1.32
+        0.2600000154972086,
+        0.2399999904632572,
+        2.65
       ],
       "parent": "frame"
     },
@@ -232,9 +232,9 @@
       "name": "mast_cross_5.1",
       "source": "plank",
       "dimensions": [
-        0.26,
-        0.24,
-        1.32
+        0.2600000154972086,
+        0.2399999904632572,
+        2.65
       ],
       "parent": "frame"
     },
@@ -503,7 +503,7 @@
       "source": "rope",
       "dimensions": [
         0.06,
-        4.228876919466917,
+        4.228877486603585,
         0.06
       ],
       "parent": "frame"
@@ -513,7 +513,7 @@
       "source": "rope",
       "dimensions": [
         0.06,
-        3.92745464645997,
+        4.040718269971495,
         0.06
       ],
       "parent": "frame"
@@ -543,7 +543,7 @@
       "source": "rope",
       "dimensions": [
         0.055,
-        6.484838085873848,
+        6.41112400633086,
         0.055
       ],
       "parent": "frame"
@@ -553,7 +553,7 @@
       "source": "rope",
       "dimensions": [
         0.055,
-        6.484838085873848,
+        6.41112400633086,
         0.055
       ],
       "parent": "frame"
@@ -561,5 +561,5 @@
   ],
   "productionVerified": false,
   "registration": "HOLD_SOURCE_CANDIDATE_ONLY",
-  "validation": "GLB_CHUNKS_ACCESSOR_INDEX_RANGE_SOURCE_BUFFER_IDENTITY_POSITIVE_INSTANCE_DETERMINANTS_AND_INSTANCE_BUDGET_CHECKED; NATIVE_QA_PENDING"
+  "validation": "GLB_SOURCE_ONLY; ORIGINAL_BINARY_IDENTICAL; TRIANGLES_5544; ALL_INSTANCE_DETERMINANTS_POSITIVE; ROTATING_STATIC_TRIANGLE_INTERIOR_CROSSING_SAMPLE_5_DEGREES_86_TO_2_PAIRS; TWO_AXLE_HUB_INTERSECTIONS_REMAIN; NATIVE_QA_PENDING"
 }
