@@ -94,12 +94,34 @@
       "source": "https://github.com/hans1177/jaewoon-games/blob/97ba748a3e897383dfe8b979b709b975aac4ce5f/roblox-games/mare-essentia/assets/SOURCES.md",
       "embeddedBinaryOffset": 375960,
       "embeddedBinaryBytes": 28300
+    },
+    {
+      "path": "roblox-games/mare-essentia/assets/town/rock-small.glb",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "6c716e5e36124dcc3e701630c310c25b930eae72",
+      "sha256": "c7b0db55c3a4b3db83de436d49d51c5e551d33d1d8e439f0f8a012f25329fee4",
+      "license": "CC0-1.0",
+      "author": "Kenney",
+      "source": "https://kenney.nl/assets/fantasy-town-kit",
+      "embeddedBinaryOffset": 404260,
+      "embeddedBinaryBytes": 21896
+    },
+    {
+      "path": "roblox-games/mare-essentia/assets/inbox-hold/london-dry-mud-field-001-source.jpg",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "b82222d0a2515d38d84a0a9955dff2c87cf0ffad",
+      "sha256": "fa527aa4eb6151c7dab4f0a7b31722d0aa180f728af694594439d106e76f6c6d",
+      "license": "CC0-1.0",
+      "author": "Rob Tuytel; Rico Cilliers",
+      "source": "https://polyhaven.com/a/dry_mud_field_001",
+      "embeddedBinaryOffset": 426156,
+      "embeddedBinaryBytes": 339575
     }
   ],
-  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated.",
-  "triangles": 28636,
-  "bytes": 437756,
-  "sha256": "b212564692d12e8a8b8ff33622ca06b525e0af3ec1226fa3cc8472af91ed1fc1",
+  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified.",
+  "triangles": 29244,
+  "bytes": 805236,
+  "sha256": "201a39b8ada05cb482dd79402707f6512be17fecfdcc7eb9d15e02992e11da67",
   "instances": [
     {
       "name": "scaffold_1_1",
@@ -307,7 +329,7 @@
       "center": [
         -7.6,
         0.075,
-        -0.9
+        -0.9650000000000001
       ],
       "parent": "Construction_materials"
     },
@@ -320,9 +342,9 @@
         0.13
       ],
       "center": [
-        -7.34,
+        -7.359999999999999,
         0.075,
-        -0.9
+        -0.9650000000000001
       ],
       "parent": "Construction_materials"
     },
@@ -335,9 +357,9 @@
         0.13
       ],
       "center": [
-        -7.08,
+        -7.119999999999999,
         0.075,
-        -0.9
+        -0.9650000000000001
       ],
       "parent": "Construction_materials"
     },
@@ -351,8 +373,8 @@
       ],
       "center": [
         -7.6,
-        0.22499999999999998,
-        -0.9
+        0.075,
+        -0.835
       ],
       "parent": "Construction_materials"
     },
@@ -365,9 +387,9 @@
         0.13
       ],
       "center": [
-        -7.34,
-        0.22499999999999998,
-        -0.9
+        -7.359999999999999,
+        0.075,
+        -0.835
       ],
       "parent": "Construction_materials"
     },
@@ -380,9 +402,9 @@
         0.13
       ],
       "center": [
-        -7.08,
-        0.22499999999999998,
-        -0.9
+        -7.119999999999999,
+        0.075,
+        -0.835
       ],
       "parent": "Construction_materials"
     },
@@ -395,9 +417,9 @@
         0.13
       ],
       "center": [
-        -7.47,
-        0.375,
-        -0.76
+        -7.574999999999999,
+        0.22499999999999998,
+        -0.9550000000000001
       ],
       "parent": "Construction_materials"
     },
@@ -410,9 +432,9 @@
         0.13
       ],
       "center": [
-        -7.21,
-        0.375,
-        -0.76
+        -7.334999999999999,
+        0.22499999999999998,
+        -0.9550000000000001
       ],
       "parent": "Construction_materials"
     },
@@ -425,9 +447,9 @@
         0.13
       ],
       "center": [
-        -6.95,
-        0.375,
-        -0.76
+        -7.094999999999999,
+        0.22499999999999998,
+        -0.9550000000000001
       ],
       "parent": "Construction_materials"
     },
@@ -440,9 +462,9 @@
         0.13
       ],
       "center": [
-        -7.47,
-        0.5249999999999999,
-        -0.76
+        -7.574999999999999,
+        0.22499999999999998,
+        -0.825
       ],
       "parent": "Construction_materials"
     },
@@ -455,9 +477,9 @@
         0.13
       ],
       "center": [
-        -7.21,
-        0.5249999999999999,
-        -0.76
+        -7.334999999999999,
+        0.22499999999999998,
+        -0.825
       ],
       "parent": "Construction_materials"
     },
@@ -470,9 +492,9 @@
         0.13
       ],
       "center": [
-        -6.95,
-        0.5249999999999999,
-        -0.76
+        -7.094999999999999,
+        0.22499999999999998,
+        -0.825
       ],
       "parent": "Construction_materials"
     },
@@ -895,18 +917,167 @@
         -0.5
       ],
       "parent": "Survey_stakes_and_string"
+    },
+    {
+      "name": "earth_mound_main",
+      "source": "rock-small + dry mud",
+      "dimensions": [
+        2.6,
+        0.84,
+        2.25
+      ],
+      "center": [
+        -5.7,
+        0.42,
+        -7.1
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "earth_mound_small",
+      "source": "rock-small + dry mud",
+      "dimensions": [
+        1.25,
+        0.5,
+        1.15
+      ],
+      "center": [
+        -7.3,
+        0.25,
+        -6.4
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_0",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        5.25,
+        0.027,
+        -8.15
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_1",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        5.73,
+        0.027,
+        -8.15
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_2",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        6.21,
+        0.027,
+        -8.15
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_3",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        6.6899999999999995,
+        0.027,
+        -8.15
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_4",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        5.275,
+        0.081,
+        -8.125
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_5",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        5.755000000000001,
+        0.081,
+        -8.125
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_6",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        6.235,
+        0.081,
+        -8.125
+      ],
+      "parent": "Construction_materials"
+    },
+    {
+      "name": "slate_tile_7",
+      "source": "stone-brick tinted slate candidate",
+      "dimensions": [
+        0.46,
+        0.054,
+        0.84
+      ],
+      "center": [
+        6.715,
+        0.081,
+        -8.125
+      ],
+      "parent": "Construction_materials"
     }
   ],
   "productionVerified": false,
   "registration": "HOLD_SOURCE_CANDIDATE_ONLY",
-  "validation": "INDEX_RANGE_NODE_REACHABILITY_POSITIVE_TRANSFORMS_AND_ALL_SOURCE_BINARY_RANGES_VERIFIED; NATIVE_QA_PENDING",
+  "validation": "SOURCE_HASHES_BINARY_RANGES_INDEX_BOUNDS_NODE_REACHABILITY_POSITIVE_TRANSFORMS_AND_BRICK_LAYER_LAYOUT_VERIFIED; NATIVE_QA_PENDING",
   "missing": [
-    "dirt piles",
-    "slate material piles",
     "historical/PBR finish",
     "scaffold support and access validation",
     "actual collision and Roblox playback",
-    "mobile performance"
+    "mobile performance",
+    "source-derived earth/slate visual fidelity and historical finish"
   ],
   "sourceAnimation": "12 second crane preview retained; not native runtime verified"
 }
