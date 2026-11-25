@@ -352792,11 +352792,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_250f7400025f3cf0831c7b79",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15142",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "32445afc5a9363a6f468c0aa8411d26861b63734",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15142,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-missing-original-parts-1125",
+        "baseSha": "32445afc5a9363a6f468c0aa8411d26861b63734",
+        "headSha": "1a70c6a21c62e02f8314daa55c14f9e7087e1e80",
+        "mergeCommitSha": "e5000e03c9f4661cdcfe914076f7964bd2258748",
+        "mergedAt": "2026-11-25T02:08:53Z",
+        "authorLogin": "hans1177",
+        "titleHash": "6befc7247aff3597a0fe3e7e60e6512eccd3fd90dd20e81a2a8e50b87ebc4238",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-missing-original-parts-1125",
+        "candidateSha": "1a70c6a21c62e02f8314daa55c14f9e7087e1e80"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 219,
+        "deletedLineCount": 0,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-hammer-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-hammer-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-trowel-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-trowel-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-english-bond-brick-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-english-bond-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-flower-pot-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-flower-pot-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-rustic-wood-hand-basket-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-rustic-wood-hand-basket-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-scroll-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-scroll-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-statue-base-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-statue-base-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-ladder-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-ladder-source.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-hammer-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-trowel-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-english-bond-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-flower-pot-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-rustic-wood-hand-basket-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-scroll-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-statue-base-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-ladder-source.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15142",
+        "merge-commit:e5000e03c9f4661cdcfe914076f7964bd2258748",
+        "base-main:32445afc5a9363a6f468c0aa8411d26861b63734"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2793
+    "total": 2794
   }
 }
