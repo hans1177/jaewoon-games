@@ -88,6 +88,12 @@ async function prepareLicensedOriginals() {
       source:'https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Single.glb', page:'https://quaternius.com/packs/ultimatehomeinterior.html',
       pinnedBlobSha:'032c5b30abebe90f5f643270f6d0ee98c1921a5f', sourceModelingMethod:'Quaternius 2020 artist-authored Ultimate House Interior Pack curtain mesh; pinned GLB conversion preserves original geometry.',
       townOriginal:true, minBytes:9952, maxBytes:9952, minTriangles:208, maxTriangles:208, originalModel:'Curtains_Single'},
+    // [런던 공사 원본] 검증된 무변형 CC0 밧줄 원본만 기존 Town 등록 경로로 승격한다.
+    {name:'london-rope-twist-02-source', assetPath:'assets/town/london-rope-twist-02-source.glb', author:'Tim Steer / The Base Mesh; glTF conversion M3-org',
+      source:'https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb', page:'https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE',
+      pinnedBlobSha:'c7b7edb7eab0d42afa485583624a349e578bd704',
+      sourceModelingMethod:'Artist-authored The Base Mesh rope; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, minBytes:21644, maxBytes:21644, minTriangles:768, maxTriangles:768, originalModel:'Rope Twist 02'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -149,7 +155,7 @@ async function prepareLicensedOriginals() {
     const license = item.license || 'CC0-1.0';
     const target = path.join(ROOT, item.assetPath || ('assets/relics/weapon-' + name + '.glb'));
     const proof = target + '.license.json';
-    let bytes, evidence;
+    let bytes, evidence, stagedTownProof;
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
@@ -186,7 +192,7 @@ async function prepareLicensedOriginals() {
         const staged = path.join(ROOT,'assets/inbox/Town',name+'.glb');
         try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
         if (bytes) {
-          const stagedProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
+          const stagedProof = stagedTownProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
           const digest = crypto.createHash('sha256').update(bytes).digest('hex');
           if (stagedProof.license !== license || stagedProof.author !== item.author
             || stagedProof.pinnedBlobSha !== item.pinnedBlobSha
@@ -895,6 +901,7 @@ async function prepareLicensedOriginals() {
           item.rebuildCoastalShip?['wood','edge','linen','rope','carved']:undefined,
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
+        sourceVisualContentReview:item.townOriginal ? stagedTownProof?.sourceVisualContentReview : undefined,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
       if (stageKind) {
         execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
@@ -1687,7 +1694,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       }
     }
     const portOriginalModel = !stagedLondon && kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);

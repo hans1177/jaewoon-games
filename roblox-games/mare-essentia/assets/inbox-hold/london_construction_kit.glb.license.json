@@ -66,7 +66,7 @@
       "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_stake/wood_stake.glb"
     },
     {
-      "path": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "path": "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
       "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
       "gitBlobSha1": "c7b7edb7eab0d42afa485583624a349e578bd704",
       "sha256": "c3ebc671e176f6d9d70a6d994bd90ac0dadd9bf969c834b414dfaaa0e6966de5",
@@ -74,8 +74,10 @@
       "source": "https://github.com/hans1177/jaewoon-games/blob/97ba748a3e897383dfe8b979b709b975aac4ce5f/roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb.license.json",
       "embeddedBinaryOffset": 337112,
       "embeddedBinaryBytes": 19840,
-      "repositoryPath": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
-      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb"
+      "repositoryPath": "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
+      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb",
+      "originalPreservedFrom": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "registrationPendingTarget": "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb"
     },
     {
       "path": "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb",
@@ -140,7 +142,7 @@
       "originalUrl": "https://polyhaven.com/a/dry_mud_field_001"
     }
   ],
-  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified. Replaced six repeated decorative scaffold dioramas with six instances of one batched original timber floor mesh; 1/2/3 level groups, continuous support posts, cross braces, deck, side/back rails, front ladder opening and ladder seats. Original diorama bytes and separate source file retained. Existing geometry/texture bytes untouched. Shifted the crane root 0.65 units inward to keep its jib within the survey boundary. No mesh, animation or texture bytes changed.",
+  "modification": "Scene-only assembly of existing meshes and texture buffers. Crane preview animation retained; scaffold stacking remains an unverified structural candidate. No new geometry or texture generated. Added two flattened original rock instances with existing CC0 mud image and projected UVs; eight thin tinted stone-brick slate candidates. Corrected two-layer brick pile coordinates. Existing binary preserved. Authentic slate appearance and scaffold access still unverified. Replaced six repeated decorative scaffold dioramas with six instances of one batched original timber floor mesh; 1/2/3 level groups, continuous support posts, cross braces, deck, side/back rails, front ladder opening and ladder seats. Original diorama bytes and separate source file retained. Existing geometry/texture bytes untouched. Shifted the crane root 0.65 units inward to keep its jib within the survey boundary. No mesh, animation or texture bytes changed. Rope original moved without byte changes into canonical Town inbox; registration proof and final path remain pending.",
   "triangles": 18756,
   "bytes": 870316,
   "sha256": "e1b92c7670e416f99feb032a6104d3ed26695aea8a9058766cf31d51930bfba3",
@@ -1640,14 +1642,15 @@
       "roblox-games/mare-essentia/assets/inbox-hold/london-wheelbarrow-source.glb",
       "roblox-games/mare-essentia/assets/inbox-hold/london-wooden-ladder-source.glb",
       "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb",
-      "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
       "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb",
       "roblox-games/mare-essentia/assets/inbox-hold/london-scroll-01-source.glb",
       "roblox-games/mare-essentia/assets/inbox-hold/london-dry-mud-field-001-source.jpg"
     ],
     "metadataRequiredFieldsPresent": true,
     "result": "HOLD_ORIGINAL_REGISTRY_APPROVAL_REQUIRED",
-    "nativeRuntimeVerified": false
+    "nativeRuntimeVerified": false,
+    "pendingSourceRegistrationTarget": "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb"
   },
   "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/"
 }

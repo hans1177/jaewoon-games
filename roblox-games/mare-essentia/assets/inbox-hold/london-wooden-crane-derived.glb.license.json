@@ -56,7 +56,7 @@
       "originalUrl": "https://kenney.nl/assets/retro-fantasy-kit"
     },
     {
-      "path": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "path": "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
       "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
       "gitBlobSha1": "c7b7edb7eab0d42afa485583624a349e578bd704",
       "sha256": "c3ebc671e176f6d9d70a6d994bd90ac0dadd9bf969c834b414dfaaa0e6966de5",
@@ -64,11 +64,13 @@
       "author": "Tim Steer / The Base Mesh; M3-org conversion",
       "source": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb",
       "license": "CC0-1.0",
-      "repositoryPath": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
-      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb"
+      "repositoryPath": "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
+      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb",
+      "originalPreservedFrom": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "registrationPendingTarget": "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb"
     }
   ],
-  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged. Adjusted existing mast, brace, crossbar and rope instance transforms to clear the wheel sweep; original binary data retained. Existing axle now rotates with wheel and terminates at inner support planes; rope offset clears sweep. Nine quaternion keys added for a 12-second source preview, not a runtime speed commitment. Existing binary prefix preserved.",
+  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged. Adjusted existing mast, brace, crossbar and rope instance transforms to clear the wheel sweep; original binary data retained. Existing axle now rotates with wheel and terminates at inner support planes; rope offset clears sweep. Nine quaternion keys added for a 12-second source preview, not a runtime speed commitment. Existing binary prefix preserved. Rope original moved without byte changes into canonical Town inbox; registration proof and final path remain pending.",
   "triangles": 5544,
   "bytes": 120644,
   "sha256": "e3460cfb8b1ea2e8806fe8fe820112f949ffe8d2f2fb5e95ffc4992127a59e25",
@@ -576,10 +578,11 @@
     "mainRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
     "sourceRightsRegistryApproved": 4,
     "sourceRightsRegistryPending": [
-      "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb"
+      "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb"
     ],
     "metadataRequiredFieldsPresent": true,
     "result": "HOLD_ORIGINAL_REGISTRY_APPROVAL_REQUIRED",
-    "nativeRuntimeVerified": false
+    "nativeRuntimeVerified": false,
+    "pendingSourceRegistrationTarget": "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb"
   }
 }
