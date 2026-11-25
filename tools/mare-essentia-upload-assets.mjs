@@ -93,7 +93,15 @@ async function prepareLicensedOriginals() {
       source:'https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb', page:'https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE',
       pinnedBlobSha:'c7b7edb7eab0d42afa485583624a349e578bd704',
       sourceModelingMethod:'Artist-authored The Base Mesh rope; pinned unchanged M3-org glTF conversion',
-      townOriginal:true, minBytes:21644, maxBytes:21644, minTriangles:768, maxTriangles:768, originalModel:'Rope Twist 02'},
+      townOriginal:true, requireSourceReview:true, minBytes:21644, maxBytes:21644, minTriangles:768, maxTriangles:768, originalModel:'Rope Twist 02'},
+    {name:'london-wooden-ladder-source', assetPath:'assets/town/london-wooden-ladder-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_ladder/wooden_ladder.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'ddca5b0e2945514cfb7e772781d289ca8963c634', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:16212, maxBytes:16212, minTriangles:352, maxTriangles:352, originalModel:'Wooden ladder'},
+    {name:'london-wood-stake-source', assetPath:'assets/town/london-wood-stake-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_stake/wood_stake.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'265f8762ad170c01e1ef6709479c83c0a8a01a23', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:4408, maxBytes:4408, minTriangles:60, maxTriangles:60, originalModel:'Wood stake'},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -165,6 +173,8 @@ async function prepareLicensedOriginals() {
       || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' : 'MARE_LICENSED_ORIGINAL_EVIDENCE_MISMATCH:') + name);
     if (bytes && !evidence) throw new Error('MARE_SHIP_SOURCE_PROVENANCE_MISSING:' + name);
+    if (item.requireSourceReview && evidence && (evidence.sourceVisualContentReview?.sourceSha256 !== evidence.sourceSha256 || evidence.sourceVisualContentReview?.reviewScope !== 'SOURCE_REGISTRATION_ONLY'))
+      throw new Error('MARE_TOWN_SOURCE_REVIEW_REQUIRED:'+name);
     if (item.rebuildNau && evidence) {
       const original = await fs.readFile(path.join(ROOT,'assets/naval/nau-source.glb'));
       const sourceHash = crypto.createHash('sha256').update(original).digest('hex');
@@ -216,6 +226,8 @@ async function prepareLicensedOriginals() {
             throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
         }
       }
+      if (item.requireSourceReview && (!bytes || stagedTownProof?.sourceVisualContentReview?.sourceSha256 !== stagedTownProof?.sourceSha256 || stagedTownProof?.sourceVisualContentReview?.reviewScope !== 'SOURCE_REGISTRATION_ONLY'))
+        throw new Error('MARE_TOWN_SOURCE_REVIEW_REQUIRED:'+name);
       if (!bytes) {
         const response = await fetch(source, {signal: AbortSignal.timeout(item.removePodium ? 150000 : 60000)});
         if (!response.ok) throw new Error('MARE_LICENSED_SOURCE_HTTP_' + response.status + ':' + name);
@@ -884,7 +896,7 @@ async function prepareLicensedOriginals() {
       const writeTarget = stageKind ? path.join(ROOT,'assets/inbox',stageKind,name+'.glb') : target;
       if (stageKind) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
       await fs.writeFile(writeTarget, bytes);
-      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({license, author:item.author, source,
+      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({...stagedTownProof, license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         sourceBlend:item.sourceBlend || undefined, sourceModelingMethod:item.sourceModelingMethod || undefined,
         sha256:item.townOriginal ? hash : undefined, bytes:item.townOriginal ? bytes.length : undefined,
@@ -1694,7 +1706,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       }
     }
     const portOriginalModel = !stagedLondon && kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb','london-wooden-ladder-source.glb','london-wood-stake-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);

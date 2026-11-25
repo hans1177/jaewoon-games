@@ -423,7 +423,7 @@ jobs:
           verified_london = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-london-verified'
           pending_london = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-london-pending'
           verified_sources = []
-          for kind, prefix in (('Town', 'london_'), ('Town', 'observatory-dome-source'), ('Town', 'opera-curtain-'), ('Town', 'london-rope-twist-02-source'), ('Terrain', 'veg_')):
+          for kind, prefix in (('Town', 'london_'), ('Town', 'observatory-dome-source'), ('Town', 'opera-curtain-'), ('Town', 'london-rope-twist-02-source'), ('Town', 'london-wooden-ladder-source'), ('Town', 'london-wood-stake-source'), ('Terrain', 'veg_')):
             for path in sorted((root/'assets'/kind.lower()).glob(prefix+'*.glb')):
               inbox = root/'assets/inbox'/kind/path.name
               if inbox.exists() or subprocess.run(['git','ls-files','--error-unmatch',str(inbox)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
@@ -463,7 +463,7 @@ jobs:
                   dest="roblox-games/mare-essentia/assets/town/${src##*/}"
                   grep -Fxq "$dest" "$verified_london" || continue
                   ;;
-                */assets/inbox/Town/observatory-dome-source.glb|*/assets/inbox/Town/opera-curtain-*-source.glb|*/assets/inbox/Town/london-rope-twist-02-source.glb) dest="roblox-games/mare-essentia/assets/town/${src##*/}" ;;
+                */assets/inbox/Town/observatory-dome-source.glb|*/assets/inbox/Town/opera-curtain-*-source.glb|*/assets/inbox/Town/london-rope-twist-02-source.glb|*/assets/inbox/Town/london-wooden-ladder-source.glb|*/assets/inbox/Town/london-wood-stake-source.glb) dest="roblox-games/mare-essentia/assets/town/${src##*/}" ;;
                 */assets/inbox/Terrain/veg_*.glb)
                   dest="roblox-games/mare-essentia/assets/terrain/${src##*/}"
                   grep -Fxq "$dest" "$verified_vegetation" || continue
@@ -509,7 +509,7 @@ jobs:
               continue
             fi
             # [건축 원본] 완성 건물과 분리해 실제 원본 해시·번호·사용권이 모두 맞는 경우만 저장한다.
-            if [[ "$f" == roblox-games/mare-essentia/assets/town/greenhouse-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/clock-tower-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/scarecrow-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/bread-oven-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/stage-curtain-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/observatory-dome-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/opera-curtain-*-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb* ]]; then
+            if [[ "$f" == roblox-games/mare-essentia/assets/town/greenhouse-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/clock-tower-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/scarecrow-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/bread-oven-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/stage-curtain-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/observatory-dome-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/opera-curtain-*-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/london-wooden-ladder-source.glb* || "$f" == roblox-games/mare-essentia/assets/town/london-wood-stake-source.glb* ]]; then
               if [ ! -e "$f" ]; then continue; fi
               if [[ "${{ steps.asset_registration.outcome }}" != "success" ]]; then
                 echo "SKIP_UNVERIFIED_TOWN_ORIGINAL $f"
