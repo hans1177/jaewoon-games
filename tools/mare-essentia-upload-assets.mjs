@@ -88,6 +88,33 @@ async function prepareLicensedOriginals() {
       source:'https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Single.glb', page:'https://quaternius.com/packs/ultimatehomeinterior.html',
       pinnedBlobSha:'032c5b30abebe90f5f643270f6d0ee98c1921a5f', sourceModelingMethod:'Quaternius 2020 artist-authored Ultimate House Interior Pack curtain mesh; pinned GLB conversion preserves original geometry.',
       townOriginal:true, minBytes:9952, maxBytes:9952, minTriangles:208, maxTriangles:208, originalModel:'Curtains_Single'},
+    // [런던 공사 원본] 검증된 무변형 CC0 밧줄 원본만 기존 Town 등록 경로로 승격한다.
+    {name:'london-rope-twist-02-source', assetPath:'assets/town/london-rope-twist-02-source.glb', author:'Tim Steer / The Base Mesh; glTF conversion M3-org',
+      source:'https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb', page:'https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE',
+      pinnedBlobSha:'c7b7edb7eab0d42afa485583624a349e578bd704',
+      sourceModelingMethod:'Artist-authored The Base Mesh rope; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:21644, maxBytes:21644, minTriangles:768, maxTriangles:768, originalModel:'Rope Twist 02'},
+    {name:'london-wooden-ladder-source', assetPath:'assets/town/london-wooden-ladder-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_ladder/wooden_ladder.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'ddca5b0e2945514cfb7e772781d289ca8963c634', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:16212, maxBytes:16212, minTriangles:352, maxTriangles:352, originalModel:'Wooden ladder'},
+    {name:'london-wood-stake-source', assetPath:'assets/town/london-wood-stake-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_stake/wood_stake.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'265f8762ad170c01e1ef6709479c83c0a8a01a23', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:4408, maxBytes:4408, minTriangles:60, maxTriangles:60, originalModel:'Wood stake'},
+    {name:'london-brick-source', assetPath:'assets/town/london-brick-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/brick/brick.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'05b4c615038cefda3d20ce7b8911006607c97ae0', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:2700, maxBytes:2700, minTriangles:12, maxTriangles:12, originalModel:'Brick'},
+    {name:'london-scroll-01-source', assetPath:'assets/town/london-scroll-01-source.glb', author:"The Base Mesh (Tim Steer); M3-org glTF conversion",
+      source:"https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/scroll_01/scroll_01.glb", page:"https://thebasemesh.com",
+      pinnedBlobSha:'65bc82b137466bab8472faab08003de30f9f4dda', sourceModelingMethod:'Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion',
+      townOriginal:true, requireSourceReview:true, minBytes:19976, maxBytes:19976, minTriangles:468, maxTriangles:468, originalModel:'Scroll 01'},
+    {name:'london-wheelbarrow-source', assetPath:'assets/town/london-wheelbarrow-source.glb', author:"Kay Lousberg",
+      source:"https://kaylousberg.itch.io/kaykit-medieval-hexagon", page:"https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0",
+      pinnedBlobSha:'6eec4a6b2f96d9df83ecaccc7cdbf875d9b43844', sourceModelingMethod:'Kay Lousberg original glTF repackaged with byte-identical geometry and embedded PNG; pinned local GLB',
+      townOriginal:true, requireSourceReview:true, repackagedOriginalParts:[{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.gltf","gitBlobSha1":"497a01a2f101e6d351e4a4bf471ecad91d020682","sha256":"bb037662a3e5be1f4fe597ffc4927d2a6ad88d307da10388cfb178ca5fdae63d","bytes":3059},{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/wheelbarrow.bin","gitBlobSha1":"d694896837c76633c823005cf001ba8f3ade96a4","sha256":"72ca612b0dc940c856ed5abbbb9df9562c09bff52cfb2258375b16cbaad29e12","bytes":19016},{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/hexagons_medieval.png","gitBlobSha1":"14cdc253646e4dba3cb7a267a6f7399b78ba2231","sha256":"5301a06866ba3be68dcc14cc429bd6d0f69004b72884283715d7e233f2e9782e","bytes":15783}], minBytes:36196, maxBytes:36196, minTriangles:396, maxTriangles:396, originalModel:'Wheelbarrow'},
+    {"name":"london-building-scaffolding-source","assetPath":"assets/town/london-building-scaffolding-source.glb","author":"Kay Lousberg","source":"https://kaylousberg.itch.io/kaykit-medieval-hexagon","page":"https://github.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0","pinnedBlobSha":"85d509fa807f97abcceea7cd9b0b8b6ecb3c60d6","sourceModelingMethod":"Kay Lousberg original glTF repackaged with byte-identical geometry and embedded PNG; pinned local GLB","townOriginal":true,"requireSourceReview":true,"repackagedOriginalParts":[{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/building_scaffolding.gltf","gitBlobSha1":"c8c0cccbf61ee6c09eea915019d83db4fbc70570","sha256":"1c11a7545694863a7edc58780ee60510b55676b97d6c5eee7e0dc7c256185c7a","bytes":3092},{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/building_scaffolding.bin","gitBlobSha1":"4d3b8703a50d2e4bfe24d5021901babce44247f3","sha256":"eed989f5f3c82d0e251b2dd2fc7e0cc350705160892a409a337c73b5f448fa54","bytes":165536},{"repositoryPath":"roblox-games/mare-essentia/assets/inbox-hold/kaykit-medieval/hexagons_medieval.png","gitBlobSha1":"14cdc253646e4dba3cb7a267a6f7399b78ba2231","sha256":"5301a06866ba3be68dcc14cc429bd6d0f69004b72884283715d7e233f2e9782e","bytes":15783}],"minBytes":182744,"maxBytes":182744,"minTriangles":2672,"maxTriangles":2672,"originalModel":"Building scaffolding","modification":"Original artist glTF re-packaged as self-contained GLB only. Geometry, mesh indices, transforms, UVs, materials and original PNG bytes unchanged. No generated geometry."},
     // [발견물 조류 1차] 원작자의 수작업 CC0 모델, 고정 리비전과 개별 Git blob 검증.
     {name:'discovery_seagull', assetPath:'assets/animals/discovery_seagull.glb', author:'Scott Petrovic (Mesh2Motion)',
       source:'https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb',
@@ -149,7 +176,7 @@ async function prepareLicensedOriginals() {
     const license = item.license || 'CC0-1.0';
     const target = path.join(ROOT, item.assetPath || ('assets/relics/weapon-' + name + '.glb'));
     const proof = target + '.license.json';
-    let bytes, evidence;
+    let bytes, evidence, stagedTownProof;
     try { bytes = await fs.readFile(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
     try { evidence = JSON.parse(await fs.readFile(proof, 'utf8')); }
     catch (e) { if (e.code !== 'ENOENT') throw e; }
@@ -159,6 +186,8 @@ async function prepareLicensedOriginals() {
       || evidence.sourceSha256 !== crypto.createHash('sha256').update(bytes).digest('hex')))
       throw new Error((license === 'CC0-1.0' ? 'MARE_CC0_ORIGINAL_EVIDENCE_MISMATCH:' : 'MARE_LICENSED_ORIGINAL_EVIDENCE_MISMATCH:') + name);
     if (bytes && !evidence) throw new Error('MARE_SHIP_SOURCE_PROVENANCE_MISSING:' + name);
+    if (item.requireSourceReview && evidence && (evidence.sourceVisualContentReview?.sourceSha256 !== evidence.sourceSha256 || evidence.sourceVisualContentReview?.reviewScope !== 'SOURCE_REGISTRATION_ONLY'))
+      throw new Error('MARE_TOWN_SOURCE_REVIEW_REQUIRED:'+name);
     if (item.rebuildNau && evidence) {
       const original = await fs.readFile(path.join(ROOT,'assets/naval/nau-source.glb'));
       const sourceHash = crypto.createHash('sha256').update(original).digest('hex');
@@ -179,6 +208,15 @@ async function prepareLicensedOriginals() {
         || original.toString('ascii',0,4)!=='glTF')
         throw new Error('MARE_COASTAL_SHIP_EXTERNAL_CC0_SOURCE_CHANGED:'+item.rebuildCoastalShip);
     }
+    // [원본 재포장] 로컬 GLB 고정 해시를 외부 원본 GLB로 오인하지 않는다. 원본 구성 파일도 매번 대조한다.
+    if (item.repackagedOriginalParts) {
+      for (const part of item.repackagedOriginalParts) {
+        const data = await fs.readFile(part.repositoryPath);
+        if (data.length !== part.bytes || crypto.createHash('sha256').update(data).digest('hex') !== part.sha256
+          || crypto.createHash('sha1').update('blob '+data.length+'\0').update(data).digest('hex') !== part.gitBlobSha1)
+          throw new Error('MARE_TOWN_REPACKAGED_SOURCE_PART_MISMATCH:'+name+':'+part.repositoryPath);
+      }
+    }
     let originalSha256 = evidence?.originalSha256 || null;
     if (!bytes) {
       // [고정 건축 원본] 이미 확보한 파일은 고정 Git blob 및 기존 출처 증빙과 일치할 때만 재사용한다.
@@ -186,7 +224,7 @@ async function prepareLicensedOriginals() {
         const staged = path.join(ROOT,'assets/inbox/Town',name+'.glb');
         try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
         if (bytes) {
-          const stagedProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
+          const stagedProof = stagedTownProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
           const digest = crypto.createHash('sha256').update(bytes).digest('hex');
           if (stagedProof.license !== license || stagedProof.author !== item.author
             || stagedProof.pinnedBlobSha !== item.pinnedBlobSha
@@ -210,6 +248,8 @@ async function prepareLicensedOriginals() {
             throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
         }
       }
+      if (item.requireSourceReview && (!bytes || stagedTownProof?.sourceVisualContentReview?.sourceSha256 !== stagedTownProof?.sourceSha256 || stagedTownProof?.sourceVisualContentReview?.reviewScope !== 'SOURCE_REGISTRATION_ONLY'))
+        throw new Error('MARE_TOWN_SOURCE_REVIEW_REQUIRED:'+name);
       if (!bytes) {
         const response = await fetch(source, {signal: AbortSignal.timeout(item.removePodium ? 150000 : 60000)});
         if (!response.ok) throw new Error('MARE_LICENSED_SOURCE_HTTP_' + response.status + ':' + name);
@@ -878,7 +918,7 @@ async function prepareLicensedOriginals() {
       const writeTarget = stageKind ? path.join(ROOT,'assets/inbox',stageKind,name+'.glb') : target;
       if (stageKind) await fs.mkdir(path.dirname(writeTarget), {recursive:true});
       await fs.writeFile(writeTarget, bytes);
-      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({license, author:item.author, source,
+      await fs.writeFile(writeTarget+'.license.json', JSON.stringify({...stagedTownProof, license, author:item.author, source,
         sourcePage, sourceSha256:hash, originalSha256, pinnedBlobSha:item.pinnedBlobSha || null,
         sourceBlend:item.sourceBlend || undefined, sourceModelingMethod:item.sourceModelingMethod || undefined,
         sha256:item.townOriginal ? hash : undefined, bytes:item.townOriginal ? bytes.length : undefined,
@@ -895,6 +935,7 @@ async function prepareLicensedOriginals() {
           item.rebuildCoastalShip?['wood','edge','linen','rope','carved']:undefined,
         modification:item.modification || (item.removePodium ? 'Exhibition podium scene nodes removed; artist ship geometry unchanged.' : 'Unmodified source'),
         triangles:tris, originalModel:item.originalModel || name,
+        sourceVisualContentReview:item.townOriginal ? stagedTownProof?.sourceVisualContentReview : undefined,
         actualRobloxRuntimeVerified:false, visualQualityApproved:false,robloxPublishedVerified:false}, null, 2) + '\n');
       if (stageKind) {
         execFileSync('python3',['tools/devloop/register_asset.py',ROOT,'--kind='+stageKind,'--prefix='+name,'--dry-run'],{stdio:'inherit',timeout:30000});
@@ -1687,7 +1728,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
       }
     }
     const portOriginalModel = !stagedLondon && kind === 'Town' && /^[a-z][a-z0-9_]*_(?:house_[123]|landmark_(?:base|full)|signature_[123]|plaza_center|street_lamp|stall_[a-z0-9_]+|workshop_[a-z0-9_]+)\.glb$/.test(sourceFileName);
-    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb'].includes(sourceFileName);
+    const townOriginal = kind === 'Town' && ['greenhouse-source.glb','clock-tower-source.glb','scarecrow-source.glb','bread-oven-source.glb','stage-curtain-source.glb','observatory-dome-source.glb','opera-curtain-double-source.glb','opera-curtain-single-source.glb','london-rope-twist-02-source.glb','london-wooden-ladder-source.glb','london-wood-stake-source.glb','london-brick-source.glb','london-scroll-01-source.glb','london-wheelbarrow-source.glb','london-building-scaffolding-source.glb'].includes(sourceFileName);
     const derivedVegetation = kind === 'Terrain' && f.startsWith('veg_');
     const harborAnimalOriginal = kind === 'Animals' && sourceFileName === 'pigeon.glb';
     const discoveryBird = kind === 'Animals' && /^discovery_(?:seagull|bald_eagle|panda|whale)\.glb$/.test(sourceFileName);
