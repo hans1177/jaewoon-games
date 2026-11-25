@@ -1553,6 +1553,7 @@ return {
 	["Town/london_trade_1"] = 70855575740504,
 	["Town/london_trade_2"] = 115190185676292,
 	["Town/london_trade_3"] = 132060541485051,
+	["Town/london_workshop_coal"] = 98071819387848,
 	["Town/london_yard_1"] = 121235867322483,
 	["Town/london_yard_2"] = 80867791534896,
 	["Town/london_yard_3"] = 91231507386872,
