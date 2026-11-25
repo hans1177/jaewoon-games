@@ -356204,11 +356204,136 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4429309784e157c0274ac312",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15198",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15198,
+        "baseBranch": "main",
+        "headBranch": "assets/london-academy",
+        "baseSha": "bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5",
+        "headSha": "30a4b575447bd8428c6a2e5d1bdc270a14d3d8f8",
+        "mergeCommitSha": "8431a770dd515706a225c38cabcce7b76f691e53",
+        "mergedAt": "2026-11-25T08:06:09Z",
+        "authorLogin": "hans1177",
+        "titleHash": "55c2784b7d59ed09e81f96ced341f55e77136163a93d26f63c3db57a31931121",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/london-academy",
+        "candidateSha": "30a4b575447bd8428c6a2e5d1bdc270a14d3d8f8"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 5,
+        "addedLineCount": 168,
+        "deletedLineCount": 9,
+        "changedFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_scholar_3.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_scholar_3.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/company-central-policy-contract-qa.yml",
+          ".github/workflows/company-development-roblox-post-runtime-qa.yml",
+          "qa/company-development-roblox-post-runtime-qa.test.mjs",
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_scholar_3.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15198",
+        "merge-commit:8431a770dd515706a225c38cabcce7b76f691e53",
+        "base-main:bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2816
+    "total": 2817
   }
 }
