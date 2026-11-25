@@ -1,5 +1,5 @@
 {
-  "version": 610,
+  "version": 611,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-10-26",
@@ -4222,7 +4222,6 @@
         ".github/workflows/vibe2-24h-runner.yml",
         ".github/workflows/company-system-ai-workers.yml",
         ".github/workflows/company-security-immune.yml",
-        ".github/workflows/artbook-free-department-bots.yml",
         ".github/workflows/company-development-confirmed-runtime.yml",
         ".github/workflows/company-development-unity-runtime.yml",
         ".github/workflows/company-development-roblox-runtime.yml",
@@ -7824,6 +7823,15 @@
     }
   },
   "changeRecord": {
+    "centralContextRecovery20261125": {
+      "scope": "RESTORE_EXISTING_CANONICAL_PREFLIGHT_VALIDATION",
+      "retiredLauncher": ".github/workflows/artbook-free-department-bots.yml",
+      "retirementCommit": "fc50aa310aa4ac21592b80cf8a6157df9d63a437",
+      "restoreValidator": "tools/company-shared-context.mjs",
+      "restoreCurrentWorkerBindings": true,
+      "developmentSequenceChanged": false,
+      "securityOrReleaseGateBypassed": false
+    },
     "ownerVibeOneShotPatch20261024": {
       "authority": "OWNER_DIRECTIVE_2026-10-24",
       "policyNumber": 1,

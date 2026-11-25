@@ -105,7 +105,7 @@ test('daily C cleanup runs on existing signed-in Studio runner without touching 
 
 test('scheduled recovery checks and preserves a verified signed-in Windows startup watchdog',()=>{
   const start=workflow.indexOf('      - name: Install hidden user-logon Startup launcher');
-  const end=workflow.indexOf('      - name: Checkout native recording setup',start);
+  const end=workflow.indexOf('      - name: Checkout existing Windows recovery and native recording tools',start);
   assert.ok(start>0&&end>start);
   const startup=workflow.slice(start,end);
   assert.ok(!startup.includes("if: github.event_name != 'schedule'"));

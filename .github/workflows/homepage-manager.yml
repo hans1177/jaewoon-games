@@ -197,6 +197,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node tools/company-shared-context.mjs --require-homepage-policy=true
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import { loadCentralPolicySnapshot } from './tools/vibe2-central-work-contract.mjs';
@@ -554,6 +555,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node tools/company-shared-context.mjs --require-homepage-policy=true
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import { loadCentralPolicySnapshot } from './tools/vibe2-central-work-contract.mjs';

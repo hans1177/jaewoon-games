@@ -1,5 +1,5 @@
 {
-  "version": 339,
+  "version": 340,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -253,11 +253,7 @@
     "RECORDS_GOVERNANCE": "SHARED_MACHINE_RECORD_SCHEMA_PATH_PROVENANCE_RETENTION_AND_INTEGRITY_VALIDATION",
     "GAME_TESTER": "EXISTING_RUNTIME_FOUNDATION_AND_GAMEPLAY_ERROR_REPRODUCTION_CAPABILITY"
   },
-  "sharedContextLoadOrder": [
-    "company-learning/company-log-map.json",
-    "company-learning/company-architecture-map.json",
-    "company-learning/security-immune-system.json"
-  ],
+  "sharedContextLoadOrder": ["company-learning/platform-release-roadmap.json", "company-learning/company-log-map.json", "company-learning/company-architecture-map.json", "company-learning/security-immune-system.json"],
   "synchronization": {
     "beforeWork": "LOAD_AND_VALIDATE_ROADMAP_LOG_ARCHITECTURE_SECURITY_POLICY",
     "duringWork": "DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY",
@@ -463,19 +459,7 @@
     "documentIsCode": true,
     "roadmapFirst": true,
     "validator": "tools/company-shared-context.mjs",
-    "launcherWorkflows": [
-      ".github/workflows/vibe2-continuous-core.yml",
-      ".github/workflows/vibe2-24h-runner.yml",
-      ".github/workflows/company-system-ai-workers.yml",
-      ".github/workflows/company-security-immune.yml",
-      ".github/workflows/artbook-free-department-bots.yml",
-      ".github/workflows/company-development-confirmed-runtime.yml",
-      ".github/workflows/company-development-unity-runtime.yml",
-      ".github/workflows/company-development-roblox-runtime.yml",
-      ".github/workflows/company-seed-design-runtime.yml",
-      ".github/workflows/director-supervisor.yml",
-      ".github/workflows/homepage-manager.yml"
-    ],
+    "launcherWorkflows": [".github/workflows/vibe2-continuous-core.yml", ".github/workflows/vibe2-24h-runner.yml", ".github/workflows/company-system-ai-workers.yml", ".github/workflows/company-security-immune.yml", ".github/workflows/company-development-confirmed-runtime.yml", ".github/workflows/company-development-unity-runtime.yml", ".github/workflows/company-development-roblox-runtime.yml", ".github/workflows/company-seed-design-runtime.yml", ".github/workflows/director-supervisor.yml", ".github/workflows/homepage-manager.yml"],
     "launcherValidationRequired": true,
     "staleRoadmapExecutionForbidden": true,
     "centralDocumentationRequired": true,
@@ -502,11 +486,7 @@
     "newChatAndWorkerPreflightRequired": true,
     "appliesToChatGPTNewSessions": true,
     "latestMainResolveBeforeCanonicalRead": true,
-    "canonicalReadOrder": [
-      "company-learning/company-log-map.json",
-      "company-learning/company-architecture-map.json",
-      "company-learning/security-immune-system.json"
-    ],
+    "canonicalReadOrder": ["company-learning/platform-release-roadmap.json", "company-learning/company-log-map.json", "company-learning/company-architecture-map.json", "company-learning/security-immune-system.json"],
     "finalDevelopmentLockStatusMustBeLoaded": true,
     "mutationDeploymentStateChangeForbiddenUntilSyncPass": true,
     "priorConversationOrMemoryCannotOverrideCentralPolicy": true,
