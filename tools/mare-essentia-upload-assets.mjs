@@ -21,17 +21,23 @@ if (contentSafety?.enabled !== true) throw new Error('IMAGE_CONTENT_SAFETY_POLIC
 const blockedPaths = new Set(contentSafety.blockedAssets.flatMap(row => row.sourcePaths || []));
 const blockedHashes = new Set(contentSafety.blockedAssets.flatMap(row => row.sha256 || []));
 const blockedIds = new Set(contentSafety.blockedAssets.flatMap(row => row.assetIds || []).map(String));
-// [동물 원본 24시간] 기존 inbox의 main 검수 증빙만 신규 인입 권한으로 사용한다.
+// [동물 원본 24시간] 기존 정식·inbox·보관 폴더의 main 검수 증빙만 신규 인입 권한으로 사용한다.
 // 검색 결과·파일명·저장소 라이선스만으로 원작/종/시각 검수를 자동 승인하지 않는다.
 const farmGoal = JSON.parse(await fs.readFile(ROOT + '/assets-wanted.seed.json','utf8')).find(row=>row.id==='mare-farm-animals');
 const animalMissing = await fs.readFile(ROOT + '/docs/discoveries/MISSING.md','utf8');
 const animalRegistry = JSON.parse(await fs.readFile(JSON_OUT,'utf8')).assets;
 const approvedAnimalOriginals = new Map();
-for (const dir of ['animals','inbox/Animals']) {
+const acquiredDiscoveryCards = new Set();
+for (const dir of ['animals','inbox/Animals','inbox-hold/Animals']) {
   for (const file of await fs.readdir(path.join(ROOT,'assets',dir))) {
     if (!/^[a-z][a-z0-9_-]*\.glb\.license\.json$/.test(file)) continue;
     const name = file.slice(0,-'.glb.license.json'.length);
     const proof = JSON.parse(await fs.readFile(path.join(ROOT,'assets',dir,file),'utf8'));
+    const row = animalRegistry['Animals/'+name];
+    const registeredSource = !!row?.assetId && row.sourceSha256===proof.sourceSha256
+      && row.assetType==='Model' && row.license==='CC0-1.0' && !blockedHashes.has(proof.sourceSha256);
+    if (registeredSource && typeof proof.discoveryCardId==='string'
+      && /^(?:am|pac|zoo)_[a-z0-9_]+$/.test(proof.discoveryCardId)) acquiredDiscoveryCards.add(proof.discoveryCardId);
     const review = proof.sourceVisualContentReview;
     if (!review || review.reviewScope !== 'SOURCE_REGISTRATION_ONLY') continue;
     const discovery = typeof proof.discoveryCardId === 'string' && /^(?:am|pac|zoo)_[a-z0-9_]+$/.test(proof.discoveryCardId)
@@ -45,14 +51,20 @@ for (const dir of ['animals','inbox/Animals']) {
       || !/^[0-9a-f]{64}$/.test(proof.sourceSha256 || '') || proof.originalSha256!==proof.sourceSha256
       || review.sourceSha256!==proof.sourceSha256 || typeof review.method!=='string' || !review.method.trim()
       || blockedHashes.has(proof.sourceSha256) || blockedPaths.has(path.join(ROOT,'assets/animals',name+'.glb'))
+      || blockedPaths.has(path.join(ROOT,'assets',dir,name+'.glb'))
       || !Number.isSafeInteger(proof.bytes) || proof.bytes<20 || proof.bytes>5000000
       || !Number.isSafeInteger(proof.triangles) || proof.triangles<1000 || proof.triangles>3000) {
       console.log('MARE_ANIMAL_SOURCE_REVIEW_BLOCKED',name);
       continue;
     }
+    if (dir==='inbox-hold/Animals' && row?.assetId && !registeredSource) {
+      console.log('MARE_ANIMAL_HELD_SOURCE_CONFLICT',name);
+      continue;
+    }
     const prior = approvedAnimalOriginals.get(name);
     if (prior && prior.approvedProof.sourceSha256!==proof.sourceSha256) throw new Error('MARE_ANIMAL_REVIEW_CONFLICT:'+name);
-    approvedAnimalOriginals.set(name,{name,assetPath:'assets/animals/'+name+'.glb',author:proof.author,source:proof.source,
+    if (prior) continue; // 정식 원본과 기존 inbox 검수 증빙 우선, 동일 보관 원본 중복 인입 금지
+    approvedAnimalOriginals.set(name,{name,approvedDir:dir,assetPath:'assets/animals/'+name+'.glb',author:proof.author,source:proof.source,
       page:proof.sourcePage,pinnedBlobSha:proof.pinnedBlobSha,sourceModelingMethod:proof.sourceModelingMethod,
       minBytes:proof.bytes,maxBytes:proof.bytes,minTriangles:proof.triangles,maxTriangles:proof.triangles,
       animalOriginal:true,discoveryBird:discovery?proof.discoveryCardId:undefined,originalModel:proof.originalModel||name,approvedProof:proof});
@@ -74,9 +86,13 @@ if (process.argv.includes('--animal-source-preflight')) {
     }
     if (!complete || row.usePermissionGranted!==true) pending.push(item);
   }
-  // 부족 목표를 순환 탐색한다. 검색 후보는 로그에만 남기고 별도 큐·자동 승인·유료 API를 만들지 않는다.
-  const missing = [...new Set([...(farmGoal?.missing||[]).filter(name=>!animalRegistry['Animals/'+name]),
-    ...[...animalMissing.matchAll(/^- (?:am|pac|zoo)_([a-z0-9_]+) /gm)].map(match=>match[1])])];
+  // 이미 확보·검수된 원본을 다시 검색하지 않고 실제 미확보 목표만 순환한다.
+  // 미검수 검색 후보의 시각·권리 승인은 자동 생성하지 않는다.
+  const reviewedDiscoveryCards = new Set([...approvedAnimalOriginals.values()].map(item=>item.discoveryBird).filter(Boolean));
+  const missing = [...new Set([...(farmGoal?.missing||[]).filter(name=>!animalRegistry['Animals/'+name]?.assetId && !approvedAnimalOriginals.has(name)),
+    ...[...animalMissing.matchAll(/^- ((?:am|pac|zoo)_([a-z0-9_]+)) /gm)]
+      .filter(match=>!acquiredDiscoveryCards.has(match[1]) && !reviewedDiscoveryCards.has(match[1]))
+      .map(match=>match[2])])];
   if (missing.length && process.env.GH_TOKEN) {
     const start=Math.floor(Date.now()/3600000)*3;
     for(let i=0;i<Math.min(3,missing.length);i++){
@@ -357,8 +373,12 @@ async function prepareLicensedOriginals() {
       }
       // [발견물 원본] 이미 확보한 inbox 바이너리를 우선 사용하고 동일한 원본 검증을 거친다.
       if (item.discoveryBird || item.animalOriginal) {
-        const staged = path.join(ROOT,'assets/inbox/Animals',name+'.glb');
+        let staged = path.join(ROOT,'assets/inbox/Animals',name+'.glb');
         try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        if (!bytes && item.animalOriginal && item.approvedDir==='inbox-hold/Animals') {
+          staged = path.join(ROOT,'assets',item.approvedDir,name+'.glb');
+          try { bytes = await fs.readFile(staged); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+        }
         if (bytes) {
           const stagedProof = JSON.parse(await fs.readFile(staged+'.license.json','utf8'));
           const digest = crypto.createHash('sha256').update(bytes).digest('hex');
@@ -366,7 +386,9 @@ async function prepareLicensedOriginals() {
             || stagedProof.source !== source || stagedProof.sourcePage !== sourcePage
             || stagedProof.pinnedBlobSha !== item.pinnedBlobSha || (item.discoveryBird && stagedProof.discoveryCardId !== item.discoveryBird)
             || stagedProof.sourceSha256 !== digest || stagedProof.originalSha256 !== digest
-            || stagedProof.commercialUseAllowed !== true || stagedProof.originalModelHandcrafted !== true)
+            || stagedProof.commercialUseAllowed !== true || stagedProof.originalModelHandcrafted !== true
+            || (item.animalOriginal && (stagedProof.sourceVisualContentReview?.reviewScope !== 'SOURCE_REGISTRATION_ONLY'
+              || stagedProof.sourceVisualContentReview?.sourceSha256 !== digest || bytes.length !== item.approvedProof.bytes)))
             throw new Error('MARE_DISCOVERY_INBOX_PROOF_MISMATCH:'+name);
         }
       }
