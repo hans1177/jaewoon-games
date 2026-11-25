@@ -2,6 +2,10 @@
 # 파일명: tools/devloop/assets_wanted.py
 # 임포트
 import hashlib
+import io
+import math
+import tarfile
+import zipfile
 import json
 import os
 import re
@@ -217,6 +221,330 @@ def trade_goods_practice():
     }, errors, three_d_audit
 
 
+
+# [원본 내부 검사] 압축을 디스크에 풀지 않고 제한된 멤버만 읽는다.
+def inspect_animal_archive(data, filename, target):
+    model_extensions = {".glb", ".gltf", ".fbx", ".blend", ".obj"}
+    max_member = 5_000_000
+    max_total = 30_000_000
+    candidates = []
+    def safe_name(name):
+        parts = name.replace("\\", "/").split("/")
+        return (not name.startswith(("/", "\\")) and not re.match(r"^[A-Za-z]:", name)
+                and "\\" not in name and all(p not in ("..", "") for p in parts))
+    def member(name, size, read):
+        if not safe_name(name) or not 0 <= size <= max_member:
+            raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+        ext = os.path.splitext(name)[1].lower()
+        stem = os.path.splitext(os.path.basename(name))[0].lower().replace("-", "_").replace(" ", "_")
+        # 파일명은 검수 후보 선별에만 사용하고 종 일치나 시각 승인 증거로 사용하지 않는다.
+        if ext not in model_extensions or stem not in (target, target + "_model", target + "_animated"):
+            return
+        body = read()
+        if len(body) != size or not body:
+            raise ValueError("SOURCE_ARCHIVE_MEMBER_LENGTH")
+        if ext == ".glb":
+            if (len(body) < 20 or body[:4] != b"glTF"
+                    or struct.unpack("<II", body[4:12]) != (2, len(body))
+                    or body[16:20] != b"JSON"
+                    or not 0 < struct.unpack("<I", body[12:16])[0] <= len(body)-20):
+                raise ValueError("SOURCE_ARCHIVE_INVALID_GLB")
+        elif ext == ".blend" and not (body.startswith(b"BLENDER") or body.startswith(b"\x1f\x8b") or body.startswith(b"\x28\xb5\x2f\xfd")):
+            raise ValueError("SOURCE_ARCHIVE_INVALID_BLEND")
+        elif ext == ".gltf":
+            doc = json.loads(body)
+            if doc.get("asset", {}).get("version") != "2.0":
+                raise ValueError("SOURCE_ARCHIVE_INVALID_GLTF")
+        candidates.append({"member": name, "format": ext[1:].upper(),
+                           "bytes": len(body), "sha256": hashlib.sha256(body).hexdigest()})
+    if filename.endswith(".zip"):
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            items = archive.infolist()
+            if len(items) > 512 or sum(i.file_size for i in items) > max_total:
+                raise ValueError("SOURCE_ARCHIVE_EXPANSION_LIMIT")
+            for info in items:
+                mode = (info.external_attr >> 16) & 0o170000
+                if mode not in (0, 0o100000, 0o040000) or info.flag_bits & 1:
+                    raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+                if info.is_dir():
+                    if not safe_name(info.filename.rstrip("/")):
+                        raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+                    continue
+                member(info.filename, info.file_size, lambda i=info: archive.read(i))
+    else:
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r|gz") as archive:
+            total = count = 0
+            for info in archive:
+                count += 1
+                total += info.size
+                if count > 512 or total > max_total:
+                    raise ValueError("SOURCE_ARCHIVE_EXPANSION_LIMIT")
+                if not safe_name(info.name.rstrip("/")) or not (info.isdir() or info.isfile()):
+                    raise ValueError("SOURCE_ARCHIVE_UNSAFE_MEMBER")
+                if info.isfile():
+                    member(info.name, info.size, lambda i=info: archive.extractfile(i).read(max_member + 1))
+    return sorted(candidates, key=lambda row: row["member"])
+
+
+# [보관 GLB 원본 품질] 실제 위치 및 인덱스 데이터, 모바일 삼각면·관절 예산을 대조한다.
+# 시각 검수·종 판정·로블록스 권한은 이 기하 검사와 별개다.
+def inspect_held_animal_glb(data):
+    if (len(data) < 28 or data[:4] != b"glTF"
+            or struct.unpack_from("<II", data, 4) != (2, len(data))
+            or data[16:20] != b"JSON"):
+        raise ValueError("GLB_HEADER")
+    end = 20 + struct.unpack_from("<I", data, 12)[0]
+    if end < 24 or end + 8 > len(data) or data[end+4:end+8] != b"BIN\x00":
+        raise ValueError("GLB_CHUNKS")
+    if end + 8 + struct.unpack_from("<I", data, end)[0] != len(data):
+        raise ValueError("GLB_BINARY_LENGTH")
+    model = json.loads(data[20:end])
+    binary = memoryview(data)[end+8:]
+    buffers = model.get("buffers", [])
+    if (model.get("asset", {}).get("version") != "2.0" or len(buffers) != 1
+            or buffers[0].get("uri") or not 0 < buffers[0]["byteLength"] <= len(binary)
+            or any(image.get("uri") for image in model.get("images", []))):
+        raise ValueError("GLB_EXTERNAL_OR_INVALID_BUFFER")
+
+    def accessor(index, allowed_types, shape):
+        if type(index) is not int or not 0 <= index < len(model["accessors"]):
+            raise ValueError("GLB_ACCESSOR_INDEX")
+        a = model["accessors"][index]
+        view_index = a["bufferView"]
+        if type(view_index) is not int or not 0 <= view_index < len(model["bufferViews"]):
+            raise ValueError("GLB_BUFFER_VIEW_INDEX")
+        v = model["bufferViews"][view_index]
+        typ = a["componentType"]
+        count = a["count"]
+        if (a.get("sparse") is not None or typ not in allowed_types or a["type"] != shape
+                or type(count) is not int or not 0 < count <= 100000 or v.get("buffer") != 0):
+            raise ValueError("GLB_UNSUPPORTED_ACCESSOR")
+        fmt, component = {5121: ("B", 1), 5123: ("H", 2), 5125: ("I", 4), 5126: ("f", 4)}[typ]
+        width = component * (3 if shape == "VEC3" else 1)
+        stride = v.get("byteStride", width)
+        offset = a.get("byteOffset", 0)
+        start = v.get("byteOffset", 0)
+        length = v["byteLength"]
+        if (any(type(x) is not int for x in (start, length, stride, offset))
+                or min(start, offset) < 0 or length <= 0 or stride < width
+                or start + length > buffers[0]["byteLength"]
+                or offset + (count-1)*stride + width > length):
+            raise ValueError("GLB_ACCESSOR_RANGE")
+        return count, (struct.unpack_from("<" + fmt*(3 if shape == "VEC3" else 1),
+                                           binary, start+offset+i*stride) for i in range(count))
+
+    triangles = inspected_vertices = 0
+    minimum = [math.inf]*3
+    maximum = [-math.inf]*3
+    for mesh in model["meshes"]:
+        for primitive in mesh["primitives"]:
+            if primitive.get("mode", 4) != 4:
+                raise ValueError("GLB_NON_TRIANGLE")
+            vertices, positions = accessor(primitive["attributes"]["POSITION"], {5126}, "VEC3")
+            inspected_vertices += vertices
+            if inspected_vertices > 1_000_000:
+                raise ValueError("GLB_GEOMETRY_INSPECTION_LIMIT")
+            for pos in positions:
+                if not all(math.isfinite(x) for x in pos):
+                    raise ValueError("GLB_NONFINITE_POSITION")
+                for axis, x in enumerate(pos):
+                    minimum[axis] = min(minimum[axis], x)
+                    maximum[axis] = max(maximum[axis], x)
+            if "indices" in primitive:
+                count, indices = accessor(primitive["indices"], {5121, 5123, 5125}, "SCALAR")
+                if any(i[0] >= vertices for i in indices):
+                    raise ValueError("GLB_INDEX_RANGE")
+            else:
+                count = vertices
+            if count % 3:
+                raise ValueError("GLB_TRIANGLE_LAYOUT")
+            triangles += count//3
+            if triangles > 1_000_000:
+                raise ValueError("GLB_GEOMETRY_INSPECTION_LIMIT")
+    if triangles <= 0 or any(not math.isfinite(x) for x in minimum+maximum) or not any(b>a for a,b in zip(minimum,maximum)):
+        raise ValueError("GLB_EMPTY_GEOMETRY")
+    skins = model.get("skins", [])
+    joint_count = len({joint for skin in skins for joint in skin["joints"]})
+    if any(type(joint) is not int or not 0 <= joint < len(model.get("nodes", []))
+           for skin in skins for joint in skin["joints"]):
+        raise ValueError("GLB_INVALID_JOINT")
+    return {"triangles": triangles, "jointCount": joint_count,
+            "animationCount": len(model.get("animations", [])),
+            "mobileGeometryWithinBudget": 1000 <= triangles <= 3000 and joint_count <= 50,
+            "speciesVerified": False, "visualQualityApproved": False}
+
+
+# [동물 원본 충원] 회사에 이미 확보된 CC0 원본부터 가져온다. 복제 저장하지 않고
+# 기존 부족 장부에 실제 원본 경로·해시·검수 대기 상태를 기록한다.
+def animal_source_practice():
+    goal = next((row for row in seed if row.get("id") == "mare-farm-animals"), None)
+    if not goal:
+        return None
+    registry = read_json(os.path.join(root, "assets-registered.json"))["assets"]
+    with open(os.path.join(root, "docs", "discoveries", "MISSING.md"), encoding="utf-8") as handle:
+        discovery = re.findall(r"^- ((?:am|pac|zoo)_([a-z0-9_]+)) ", handle.read(), re.M)
+    targets = {}
+    for name in goal.get("missing", []):
+        if not registry.get("Animals/" + name, {}).get("assetId"):
+            targets.setdefault(name.replace("-", "_"), []).append("farm:" + name)
+    acquired_cards = set()
+    for name, row in registry.items():
+        if not name.startswith("Animals/") or not row.get("assetId"):
+            continue
+        model = os.path.join(root, "assets", "animals", name.split("/", 1)[1] + ".glb")
+        proof_path = model + ".license.json"
+        if os.path.isfile(proof_path):
+            proof = read_json(proof_path)
+            if (row.get("sourceSha256") and row.get("sourceSha256") == proof.get("sourceSha256")
+                    and row.get("assetType") == "Model" and row.get("license") == "CC0-1.0"
+                    and row.get("usePermissionGranted") is True and proof.get("discoveryCardId")):
+                acquired_cards.add(proof["discoveryCardId"])
+    for card, name in discovery:
+        if card not in acquired_cards:
+            targets.setdefault(name, []).append(card)
+
+    report = {"authority": "EXISTING_MARE_ASSET_PIPELINE_PRACTICE_ONLY",
+              "method": "COMPANY_ARCHIVE_EXACT_NAME_CC0_AND_PINNED_SOURCE_BYTES",
+              "nativeRuntimeVerified": False, "automaticRuntimePromotionAllowed": False,
+              "targetCount": len(targets), "candidates": [], "rejected": [],
+              "archiveInventoryState": "UNAVAILABLE"}
+    if not targets:
+        report["archiveInventoryState"] = "NO_MISSING_TARGETS"
+        return report
+
+    # 기존 sparse checkout에서 빠진 회사 공용 원본도 동일 체크아웃 HEAD에서만 읽는다.
+    # 외부 코드를 실행하거나 압축을 풀지 않는다. 선택된 부족 목표만 요청한다.
+    def pinned_file(name, max_bytes):
+        size = int(subprocess.check_output(
+            ["git", "cat-file", "-s", "HEAD:" + name], timeout=30, stderr=subprocess.DEVNULL))
+        if not 0 < size <= max_bytes:
+            raise ValueError("SOURCE_SIZE_LIMIT")
+        data = subprocess.check_output(["git", "show", "HEAD:" + name],
+                                       timeout=45, stderr=subprocess.DEVNULL)
+        if len(data) != size:
+            raise ValueError("SOURCE_SIZE_MISMATCH")
+        return data
+
+    try:
+        safety = read_json("company-learning/platform-release-roadmap.json")[
+            "livingMotionVisualQualityContract"]["assetAdaptation"]["contentSafety"]
+        if safety.get("enabled") is not True:
+            raise ValueError("SOURCE_SAFETY_POLICY_DISABLED")
+        blocked_hashes = {h for row in safety["blockedAssets"] for h in (row.get("sha256") or [])}
+        blocked_paths = {p for row in safety["blockedAssets"] for p in (row.get("sourcePaths") or [])}
+        blocked_ids = {str(i) for row in safety["blockedAssets"] for i in (row.get("assetIds") or [])}
+    except (OSError, ValueError, KeyError, TypeError):
+        return report
+
+    # 보관 원본은 외부 재검색보다 먼저 확인하되 검수 승인 증거를 생성하지 않는다.
+    seen = set()
+    hold = os.path.join(root, "assets", "inbox-hold", "Animals")
+    wanted_cards = {card: name for name, cards in targets.items() for card in cards if not card.startswith("farm:")}
+    if os.path.isdir(hold):
+        for name in sorted(os.listdir(hold)):
+            if not re.fullmatch(r"[a-zA-Z0-9_-]+\.glb\.license\.json", name):
+                continue
+            proof_path = os.path.join(hold, name)
+            source = proof_path.removesuffix(".license.json")
+            try:
+                proof = read_json(proof_path)
+                card = proof.get("discoveryCardId") or proof.get("candidateDiscoveryCardId")
+                if card not in wanted_cards:
+                    continue
+                digest = proof.get("sourceSha256", "")
+                size = proof.get("bytes")
+                if (proof.get("license") != "CC0-1.0" or proof.get("commercialUseAllowed") is not True
+                        or not proof.get("author") or not str(proof.get("source", "")).startswith("https://")
+                        or not str(proof.get("sourcePage", "")).startswith("https://")
+                        or not re.fullmatch(r"[a-f0-9]{64}", digest) or proof.get("originalSha256") != digest
+                        or not re.fullmatch(r"[a-f0-9]{40}", str(proof.get("pinnedBlobSha", "")))
+                        or type(size) is not int or not 0 < size <= 5_000_000
+                        or digest in blocked_hashes or source in blocked_paths or os.path.islink(source)
+                        or os.path.islink(proof_path)):
+                    raise ValueError("HELD_SOURCE_POLICY_OR_PROVENANCE_INVALID")
+                if digest in seen:
+                    continue
+                if os.path.getsize(source) != size:
+                    raise ValueError("HELD_SOURCE_SIZE_MISMATCH")
+                with open(source, "rb") as handle:
+                    data = handle.read(5_000_001)
+                if (len(data) != size or hashlib.sha256(data).hexdigest() != digest
+                        or hashlib.sha1(("blob %d\0" % size).encode()+data).hexdigest() != proof["pinnedBlobSha"]):
+                    raise ValueError("HELD_SOURCE_HASH_MISMATCH")
+                if any(str(row.get("assetId")) in blocked_ids for row in registry.values()
+                       if row.get("sourceSha256") == digest):
+                    raise ValueError("HELD_SOURCE_BLOCKED_ASSET_ID")
+                geometry = inspect_held_animal_glb(data)
+                if proof.get("triangles") != geometry["triangles"]:
+                    raise ValueError("HELD_SOURCE_TRIANGLE_EVIDENCE_MISMATCH")
+            except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, struct.error) as error:
+                report["rejected"].append({"name": name, "state": "HELD_SOURCE_UNVERIFIED"})
+                continue
+            seen.add(digest)
+            report["candidates"].append({
+                "name": wanted_cards[card], "targets": [card], "source": source,
+                "sourceSha256": digest, "bytes": size, "license": proof["license"],
+                "sourceUrl": proof["source"], "licenseEvidenceUrl": proof["sourcePage"],
+                "geometry": geometry, "speciesVerified": False, "visualQualityApproved": False,
+                "registrationApproved": False, "actualRobloxRuntimeVerified": False,
+                "state": ("HELD_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING" if geometry["mobileGeometryWithinBudget"]
+                          else "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"),
+            })
+    try:
+        manifest = json.loads(pinned_file("assets/asset-manifest.json", 8_000_000))
+        archives = manifest["sharedOriginalArchives"]["packs"]
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError):
+        return report
+    report["archiveInventoryState"] = "AVAILABLE"
+    for pack in archives:
+        file = pack.get("file", "")
+        if not re.fullmatch(r"[a-zA-Z0-9_-]+\.(?:tar\.gz|zip)", file):
+            continue
+        name = re.sub(r"\.(?:tar\.gz|zip)$", "", file).lower().replace("-", "_")
+        if name not in targets:
+            continue
+        source = pack.get("sourcePath", "")
+        digest = pack.get("sha256", "")
+        size = pack.get("bytes")
+        if (pack.get("licenseDeclared") not in ("CC0", "CC0-1.0")
+                or pack.get("sourceOnly") is not True
+                or not re.fullmatch(r"assets/external/[a-zA-Z0-9_./-]+", source)
+                or any(part in ("", ".", "..") for part in source.split("/"))
+                or os.path.basename(source) != file
+                or not re.fullmatch(r"[a-f0-9]{64}", digest)
+                or type(size) is not int or not 0 < size <= 5_000_000
+                or not str(pack.get("licenseEvidenceUrl", "")).startswith("https://")
+                or not str(pack.get("sourceUrl", "")).startswith("https://")
+                or digest in blocked_hashes or source in blocked_paths):
+            report["rejected"].append({"name": name, "state": "SOURCE_POLICY_OR_PROVENANCE_INVALID"})
+            continue
+        if digest in seen:
+            continue
+        seen.add(digest)
+        try:
+            data = pinned_file(source, size)
+            if len(data) != size or hashlib.sha256(data).hexdigest() != digest:
+                raise ValueError("SOURCE_HASH_MISMATCH")
+            if not (data.startswith(b"PK\x03\x04") if file.endswith(".zip") else data.startswith(b"\x1f\x8b")):
+                raise ValueError("SOURCE_ARCHIVE_HEADER_INVALID")
+            members = inspect_animal_archive(data, file, name)
+        except (OSError, subprocess.SubprocessError, ValueError, TypeError, AttributeError,
+                EOFError, zipfile.BadZipFile, tarfile.TarError):
+            report["rejected"].append({"name": name, "state": "SOURCE_BYTES_OR_ARCHIVE_UNVERIFIED"})
+            continue
+        report["candidates"].append({
+            "name": name, "targets": sorted(targets[name]), "source": source,
+            "sourceSha256": digest, "bytes": size, "license": pack["licenseDeclared"],
+            "sourceUrl": pack["sourceUrl"], "licenseEvidenceUrl": pack["licenseEvidenceUrl"],
+            "modelMembers": members,
+            "state": ("MODEL_MEMBER_BYTES_VERIFIED_SPECIES_VISUAL_REVIEW_PENDING" if members
+                      else "ORIGINAL_ARCHIVE_BYTES_VERIFIED_MODEL_MEMBER_UNRESOLVED"),
+            "speciesVerified": False, "visualQualityApproved": False,
+            "registrationApproved": False, "actualRobloxRuntimeVerified": False,
+        })
+    return report
+
+
 audit, failures, audit_3d = trade_goods_practice()
 if audit_3d:
     goal_3d = next((row for row in seed if row.get("id") == "trade-goods-3d-models"), None)
@@ -242,6 +570,11 @@ if audit:
     out["tradeGoodsPractice"] = audit
 if audit_3d:
     out["tradeGoods3DPractice"] = audit_3d
+animal_audit = animal_source_practice()
+if animal_audit:
+    out["animalSourcePractice"] = animal_audit
+    print("MARE_ANIMAL_COMPANY_ARCHIVE_CANDIDATES=" + str(len(animal_audit["candidates"])))
+    print("MARE_ANIMAL_COMPANY_ARCHIVE_INVENTORY=" + animal_audit["archiveInventoryState"])
 with open(os.path.join(root, "assets-wanted.json"), "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=1)
     f.write("\n")
