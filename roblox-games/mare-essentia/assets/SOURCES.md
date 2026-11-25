@@ -2326,3 +2326,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `town/` | london_stall_coal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_stall_tin.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
 | `town/` | london_stall_wool.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_workshop_coal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
