@@ -357147,11 +357147,174 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_d1d6abf6e0f253005982df27",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15224",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7fa5e627276d8f53996cdbbd9d7efcb75e19aa87",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15224,
+        "baseBranch": "main",
+        "headBranch": "mare-asset-save-fix",
+        "baseSha": "7fa5e627276d8f53996cdbbd9d7efcb75e19aa87",
+        "headSha": "78bc00c340b80d677e615b8875b6f37fb6302f4d",
+        "mergeCommitSha": "9ae9624e53ac3ca1f9c3d843a9fc51568e14ab9c",
+        "mergedAt": "2026-11-25T16:05:56Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9fac0563b678a177b33b3cbc104704fbceeaf7de8ba3aff6e153b3303f89e278",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-asset-save-fix",
+        "candidateSha": "78bc00c340b80d677e615b8875b6f37fb6302f4d"
+      },
+      "changeStats": {
+        "changedFileCount": 32,
+        "codingRelevantFileCount": 17,
+        "addedLineCount": 417,
+        "deletedLineCount": 333,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-brick-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-building-scaffolding-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-building-scaffolding-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-scroll-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-scroll-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wheelbarrow-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wheelbarrow-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wood-stake-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wooden-ladder-source.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wooden-ladder-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-brick-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-building-scaffolding-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-building-scaffolding-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-scroll-01-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-scroll-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-wheelbarrow-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-wheelbarrow-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-wood-stake-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-wooden-ladder-source.glb",
+          "roblox-games/mare-essentia/assets/town/london-wooden-ladder-source.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-building-scaffolding-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-scroll-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wheelbarrow-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london-wooden-ladder-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-building-scaffolding-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-scroll-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-wheelbarrow-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london-wooden-ladder-source.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15224",
+        "merge-commit:9ae9624e53ac3ca1f9c3d843a9fc51568e14ab9c",
+        "base-main:7fa5e627276d8f53996cdbbd9d7efcb75e19aa87"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2823
+    "total": 2824
   }
 }
