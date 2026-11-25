@@ -3,6 +3,7 @@
 # 임포트
 import hashlib
 import io
+import math
 import tarfile
 import zipfile
 import json
@@ -285,6 +286,84 @@ def inspect_animal_archive(data, filename, target):
     return sorted(candidates, key=lambda row: row["member"])
 
 
+# [보관 GLB 원본 품질] 실제 위치 및 인덱스 데이터, 모바일 삼각면·관절 예산을 대조한다.
+# 시각 검수·종 판정·로블록스 권한은 이 기하 검사와 별개다.
+def inspect_held_animal_glb(data):
+    if (len(data) < 28 or data[:4] != b"glTF"
+            or struct.unpack_from("<II", data, 4) != (2, len(data))
+            or data[16:20] != b"JSON"):
+        raise ValueError("GLB_HEADER")
+    end = 20 + struct.unpack_from("<I", data, 12)[0]
+    if end < 24 or end + 8 > len(data) or data[end+4:end+8] != b"BIN\x00":
+        raise ValueError("GLB_CHUNKS")
+    if end + 8 + struct.unpack_from("<I", data, end)[0] != len(data):
+        raise ValueError("GLB_BINARY_LENGTH")
+    model = json.loads(data[20:end])
+    binary = memoryview(data)[end+8:]
+    buffers = model.get("buffers", [])
+    if (model.get("asset", {}).get("version") != "2.0" or len(buffers) != 1
+            or buffers[0].get("uri") or not 0 < buffers[0]["byteLength"] <= len(binary)
+            or any(image.get("uri") for image in model.get("images", []))):
+        raise ValueError("GLB_EXTERNAL_OR_INVALID_BUFFER")
+
+    def accessor(index, allowed_types, shape):
+        a = model["accessors"][index]
+        v = model["bufferViews"][a["bufferView"]]
+        typ = a["componentType"]
+        count = a["count"]
+        if (a.get("sparse") is not None or typ not in allowed_types or a["type"] != shape
+                or type(count) is not int or not 0 < count <= 100000 or v.get("buffer") != 0):
+            raise ValueError("GLB_UNSUPPORTED_ACCESSOR")
+        fmt, component = {5121: ("B", 1), 5123: ("H", 2), 5125: ("I", 4), 5126: ("f", 4)}[typ]
+        width = component * (3 if shape == "VEC3" else 1)
+        stride = v.get("byteStride", width)
+        offset = a.get("byteOffset", 0)
+        start = v.get("byteOffset", 0)
+        length = v["byteLength"]
+        if (any(type(x) is not int for x in (start, length, stride, offset))
+                or min(start, offset) < 0 or length <= 0 or stride < width
+                or start + length > buffers[0]["byteLength"]
+                or offset + (count-1)*stride + width > length):
+            raise ValueError("GLB_ACCESSOR_RANGE")
+        return count, (struct.unpack_from("<" + fmt*(3 if shape == "VEC3" else 1),
+                                           binary, start+offset+i*stride) for i in range(count))
+
+    triangles = 0
+    minimum = [math.inf]*3
+    maximum = [-math.inf]*3
+    for mesh in model["meshes"]:
+        for primitive in mesh["primitives"]:
+            if primitive.get("mode", 4) != 4:
+                raise ValueError("GLB_NON_TRIANGLE")
+            vertices, positions = accessor(primitive["attributes"]["POSITION"], {5126}, "VEC3")
+            for pos in positions:
+                if not all(math.isfinite(x) for x in pos):
+                    raise ValueError("GLB_NONFINITE_POSITION")
+                for axis, x in enumerate(pos):
+                    minimum[axis] = min(minimum[axis], x)
+                    maximum[axis] = max(maximum[axis], x)
+            if "indices" in primitive:
+                count, indices = accessor(primitive["indices"], {5121, 5123, 5125}, "SCALAR")
+                if any(i[0] >= vertices for i in indices):
+                    raise ValueError("GLB_INDEX_RANGE")
+            else:
+                count = vertices
+            if count % 3:
+                raise ValueError("GLB_TRIANGLE_LAYOUT")
+            triangles += count//3
+    if triangles <= 0 or any(not math.isfinite(x) for x in minimum+maximum) or not any(b>a for a,b in zip(minimum,maximum)):
+        raise ValueError("GLB_EMPTY_GEOMETRY")
+    skins = model.get("skins", [])
+    joint_count = len({joint for skin in skins for joint in skin["joints"]})
+    if any(type(joint) is not int or not 0 <= joint < len(model.get("nodes", []))
+           for skin in skins for joint in skin["joints"]):
+        raise ValueError("GLB_INVALID_JOINT")
+    return {"triangles": triangles, "jointCount": joint_count,
+            "animationCount": len(model.get("animations", [])),
+            "mobileGeometryWithinBudget": 1000 <= triangles <= 3000 and joint_count <= 50,
+            "speciesVerified": False, "visualQualityApproved": False}
+
+
 # [동물 원본 충원] 회사에 이미 확보된 CC0 원본부터 가져온다. 복제 저장하지 않고
 # 기존 부족 장부에 실제 원본 경로·해시·검수 대기 상태를 기록한다.
 def animal_source_practice():
@@ -306,7 +385,9 @@ def animal_source_practice():
         proof_path = model + ".license.json"
         if os.path.isfile(proof_path):
             proof = read_json(proof_path)
-            if row.get("sourceSha256") == proof.get("sourceSha256") and proof.get("discoveryCardId"):
+            if (row.get("sourceSha256") and row.get("sourceSha256") == proof.get("sourceSha256")
+                    and row.get("assetType") == "Model" and row.get("license") == "CC0-1.0"
+                    and row.get("usePermissionGranted") is True and proof.get("discoveryCardId")):
                 acquired_cards.add(proof["discoveryCardId"])
     for card, name in discovery:
         if card not in acquired_cards:
@@ -335,19 +416,76 @@ def animal_source_practice():
         return data
 
     try:
-        manifest = json.loads(pinned_file("assets/asset-manifest.json", 8_000_000))
         safety = read_json("company-learning/platform-release-roadmap.json")[
             "livingMotionVisualQualityContract"]["assetAdaptation"]["contentSafety"]
         if safety.get("enabled") is not True:
             raise ValueError("SOURCE_SAFETY_POLICY_DISABLED")
         blocked_hashes = {h for row in safety["blockedAssets"] for h in (row.get("sha256") or [])}
         blocked_paths = {p for row in safety["blockedAssets"] for p in (row.get("sourcePaths") or [])}
+        blocked_ids = {str(i) for row in safety["blockedAssets"] for i in (row.get("assetIds") or [])}
+    except (OSError, ValueError, KeyError, TypeError):
+        return report
+
+    # 보관 원본은 외부 재검색보다 먼저 확인하되 검수 승인 증거를 생성하지 않는다.
+    seen = set()
+    hold = os.path.join(root, "assets", "inbox-hold", "Animals")
+    wanted_cards = {card: name for name, cards in targets.items() for card in cards if not card.startswith("farm:")}
+    if os.path.isdir(hold):
+        for name in sorted(os.listdir(hold)):
+            if not re.fullmatch(r"[a-zA-Z0-9_-]+\.glb\.license\.json", name):
+                continue
+            proof_path = os.path.join(hold, name)
+            source = proof_path.removesuffix(".license.json")
+            try:
+                proof = read_json(proof_path)
+                card = proof.get("discoveryCardId") or proof.get("candidateDiscoveryCardId")
+                if card not in wanted_cards:
+                    continue
+                digest = proof.get("sourceSha256", "")
+                size = proof.get("bytes")
+                if (proof.get("license") != "CC0-1.0" or proof.get("commercialUseAllowed") is not True
+                        or not proof.get("author") or not str(proof.get("source", "")).startswith("https://")
+                        or not str(proof.get("sourcePage", "")).startswith("https://")
+                        or not re.fullmatch(r"[a-f0-9]{64}", digest) or proof.get("originalSha256") != digest
+                        or not re.fullmatch(r"[a-f0-9]{40}", str(proof.get("pinnedBlobSha", "")))
+                        or type(size) is not int or not 0 < size <= 5_000_000
+                        or digest in blocked_hashes or source in blocked_paths or os.path.islink(source)
+                        or os.path.islink(proof_path)):
+                    raise ValueError("HELD_SOURCE_POLICY_OR_PROVENANCE_INVALID")
+                if digest in seen:
+                    continue
+                if os.path.getsize(source) != size:
+                    raise ValueError("HELD_SOURCE_SIZE_MISMATCH")
+                with open(source, "rb") as handle:
+                    data = handle.read(5_000_001)
+                if (len(data) != size or hashlib.sha256(data).hexdigest() != digest
+                        or hashlib.sha1(("blob %d\0" % size).encode()+data).hexdigest() != proof["pinnedBlobSha"]):
+                    raise ValueError("HELD_SOURCE_HASH_MISMATCH")
+                if any(str(row.get("assetId")) in blocked_ids for row in registry.values()
+                       if row.get("sourceSha256") == digest):
+                    raise ValueError("HELD_SOURCE_BLOCKED_ASSET_ID")
+                geometry = inspect_held_animal_glb(data)
+                if proof.get("triangles") != geometry["triangles"]:
+                    raise ValueError("HELD_SOURCE_TRIANGLE_EVIDENCE_MISMATCH")
+            except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, struct.error) as error:
+                report["rejected"].append({"name": name, "state": "HELD_SOURCE_UNVERIFIED"})
+                continue
+            seen.add(digest)
+            report["candidates"].append({
+                "name": wanted_cards[card], "targets": [card], "source": source,
+                "sourceSha256": digest, "bytes": size, "license": proof["license"],
+                "sourceUrl": proof["source"], "licenseEvidenceUrl": proof["sourcePage"],
+                "geometry": geometry, "speciesVerified": False, "visualQualityApproved": False,
+                "registrationApproved": False, "actualRobloxRuntimeVerified": False,
+                "state": ("HELD_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING" if geometry["mobileGeometryWithinBudget"]
+                          else "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"),
+            })
+    try:
+        manifest = json.loads(pinned_file("assets/asset-manifest.json", 8_000_000))
         archives = manifest["sharedOriginalArchives"]["packs"]
     except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError):
         return report
-
     report["archiveInventoryState"] = "AVAILABLE"
-    seen = set()
     for pack in archives:
         file = pack.get("file", "")
         if not re.fullmatch(r"[a-zA-Z0-9_-]+\.(?:tar\.gz|zip)", file):
