@@ -45,17 +45,27 @@
       "sha256": "e3f48621763c1314e1f4f2a98ed6c61b76dfa436cdde263d1014a0404c1ba935",
       "gitBlobSha1": "74e71b5fd358ef9933e298b4ae6f89d86963505b",
       "registeredAssetId": "125271656667445"
+    },
+    {
+      "name": "wall-pillar.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/castle/wall-pillar.glb",
+      "originalUrl": "https://kenney.nl/assets/castle-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "0fc10abae8bad91ec938da54a0d457143f4976c497facab076d0d756b783e4e0",
+      "gitBlobSha1": "d55c45873bc9159c5dd44f50afa8ac9be054ec4d",
+      "registeredAssetId": "137513693378344"
     }
   ],
-  "modification": "Four original stone spans and dark stone deck plates, four market stands, two sloped approaches and two enclosed timber shop exteriors. Deck plate orientation corrected so thickness extends below the walking surface. Original buffer bytes and materials preserved. Static coverage only; enclosed interiors, structural supports under approaches, actual Roblox rendering and collision not verified. Existing construction-stage asset unchanged.",
-  "sha256": "150c93e87c47653338b299041ce9581d773d9a96c6f89644bf6491b33afe35ac",
-  "bytes": 378760,
-  "triangles": 13424,
-  "sceneTriangles": 13424,
+  "modification": "Four original stone spans and dark stone deck plates, four market stands, two sloped approaches and two enclosed timber shop exteriors. Deck plate orientation corrected so thickness extends below the walking surface. Original buffer bytes and materials preserved. Static coverage only; enclosed interiors, structural supports under approaches, actual Roblox rendering and collision not verified. Existing construction-stage asset unchanged. Added twelve source-textured stone piers in six pairs beneath the two approaches; their top bounding planes intersect the slab thickness but stay below the walkway. Corrected ramp matrices to orthogonal rotation-scale, preserving top surface. Static bounds checks only; actual contact geometry, native rendering, collision and historical finish still pending.",
+  "sha256": "ca240865c8f078ed2e67d285b03a765c2c82b56ff001f8c9cbb65d4b0539d875",
+  "bytes": 405596,
+  "triangles": 15656,
+  "sceneTriangles": 15656,
   "sourceRevision": "274eaef36a41e7b8e18f90c1607c3695182c630d",
   "productionVerified": false,
   "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_HISTORICAL_FINISH_QA",
-  "validation": "SOURCE_SHA256_BINARY_PRESERVED_STATIC_APPROACH_AND_DECK_HEIGHT_COVERAGE_VERIFIED",
+  "validation": "SOURCE_SHA256_BINARY_PRESERVED_ORTHOGONAL_RAMP_STATIC_BOUNDS_CONTACT_AND_DECK_COVERAGE_VERIFIED",
   "geometry": {
     "spanCount": 4,
     "standCount": 4,
@@ -69,7 +79,12 @@
     "approachSlope": 0.1995641727062563,
     "shopExteriorCount": 2,
     "approachAndDeckSamples": 1971,
-    "maximumHeightError": 1.7763568394002505e-15,
-    "centralShopClearance": 1.6
+    "maximumHeightError": 8.881784197001252e-16,
+    "centralShopClearance": 1.6,
+    "approachPierCount": 12,
+    "approachPierPairs": 6,
+    "supportBoundsSamples": 108,
+    "minimumTopClearance": 0.04017433091749689,
+    "orthogonalRampTransforms": true
   }
 }
