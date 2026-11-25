@@ -1540,6 +1540,7 @@ return {
 	["Town/london_house_merchant"] = 81113323401819,
 	["Town/london_house_villa"] = 95319547443672,
 	["Town/london_house_worker"] = 93317647478187,
+	["Town/london_landmark_base"] = 95299522455427,
 	["Town/london_scholar_1"] = 80241691845534,
 	["Town/london_scholar_2"] = 119570363369935,
 	["Town/london_stall_coal"] = 104016871688384,
