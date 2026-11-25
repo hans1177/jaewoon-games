@@ -760,12 +760,16 @@ test('Mare harbor animals preserve imported mesh scale and verify final bounds',
   const scene=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   assert.match(scene,/local isAnimal = kind == "Animals"/);
   assert.match(scene,/elseif isAnimal then math\.max\(ext\.X, ext\.Y, ext\.Z\)/);
-  assert.match(scene,/if not isAnimal and \(ratio < 0\.01 or ratio > 100\)/);
-  assert.match(scene,/m:GetScale\(\) \* ratio/);
+  // 원경 예외는 비충돌 Terrain/Castle에 한정하며 일반 모델의 배율 제한을 보존한다.
+  assert.match(scene,/local distantBackdrop = not solid and desiredSize >= 80 and \(kind == "Terrain" or kind == "Castle"\)/);
+  assert.match(scene,/if not isAnimal and not distantBackdrop and \(ratio < 0\.01 or ratio > 100\) then\s*error\(/);
+  assert.match(scene,/local scale = if isAnimal or distantBackdrop then m:GetScale\(\) \* ratio else ratio/);
+  assert.match(scene,/if scale ~= scale or scale <= 0 or scale == math\.huge then error\(/);
+  assert.match(scene,/if isAnimal or distantBackdrop then\s*local _, actualSize = m:GetBoundingBox\(\)\s*local actualAxis = if isAnimal then math\.max\(actualSize\.X, actualSize\.Y, actualSize\.Z\)/);
   assert.match(scene,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
   assert.match(scene,/local asset = if species == "dog" then "dog-pug" else species/);
-  assert.match(scene,/local m = if species == "duck" then nil else k and importedModel\(folder, "Animals", asset, pos, k\[1\], false, coat/);
-  assert.match(scene,/if isAnimal then m:GetScale\(\) \* ratio else ratio/);
+  // 오리도 승인된 원본 등록 전에는 숨기고, 등록 이후 기존 수입 모델 경로만 사용한다.
+  assert.match(scene,/local m = if k and AssetIds\["Animals\/" \.\. asset\]\s*then importedModel\(folder, "Animals", asset, pos, k\[1\], false, coat\) else nil\s*if not m then return end/);
 });
 
 test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
