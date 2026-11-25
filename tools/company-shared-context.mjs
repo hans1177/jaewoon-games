@@ -205,6 +205,7 @@ export function compileHomepageCentralPolicy(policy={}){
 export function compileCentralArchitectureProjection(policy={}){
   const errors=[];
   const constitution=compileOwnerCanonicalConstitution(policy);
+  if(!constitution.valid)errors.push('ARCHITECTURE_CONSTITUTION_INVALID');
   const sync=policy?.centralDocumentation?.machineProjectionSynchronization||{};
   const lifecycle=policy?.developmentLifecycleMachine||{};
   const shared=lifecycle?.sharedWorkerContext||{};

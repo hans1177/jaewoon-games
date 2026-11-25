@@ -603,7 +603,8 @@ test('owner web deploy-first approval accepts only exact publication policy and 
 
 test('local owner receiver approval allows only the exact advisory addition and retains source and QA gates',()=>{
   const begin=securityWorkflow.indexOf('          // Exact owner-authored local WEB chat:');
-  const end=securityWorkflow.indexOf('          const bad=changes.filter',begin);
+  const end=securityWorkflow.indexOf('          // Owner-authorized, exact central context restoration',begin);
+  assert.ok(begin>=0&&end>begin);
   const code=securityWorkflow.slice(begin,end);
   const head=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json'));
   const base=structuredClone(head);delete base.localVibeWebChat.existingPwaOwnerCommentReceiver;

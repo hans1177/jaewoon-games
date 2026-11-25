@@ -1,6 +1,6 @@
 import{test}from'node:test';import{strict as a}from'node:assert';import{readFileSync}from'node:fs';import{createHash}from'node:crypto';
 // Owner-reviewed exact restored companion blobs; all byte and authority assertions remain active.
-const files=[["company-directive.json","0d17f6f1879348ce4d229c926ef64fa9b1374e54"],["company-learning/company-log-map.json","e16dc62d01410f411cdb7100135c93fa160bcd12"],["company-learning/company-architecture-map.json","c724ee063bc9f6324dbc2a57d981476da361777d"],["company-learning/security-immune-system.json","72e8117cd649f2c8c5c6a06c33881f68454f5e08"]];
+const files=[["company-directive.json","0d17f6f1879348ce4d229c926ef64fa9b1374e54"],["company-learning/company-log-map.json","e16dc62d01410f411cdb7100135c93fa160bcd12"],["company-learning/company-architecture-map.json","723d46c702a83edc8bc21cb55eff97d537fc14bd"],["company-learning/security-immune-system.json","72e8117cd649f2c8c5c6a06c33881f68454f5e08"]];
 test('four canonical companion documents retain exact restored blob fingerprints',()=>{
 for(const[p,id]of files){
 const b=readFileSync(p),s=b.toString('utf8'),h=createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');

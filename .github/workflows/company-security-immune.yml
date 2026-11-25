@@ -735,9 +735,9 @@ jobs:
             const pins=[
               [policyPath,'3772dce4b98dff8072e2c6dc0326bb070df44602','930005dd7ad0399a260172792e3140044059da02'],
               ['company-learning/company-log-map.json','e16dc62d01410f411cdb7100135c93fa160bcd12','e16dc62d01410f411cdb7100135c93fa160bcd12'],
-              ['company-learning/company-architecture-map.json','3e2dcd528dea7a21d5c709e250d7f8ba2b48df2f','c724ee063bc9f6324dbc2a57d981476da361777d'],
+              ['company-learning/company-architecture-map.json','3e2dcd528dea7a21d5c709e250d7f8ba2b48df2f','723d46c702a83edc8bc21cb55eff97d537fc14bd'],
               ['company-learning/security-immune-system.json','63e6c91b5f93b98f492a7a75a395753b2f3db742','72e8117cd649f2c8c5c6a06c33881f68454f5e08'],
-              ['tools/company-shared-context.mjs',null,'e50461005a872161589a18a1567d811326c43e38']
+              ['tools/company-shared-context.mjs',null,'60044c7d4ef414a53f782115d1de51887240d62d']
             ];
             for(const [file,before,after] of pins){
               if((before&&execFileSync('git',['rev-parse',process.env.BASE_SHA+':'+file],{encoding:'utf8'}).trim()!==before)||
