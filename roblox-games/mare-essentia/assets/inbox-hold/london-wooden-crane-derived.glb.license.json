@@ -15,7 +15,9 @@
       "bytes": 28380,
       "author": "Kenney Fantasy Town Kit",
       "source": "https://kenney.nl/assets/fantasy-town-kit",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/wheel.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit"
     },
     {
       "path": "roblox-games/mare-essentia/assets/town/kenney_wood_pole_01.glb",
@@ -25,7 +27,9 @@
       "bytes": 2128,
       "author": "Kenney Medieval Town Base",
       "source": "https://opengameart.org/content/medieval-town-base-3d-assets",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/kenney_wood_pole_01.glb",
+      "originalUrl": "https://opengameart.org/content/medieval-town-base-3d-assets"
     },
     {
       "path": "roblox-games/mare-essentia/assets/cargo/wood-plank-a.glb",
@@ -35,7 +39,9 @@
       "bytes": 29024,
       "author": "Existing CC0 cargo wood plank",
       "source": "https://github.com/hans1177/jaewoon-games/blob/main/roblox-games/mare-essentia/assets/SOURCES.md",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/wood-plank-a.glb",
+      "originalUrl": "https://github.com/hans1177/jaewoon-games/blob/main/roblox-games/mare-essentia/assets/SOURCES.md"
     },
     {
       "path": "roblox-games/mare-essentia/assets/naval/pulley-crate.glb",
@@ -45,7 +51,9 @@
       "bytes": 32032,
       "author": "Kenney Retro Fantasy Kit",
       "source": "https://kenney.nl/assets/retro-fantasy-kit",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/naval/pulley-crate.glb",
+      "originalUrl": "https://kenney.nl/assets/retro-fantasy-kit"
     },
     {
       "path": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
@@ -55,7 +63,9 @@
       "bytes": 21644,
       "author": "Tim Steer / The Base Mesh; M3-org conversion",
       "source": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb"
     }
   ],
   "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged. Adjusted existing mast, brace, crossbar and rope instance transforms to clear the wheel sweep; original binary data retained. Existing axle now rotates with wheel and terminates at inner support planes; rope offset clears sweep. Nine quaternion keys added for a 12-second source preview, not a runtime speed commitment. Existing binary prefix preserved.",
@@ -561,5 +571,15 @@
   ],
   "productionVerified": false,
   "registration": "HOLD_SOURCE_CANDIDATE_ONLY",
-  "validation": "GLB_SOURCE_ONLY; ORIGINAL_GEOMETRY_TEXTURE_BINARY_PREFIX_IDENTICAL; TRIANGLES_5544; ROTATING_STATIC_STRICT_INTERIOR_EDGE_TRIANGLE_CROSSINGS_ZERO_AT_360_SAMPLED_ANGLES; COPLANAR_CONTACT_AND_NATIVE_COLLISION_NOT_VERIFIED; SOURCE_ANIMATION_KEYS_VALID; NATIVE_QA_PENDING"
+  "validation": "GLB_SOURCE_ONLY; ORIGINAL_GEOMETRY_TEXTURE_BINARY_PREFIX_IDENTICAL; TRIANGLES_5544; ROTATING_STATIC_STRICT_INTERIOR_EDGE_TRIANGLE_CROSSINGS_ZERO_AT_360_SAMPLED_ANGLES; COPLANAR_CONTACT_AND_NATIVE_COLLISION_NOT_VERIFIED; SOURCE_ANIMATION_KEYS_VALID; NATIVE_QA_PENDING",
+  "canonicalRegistrationPreflight": {
+    "mainRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+    "sourceRightsRegistryApproved": 4,
+    "sourceRightsRegistryPending": [
+      "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb"
+    ],
+    "metadataRequiredFieldsPresent": true,
+    "result": "HOLD_ORIGINAL_REGISTRY_APPROVAL_REQUIRED",
+    "nativeRuntimeVerified": false
+  }
 }
