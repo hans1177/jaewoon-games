@@ -1,6 +1,7 @@
 {
   "_안내": "새 이미지는 사람이 눈으로 확인한 뒤 여기에 \"종류/이름\": \"파일 sha256\" 으로 추가해야만 업로드된다. 자동 선별 이미지는 절대 자동 업로드하지 않는다. 사람 사진은 인물 확인·라이선스 확인 필수.",
   "approved": {
+    "Materials/london-dry-mud-field-001-source": "fa527aa4eb6151c7dab4f0a7b31722d0aa180f728af694594439d106e76f6c6d",
     "CardArt/history_open": "d5031c1524ae67ec2d0e7414315e3da49e89cbbd98b24a0a140155f30c785929",
     "CardArt/history_map": "017e93c4c0d692408b77727f173495de5e8d4caf63f1ad2ae0a391718812a058",
     "CardArt/history_record": "25cda7d6d66b76fdbb3a2d1e590cbeca8aaec758d1b2a93e448afe442336408e",
@@ -528,7 +529,7 @@
     "CardArt/eu_03": "a44f9424cdf12af58f0709cecb82c9dfc1c60aaf89373b55b3da5fe8dae06349",
     "CardArt/af_19": "6e8f7f3e222a03f2ec7642756a0f16a06c1523f8a4c8ee0695e984e5ba8d9768",
     "CardArt/af_20": "f06a44dc6545577a8ce1b7f734db1f49852282cd354bb5d31ae22ee914cac55f",
-    "CardArt/af_21": "9f78606ca37b156d8577ad66e1589444e22a1f03c8515eec7b5f881b71b00808",
+    "CardArt/af_21": "55596f0e8c1cd1fea93185fc8da577e64ee740895f5004d95284b7d6e58a7edb",
     "CardArt/af_22": "a43f1037436280d6b12eecb21f0a7f94753131e90b4ee40a7976abfe5ca33acd",
     "CardArt/af_23": "727c31c8d1e5444f1a1a248265b022cec4352d152cd3ae1bb830cd2042184cc9",
     "CardArt/af_24": "15f4073277ed31ab7a867d2f90c4660e0906f1001a0fd75862fea294607dfcf2",
@@ -880,6 +881,23 @@
       "commercialRights": true,
       "replacesSha256": "da0d6624beacdc1cb58a0df2505941336d51901ab993061e0d147081afddd2ba",
       "replacesAssetId": "107734944778682"
+    },
+    "CardArt/af_21": {
+      "sourceType": "IMAGE_GENERATION_MODEL",
+      "sourceFile": "assets/cardart/src/af_21-original.png",
+      "sourceSha256": "55596f0e8c1cd1fea93185fc8da577e64ee740895f5004d95284b7d6e58a7edb",
+      "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+      "reviewedAt": "2026-11-25",
+      "license": "PROJECT_ORIGINAL_ART",
+      "subjectMatch": true,
+      "historicalContext": true,
+      "houseStyle": true,
+      "singleFinishedScene": true,
+      "noPartsOrSprites": true,
+      "robloxSafety": true,
+      "commercialRights": true,
+      "replacesSha256": "9f78606ca37b156d8577ad66e1589444e22a1f03c8515eec7b5f881b71b00808",
+      "replacesAssetId": "139202302026948"
     }
   },
   "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지."

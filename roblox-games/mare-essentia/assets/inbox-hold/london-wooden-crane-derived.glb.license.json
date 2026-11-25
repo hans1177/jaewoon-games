@@ -1,0 +1,588 @@
+{
+  "license": "CC0-1.0",
+  "derived": true,
+  "author": "Derived from existing CC0 repository assets",
+  "source": "https://github.com/hans1177/jaewoon-games/tree/590d921b2b4fdf09ec047e074c78419a18b7d0ae/roblox-games/mare-essentia/assets/",
+  "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "commercialUseAllowed": true,
+  "originalFiles": [
+    {
+      "path": "roblox-games/mare-essentia/assets/town/wheel.glb",
+      "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
+      "gitBlobSha1": "e8d2f992bda75f63940a0fcbc453e22fc38c349a",
+      "sha256": "9dcffeb5b591f949b8488775592c224a8ba7988d94b0ba205fe5486730c28b30",
+      "bytes": 28380,
+      "author": "Kenney Fantasy Town Kit",
+      "source": "https://kenney.nl/assets/fantasy-town-kit",
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/wheel.glb",
+      "originalUrl": "https://kenney.nl/assets/fantasy-town-kit"
+    },
+    {
+      "path": "roblox-games/mare-essentia/assets/town/kenney_wood_pole_01.glb",
+      "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
+      "gitBlobSha1": "6cc33bb91194ae55f152f75dd63c181e4da8ced2",
+      "sha256": "dee33564a0429cae6208152490385e1aaebe113f17721670f18ea953ffb45ca8",
+      "bytes": 2128,
+      "author": "Kenney Medieval Town Base",
+      "source": "https://opengameart.org/content/medieval-town-base-3d-assets",
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/kenney_wood_pole_01.glb",
+      "originalUrl": "https://opengameart.org/content/medieval-town-base-3d-assets"
+    },
+    {
+      "path": "roblox-games/mare-essentia/assets/cargo/wood-plank-a.glb",
+      "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
+      "gitBlobSha1": "8f73d4ea384131b986ef1c5b9143e9b843bc9ecd",
+      "sha256": "cf6f3f72f0359bb926b6d7c060dae2cfbcf772f0ac0551963d64cf97736cbc52",
+      "bytes": 29024,
+      "author": "Existing CC0 cargo wood plank",
+      "source": "https://github.com/hans1177/jaewoon-games/blob/main/roblox-games/mare-essentia/assets/SOURCES.md",
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/wood-plank-a.glb",
+      "originalUrl": "https://github.com/hans1177/jaewoon-games/blob/main/roblox-games/mare-essentia/assets/SOURCES.md"
+    },
+    {
+      "path": "roblox-games/mare-essentia/assets/naval/pulley-crate.glb",
+      "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
+      "gitBlobSha1": "9b213f236367bea0f5a06f48947d30489fbc2907",
+      "sha256": "2191ca0a472f96464ff165b81fe01619f8a0c2340fdb5f91c42a94b3856a4b12",
+      "bytes": 32032,
+      "author": "Kenney Retro Fantasy Kit",
+      "source": "https://kenney.nl/assets/retro-fantasy-kit",
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/naval/pulley-crate.glb",
+      "originalUrl": "https://kenney.nl/assets/retro-fantasy-kit"
+    },
+    {
+      "path": "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
+      "sourceRevision": "590d921b2b4fdf09ec047e074c78419a18b7d0ae",
+      "gitBlobSha1": "c7b7edb7eab0d42afa485583624a349e578bd704",
+      "sha256": "c3ebc671e176f6d9d70a6d994bd90ac0dadd9bf969c834b414dfaaa0e6966de5",
+      "bytes": 21644,
+      "author": "Tim Steer / The Base Mesh; M3-org conversion",
+      "source": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb",
+      "license": "CC0-1.0",
+      "repositoryPath": "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb",
+      "originalUrl": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb",
+      "originalPreservedFrom": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "registrationPendingTarget": "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb"
+    }
+  ],
+  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged. Adjusted existing mast, brace, crossbar and rope instance transforms to clear the wheel sweep; original binary data retained. Existing axle now rotates with wheel and terminates at inner support planes; rope offset clears sweep. Nine quaternion keys added for a 12-second source preview, not a runtime speed commitment. Existing binary prefix preserved. Rope original moved without byte changes into canonical Town inbox; registration proof and final path remain pending.",
+  "triangles": 5544,
+  "bytes": 120644,
+  "sha256": "e3460cfb8b1ea2e8806fe8fe820112f949ffe8d2f2fb5e95ffc4992127a59e25",
+  "dimensions": [
+    3,
+    6.778,
+    8.85
+  ],
+  "instances": [
+    {
+      "name": "ground_sill_-1.18",
+      "source": "plank",
+      "dimensions": [
+        0.38,
+        0.32,
+        5.7
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "axle_frame_front_-1.18",
+      "source": "plank",
+      "dimensions": [
+        0.3,
+        0.3,
+        2.421177399531063
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "axle_frame_back_-1.18",
+      "source": "plank",
+      "dimensions": [
+        0.3,
+        0.3,
+        2.453487314008369
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "mast_-1.18",
+      "source": "plank",
+      "dimensions": [
+        0.34,
+        0.34,
+        4.93
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "mast_brace_-1.18",
+      "source": "plank",
+      "dimensions": [
+        0.25,
+        0.25,
+        4.658261478277062
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "ground_sill_1.18",
+      "source": "plank",
+      "dimensions": [
+        0.38,
+        0.32,
+        5.7
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "axle_frame_front_1.18",
+      "source": "plank",
+      "dimensions": [
+        0.3,
+        0.3,
+        2.421177399531063
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "axle_frame_back_1.18",
+      "source": "plank",
+      "dimensions": [
+        0.3,
+        0.3,
+        2.453487314008369
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "mast_1.18",
+      "source": "plank",
+      "dimensions": [
+        0.34,
+        0.34,
+        4.93
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "mast_brace_1.18",
+      "source": "plank",
+      "dimensions": [
+        0.25,
+        0.25,
+        4.658261478277062
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "sill_cross_-2.2",
+      "source": "plank",
+      "dimensions": [
+        0.32,
+        0.32,
+        3
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "sill_cross_0",
+      "source": "plank",
+      "dimensions": [
+        0.32,
+        0.32,
+        3
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "sill_cross_2.7",
+      "source": "plank",
+      "dimensions": [
+        0.32,
+        0.32,
+        3
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "axle_cross",
+      "source": "plank",
+      "dimensions": [
+        0.2,
+        0.2,
+        2.06
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "mast_cross_1.1",
+      "source": "plank",
+      "dimensions": [
+        0.2600000154972086,
+        0.2399999904632572,
+        2.65
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "mast_cross_3.3",
+      "source": "plank",
+      "dimensions": [
+        0.2600000154972086,
+        0.2399999904632572,
+        2.65
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "mast_cross_5.1",
+      "source": "plank",
+      "dimensions": [
+        0.2600000154972086,
+        0.2399999904632572,
+        2.65
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_-0.24",
+      "source": "plank",
+      "dimensions": [
+        0.23,
+        0.3,
+        4.193149174546501
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_brace_-0.24",
+      "source": "plank",
+      "dimensions": [
+        0.19,
+        0.21,
+        3.440930106817051
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_0.24",
+      "source": "plank",
+      "dimensions": [
+        0.23,
+        0.3,
+        4.193149174546501
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_brace_0.24",
+      "source": "plank",
+      "dimensions": [
+        0.19,
+        0.21,
+        3.440930106817051
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_cross_0.18",
+      "source": "plank",
+      "dimensions": [
+        0.16,
+        0.16,
+        0.64
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_cross_0.48",
+      "source": "plank",
+      "dimensions": [
+        0.16,
+        0.16,
+        0.64
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_cross_0.78",
+      "source": "plank",
+      "dimensions": [
+        0.16,
+        0.16,
+        0.64
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "jib_cross_0.98",
+      "source": "plank",
+      "dimensions": [
+        0.16,
+        0.16,
+        0.64
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "wheel_side_-0.72",
+      "source": "wheel",
+      "dimensions": [
+        0.19,
+        3.55,
+        3.55
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "wheel_side_0.72",
+      "source": "wheel",
+      "dimensions": [
+        0.19,
+        3.55,
+        3.55
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_0",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_1",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_2",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_3",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_4",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_5",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_6",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_7",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_8",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_9",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_10",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_11",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_12",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_13",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_14",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "tread_15",
+      "source": "plank",
+      "dimensions": [
+        0.55,
+        0.12,
+        1.62
+      ],
+      "parent": "Treadwheel_rotating_assembly"
+    },
+    {
+      "name": "haul_line_axle_mast",
+      "source": "rope",
+      "dimensions": [
+        0.06,
+        4.228877486603585,
+        0.06
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "haul_line_mast_jib",
+      "source": "rope",
+      "dimensions": [
+        0.06,
+        4.057746189361952,
+        0.06
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "hanging_line",
+      "source": "rope",
+      "dimensions": [
+        0.06,
+        3.25,
+        0.06
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "suspended_pulley_crate",
+      "source": "pulley",
+      "dimensions": [
+        0.62,
+        1.56,
+        1.05
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "backstay_-1.3",
+      "source": "rope",
+      "dimensions": [
+        0.055,
+        6.41112400633086,
+        0.055
+      ],
+      "parent": "frame"
+    },
+    {
+      "name": "backstay_1.3",
+      "source": "rope",
+      "dimensions": [
+        0.055,
+        6.41112400633086,
+        0.055
+      ],
+      "parent": "frame"
+    }
+  ],
+  "productionVerified": false,
+  "registration": "HOLD_SOURCE_CANDIDATE_ONLY",
+  "validation": "GLB_SOURCE_ONLY; ORIGINAL_GEOMETRY_TEXTURE_BINARY_PREFIX_IDENTICAL; TRIANGLES_5544; ROTATING_STATIC_STRICT_INTERIOR_EDGE_TRIANGLE_CROSSINGS_ZERO_AT_360_SAMPLED_ANGLES; COPLANAR_CONTACT_AND_NATIVE_COLLISION_NOT_VERIFIED; SOURCE_ANIMATION_KEYS_VALID; NATIVE_QA_PENDING",
+  "canonicalRegistrationPreflight": {
+    "mainRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+    "sourceRightsRegistryApproved": 4,
+    "sourceRightsRegistryPending": [
+      "roblox-games/mare-essentia/assets/inbox/Town/london-rope-twist-02-source.glb"
+    ],
+    "metadataRequiredFieldsPresent": true,
+    "result": "HOLD_ORIGINAL_REGISTRY_APPROVAL_REQUIRED",
+    "nativeRuntimeVerified": false,
+    "pendingSourceRegistrationTarget": "roblox-games/mare-essentia/assets/town/london-rope-twist-02-source.glb"
+  }
+}

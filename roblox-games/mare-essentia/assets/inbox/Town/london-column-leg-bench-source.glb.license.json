@@ -15,14 +15,27 @@
   "triangles": 910,
   "commercialUseAllowed": true,
   "derived": false,
-  "modification": "None; exact pinned GLB preserved. No embedded color textures; historical finish and visual review pending.",
+  "modification": "None; exact pinned GLB preserved. No embedded color textures; historical finish and native visual QA pending.",
   "intendedLondonTargets": [
     "london_district_props"
   ],
   "validation": "PINNED_LICENSE_GIT_BLOB_SHA256_GLB_INDEX_BOUNDS_CHECKED",
-  "registration": "HOLD_SOURCE_ONLY_NOT_APPROVED_FOR_UPLOAD",
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
   "productionVerified": false,
   "visualQualityApproved": false,
   "actualRobloxRuntimeVerified": false,
-  "gameBindingApproved": false
+  "gameBindingApproved": false,
+  "pinnedBlobSha": "25e274fa8f7ea84a39c24c23f98b582788b314a1",
+  "originalSha256": "8ded8cdda4ed33b315b661d14227cae6b34c76e21e5e0d1d89b9befdf025c9ae",
+  "sourceModelingMethod": "Artist-authored The Base Mesh component; pinned unchanged M3-org glTF conversion",
+  "originalModel": "Column leg bench",
+  "sourceVisualContentReview": {
+    "sourceRevision": "a6d2d8c5bd86e14e54752880d73d5859378cb7d1",
+    "sourceSha256": "8ded8cdda4ed33b315b661d14227cae6b34c76e21e5e0d1d89b9befdf025c9ae",
+    "method": "Two orthographic software rasterizations of exact original mesh POSITION/index data; node transforms separately inspected. No embedded images. Shape and intended object identity confirmed; no prohibited visual content observed. Upstream pinned Git blob and CC0 license blob matched.",
+    "reviewScope": "SOURCE_REGISTRATION_ONLY",
+    "nativeVisualQa": "PENDING",
+    "nativeCollisionQa": "PENDING",
+    "gameBindingApproved": false
+  }
 }
