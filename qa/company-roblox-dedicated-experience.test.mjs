@@ -1178,8 +1178,8 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   }
   assert.ok(battle.includes('AssetIds["Terrain/" .. spec[1]]'));
   assert.ok(battle.includes('node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'));
-  assert.ok(battle.includes('local aimAngle = if dd > 0.1 then math.deg(math.acos'));
-  assert.ok(battle.includes('local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5)'));
+  assert.match(battle,/local broadside = if dd > 0\.1 then math\.abs\(heading:Cross\(direction\.Unit\)\.Y\) else 0/);
+  assert.match(battle,/local enemyBearing = if dd > 0\.1 then math\.atan2\(direction\.Z, direction\.X\) else me\.theta\s*local turnLeft = \(enemyBearing \+ math\.pi \/ 2 - me\.theta \+ math\.pi\) % \(math\.pi \* 2\) - math\.pi\s*local turnRight = \(enemyBearing - math\.pi \/ 2 - me\.theta \+ math\.pi\) % \(math\.pi \* 2\) - math\.pi\s*local turnNeeded = if math\.abs\(turnRight\) < math\.abs\(turnLeft\) then turnRight else turnLeft/);
   assert.ok(battle.includes('local aligned = broadside > 0.5'),'gun-angle display cannot redefine existing fire rule');
   assert.ok(battle.includes('local scanAngle = (now * 2.45) % tau'));
   assert.ok(battle.includes('sweep.Width0, sweep.Width1 = 0.035'));
@@ -1212,7 +1212,7 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
   assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.66/);
+  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\)\), 26\)/);
   assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
   assert.match(src,/l\.TextStrokeTransparency = 1/);
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
@@ -1230,13 +1230,14 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/folder:SetAttribute\("NavalWeatherMode", mode\)/);
   assert.match(src,/local portLat, portLon = tonumber\(opts\.portLat\), tonumber\(opts\.portLon\)/);
   assert.match(src,/for i = 1, \(if MOBILE_VFX then 12 else 20\) do/,'foam attachments remain bounded on mobile and desktop');
-  assert.match(src,/if MOBILE_VFX and index > 3 then break end/,'mobile shore models retain the three-object cap');
+  assert.match(src,/for index, spec in coast\.props do\s*if not MOBILE_VFX or index <= 3 then table\.insert\(shoreModels, spec\) end/,'mobile mid-shore cap remains three');
+  assert.match(src,/for index, spec in depthCoast do\s*if \(not MOBILE_VFX or index <= 1\) and AssetIds\["Terrain\/" \.\. spec\[1\]\] then\s*table\.insert\(shoreModels, spec\)/,'mobile far-shore cap is one registered model');
   assert.match(src,/folder\.Destroying:Connect\(function\(\)[\s\S]*?colorGrade:Destroy\(\)/);
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   assert.match(client,/portLat = view\.player and PortData\.Ports\[view\.player\.portId\]/);
   assert.match(client,/portLon = view\.player and PortData\.Ports\[view\.player\.portId\]/);
-  assert.match(src,/local steerCue = \(if turnNeeded >= 0 then "우로 " else "좌로 "\)/);
-  assert.match(src,/\) \.\. "°"/, "aim cue string literal must be closed");
+  assert.match(src,/local steerCue = if turnNeeded >= 0 then "우현으로 조타" else "좌현으로 조타"/);
+  assert.match(src,/if not inRange then "적선에 접근" elseif not aligned then steerCue else ""/);
   assert.match(src,/local scanAngle = \(now \* 2\.45\) % tau/);
   assert.match(src,/if trailAngle < 1\.45/);
   assert.match(src,/s0 = scale \* 1\.95/);
@@ -1438,17 +1439,18 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   const readme=fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/README.md','utf8');
   assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
+  assert.match(source,/local showDawn = opts\.cardOnly and AssetIds\[dawnBoardKey\] ~= nil/);
   assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
   assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
-  assert.match(source,/boardArt.ImageTransparency = if opts.cardOnly then \(if regionArtKey and AssetIds\[regionArtKey\] then 0\.25 else 0\.9\)/);
+  assert.match(source,/boardArt.ImageTransparency = if showDawn then 0 elseif opts\.cardOnly then \(if regionArtKey and AssetIds\[regionArtKey\] then 0\.25 else 0\.9\)/);
   assert.match(source,/elseif boardArtKey == "CardArt\/battle_board" then 0\.07 else 0\.58/);
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
   assert.match(source,/boardShade.Parent = boardWash/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
     // 카드 전용 화면·일반 해전의 좌표를 둘 다 유지하는지 검사한다.
-  assert.match(source,/handFrame.Position = if compactCards then UDim2.fromScale\(0\.018, 0\.777\) else UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
-  assert.match(source,/boardFrame.Position = if compactCards then UDim2.fromScale\(0\.012, 0\.233\) else UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
-  assert.match(source,/boardFrame.Size = if compactCards then UDim2.fromScale\(0\.976, 0\.46\) else UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
+  assert.match(source,/handFrame.Position = if compactCards then UDim2.fromScale\(0\.018, 0\.716\) else UDim2.fromScale\(if opts\.cardOnly then 0\.025 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
+  assert.match(source,/boardFrame.Position = if compactCards then UDim2.fromScale\(0\.15, 0\.135\) else UDim2.fromScale\(if opts\.cardOnly then 0\.02 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
+  assert.match(source,/boardFrame.Size = if compactCards then UDim2.fromScale\(0\.838, 0\.57\) else UDim2.fromScale\(if opts\.cardOnly then 0\.76 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
   assert.match(source,/local order = \{ \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \} \}/);
   assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
   assert.match(source,/laneStroke.Thickness = 1/);
