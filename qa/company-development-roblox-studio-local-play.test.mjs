@@ -4204,13 +4204,16 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('status:SetAttribute("CombatEnabled", false)')&&!scene.includes('aw.family == "axe", true, false, nil, aw'),
     'automatic skill must use original cooldown and stamina; party cannot contribute to owner streak');
   // [모바일 반원형 3메달] 기존 공격·회피 두 행동 + 주·보조 무기교체. 별도 스킬/방어 버튼 없음.
-  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
-    scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
-    scene.includes('if compactTouch then 96 elseif visualMobile then 106 else 94')&&
-    scene.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)')&&
+  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 520')&&
+    scene.includes('workspace.CurrentCamera.ViewportSize.X <= workspace.CurrentCamera.ViewportSize.Y')&&
+    scene.includes('UDim2.fromOffset(if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104')&&
+    scene.includes('UDim2.fromOffset(if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88')&&
+    scene.includes('1, if compactTouch then -85')&&
+    scene.includes('if compactTouch then UDim2.new(1, -62, 1, -202)')&&
     scene.includes('else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66)')&&
     scene.includes('combatBtns.dodge = { btn = b, label = "회피" }'),
     'large dodge and attack must be separated for thumb reach on portrait mobile');
+  assert.ok(202-85 > (104+86)/2,'portrait attack and dodge must not overlap');
   assert.ok(scene.includes('button.Name == "FieldAttack" or button.Name == "FieldDodge"')&&
     scene.includes('attackCaption.Name = "FieldAttackCaption"')&&
     scene.includes('dodgeCaption.Name = "FieldDodgeCaption"')&&
@@ -4228,7 +4231,8 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('comboLabel.Font = Enum.Font.Bangers')&&
     scene.includes('comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)')&&
     scene.includes('if visualMobile then 63 else 76')&&
-    scene.includes('TextSize = targetSize, Rotation = 0')&&
+    scene.includes('comboLabel.TextSize = targetSize')&&
+    scene.includes('comboLabel.Rotation = 0')&&scene.includes('comboPopScale.Scale = if milestone then 1.20 else 1.13')&&
     scene.includes('comboInfo.Font = Enum.Font.GothamBlack')&&
     scene.includes('초당 %.1f타'),
     'large high-contrast combo lettering and speed HUD must preserve real hit-count logic');
