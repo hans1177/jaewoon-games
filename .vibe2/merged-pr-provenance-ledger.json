@@ -356724,11 +356724,142 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_a9c9019914c9819cc79a1be5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15208",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "7d7b17a962ccc6caaa6abcbf0d23d0f31c740411",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15208,
+        "baseBranch": "main",
+        "headBranch": "mare-london-construction-originals",
+        "baseSha": "7d7b17a962ccc6caaa6abcbf0d23d0f31c740411",
+        "headSha": "a59105071d3cfc436cd65e9917632180e1a67516",
+        "mergeCommitSha": "8c7110e1e3d4630baa5add531e0a4330fdf0b97d",
+        "mergedAt": "2026-11-25T08:34:17Z",
+        "authorLogin": "hans1177",
+        "titleHash": "9234ba12a7f087ad3b88dfb996631c21cbc8798eee8a0c156ea0f15e8436ffdf",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-london-construction-originals",
+        "candidateSha": "a59105071d3cfc436cd65e9917632180e1a67516"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 1360,
+        "deletedLineCount": 1,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wheelbarrow-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wheelbarrow-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_1.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_2.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_3.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_3.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-building-scaffolding-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wheelbarrow-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_diplomacy_3.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15208",
+        "merge-commit:8c7110e1e3d4630baa5add531e0a4330fdf0b97d",
+        "base-main:7d7b17a962ccc6caaa6abcbf0d23d0f31c740411"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2820
+    "total": 2821
   }
 }
