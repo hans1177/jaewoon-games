@@ -42,7 +42,22 @@ jobs:
       matrix: ${{ steps.targets.outputs.matrix }}
       count: ${{ steps.targets.outputs.count }}
     steps:
+      # [계약 검사 다운로드 최적화] PR 검사는 로블록스 원본과 정책·도구·시험 파일만 복원한다.
+      # 게시 및 수동 실행은 기존 전체 체크아웃을 유지한다.
+      - name: Checkout complete Roblox contract inputs
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            qa
+            tools
+            company-learning
+            roblox-games
+            assets
       - uses: actions/checkout@v4
+        if: github.event_name != 'pull_request'
         with:
           fetch-depth: 2
       - uses: actions/setup-node@v4
