@@ -3045,7 +3045,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         const effectiveIds=new Map([...idSource.matchAll(/\["([^"]+)"\]\s*=\s*(\d+)/g)]
           .map(match=>[match[1],match[2]]));
         const imageRows=Object.entries(registered)
-          .filter(([key])=>/^(?:Goods|Menu|Portraits|CardArt)\/[A-Za-z0-9._-]+$/.test(key))
+          .filter(([key])=>/^(?:Goods|Menu|Portraits|CardArt|Materials)\/[A-Za-z0-9._-]+$/.test(key))
           .sort(([a],[b])=>a.localeCompare(b))
           .map(([key,asset])=>{
             if(asset?.assetType!=='Image'||asset.usePermissionGranted!==true
