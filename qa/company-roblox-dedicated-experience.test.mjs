@@ -852,10 +852,18 @@ test('Mare donkey rig candidate keeps original geometry and has real skinned joi
     assert.equal(doc.accessors[prim.attributes.JOINTS_0].count,pos.count);
     assert.equal(doc.accessors[prim.attributes.WEIGHTS_0].count,pos.count);
   }
-  const staticBin=20+original.readUInt32LE(12)+8;
-  const rigBin=20+rig.readUInt32LE(12)+8;
+  // GLB BIN 청크 헤더는 JSON 끝에 위치한다. 길이/타입 8바이트 뒤부터 실제 메시 데이터다.
+  const staticBin=20+original.readUInt32LE(12);
+  const rigBin=20+rig.readUInt32LE(12);
+  assert.equal(original.readUInt32LE(staticBin+4),0x004e4942);
+  assert.equal(rig.readUInt32LE(rigBin+4),0x004e4942);
   const originalLen=original.readUInt32LE(staticBin);
-  assert.deepEqual(rig.subarray(rigBin+8,rigBin+8+originalLen),original.subarray(staticBin+8,staticBin+8+originalLen),'original mesh BIN must be bit-identical');
+  const rigLen=rig.readUInt32LE(rigBin);
+  assert.ok(originalLen>0&&rigLen>=originalLen);
+  assert.equal(staticBin+8+originalLen,original.length);
+  assert.equal(rigBin+8+rigLen,rig.length);
+  // 전체 바이너리를 바이트 단위 비교하되 실패 시 거대한 배열 차이를 생성하지 않는다.
+  assert.ok(rig.subarray(rigBin+8,rigBin+8+originalLen).equals(original.subarray(staticBin+8,staticBin+8+originalLen)),'original mesh BIN must be bit-identical');
   assert.deepEqual(doc.animations.map(a=>a.name),['idle','walk','trot','graze','drink','shake']);
   assert.ok(doc.animations.every(a=>a.channels.length>=11));
   assert.match(fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8'),/await prepareDonkeyRig\(\)/);
@@ -1832,7 +1840,7 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.equal(after.gltf.meshes.length>originalMeshCount,true,ship+' rebuilt geometry');
     assert.equal(before.gltf.meshes.length,originalMeshCount,ship+' original mesh baseline');
     assert.deepEqual(after.gltf.meshes.slice(0,originalMeshCount),before.gltf.meshes,ship+' source mesh must survive');
-    assert.deepEqual(after.bin.subarray(0,before.bin.length),before.bin,ship+' original binary must survive');
+    assert.ok(after.bin.subarray(0,before.bin.length).equals(before.bin),ship+' original binary must survive');
     const extra=after.gltf.meshes.slice(originalMeshCount);
     const addedTriangles=extra.reduce((n,m)=>n+m.primitives.reduce((s,p)=>s+after.gltf.accessors[p.indices].count/3,0),0);
     assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
@@ -1952,7 +1960,7 @@ test('Mare external CC0 nau original hull and Roblox registration integrity',()=
   assert.deepEqual(meta.modelGeometryGroups,['wood','linen','rope']);
   assert.deepEqual(derived.gltf.meshes.slice(0,source.gltf.meshes.length),source.gltf.meshes,
     'external source hull must remain unchanged');
-  assert.deepEqual(derived.bin.subarray(0,source.bin.length),source.bin,
+  assert.ok(derived.bin.subarray(0,source.bin.length).equals(source.bin),
     'external source geometry bytes must remain unchanged');
   assert.equal(derived.gltf.meshes.length,source.gltf.meshes.length+3);
   assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen lateen cloth'));
@@ -2039,7 +2047,7 @@ test('Mare external CC0 coastal original hull and Roblox registration integrity'
     for(const group of ['wood','edge','linen','rope','carved'])
       assert.ok(meta.modelGeometryGroups.includes(group),ship+' missing material group '+group);
     assert.deepEqual(after.model.meshes.slice(0,before.model.meshes.length),before.model.meshes);
-    assert.deepEqual(after.bin.subarray(0,before.bin.length),before.bin);
+    assert.ok(after.bin.subarray(0,before.bin.length).equals(before.bin),ship+' original binary must survive');
     assert.ok(after.model.meshes.some(m=>m.name===ship+' joined curved outer hull planks'));
     assert.ok(after.model.meshes.some(m=>m.name===ship+' timber gunwale and ribs'));
     assert.ok(after.model.meshes.some(m=>m.name===ship+' handworked open cargo deck and timber boxes'));
