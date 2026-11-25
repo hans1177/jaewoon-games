@@ -378,9 +378,11 @@ test('Studio Auto QA routes Mare publisher by workflow path without launching Fo
   assert.doesNotMatch(qa,/gh workflow run devloop-studio\.yml[^\n]*fantasy-survival/);
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(qa.includes("    - cron: '*/10 * * * *'")); // Studio 상태 확인 10분 간격
-  assert.ok(qa.includes('STUDIO_ROTATION_SKIP=RUNNER_BUSY'));
+  assert.match(qa,/if \[ "\$busy" -ge 1 \]; then\s+echo "STUDIO_WATCHDOG_SKIP=RUNNER_BUSY:\$busy"\s+exit 0/);
   assert.ok(qa.includes('group: studio-autoqa-dispatch-mare-essentia'));
-  assert.ok(qa.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.match(qa,/assets\/naval\/\*\|[^\n]+mare-ships\.json\)\s+candidate=SHIPS ;;/);
+  assert.ok(qa.includes('SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;'));
+  assert.ok(qa.includes('STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope'));
   assert.doesNotMatch(qa,/scripts\+=\(|for script in/);
   assert.ok(qa.includes('github.event.repository.private == false'));
 });
