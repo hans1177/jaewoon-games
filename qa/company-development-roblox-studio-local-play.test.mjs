@@ -4534,7 +4534,7 @@ test('Mare server media timeout requires full official Client image and sound Is
   assert.match(script,/const failed=media\.failedMedia/);
   assert.match(script,/row\?\.status!=='TIMEOUT_16S'/);
   assert.match(script,/asset\.usePermissionGranted!==true/);
-  assert.match(script,/\(\?:Goods\|Menu\|Portraits\|CardArt\)/);
+  assert.match(script,/\(\?:Goods\|Menu\|Portraits\|CardArt\|Materials\)/);
   assert.match(script,/AudioIds\.luau/);
   assert.match(script,/const allRows=\[\.\.\.imageRows,\.\.\.soundRows\]/);
   assert.match(script,/Number\(media\.imagesSounds\)!==allRows\.length/);
