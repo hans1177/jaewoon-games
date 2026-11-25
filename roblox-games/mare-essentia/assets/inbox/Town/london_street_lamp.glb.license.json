@@ -24,7 +24,8 @@
           1,
           1
         ]
-      }
+      },
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/kenney_lightpost_01.glb"
     },
     {
       "name": "lantern-candle.glb",
@@ -45,19 +46,32 @@
           0.85,
           0.85
         ]
-      }
+      },
+      "repositoryPath": "roblox-games/mare-essentia/assets/terrain/lantern-candle.glb"
     }
   ],
   "modification": "런던 3단계 가로등 실물 철제 기둥 위에 CC0 유리 랜턴 케이스를 상부 배치. 원본 메탈·유리/목재 재질 보존; Roblox 불빛 구현 별도.",
   "sha256": "1ad1248f07297907392596958a78da23c70c46c860a794984a552caded6acf71",
   "bytes": 43252,
   "triangles": 328,
-  "validation": "GLB_STRUCTURE_AND_TRIANGLE_COUNT_VERIFIED__STUDIO_VISUAL_AND_ROLE_REVIEW_PENDING",
+  "validation": "GLB_STRUCTURE_SCENE_TRIANGLES_SHA256_VERIFIED__SOURCE_VISUAL_CONTENT_REVIEWED__STUDIO_VISUAL_AND_COLLISION_PENDING",
   "productionVerified": false,
   "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
   "sourcePage": "https://opengameart.org/content/medieval-town-base-3d-assets",
   "sourceGitBlobSha1": "58b34926b31883c8abe32097eda13fc73ade637f",
   "sourceSizeBytes": 43252,
   "sourceSha256": "1ad1248f07297907392596958a78da23c70c46c860a794984a552caded6acf71",
-  "commercialUseAllowed": true
+  "commercialUseAllowed": true,
+  "sourceVisualContentReview": {
+    "sourceRevision": "9630198ba42afb7f13b720b4b25dad2c202320a2",
+    "sourceSha256": "1ad1248f07297907392596958a78da23c70c46c860a794984a552caded6acf71",
+    "method": "Exact GLB geometry rendered from indexed triangles in two views and the embedded color-map PNG inspected. Lamp silhouette visible; no prohibited visual content observed. Flat-color geometry preview does not verify Roblox material or light behavior.",
+    "reviewScope": "SOURCE_REGISTRATION_ONLY",
+    "nativeVisualQa": "PENDING",
+    "nativeCollisionQa": "PENDING",
+    "gameBindingApproved": false
+  },
+  "actualRobloxRuntimeVerified": false,
+  "visualQualityApproved": false,
+  "robloxPublishedVerified": false
 }
