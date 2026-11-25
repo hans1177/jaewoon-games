@@ -1,0 +1,288 @@
+{
+  "license": "CC0-1.0",
+  "author": "Tim Steer / The Base Mesh; glTF conversion M3-org; composition by Mare Essentia",
+  "source": "https://github.com/M3-org/base-meshes/tree/2b944200d24c8a7caf698257a3047619d3ab9268",
+  "sourceLicense": "https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/LICENSE",
+  "derived": true,
+  "commercialUseAllowed": true,
+  "originalFiles": [
+    {
+      "localPath": "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "265f8762ad170c01e1ef6709479c83c0a8a01a23",
+      "sha256": "050a49a660a02513bbe1198f9c6c72a9cb83197cb439baffd3f71383f464fffd",
+      "triangles": 60
+    },
+    {
+      "localPath": "roblox-games/mare-essentia/assets/inbox-hold/london-rope-twist-02-source.glb",
+      "sourceRevision": "97ba748a3e897383dfe8b979b709b975aac4ce5f",
+      "gitBlobSha1": "c7b7edb7eab0d42afa485583624a349e578bd704",
+      "sha256": "c3ebc671e176f6d9d70a6d994bd90ac0dadd9bf969c834b414dfaaa0e6966de5",
+      "triangles": 768
+    },
+    {
+      "localPath": "roblox-games/mare-essentia/assets/inbox-hold/london-clothes-peg-source.glb",
+      "sourceRevision": "a67b67e80a921c715914d7c2addc0afb8abee13d",
+      "gitBlobSha1": "3284e1fc2622d57d41998e42e4cf759ae2fbe11f",
+      "sha256": "18e92df16932be8277a5d9f6671f599aad8a8860d3d3c288dc45037314d823d6",
+      "triangles": 1880
+    }
+  ],
+  "modification": "Original mesh/index/normal/UV binary buffers preserved byte-for-byte; two timber posts, eight sagging rope sections and two pegs assembled with positive scales and normalized rotations; material tint and roughness adjusted. Frame only: no laundry fabric, PBR texture maps, animated cloth, collision or Roblox runtime verified.",
+  "transforms": [
+    {
+      "name": "left timber post",
+      "mesh": 0,
+      "translation": [
+        -1.5,
+        0.9664965423785251,
+        0
+      ],
+      "rotation": [
+        -0.7071067811865475,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        65,
+        120,
+        153.28124597141777
+      ]
+    },
+    {
+      "name": "right timber post",
+      "mesh": 0,
+      "translation": [
+        1.5,
+        0.9664965423785251,
+        0
+      ],
+      "rotation": [
+        -0.7071067811865475,
+        0,
+        0,
+        0.7071067811865476
+      ],
+      "scale": [
+        65,
+        120,
+        153.28124597141777
+      ]
+    },
+    {
+      "name": "rope section 1",
+      "mesh": 1,
+      "translation": [
+        -1.5,
+        1.76,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7692519460823242,
+        0.6389455715853715
+      ],
+      "scale": [
+        0.55,
+        3.8147744236436134,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 2",
+      "mesh": 1,
+      "translation": [
+        -1.125,
+        1.69,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7523841173533029,
+        0.6587246313555394
+      ],
+      "scale": [
+        0.55,
+        3.783186994970303,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 3",
+      "mesh": 1,
+      "translation": [
+        -0.75,
+        1.6400000000000001,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7347602405829027,
+        0.6783269041240773
+      ],
+      "scale": [
+        0.55,
+        3.7619813657163537,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 4",
+      "mesh": 1,
+      "translation": [
+        -0.375,
+        1.61,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.7164695353743173,
+        0.697618380549502
+      ],
+      "scale": [
+        0.55,
+        3.75133359947358,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 5",
+      "mesh": 1,
+      "translation": [
+        0,
+        1.6,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6976183805495019,
+        0.7164695353743175
+      ],
+      "scale": [
+        0.55,
+        3.75133359947358,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 6",
+      "mesh": 1,
+      "translation": [
+        0.375,
+        1.61,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6783269041240771,
+        0.7347602405829027
+      ],
+      "scale": [
+        0.55,
+        3.7619813657163537,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 7",
+      "mesh": 1,
+      "translation": [
+        0.75,
+        1.6400000000000001,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6587246313555394,
+        0.7523841173533029
+      ],
+      "scale": [
+        0.55,
+        3.783186994970303,
+        0.55
+      ]
+    },
+    {
+      "name": "rope section 8",
+      "mesh": 1,
+      "translation": [
+        1.125,
+        1.69,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        -0.6389455715853715,
+        0.7692519460823242
+      ],
+      "scale": [
+        0.55,
+        3.8147744236436134,
+        0.55
+      ]
+    },
+    {
+      "name": "wooden clothes peg",
+      "mesh": 2,
+      "translation": [
+        -0.7,
+        1.6348444444444445,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        1,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "wooden clothes peg",
+      "mesh": 2,
+      "translation": [
+        0.7,
+        1.6348444444444445,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        1,
+        6.123233995736766e-17
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "sha256": "462927ca3db0ef08cb37e9a09c5f8741f23fd2560ab62f4311e3c61a8c682ee5",
+  "bytes": 80816,
+  "triangles": 10024,
+  "meshInstances": 12,
+  "intendedLondonTargets": [
+    "london_district_props"
+  ],
+  "validation": "SOURCE_SHA256_BINARY_BUFFER_PRESERVATION_GLB_INDEX_BOUNDS_POSITIVE_SCALE_CHECKED",
+  "registration": "HOLD_DERIVED_CANDIDATE_NOT_APPROVED_FOR_UPLOAD",
+  "productionVerified": false,
+  "visualQualityApproved": false,
+  "actualRobloxRuntimeVerified": false,
+  "gameBindingApproved": false,
+  "dependencyPullRequest": 15214
+}
