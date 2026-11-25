@@ -35,17 +35,27 @@
       "sha256": "43b5fd2f1fd9786dd6bf0567517389e5244caeae5f1dd439b21ad2c028d2defe",
       "gitBlobSha1": "621c0bb8eb160fa9675181372628dff48ba917d3",
       "registeredAssetId": "73213949017379"
+    },
+    {
+      "name": "village-house-4.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-4.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "e3f48621763c1314e1f4f2a98ed6c61b76dfa436cdde263d1014a0404c1ba935",
+      "gitBlobSha1": "74e71b5fd358ef9933e298b4ae6f89d86963505b",
+      "registeredAssetId": "125271656667445"
     }
   ],
-  "modification": "Four original stone spans, four original dark stone deck plates and four market stands. Existing original geometry, material and buffers preserved. Added continuous stone surface over detected deck gaps. Static deck sample coverage only; enclosed historical shops, approach ramps, native render and collision not verified. Existing registered construction stage unchanged.",
-  "sha256": "60495780d6e1814a6bc47df2543e0e7092ea7189e19d132cfa27c59b278359c2",
-  "bytes": 174232,
-  "triangles": 7352,
-  "sceneTriangles": 7352,
-  "sourceRevision": "63c5af5f66432775f26491a2161f34af0a78426e",
+  "modification": "Four original stone spans and dark stone deck plates, four market stands, two sloped approaches and two enclosed timber shop exteriors. Deck plate orientation corrected so thickness extends below the walking surface. Original buffer bytes and materials preserved. Static coverage only; enclosed interiors, structural supports under approaches, actual Roblox rendering and collision not verified. Existing construction-stage asset unchanged.",
+  "sha256": "150c93e87c47653338b299041ce9581d773d9a96c6f89644bf6491b33afe35ac",
+  "bytes": 378760,
+  "triangles": 13424,
+  "sceneTriangles": 13424,
+  "sourceRevision": "274eaef36a41e7b8e18f90c1607c3695182c630d",
   "productionVerified": false,
   "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_HISTORICAL_FINISH_QA",
-  "validation": "SOURCE_SHA256_BINARY_PRESERVED_STATIC_DECK_SAMPLE_COVERAGE_VERIFIED",
+  "validation": "SOURCE_SHA256_BINARY_PRESERVED_STATIC_APPROACH_AND_DECK_HEIGHT_COVERAGE_VERIFIED",
   "geometry": {
     "spanCount": 4,
     "standCount": 4,
@@ -53,6 +63,13 @@
     "deckSamples": 5523,
     "deckHeight": 4.789540144950151,
     "spanStep": 4.42,
-    "nativeCollisionVerified": false
+    "nativeCollisionVerified": false,
+    "approachCount": 2,
+    "approachLength": 24,
+    "approachSlope": 0.1995641727062563,
+    "shopExteriorCount": 2,
+    "approachAndDeckSamples": 1971,
+    "maximumHeightError": 1.7763568394002505e-15,
+    "centralShopClearance": 1.6
   }
 }
