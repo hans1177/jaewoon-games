@@ -56,6 +56,12 @@ task.spawn(function()
 	end
 	local bad = 0
 	-- [자산 감사] 실제 로딩 콜백·실패 자산·진행 위치를 보존한다.
+	-- [선로딩 경합 방지] 최초 모델 준비 구간과 Studio 미디어 감사의 네트워크 요청을 분리한다.
+	-- 실제 게임의 시작 제한시간이나 기존 클라이언트 전수 검사는 변경하지 않는다.
+	local modelReadyDeadline = os.clock() + 35
+	while ReplicatedStorage:GetAttribute("MareAssetsReady") ~= true and os.clock() < modelReadyDeadline do
+		task.wait(0.25)
+	end
 	local mediaStarted = os.clock()
 	local mediaCallbacks, currentBatch, timedOutMedia = 0, 0, 0
 	local serverPreloadUnresponsive = false
@@ -69,13 +75,8 @@ task.spawn(function()
 			kind = "ImageLabel"
 		end
 		if kind then
-			local inst = Instance.new(kind)
-			if kind == "Sound" then
-				inst.SoundId = it.url
-			else
-				inst.Image = it.url
-			end
-			table.insert(items, { inst = inst, it = it })
+			-- [서버 콘텐츠 감사] 렌더링되지 않는 임시 UI 대신 등록 콘텐츠 ID를 직접 요청한다.
+			table.insert(items, { it = it })
 		end
 	end
 	-- [진단] 로블록스 콘텐츠 서버가 응답하지 않아도 종료 결과를 남기며 성공으로 간주하지 않는다.
@@ -106,7 +107,6 @@ task.spawn(function()
 				if finished then return end
 				finished = true
 				remaining -= 1
-				row.inst:Destroy()
 				if status == "SUCCESS" then return end
 				if status == "TIMEOUT_16S" then timedOutMedia += 1 end
 				bad += 1
@@ -116,7 +116,7 @@ task.spawn(function()
 				fail("asset " .. row.it.key .. " " .. row.it.url .. " status=" .. status)
 			end
 			task.spawn(function()
-				local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, { row.inst }, function(_, status)
+				local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, { row.it.url }, function(_, status)
 					if finished then return end
 					mediaCallbacks += 1
 					if status ~= Enum.AssetFetchStatus.Success or fetchStatus == nil then
