@@ -665,6 +665,7 @@ return {
 	["Interior/tablecross"] = 96356424475771,
 	["Interior/tablecrosscloth"] = 85539401678089,
 	["Interior/tableround"] = 78587008962653,
+	["Materials/london-dry-mud-field-001-source"] = 84700570481873,
 	["Materials/mat_stone_paving_historic_bc"] = 135621559112020,
 	["Materials/mat_stone_paving_historic_n"] = 138783316843682,
 	["Materials/mat_stone_paving_historic_r"] = 111390493775992,
