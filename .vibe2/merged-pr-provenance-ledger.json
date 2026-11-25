@@ -355700,11 +355700,142 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c94802acfbd963ddbeb5a766",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15185",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "14814813694ff6ddefc2a713740e33195b4e768d",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15185,
+        "baseBranch": "main",
+        "headBranch": "assets/london-wool-dye-loom",
+        "baseSha": "14814813694ff6ddefc2a713740e33195b4e768d",
+        "headSha": "07a426b112f67f0a07e82cd29aecaf1f3731f535",
+        "mergeCommitSha": "c452adcb2809a604bd8a701ccfc1241d1fbc4677",
+        "mergedAt": "2026-11-25T04:45:31Z",
+        "authorLogin": "hans1177",
+        "titleHash": "634fb109ae3ed6d8f106e007c7d96d2dcd63a757060967c90aaac7c34a5c212c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "assets/london-wool-dye-loom",
+        "candidateSha": "07a426b112f67f0a07e82cd29aecaf1f3731f535"
+      },
+      "changeStats": {
+        "changedFileCount": 11,
+        "codingRelevantFileCount": 6,
+        "addedLineCount": 136,
+        "deletedLineCount": 19,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-awning-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-awning-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-finger-post-sign-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-finger-post-sign-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-awning-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-finger-post-sign-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wood-stake-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_tin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_wool.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15185",
+        "merge-commit:c452adcb2809a604bd8a701ccfc1241d1fbc4677",
+        "base-main:14814813694ff6ddefc2a713740e33195b4e768d"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2812
+    "total": 2813
   }
 }
