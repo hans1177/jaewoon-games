@@ -354011,11 +354011,150 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_9894d45ad500486693de7ae1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15162",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "ac2eac6822d9df2f65a6a42ca0facf2ee4da250a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15162,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-source-components-1125b",
+        "baseSha": "ac2eac6822d9df2f65a6a42ca0facf2ee4da250a",
+        "headSha": "f4a4bee41492b37858069a9b308c987b53b17de6",
+        "mergeCommitSha": "285ce583d8023cc154e7f8a23c1e1a5f27fe807f",
+        "mergedAt": "2026-11-25T03:41:00Z",
+        "authorLogin": "hans1177",
+        "titleHash": "de96c336f951bb447d5701076fdb0bd1674fcbc77f1ad6fd2a62810721b616a1",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-source-components-1125b",
+        "candidateSha": "f4a4bee41492b37858069a9b308c987b53b17de6"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 244,
+        "deletedLineCount": 79,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-01-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wall-open-scaffold-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wall-open-scaffold-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-water-drip-source.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-water-drip-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_workshop_coal.glb",
+          "roblox-games/mare-essentia/assets/town/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-brick-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-stone-archway-01-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-wall-open-scaffold-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london-water-drip-source.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_workshop_coal.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15162",
+        "merge-commit:285ce583d8023cc154e7f8a23c1e1a5f27fe807f",
+        "base-main:ac2eac6822d9df2f65a6a42ca0facf2ee4da250a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2801
+    "total": 2802
   }
 }
