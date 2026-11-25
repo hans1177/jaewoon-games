@@ -352654,11 +352654,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3b3b71fe55498cf178141dfb",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15138",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "35cf6ea698c7edb687d46140eeddd4a58fa1118c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15138,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-london-house-bridge-source-1125",
+        "baseSha": "35cf6ea698c7edb687d46140eeddd4a58fa1118c",
+        "headSha": "8ffa215d21bf432858e4eb2d733ecfb0ec4f4825",
+        "mergeCommitSha": "cb14cdab159bd6b4ec0b3993cc864add479da2af",
+        "mergedAt": "2026-11-25T02:02:05Z",
+        "authorLogin": "hans1177",
+        "titleHash": "26487f7c37566ee925c84aea6205e5636f71670b760a8d72edf26d278a27e883",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-london-house-bridge-source-1125",
+        "candidateSha": "8ffa215d21bf432858e4eb2d733ecfb0ec4f4825"
+      },
+      "changeStats": {
+        "changedFileCount": 16,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 568,
+        "deletedLineCount": 507,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_1.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_2.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_3.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_1.glb",
+          "roblox-games/mare-essentia/assets/town/london_house_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_2.glb",
+          "roblox-games/mare-essentia/assets/town/london_house_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_3.glb",
+          "roblox-games/mare-essentia/assets/town/london_house_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_house_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox/Town/london_landmark_base.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_1.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_2.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_house_3.glb.license.json",
+          "roblox-games/mare-essentia/assets/town/london_landmark_base.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15138",
+        "merge-commit:cb14cdab159bd6b4ec0b3993cc864add479da2af",
+        "base-main:35cf6ea698c7edb687d46140eeddd4a58fa1118c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2792
+    "total": 2793
   }
 }
