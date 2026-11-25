@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-7ac06l",
+      "worker": "vibe2",
+      "taskId": "recovery-recovery-dd6862ac2d34de278371",
+      "gameId": "mare-essentia",
+      "files": [
+        "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau"
+      ],
+      "baseSha": "bed21c0e312f6d68e11fc4c2a2ee750d0d1bb3d5",
+      "runId": "45552250162",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-25T05:21:01.934Z",
+      "expiresAt": "2026-11-25T06:06:01.934Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:recovery-recovery-dd6862ac2d34de278371"
+      ]
+    }
+  ]
 }
