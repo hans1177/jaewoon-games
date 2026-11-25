@@ -58,10 +58,10 @@
       "license": "CC0-1.0"
     }
   ],
-  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved.",
+  "modification": "Original GLB vertex/index/UV/image buffer bytes preserved; scene composed using instance matrices and independent treadwheel node. No newly generated mesh geometry. Source candidate only; not historical, visual, PBR, collision, animation or runtime approved. Tread plank instance matrices use positive determinant rotations; original geometry and image buffers unchanged.",
   "triangles": 5544,
-  "bytes": 120296,
-  "sha256": "8543c73bdb56a44ba13addffcb4dde09e7458da496d39b4053d6c147a749fc8f",
+  "bytes": 120292,
+  "sha256": "b9a63c9c2baec9e5a563c812e1d3c2c4c548b53e07b3e0beac6683a0686877c6",
   "dimensions": [
     3,
     6.777,
@@ -561,5 +561,5 @@
   ],
   "productionVerified": false,
   "registration": "HOLD_SOURCE_CANDIDATE_ONLY",
-  "validation": "GLB_CHUNKS_BUFFER_RANGE_AND_INSTANCE_BUDGET_CHECKED; NATIVE_QA_PENDING"
+  "validation": "GLB_CHUNKS_ACCESSOR_INDEX_RANGE_SOURCE_BUFFER_IDENTITY_POSITIVE_INSTANCE_DETERMINANTS_AND_INSTANCE_BUDGET_CHECKED; NATIVE_QA_PENDING"
 }
