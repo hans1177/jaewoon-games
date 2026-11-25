@@ -4369,7 +4369,9 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/for i = 1, #items, 12 do/);
   assert.match(qa,/task\.delay\(16, function\(\)/);
   assert.match(qa,/complete\("TIMEOUT_16S"\)/);
-  assert.match(qa,/ContentProvider, \{ row\.inst \}/);
+  assert.match(qa,/ContentProvider\.PreloadAsync, ContentProvider, \{ row\.it\.url \}, function\(_, status\)/);
+  assert.match(qa,/elseif fetchStatus == Enum\.AssetFetchStatus\.Success then\s+complete\("SUCCESS"\)/);
+  assert.match(qa,/complete\(if fetchStatus then tostring\(fetchStatus\) else "NO_CALLBACK"\)/);
   assert.match(qa,/#failedMedia < 128/);
   assert.doesNotMatch(qa,/for i = 1, #items, 30 do/);
   assert.match(qa,/task\.delay\(140, function\(\)/);

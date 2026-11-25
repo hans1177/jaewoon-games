@@ -367,8 +367,16 @@ test('Open Cloud runtime stays automatic while official Studio is mandatory for 
   assert.match(foundation,/name: Probe exact Roblox Open Cloud engine execution/);
   assert.doesNotMatch(foundation,/name: Probe exact Roblox Open Cloud engine execution\n\s+if: \$\{\{ inputs\.retry_open_cloud_only == true \}\}/);
   assert.match(foundation,/SERVER_DIAGNOSTIC_ENABLED: true/);
-  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
-  assert.match(studioPlan,/if: \$\{\{ !cancelled\(\) \}\}/);
+  const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const focus=policy.developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  assert.equal(focus.completionPursuit.nonFocusedDevelopmentContinues,false);
+  assert.equal(focus.ownerFocusedGameIds.length,1);
+  assert.equal(policy.roblox.deploymentControl.studioRuntimeRequired,true);
+  const expectedPlanCondition="    if: ${{ !cancelled() && (inputs.game_id == '' || inputs.game_id == '"+focus.ownerFocusedGameIds[0]+"') }}";
+  assert.ok(studioPlan.split('\n').includes(expectedPlanCondition),'Studio plan must follow current owner focus without treating a skipped job as a pass');
+  assert.ok(studioPlan.includes('ROBLOX_STUDIO_MCP_PLAN_IS_ACTUAL_PLAY_PASS=NO'));
+  const studioPlay=workflow.slice(studioAutoPlayAt);
+  assert.ok(studioPlay.includes("if: always() && needs.studio-local-plan.result == 'success' && needs.studio-local-plan.outputs.count != '0'"));
 });
 
 
