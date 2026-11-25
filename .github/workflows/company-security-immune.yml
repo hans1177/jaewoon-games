@@ -750,7 +750,7 @@ jobs:
             const reconstructed=structuredClone(base);
             reconstructed.version++;
             reconstructed.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows=oldLaunchers.filter(file=>file!==retired);
-            reconstructed.changeRecord.centralContextRecovery20261125=head.changeRecord.centralContextRecovery20261125;
+            reconstructed.changeRecord={centralContextRecovery20261125:head.changeRecord.centralContextRecovery20261125,...reconstructed.changeRecord};
             if(!same(changes.slice().sort(),contextRecoveryKeys.slice().sort())||
               oldLaunchers.filter(file=>file===retired).length!==1||fs.existsSync(retired)||
               !same(nextLaunchers,reconstructed.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows)||
