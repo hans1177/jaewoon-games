@@ -895,7 +895,7 @@ test('Mare R15 faces use their native head front and stationary villagers greet 
 });
 
 // [탐험 전투] 기존 판정·무기 목록은 보존하고, 화면 이동·두 무기·이미지 가독성을 검증한다.
-test('Mare field charge, follower formation, two-weapon quick swap and approved skill art stay coherent',()=>{
+test('Mare field charge, noncombat party, two-weapon quick swap and approved skill art stay coherent',()=>{
   const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
   const weapons=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau','utf8');
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
@@ -903,9 +903,10 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   assert.ok(field.includes('desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))'));
   assert.ok(!field.includes('e.model:PivotTo(e.model:GetPivot() + to.Unit * step)'),'no one-frame enemy charge teleport');
   assert.ok(field.includes('math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))'),'enemy speed respects frame lag');
-  assert.ok(field.includes('pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)'));
-  assert.ok(field.includes('a.focus = tgt'),'ally retains combat target instead of switching every frame');
-  assert.ok(field.includes('root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)'));
+  assert.doesNotMatch(field,/pcall\(Pose\.createR15, folder, pos0|a\.focus = tgt|root0\.CFrame \* CFrame\.new\(if a\.slot/,'solo combat must not spawn or command companion combat actors');
+  assert.match(field,/local party = if type\(opts\.allies\) == "table" then opts\.allies else \{\}/);
+  assert.match(field,/for _, member in party do\s*if count >= 2 then break end/);
+  assert.match(field,/status:SetAttribute\("CompanionId", member\.id\)\s*status:SetAttribute\("CombatEnabled", false\)/);
   assert.ok(field.includes('wbtn:SetAttribute("WeaponChoiceCount", 2)'));
   assert.ok(field.includes('wpn, reserveWeapon = reserveWeapon, wpn'));
   assert.ok(weapons.includes('function Weapons.cycle('),'all historical weapon definitions remain available');
@@ -922,7 +923,7 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
 });
 
 // [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
-test('Mare exploration preserves combat rules while grounding allies and containing cancelled scene builds',()=>{
+test('Mare exploration preserves combat rules while preserving noncombat party and containing cancelled scene builds',()=>{
   const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
@@ -936,9 +937,11 @@ test('Mare exploration preserves combat rules while grounding allies and contain
     assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
   }
   assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
-  assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.015, root0\.Position\.Z - 4\)/);
+  assert.doesNotMatch(field,/local pos0 = Vector3\.new\(footX|pcall\(Pose\.createR15, folder, pos0/,'no combat companion spawn in solo field');
+  assert.match(field,/local companionRows: \{ any \} = \{\}/);
   assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
-  assert.match(field,/local created, m = pcall\(Pose\.createR15, folder, pos0/);
+  assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
+  assert.match(field,/ui\.portrait = opts\.allyPortraits and opts\.allyPortraits\[member\.id\]/);
   assert.match(field,/local visualTreeCount = treeCount/);
   assert.match(field,/local visualRockCount = rockCount/);
   assert.match(field,/local hillCount = if visualMobile then 16 else 28/);
