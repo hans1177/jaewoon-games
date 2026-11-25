@@ -3254,7 +3254,7 @@
   "triangles": 37340,
   "sourceRevision": "187b8b73b87414c95be280cd76c8794597665ee3",
   "productionVerified": false,
-  "registration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
   "validation": "SOURCE_SHA256_GIT_BLOB_REGISTERED_RIGHTS_GLB_SCENE_TRIANGLES_AND_ROOF_RIDGE_HEIGHT_VERIFIED",
   "previousAssemblySha256": "8f498b65be21e3005204e2cc27d9d71664605e840643d0cd0b4f49f6ca5a3c1e",
   "roofInterfaceGeometry": {
@@ -3266,5 +3266,23 @@
     "oldDomeBaseY": 7.3,
     "domeDiameter": 4.4,
     "originalBinSha256": "adaf19bb2c10753fd1a531318f7e0d81ee7f6ed6a6a3c20fd85bb02a8bb2fa41"
-  }
+  },
+  "sourcePage": "https://kenney.nl/assets/fantasy-town-kit",
+  "sourceGitBlobSha1": "6f23cc3dd1ab86d1de76cce2072760c05b5dcef1",
+  "sourceSizeBytes": 188820,
+  "sourceSha256": "ebb56a8c08174a3d8a8518667b38d02e143036f1a43f24d833c65055994ce6d8",
+  "commercialUseAllowed": true,
+  "previousRegistration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
+  "sourceVisualContentReview": {
+    "sourceRevision": "a116375bbc60dea7c6f59076cea06c7255f71384",
+    "sourceSha256": "ebb56a8c08174a3d8a8518667b38d02e143036f1a43f24d833c65055994ce6d8",
+    "method": "Reviewed two opposing flat software geometry renders using actual GLB indexed positions and scene transforms; inspected all unique embedded color maps. No prohibited visual content observed. Reserved text on the resource atlas did not intersect any UV triangle bounding rectangle in checked primitives. Original SHA-256, byte counts, scene triangles, buffer bounds and parent SHA-256/Git blob/registered CC0 permissions matched. This is source registration only; historical surface appearance, collision, water flow and loom interaction remain unverified.",
+    "reviewScope": "SOURCE_REGISTRATION_ONLY",
+    "nativeVisualQa": "PENDING",
+    "nativeCollisionQa": "PENDING",
+    "gameBindingApproved": false
+  },
+  "actualRobloxRuntimeVerified": false,
+  "visualQualityApproved": false,
+  "robloxPublishedVerified": false
 }
