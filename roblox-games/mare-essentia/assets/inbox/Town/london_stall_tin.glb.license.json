@@ -53,11 +53,24 @@
   "sceneTriangles": 3634,
   "sourceRevision": "4e04d184534fc59aa475ecdfd4f2d4cbdad7aad7",
   "productionVerified": false,
-  "registration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
+  "registration": "PENDING_EXISTING_CANONICAL_REGISTER_AND_ASSET_WORKFLOW",
   "validation": "SOURCE_GIT_BLOB_SHA256_RIGHTS_AND_GLB_STRUCTURE_VERIFIED",
   "sourcePage": "https://kenney.nl/assets/fantasy-town-kit",
   "sourceGitBlobSha1": "4d79d67cb00f2fc9980dff711aec7d474a96a42a",
   "sourceSizeBytes": 156576,
   "sourceSha256": "8cadaa1891ce213341da9250f3f007ffcb19e17eb28857c82698337fd60ecb02",
-  "commercialUseAllowed": true
+  "commercialUseAllowed": true,
+  "previousRegistration": "HOLD_NATIVE_VISUAL_AND_COLLISION_QA",
+  "sourceVisualContentReview": {
+    "sourceRevision": "f13dd4d169a744f193598d20f3d076ff1977bf72",
+    "sourceSha256": "8cadaa1891ce213341da9250f3f007ffcb19e17eb28857c82698337fd60ecb02",
+    "method": "Inspected flat software geometry render from exact GLB position/index/node transforms and all unique embedded color maps. No prohibited visual content observed; resource atlas reserved text does not overlap any UV triangle bounding rectangle. Texture appearance in Roblox not verified.",
+    "reviewScope": "SOURCE_REGISTRATION_ONLY",
+    "nativeVisualQa": "PENDING",
+    "nativeCollisionQa": "PENDING",
+    "gameBindingApproved": false
+  },
+  "actualRobloxRuntimeVerified": false,
+  "visualQualityApproved": false,
+  "robloxPublishedVerified": false
 }
