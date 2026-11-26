@@ -771,6 +771,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		m:Destroy()
 		return nil
 	end
+	-- [항구 자산 실측] 배치에 성공한 등록 모델에만 원본 키를 남긴다. 로딩/등록 성공과 구분한다.
+	-- 실제 Studio 감사 전용이며 일반 플레이의 모델 속성·부하를 변경하지 않는다.
+	if RunService:IsStudio() and kind == "Town" and AssetIds["Town/" .. asset] then
+		m:SetAttribute("PortPlacedAssetKey", "Town/" .. asset)
+	end
 	-- [실제 3D 설치 모션] 요청된 장식과 공사 단계에만 적용한다. 원본 메시의 최종 좌표·충돌을 복원한다.
 	-- 보이는 파츠가 너무 많은 원본은 모바일 드로콜/트윈 폭증을 피하기 위해 즉시 설치한다.
 	if type(buildDelay) == "number" and buildDelay >= 0 then
@@ -9150,6 +9155,46 @@ function PortScene.build(info, onFacility)
 		end
 	end
 	sliceMark("shadowPass")
+	-- [전 항구 배치 감사] 최종 장면에 남은 실제 모델의 등록 키를 집계한다.
+	-- 발전도별 대체 모델과 원본 부품은 미배치만으로 실패/승인 처리하지 않는다.
+	-- 이 증거는 장면 구성 확인이며 화면 품질·충돌·모바일 성능 승인과 별개다.
+	if RunService:IsStudio() then
+		local registered, placed, unplaced, sourcePending = {}, {}, {}, {}
+		local underscore = "Town/" .. info.portId .. "_"
+		local hyphen = "Town/" .. info.portId .. "-"
+		for assetKey in AssetIds do
+			if assetKey:sub(1, #underscore) == underscore or assetKey:sub(1, #hyphen) == hyphen then
+				registered[assetKey] = true
+			end
+		end
+		local observed = {}
+		for _, model in folder:GetDescendants() do
+			if model:IsA("Model") then
+				local assetKey = model:GetAttribute("PortPlacedAssetKey")
+				if assetKey and registered[assetKey] then observed[assetKey] = true end
+			end
+		end
+		for assetKey in registered do
+			if observed[assetKey] then
+				table.insert(placed, assetKey)
+			elseif assetKey:sub(-7) == "-source" then
+				table.insert(sourcePending, assetKey)
+			else
+				table.insert(unplaced, assetKey)
+			end
+		end
+		table.sort(placed)
+		table.sort(unplaced)
+		table.sort(sourcePending)
+		folder:SetAttribute("PortAssetPlacedKeys", table.concat(placed, ";"))
+		folder:SetAttribute("PortAssetUnplacedKeys", table.concat(unplaced, ";"))
+		folder:SetAttribute("PortAssetUnplacedSourceKeys", table.concat(sourcePending, ";"))
+		folder:SetAttribute("PortAssetRegisteredCount", #placed + #unplaced + #sourcePending)
+		folder:SetAttribute("PortAssetPlacedCount", #placed)
+		folder:SetAttribute("PortAssetAuditScope", "STUDIO_SCENE_CONSTRUCTION_ONLY")
+		print(("[QA] PORT_ASSET_PLACEMENT port=%s level=%d registered=%d placed=%d unplaced=%d unplacedSource=%d"):format(
+			info.portId, sceneLevel, #placed + #unplaced + #sourcePending, #placed, #unplaced, #sourcePending))
+	end
 	local spanText = {}
 	for _, row in spans do table.insert(spanText, row.ms .. "ms@" .. row.at) end
 	folder:SetAttribute("BuildMaxSpanMs", if spans[1] then spans[1].ms else 0)
