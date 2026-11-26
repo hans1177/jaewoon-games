@@ -123723,7 +123723,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -123757,7 +123757,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 47,
-      "previousReservationId": "system-ai:45764844557:1",
+      "previousReservationId": "system-ai:45766602332:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -123765,12 +123765,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:45766602332:1",
-      "reservedAt": "2026-11-26T06:19:04.868Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -127838,7 +127838,13 @@
         "model-output-sha256:d3e2b9ae8c02cd050a6280791dee5fc8a114a44779753f10b4f446c5ecee23d7",
         "system-ai-handoff-to-reservation:system-ai:45764844557:1",
         "actions-run:45764844557",
-        "system-ai-handoff-to-reservation:system-ai:45766602332:1"
+        "system-ai-handoff-to-reservation:system-ai:45766602332:1",
+        "actions-run:45766602332",
+        "external-ai-raw-output-sha256:805aac2bbdc499e157d99ec3abf7c9550c0f9eff5363967aeafe1b737358ab80",
+        "system-ai-applied-answer-sha256:0d6c12a3c53a2ec3a0d33faaf50d93611d125875c15a2ffab7d8e5dc32976044",
+        "repair-strategy-fingerprint:5b18b258b59c585b2cafeaccad836136d0ef11f73f2f68c5cd782dd7520e12e3",
+        "failed-strategy-fingerprint:5b18b258b59c585b2cafeaccad836136d0ef11f73f2f68c5cd782dd7520e12e3",
+        "model-output-sha256:805aac2bbdc499e157d99ec3abf7c9550c0f9eff5363967aeafe1b737358ab80"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1918,
@@ -127853,11 +127859,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-26T06:19:04.868Z"
+      "updatedAt": "2026-11-26T06:24:34.728Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -127892,7 +127898,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 27,
-      "previousReservationId": "system-ai:45764844557:1",
+      "previousReservationId": "system-ai:45766602332:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -127900,12 +127906,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:45766602332:1",
-      "reservedAt": "2026-11-26T06:19:04.868Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -128976,7 +128982,8 @@
         "repair-strategy-fingerprint:b69c7ab1aa46bbd1f99b2aa1824ddb374f2613839b0782505ab9afbb75ce6920",
         "failed-strategy-fingerprint:b69c7ab1aa46bbd1f99b2aa1824ddb374f2613839b0782505ab9afbb75ce6920",
         "model-output-sha256:e0b32322eb617fdbc99162ba74095e8b6db2d8f40735d33be14ecb9f7f00a387",
-        "system-ai-handoff-to-reservation:system-ai:45766602332:1"
+        "system-ai-handoff-to-reservation:system-ai:45766602332:1",
+        "actions-run:45766602332"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -128991,7 +128998,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-26T06:19:04.868Z"
+      "updatedAt": "2026-11-26T06:24:34.728Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
