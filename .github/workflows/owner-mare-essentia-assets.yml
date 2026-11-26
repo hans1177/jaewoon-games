@@ -2,7 +2,7 @@
 # Mare Essentia: CC0 모델과 CC BY 3.0 메뉴 그림을 기존 Open Cloud 등록 통로로 등록한다.
 # main 자산 변경·정기·수동 등록. 정기 실행은 검증된 등록 변경이 실제 main에 반영될 때만 기존 게시기로 연결한다.
 name: Owner Mare Essentia Register Assets
-run-name: Owner Mare Essentia assets · ${{ github.sha }}
+run-name: Owner Mare Essentia assets · ${{ github.sha }}${{ inputs.scheduled_recovery == true && ' · periodic' || '' }}
 
 on:
   push:
@@ -48,6 +48,11 @@ on:
         type: boolean
         required: false
         default: false
+      scheduled_recovery:
+        description: '기존 무료 연습 체인의 정기 누락 복구 (정기 모델 검사와 동일)'
+        type: boolean
+        required: false
+        default: false
       publish_after_register:
         description: '자산 등록 확인 후 게시까지 할지 (기본: 게시 안 함)'
         type: boolean
@@ -66,11 +71,12 @@ concurrency:
 
 jobs:
   register:
+    if: ${{ inputs.scheduled_recovery != true || (inputs.studio_regrant != true && inputs.register_v5 != true && inputs.upgrade_cargo_quality != true && inputs.publish_after_register != true) }}
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
-      MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' }}
-      MARE_ANIMAL_PREVIEW: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-animal-preview]')) || (github.event_name == 'workflow_dispatch' && inputs.animal_preview == true && inputs.studio_regrant != true) }}
+      MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}
+      MARE_ANIMAL_PREVIEW: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true || (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-animal-preview]')) || (github.event_name == 'workflow_dispatch' && inputs.animal_preview == true && inputs.studio_regrant != true) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -92,7 +98,7 @@ jobs:
 
       - name: Check reviewed animal originals and rotate missing source search
         id: animal_practice
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ env.MARE_MODELS_ONLY == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: node tools/mare-essentia-upload-assets.mjs --animal-source-preflight
@@ -100,7 +106,7 @@ jobs:
       # [풀컬러 원본 인입] 큰 PNG 전송 실패 시 동일 원본의 Base64 분할 파일을 정식 등록 직전에 복원한다.
       # 로블록스 등록기·이미지 승인 절차는 변경하지 않는다. 원본 SHA 불일치 시 실패한다.
       - name: Restore full-color originals from verified transfer parts
-        if: ${{ github.event_name != 'schedule' }}
+        if: ${{ env.MARE_MODELS_ONLY != 'true' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -261,7 +267,7 @@ jobs:
       # [런던 원본] 기존 inbox 등록기가 검사 후 승격하므로 동일 시험 검사를 반복하지 않는다.
       - name: Validate and stage London source models through canonical asset register
         id: london_source
-        if: ${{ github.event_name != 'schedule' && inputs.studio_regrant != true }}
+        if: ${{ env.MARE_MODELS_ONLY != 'true' && inputs.studio_regrant != true }}
         shell: bash
         run: |
           set -euo pipefail
@@ -273,7 +279,7 @@ jobs:
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
         # 검수 원본이 존재하는 정기 실행만 기존 정식 업로드 경로를 사용한다.
-        if: ${{ github.event_name != 'schedule' || steps.animal_practice.outputs.pending == 'true' }}
+        if: ${{ env.MARE_MODELS_ONLY != 'true' || steps.animal_practice.outputs.pending == 'true' }}
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           # 새 소유 계정(Anyanguy1980) 키만 사용한다. 제재 계정 쿠키는 넘기지 않는다.
@@ -422,7 +428,7 @@ jobs:
           if [[ "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
             node tools/mare-essentia-upload-assets.mjs --animal-source-visual-review="$RUNNER_TEMP/mare-animal-source-preview"
           fi
-          if [[ "${{ github.event_name }}" != "schedule" ]]; then
+          if [[ "$MARE_MODELS_ONLY" != "true" ]]; then
             python3 - <<'PY'
           import json
           report = json.load(open("roblox-games/mare-essentia/assets-wanted.json", encoding="utf-8"))
@@ -815,7 +821,7 @@ jobs:
           echo "MARE_REGISTERED_CHANGE_VERIFIED=$changed"
 
       - name: Publish the place with the new asset IDs
-        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (github.event_name == 'schedule' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
+        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (env.MARE_MODELS_ONLY == 'true' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
         env:
           GH_TOKEN: ${{ github.token }}
           MARE_PUBLISH_UNIVERSE: ${{ inputs.universe_id || '10775310508' }}
