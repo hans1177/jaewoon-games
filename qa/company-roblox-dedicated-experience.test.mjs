@@ -640,13 +640,19 @@ test('Mare scheduled verified asset registration dispatches existing publisher o
   assert.ok(workflow.includes('for f in "$registry" "$ids"; do'));
   assert.ok(workflow.includes('MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f'));
   assert.ok(workflow.includes('echo "registered_change=$changed" >> "$GITHUB_OUTPUT"'));
-  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (github.event_name == 'schedule' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
+  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (env.MARE_MODELS_ONLY == 'true' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
   assert.ok(workflow.includes('gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"'));
   assert.ok(workflow.includes('MARE_ASSET_PUBLISH_REQUESTED=YES'));
   assert.ok(publisher.includes('MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED:'));
   assert.ok(publisher.includes('MARE_CANONICAL_TARGET_MISMATCH'));
   assert.ok(studio.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
   assert.ok(publisher.includes("github.event.workflow_run.event != 'schedule'")); // 정기 작업의 중복 workflow_run 게시 금지
+  assert.ok(publisher.includes("!endsWith(github.event.workflow_run.display_title, ' · periodic')"));
+  assert.ok(publisher.includes("github.event.workflow_run.head_repository.full_name == github.repository"));
+  assert.ok(workflow.includes("MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}"));
+  assert.ok(workflow.includes("inputs.scheduled_recovery == true && ' · periodic'"));
+  assert.ok(workflow.includes("inputs.scheduled_recovery != true || (inputs.studio_regrant != true"));
+  assert.ok(workflow.includes('if [[ "$MARE_MODELS_ONLY" != "true" ]]; then'));
 });
 
 // [교역품 3D] 남은 69종의 실물·권한·자동개선 관문을 검증한다.
@@ -697,9 +703,9 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   assert.match(workflow,/schedule:\s*\n\s*- cron: '2,7,12,17,22,27,32,37,42,47,52,57 \* \* \* \*'/);
   assert.equal((fs.readFileSync('tools/devloop/assets_wanted.py','utf8').match(/time\.time\(\) \/\/ 300/g)||[]).length,2);
-  assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ github\.event_name == 'schedule' \}\}/);
+  assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ env\.MARE_MODELS_ONLY == 'true' \}\}/);
   assert.match(workflow,/run: node tools\/mare-essentia-upload-assets\.mjs --animal-source-preflight/);
-  assert.match(workflow,/github\.event_name != 'schedule' \|\| steps\.animal_practice\.outputs\.pending == 'true'/);
+  assert.match(workflow,/env\.MARE_MODELS_ONLY != 'true' \|\| steps\.animal_practice\.outputs\.pending == 'true'/);
   assert.match(workflow,/TRADE_GOODS_3D_SOURCE_PROVENANCE_MISSING/);
   assert.match(workflow,/j=report\['tradeGoodsPractice'\]/);
   assert.match(workflow,/three=report\['tradeGoods3DPractice'\]/);
