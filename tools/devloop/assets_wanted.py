@@ -473,20 +473,29 @@ def gobkit_animal_sources(manifest, targets, scene=False):
 
 
 # [항구·전투 원본] 제작 지시서의 정확한 자산 키만 확보 대상으로 사용한다.
-def scene_source_targets(registry):
+def scene_source_targets(registry, progress=None):
     docs = os.path.join(root, "docs")
     ports_dir = os.path.join(docs, "ports")
     with open(os.path.join(ports_dir, "README.md"), encoding="utf-8") as handle:
         ports = sorted(set(re.findall(r"^\| \[[^\n]+?\]\(([a-z0-9_]+)\.md\)", handle.read(), re.M)))
     targets = {}
+    port_assets = {port: {} for port in ports}
     for port in ports:
         with open(os.path.join(ports_dir, port + ".md"), encoding="utf-8") as handle:
-            for asset in re.findall(r"^#### `(" + re.escape(port) + r"_[a-z0-9_]+)`", handle.read(), re.M):
-                targets[asset] = "Town"
+            brief = handle.read()
+        pattern = r"^#### " + chr(96) + "(" + re.escape(port) + r"_[a-z0-9_]+)" + chr(96) + r"[^\n]*\n(?:- [^\n]*?· ([1-5])단계\b)?"
+        for asset, tier in re.findall(pattern, brief, re.M):
+            targets[asset] = "Town"
+            port_assets[port][asset] = int(tier) if tier else None
     with open(os.path.join(docs, "port_asset_prompts.csv"), encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
-            if row["port_id"] in ports and re.fullmatch(r"[a-z0-9_]+", row["asset_id"]):
-                targets[row["asset_id"]] = "Town"
+            port, asset = row["port_id"], row["asset_id"]
+            if port in port_assets and re.fullmatch(re.escape(port) + r"_[a-z0-9_]+", asset):
+                targets[asset] = "Town"
+                if port_assets[port].get(asset) is None and row.get("tier") in ("1", "2", "3", "4", "5"):
+                    port_assets[port][asset] = int(row["tier"])
+                else:
+                    port_assets[port].setdefault(asset, None)
     battle_csv = os.path.join(docs, "battle_backdrops", "backdrop_prompts.csv")
     with open(battle_csv, encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
@@ -496,9 +505,45 @@ def scene_source_targets(registry):
                     targets[asset] = "Naval"
                 elif category == "field":
                     targets[asset] = "Terrain"
-    outstanding = {asset: kind for asset, kind in targets.items()
-                   if not (registry.get(kind + "/" + asset, {}).get("assetId")
-                           and registry[kind + "/" + asset].get("usePermissionGranted") is True)}
+    def registered(asset, kind):
+        row = registry.get(kind + "/" + asset, {})
+        asset_id = str(row.get("assetId") or "")
+        return (row.get("assetType") == "Model" and re.fullmatch(r"[1-9][0-9]*", asset_id) is not None
+                and row.get("usePermissionGranted") is True)
+    outstanding = {asset: kind for asset, kind in targets.items() if not registered(asset, kind)}
+    if progress is not None:
+        rows = []
+        for port in ports:
+            stages = {str(i): {"planned": 0, "registeredModelRights": 0} for i in range(1, 6)}
+            stages["unspecified"] = {"planned": 0, "registeredModelRights": 0}
+            held = 0
+            missing = []
+            for asset, tier in sorted(port_assets[port].items(), key=lambda pair: (pair[1] or 6, pair[0])):
+                bucket = stages[str(tier) if tier else "unspecified"]
+                bucket["planned"] += 1
+                if registered(asset, "Town"):
+                    bucket["registeredModelRights"] += 1
+                    continue
+                path = os.path.join(root, "assets", "inbox-hold", "Town", "gobkit-free-" + asset + ".glb")
+                # 존재만으로 라이선스나 승인 성공을 표시하지 않는다.
+                if (os.path.isfile(path) and os.path.isfile(path + ".license.json")
+                        and not os.path.islink(path) and not os.path.islink(path + ".license.json")):
+                    held += 1
+                else:
+                    missing.append({"assetKey": "Town/" + asset, "tier": tier})
+            planned = len(port_assets[port])
+            rights = sum(v["registeredModelRights"] for v in stages.values())
+            rows.append({"portId": port, "planned": planned, "registeredModelRights": rights,
+                         "heldUnverified": held, "missingOriginal": len(missing),
+                         "stages": stages, "nextMissing": missing[:3]})
+        progress.update({"state": "BRIEF_SOURCE_COVERAGE_ONLY",
+                         "portCount": len(rows),
+                         "planned": sum(row["planned"] for row in rows),
+                         "registeredModelRights": sum(row["registeredModelRights"] for row in rows),
+                         "heldUnverified": sum(row["heldUnverified"] for row in rows),
+                         "missingOriginal": sum(row["missingOriginal"] for row in rows),
+                         "nativeRuntimeVerified": False, "visualQualityApproved": False,
+                         "ports": rows})
     print("MARE_SCENE_SOURCE_TARGETS",
           json.dumps({"ports": len(ports), **{kind: sum(v == kind for v in outstanding.values())
                                             for kind in ("Town", "Naval", "Terrain")}}, sort_keys=True))
@@ -714,12 +759,14 @@ def animal_source_practice():
     report["newOriginals"] = []
     report["downloadAttempts"] = restore_attempts
     report["publisherSearchState"] = "NOT_REQUESTED"
+    # 일반 자산 등록이나 20분 원본 탐색에서도 같은 지시서 장부를 갱신한다.
+    report["portImplementation"] = {}
+    scene_targets = scene_source_targets(registry, report["portImplementation"])
     if (not any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)
             or os.path.islink(os.path.dirname(hold)) or os.path.islink(hold)):
         return report
     covered = {row["name"] for row in report["candidates"]}
     missing = sorted(set(targets)-covered)
-    scene_targets = scene_source_targets(registry)
     if not missing and not scene_targets:
         report["publisherSearchState"] = "NO_MISSING_SOURCE_TARGETS"
         return report
@@ -737,14 +784,21 @@ def animal_source_practice():
     report["scenePublisherExactNameCandidates"] = len(scene_catalog)
     # 검색 결과가 아니라 실제 부족 목표와 정확히 일치하는 항목만 최대 세 개 받는다.
     import time
+    # 항구 지시서에 정확히 일치한 원본이 있으면 동물 목록에 밀리지 않게 한 자리를 우선한다.
+    # 항구 간에는 20분 슬롯으로 순환하고 이후에는 기존 전체 후보를 탐색한다.
     picks = sorted([(False, name) for name in catalog] + [(True, name) for name in scene_catalog])
     if not picks:
         return report
     start = int(time.time() // 1200)*3
-    for i in range(len(picks)):
+    picks = picks[start % len(picks):] + picks[:start % len(picks)]
+    port_picks = [pair for pair in picks if pair[0] and scene_targets[pair[1]] == "Town"]
+    if port_picks:
+        first = port_picks[0]
+        picks.remove(first)
+        picks.insert(0, first)
+    for scene, name in picks:
         if report["downloadAttempts"] >= 3:
             break
-        scene, name = picks[(start+i)%len(picks)]
         entry = (scene_catalog if scene else catalog)[name]
         source_kind = scene_targets[name] if scene else "Animals"
         target_ids = [source_kind + "/" + name] if scene else sorted(targets[name])
