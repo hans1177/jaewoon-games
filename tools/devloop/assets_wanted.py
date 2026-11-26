@@ -676,6 +676,7 @@ def render_animal_review_candidates(report, out):
                                         "artifactDirectory": key, "sourceMemberSha256": member["sha256"],
                                         "triangles": audit["triangles"], "frames": frames,
                                         "renderer": preview["renderer"],
+                                        "ignoredReferenceImages": preview["ignoredReferenceImages"],
                                         "registrationApproved": False, "visualQualityApproved": False}
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
                 tarfile.TarError, zipfile.BadZipFile) as error:
