@@ -365793,11 +365793,158 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_c262216a64db3cbc5cbcc75c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15389",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "09b72249389cf8d98e9affd41b50e8c200ae5060",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15389,
+        "baseBranch": "main",
+        "headBranch": "local-asset-coverage",
+        "baseSha": "09b72249389cf8d98e9affd41b50e8c200ae5060",
+        "headSha": "2ecc6b2b820383a3aa0f4e4a9d506edb6faca443",
+        "mergeCommitSha": "b028cf678cbf7fe6747dfeeff241e768cdc6b38d",
+        "mergedAt": "2026-11-26T05:58:17Z",
+        "authorLogin": "hans1177",
+        "titleHash": "531a4e9f83975bbb2f367544cea17736badcddf6ce8366eaa085697a2fe16418",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "local-asset-coverage",
+        "candidateSha": "2ecc6b2b820383a3aa0f4e4a9d506edb6faca443"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 15,
+        "addedLineCount": 484,
+        "deletedLineCount": 163,
+        "changedFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "company-asset-library.json",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "qa/vibe-practice-session.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets-wanted.seed.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_iberian_atlantic_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_iberian_atlantic_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_stockholm_mine.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_stockholm_mine.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_survey_16.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_survey_16.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "tools/vibe-cc0-fetch.mjs",
+          "tools/vibe-cc0-library.mjs",
+          "tools/vibe-python.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "company-asset-library.json",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "qa/vibe-practice-session.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets-wanted.seed.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_iberian_atlantic_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_stockholm_mine.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_survey_16.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "tools/vibe-cc0-fetch.mjs",
+          "tools/vibe-cc0-library.mjs",
+          "tools/vibe-python.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15389",
+        "merge-commit:b028cf678cbf7fe6747dfeeff241e768cdc6b38d",
+        "base-main:09b72249389cf8d98e9affd41b50e8c200ae5060"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2891
+    "total": 2892
   }
 }
