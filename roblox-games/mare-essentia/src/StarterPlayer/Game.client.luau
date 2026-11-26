@@ -13315,11 +13315,10 @@ syncScene = function()
 	if sceneHold or inField then
 		return -- 항해 중·지상 탐험 중에는 항구 장면을 다시 짓거나 캐릭터를 항구로 되돌리지 않는다
 	end
-	-- [시작 로딩 단축] 서버의 외부 3D 모델 수입은 최대 30초 걸린다.
-	-- 5초 안에 준비되지 않으면 기존 절차형 항구 장면을 먼저 만들고, 나중에 모델이 도착하면 정본 항구를 한 번 갱신한다.
-	-- 메뉴·게임 상태·저장·항해는 모델 로딩 완료를 기다리지 않는다.
+	-- [시작 로딩 단축] 첫 장면 모델만 최대 5초 기다리고 기존 항구를 만든다.
+	-- 전체 모델 수입 종료 후 현재 항구를 한 번 갱신하며 메뉴·저장·항해는 기다리지 않는다.
 	local RS = game:GetService("ReplicatedStorage")
-	if not RS:GetAttribute("MareAssetsReady") and not H.assetWaitDone then
+	if not H.assetWaitDone then
 		if not assetWaitStarted then
 			assetWaitStarted = true
 			task.spawn(function()
@@ -13327,19 +13326,20 @@ syncScene = function()
 				while not RS:GetAttribute("MareAssetsReady") and os.clock() - t0 < 5 and player.Parent do
 					task.wait(0.2)
 				end
-				local assetsReady = RS:GetAttribute("MareAssetsReady") == true
+				if not player.Parent then return end
+				local assetsSettled = RS:GetAttribute("MareAssetsSettled") == true
 				H.assetWaitDone = true
 				sceneKey = nil
 				if view and not sceneHold and not inField then
 					syncScene()
 				end
-				if not assetsReady then
-					-- 초기 장면에 없던 원본 3D 에셋은 로딩이 끝난 뒤 현재 항구에만 갱신한다.
-					-- 같은 기다림을 다시 걸지 않으며, 출항/현장 탐험 중에는 장면을 빼앗지 않는다.
-					while not RS:GetAttribute("MareAssetsReady") and player.Parent do
+				if not assetsSettled then
+					-- 초기 준비가 먼저 끝나도 전체 수입 종료까지 한 번만 기다린다.
+					-- 출항·탐험 중 장면을 빼앗지 않고 다음 항구 진입에서 최신 모델을 사용한다.
+					while not RS:GetAttribute("MareAssetsSettled") and player.Parent do
 						task.wait(0.5)
 					end
-					if RS:GetAttribute("MareAssetsReady") and view then
+					if player.Parent and RS:GetAttribute("MareAssetsSettled") and view then
 						sceneKey = nil
 						if not sceneHold and not inField then
 							syncScene()
