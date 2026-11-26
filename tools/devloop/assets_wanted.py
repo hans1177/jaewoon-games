@@ -1187,10 +1187,20 @@ def render_animal_review_candidates(report, out):
                                     "failureReason": row["priorRenderFailureReason"],
                                     "registrationApproved": False, "visualQualityApproved": False}
             row["alternateSourceState"] = "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
-            if replacement in retry:
-                retry.remove(replacement)
-            retry.insert(0, replacement)
-            print("MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY", row["name"])
+            observation = replacement.get("sourceVisualObservation", {})
+            already_observed = (
+                observation.get("state") == "SOURCE_VISUAL_OBSERVED_ONLY"
+                and len(replacement["modelMembers"]) == 1
+                and observation.get("sourceMemberSha256") == replacement["modelMembers"][0]["sha256"]
+                and observation.get("contentSafe") is True
+                and observation.get("speciesMatch") is True
+                and observation.get("uncertain") is False)
+            # 검수된 대체 원본은 일반 품질 수리 순환에 맡겨 다른 종의 재시도를 막지 않는다.
+            if not already_observed:
+                if replacement in retry:
+                    retry.remove(replacement)
+                retry.insert(0, replacement)
+                print("MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY", row["name"])
     fresh = [row for row in ordered if not row.get("sourceVisualObservation") and not row.get("priorRenderRetry")]
     preferred = [row for row in fresh if row.get("geometryQualityState") != "SOURCE_GEOMETRY_REPAIR_REQUIRED"]
     # 한 자리만 실제 수리에 배정하고 기존 신규·재시도 순환도 유지한다.
