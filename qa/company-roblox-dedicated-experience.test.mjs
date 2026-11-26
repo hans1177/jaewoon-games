@@ -869,12 +869,18 @@ stream=io.BytesIO()
 with zipfile.ZipFile(stream,'w') as z:
     z.writestr('models/goat.blend',body)
     z.writestr('models/goat.png',png)
+    z.writestr('models/alternate.png',png)
+    z.writestr('other/ignored.png',png)
+    z.writestr('models/texture.jpg',b'\xff\xd8\xff'+b'jpeg'+b'\xff\xd9')
 data=stream.getvalue()
 member=inspect_animal_archive(data,'goat.zip','goat')[0]
 with tempfile.TemporaryDirectory() as dest:
     path=materialize_animal_review_member(data,'goat.zip','goat',member,dest)
     assert Path(path).read_bytes()==body
     assert Path(dest,'goat.png').read_bytes()==png
+    assert Path(dest,'alternate.png').read_bytes()==png
+    assert Path(dest,'texture.jpg').read_bytes().startswith(b'\xff\xd8\xff')
+    assert not Path(dest,'ignored.png').exists()
     try:
         materialize_animal_review_member(data,'goat.zip','goat',{**member,'sha256':'0'*64},dest)
     except ValueError:
@@ -897,6 +903,12 @@ print('MARE_SOURCE_PREVIEW_FIXTURES=3')
   assert.match(source,/failureReason/);
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.match(uploader,/SOURCE_VISUAL_FRAME_HASH/);
+  assert.match(uploader,/VIBE2_GEMINI_FREE_TIER_VERIFIED==='YES'/);
+  assert.match(uploader,/buildProviders\(/);
+  assert.match(uploader,/askChain\(/);
+  assert.match(uploader,/FREE_VISION_BILLING_BLOCKED/);
+  assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
+  assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
   assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
   assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);
   assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
