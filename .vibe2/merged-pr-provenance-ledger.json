@@ -367914,11 +367914,135 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_f5dbc6d5ce442f83536efe5f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15433",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "1675a8360a8920def184d367a5ffd2eb72e6289c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15433,
+        "baseBranch": "main",
+        "headBranch": "mare-dropbox-card-eu_19-ba824d640a21",
+        "baseSha": "1675a8360a8920def184d367a5ffd2eb72e6289c",
+        "headSha": "543c2c56116027bd99c5e4779fde5844f6c6f9ed",
+        "mergeCommitSha": "a860f1caee2ed4d5b9b00f7d49df9cb2f6f982ea",
+        "mergedAt": "2026-11-26T15:34:32Z",
+        "authorLogin": "github-actions[bot]",
+        "titleHash": "83c1202b66c7be37620f40ee6212fa7642a30c87b03df10e6feb5e15beb2c186",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-dropbox-card-eu_19-ba824d640a21",
+        "candidateSha": "543c2c56116027bd99c5e4779fde5844f6c6f9ed"
+      },
+      "changeStats": {
+        "changedFileCount": 6,
+        "codingRelevantFileCount": 4,
+        "addedLineCount": 143,
+        "deletedLineCount": 48,
+        "changedFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png",
+          "roblox-games/mare-essentia/assets/cardart/src/eu_19-original.png",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15433",
+        "merge-commit:a860f1caee2ed4d5b9b00f7d49df9cb2f6f982ea",
+        "base-main:1675a8360a8920def184d367a5ffd2eb72e6289c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2907
+    "total": 2908
   }
 }
