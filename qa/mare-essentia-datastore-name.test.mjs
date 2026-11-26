@@ -4355,3 +4355,27 @@ test('13 representative port Studio captures fail closed on build and retain bot
   const core=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.equal(core.length,1000,'기존 실제 플레이 검증 1,000단계는 별도로 유지');
 });
+
+// [항구 지시서 자동 배치] 기존 필지의 승인된 현지 모델만 선택하고 미로딩이면 기존 표현을 유지한다.
+test('지역별 공방·우물·종교·시장·제분 시설은 해당 항구 정식 자산만 자동 선택한다',()=>{
+ const scene=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
+ for(const token of [
+  'info.portId .. (if n % 2 == 0 then "_bld_carpenter" else "_bld_smithy")',
+  'if portWorkshop and not AssetIds["Town/" .. portWorkshop] then portWorkshop = nil end',
+  'ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])',
+  'local originalWell = info.portId .. "_bld_well"',
+  'if not detail and itemName == originalWell then',
+  'local originalReligious = info.portId .. (if lvl <= 2 then "_bld_chapel" else "_bld_temple")',
+  'local placedOriginal = AssetIds["Town/" .. originalReligious]',
+  'if not placedOriginal then put("Town", "church"',
+  'local localMarket = info.portId .. "_bld_market_stalls"',
+  'if not originalStall and stallAsset == localMarket then',
+  'AssetIds["Town/" .. info.portId .. "_bld_mill"]',
+  'if not building and workshop == info.portId .. "_bld_mill" then'
+ ]) assert.ok(scene.includes(token),token);
+ for(const port of ['london','acapulco','edo']){
+  const brief=readText('roblox-games/mare-essentia/docs/ports/'+port+'.md');
+  for(const role of ['well','chapel','temple','market_stalls','mill','smithy','carpenter'])
+   assert.ok(brief.includes(port+'_bld_'+role),port+':'+role);
+ }
+});
