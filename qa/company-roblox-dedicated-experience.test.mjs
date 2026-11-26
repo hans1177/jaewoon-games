@@ -956,6 +956,8 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(source,/restore_pinned_animal_glb\(proof, source\)/);
   assert.match(source,/HELD_SOURCE_RESTORE_HASH/);
   assert.match(workflow,/MARE_ANIMAL_RESTORED_PROOF_INVALID/);
+  assert.match(workflow,/MARE_ANIMAL_PUBLISHER_PROOF_INVALID/);
+  assert.match(source,/PUBLISHER_FREE_CATALOG_HELD_ONLY/);
   assert.match(workflow,/inbox-hold\/Animals/);
   assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
   assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
@@ -973,7 +975,7 @@ import ast, json, struct, math, hashlib, os, re, tempfile, http.client
 from unittest.mock import patch
 from pathlib import Path
 tree=ast.parse(Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8'))
-names={'inspect_held_animal_glb','restore_pinned_animal_glb'}
+names={'inspect_held_animal_glb','restore_pinned_animal_glb','gobkit_animal_sources','read_gobkit_free'}
 exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names],type_ignores=[]),'assets_wanted.py','exec'))
 def glb(triangles=1000, bad_index=False, nan=False, negative_accessor=False, external=False, invalid_joint=False):
     pos=struct.pack('<9f',0,0,0,1,0,0,0,1,float('nan') if nan else 0)
@@ -1028,10 +1030,35 @@ with tempfile.TemporaryDirectory() as dest:
             else: raise AssertionError(expected)
             assert not Path(target).exists()
 print('MARE_HELD_ANIMAL_RESTORE_FIXTURES=8')
+license_text='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
+url='https://gobkit.com/freebies/animal013/Pigeon.glb'
+entry={'name':'Pigeon','format':'glb','url':url,'license':license_text}
+def catalog(model, listed=True):
+    return {'schemaVersion':2,'glbs':[url] if listed else [],'packs':[{'models':[model]}]}
+assert gobkit_animal_sources(catalog(entry),['pigeon','penguin'])=={'pigeon':{'name':'Pigeon','url':url,'license':license_text}}
+assert gobkit_animal_sources(catalog(entry,False),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'license':'CC BY'}),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'name':'Rockhopper Penguin'}),['penguin'])=={}
+assert gobkit_animal_sources(catalog({**entry,'url':'https://example.com/Pigeon.glb'}),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'name':'Sea Otter'}),['sea_otter'])['sea_otter']['url']==url
+with patch.object(http.client,'HTTPSConnection') as connection:
+    response=connection.return_value.getresponse.return_value
+    response.status=200
+    response.read.return_value=b'123'
+    assert read_gobkit_free('/api/free',3)==b'123'
+    response.read.assert_called_once_with(4)
+    for path,status,body in [('/api/free',302,b'123'),('/api/free',200,b'1234'),('/redirect',200,b'123')]:
+        response.status=status
+        response.read.return_value=body
+        try: read_gobkit_free(path,3)
+        except ValueError: pass
+        else: raise AssertionError('unsafe publisher download')
+print('MARE_ANIMAL_PUBLISHER_FIXTURES=10')
 `;
   const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
   assert.match(output,/MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8/);
   assert.match(output,/MARE_HELD_ANIMAL_RESTORE_FIXTURES=8/);
+  assert.match(output,/MARE_ANIMAL_PUBLISHER_FIXTURES=10/);
 });
 
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{

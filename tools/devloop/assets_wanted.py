@@ -421,6 +421,53 @@ def restore_pinned_animal_glb(proof, source):
     return data
 
 
+# [제작자 공개 무료 목록] 고정 호스트의 공개 CC0 목록과 실제 원본만 읽는다.
+# 원본 외부 버전은 고정되지 않았으므로 관찰 후보로만 보관하고 등록 승인은 생성하지 않는다.
+def read_gobkit_free(path, limit):
+    import http.client
+    if path != "/api/free" and not re.fullmatch(r"/freebies/(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)/[A-Za-z0-9_-]+\.glb", path):
+        raise ValueError("PUBLISHER_SOURCE_PATH")
+    conn = http.client.HTTPSConnection("gobkit.com", timeout=25)
+    try:
+        conn.request("GET", path, headers={"Accept-Encoding": "identity", "User-Agent": "Mare-CC0-source-discovery"})
+        response = conn.getresponse()
+        if response.status != 200:
+            raise ValueError("PUBLISHER_SOURCE_HTTP")
+        data = response.read(limit+1)
+    except http.client.HTTPException as error:
+        raise ValueError("PUBLISHER_SOURCE_HTTP") from error
+    finally:
+        conn.close()
+    if not 0 < len(data) <= limit:
+        raise ValueError("PUBLISHER_SOURCE_SIZE")
+    return data
+
+
+def gobkit_animal_sources(manifest, targets):
+    if manifest.get("schemaVersion") != 2 or not isinstance(manifest.get("packs"), list):
+        raise ValueError("PUBLISHER_MANIFEST_SCHEMA")
+    listed = set(manifest.get("glbs", []))
+    selected = {}
+    for pack in manifest["packs"]:
+        for model in pack.get("models", []):
+            name = model.get("name", "")
+            url = model.get("url", "")
+            license_text = model.get("license", "")
+            if (not isinstance(name,str) or not re.fullmatch(r"[A-Za-z0-9 _-]{1,80}",name)
+                    or not isinstance(url,str)
+                    or not re.fullmatch(r"https://gobkit\.com/freebies/(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)/[A-Za-z0-9_-]+\.glb",url)
+                    or url not in listed or model.get("format") != "glb"
+                    or license_text != "CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required."):
+                continue
+            normalized = re.sub(r"[^a-z0-9]","",name.lower())
+            for target in targets:
+                if normalized == target.replace("_","").replace("-",""):
+                    entry = {"name":name,"url":url,"license":license_text}
+                    if target not in selected or url < selected[target]["url"]:
+                        selected[target] = entry
+    return selected
+
+
 def animal_source_practice():
     goal = next((row for row in seed if row.get("id") == "mare-farm-animals"), None)
     if not goal:
@@ -487,7 +534,7 @@ def animal_source_practice():
     restore_attempts = 0
     report["restoredOriginals"] = restored
     hold = os.path.join(root, "assets", "inbox-hold", "Animals")
-    wanted_cards = {card: name for name, cards in targets.items() for card in cards if not card.startswith("farm:")}
+    wanted_cards = {card: name for name, cards in targets.items() for card in cards}
     if os.path.isdir(hold) and not os.path.islink(hold):
         for name in sorted(os.listdir(hold)):
             if not re.fullmatch(r"[a-zA-Z0-9_-]+\.glb\.license\.json", name):
@@ -497,15 +544,37 @@ def animal_source_practice():
             try:
                 proof = read_json(proof_path)
                 card = proof.get("discoveryCardId") or proof.get("candidateDiscoveryCardId")
-                if card not in wanted_cards:
-                    continue
+                publisher = proof.get("sourceAcquisition") == "PUBLISHER_FREE_CATALOG_HELD_ONLY"
+                if publisher:
+                    cards = proof.get("candidateTargetIds",[])
+                    if not isinstance(cards,list) or not cards or not all(isinstance(c,str) for c in cards):
+                        continue
+                    valid_cards = [c for c in cards if c in wanted_cards]
+                    if not valid_cards:
+                        continue
+                    card = valid_cards[0]
+                    entry = proof.get("publisherEntry",{})
+                    if (proof.get("externalRevisionPinned") is not False
+                            or proof.get("sourcePage") != "https://gobkit.com/api/free"
+                            or not re.fullmatch(r"[a-f0-9]{64}",str(proof.get("publisherManifestSha256","")))
+                            or gobkit_animal_sources({"schemaVersion":2,"glbs":[entry.get("url")],
+                                "packs":[{"models":[{**entry,"format":"glb"}]}]},[wanted_cards[card]]) == {}
+                            or entry.get("url") != proof.get("source")
+                            or any(wanted_cards[c] != wanted_cards[card] for c in valid_cards)):
+                        raise ValueError("HELD_PUBLISHER_SOURCE_EVIDENCE")
+                    blob_sha = proof.get("downloadedBlobSha","")
+                else:
+                    valid_cards = [card] if card in wanted_cards else []
+                    if not valid_cards:
+                        continue
+                    blob_sha = proof.get("pinnedBlobSha","")
                 digest = proof.get("sourceSha256", "")
                 size = proof.get("bytes")
                 if (proof.get("license") != "CC0-1.0" or proof.get("commercialUseAllowed") is not True
                         or not proof.get("author") or not str(proof.get("source", "")).startswith("https://")
                         or not str(proof.get("sourcePage", "")).startswith("https://")
                         or not re.fullmatch(r"[a-f0-9]{64}", digest) or proof.get("originalSha256") != digest
-                        or not re.fullmatch(r"[a-f0-9]{40}", str(proof.get("pinnedBlobSha", "")))
+                        or not re.fullmatch(r"[a-f0-9]{40}", str(blob_sha))
                         or type(size) is not int or not 0 < size <= 5_000_000
                         or digest in blocked_hashes or source in blocked_paths or os.path.islink(source)
                         or os.path.islink(proof_path)):
@@ -518,7 +587,7 @@ def animal_source_practice():
                 # 일반 장부 조회는 읽기 전용. 실제 정기/수동 시각 검사에서만
                 # 검증된 출처의 누락 원본을 최대 세 개 복구한다.
                 recovered = False
-                if (not os.path.lexists(source) and restore_attempts < 3
+                if (not publisher and not os.path.lexists(source) and restore_attempts < 3
                         and any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)):
                     restore_attempts += 1
                     data = restore_pinned_animal_glb(proof, source)
@@ -529,7 +598,7 @@ def animal_source_practice():
                     with open(source, "rb") as handle:
                         data = handle.read(5_000_001)
                 if (len(data) != size or hashlib.sha256(data).hexdigest() != digest
-                        or hashlib.sha1(("blob %d\0" % size).encode()+data).hexdigest() != proof["pinnedBlobSha"]):
+                        or hashlib.sha1(("blob %d\0" % size).encode()+data).hexdigest() != blob_sha):
                     raise ValueError("HELD_SOURCE_HASH_MISMATCH")
                 geometry = inspect_held_animal_glb(data)
                 if proof.get("triangles") != geometry["triangles"]:
@@ -542,7 +611,7 @@ def animal_source_practice():
                 restored.append(source)
                 print("MARE_ANIMAL_HELD_ORIGINAL_RESTORED", name, digest)
             report["candidates"].append({
-                "name": wanted_cards[card], "targets": [card], "source": source,
+                "name": wanted_cards[card], "targets": valid_cards, "source": source,
                 "directModel": True,
                 "modelMembers": [{"member": os.path.basename(source), "format": "GLB",
                                   "bytes": size, "sha256": digest}],
@@ -605,6 +674,81 @@ def animal_source_practice():
             "speciesVerified": False, "visualQualityApproved": False,
             "registrationApproved": False, "actualRobloxRuntimeVerified": False,
         })
+    # 회사 보관 원본과 기존 게임 원본에서 확보하지 못한 종만 제작자 무료 목록에 요청한다.
+    report["newOriginals"] = []
+    report["publisherSearchState"] = "NOT_REQUESTED"
+    if (not any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)
+            or not os.path.isdir(hold) or os.path.islink(hold)):
+        return report
+    covered = {row["name"] for row in report["candidates"]}
+    missing = sorted(set(targets)-covered)
+    if not missing:
+        report["publisherSearchState"] = "NO_MISSING_SOURCE_TARGETS"
+        return report
+    try:
+        manifest_bytes = read_gobkit_free("/api/free", 4_000_000)
+        catalog = gobkit_animal_sources(json.loads(manifest_bytes),missing)
+    except (OSError,ValueError,TypeError,KeyError,AttributeError) as error:
+        report["publisherSearchState"] = "PUBLISHER_CATALOG_RETRY"
+        print("MARE_ANIMAL_PUBLISHER_CATALOG_RETRY")
+        return report
+    report["publisherSearchState"] = "PUBLISHER_CATALOG_CHECKED"
+    report["publisherExactNameCandidates"] = len(catalog)
+    # 검색 결과가 아니라 실제 부족 목표와 정확히 일치하는 항목만 최대 세 개 받는다.
+    import time
+    picks = sorted(catalog)
+    if not picks:
+        return report
+    start = int(time.time()//3600)*3
+    for i in range(min(3,len(picks))):
+        name = picks[(start+i)%len(picks)]
+        entry = catalog[name]
+        source = os.path.join(hold,"gobkit-free-"+name+".glb")
+        proof_path = source+".license.json"
+        if (source in blocked_paths or proof_path in blocked_paths
+                or os.path.lexists(proof_path) or os.path.islink(source)):
+            continue
+        try:
+            data = read_gobkit_free(entry["url"].removeprefix("https://gobkit.com"),5_000_000)
+            digest = hashlib.sha256(data).hexdigest()
+            if (digest in blocked_hashes or digest in seen
+                    or any(row.get("sourceSha256")==digest for row in registry.values())):
+                raise ValueError("PUBLISHER_SOURCE_DUPLICATE_OR_BLOCKED")
+            geometry = inspect_held_animal_glb(data)
+            proof = {"license":"CC0-1.0","commercialUseAllowed":True,"author":"Gobkit / Alsomind Tech Co., Ltd.",
+                     "source":entry["url"],"sourcePage":"https://gobkit.com/api/free",
+                     "sourceAcquisition":"PUBLISHER_FREE_CATALOG_HELD_ONLY",
+                     "publisherEntry":entry,"publisherManifestSha256":hashlib.sha256(manifest_bytes).hexdigest(),
+                     "externalRevisionPinned":False,"sourceSha256":digest,"originalSha256":digest,
+                     "downloadedBlobSha":hashlib.sha1(("blob %d\0"%len(data)).encode()+data).hexdigest(),
+                     "bytes":len(data),"triangles":geometry["triangles"],
+                     "candidateTargetIds":sorted(targets[name]),"speciesVerified":False,
+                     "originalModelHandcraftedVerified":False,"registration":"PENDING_SOURCE_AND_VISUAL_REVIEW",
+                     "actualRobloxRuntimeVerified":False,"visualQualityApproved":False}
+            if os.path.exists(source):
+                with open(source,"rb") as handle:
+                    if handle.read(5_000_001)!=data:
+                        raise ValueError("PUBLISHER_SOURCE_EXISTING_CONFLICT")
+            else:
+                with open(source,"xb") as handle:
+                    handle.write(data)
+            with open(proof_path,"x",encoding="utf8") as handle:
+                json.dump(proof,handle,ensure_ascii=False,indent=2)
+                handle.write("\n")
+        except (OSError,ValueError,TypeError,KeyError,IndexError,AttributeError,struct.error):
+            report["rejected"].append({"name":name,"state":"PUBLISHER_SOURCE_UNVERIFIED"})
+            print("MARE_ANIMAL_PUBLISHER_SOURCE_RETRY",name)
+            continue
+        seen.add(digest)
+        report["newOriginals"].append(source)
+        report["candidates"].append({
+            "name":name,"targets":sorted(targets[name]),"source":source,
+            "directModel":True,"modelMembers":[{"member":os.path.basename(source),"format":"GLB",
+                "bytes":len(data),"sha256":digest}],"sourceSha256":digest,"bytes":len(data),"license":"CC0-1.0",
+            "sourceUrl":entry["url"],"licenseEvidenceUrl":proof["sourcePage"],"geometry":geometry,
+            "speciesVerified":False,"visualQualityApproved":False,"registrationApproved":False,
+            "actualRobloxRuntimeVerified":False,"state":"HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING"})
+        print("MARE_ANIMAL_PUBLISHER_ORIGINAL_HELD",name,digest)
     return report
 
 

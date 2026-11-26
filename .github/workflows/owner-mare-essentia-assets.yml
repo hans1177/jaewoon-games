@@ -542,7 +542,10 @@ jobs:
           root=pathlib.Path('roblox-games/mare-essentia')
           report=json.loads((root/'assets-wanted.json').read_text())['animalSourcePractice']
           restored=report.get('restoredOriginals',[])
-          if not isinstance(restored,list) or len(restored)>3 or len(set(restored))!=len(restored):
+          acquired=report.get('newOriginals',[])
+          if any(not isinstance(items,list) or len(items)>3 or len(set(items))!=len(items) for items in (restored,acquired)):
+              raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
+          if set(restored)&set(acquired):
               raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
           with open(sys.argv[1],'w',encoding='utf-8') as out:
               for file in restored:
@@ -560,6 +563,31 @@ jobs:
                       or proof.get('pinnedBlobSha')!=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()):
                       raise SystemExit('MARE_ANIMAL_RESTORED_PROOF_INVALID')
                   out.write(file+'\n')
+              for file in acquired:
+                  if not re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-[a-z0-9_]+\.glb',file):
+                      raise SystemExit('MARE_ANIMAL_PUBLISHER_PATH_INVALID')
+                  path=pathlib.Path(file)
+                  proof_path=pathlib.Path(file+'.license.json')
+                  if path.is_symlink() or proof_path.is_symlink():
+                      raise SystemExit('MARE_ANIMAL_PUBLISHER_PATH_INVALID')
+                  proof=json.loads(proof_path.read_text(encoding='utf8'))
+                  data=path.read_bytes()
+                  digest=hashlib.sha256(data).hexdigest()
+                  if (proof.get('sourceAcquisition')!='PUBLISHER_FREE_CATALOG_HELD_ONLY'
+                      or proof.get('sourcePage')!='https://gobkit.com/api/free'
+                      or not re.fullmatch(r'https://gobkit\.com/freebies/(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)/[A-Za-z0-9_-]+\.glb',proof.get('source',''))
+                      or proof.get('publisherEntry',{}).get('url')!=proof.get('source')
+                      or proof.get('publisherEntry',{}).get('license')!='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
+                      or proof.get('license')!='CC0-1.0' or proof.get('commercialUseAllowed') is not True
+                      or proof.get('externalRevisionPinned') is not False
+                      or proof.get('sourceVisualContentReview') is not None
+                      or proof.get('registration')!='PENDING_SOURCE_AND_VISUAL_REVIEW'
+                      or any(proof.get(key) is not False for key in ('speciesVerified','visualQualityApproved','actualRobloxRuntimeVerified','originalModelHandcraftedVerified'))
+                      or proof.get('bytes')!=len(data) or not 0<len(data)<=5_000_000
+                      or proof.get('sourceSha256')!=digest or proof.get('originalSha256')!=digest
+                      or proof.get('downloadedBlobSha')!=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()):
+                      raise SystemExit('MARE_ANIMAL_PUBLISHER_PROOF_INVALID')
+                  out.write(file+'\n'+str(proof_path)+'\n')
           PYRESTORED
             mapfile -t restored_animals < "$restored_list"
             rm -f "$restored_list"
