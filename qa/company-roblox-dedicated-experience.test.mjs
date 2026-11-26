@@ -897,6 +897,48 @@ print('MARE_SOURCE_PREVIEW_FIXTURES=3')
   assert.match(source,/timeout=600, check=False, stdout=diagnostic, stderr=subprocess\.STDOUT\)/);
   assert.match(source,/RENDERED_AWAITING_VISUAL_REVIEW/);
   assert.match(mesh,/use_scripts=False/);
+  const textureGuardFixture=String.raw`
+from pathlib import Path
+from types import SimpleNamespace
+import tempfile, textwrap
+mesh=Path('tools/vibe_mesh_audit.py').read_text(encoding='utf8')
+guard=textwrap.dedent(mesh.split('    ignored_reference_images = 0\n',1)[1].split('    scene = bpy.data.scenes.new(',1)[0])
+guard='ignored_reference_images = 0\n'+guard
+class Screen: pass
+class Object:
+    def __init__(self, kind, data): self.type,self.data=kind,data
+class Material: pass
+class Image:
+    def __init__(self, path, packed=False):
+        self.source,self.packed_file,self.filepath='FILE',packed,str(path)
+class Images(list):
+    def remove(self, image, do_unlink=False):
+        assert do_unlink
+        super().remove(image)
+with tempfile.TemporaryDirectory() as folder:
+    source=Path(folder)/'animal.blend'
+    local=Path(folder)/'valid.png'
+    local.touch()
+    for owner_kind, allowed in [('none',True),('screen',True),('empty',True),('material',False),('mesh',False),('mixed',False),('local',True),('packed',True)]:
+        im=Image(local if owner_kind=='local' else Path(folder)/'missing.png',owner_kind=='packed')
+        owners={'none':set(),'screen':{Screen()},'empty':{Object('EMPTY',im)},'material':{Material()},'mesh':{Object('MESH',im)},'mixed':{Screen(),Material()},'local':{Material()},'packed':{Material()}}[owner_kind]
+        images=Images([im])
+        bpy=SimpleNamespace(data=SimpleNamespace(images=images,user_map=lambda:{im:owners}),path=SimpleNamespace(abspath=lambda p:p),types=SimpleNamespace(Screen=Screen,Object=Object))
+        scope=dict(Path=Path,source=source,bpy=bpy)
+        try:
+            exec(guard,scope)
+        except ValueError as error:
+            assert not allowed and str(error)=='SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE',owner_kind
+            assert images==[im]
+        else:
+            assert allowed,owner_kind
+            preserved=owner_kind in ('local','packed')
+            assert (images==[im])==preserved,owner_kind
+            assert scope['ignored_reference_images']==(0 if preserved else 1),owner_kind
+print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
+`;
+  assert.match(execFileSync('python3',['-c',textureGuardFixture],{encoding:'utf8',timeout:15000}),/MARE_REFERENCE_TEXTURE_FIXTURES=8/);
+
   assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
   assert.match(workflow,/--animal-preview-dir=/);
   assert.match(workflow,/retention-days: 3/);
