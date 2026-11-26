@@ -123726,7 +123726,7 @@
     },
     {
       "id": "marketing-horror-escape-room-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -123760,7 +123760,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 47,
-      "previousReservationId": "system-ai:45769985625:1",
+      "previousReservationId": "system-ai:45771786991:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -123768,12 +123768,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:45771786991:1",
-      "reservedAt": "2026-11-26T07:06:31.320Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -127857,7 +127857,15 @@
         "repair-strategy-fingerprint:983d44493e86c3fdca321a0bc7a8ea87e9b8263a564aa602e98bbc15481eaf94",
         "failed-strategy-fingerprint:983d44493e86c3fdca321a0bc7a8ea87e9b8263a564aa602e98bbc15481eaf94",
         "model-output-sha256:fe925f45bd6160c674d317ed8793389f771b10f969e03d32e999a1c26dce60d1",
-        "system-ai-handoff-to-reservation:system-ai:45771786991:1"
+        "system-ai-handoff-to-reservation:system-ai:45771786991:1",
+        "actions-run:45771786991",
+        "external-ai-raw-output-sha256:309560668d9959ab2cd5d9f13dc3540aade55197f80ecfaf7ae7f5dfbac12e66",
+        "selected-strategy:strategy-store-positioning-comprehensive",
+        "system-ai-critic-decision-sha256:2d1223f7a4fa919dd0599574cc38fa2fc253303c15d3de61d1ae14cbc1dced3b",
+        "system-ai-applied-answer-sha256:9b09a6dc06642979c09cb7d4fb69dea25f4548a0b145a1f27d924dd2aaf81d5b",
+        "repair-strategy-fingerprint:9bd84768c72de0fc329b4cef56ddfc6053a16d1ba238dad7577e87a0a02f096b",
+        "failed-strategy-fingerprint:9bd84768c72de0fc329b4cef56ddfc6053a16d1ba238dad7577e87a0a02f096b",
+        "model-output-sha256:309560668d9959ab2cd5d9f13dc3540aade55197f80ecfaf7ae7f5dfbac12e66"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -127872,11 +127880,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-26T07:06:31.320Z"
+      "updatedAt": "2026-11-26T07:16:34.931Z"
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -127911,7 +127919,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 27,
-      "previousReservationId": "system-ai:45767673924:1",
+      "previousReservationId": "system-ai:45771786991:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -127919,12 +127927,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:45771786991:1",
-      "reservedAt": "2026-11-26T07:06:31.320Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -128999,7 +129007,8 @@
         "actions-run:45766602332",
         "system-ai-handoff-to-reservation:system-ai:45767673924:1",
         "actions-run:45767673924",
-        "system-ai-handoff-to-reservation:system-ai:45771786991:1"
+        "system-ai-handoff-to-reservation:system-ai:45771786991:1",
+        "actions-run:45771786991"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1918,
@@ -129014,7 +129023,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-26T07:06:31.320Z"
+      "updatedAt": "2026-11-26T07:16:34.931Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
