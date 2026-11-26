@@ -244,6 +244,21 @@ test('Mare asset ledger executes the existing game-local reference scanner and d
     assert.equal(evidence.unresolvedReferenceCount,1);
     assert.deepEqual(evidence.dynamicPrefixes,['CardArt/']);
     assert.equal(evidence.groups.Town.unresolvedReferenceCount,1);
+    assert.deepEqual(evidence.unresolvedKeys,['Town/bench']);
+    const registryFile=path.join(fixture,'assets-registered.json');
+    const registry=JSON.parse(fs.readFileSync(registryFile,'utf8'));
+    for(const key of ['Castle/tower-base','Castle/tower-roof','Castle/gate','Interior/tablecloth','Interior/bookcase','Interior/chair','Interior/unused']){
+      registry.assets[key]={assetType:'Model'};
+    }
+    fs.writeFileSync(registryFile,JSON.stringify(registry));
+    fs.writeFileSync(path.join(fixture,'default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{MareAssets:{Town:{},Castle:{},Interior:{}}}}}));
+    fs.appendFileSync(source,'stack("Castle", {"tower-base", "tower-roof"}, 10, 0, 0)\nlocal row={"시설", "Castle", "gate"}\nimportedModel(parent, "Interior", if tavern then "tablecloth" elseif school then "bookcase" else "chair", pos, 4, false)\n-- stack("Interior", {"unused"}, 5, 0, 0)\n');
+    const detail=run().audit.referenceEvidence;
+    assert.equal(detail.literalOrPlacementReferenceCount,8);
+    assert.equal(detail.dynamicPrefixCandidateCount,2);
+    assert.equal(detail.unresolvedReferenceCount,2);
+    assert.deepEqual(detail.unresolvedKeys,['Interior/unused','Town/bench']);
+    assert.equal(detail.groups.Castle.unresolvedReferenceCount,0);
     fs.unlinkSync(scanner);
     const failed=run();
     assert.equal(failed.audit.state,'SCAN_ERROR');

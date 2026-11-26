@@ -15,6 +15,11 @@ p4 = re.compile(r'\b(?:rowOf|one)\(\s*"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds)
 # [참조 증거] 등록 목록 자체는 사용 증거가 아니다. 동적 접두사는 후보로만 기록한다.
 literal_key = re.compile(r'["\']((?:%s)/[\w.-]+)["\']' % "|".join(map(re.escape, kinds)))
 dynamic_prefix = re.compile(r'\b(?:AssetIds|ids)\s*\[\s*["\']((?:%s)/[\w.-]*)["\']\s*\.\.' % "|".join(map(re.escape, kinds)))
+# [조립·시설별 선택] 실제 기존 모델 생성 호출의 정적 후보를 보존한다.
+stack_parts = re.compile(r'\bstack\(\s*"(%s)"\s*,\s*\{([^{}]+)\}' % "|".join(map(re.escape, kinds)))
+labeled_row = re.compile(r'\{\s*"[^"\n]+"\s*,\s*"(%s)"\s*,\s*"([\w.-]+)"\s*\}' % "|".join(map(re.escape, kinds)))
+conditional_model = re.compile(r'\bimportedModel\([^,\n]+,\s*"(%s)"\s*,\s*if\b([^,]+)' % "|".join(map(re.escape, kinds)))
+branch_name = re.compile(r'\b(?:then|else)\s*"([\w.-]+)"')
 literal_mentions, dynamic_prefixes = set(), set()
 used, missing = set(), []
 for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
@@ -24,6 +29,15 @@ for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
         source = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("--"))
         literal_mentions.update(key for key in literal_key.findall(source) if key in reg)
         dynamic_prefixes.update(dynamic_prefix.findall(source))
+        # 진단 전용: 기존 강제 미등록 검사 규칙은 변경하지 않는다.
+        for kind, parts in stack_parts.findall(source):
+            literal_mentions.update(kind + "/" + name for name in re.findall(r'"([\w.-]+)"', parts)
+                                    if kind + "/" + name in reg)
+        literal_mentions.update(kind + "/" + name for kind, name in labeled_row.findall(source)
+                                if kind + "/" + name in reg)
+        for kind, choices in conditional_model.findall(source):
+            literal_mentions.update(kind + "/" + name for name in branch_name.findall(choices)
+                                    if kind + "/" + name in reg)
     for k, n in p1.findall(text) + p2.findall(text) + p3.findall(text) + p4.findall(text):
         used.add(f"{k}/{n}")
         if f"{k}/{n}" not in reg:
@@ -49,6 +63,7 @@ evidence = {
     "literalOrPlacementReferenceCount": len(known),
     "dynamicPrefixCandidateCount": len(dynamic_candidates),
     "unresolvedReferenceCount": len(unresolved),
+    "unresolvedKeys": sorted(unresolved),
     "dynamicPrefixes": sorted(dynamic_prefixes),
     "groups": {
         kind: {
