@@ -906,7 +906,7 @@ print('MARE_SOURCE_PREVIEW_FIXTURES=3')
   const textureGuardFixture=String.raw`
 from pathlib import Path
 from types import SimpleNamespace
-import tempfile, textwrap
+import tempfile, textwrap, re
 mesh=Path('tools/vibe_mesh_audit.py').read_text(encoding='utf8')
 guard=textwrap.dedent(mesh.split('    ignored_reference_images = 0\n',1)[1].split('    scene = bpy.data.scenes.new(',1)[0])
 guard='ignored_reference_images = 0\n'+guard
@@ -917,6 +917,11 @@ class Material: pass
 class Image:
     def __init__(self, path, packed=False):
         self.source,self.packed_file,self.filepath='FILE',packed,str(path)
+        self.has_data=False
+        self.size=(0,0)
+    def reload(self):
+        self.has_data=Path(self.filepath).is_file()
+        self.size=(4,4) if self.has_data else (0,0)
 class Images(list):
     def remove(self, image, do_unlink=False):
         assert do_unlink
@@ -924,13 +929,15 @@ class Images(list):
 with tempfile.TemporaryDirectory() as folder:
     source=Path(folder)/'animal.blend'
     local=Path(folder)/'valid.png'
-    local.touch()
-    for owner_kind, allowed in [('none',True),('screen',True),('empty',True),('material',False),('mesh',False),('mixed',False),('local',True),('packed',True)]:
-        im=Image(local if owner_kind=='local' else Path(folder)/'missing.png',owner_kind=='packed')
-        owners={'none':set(),'screen':{Screen()},'empty':{Object('EMPTY',im)},'material':{Material()},'mesh':{Object('MESH',im)},'mixed':{Screen(),Material()},'local':{Material()},'packed':{Material()}}[owner_kind]
+    local.write_bytes(b'\x89PNG\r\n\x1a\n'+b'texture')
+    (Path(folder)/'bad.png').write_bytes(b'invalid')
+    for owner_kind, allowed in [('none',True),('screen',True),('empty',True),('material',False),('mesh',False),('mixed',False),('local',True),('packed',True),('legacy',True),('invalid',False)]:
+        original=local if owner_kind=='local' else r'C:\old\valid.png' if owner_kind=='legacy' else r'C:\old\bad.png' if owner_kind=='invalid' else Path(folder)/'missing.png'
+        im=Image(original,owner_kind=='packed')
+        owners={'none':set(),'screen':{Screen()},'empty':{Object('EMPTY',im)},'material':{Material()},'mesh':{Object('MESH',im)},'mixed':{Screen(),Material()},'local':{Material()},'packed':{Material()},'legacy':{Material()},'invalid':{Material()}}[owner_kind]
         images=Images([im])
         bpy=SimpleNamespace(data=SimpleNamespace(images=images,user_map=lambda:{im:owners}),path=SimpleNamespace(abspath=lambda p:p),types=SimpleNamespace(Screen=Screen,Object=Object))
-        scope=dict(Path=Path,source=source,bpy=bpy)
+        scope=dict(Path=Path,source=source,bpy=bpy,re=re)
         try:
             exec(guard,scope)
         except ValueError as error:
@@ -938,12 +945,14 @@ with tempfile.TemporaryDirectory() as folder:
             assert images==[im]
         else:
             assert allowed,owner_kind
-            preserved=owner_kind in ('local','packed')
+            preserved=owner_kind in ('local','packed','legacy')
             assert (images==[im])==preserved,owner_kind
             assert scope['ignored_reference_images']==(0 if preserved else 1),owner_kind
-print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
+            assert scope['restored_texture_references']==(1 if owner_kind=='legacy' else 0),owner_kind
+            if owner_kind=='legacy': assert im.filepath==str(local)
+print('MARE_REFERENCE_TEXTURE_FIXTURES=10')
 `;
-  assert.match(execFileSync('python3',['-c',textureGuardFixture],{encoding:'utf8',timeout:15000}),/MARE_REFERENCE_TEXTURE_FIXTURES=8/);
+  assert.match(execFileSync('python3',['-c',textureGuardFixture],{encoding:'utf8',timeout:15000}),/MARE_REFERENCE_TEXTURE_FIXTURES=10/);
 
   assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
   assert.match(workflow,/--animal-preview-dir=/);
@@ -965,6 +974,8 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(uploader,/askChain\(/);
   assert.match(uploader,/FREE_VISION_BILLING_BLOCKED/);
   assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
+  assert.match(source,/VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED/);
+  assert.match(source,/MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY/);
   assert.match(source,/"directModel": True/);
   assert.match(source,/SOURCE_PREVIEW_DIRECT_EVIDENCE/);
   assert.match(source,/restore_pinned_animal_glb\(proof, source\)/);

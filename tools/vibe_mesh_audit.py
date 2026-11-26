@@ -301,6 +301,7 @@ if args.source_preview_dir:
     # 외부 파일은 읽지 않고, 렌더에 연결된 이미지나 사용처가 불명확한 이미지는 계속 차단한다.
     print("MARE_SOURCE_PREVIEW_STAGE TEXTURE", flush=True)
     ignored_reference_images = 0
+    restored_texture_references = 0
     image_users = bpy.data.user_map()
     unused_references = []
     for im in bpy.data.images:
@@ -319,7 +320,27 @@ if args.source_preview_dir:
             for owner in owners
         )
         if not reference_only:
-            raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            # 압축 원본과 함께 검증·추출한 같은 폴더의 정확한 파일명만 복원한다.
+            # 구형 Blender의 절대경로/Windows 경로를 외부 접근 없이 재연결한다.
+            filename = str(im.filepath).replace('\\', '/').rsplit('/', 1)[-1]
+            local = source.parent / filename
+            suffix = local.suffix.lower()
+            if (not re.fullmatch(r'[A-Za-z0-9_. -]+\.(?i:png|jpg|jpeg)', filename)
+                    or local.is_symlink() or not local.is_file()
+                    or local.resolve().parent != source.parent
+                    or not 0 < local.stat().st_size <= 5_000_000):
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            payload = local.read_bytes()
+            if not (payload.startswith(b'\x89PNG\r\n\x1a\n') if suffix == '.png'
+                    else payload.startswith(b'\xff\xd8\xff') and payload.endswith(b'\xff\xd9')):
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            # 실제 디코딩 성공까지 확인하며 원본 파일에는 저장하지 않는다.
+            im.filepath = str(local)
+            im.reload()
+            if not im.has_data or len(im.size) != 2 or min(im.size) <= 0:
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            restored_texture_references += 1
+            continue
         unused_references.append(im)
     # 원본은 저장하지 않으며 검수 프로세스 메모리에서만 참조를 제거한다.
     for im in unused_references:
@@ -369,6 +390,7 @@ if args.source_preview_dir:
     result['sourcePreview'] = {'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                                'frames': frames, 'renderer': 'BLENDER_WORKBENCH_TEXTURE',
                                'ignoredReferenceImages': ignored_reference_images,
+                               'restoredTextureReferences': restored_texture_references,
                                'visualQualityApproved': False, 'registrationApproved': False}
 
 # [동물 품질 수리] 원본 렌더 완료 후 별도 후보만 제작한다. 기존 범용 후보 차단은 유지한다.
