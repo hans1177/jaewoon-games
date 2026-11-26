@@ -11,6 +11,9 @@ on:
       - 'tools/vibe-practice-session.mjs'
       - 'assets/vibe-presentation-director.js'
       - 'qa/vibe-crossplatform-visual-components.test.mjs'
+      - 'tools/vibe-cc0-fetch.mjs'
+      - 'tools/vibe-cc0-library.mjs'
+      - 'qa/vibe-cc0-library.test.mjs'
       - 'tools/vibe-gym-publish.mjs'
       - 'tools/vibe_object_score.py'
       - 'tools/vibe-normal-bake.mjs'
@@ -26,6 +29,9 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'tools/vibe-cc0-fetch.mjs'
+      - 'tools/vibe-cc0-library.mjs'
+      - 'qa/vibe-cc0-library.test.mjs'
       - 'tools/vibe_mesh_audit.py'
       - 'tools/vibe-mesh-audit.mjs'
       - 'qa/vibe-mesh-audit.test.mjs'
@@ -68,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify existing practice scheduling contract
-        run: node --test qa/vibe-practice-session.test.mjs
+        run: node --test qa/vibe-practice-session.test.mjs qa/vibe-cc0-library.test.mjs
       - name: Install Blender for actual CC0 model regression
         run: |
           for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.sources /etc/apt/sources.list.d/*.list; do
@@ -226,7 +232,7 @@ jobs:
           if ($env:VIBE_SELECTED_SOURCE) {
             node tools/vibe-cc0-fetch.mjs --execute --source $env:VIBE_SELECTED_SOURCE
           } else {
-            node tools/vibe-cc0-fetch.mjs --execute --max 1
+            node tools/vibe-cc0-fetch.mjs --execute --max 1 --design roblox-games/mare-essentia/assets-wanted.seed.json --wanted roblox-games/mare-essentia/assets-wanted.json
           }
           if ($LASTEXITCODE -ne 0) { throw 'Local source acquisition failed' }
           node tools/vibe-cc0-library.mjs scan

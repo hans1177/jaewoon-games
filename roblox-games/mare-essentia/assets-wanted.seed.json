@@ -32,6 +32,7 @@
   },
   {
     "id": "culture-landmarks",
+    "localAcquisition": [{"sourceId":"kenney-fantasy-town-kit"}],
     "kind": "Terrain",
     "purpose": "문화권 전용 랜드마크(돔 모스크·도리이·종탑)",
     "status": "using-stand-ins",
@@ -90,6 +91,7 @@
   },
   {
     "id": "naval-melee-audio",
+    "localAcquisition": [{"sourceId":"kenney-rpg-audio"},{"sourceId":"kenney-impact-sounds"}],
     "kind": "Audio",
     "purpose": "백병전 전용 효과음(칼 부딪힘·함성·갑판 발소리). 지금은 기존 타격음(sfx_hit)을 높낮이만 바꿔 겹쳐 쓴다",
     "status": "using-stand-ins",
@@ -101,6 +103,7 @@
   },
   {
     "id": "mare-farm-animals",
+    "localAcquisition": [{"sourceId":"innerscene-hippopotamus","animal":"hippo"}],
     "kind": "Animals",
     "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
     "status": "source-registered-runtime-unverified",
@@ -247,6 +250,7 @@
   },
   {
     "id": "culture-palace-architecture",
+    "localAcquisition": [{"sourceId":"kenney-fantasy-town-kit"}],
     "kind": "Town",
     "purpose": "문화권별 왕궁 실물 부품: 동아시아 기와 우진각·팔작 지붕, 조선 궁문·행각, 오스만 돔·회랑 아치, 남아시아 차트리 정자·아치 회랑, 중국 전각·패루, 일본 천수각 지붕",
     "status": "missing",

@@ -1,17 +1,4 @@
 {
-  "note": "분야별 '이만큼은 있어야 한다'는 최소 개수(잠정값, 오너가 조정). 이보다 적을 때만 자동 확보 계획이 만들어진다. 미리 쌓아 두지 않는다(prefetchAllowed:false 규칙). 중앙 12개 분야를 검사하며 원화·카드 원화는 제외. 신규 분야의 최소값 1은 부족 감지용이며 추가 대량 확보 또는 제작 승인을 뜻하지 않는다.",
-  "minPerFamily": {
-    "CHARACTER": 20,
-    "CREATURE": 30,
-    "PROP": 60,
-    "BUILDING": 25,
-    "ENVIRONMENT": 15,
-    "UI": 10,
-    "MATERIAL": 20,
-    "MOTION": 1,
-    "AUDIO": 1,
-    "VFX": 1,
-    "WEAPON": 1,
-    "SKILL": 1
-  }
+  "note": "분야별 '이만큼은 있어야 한다'는 최소 개수(잠정값, 오너가 조정). 이보다 적을 때만 자동 확보 계획이 만들어진다. 미리 쌓아 두지 않는다(prefetchAllowed:false 규칙).",
+  "minPerFamily": {"CHARACTER": 20, "CREATURE": 30, "PROP": 60, "BUILDING": 25, "ENVIRONMENT": 15, "UI": 10, "MATERIAL": 20}
 }

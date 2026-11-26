@@ -15,7 +15,7 @@ import {libraryDir,scanLibrary,checkLicense,approvedLibraryParents,extractZipSaf
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const isCc0=l=>/^CC0(?:-1\.0)?$/i.test(String(l||''));
-const acquisitionFamilies=new Set(Object.keys(JSON.parse(fs.readFileSync(path.join(here,'vibe-cc0-shortage.json'),'utf8')).minPerFamily));
+const acquisitionFamilies=new Set(['CHARACTER','CREATURE','PROP','BUILDING','ENVIRONMENT','UI','MATERIAL','MOTION','AUDIO','VFX','WEAPON','SKILL','RIG','ANIMATION']);
 const artworkCategory=/^(?:ART|ARTWORK|ORIGINAL_ART|CONCEPT_ART|CARD_ART|CARD_ARTWORK|ILLUSTRATION|PORTRAIT|KEY_ART|SPLASH_ART)$/i;
 const artworkId=/(?:^|[-_ ])(?:card[-_ ]?art(?:work)?|concept[-_ ]?art|original[-_ ]?art|illustration|portrait|key[-_ ]?art|splash[-_ ]?art)(?:$|[-_ ])/i;
 
@@ -133,7 +133,7 @@ export async function acquire(src,libDir,{allowLocal=false,maxBytes=500*1024*102
   return {id:src.id,status:'ACQUIRED_NEEDS_OWNER_APPROVAL',pack:src.id,hint:`승인: node tools/vibe-cc0-library.mjs approve --pack ${src.id} --by <이름>`};
 }
 
-export function plan({registry,repoRoot,libDir,family=null,sourceId=null,max=2,minPerFamily=JSON.parse(fs.readFileSync(path.join(here,'vibe-cc0-shortage.json'),'utf8')).minPerFamily,allowLocal=false}){
+export function plan({registry,repoRoot,libDir,family=null,sourceId=null,max=2,design=null,wanted=null,minPerFamily=JSON.parse(fs.readFileSync(path.join(here,'vibe-cc0-shortage.json'),'utf8')).minPerFamily,allowLocal=false}){
   const have=new Set(fs.existsSync(libDir)?fs.readdirSync(libDir):[]);
   const counts=countByFamily(registry,repoRoot,libDir);
   const short=shortages(counts,minPerFamily).filter(s=>!family||s.family===family.toUpperCase());
@@ -145,6 +145,28 @@ export function plan({registry,repoRoot,libDir,family=null,sourceId=null,max=2,m
     if(!have.has(sourceId)&&!candidateSources(registry,String(selected.category),have).some(x=>x.id===sourceId))throw new Error('SOURCE_POLICY_REJECTED:'+sourceId);
     if(!have.has(sourceId))picks.push({family:selected.category,missing:null,src:selected,method:methodFor(selected,{allowLocal})});
     return {counts,short,picks};
+  }
+  // 자동 실행: 실제 지시서의 명시 출처와 최신 부족 장부가 일치할 때만 확보한다.
+  if(design!==null||wanted!==null){
+    if(!Array.isArray(design)||!Array.isArray(wanted?.wanted)||typeof wanted.game!=='string')throw new Error('DESIGN_DEMAND_UNVERIFIED');
+    const demand=[];const seen=new Set();const perFamily={};
+    for(const row of design){
+      const live=wanted.wanted.find(x=>x.id===row.id&&x.kind===row.kind);
+      if(!live||/portrait|card.?art|illustration|artwork/i.test(String(row.kind)+' '+String(row.id)))continue;
+      for(const req of row.localAcquisition||[]){
+        const animal=typeof req.animal==='string'?req.animal:null;
+        const unresolved=animal?(wanted.animalSourcePractice?.candidates||[]).some(x=>x.name===animal&&x.registrationApproved===false&&(x.sourcePreview?.failureReason||x.geometryQualityState==='SOURCE_GEOMETRY_REPAIR_REQUIRED'||x.state==='HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET'))&&!((wanted.animalSourcePractice?.candidates||[]).some(x=>x.name===animal&&x.registrationApproved===true)) : ['missing','using-stand-ins','missing-models-auto-practice'].includes(live.status);
+        if(!unresolved||seen.has(req.sourceId)||have.has(req.sourceId))continue;
+        const src=(registry.externalSources||[]).find(x=>x.id===req.sourceId);
+        if(!src||!candidateSources(registry,String(src.category),have).some(x=>x.id===src.id))continue;
+        const method=methodFor(src,{allowLocal});
+        if(method==='manual'){demand.push({demandId:row.id,sourceId:src.id,family:src.category,state:'NO_AUTOMATIC_SOURCE'});continue;}
+        if((perFamily[src.category]||0)>=max)continue;
+        seen.add(src.id);perFamily[src.category]=(perFamily[src.category]||0)+1;
+        picks.push({family:src.category,missing:null,src,method,demandId:row.id,game:wanted.game});
+      }
+    }
+    return {counts,short:[],picks,demand};
   }
   for(const s of short){
     const candidates=candidateSources(registry,s.family,have).map(src=>({family:s.family,missing:s.missing,src,method:methodFor(src,{allowLocal})}));
@@ -161,9 +183,14 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   try{
     const libDir=libraryDir(opt('dir')),repoRoot=process.cwd();
     const registry=JSON.parse(fs.readFileSync('company-asset-library.json','utf8'));
-    const {short,picks}=plan({registry,repoRoot,libDir,family:opt('family'),sourceId:opt('source'),max:+(opt('max')||2)});
+    const designFile=opt('design'),wantedFile=opt('wanted');
+    if(a.includes('--execute')&&!opt('source')&&(!designFile||!wantedFile))throw new Error('DESIGN_DEMAND_REQUIRED_FOR_AUTOMATIC_ACQUISITION');
+    const design=designFile?JSON.parse(fs.readFileSync(designFile,'utf8')):null;
+    const wanted=wantedFile?JSON.parse(fs.readFileSync(wantedFile,'utf8')):null;
+    const {short,picks,demand=[]}=plan({registry,repoRoot,libDir,family:opt('family'),sourceId:opt('source'),design,wanted,max:+(opt('max')||2)});
+    for(const item of demand)console.log('VIBE_CC0_DESIGN_SOURCE_GAP '+JSON.stringify(item));
     console.log('부족한 분야:',short.length?short.map(s=>`${s.family} ${s.have}/${s.min}`).join(', '):'없음');
-    for(const p of picks)console.log(`  후보 ${p.family}: ${p.src.id} (${p.method}) ${p.src.sourceUrl}`);
+    for(const p of picks)console.log(`  후보 ${p.family}: ${p.src.id} (${p.method}) ${p.src.sourceUrl}${p.demandId?' demand='+p.demandId:''}`);
     for(const s of short)if(!picks.some(p=>p.family===s.family&&p.method!=='manual'))console.log(`VIBE_CC0_SOURCE_GAP family=${s.family} missing=${s.missing} automaticSource=NONE`);
     if(!a.includes('--execute')){console.log('VIBE_CC0_FETCH_PLAN_ONLY (--execute 를 주면 받는다)');process.exit(0)}
     for(const p of picks)console.log(JSON.stringify(await acquire(p.src,libDir)));
