@@ -156925,7 +156925,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -156967,12 +156967,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:45768016348:1",
+      "reservedAt": "2026-11-26T06:34:50.928Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -157606,7 +157606,8 @@
         "system-ai-handoff-to-reservation:system-ai:45695534818:1",
         "actions-run:45695534818",
         "system-ai-handoff-to-reservation:system-ai:45765020271:1",
-        "actions-run:45765020271"
+        "actions-run:45765020271",
+        "system-ai-handoff-to-reservation:system-ai:45768016348:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1918,
@@ -157621,7 +157622,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-26T06:21:27.658Z"
+      "updatedAt": "2026-11-26T06:34:50.928Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
