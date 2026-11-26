@@ -370,8 +370,24 @@ def inspect_held_animal_glb(data):
     if any(type(joint) is not int or not 0 <= joint < len(model.get("nodes", []))
            for skin in skins for joint in skin["joints"]):
         raise ValueError("GLB_INVALID_JOINT")
+    animations = model.get("animations", [])
+    for clip in animations:
+        channels = clip.get("channels", [])
+        samplers = clip.get("samplers", [])
+        if not channels or not samplers:
+            raise ValueError("GLB_EMPTY_ANIMATION")
+        for channel in channels:
+            target = channel.get("target", {})
+            index, node = channel.get("sampler"), target.get("node")
+            if (type(index) is not int or not 0 <= index < len(samplers)
+                    or type(node) is not int or not 0 <= node < len(model.get("nodes", []))):
+                raise ValueError("GLB_ANIMATION_CHANNEL")
+        for sampler in samplers:
+            if any(type(sampler.get(key)) is not int or not 0 <= sampler[key] < len(model["accessors"])
+                   for key in ("input", "output")):
+                raise ValueError("GLB_ANIMATION_SAMPLER")
     return {"triangles": triangles, "jointCount": joint_count,
-            "animationCount": len(model.get("animations", [])),
+            "animationCount": len(animations),
             "mobileGeometryWithinBudget": 1000 <= triangles <= 3000 and joint_count <= 50,
             "speciesVerified": False, "visualQualityApproved": False}
 
@@ -451,6 +467,10 @@ def gobkit_animal_sources(manifest, targets, scene=False):
     listed = set(manifest.get("glbs", []))
     selected = {}
     pack_path = r"[A-Za-z0-9_-]+" if scene else r"(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)"
+    target_names = {}
+    for target in sorted(targets):
+        key = target.replace("-", "_") if scene else target.replace("_", "").replace("-", "")
+        target_names.setdefault(key, []).append(target)
     for pack in manifest["packs"]:
         for model in pack.get("models", []):
             name = model.get("name", "")
@@ -464,11 +484,14 @@ def gobkit_animal_sources(manifest, targets, scene=False):
                 continue
             normalized = (re.sub(r"[ -]+", "_", name.lower()) if scene
                           else re.sub(r"[^a-z0-9]", "", name.lower()))
-            for target in targets:
-                if normalized == (target if scene else target.replace("_", "").replace("-", "")):
-                    entry = {"name":name,"url":url,"license":license_text}
-                    if target not in selected or url < selected[target]["url"]:
-                        selected[target] = entry
+            # 여러 자산 키로 해석되는 제작자 이름은 후보로 고르지 않는다.
+            matches = target_names.get(normalized, [])
+            if len(matches) != 1:
+                continue
+            target = matches[0]
+            entry = {"name":name,"url":url,"license":license_text}
+            if target not in selected or url < selected[target]["url"]:
+                selected[target] = entry
     return selected
 
 
@@ -496,12 +519,42 @@ def scene_source_targets(registry):
                     targets[asset] = "Naval"
                 elif category == "field":
                     targets[asset] = "Terrain"
+    # 주민 외형은 실제 조립 코드와 미등록 자산 참조에서만 가져온다.
+    shared = os.path.join(root, "src", "ReplicatedStorage", "Shared")
+    with open(os.path.join(shared, "Pose.luau"), encoding="utf-8") as handle:
+        for asset in re.findall(r'"((?:hair|outfit|acc)_[a-z0-9_]+)"', handle.read()):
+            targets.setdefault(asset, "People")
+    for _, asset_key in missing:
+        kind, _, asset = asset_key.partition("/")
+        if kind in ("People", "Outfits", "Monsters", "Animals") and re.fullmatch(r"[a-z0-9_-]+", asset):
+            targets.setdefault(asset, kind)
+
+    # 공용 R15 동작은 재수집하지 않는다. 직업별 작업 동작과 동물별 리그·클립만 찾는다.
+    with open(os.path.join(docs, "residents", "jobs.md"), encoding="utf-8") as handle:
+        for job in re.findall(r"^\| [^\n|]+? \(`([a-z0-9_]+)`\)", handle.read(), re.M):
+            targets.setdefault(job + "_work", "Motion")
+    for name in ("rig_f", "rig_m"):
+        if not os.path.isfile(os.path.join(root, "assets", "people", name + ".glb")):
+            targets.setdefault(name, "Rig")
+
+    animal_goal = next((row for row in seed if row.get("id") == "mare-farm-animals"), {})
+    species = set(animal_goal.get("missing", [])) | set(animal_goal.get("sourceReady", []))
+    with open(os.path.join(docs, "discoveries", "MISSING.md"), encoding="utf-8") as handle:
+        species.update(re.findall(r"^- (?:am|pac|zoo)_([a-z0-9_]+) ", handle.read(), re.M))
+    species.update(key.split("/", 1)[1] for key in registry if key.startswith(("Animals/", "Monsters/")))
+    for name in sorted(species):
+        if not re.fullmatch(r"[a-z0-9_-]+", name):
+            continue
+        targets.setdefault(name + "_rig", "Rig")
+        for action in ("idle", "idle_look", "walk", "run", "alert", "flee_start", "threat",
+                       "attack", "hit", "death"):
+            targets.setdefault(name + "_" + action, "Motion")
     outstanding = {asset: kind for asset, kind in targets.items()
                    if not (registry.get(kind + "/" + asset, {}).get("assetId")
                            and registry[kind + "/" + asset].get("usePermissionGranted") is True)}
     print("MARE_SCENE_SOURCE_TARGETS",
           json.dumps({"ports": len(ports), **{kind: sum(v == kind for v in outstanding.values())
-                                            for kind in ("Town", "Naval", "Terrain")}}, sort_keys=True))
+                                            for kind in sorted(set(targets.values()))}}, sort_keys=True))
     return outstanding
 
 
@@ -764,6 +817,10 @@ def animal_source_practice():
                     or any(row.get("sourceSha256")==digest for row in registry.values())):
                 raise ValueError("PUBLISHER_SOURCE_DUPLICATE_OR_BLOCKED")
             geometry = inspect_held_animal_glb(data)
+            if source_kind in ("Rig", "Motion") and geometry["jointCount"] == 0:
+                raise ValueError("PUBLISHER_SOURCE_RIG_REQUIRED")
+            if source_kind == "Motion" and geometry["animationCount"] == 0:
+                raise ValueError("PUBLISHER_SOURCE_ANIMATION_REQUIRED")
             proof = {"license":"CC0-1.0","commercialUseAllowed":True,"author":"Gobkit / Alsomind Tech Co., Ltd.",
                      "source":entry["url"],"sourcePage":"https://gobkit.com/api/free",
                      "sourceAcquisition":"PUBLISHER_FREE_CATALOG_HELD_ONLY",
@@ -771,6 +828,7 @@ def animal_source_practice():
                      "externalRevisionPinned":False,"sourceSha256":digest,"originalSha256":digest,
                      "downloadedBlobSha":hashlib.sha1(("blob %d\0"%len(data)).encode()+data).hexdigest(),
                      "bytes":len(data),"triangles":geometry["triangles"],
+                     "jointCount":geometry["jointCount"],"animationCount":geometry["animationCount"],
                      "candidateTargetIds":target_ids,"speciesVerified":False,
                      "originalModelHandcraftedVerified":False,"registration":"PENDING_SOURCE_AND_VISUAL_REVIEW",
                      "actualRobloxRuntimeVerified":False,"visualQualityApproved":False}
