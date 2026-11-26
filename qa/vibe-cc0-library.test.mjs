@@ -85,6 +85,30 @@ test('부족 계산과 후보 선택: 부족한 분야만, CC0·자동허용·�
   assert.equal(plan({registry:reg,repoRoot:repo,libDir:path.join(repo,'lib'),minPerFamily:{PROP:1}}).picks.length,0); // 충분하면 계획 없음
 });
 
+
+test('전체 지원 분야: 원화 제외, 수동 주소보다 실제 자동 주소 우선, 승인된 음향·모션·효과 해시만 보유량에 반영', () => {
+  const repo=tmp(),lib=tmp();
+  const policy=JSON.parse(fs.readFileSync(new URL('../tools/vibe-cc0-shortage.json',import.meta.url),'utf8')).minPerFamily;
+  for(const f of ['MOTION','AUDIO','VFX','WEAPON','SKILL'])assert.ok(policy[f]>0);
+  const reg={assets:[],externalSources:[
+    src({id:'manual-motion',category:'MOTION',sourceUrl:'https://example.com/motion'}),
+    src({id:'free-motion',category:'MOTION',sourceUrl:'https://example.com/motion',downloadUrl:'https://example.com/motion.zip'}),
+    src({id:'card-art-pack',category:'UI'}),src({id:'other-art',category:'UI',categories:['CARD_ART']}),
+    src({id:'concept',category:'CONCEPT_ART'})]};
+  const p=plan({registry:reg,repoRoot:repo,libDir:lib,max:1,minPerFamily:{MOTION:1,UI:1,CONCEPT_ART:1}});
+  assert.deepEqual(p.picks.map(x=>x.src.id),['free-motion']);
+  assert.throws(()=>plan({registry:reg,repoRoot:repo,libDir:lib,sourceId:'card-art-pack'}),/SOURCE_POLICY_REJECTED/);
+  for(const [family,file] of [['AUDIO','hit.ogg'],['MOTION','walk.fbx'],['VFX','spark.png']]){
+    mk(lib,{[family+'/provenance.json']:JSON.stringify({license:'CC0',licenseEvidenceUrl:'https://example.com/lic',family}),[family+'/'+file]:'original'});
+    assert.equal(countByFamily(reg,repo,lib)[family],undefined);
+    approvePack(lib,family,'tester');
+    assert.equal(countByFamily(reg,repo,lib)[family],1);
+  }
+  assert.deepEqual(approvedLibraryParents(lib),[]);
+  fs.appendFileSync(path.join(lib,'AUDIO','hit.ogg'),'changed');
+  assert.equal(countByFamily(reg,repo,lib).AUDIO,undefined);
+});
+
 test('받는 방법 분류: GitHub만 git, downloadUrl만 zip, 나머지는 수동 inbox', () => {
   assert.equal(methodFor(src()),'git');
   assert.equal(methodFor(src({sourceUrl:'https://kenney.nl/assets/x'})),'manual');

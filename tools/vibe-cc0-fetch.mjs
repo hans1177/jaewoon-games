@@ -15,6 +15,9 @@ import {libraryDir,scanLibrary,checkLicense,approvedLibraryParents,extractZipSaf
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const isCc0=l=>/^CC0(?:-1\.0)?$/i.test(String(l||''));
+const acquisitionFamilies=new Set(Object.keys(JSON.parse(fs.readFileSync(path.join(here,'vibe-cc0-shortage.json'),'utf8')).minPerFamily));
+const artworkCategory=/^(?:ART|ARTWORK|ORIGINAL_ART|CONCEPT_ART|CARD_ART|CARD_ARTWORK|ILLUSTRATION|PORTRAIT|KEY_ART|SPLASH_ART)$/i;
+const artworkId=/(?:^|[-_ ])(?:card[-_ ]?art(?:work)?|concept[-_ ]?art|original[-_ ]?art|illustration|portrait|key[-_ ]?art|splash[-_ ]?art)(?:$|[-_ ])/i;
 
 // 분야별 현재 보유 수: 레지스트리의 CC0 에셋(실제 소스 파일 있는 것) + 오너가 승인한 라이브러리 모델
 export function countByFamily(registry,repoRoot,libDir){
@@ -25,7 +28,7 @@ export function countByFamily(registry,repoRoot,libDir){
     if(!has)continue;
     const k=String(a.family||a.category||'?').toUpperCase();n[k]=(n[k]||0)+1;
   }
-  for(const p of approvedLibraryParents(libDir||'')){const k=String(p.family).toUpperCase();n[k]=(n[k]||0)+1}
+  for(const p of approvedLibraryParents(libDir||'',{includeSupportingAssets:true})){const k=String(p.family).toUpperCase();n[k]=(n[k]||0)+1}
   return n;
 }
 export function shortages(counts,minPerFamily){
@@ -35,7 +38,8 @@ export function shortages(counts,minPerFamily){
 // 후보 출처: CC0 검증됨 + 자동 확보 허용 + 미리받기 금지 규칙 준수 + 해당 분야 + 아직 라이브러리에 없음
 export function candidateSources(registry,family,have=new Set()){
   return (registry.externalSources||[]).filter(s=>
-    isCc0(s.license)&&s.automaticAcquisitionWhenSelected===true&&s.prefetchAllowed===false&&s.speculativeDownloadAllowed===false
+    acquisitionFamilies.has(String(s.category||'').toUpperCase())&&!artworkId.test(String(s.id||''))&&![s.category,...(Array.isArray(s.categories)?s.categories:[])].some(c=>artworkCategory.test(String(c||'')))
+    &&isCc0(s.license)&&s.automaticAcquisitionWhenSelected===true&&s.prefetchAllowed===false&&s.speculativeDownloadAllowed===false
     &&String(s.category||'').toUpperCase()===family.toUpperCase()&&/^https:\/\//.test(s.licenseEvidenceUrl||'')&&!have.has(s.id)&&!String(s.id).startsWith('acquired-'));
 }
 export function methodFor(src,{allowLocal=false}={}){
@@ -104,11 +108,14 @@ export async function acquire(src,libDir,{allowLocal=false,maxBytes=500*1024*102
     // 크기 상한을 두고 받고, 오너가 해시(downloadSha256)를 적어 뒀으면 반드시 일치해야 한다. 안전한 해제(zip-slip 방지).
     const tmpZip=path.join(libDir,`.dl-${src.id}.zip`);
     try{
-      const res=await fetch(src.downloadUrl,{redirect:'follow'});
+      const res=await fetch(src.downloadUrl,{redirect:'follow',signal:AbortSignal.timeout(120000)});
       if(!res.ok)return {id:src.id,status:'DOWNLOAD_FAILED',error:'HTTP '+res.status};
-      const buf=Buffer.from(await res.arrayBuffer());
-      if(buf.length>maxBytes)return {id:src.id,status:'DOWNLOAD_TOO_LARGE'};
-      if(src.downloadSha256&&crypto.createHash('sha256').update(buf).digest('hex')!==String(src.downloadSha256).toLowerCase())return {id:src.id,status:'HASH_MISMATCH'};
+      if(Number(res.headers.get('content-length'))>maxBytes){await res.body?.cancel();return {id:src.id,status:'DOWNLOAD_TOO_LARGE'}}
+      const chunks=[];let size=0;
+      for await(const chunk of res.body){size+=chunk.length;if(size>maxBytes)return {id:src.id,status:'DOWNLOAD_TOO_LARGE'};chunks.push(Buffer.from(chunk))}
+      const buf=Buffer.concat(chunks,size),digest=crypto.createHash('sha256').update(buf).digest('hex');
+      if(src.downloadSha256&&digest!==String(src.downloadSha256).toLowerCase())return {id:src.id,status:'HASH_MISMATCH'};
+      sourceFileEvidence={downloadUrl:src.downloadUrl,sourceSha256:digest,sourceBytes:size,visualQualityApproved:false,runtimeVerified:false};
       fs.writeFileSync(tmpZip,buf);
       fs.mkdirSync(dest,{recursive:true});
       const r=extractZipSafe(tmpZip,dest);
@@ -140,7 +147,10 @@ export function plan({registry,repoRoot,libDir,family=null,sourceId=null,max=2,m
     return {counts,short,picks};
   }
   for(const s of short){
-    for(const src of candidateSources(registry,s.family,have).slice(0,max))picks.push({family:s.family,missing:s.missing,src,method:methodFor(src,{allowLocal})});
+    const candidates=candidateSources(registry,s.family,have).map(src=>({family:s.family,missing:s.missing,src,method:methodFor(src,{allowLocal})}));
+    const automatic=candidates.filter(p=>p.method!=='manual');
+    // 수동 후보가 첫 자리를 차지해 실제 자동 원본을 막지 않게 한다.
+    picks.push(...(automatic.length?automatic:candidates).slice(0,max));
   }
   return {counts,short,picks};
 }
@@ -154,6 +164,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
     const {short,picks}=plan({registry,repoRoot,libDir,family:opt('family'),sourceId:opt('source'),max:+(opt('max')||2)});
     console.log('부족한 분야:',short.length?short.map(s=>`${s.family} ${s.have}/${s.min}`).join(', '):'없음');
     for(const p of picks)console.log(`  후보 ${p.family}: ${p.src.id} (${p.method}) ${p.src.sourceUrl}`);
+    for(const s of short)if(!picks.some(p=>p.family===s.family&&p.method!=='manual'))console.log(`VIBE_CC0_SOURCE_GAP family=${s.family} missing=${s.missing} automaticSource=NONE`);
     if(!a.includes('--execute')){console.log('VIBE_CC0_FETCH_PLAN_ONLY (--execute 를 주면 받는다)');process.exit(0)}
     for(const p of picks)console.log(JSON.stringify(await acquire(p.src,libDir)));
     scanLibrary(libDir);
