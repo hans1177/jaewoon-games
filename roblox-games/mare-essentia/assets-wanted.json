@@ -1879,34 +1879,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
-     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
-     "triangles": 404,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "8c70c251fa4746e9a6423ea804144a7ed34d5ff3dfd1b07bb8aad11637677da3",
-       "bytes": 231953
-      },
-      {
-       "name": "rear.png",
-       "sha256": "49149522c67b50c6fdcc46b595cc6f783f48ab880bc996292785cb3583835fb9",
-       "bytes": 235713
-      },
-      {
-       "name": "side.png",
-       "sha256": "ec486ed9f2b54764a1258820dd749844b0c5397f954b888800a4d8946d430a1b",
-       "bytes": 231825
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "goat",
@@ -1961,43 +1934,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
-     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
-     "triangles": 396,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "674be98dcddbd460cf1ad92caf59ca0d66eafd4e8b739dd28896ef23ab79e0d2",
-       "bytes": 245616
-      },
-      {
-       "name": "rear.png",
-       "sha256": "2e77fb54d6ac7bfd82fc07630c78aae9dbd5697d674cd278b8d56010e25e3991",
-       "bytes": 239317
-      },
-      {
-       "name": "side.png",
-       "sha256": "0d0c7bb4c7a2b5f66117364526f562bef5b29e0adb33f22db4bac2a5b13e293b",
-       "bytes": 239532
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "qualityCandidate": {
-     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
-     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "nativeRuntimeVerified": false,
-     "originalPreserved": true,
-     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "hummingbird",
@@ -2161,6 +2098,41 @@
     "licenseEvidenceUrl": "https://gobkit.com/api/free",
     "geometry": {
      "triangles": 542,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
+     "visualQualityApproved": false
+    },
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+   },
+   {
+    "name": "peacock",
+    "targets": [
+     "zoo_peacock"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-peacock.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-peacock.glb",
+      "format": "GLB",
+      "bytes": 100504,
+      "sha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6"
+     }
+    ],
+    "sourceSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
+    "bytes": 100504,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/birds/Peacock.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 734,
      "jointCount": 16,
      "animationCount": 4,
      "mobileGeometryWithinBudget": false,
@@ -2613,18 +2585,7 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureDiagnostic": {
-      "stage": "TEXTURE",
-      "exitCode": 1,
-      "exceptionType": "ValueError",
-      "scriptLine": 322
-     },
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
-    }
+    "priorRenderRetry": true
    },
    {
     "name": "oryx",
@@ -2650,41 +2611,6 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false
-   },
-   {
-    "name": "peacock",
-    "targets": [
-     "zoo_peacock"
-    ],
-    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-peacock.glb",
-    "directModel": true,
-    "modelMembers": [
-     {
-      "member": "gobkit-free-peacock.glb",
-      "format": "GLB",
-      "bytes": 100504,
-      "sha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6"
-     }
-    ],
-    "sourceSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
-    "bytes": 100504,
-    "license": "CC0-1.0",
-    "sourceUrl": "https://gobkit.com/freebies/birds/Peacock.glb",
-    "licenseEvidenceUrl": "https://gobkit.com/api/free",
-    "geometry": {
-     "triangles": 734,
-     "jointCount": 16,
-     "animationCount": 4,
-     "mobileGeometryWithinBudget": false,
-     "speciesVerified": false,
-     "visualQualityApproved": false
-    },
-    "speciesVerified": false,
-    "visualQualityApproved": false,
-    "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING",
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    }
   ],
   "rejected": [
@@ -2791,14 +2717,8528 @@
   ],
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
-  "newOriginals": [
-   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-peacock.glb"
-  ],
-  "downloadAttempts": 1,
-  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
-  "publisherExactNameCandidates": 1,
-  "scenePublisherExactNameCandidates": 0,
-  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED"
+  "newOriginals": [],
+  "downloadAttempts": 0,
+  "publisherSearchState": "NOT_REQUESTED",
+  "portImplementation": {
+   "state": "BRIEF_SOURCE_COVERAGE_ONLY",
+   "portCount": 181,
+   "planned": 13910,
+   "registeredModelRights": 73,
+   "heldUnverified": 0,
+   "missingOriginal": 13837,
+   "nativeRuntimeVerified": false,
+   "visualQualityApproved": false,
+   "ports": [
+    {
+     "portId": "acapulco",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/acapulco_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/acapulco_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/acapulco_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "acre",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/acre_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/acre_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/acre_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "aden",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/aden_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/aden_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/aden_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "agadir",
+     "planned": 72,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 72,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/agadir_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/agadir_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/agadir_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ajaccio",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ajaccio_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ajaccio_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ajaccio_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "alexandria",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/alexandria_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/alexandria_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/alexandria_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "algiers",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/algiers_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/algiers_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/algiers_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ambon",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ambon_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ambon_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ambon_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "amoy",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/amoy_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/amoy_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/amoy_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "amsterdam",
+     "planned": 91,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 91,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 29,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/amsterdam_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/amsterdam_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/amsterdam_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ancona",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ancona_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ancona_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ancona_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "antwerp",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/antwerp_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/antwerp_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/antwerp_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "athens",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/athens_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/athens_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/athens_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "auckland",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/auckland_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/auckland_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/auckland_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "banda",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/banda_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/banda_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/banda_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bandar_abbas",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bandar_abbas_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bandar_abbas_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bandar_abbas_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bangkok",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bangkok_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bangkok_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bangkok_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "barcelona",
+     "planned": 82,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 82,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 25,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/barcelona_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/barcelona_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/barcelona_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "basra",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/basra_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/basra_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/basra_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "batavia",
+     "planned": 83,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 83,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 25,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/batavia_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/batavia_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/batavia_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "beirut",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/beirut_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/beirut_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/beirut_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "belem",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/belem_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/belem_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/belem_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "benghazi",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/benghazi_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/benghazi_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/benghazi_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "benguela",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/benguela_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/benguela_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/benguela_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bergen",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bergen_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bergen_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bergen_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bissau",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bissau_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bissau_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bissau_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bone",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bone_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bone_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bone_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bordeaux",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bordeaux_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bordeaux_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bordeaux_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "boston",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/boston_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/boston_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/boston_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "bridgetown",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/bridgetown_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bridgetown_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/bridgetown_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "brunei",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/brunei_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/brunei_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/brunei_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "buenos_aires",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/buenos_aires_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/buenos_aires_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/buenos_aires_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "busan",
+     "planned": 85,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 85,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 27,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/busan_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/busan_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/busan_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "cadiz",
+     "planned": 84,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 84,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 25,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/cadiz_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cadiz_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cadiz_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "cagliari",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/cagliari_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cagliari_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cagliari_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "calabar",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/calabar_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/calabar_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/calabar_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "calcutta",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/calcutta_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/calcutta_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/calcutta_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "calicut",
+     "planned": 83,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 83,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 26,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/calicut_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/calicut_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/calicut_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "callao",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/callao_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/callao_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/callao_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "campeche",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/campeche_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/campeche_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/campeche_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "candia",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/candia_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/candia_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/candia_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "canton",
+     "planned": 88,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 88,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/canton_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/canton_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/canton_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "cape_town",
+     "planned": 83,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 83,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 25,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/cape_town_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cape_town_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cape_town_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "cartagena",
+     "planned": 82,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 82,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/cartagena_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cartagena_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cartagena_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "cartagena_indias",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/cartagena_indias_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cartagena_indias_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cartagena_indias_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "casablanca",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/casablanca_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/casablanca_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/casablanca_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "charleston",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/charleston_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/charleston_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/charleston_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "cochin",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/cochin_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cochin_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/cochin_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "colombo",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/colombo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/colombo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/colombo_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "copenhagen",
+     "planned": 90,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 90,
+     "stages": {
+      "1": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/copenhagen_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/copenhagen_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/copenhagen_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "corfu",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/corfu_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/corfu_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/corfu_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "dakar",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/dakar_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/dakar_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/dakar_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "damietta",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/damietta_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/damietta_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/damietta_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "darwin",
+     "planned": 69,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 69,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 12,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/darwin_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/darwin_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/darwin_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "diu",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/diu_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/diu_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/diu_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "dublin",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/dublin_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/dublin_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/dublin_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "edinburgh",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/edinburgh_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/edinburgh_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/edinburgh_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "edo",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/edo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/edo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/edo_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "elmina",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/elmina_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/elmina_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/elmina_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "famagusta",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/famagusta_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/famagusta_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/famagusta_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "freetown",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/freetown_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/freetown_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/freetown_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "funchal",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/funchal_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/funchal_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/funchal_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "gdansk",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/gdansk_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/gdansk_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/gdansk_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "genoa",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/genoa_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/genoa_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/genoa_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "gibraltar",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/gibraltar_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/gibraltar_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/gibraltar_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "glasgow",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/glasgow_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/glasgow_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/glasgow_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "goa",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/goa_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/goa_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/goa_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "gothenburg",
+     "planned": 86,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 86,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 26,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/gothenburg_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/gothenburg_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/gothenburg_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "guam",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/guam_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/guam_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/guam_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "guayaquil",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/guayaquil_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/guayaquil_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/guayaquil_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "hakodate",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/hakodate_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hakodate_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hakodate_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "halifax",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/halifax_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/halifax_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/halifax_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "hamburg",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/hamburg_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hamburg_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hamburg_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "havana",
+     "planned": 77,
+     "registeredModelRights": 1,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 1
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/havana_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/havana_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/havana_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "helsinki",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/helsinki_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/helsinki_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/helsinki_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "hobart",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/hobart_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hobart_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hobart_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "hoi_an",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/hoi_an_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hoi_an_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hoi_an_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "honolulu",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/honolulu_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/honolulu_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/honolulu_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "hull",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/hull_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hull_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/hull_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "incheon",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/incheon_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/incheon_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/incheon_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "istanbul",
+     "planned": 95,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 95,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 31,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/istanbul_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/istanbul_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/istanbul_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "jeddah",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/jeddah_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/jeddah_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/jeddah_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "kilwa",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/kilwa_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/kilwa_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/kilwa_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "kingston",
+     "planned": 77,
+     "registeredModelRights": 1,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 1
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/kingston_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/kingston_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/kingston_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "koenigsberg",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/koenigsberg_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/koenigsberg_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/koenigsberg_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "la_guaira",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/la_guaira_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/la_guaira_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/la_guaira_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "la_rochelle",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/la_rochelle_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/la_rochelle_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/la_rochelle_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "lagos",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/lagos_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/lagos_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/lagos_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "las_palmas",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/las_palmas_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/las_palmas_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/las_palmas_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "lisbon",
+     "planned": 96,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 96,
+     "stages": {
+      "1": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 32,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/lisbon_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/lisbon_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/lisbon_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "livorno",
+     "planned": 72,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 72,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/livorno_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/livorno_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/livorno_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "london",
+     "planned": 90,
+     "registeredModelRights": 70,
+     "heldUnverified": 0,
+     "missingOriginal": 20,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 11
+      },
+      "2": {
+       "planned": 17,
+       "registeredModelRights": 15
+      },
+      "3": {
+       "planned": 29,
+       "registeredModelRights": 21
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 8
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 15
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/london_construction_kit",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/london_construction_stages",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/london_district_props",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "luanda",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/luanda_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/luanda_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/luanda_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "lubeck",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/lubeck_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/lubeck_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/lubeck_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "macau",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/macau_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/macau_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/macau_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "madras",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/madras_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/madras_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/madras_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "makassar",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/makassar_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/makassar_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/makassar_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "malacca",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/malacca_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/malacca_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/malacca_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "malaga",
+     "planned": 72,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 72,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/malaga_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/malaga_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/malaga_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "manila",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/manila_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/manila_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/manila_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "marseille",
+     "planned": 82,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 82,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/marseille_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/marseille_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/marseille_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "messina",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/messina_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/messina_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/messina_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "mocha",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/mocha_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mocha_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mocha_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "mogadishu",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/mogadishu_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mogadishu_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mogadishu_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "mombasa",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/mombasa_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mombasa_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mombasa_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "montevideo",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/montevideo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/montevideo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/montevideo_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "mozambique",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/mozambique_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mozambique_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/mozambique_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "muscat",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/muscat_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/muscat_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/muscat_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "nagasaki",
+     "planned": 88,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 88,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/nagasaki_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/nagasaki_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/nagasaki_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "naples",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/naples_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/naples_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/naples_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "nassau",
+     "planned": 74,
+     "registeredModelRights": 1,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 1
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/nassau_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/nassau_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/nassau_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "new_orleans",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/new_orleans_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/new_orleans_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/new_orleans_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "new_york",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/new_york_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/new_york_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/new_york_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ningbo",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ningbo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ningbo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ningbo_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "oran",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/oran_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/oran_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/oran_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "osaka",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/osaka_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/osaka_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/osaka_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "oslo",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/oslo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/oslo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/oslo_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ouidah",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ouidah_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ouidah_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ouidah_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "palermo",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/palermo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/palermo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/palermo_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "palma",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/palma_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/palma_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/palma_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "panama",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/panama_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/panama_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/panama_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "paramaribo",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/paramaribo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/paramaribo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/paramaribo_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "perth",
+     "planned": 72,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 72,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/perth_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/perth_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/perth_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "philadelphia",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/philadelphia_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/philadelphia_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/philadelphia_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "plymouth",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/plymouth_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/plymouth_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/plymouth_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ponta_delgada",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ponta_delgada_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ponta_delgada_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ponta_delgada_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "port_louis",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/port_louis_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/port_louis_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/port_louis_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "port_moresby",
+     "planned": 69,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 69,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 12,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/port_moresby_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/port_moresby_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/port_moresby_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "port_of_spain",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/port_of_spain_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/port_of_spain_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/port_of_spain_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "porto",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/porto_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/porto_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/porto_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "portobelo",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/portobelo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/portobelo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/portobelo_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "praia",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/praia_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/praia_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/praia_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "quebec",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/quebec_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/quebec_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/quebec_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ragusa",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ragusa_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ragusa_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ragusa_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "rangoon",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/rangoon_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rangoon_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rangoon_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "recife",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/recife_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/recife_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/recife_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "rhodes",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/rhodes_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rhodes_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rhodes_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "riga",
+     "planned": 70,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 70,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/riga_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/riga_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/riga_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "rio",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/rio_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rio_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rio_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "rotterdam",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/rotterdam_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rotterdam_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rotterdam_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "rouen",
+     "planned": 89,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 89,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/rouen_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rouen_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/rouen_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "safi",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/safi_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/safi_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/safi_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "saint_louis",
+     "planned": 72,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 72,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/saint_louis_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/saint_louis_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/saint_louis_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "salvador",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/salvador_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/salvador_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/salvador_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "san_francisco",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/san_francisco_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/san_francisco_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/san_francisco_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "san_juan",
+     "planned": 72,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 72,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/san_juan_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/san_juan_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/san_juan_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "santo_domingo",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/santo_domingo_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/santo_domingo_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/santo_domingo_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "sao_tome",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/sao_tome_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/sao_tome_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/sao_tome_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "seville",
+     "planned": 86,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 86,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/seville_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/seville_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/seville_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "shanghai",
+     "planned": 82,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 82,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/shanghai_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/shanghai_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/shanghai_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "singapore",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 24,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/singapore_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/singapore_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/singapore_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "sitka",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/sitka_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/sitka_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/sitka_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "smyrna",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/smyrna_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/smyrna_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/smyrna_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "split",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/split_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/split_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/split_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "st_helena",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/st_helena_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/st_helena_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/st_helena_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "st_johns",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/st_johns_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/st_johns_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/st_johns_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "st_petersburg",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/st_petersburg_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/st_petersburg_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/st_petersburg_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "stockholm",
+     "planned": 71,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 71,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 13,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/stockholm_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/stockholm_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/stockholm_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "surat",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 22,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/surat_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/surat_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/surat_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "suva",
+     "planned": 69,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 69,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 12,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/suva_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/suva_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/suva_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "sydney",
+     "planned": 79,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 79,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/sydney_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/sydney_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/sydney_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "syracuse",
+     "planned": 75,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 75,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/syracuse_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/syracuse_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/syracuse_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tahiti",
+     "planned": 69,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 69,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 12,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tahiti_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tahiti_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tahiti_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tainan",
+     "planned": 77,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 77,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tainan_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tainan_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tainan_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tallinn",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tallinn_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tallinn_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tallinn_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tangier",
+     "planned": 78,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 78,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tangier_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tangier_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tangier_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "ternate",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/ternate_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ternate_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/ternate_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "thessaloniki",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/thessaloniki_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/thessaloniki_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/thessaloniki_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tianjin",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tianjin_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tianjin_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tianjin_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "toulon",
+     "planned": 80,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 80,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/toulon_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/toulon_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/toulon_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "trieste",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/trieste_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/trieste_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/trieste_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tripoli",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tripoli_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tripoli_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tripoli_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "tunis",
+     "planned": 74,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 74,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 20,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/tunis_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tunis_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/tunis_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "valencia",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/valencia_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/valencia_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/valencia_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "valletta",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 23,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/valletta_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/valletta_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/valletta_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "valparaiso",
+     "planned": 82,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 82,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 25,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/valparaiso_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/valparaiso_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/valparaiso_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "vancouver",
+     "planned": 73,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 73,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 19,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/vancouver_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/vancouver_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/vancouver_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "venice",
+     "planned": 89,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 89,
+     "stages": {
+      "1": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/venice_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/venice_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/venice_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "veracruz",
+     "planned": 88,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 88,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 18,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 28,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/veracruz_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/veracruz_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/veracruz_bld_garden",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "visby",
+     "planned": 76,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 76,
+     "stages": {
+      "1": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 15,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 21,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/visby_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/visby_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/visby_bld_fish_rack",
+       "tier": 1
+      }
+     ]
+    },
+    {
+     "portId": "zanzibar",
+     "planned": 81,
+     "registeredModelRights": 0,
+     "heldUnverified": 0,
+     "missingOriginal": 81,
+     "stages": {
+      "1": {
+       "planned": 16,
+       "registeredModelRights": 0
+      },
+      "2": {
+       "planned": 17,
+       "registeredModelRights": 0
+      },
+      "3": {
+       "planned": 25,
+       "registeredModelRights": 0
+      },
+      "4": {
+       "planned": 9,
+       "registeredModelRights": 0
+      },
+      "5": {
+       "planned": 14,
+       "registeredModelRights": 0
+      },
+      "unspecified": {
+       "planned": 0,
+       "registeredModelRights": 0
+      }
+     },
+     "nextMissing": [
+      {
+       "assetKey": "Town/zanzibar_bld_chapel",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/zanzibar_bld_dock_shed",
+       "tier": 1
+      },
+      {
+       "assetKey": "Town/zanzibar_bld_garden",
+       "tier": 1
+      }
+     ]
+    }
+   ]
+  },
+  "sourcePreviewState": "NOT_REQUESTED"
  }
 }
