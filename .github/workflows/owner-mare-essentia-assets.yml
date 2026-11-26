@@ -287,6 +287,13 @@ jobs:
           gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"
           echo "CARD_DROPBOX_PR_MERGED=$pr"
 
+      - name: Check reviewed animal originals and rotate missing source search
+        id: animal_practice
+        if: ${{ env.MARE_MODELS_ONLY == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/mare-essentia-upload-assets.mjs --animal-source-preflight
+
       # [원화 등록 복구] 메인에 승인된 실물 원화가 등록표보다 새로우면 정기 실행도 기존 전체 등록기를 사용한다.
       - name: Select existing full registration for pending approved card originals
         id: card_recovery
@@ -323,13 +330,6 @@ jobs:
               print('CARD_APPROVED_REGISTRATION_RECOVERY',card,digest)
               break
           PYRECOVERY
-
-      - name: Check reviewed animal originals and rotate missing source search
-        id: animal_practice
-        if: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node tools/mare-essentia-upload-assets.mjs --animal-source-preflight
 
       # [풀컬러 원본 인입] 큰 PNG 전송 실패 시 동일 원본의 Base64 분할 파일을 정식 등록 직전에 복원한다.
       # 로블록스 등록기·이미지 승인 절차는 변경하지 않는다. 원본 SHA 불일치 시 실패한다.
