@@ -88,12 +88,11 @@ jobs:
               matching_manifests+=("$candidate_manifest")
             fi
           done
+          # [후보 신원] 다른 브랜치의 단일 오래된 manifest를 현재 후보로 대신 선택하지 않는다.
+          # 일치 0건/중복 n건은 정식 검수 대상이 아니며 큐 태스크 신원을 추측해서는 안 된다.
           if [ "${#matching_manifests[@]}" -eq 1 ]; then
             manifest="${matching_manifests[0]}"
             echo "VIBE2_CANDIDATE_MANIFEST_MATCH=$manifest"
-          elif [ "${#manifests[@]}" -eq 1 ]; then
-            manifest="${manifests[0]}"
-            echo "VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=$manifest"
           else
             echo 'decision=reject' >> "$GITHUB_OUTPUT"
             echo 'reason=candidate-manifest-not-unique-for-branch' >> "$GITHUB_OUTPUT"
