@@ -2,15 +2,15 @@
   "version": 3,
   "provider": "NVIDIA",
   "gameId": "mare-essentia",
-  "sourceRevision": "dd8047e1efe797b3d0d8fb4b16122534e0aa68c1",
+  "sourceRevision": "46087216906c4026fd92e4db2819f6e477d2d651",
   "status": "CANDIDATE_EDITED",
-  "selectedRole": "UI",
+  "selectedRole": "MOTION",
   "usageWindow": {
     "day": "2026-11-26",
     "calls": {
-      "NVIDIA": 2,
+      "NVIDIA": 3,
       "GEMINI": 6,
-      "OPENROUTER": 2
+      "OPENROUTER": 3
     },
     "windowIds": {
       "NVIDIA": "2026-11-26",
@@ -25,19 +25,19 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-27T01:33:05.247Z",
-    "OPENROUTER_GEMMA": "2026-11-26T02:36:50.375Z"
+    "OPENROUTER_OMNI": "2026-11-26T05:59:02.285Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 2,
-      "remainingLocal": 10,
-      "effectiveRemaining": 10,
-      "regularWorkRemaining": 7,
+      "localUsed": 3,
+      "remainingLocal": 9,
+      "effectiveRemaining": 9,
+      "regularWorkRemaining": 6,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.95,
-      "estimatedHoursToLocalCap": 10.5,
+      "estimatedCallsPerHour": 0.45,
+      "estimatedHoursToLocalCap": 20,
       "nextLocalWindowAt": "2026-11-27T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -53,8 +53,8 @@
       "effectiveRemaining": 6,
       "regularWorkRemaining": 3,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.28,
-      "estimatedHoursToLocalCap": 21.4,
+      "estimatedCallsPerHour": 0.24,
+      "estimatedHoursToLocalCap": 25,
       "nextLocalWindowAt": "2026-11-26T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -65,13 +65,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 2,
-      "remainingLocal": 28,
-      "effectiveRemaining": 28,
-      "regularWorkRemaining": 22,
+      "localUsed": 3,
+      "remainingLocal": 27,
+      "effectiveRemaining": 27,
+      "regularWorkRemaining": 21,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 0.95,
-      "estimatedHoursToLocalCap": 29.5,
+      "estimatedCallsPerHour": 0.45,
+      "estimatedHoursToLocalCap": 60,
       "nextLocalWindowAt": "2026-11-27T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -83,10 +83,10 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_GEMMA",
-      "status": "HTTP_429",
+      "id": "OPENROUTER_OMNI",
+      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
       "provider": "OPENROUTER",
-      "model": "google/gemma-4-31b-it:free"
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
     },
     {
       "id": "NVIDIA_VL",
@@ -97,71 +97,76 @@
   ],
   "frames": [
     {
-      "name": "qa_click_trade_to_harbor-0.jpg",
-      "sha256": "1b9094eb8942475baab0df6742ca931451d1eb11c9c2a4d45f10b70fc3097429"
+      "name": "field_actor_after_motion-0.jpg",
+      "sha256": "2f2df23f6ff60146fddee9ce64736f79e7ad8d0fd3ebca37acfbbf474957162f"
     },
     {
-      "name": "tab_trade-0.jpg",
-      "sha256": "a668b76358fc18cabf85aae5ea20e8a87e55bc7707c9b2565b127dab1385fc15"
+      "name": "field_motion_smooth_icons-0.jpg",
+      "sha256": "95494ae19ce9b6cc1184aa53b9089ba3ace38c4a2dfcd5014b6741a3ccd70392"
     },
     {
-      "name": "ui_trade_inline-0.jpg",
-      "sha256": "76d7ee30363139bc7f0e4e631f065100df50a2f69f4ae66f1dbe7edd9304654e"
+      "name": "field_runtime_fps_sample-0.jpg",
+      "sha256": "cbb9b48668980976620bb142a15b23cc2724840cc13330ebf75484b6b20789de"
     },
     {
-      "name": "field_hud_hitbox-0.jpg",
-      "sha256": "7de4df0dfe1c644a576ec7a821f42b5c83e351e34b06b4fc6e562e45da043a87"
+      "name": "harbor_motion_attack-0.jpg",
+      "sha256": "863eb9231a8233fcada99fe76fbf0b16ddae0c6ca212a527d7e4d9f3dea79f36"
     }
   ],
   "model": "nvidia/nemotron-3.5-super-vl-120b-a12b",
-  "rawResponseSha256": "4f9cb1ef2a71b38d43d972302ccaa1727c55ad3cd3c555d70c157b4c1704e08b",
+  "rawResponseSha256": "b1d9349819ad18205f35d9e0feada354b427d0f1e2985ee01dc1b74bb735e6cd",
   "issues": [
     {
       "category": "ui",
       "severity": "medium",
-      "screenshot": "qa_click_trade_to_harbor-0.jpg",
-      "evidenceSha256": "9cb2297b097dee238f17b2d5b630fbcdb5051dbc0a0c139b7d0890c1e242e214"
+      "screenshot": "field_actor_after_motion-0.jpg",
+      "evidenceSha256": "dbe3e99e178a0b03d37b674e136c4f28de23115aaa6d39e50c794adfddc02c83"
     },
     {
-      "category": "ui",
+      "category": "lighting",
       "severity": "medium",
-      "screenshot": "tab_trade-0.jpg",
-      "evidenceSha256": "40294e79539c79a21ef7f60cebb8ac47d152bc55ba2b8ef029f2e51971cf54bc"
+      "screenshot": "field_motion_smooth_icons-0.jpg",
+      "evidenceSha256": "c12b6d2ca6dc8f56b71fac99285369b7298b0158791f5d2e8c6e5612fe9350e2"
     },
     {
-      "category": "ui",
-      "severity": "medium",
-      "screenshot": "ui_trade_inline-0.jpg",
-      "evidenceSha256": "e463d77c6d17c75380b9a8be4c89c14ec7772305e06d208179efe174ec139271"
+      "category": "material",
+      "severity": "high",
+      "screenshot": "field_runtime_fps_sample-0.jpg",
+      "evidenceSha256": "e242b524713cc0f20d2d8594401614b7a4a00cb52247c2592e115ae10735eb22"
     },
     {
-      "category": "hud",
-      "severity": "medium",
-      "screenshot": "field_hud_hitbox-0.jpg",
-      "evidenceSha256": "b1d7ad5edbc1c26bb671c88a4a7d8cf2d20363fce95144f9321824c88e136f78"
+      "category": "ship-appearance",
+      "severity": "low",
+      "screenshot": "harbor_motion_attack-0.jpg",
+      "evidenceSha256": "4f65e0e2384a41e87f4e2da1ef9c5cc2851c8425166b54ecdb3bed6b43da8044"
     }
   ],
   "edits": [
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
-      "category": "ui",
-      "screenshot": "qa_click_trade_to_harbor-0.jpg",
-      "beforeSha256": "4c43e86f40693fde081e83647ebe1025cd3b36164c4794c70a568077d8968d65",
-      "afterSha256": "f984aa7f78e03808a117d984e68f9a29b2e45d33b6067cf269a5326c1b722b69"
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "category": "lighting",
+      "screenshot": "field_motion_smooth_icons-0.jpg",
+      "beforeSha256": "b7c83d53764d34941338e1c201ca96c4bd5743cf780b4f4aa88765e22f0e13ae",
+      "afterSha256": "a188724a04005efcdcefea6b88a061fb4f632259d1a4a3f2cd0f4ebdc91ea23b"
     },
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
-      "category": "ui",
-      "screenshot": "tab_trade-0.jpg",
-      "beforeSha256": "f6cdfce54898335a4c83d93411fccb33583aee544645a9a9a7f5211156be1e24",
-      "afterSha256": "07be7f57b19510d01a30808183ccd3a7607a38796e0a8fe66ac5f090148c3f60"
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "category": "material",
+      "screenshot": "field_runtime_fps_sample-0.jpg",
+      "beforeSha256": "6a794d71ad0665bb5a0783e9416bf61d8e9d70b62cc35b7aacefe051c1aeb49c",
+      "afterSha256": "30b242c5101f60f16cf773483e9385f08c59c84c741e31cf36d55145ecd96f62"
     }
   ],
   "sourceHashes": [
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
-      "beforeSha256": "1f4786a4feac28be7e1fc0511ff7500a4d293502eef083a562eefa01373b4736",
-      "afterSha256": "7ac8138ff54cbdde7e3d5dca8b0debef2ba264f7cf3918b1fcc017cf6842fa51"
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "beforeSha256": "ae54a8fd159d79fd9d5e70455c1fea3c498337fe24ca1c334cee46619d2108a1",
+      "afterSha256": "d37cac24491094884757687ea0551f0a37816a3a02e165ef1b9cd9c8a08d9fc8"
+    },
+    {
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "beforeSha256": "8a843475bc8b5781084d2806aaf2dafe32fdd025daaf83d483e42962c28c22ba",
+      "afterSha256": "6f8419ac4ef157f414aa65e8ddfdf37927f5b42a0fa58c70f13b2680dcca915d"
     }
   ],
   "candidateOnly": true,
