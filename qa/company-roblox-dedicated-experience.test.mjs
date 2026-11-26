@@ -640,7 +640,7 @@ test('Mare scheduled verified asset registration dispatches existing publisher o
   assert.ok(workflow.includes('for f in "$registry" "$ids"; do'));
   assert.ok(workflow.includes('MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f'));
   assert.ok(workflow.includes('echo "registered_change=$changed" >> "$GITHUB_OUTPUT"'));
-  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (env.MARE_MODELS_ONLY == 'true' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
+  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || ((env.MARE_MODELS_ONLY == 'true' || steps.card_recovery.outputs.pending == 'true') && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
   assert.ok(workflow.includes('gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"'));
   assert.ok(workflow.includes('MARE_ASSET_PUBLISH_REQUESTED=YES'));
   assert.ok(publisher.includes('MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED:'));
@@ -709,6 +709,10 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.equal((fs.readFileSync('tools/devloop/assets_wanted.py','utf8').match(/time\.time\(\) \/\/ 300/g)||[]).length,2);
   assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ env\.MARE_MODELS_ONLY == 'true' \}\}/);
   assert.match(workflow,/run: node tools\/mare-essentia-upload-assets\.mjs --animal-source-preflight/);
+  assert.ok(workflow.indexOf('id: animal_practice') < workflow.indexOf('id: card_recovery'),'scheduled animal preflight precedes card recovery mode selection');
+  assert.match(workflow,/old\.get\('sourceSha256'\)!=review\.get\('replacesSha256'\)/);
+  assert.match(workflow,/hashlib\.sha256\(raw\)\.hexdigest\(\)!=digest/);
+  assert.match(workflow,/out\.write\('MARE_MODELS_ONLY=false\\n'\)/);
   assert.match(workflow,/env\.MARE_MODELS_ONLY != 'true' \|\| steps\.animal_practice\.outputs\.pending == 'true'/);
   assert.match(workflow,/TRADE_GOODS_3D_SOURCE_PROVENANCE_MISSING/);
   assert.match(workflow,/j=report\['tradeGoodsPractice'\]/);
@@ -2133,7 +2137,42 @@ test('Mare generated original art is promoted only after model-source visual QA 
     await assert.rejects(execute(), /MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH/);
     assert.equal(fs.existsSync(dest),false);
     // [원화 무손실 재등록] 실제 256색(P 모드) PNG는 승인 해시가 있어도 신규 승격할 수 없다.
-    const indexed = fs.readFileSync('roblox-games/mare-essentia/assets/cardart/eu_21.png');
+    const pngChunk=(type,payload)=>{
+      const body=Buffer.concat([Buffer.from(type),payload]);
+      let crc=0xffffffff;
+      for(const byte of body){
+        crc^=byte;
+        for(let bit=0;bit<8;bit++)crc=(crc>>>1)^(0xedb88320&-(crc&1));
+      }
+      const header=Buffer.alloc(4),tail=Buffer.alloc(4);
+      header.writeUInt32BE(payload.length);
+      tail.writeUInt32BE((crc^0xffffffff)>>>0);
+      return Buffer.concat([header,body,tail]);
+    };
+    const {deflateSync}=await import('node:zlib');
+    // 실제 게임 자산이 풀컬러로 교체되어도 256색 거부 검사가 유지되도록 독립 PNG를 생성한다.
+    const paletteWidth=768,paletteHeight=768,paletteStride=paletteWidth+1;
+    const paletteHeader=Buffer.alloc(13);
+    paletteHeader.writeUInt32BE(paletteWidth,0);
+    paletteHeader.writeUInt32BE(paletteHeight,4);
+    paletteHeader[8]=8;
+    paletteHeader[9]=3;
+    const palette=Buffer.alloc(256*3);
+    for(let i=0;i<256;i++){palette[i*3]=i;palette[i*3+1]=(i*17)&255;palette[i*3+2]=(i*53)&255;}
+    const paletteScan=Buffer.alloc(paletteStride*paletteHeight);
+    let noise=0x12345678;
+    for(let y=0;y<paletteHeight;y++) for(let x=1;x<paletteStride;x++){
+      noise^=noise<<13; noise^=noise>>>17; noise^=noise<<5;
+      paletteScan[y*paletteStride+x]=noise&255;
+    }
+    const indexed=Buffer.concat([
+      Buffer.from([137,80,78,71,13,10,26,10]),
+      pngChunk('IHDR',paletteHeader),
+      pngChunk('PLTE',palette),
+      pngChunk('IDAT',deflateSync(paletteScan,{level:6})),
+      pngChunk('IEND',Buffer.alloc(0)),
+    ]);
+    assert.ok(indexed.length>=50000,'palette fixture meets real source size gate');
     assert.equal(indexed[25],3,'indexed fixture must really be a palette PNG');
     fs.writeFileSync(source,indexed);
     const indexedHash=createHash('sha256').update(indexed).digest('hex');
@@ -2169,24 +2208,11 @@ test('Mare generated original art is promoted only after model-source visual QA 
       scanlines[offset+1]=(x*13+y*47)&255;
       scanlines[offset+2]=(x*53+y*7)&255;
     }
-    const pngChunk=(type,payload)=>{
-      const body=Buffer.concat([Buffer.from(type),payload]);
-      let crc=0xffffffff;
-      for(const byte of body){
-        crc^=byte;
-        for(let bit=0;bit<8;bit++)crc=(crc>>>1)^(0xedb88320&-(crc&1));
-      }
-      const header=Buffer.alloc(4),tail=Buffer.alloc(4);
-      header.writeUInt32BE(payload.length);
-      tail.writeUInt32BE((crc^0xffffffff)>>>0);
-      return Buffer.concat([header,body,tail]);
-    };
     const ihdr=Buffer.alloc(13);
     ihdr.writeUInt32BE(width,0);
     ihdr.writeUInt32BE(height,4);
     ihdr[8]=8;
     ihdr[9]=2;
-    const {deflateSync}=await import('node:zlib');
     fs.writeFileSync(upgradeSource,Buffer.concat([
       Buffer.from([137,80,78,71,13,10,26,10]),
       pngChunk('IHDR',ihdr),
