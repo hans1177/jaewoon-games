@@ -3710,17 +3710,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local face = if z > 0 then -1 else 1
 						local wallName = if key == "japan" or key == "china" or key == "seasia" or key == "malabar"
 							or key == "pacific" or key == "swahili" or key == "wafrica" then "kenney_wood_wall_01" else "kenney_grey_wall_01"
-						-- [런던 공방 전용 실물] 1번째 대장간, 2번째 목공소.
-						-- 실제 등록 번호가 없는 동안에는 기존 개방형 공방을 유지한다.
-						local londonWorkshop = if info.portId == "london" and c[1] == "workshop"
-							then (if n % 2 == 0 then "london_bld_carpenter" else "london_bld_smithy") else nil
-						if londonWorkshop and not AssetIds["Town/" .. londonWorkshop] then londonWorkshop = nil end
-						local ground = importedModel(folder, "Town", londonWorkshop or "floor_base", at,
-							21, londonWorkshop ~= nil, c[6])
+						-- [항구 지시서 공방] 해당 항구의 정확한 2단계 대장간·목공소만 기존 필지에서 선택한다.
+						-- 런던 기존 연출 유지. 등록 또는 실제 복제 실패 시 기존 개방형 공방을 유지한다.
+						local portWorkshop = if c[1] == "workshop" and (lvl >= 2 or info.portId == "london")
+							then info.portId .. (if n % 2 == 0 then "_bld_carpenter" else "_bld_smithy") else nil
+						if portWorkshop and not AssetIds["Town/" .. portWorkshop] then portWorkshop = nil end
+						local ground = if portWorkshop then importedModel(folder, "Town", portWorkshop, at, 21, true, c[6]) else nil
+						if not ground then
+							portWorkshop = nil
+							ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])
+						end
 						if ground then
 							ground.Name = "EconomySite_" .. c[1]
 							ground:SetAttribute("IndustryGood", c[7] or "")
-							if londonWorkshop then ground:SetAttribute("PortOriginalIndustry", londonWorkshop) end
+							if portWorkshop then ground:SetAttribute("PortOriginalIndustry", portWorkshop) end
 							ground:SetAttribute("PortId", info.portId)
 							ground:SetAttribute("DevelopmentTier", lvl)
 							-- [경제↔건축] 현재 시설 숫자만 읽어 준공 및 증축 가능 등급을 표시한다. 건설비·저장값 변경 없음.
@@ -3736,7 +3739,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							table.insert(placedLots, { X = x, Z = z, H = 18 })
 							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
 							local back = nil
-							if not londonWorkshop then
+							if not portWorkshop then
 								back = importedModel(folder, "Town", wallName, at + Vector3.new(0, 0, -face * 8), 19, true, c[6])
 								for _, dx in { -9, 9 } do
 									local sideAt = at + Vector3.new(dx, 0, 0)
@@ -3752,7 +3755,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 								or ground:FindFirstChildWhichIsA("BasePart", true)
 							if anchor then sign(folder, anchor, c[2], C(151, 110, 51), 10) end
 							-- [내부 설비] 업종에 맞는 실제 실내가구·장비·원료를 기존 개방형 실내에 놓는다.
-							if not londonWorkshop then
+							if not portWorkshop then
 								local fixture = importedModel(folder, c[4], c[5], at + Vector3.new(-4, 0, -face * 2), 4.5, false)
 								if fixture then fixture.Name = "FacilityEquipment_" .. c[1] end
 								importedModel(folder, "Interior", if c[1] == "warehouse" or c[1] == "hall" or c[1] == "school"
@@ -4085,13 +4088,16 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
 								local newGrade = previousDecor and decor.residential > (previousDecor.residential or 0)
 									and decorAnimated < animationLimit
-								local itemName = if decor.residential >= 3 and info.portId == "london"
-									and AssetIds["Town/london_bld_well"] then "london_bld_well"
+								local originalWell = info.portId .. "_bld_well"
+								local itemName = if decor.residential >= 3 and AssetIds["Town/" .. originalWell] then originalWell
 									elseif decor.residential >= 3 then "village-well" else "bench_A"
 								local front = if pos.Z > 0 then -1 else 1
 								local placeAt = pos + Vector3.new(ww * 0.28, 0, front * (ww * 0.45 + 4))
 								local delay = if newGrade then 0.28 + decorAnimated * 0.36 else nil
 								local detail = importedModel(folder, "Town", itemName, placeAt, 4.5, false, nil, delay)
+								if not detail and itemName == originalWell then
+									detail = importedModel(folder, "Town", "village-well", placeAt, 4.5, false, nil, delay)
+								end
 								if detail then
 									residentialDecorationPlaced = true
 									decorPlaced += 1
@@ -4448,23 +4454,20 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			if d.kind == "religious" then
 				-- [종교 시설] 문화권 대표 건물은 유지하고 부속탑·가로등은 발전도와 실제 종사 인력에 맞춰 개방.
 				local clergyAvailable = not districtJobs or (tonumber(districtJobs.clergy) or 0) > 0
+				-- [지역 종교 원본] 예배당/신사 1단계, 사원/성당 3단계의 정확한 현지 모델만 사용.
+				local originalReligious = info.portId .. (if lvl <= 2 then "_bld_chapel" else "_bld_temple")
+				local placedOriginal = AssetIds["Town/" .. originalReligious]
+					and put("Town", originalReligious, if lvl <= 2 then 22 else 30, cx, cz, true, face)
 				if key == "japan" or key == "china" or key == "korea" then
-					put("Town", "temple-tower", 26, cx, cz, true, face)
+					if not placedOriginal then put("Town", "temple-tower", 26, cx, cz, true, face) end
 					if lvl >= 3 and clergyAvailable then
 						put("Town", "temple-stone", 14, cx + 14, cz + (if cz > 0 then -8 else 8), true, face)
 					end
 				elseif key == "ottoman" or key == "swahili" or key == "malabar" or key == "desert" or key == "tropic" or key == "seasia" or key == "pacific" or key == "wafrica" then
-					put("Town", "temple-stone", 28, cx, cz, true, face)
+					if not placedOriginal then put("Town", "temple-stone", 28, cx, cz, true, face) end
 					if lvl >= 4 and clergyAvailable then put("Terrain", "pillar-obelisk", 14, cx + 15, cz, true) end
 				else
-					-- [런던 종교 구획] 1~2단계는 승인된 소형 예배당을, 이후는 원래의 대형 교회를 쓴다.
-					if info.portId == "london" and lvl <= 2 and AssetIds["Town/london_bld_chapel"] then
-						put("Town", "london_bld_chapel", 22, cx, cz, true, face)
-					elseif info.portId == "london" and lvl >= 3 and AssetIds["Town/london_bld_temple"] then
-						put("Town", "london_bld_temple", 30, cx, cz, true, face)
-					else
-						put("Town", "church", 30, cx, cz, true, face)
-					end
+					if not placedOriginal then put("Town", "church", 30, cx, cz, true, face) end
 					if lvl >= 3 and clergyAvailable then
 						put("Town", "bell-tower", 22, cx - 16, cz + (if cz > 0 then -6 else 6), true)
 					end
@@ -4488,11 +4491,16 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10
 					local side = if k % 2 == 0 then -1 else 1
-					local stallAsset = if info.portId == "london" and lvl >= 2 and k == 1
-						and AssetIds["Town/london_bld_market_stalls"] then "london_bld_market_stalls"
-						elseif (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
+					local localMarket = info.portId .. "_bld_market_stalls"
+					local fallbackStall = if (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
+					local stallAsset = if lvl >= 2 and k == 1 and AssetIds["Town/" .. localMarket] then localMarket else fallbackStall
 					local originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
 						if side > 0 then face else face + math.pi)
+					if not originalStall and stallAsset == localMarket then
+						stallAsset = fallbackStall
+						originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
+							if side > 0 then face else face + math.pi)
+					end
 					if londonMarketDay and originalStall and
 						put("Town", stallAsset, 7, x, cz + side * 19, false,
 							if side > 0 then face else face + math.pi) then
@@ -4566,10 +4574,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local workshop = if europeanFarm and table.find(made, "timber") then "village-sawmill"
 							elseif europeanFarm and table.find(made, "iron") then "village-blacksmith"
 							elseif europeanFarm and ruralProduct == "grain" then
-							(if info.portId == "london" and AssetIds["Town/london_bld_mill"]
-								then "london_bld_mill" else "village-mill") else nil
+							(if AssetIds["Town/" .. info.portId .. "_bld_mill"]
+								then info.portId .. "_bld_mill" else "village-mill") else nil
 						if workshop and AssetIds["Town/" .. workshop] then
 							local building = put("Town", workshop, 22, cx + 62, cz, true, face)
+							if not building and workshop == info.portId .. "_bld_mill" then
+								workshop = "village-mill"
+								building = put("Town", workshop, 22, cx + 62, cz, true, face)
+							end
 							if building then building:SetAttribute("CityPortRuralWorkshop", workshop) end
 						end
 					end
