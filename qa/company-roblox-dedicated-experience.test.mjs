@@ -893,6 +893,13 @@ print('MARE_SOURCE_PREVIEW_FIXTURES=3')
   assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
   assert.match(workflow,/--animal-preview-dir=/);
   assert.match(workflow,/retention-days: 3/);
+  assert.match(workflow,/--animal-source-visual-review=/);
+  assert.match(source,/failureReason/);
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.match(uploader,/SOURCE_VISUAL_FRAME_HASH/);
+  assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
+  assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);
+  assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
   assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
   assert.equal((workflow.match(/always\(\) && env\.MARE_ANIMAL_PREVIEW == 'true'/g)||[]).length,2);
   assert.match(workflow,/if \[\[ "\$MARE_ANIMAL_PREVIEW" == "true" \]\]; then/);
