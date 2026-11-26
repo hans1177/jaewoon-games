@@ -4737,3 +4737,13 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.ok(town.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
   assert.ok(port.includes('CityPortPlazaAccessConnected')&&port.includes('CentralPlazaRemovedStructures'),'new plaza access and final occupancy cleanup must remain');
 });
+
+// [실제 Studio 회복] 초기 지연을 숨기지 않고 전수 검사 성공 때만 구분한다.
+test('Mare Studio priority model delay remains a failure unless full recovery is proven',()=>{
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const gate=workflow.slice(workflow.indexOf('$modelRecovered = ('),workflow.indexOf('$foreignProcessing = {',workflow.indexOf('$modelRecovered = (')));
+  for(const evidence of ["$env:CAP_GAME -ceq 'mare-essentia'","[string]$modelAudit.status -ceq 'PASS'","[int]$modelAudit.registered -gt 0","[int]$modelAudit.loaded -eq [int]$modelAudit.registered","$null -ne $modelAudit.failed -and [int]$modelAudit.failed -eq 0","@($modelAudit.errors).Count -eq 0","[string]$report.assetRegistryAudit.status -ceq 'PASS'","$mediaOk -and","[string]$report.assetAudit.features.status -ceq 'PASS'","$report.summary.abortedEarly -eq $false","[int]$report.summary.completedSteps -eq [int]$report.summary.plannedSteps","@($report.errors).Count -eq 0"])assert.ok(gate.includes(evidence),evidence);
+  assert.ok(workflow.includes("$modelRecovered -and $_ -cmatch '^\\[MareEssentia\\] 우선 모델 불러오기 제한시간 도달\\s+[1-9][0-9]*\\s*$'"));
+  assert.ok(workflow.includes('STUDIO_PRIORITY_MODEL_DELAY_RECOVERED='));
+  assert.ok(workflow.includes('-not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)'));
+});
