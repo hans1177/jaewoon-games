@@ -2736,3 +2736,20 @@ test('Mare first card has no forced wonder and spontaneous port events are limit
   assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
   assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
 });
+
+// Dropbox 후보의 수동 QA도 실제 동일 SHA의 GitHub Actions 검사로 검증한다.
+test('Mare Dropbox candidate recognizes exact successful check runs without weakening native merge protection',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'),workflow.indexOf('      - name: Check reviewed animal originals'));
+  assert.ok(block.includes("'/commits/'+head+'/check-runs?filter=latest&per_page=100'"));
+  assert.ok(block.includes("row.get('head_sha')==head"));
+  assert.ok(block.includes("row.get('app',{}).get('slug')=='github-actions'"));
+  assert.ok(block.includes("str(row.get('details_url','')).startswith(prefix)"));
+  assert.ok(block.includes('CARD_DROPBOX_REQUIRED_CHECK_RUN_NOT_VERIFIED:'));
+  assert.ok(block.includes('CARD_DROPBOX_CHECK_RUN_PENDING_OR_FAILED'));
+  assert.ok(block.includes('gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required'));
+  assert.ok(block.includes("no checks reported on the '$CARD_BRANCH' branch"));
+  assert.ok(block.includes('gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"'));
+  assert.ok(!block.includes('--admin'));
+  assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
+});
