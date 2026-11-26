@@ -951,6 +951,18 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(uploader,/askChain\(/);
   assert.match(uploader,/FREE_VISION_BILLING_BLOCKED/);
   assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
+  assert.match(source,/"directModel": True/);
+  assert.match(source,/SOURCE_PREVIEW_DIRECT_EVIDENCE/);
+  assert.match(source,/restore_pinned_animal_glb\(proof, source\)/);
+  assert.match(source,/HELD_SOURCE_RESTORE_HASH/);
+  assert.match(workflow,/MARE_ANIMAL_RESTORED_PROOF_INVALID/);
+  assert.match(workflow,/MARE_ANIMAL_PUBLISHER_PROOF_INVALID/);
+  assert.ok(source.includes('report["downloadAttempts"] = restore_attempts'));
+  assert.ok(source.includes('if report["downloadAttempts"] >= 3:'));
+  assert.ok(source.includes('report["downloadAttempts"] += 1'));
+  assert.ok(workflow.includes('len(restored)+len(acquired)<=attempts<=3'));
+  assert.match(source,/PUBLISHER_FREE_CATALOG_HELD_ONLY/);
+  assert.match(workflow,/inbox-hold\/Animals/);
   assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
   assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
   assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);
@@ -963,11 +975,12 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`
-import ast, json, struct, math
+import ast, json, struct, math, hashlib, os, re, tempfile, http.client
+from unittest.mock import patch
 from pathlib import Path
 tree=ast.parse(Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8'))
-fn=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='inspect_held_animal_glb')
-exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+names={'inspect_held_animal_glb','restore_pinned_animal_glb','gobkit_animal_sources','read_gobkit_free'}
+exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names],type_ignores=[]),'assets_wanted.py','exec'))
 def glb(triangles=1000, bad_index=False, nan=False, negative_accessor=False, external=False, invalid_joint=False):
     pos=struct.pack('<9f',0,0,0,1,0,0,0,1,float('nan') if nan else 0)
     idx=struct.pack('<'+'H'*(3*triangles),*([0,1,3 if bad_index else 2]*triangles))
@@ -985,9 +998,71 @@ for option,reason in [('bad_index','GLB_INDEX_RANGE'),('nan','GLB_NONFINITE_POSI
     except ValueError as e: assert str(e)==reason,(option,e)
     else: raise AssertionError(option)
 print('MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8')
+data=glb()
+digest=hashlib.sha256(data).hexdigest()
+proof={'source':'https://github.com/owner/repo/blob/'+'a'*40+'/animal/Goat.glb',
+       'license':'CC0-1.0','commercialUseAllowed':True,'bytes':len(data),'triangles':1000,
+       'sourceSha256':digest,'originalSha256':digest,
+       'pinnedBlobSha':hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()}
+with tempfile.TemporaryDirectory() as dest:
+    target=str(Path(dest)/'goat.glb')
+    with patch.object(http.client,'HTTPSConnection') as connection:
+        response=connection.return_value.getresponse.return_value
+        response.status=200
+        response.read.return_value=data
+        assert restore_pinned_animal_glb(proof,target)==data
+        assert Path(target).read_bytes()==data
+        connection.assert_called_once_with('raw.githubusercontent.com',timeout=25)
+        assert connection.return_value.request.call_args.args==('GET','/owner/repo/'+'a'*40+'/animal/Goat.glb')
+        response.read.assert_called_once_with(len(data)+1)
+        for case, expected in [(proof,'HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS')]:
+            try: restore_pinned_animal_glb(case,target)
+            except ValueError as e: assert str(e)==expected
+            else: raise AssertionError('overwrite allowed')
+        Path(target).unlink()
+        for case,status,body,expected in [
+            ({**proof,'source':'https://example.com/Goat.glb'},200,data,'HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS'),
+            ({**proof,'license':'CC-BY-4.0'},200,data,'HELD_SOURCE_RESTORE_PROVENANCE'),
+            (proof,302,data,'HELD_SOURCE_RESTORE_HTTP'),
+            (proof,200,data+b'x','HELD_SOURCE_RESTORE_HASH'),
+            (proof,200,b'x'+data[1:],'HELD_SOURCE_RESTORE_HASH'),
+            ({**proof,'triangles':999},200,data,'HELD_SOURCE_RESTORE_GEOMETRY')]:
+            response.status=status
+            response.read.return_value=body
+            try: restore_pinned_animal_glb(case,target)
+            except ValueError as e: assert str(e)==expected,(expected,e)
+            else: raise AssertionError(expected)
+            assert not Path(target).exists()
+print('MARE_HELD_ANIMAL_RESTORE_FIXTURES=8')
+license_text='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
+url='https://gobkit.com/freebies/animal013/Pigeon.glb'
+entry={'name':'Pigeon','format':'glb','url':url,'license':license_text}
+def catalog(model, listed=True):
+    return {'schemaVersion':2,'glbs':[url] if listed else [],'packs':[{'models':[model]}]}
+assert gobkit_animal_sources(catalog(entry),['pigeon','penguin'])=={'pigeon':{'name':'Pigeon','url':url,'license':license_text}}
+assert gobkit_animal_sources(catalog(entry,False),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'license':'CC BY'}),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'name':'Rockhopper Penguin'}),['penguin'])=={}
+assert gobkit_animal_sources(catalog({**entry,'url':'https://example.com/Pigeon.glb'}),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'name':'Sea Otter'}),['sea_otter'])['sea_otter']['url']==url
+with patch.object(http.client,'HTTPSConnection') as connection:
+    response=connection.return_value.getresponse.return_value
+    response.status=200
+    response.read.return_value=b'123'
+    assert read_gobkit_free('/api/free',3)==b'123'
+    response.read.assert_called_once_with(4)
+    for path,status,body in [('/api/free',302,b'123'),('/api/free',200,b'1234'),('/redirect',200,b'123')]:
+        response.status=status
+        response.read.return_value=body
+        try: read_gobkit_free(path,3)
+        except ValueError: pass
+        else: raise AssertionError('unsafe publisher download')
+print('MARE_ANIMAL_PUBLISHER_FIXTURES=10')
 `;
   const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
   assert.match(output,/MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8/);
+  assert.match(output,/MARE_HELD_ANIMAL_RESTORE_FIXTURES=8/);
+  assert.match(output,/MARE_ANIMAL_PUBLISHER_FIXTURES=10/);
 });
 
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{
@@ -1759,8 +1834,54 @@ test('Mare European card art hides unverified ratios and styles without deleting
     const key='CardArt/'+id;
     assert.ok(approved.approved[key],key+' approved source preserved');
     assert.ok(registered.assets[key]?.assetId,key+' Roblox asset preserved');
-    assert.equal(registered.assets[key].sourceSha256,approved.approved[key],key+' approved and registered SHA unchanged');
-    assert.ok(ids.includes('["'+key+'"] = '+registered.assets[key].assetId),key+' Luau ID unchanged');
+    const previous=registered.assets[key];
+    assert.ok(ids.includes('["'+key+'"] = '+previous.assetId),key+' Luau ID unchanged');
+    if (previous.sourceSha256!==approved.approved[key]) {
+      // [원화 교체 대기] 기존 등록 이미지와 신규 검수 원본 양쪽의 실제 해시·권한을 검증한다.
+      // 등록 완료 전 신규 원화가 게임에 노출되는 것은 허용하지 않는다.
+      const review=approved.modelOriginals?.[key];
+      assert.ok(!permitted.includes(id),key+' pending replacement must remain hidden');
+      assert.equal(review?.replacesSha256,previous.sourceSha256,key+' previous source identity');
+      assert.equal(String(review?.replacesAssetId),String(previous.assetId),key+' previous asset identity');
+      assert.equal(previous.assetType,'Image');
+      assert.equal(previous.usePermissionGranted,true);
+      assert.match(String(previous.assetId),/^[1-9][0-9]*$/);
+      assert.equal(review.sourceType,'IMAGE_GENERATION_MODEL');
+      assert.equal(review.reviewer,'VIBE_AGENT_VISUAL_REVIEW');
+      assert.equal(review.license,'PROJECT_ORIGINAL_ART');
+      assert.match(review.reviewedAt,/^\d{4}-\d{2}-\d{2}$/);
+      for(const field of ['subjectMatch','historicalContext','houseStyle','singleFinishedScene','noPartsOrSprites','robloxSafety','commercialRights'])
+        assert.equal(review[field],true,key+' '+field);
+      const oldPath='assets/cardart/'+id+'.png';
+      const original='assets/cardart/src/'+id+'-original.png';
+      const portrait='assets/cardart/src/'+id+'-1400x2000.png';
+      assert.ok([original,portrait].includes(review.sourceFile),key+' replacement source path');
+      const old=fs.readFileSync(root+oldPath);
+      const next=fs.readFileSync(root+review.sourceFile);
+      assert.equal(createHash('sha256').update(old).digest('hex'),previous.sourceSha256,key+' existing bytes preserved');
+      assert.equal(createHash('sha256').update(next).digest('hex'),review.sourceSha256,key+' replacement bytes');
+      assert.equal(review.sourceSha256,approved.approved[key],key+' replacement approved hash');
+      assert.ok(next.length>=50000 && next.length<=20*1024*1024);
+      assert.ok(next.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
+      assert.equal(next.toString('ascii',12,16),'IHDR');
+      const w=next.readUInt32BE(16),h=next.readUInt32BE(20);
+      assert.ok(w>=768 && h>=768 && w<=4096 && h<=4096);
+      assert.ok(Math.abs(w*10-h*7)<=h*0.05);
+      if(review.sourceFile===portrait){assert.equal(w,1400);assert.equal(h,2000);}
+      assert.equal(next[24],8);
+      assert.ok([2,6].includes(next[25]),key+' true-color replacement required');
+      const safety=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+        .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+      assert.equal(safety.enabled,true);
+      for(const blocked of safety.blockedAssets){
+        assert.ok(!(blocked.sha256||[]).some(hash=>[previous.sourceSha256,review.sourceSha256].includes(hash)));
+        assert.ok(!(blocked.assetIds||[]).map(String).includes(String(previous.assetId)));
+        assert.ok(!(blocked.sourcePaths||[]).some(file=>[oldPath,review.sourceFile,root+oldPath,root+review.sourceFile].includes(file)));
+      }
+      console.log('MARE_CARD_REPLACEMENT_PENDING_REGISTRATION',key);
+      continue;
+    }
+    assert.equal(previous.sourceSha256,approved.approved[key],key+' approved and registered SHA unchanged');
     if (!permitted.includes(id))continue;
     const review=approved.modelOriginals[key];
     assert.equal(review?.sourceSha256,approved.approved[key],key+' model original reviewed');
