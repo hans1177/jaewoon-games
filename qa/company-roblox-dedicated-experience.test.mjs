@@ -893,6 +893,9 @@ print('MARE_SOURCE_PREVIEW_FIXTURES=3')
   assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
   assert.match(workflow,/--animal-preview-dir=/);
   assert.match(workflow,/retention-days: 3/);
+  assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
+  assert.equal((workflow.match(/always\(\) && env\.MARE_ANIMAL_PREVIEW == 'true'/g)||[]).length,2);
+  assert.match(workflow,/if \[\[ "\$MARE_ANIMAL_PREVIEW" == "true" \]\]; then/);
 });
 
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.

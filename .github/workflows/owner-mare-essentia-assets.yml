@@ -42,6 +42,11 @@ on:
         type: boolean
         required: false
         default: false
+      animal_preview:
+        description: '기존 무료 동물 원본 렌더링 검사 즉시 실행 (승인 아님)'
+        type: boolean
+        required: false
+        default: false
       publish_after_register:
         description: '자산 등록 확인 후 게시까지 할지 (기본: 게시 안 함)'
         type: boolean
@@ -62,6 +67,8 @@ jobs:
   register:
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    env:
+      MARE_ANIMAL_PREVIEW: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-animal-preview]')) || (github.event_name == 'workflow_dispatch' && inputs.animal_preview == true && inputs.studio_regrant != true) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -364,7 +371,7 @@ jobs:
 
       # [동물 원본 시각 증거] 기존 무료 Blender 검사기를 같은 등록 흐름에서 사용한다.
       - name: Prepare free Blender source preview
-        if: ${{ always() && github.event_name == 'schedule' }}
+        if: ${{ always() && env.MARE_ANIMAL_PREVIEW == 'true' }}
         continue-on-error: true
         shell: bash
         run: |
@@ -380,7 +387,7 @@ jobs:
         run: |
           set -euo pipefail
           preview_args=()
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
             preview_args+=("--animal-preview-dir=$RUNNER_TEMP/mare-animal-source-preview")
           fi
           python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods "${preview_args[@]}"
@@ -407,7 +414,7 @@ jobs:
           fi
 
       - name: Keep bounded animal source review frames
-        if: ${{ always() && github.event_name == 'schedule' }}
+        if: ${{ always() && env.MARE_ANIMAL_PREVIEW == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: mare-animal-source-preview
