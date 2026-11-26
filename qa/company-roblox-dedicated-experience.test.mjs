@@ -952,6 +952,11 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE SCENE/);
   assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE RENDER_/);
   assert.ok(workflow.includes("blender --version"));
+  assert.ok(workflow.includes("blender python3-numpy libegl1"));
+  assert.ok(workflow.includes("import numpy; import io_scene_gltf2"));
+  assert.ok(workflow.includes("MARE_BLENDER_IMPORT_DEPENDENCIES_OK"));
+  assert.ok(source.includes('evidence["missingModule"]'));
+  assert.ok(source.includes('module if module in allowed else "OTHER"'));
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.match(uploader,/SOURCE_VISUAL_FRAME_HASH/);
   assert.match(uploader,/VIBE2_GEMINI_FREE_TIER_VERIFIED==='YES'/);
