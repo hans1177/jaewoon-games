@@ -56,10 +56,10 @@ task.spawn(function()
 	end
 	local bad = 0
 	-- [자산 감사] 실제 로딩 콜백·실패 자산·진행 위치를 보존한다.
-	-- [선로딩 경합 방지] 최초 모델 준비 구간과 Studio 미디어 감사의 네트워크 요청을 분리한다.
-	-- 실제 게임의 시작 제한시간이나 기존 클라이언트 전수 검사는 변경하지 않는다.
-	local modelReadyDeadline = os.clock() + 35
-	while ReplicatedStorage:GetAttribute("MareAssetsReady") ~= true and os.clock() < modelReadyDeadline do
+	-- [선로딩 경합 방지] 초기 입장 준비가 아닌 전체 모델 요청 종료까지 제한된 시간만 대기한다.
+	-- 기존 140초 미디어 검사와 300초 통합 검사 제한 및 실패 판정은 유지한다.
+	local modelReadyDeadline = os.clock() + 60
+	while ReplicatedStorage:GetAttribute("MareAssetsSettled") ~= true and os.clock() < modelReadyDeadline do
 		task.wait(0.25)
 	end
 	local mediaStarted = os.clock()
