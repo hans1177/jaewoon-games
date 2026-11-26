@@ -1736,6 +1736,124 @@
   "targetCount": 102,
   "candidates": [
    {
+    "name": "beaver",
+    "targets": [
+     "am_beaver",
+     "zoo_beaver"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-beaver.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-beaver.glb",
+      "format": "GLB",
+      "bytes": 101684,
+      "sha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986"
+     }
+    ],
+    "sourceSha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986",
+    "bytes": 101684,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/animal008/Beaver.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 660,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
+     "visualQualityApproved": false
+    },
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+   },
+   {
+    "name": "flamingo",
+    "targets": [
+     "zoo_flamingo"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-flamingo.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-flamingo.glb",
+      "format": "GLB",
+      "bytes": 89336,
+      "sha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180"
+     }
+    ],
+    "sourceSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
+    "bytes": 89336,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/birds/Flamingo.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 390,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
+     "visualQualityApproved": false
+    },
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "sourceVisualObservation": {
+     "state": "VISUAL_IDENTITY_REPAIR_REQUIRED",
+     "sourceRevision": "3cffd3bcfc59c0e3b04a7134b7561e2be3dc9708",
+     "sourceMemberSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "model": "gemini-3.6-flash",
+     "provider": "gemini:gemini-3.6-flash",
+     "frameSha256": [
+      "71a05f7e7445079f8dacb27ba70aed346740f0e9d332d56e97ef03b5f8bac8d5",
+      "71b9ede9dd3547af85892235de024526379a3a3ad2d06778b53f7933787d768a",
+      "f5820aab94a0b27a1be9bf04cd09c3837864591214158ce9180faa16e33ddbd5"
+     ],
+     "responseSha256": "518107c1ea62c84e2a47725953a89269debbc00286c29fe7cf09a6567679ab9e",
+     "speciesMatch": false,
+     "contentSafe": true,
+     "silhouetteClear": true,
+     "uncertain": false,
+     "mobileGeometryWithinBudget": false
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "15ca99527b87af6d-15ca99527b87af6d",
+     "sourceMemberSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
+     "triangles": 390,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "71a05f7e7445079f8dacb27ba70aed346740f0e9d332d56e97ef03b5f8bac8d5",
+       "bytes": 241401
+      },
+      {
+       "name": "rear.png",
+       "sha256": "71b9ede9dd3547af85892235de024526379a3a3ad2d06778b53f7933787d768a",
+       "bytes": 240486
+      },
+      {
+       "name": "side.png",
+       "sha256": "f5820aab94a0b27a1be9bf04cd09c3837864591214158ce9180faa16e33ddbd5",
+       "bytes": 240364
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
+   },
+   {
     "name": "frigatebird",
     "targets": [
      "zoo_frigatebird"
@@ -1768,39 +1886,13 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
-     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
-     "triangles": 404,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "6d88d70ae43a2eb85f904ca02b8962e4ff77f4f0090a81ff4724feab6ddaf85c",
-       "bytes": 231953
-      },
-      {
-       "name": "rear.png",
-       "sha256": "5f26f229baf8687de7eb22211981f9f4ff8549ebdad3f00a6499f518a813904c",
-       "bytes": 235713
-      },
-      {
-       "name": "side.png",
-       "sha256": "126f42f5f2682d3d3c5878732c50d1a5092626d1e75a54581f91e7ded8591aa5",
-       "bytes": 231825
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
      "sourceRevision": "bb571c63094b50ea08c03fe7c76eb07f3ee7eeeb",
      "registrationApproved": false,
      "visualQualityApproved": false
-    }
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "goat",
@@ -1835,33 +1927,6 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
-     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
-     "triangles": 396,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "9c3bf8be21425222609a1137e8fbbfc345d75f0d0add38e01b40051cb23e5906",
-       "bytes": 245616
-      },
-      {
-       "name": "rear.png",
-       "sha256": "5c5747bfac8c26ef4b49839ef5f9a6fc8d36dbb2a12b5d3057f882f3a1614adc",
-       "bytes": 239317
-      },
-      {
-       "name": "side.png",
-       "sha256": "ecebf8af10704616cfb183672a6915274fcb38baed8434eff2ba19965d2a1a91",
-       "bytes": 239532
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_OBSERVED_ONLY",
      "sourceRevision": "bb571c63094b50ea08c03fe7c76eb07f3ee7eeeb",
@@ -1881,7 +1946,8 @@
      "silhouetteClear": true,
      "uncertain": false,
      "mobileGeometryWithinBudget": false
-    }
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "hummingbird",
@@ -1915,7 +1981,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "kiwi",
@@ -1949,7 +2016,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "macaw",
@@ -1983,7 +2051,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "manatee",
@@ -2017,7 +2086,90 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+   },
+   {
+    "name": "toucan",
+    "targets": [
+     "am_toucan"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-toucan.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-toucan.glb",
+      "format": "GLB",
+      "bytes": 89796,
+      "sha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621"
+     }
+    ],
+    "sourceSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+    "bytes": 89796,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/birds/Toucan.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 432,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
+     "visualQualityApproved": false
+    },
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "4e1b93cc5a4d8de9-4e1b93cc5a4d8de9",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "triangles": 432,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "82716fbbfec6c8b57d2a9da431ef2e842f269e90a5cd6ad8ae9c4f338e0ddd93",
+       "bytes": 227100
+      },
+      {
+       "name": "rear.png",
+       "sha256": "046fa00e3091f039413b2209d9b327283874c2399dfc0a9b717e09bce2882b0c",
+       "bytes": 225803
+      },
+      {
+       "name": "side.png",
+       "sha256": "e53483a9e1bc8d0229cd93d4fd63d50e851bf50ed2fc77598d87836db9ac32c1",
+       "bytes": 232972
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "sourceVisualObservation": {
+     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
+     "sourceRevision": "3cffd3bcfc59c0e3b04a7134b7561e2be3dc9708",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "model": "gemini-3.6-flash",
+     "provider": "gemini:gemini-3.6-flash",
+     "frameSha256": [
+      "82716fbbfec6c8b57d2a9da431ef2e842f269e90a5cd6ad8ae9c4f338e0ddd93",
+      "046fa00e3091f039413b2209d9b327283874c2399dfc0a9b717e09bce2882b0c",
+      "e53483a9e1bc8d0229cd93d4fd63d50e851bf50ed2fc77598d87836db9ac32c1"
+     ],
+     "responseSha256": "bc28f45e4232b877f296cd254c6b6a8eb71be715ac18a69c9788cecc70eeeb55",
+     "speciesMatch": true,
+     "contentSafe": true,
+     "silhouetteClear": true,
+     "uncertain": false,
+     "mobileGeometryWithinBudget": false
+    }
    },
    {
     "name": "hippo",
@@ -2051,7 +2203,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "koala",
@@ -2085,7 +2238,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "narwhal",
@@ -2119,7 +2273,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "platypus",
@@ -2153,7 +2308,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "sea_otter",
@@ -2187,7 +2343,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "seal",
@@ -2221,7 +2378,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "tasmanian_devil",
@@ -2255,7 +2413,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET"
+    "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "penguin",
@@ -2280,7 +2439,55 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false
+    "actualRobloxRuntimeVerified": false,
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "f3e51ff8d9c34fae-8651275a052611fa",
+     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
+     "triangles": 684,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "96f16eb4c9adc9bd5b1bcb3a13d1f8d0fba2754e7fd210c9d1f6005d70c2cefd",
+       "bytes": 249452
+      },
+      {
+       "name": "rear.png",
+       "sha256": "909de9674d7bc74e105a6bd67bdd40aedf7b6dc0d4a8372a4289e444f60b8ea0",
+       "bytes": 238916
+      },
+      {
+       "name": "side.png",
+       "sha256": "5354cee22fa4feb2b9d6c70188d1b9fe964d41a2ed727dfb48451573c2255f0f",
+       "bytes": 239992
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourceVisualObservation": {
+     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
+     "sourceRevision": "3cffd3bcfc59c0e3b04a7134b7561e2be3dc9708",
+     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "model": "gemini-3.6-flash",
+     "provider": "gemini:gemini-3.6-flash",
+     "frameSha256": [
+      "96f16eb4c9adc9bd5b1bcb3a13d1f8d0fba2754e7fd210c9d1f6005d70c2cefd",
+      "909de9674d7bc74e105a6bd67bdd40aedf7b6dc0d4a8372a4289e444f60b8ea0",
+      "5354cee22fa4feb2b9d6c70188d1b9fe964d41a2ed727dfb48451573c2255f0f"
+     ],
+     "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
+     "speciesMatch": true,
+     "contentSafe": true,
+     "silhouetteClear": true,
+     "uncertain": false,
+     "mobileGeometryWithinBudget": false
+    }
    },
    {
     "name": "hippo",
@@ -2333,96 +2540,27 @@
     "actualRobloxRuntimeVerified": false
    },
    {
-    "name": "toucan",
+    "name": "pelican",
     "targets": [
-     "am_toucan"
+     "zoo_pelican"
     ],
-    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-toucan.glb",
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-pelican.glb",
     "directModel": true,
     "modelMembers": [
      {
-      "member": "gobkit-free-toucan.glb",
+      "member": "gobkit-free-pelican.glb",
       "format": "GLB",
-      "bytes": 89796,
-      "sha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621"
+      "bytes": 88688,
+      "sha256": "3e2395c2303334305cc5c6ef551ce954808d3037e12cc0e85ced4f82b2eadbfd"
      }
     ],
-    "sourceSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-    "bytes": 89796,
+    "sourceSha256": "3e2395c2303334305cc5c6ef551ce954808d3037e12cc0e85ced4f82b2eadbfd",
+    "bytes": 88688,
     "license": "CC0-1.0",
-    "sourceUrl": "https://gobkit.com/freebies/birds/Toucan.glb",
+    "sourceUrl": "https://gobkit.com/freebies/birds/Pelican.glb",
     "licenseEvidenceUrl": "https://gobkit.com/api/free",
     "geometry": {
-     "triangles": 432,
-     "jointCount": 16,
-     "animationCount": 4,
-     "mobileGeometryWithinBudget": false,
-     "speciesVerified": false,
-     "visualQualityApproved": false
-    },
-    "speciesVerified": false,
-    "visualQualityApproved": false,
-    "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING"
-   },
-   {
-    "name": "beaver",
-    "targets": [
-     "am_beaver",
-     "zoo_beaver"
-    ],
-    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-beaver.glb",
-    "directModel": true,
-    "modelMembers": [
-     {
-      "member": "gobkit-free-beaver.glb",
-      "format": "GLB",
-      "bytes": 101684,
-      "sha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986"
-     }
-    ],
-    "sourceSha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986",
-    "bytes": 101684,
-    "license": "CC0-1.0",
-    "sourceUrl": "https://gobkit.com/freebies/animal008/Beaver.glb",
-    "licenseEvidenceUrl": "https://gobkit.com/api/free",
-    "geometry": {
-     "triangles": 660,
-     "jointCount": 16,
-     "animationCount": 4,
-     "mobileGeometryWithinBudget": false,
-     "speciesVerified": false,
-     "visualQualityApproved": false
-    },
-    "speciesVerified": false,
-    "visualQualityApproved": false,
-    "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING"
-   },
-   {
-    "name": "flamingo",
-    "targets": [
-     "zoo_flamingo"
-    ],
-    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-flamingo.glb",
-    "directModel": true,
-    "modelMembers": [
-     {
-      "member": "gobkit-free-flamingo.glb",
-      "format": "GLB",
-      "bytes": 89336,
-      "sha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180"
-     }
-    ],
-    "sourceSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
-    "bytes": 89336,
-    "license": "CC0-1.0",
-    "sourceUrl": "https://gobkit.com/freebies/birds/Flamingo.glb",
-    "licenseEvidenceUrl": "https://gobkit.com/api/free",
-    "geometry": {
-     "triangles": 390,
+     "triangles": 394,
      "jointCount": 16,
      "animationCount": 4,
      "mobileGeometryWithinBudget": false,
@@ -2434,39 +2572,77 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "15ca99527b87af6d-15ca99527b87af6d",
-     "sourceMemberSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
-     "triangles": 390,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "6870d1dd0b89bf93cc0561322e9c0e7a7281cfa659c9e213cfa4d29a5248037f",
-       "bytes": 241401
-      },
-      {
-       "name": "rear.png",
-       "sha256": "c5e7536d2c532442e6c16979d773e99740a76c717634b728e939d4c235dac914",
-       "bytes": 240486
-      },
-      {
-       "name": "side.png",
-       "sha256": "03e394801952be9dd00703de04ce47e8078061729aaf40bf221e5e85990c55af",
-       "bytes": 240364
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+   },
+   {
+    "name": "puffin",
+    "targets": [
+     "zoo_puffin"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-puffin.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-puffin.glb",
+      "format": "GLB",
+      "bytes": 90848,
+      "sha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517"
+     }
+    ],
+    "sourceSha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517",
+    "bytes": 90848,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/animal013/Puffin.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 494,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
      "visualQualityApproved": false
     },
-    "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "bb571c63094b50ea08c03fe7c76eb07f3ee7eeeb",
-     "registrationApproved": false,
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+   },
+   {
+    "name": "ostrich",
+    "targets": [
+     "zoo_ostrich"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-ostrich.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-ostrich.glb",
+      "format": "GLB",
+      "bytes": 93840,
+      "sha256": "f60b191eac5b627bc4fb812434cf39acd9ee8130021c1f81a55c57fbd5372c4c"
+     }
+    ],
+    "sourceSha256": "f60b191eac5b627bc4fb812434cf39acd9ee8130021c1f81a55c57fbd5372c4c",
+    "bytes": 93840,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/animal013/Ostrich.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 542,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
      "visualQualityApproved": false
-    }
+    },
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    }
   ],
   "rejected": [
@@ -2574,13 +2750,13 @@
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
   "newOriginals": [
-   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-toucan.glb",
-   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-beaver.glb",
-   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-flamingo.glb"
+   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-pelican.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-puffin.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-ostrich.glb"
   ],
   "downloadAttempts": 3,
   "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
-  "publisherExactNameCandidates": 7,
+  "publisherExactNameCandidates": 4,
   "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
   "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED"
  }
