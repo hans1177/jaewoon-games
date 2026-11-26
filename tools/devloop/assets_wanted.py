@@ -496,7 +496,7 @@ def gobkit_animal_sources(manifest, targets, scene=False):
 
 
 # [항구·전투 원본] 제작 지시서의 정확한 자산 키만 확보 대상으로 사용한다.
-def scene_source_targets(registry, progress=None):
+def scene_source_targets(registry, progress=None, battle_progress=None):
     docs = os.path.join(root, "docs")
     ports_dir = os.path.join(docs, "ports")
     with open(os.path.join(ports_dir, "README.md"), encoding="utf-8") as handle:
@@ -519,15 +519,24 @@ def scene_source_targets(registry, progress=None):
                     port_assets[port][asset] = int(row["tier"])
                 else:
                     port_assets[port].setdefault(asset, None)
-    battle_csv = os.path.join(docs, "battle_backdrops", "backdrop_prompts.csv")
+    battle_docs = os.path.join(docs, "battle_backdrops")
+    battle_csv = os.path.join(battle_docs, "backdrop_prompts.csv")
+    naval_assets, field_assets = {}, {}
     with open(battle_csv, encoding="utf-8", newline="") as handle:
         for row in csv.DictReader(handle):
             category, asset = row["category"], row["asset_id"]
             if re.fullmatch(r"[a-z0-9_]+", asset):
                 if category in ("naval-near", "naval-mid", "naval-far"):
                     targets[asset] = "Naval"
+                    layer = category.removeprefix("naval-")
+                    match = re.fullmatch(r"sea_([a-z0-9_]+)_" + layer, asset)
+                    if match:
+                        naval_assets.setdefault(match.group(1), {})[layer] = asset
                 elif category == "field":
                     targets[asset] = "Terrain"
+                    match = re.fullmatch(r"field_([a-z0-9_]+)", asset)
+                    if match:
+                        field_assets[match.group(1)] = asset
     # 주민 외형은 실제 조립 코드와 미등록 자산 참조에서만 가져온다.
     shared = os.path.join(root, "src", "ReplicatedStorage", "Shared")
     with open(os.path.join(shared, "Pose.luau"), encoding="utf-8") as handle:
@@ -570,7 +579,7 @@ def scene_source_targets(registry, progress=None):
             stages = {str(i): {"planned": 0, "registeredModelRights": 0} for i in range(1, 6)}
             stages["unspecified"] = {"planned": 0, "registeredModelRights": 0}
             held = 0
-            missing = []
+            missing_assets = []
             for asset, tier in sorted(port_assets[port].items(), key=lambda pair: (pair[1] or 6, pair[0])):
                 bucket = stages[str(tier) if tier else "unspecified"]
                 bucket["planned"] += 1
@@ -583,12 +592,12 @@ def scene_source_targets(registry, progress=None):
                         and not os.path.islink(path) and not os.path.islink(path + ".license.json")):
                     held += 1
                 else:
-                    missing.append({"assetKey": "Town/" + asset, "tier": tier})
+                    missing_assets.append({"assetKey": "Town/" + asset, "tier": tier})
             planned = len(port_assets[port])
             rights = sum(v["registeredModelRights"] for v in stages.values())
             rows.append({"portId": port, "planned": planned, "registeredModelRights": rights,
-                         "heldUnverified": held, "missingOriginal": len(missing),
-                         "stages": stages, "nextMissing": missing[:3]})
+                         "heldUnverified": held, "missingOriginal": len(missing_assets),
+                         "stages": stages, "nextMissing": missing_assets[:3]})
         progress.update({"state": "BRIEF_SOURCE_COVERAGE_ONLY",
                          "portCount": len(rows),
                          "planned": sum(row["planned"] for row in rows),
@@ -597,6 +606,59 @@ def scene_source_targets(registry, progress=None):
                          "missingOriginal": sum(row["missingOriginal"] for row in rows),
                          "nativeRuntimeVerified": False, "visualQualityApproved": False,
                          "ports": rows})
+    if battle_progress is not None:
+        # [퀘스트·탐험·해전] 제작 지시서의 실제 ID만 사용한다.
+        # 등록 권한과 장면 렌더 성공은 서로 다른 증거다.
+        def model_status(asset, kind):
+            path = os.path.join(root, "assets", "inbox-hold", kind, "gobkit-free-" + asset + ".glb")
+            if registered(asset, kind):
+                state = "REGISTERED_MODEL_RIGHTS"
+            elif (os.path.isfile(path) and os.path.isfile(path + ".license.json")
+                  and not os.path.islink(path) and not os.path.islink(path + ".license.json")):
+                state = "HELD_UNVERIFIED"
+            else:
+                state = "MISSING_ORIGINAL"
+            return {"assetKey": kind + "/" + asset, "state": state}
+        sea_rows = [{"seaId": sea, "layers": {
+                         layer: model_status(assets[layer], "Naval") if layer in assets
+                         else {"state": "BRIEF_LAYER_UNSPECIFIED"}
+                         for layer in ("near", "mid", "far")}}
+                    for sea, assets in sorted(naval_assets.items())]
+        field_rows = [{"siteId": site, **model_status(asset, "Terrain")}
+                      for site, asset in sorted(field_assets.items())]
+        quest_rows = []
+        with open(os.path.join(battle_docs, "quests.md"), encoding="utf-8") as handle:
+            for line in handle:
+                match = re.fullmatch(r"\|[^|\n]*\(\x60([a-z0-9_]+)\x60\)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*", line.rstrip("\n"))
+                if not match:
+                    continue
+                quest_id, kind, brief = match.groups()
+                refs = sorted(set(re.findall(r"naval/([a-z0-9_]+)\.md", brief)) & set(naval_assets))
+                if kind == "field":
+                    route = "CURRENT_EXPLORATION_SITE"
+                elif kind == "landmark":
+                    route = "CURRENT_PORT_LANDMARK"
+                elif kind in ("win", "war_clear", "함대전"):
+                    route = "CURRENT_BATTLE_SEA"
+                else:
+                    route = "UNRESOLVED_BRIEF_ROUTE"
+                quest_rows.append({"questId": quest_id, "kind": kind, "route": route,
+                                   "explicitSeaCandidates": refs,
+                                   "runtimeRouteVerified": False})
+        states = [v["state"] for row in sea_rows for v in row["layers"].values()
+                  if v["state"] != "BRIEF_LAYER_UNSPECIFIED"] + [row["state"] for row in field_rows]
+        battle_progress.update({"state": "BRIEF_SOURCE_COVERAGE_ONLY",
+                                "seaCount": len(sea_rows), "siteCount": len(field_rows),
+                                "questBriefCount": len(quest_rows), "planned": len(states),
+                                "registeredModelRights": states.count("REGISTERED_MODEL_RIGHTS"),
+                                "heldUnverified": states.count("HELD_UNVERIFIED"),
+                                "missingOriginal": states.count("MISSING_ORIGINAL"),
+                                "nativeRuntimeVerified": False, "visualQualityApproved": False,
+                                "seas": sea_rows, "sites": field_rows, "quests": quest_rows})
+        print("MARE_BATTLE_BRIEF_COVERAGE", json.dumps({
+            key: battle_progress[key] for key in ("seaCount", "siteCount", "questBriefCount", "planned",
+                                                   "registeredModelRights", "heldUnverified", "missingOriginal")},
+            sort_keys=True))
     print("MARE_SCENE_SOURCE_TARGETS",
           json.dumps({"ports": len(ports), **{kind: sum(v == kind for v in outstanding.values())
                                             for kind in sorted(set(targets.values()))}}, sort_keys=True))
@@ -814,7 +876,8 @@ def animal_source_practice():
     report["publisherSearchState"] = "NOT_REQUESTED"
     # 일반 자산 등록이나 20분 원본 탐색에서도 같은 지시서 장부를 갱신한다.
     report["portImplementation"] = {}
-    scene_targets = scene_source_targets(registry, report["portImplementation"])
+    report["battleImplementation"] = {}
+    scene_targets = scene_source_targets(registry, report["portImplementation"], report["battleImplementation"])
     if (not any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)
             or os.path.islink(os.path.dirname(hold)) or os.path.islink(hold)):
         return report
@@ -837,8 +900,8 @@ def animal_source_practice():
     report["scenePublisherExactNameCandidates"] = len(scene_catalog)
     # 검색 결과가 아니라 실제 부족 목표와 정확히 일치하는 항목만 최대 세 개 받는다.
     import time
-    # 항구 지시서에 정확히 일치한 원본이 있으면 동물 목록에 밀리지 않게 한 자리를 우선한다.
-    # 항구 간에는 20분 슬롯으로 순환하고 이후에는 기존 전체 후보를 탐색한다.
+    # 20분마다 항구·해전·지상 탐험·동물의 우선순위를 순환한다.
+    # 총 다운로드 시도 3건 상한과 기존 검증·보관 경로는 유지한다.
     picks = sorted([(False, name) for name in catalog] + [(True, name) for name in scene_catalog])
     if not picks:
         return report
