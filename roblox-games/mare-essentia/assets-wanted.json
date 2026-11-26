@@ -1933,40 +1933,7 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "f3e51ff8d9c34fae-8651275a052611fa",
-     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
-     "triangles": 684,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "8143a7374f9d9d19af3ef3b175152d5de9f1e43cff64d6b762d5925c3ece872f",
-       "bytes": 249452
-      },
-      {
-       "name": "rear.png",
-       "sha256": "c14ab69e767c87a1bb1118e0fc6bc83bcb2a8e76b2bcbdc357c464541ab8b962",
-       "bytes": 238916
-      },
-      {
-       "name": "side.png",
-       "sha256": "c2a6338dfe67f60138919f0c96756393dc9fcd94371a72db5e9870ea5c9f8b36",
-       "bytes": 239992
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "7188690add1242134b2ce54d3fd457579edeeef5",
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "actualRobloxRuntimeVerified": false
    },
    {
     "name": "hippo",
@@ -1991,13 +1958,7 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
-    }
+    "actualRobloxRuntimeVerified": false
    },
    {
     "name": "oryx",
@@ -2022,54 +1983,7 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "cafa60f525a8b562-80469f947c5f3f3c",
-     "sourceMemberSha256": "80469f947c5f3f3cac4dccabfaf6f7e47631994907589714594f90acbf3e2d4e",
-     "triangles": 402,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "216c8a322b5cfb7719df93954d3320ca8858c811c13823f1d8e1ca933fe281be",
-       "bytes": 222432
-      },
-      {
-       "name": "rear.png",
-       "sha256": "5b220f050a15d323c4ca01b6915bc8c7078e0270e7063afe26bd2c3d85a792cc",
-       "bytes": 223789
-      },
-      {
-       "name": "side.png",
-       "sha256": "6a106cad73d09bd7d25efa7e7867a2f20a7d26f4e84dd97209a3acfc79712151",
-       "bytes": 230276
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 2,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "7188690add1242134b2ce54d3fd457579edeeef5",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "model": "gemini-3.6-flash",
-     "provider": "gemini:gemini-3.6-flash",
-     "sourceMemberSha256": "80469f947c5f3f3cac4dccabfaf6f7e47631994907589714594f90acbf3e2d4e",
-     "frameSha256": [
-      "216c8a322b5cfb7719df93954d3320ca8858c811c13823f1d8e1ca933fe281be",
-      "5b220f050a15d323c4ca01b6915bc8c7078e0270e7063afe26bd2c3d85a792cc",
-      "6a106cad73d09bd7d25efa7e7867a2f20a7d26f4e84dd97209a3acfc79712151"
-     ],
-     "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
-     "speciesMatch": true,
-     "contentSafe": true,
-     "silhouetteClear": true,
-     "uncertain": false,
-     "mobileGeometryWithinBudget": false
-    }
+    "actualRobloxRuntimeVerified": false
    }
   ],
   "rejected": [
@@ -2174,8 +2088,6 @@
     "state": "HELD_SOURCE_UNVERIFIED"
    }
   ],
-  "archiveInventoryState": "AVAILABLE",
-  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED"
+  "archiveInventoryState": "AVAILABLE"
  }
 }
