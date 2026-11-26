@@ -62,6 +62,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 # [정체 복구] 평소에는 중단 없이 순차 등록한다. 저장소 체크아웃이 멈춘 경우만
 # 명시된 복구 커밋에서 기존 실행을 종료하고 최신 메인의 동일 정식 등록기로 재개한다.
@@ -100,6 +101,7 @@ jobs:
       # [드롭박스 원화 인입] 검수 완료된 원본만 기존 승인표와 함께 후보 브랜치에 보관한다.
       # 활성 승인·main·기존 Roblox 번호는 직접 바꾸지 않는다. 기존 PR 검사를 통과해야 등록한다.
       - name: Stage reviewed Dropbox original in existing card transfer lane
+        id: dropbox_stage
         if: ${{ inputs.studio_regrant != true }}
         continue-on-error: true
         env:
@@ -171,7 +173,8 @@ jobs:
               remote = subprocess.run(['git','ls-remote','--exit-code','--heads','origin','refs/heads/'+branch],capture_output=True,env=safe_env)
               if remote.returncode == 0:
                   print('CARD_DROPBOX_CANDIDATE_EXISTS',card,branch)
-                  continue
+                  with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('branch='+branch+'\n')
+                  break
               if remote.returncode != 2:
                   raise SystemExit('CARD_DROPBOX_REF_CHECK_FAILED')
               keys = [os.environ.get(k,'') for k in ('DROPBOX_APP_KEY','DROPBOX_APP_SECRET','DROPBOX_REFRESH_TOKEN')]
@@ -210,12 +213,120 @@ jobs:
               if ref!=commit:
                   raise SystemExit('CARD_DROPBOX_REF_MISMATCH')
               print('CARD_DROPBOX_CANDIDATE_READY',card,branch,commit,digest)
+              with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('branch='+branch+'\n')
               break
           PYDROPBOX
 
+
+      # [원본 후보 승인] 기존 GitHub PR/검사 통로를 사용한다. Dropbox 인증 변수는 전달하지 않는다.
+      - name: Open reviewed Dropbox candidate PR and merge only after checks
+        if: ${{ steps.dropbox_stage.outputs.branch != '' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CARD_BRANCH: ${{ steps.dropbox_stage.outputs.branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CARD_BRANCH" =~ ^mare-dropbox-card-(eu|ea|me|nw|af|sa)_[0-9]{2}-[a-f0-9]{12}$ ]]
+          card="$(printf '%s' "$CARD_BRANCH" | cut -d- -f4)"
+          pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --base main --head "$CARD_BRANCH" --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr" ]]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$CARD_BRANCH" --title "Mare Essentia: verified Dropbox original $card" --body "Reviewed original and approval, existing registration retained until successful replacement."
+            pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --base main --head "$CARD_BRANCH" --json number --jq '.[0].number // empty')"
+          fi
+          [[ "$pr" =~ ^[0-9]+$ ]]
+          head="$(gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq .headRefOid)"
+          [[ "$head" =~ ^[a-f0-9]{40}$ ]]
+          export CARD_PR="$pr" CARD_HEAD="$head" CARD_NAME="$card"
+          python3 - <<'PYPR'
+          import base64,hashlib,json,os,subprocess
+          repo=os.environ['GITHUB_REPOSITORY']
+          def api(path):
+              return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          pr=api('repos/'+repo+'/pulls/'+os.environ['CARD_PR'])
+          head=os.environ['CARD_HEAD']
+          if pr['head']['sha']!=head or pr['base']['ref']!='main' or pr['head']['repo']['full_name']!=repo:
+              raise SystemExit('CARD_DROPBOX_PR_REF_INVALID')
+          files=api('repos/'+repo+'/pulls/'+os.environ['CARD_PR']+'/files?per_page=100')
+          root='roblox-games/mare-essentia/assets/'
+          card='CardArt/'+os.environ['CARD_NAME']
+          manifest=root+'APPROVED_IMAGES.json'
+          original=root+'cardart/src/'+os.environ['CARD_NAME']+'-original.png'
+          if pr['changed_files']!=2 or {f['filename'] for f in files}!={manifest,original}:
+              raise SystemExit('CARD_DROPBOX_PR_FILES_INVALID')
+          def contents(path,ref):
+              row=api('repos/'+repo+'/contents/'+path+'?ref='+ref)
+              blob=api('repos/'+repo+'/git/blobs/'+row['sha'])
+              return base64.b64decode(blob['content'])
+          current=json.loads(contents(manifest,'main'))
+          candidate=current.get('dropboxPending',{}).get(card)
+          if not candidate:
+              raise SystemExit('CARD_DROPBOX_PENDING_REVIEW_CHANGED')
+          review=candidate['review']
+          current['approved'][card]=review['sourceSha256']
+          current['modelOriginals'][card]=review
+          del current['dropboxPending'][card]
+          if not current['dropboxPending']:
+              del current['dropboxPending']
+          if json.loads(contents(manifest,head))!=current:
+              raise SystemExit('CARD_DROPBOX_PR_APPROVAL_DRIFT')
+          raw=contents(original,head)
+          if len(raw)!=candidate['bytes'] or hashlib.sha256(raw).hexdigest()!=review['sourceSha256']:
+              raise SystemExit('CARD_DROPBOX_PR_ORIGINAL_MISMATCH')
+          runs=api('repos/'+repo+'/actions/runs?event=pull_request&head_sha='+head+'&per_page=100')['workflow_runs']
+          latest={}
+          for row in sorted(runs,key=lambda x:x['id'],reverse=True):
+              latest.setdefault(row['name'],row)
+          required={'All Games Development Sync','Vibe QA','Devloop Gates (Mare Essentia)'}
+          if not required.issubset(latest) or any(r['status']!='completed' or r['conclusion']!='success' for r in latest.values()):
+              raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING_OR_FAILED')
+          print('CARD_DROPBOX_PR_CHECKS_VERIFIED',head)
+          PYPR
+          gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required
+          gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"
+          echo "CARD_DROPBOX_PR_MERGED=$pr"
+
+      # [원화 등록 복구] 메인에 승인된 실물 원화가 등록표보다 새로우면 정기 실행도 기존 전체 등록기를 사용한다.
+      - name: Select existing full registration for pending approved card originals
+        id: card_recovery
+        if: ${{ inputs.studio_regrant != true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYRECOVERY'
+          import hashlib,json,os,pathlib,re
+          root=pathlib.Path('roblox-games/mare-essentia')
+          doc=json.loads((root/'assets/APPROVED_IMAGES.json').read_text(encoding='utf-8'))
+          registry=json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          for card,review in doc.get('modelOriginals',{}).items():
+              if not re.fullmatch(r'CardArt/(?:eu|ea|me|nw|af|sa)_[0-9]{2}',card):
+                  continue
+              old=registry.get(card,{})
+              digest=review.get('sourceSha256')
+              if not digest or doc['approved'].get(card)!=digest or old.get('sourceSha256')==digest:
+                  continue
+              if old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or old.get('usePermissionGranted') is not True:
+                  continue
+              name=card.split('/')[1]
+              rel=review.get('sourceFile')
+              if rel not in ('assets/cardart/src/'+name+'-original.png','assets/cardart/src/'+name+'-1400x2000.png'):
+                  continue
+              source=root/rel
+              if not source.is_file() or source.stat().st_size>20*1024*1024:
+                  continue
+              raw=source.read_bytes()
+              if len(raw)<50000 or raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6) or hashlib.sha256(raw).hexdigest()!=digest:
+                  continue
+              with open(os.environ['GITHUB_ENV'],'a') as out: out.write('MARE_MODELS_ONLY=false\n')
+              with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('pending=true\n')
+              print('CARD_APPROVED_REGISTRATION_RECOVERY',card,digest)
+              break
+          PYRECOVERY
+
       - name: Check reviewed animal originals and rotate missing source search
         id: animal_practice
-        if: ${{ env.MARE_MODELS_ONLY == 'true' }}
+        if: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: node tools/mare-essentia-upload-assets.mjs --animal-source-preflight
@@ -938,7 +1049,7 @@ jobs:
           echo "MARE_REGISTERED_CHANGE_VERIFIED=$changed"
 
       - name: Publish the place with the new asset IDs
-        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (env.MARE_MODELS_ONLY == 'true' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
+        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || ((env.MARE_MODELS_ONLY == 'true' || steps.card_recovery.outputs.pending == 'true') && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
         env:
           GH_TOKEN: ${{ github.token }}
           MARE_PUBLISH_UNIVERSE: ${{ inputs.universe_id || '10775310508' }}
