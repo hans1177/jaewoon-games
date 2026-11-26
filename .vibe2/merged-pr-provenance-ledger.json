@@ -366456,11 +366456,156 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_042891d727f63d8631927ef1",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15403",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "fcfd03b9bb4cab93a88d86621936770dc6ee7db6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15403,
+        "baseBranch": "main",
+        "headBranch": "mare-eu22-resolution-approval-20261126",
+        "baseSha": "fcfd03b9bb4cab93a88d86621936770dc6ee7db6",
+        "headSha": "e87bbe1467e9debef274e7696d485293c5d9a602",
+        "mergeCommitSha": "f0d83bc5ee17e41bdb5d1d09d3025507e2b1d04a",
+        "mergedAt": "2026-11-26T08:42:59Z",
+        "authorLogin": "hans1177",
+        "titleHash": "e88dfebbbafd86d55f6cd291529c10c3205e3789dedc9ebe7ce493373d78455d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-eu22-resolution-approval-20261126",
+        "candidateSha": "e87bbe1467e9debef274e7696d485293c5d9a602"
+      },
+      "changeStats": {
+        "changedFileCount": 21,
+        "codingRelevantFileCount": 10,
+        "addedLineCount": 497,
+        "deletedLineCount": 39,
+        "changedFiles": [
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/cardart/src/README.md",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_biscay_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_biscay_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_east_china_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_east_china_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_north_atlantic_america_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_north_atlantic_america_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_north_sea_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_north_sea_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_amsterdam_dogger.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_amsterdam_dogger.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_art_amsterdam_low.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_art_amsterdam_low.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_naples_coins.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_naples_coins.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_stjohns_banks.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_stjohns_banks.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_survey_14.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_survey_14.glb.license.json"
+        ],
+        "codingRelevantFiles": [
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_biscay_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_east_china_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_north_atlantic_america_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_north_sea_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_amsterdam_dogger.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_art_amsterdam_low.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_naples_coins.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_stjohns_banks.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_survey_14.glb.license.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15403",
+        "merge-commit:f0d83bc5ee17e41bdb5d1d09d3025507e2b1d04a",
+        "base-main:fcfd03b9bb4cab93a88d86621936770dc6ee7db6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2895
+    "total": 2896
   }
 }
