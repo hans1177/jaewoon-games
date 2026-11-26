@@ -700,7 +700,7 @@ def animal_source_practice():
     picks = sorted(catalog)
     if not picks:
         return report
-    start = int(time.time()//3600)*3
+    start = int(time.time() // 1200)*3
     for i in range(len(picks)):
         if report["downloadAttempts"] >= 3:
             break
@@ -821,7 +821,7 @@ def render_animal_review_candidates(report, out):
     report["sourcePreviewState"] = "RENDER_EVIDENCE_ONLY"
     # 한 번에 세 건씩만 순환하고 원본별 렌더 시간을 제한한다.
     import time
-    slot = int(time.time() // 3600) * 3
+    slot = int(time.time() // 1200) * 3
     for i in range(min(3, len(candidates))):
         row = candidates[(slot + i) % len(candidates)]
         row["sourcePreview"] = {"state": "UNVERIFIED", "registrationApproved": False,

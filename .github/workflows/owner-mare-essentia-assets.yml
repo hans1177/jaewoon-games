@@ -18,9 +18,9 @@ on:
       - 'tools/mare-essentia-upload-assets.mjs'
       - 'tools/mare-essentia-character-finish.mjs'
       - 'tools/mare-essentia-ship-v5.py'
-  # [동물 원본] 매시간 기존 무료 등록 절차에서 부족 원본을 탐색·검증한다.
+  # [동물 원본] 20분마다 기존 무료 등록 절차에서 부족 원본을 탐색·검증한다.
   schedule:
-    - cron: '20 * * * *'
+    - cron: '7,27,47 * * * *'
   workflow_dispatch:
     inputs:
       universe_id:
