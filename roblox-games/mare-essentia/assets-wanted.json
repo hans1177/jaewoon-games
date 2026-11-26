@@ -1925,43 +1925,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
-     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
-     "triangles": 396,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "674175e849f9a10d2383feca38bd1cdaf9072284edddbe896e9c7806359f15d4",
-       "bytes": 245569
-      },
-      {
-       "name": "rear.png",
-       "sha256": "de655d8b77a217229719bfae69e0be04fbf300a5753d1ca7cd669045d2d0f51c",
-       "bytes": 239321
-      },
-      {
-       "name": "side.png",
-       "sha256": "ac9fca511e8355990b95955e48461730fb3b99158ba97e94fd63fa535890078e",
-       "bytes": 239464
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "qualityCandidate": {
-     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
-     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "nativeRuntimeVerified": false,
-     "originalPreserved": true,
-     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "hummingbird",
@@ -2518,34 +2482,6 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "4ffe3fe0536e1c38-4ffe3fe0536e1c38",
-     "sourceMemberSha256": "4ffe3fe0536e1c380ae2995b8012e90417094c96114bf2be61bc27780a1645ef",
-     "triangles": 398,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "0397092123c694c918a777ddc45b6f39e364e47c0c83a8b357a508d8f5b7ca03",
-       "bytes": 230625
-      },
-      {
-       "name": "rear.png",
-       "sha256": "cf876d723873009c3557896471f60f580b923bf61b86e6b4381bbf6e195e98ff",
-       "bytes": 226317
-      },
-      {
-       "name": "side.png",
-       "sha256": "a19984cae8ea29a8249f0b4bd08654596fb84679b2219b2a776921da8609b6a6",
-       "bytes": 225087
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
      "sourceRevision": "70ce2f8a0256c0be559aab96c581ee92e3d3ffb1",
@@ -2557,7 +2493,8 @@
       429,
       503
      ]
-    }
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "tasmanian_devil",
@@ -2663,18 +2600,8 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureDiagnostic": {
-      "stage": "TEXTURE",
-      "exitCode": 1,
-      "exceptionType": "ValueError",
-      "scriptLine": 322
-     },
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
-    }
+    "priorRenderRetry": true,
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
    },
    {
     "name": "oryx",
@@ -2828,7 +2755,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
+  "publisherSearchState": "NOT_REQUESTED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -15070,9 +14997,6 @@
     }
    ]
   },
-  "publisherExactNameCandidates": 0,
-  "scenePublisherExactNameCandidates": 0,
-  "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
    "runId": "45750349714",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
@@ -15095,7 +15019,6 @@
    "visualObservationCount": 1,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED"
+  "sourcePreviewState": "NOT_REQUESTED"
  }
 }
