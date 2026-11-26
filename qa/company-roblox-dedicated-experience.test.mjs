@@ -670,6 +670,11 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(script,/asset\.get\("sourceSha256"\) == source_hash/);
   assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
   assert.match(script,/"tradeGoods3DPractice"/);
+  assert.match(script,/BRIEF_BUILDING_ROLE_CANDIDATE_ONLY/);
+  assert.match(script,/regionalAdaptationRequired/);
+  assert.match(script,/report\["lastPreviewRun"\] = last/);
+  assert.match(script,/animal_audit\["lastPreviewRun"\] = \{/);
+  assert.match(fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8'),/lastPreviewRun\.visualObservationCount=observed/);
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   assert.match(workflow,/schedule:\s*\n\s*- cron: '2,7,12,17,22,27,32,37,42,47,52,57 \* \* \* \*'/);
   assert.equal((fs.readFileSync('tools/devloop/assets_wanted.py','utf8').match(/time\.time\(\) \/\/ 300/g)||[]).length,2);

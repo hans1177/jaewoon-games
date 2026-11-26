@@ -898,7 +898,53 @@ def animal_source_practice():
     report["publisherSearchState"] = "PUBLISHER_CATALOG_CHECKED"
     report["publisherExactNameCandidates"] = len(catalog)
     report["scenePublisherExactNameCandidates"] = len(scene_catalog)
-    # 검색 결과가 아니라 실제 부족 목표와 정확히 일치하는 항목만 최대 세 개 받는다.
+    # 항구 전용 이름이 없는 제작자 원본도 지시서의 건물 역할 이름과 정확히 같으면
+    # 지역별 가공 전의 원본 후보로만 보관한다. 완성 건물/전용 랜드마크로 승인하지 않는다.
+    import time
+    slot = int(time.time() // 300)
+    role_targets = {}
+    for asset, kind in sorted(scene_targets.items()):
+        if kind != "Town" or asset in scene_catalog:
+            continue
+        match = re.fullmatch(r"[a-z0-9_]+_bld_([a-z0-9_]+)", asset)
+        if match and match.group(1) not in ("house", "building", "tower", "wall", "gate"):
+            role_targets.setdefault(match.group(1), []).append(asset)
+    role_catalog = gobkit_animal_sources(manifest, role_targets, scene=True)
+    held_urls = set()
+    for kind in ("Town", "Naval", "Terrain", "People", "Outfits", "Monsters", "Rig", "Motion", "Animals"):
+        directory = os.path.join(os.path.dirname(hold), kind)
+        if not os.path.isdir(directory) or os.path.islink(directory):
+            continue
+        for filename in sorted(os.listdir(directory)):
+            if not filename.endswith(".glb.license.json"):
+                continue
+            path = os.path.join(directory, filename)
+            if os.path.islink(path) or os.path.islink(path.removesuffix(".license.json")):
+                continue
+            try:
+                proof = read_json(path)
+                if (proof.get("sourceAcquisition") == "PUBLISHER_FREE_CATALOG_HELD_ONLY"
+                        and os.path.isfile(path.removesuffix(".license.json"))):
+                    held_urls.add(proof["source"])
+            except (OSError, ValueError, KeyError, TypeError):
+                continue
+    held_urls.update(row.get("source") for row in registry.values() if isinstance(row, dict))
+    chosen_urls = {entry["url"] for entry in scene_catalog.values()} | {entry["url"] for entry in catalog.values()}
+    role_candidates = 0
+    for role, entry in sorted(role_catalog.items()):
+        if entry["url"] in held_urls or entry["url"] in chosen_urls:
+            continue
+        options = role_targets[role]
+        target = options[slot % len(options)]
+        scene_catalog[target] = {**entry, "matchMode": "BRIEF_BUILDING_ROLE_CANDIDATE_ONLY",
+                                 "sourceRole": role, "regionalAdaptationRequired": True}
+        chosen_urls.add(entry["url"])
+        role_candidates += 1
+    report["scenePublisherRoleCandidates"] = role_candidates
+    print("MARE_SCENE_PUBLISHER_SEARCH", json.dumps({
+        "exact": report["scenePublisherExactNameCandidates"], "roleCandidates": role_candidates,
+        "animalExact": report["publisherExactNameCandidates"]}, sort_keys=True))
+    # 실제 역할에 맞는 원본 후보만 최대 세 개 받는다. 지역별 가공과 검수는 별도다.
     import time
     # 5분마다 항구·해전·지상 탐험·동물의 우선순위를 순환한다.
     # 총 다운로드 시도 3건 상한과 기존 검증·보관 경로는 유지한다.
@@ -906,7 +952,6 @@ def animal_source_practice():
     if not picks:
         return report
     from concurrent.futures import ThreadPoolExecutor
-    slot = int(time.time() // 300)
     start = slot * 3
     picks = picks[start % len(picks):] + picks[:start % len(picks)]
     # 분야마다 먼저 한 자리를 배정한다. 세 자리에서 밀린 분야는 다음 회차에 먼저 본다.
@@ -983,6 +1028,9 @@ def animal_source_practice():
                      "candidateTargetIds":target_ids,"speciesVerified":False,
                      "originalModelHandcraftedVerified":False,"registration":"PENDING_SOURCE_AND_VISUAL_REVIEW",
                      "actualRobloxRuntimeVerified":False,"visualQualityApproved":False}
+            if entry.get("matchMode") == "BRIEF_BUILDING_ROLE_CANDIDATE_ONLY":
+                proof["sourceMatchMode"] = entry["matchMode"]
+                proof["regionalAdaptationRequired"] = True
             os.makedirs(source_dir, exist_ok=True)
             if os.path.exists(source):
                 with open(source,"rb") as handle:
@@ -1068,9 +1116,14 @@ def render_animal_review_candidates(report, out):
     candidates = [row for row in report["candidates"] if row.get("modelMembers")]
     # 기존 메인 장부의 동일 원본 관찰만 순환 우선순위에 사용한다. 승인이나 현재 렌더 증거로 승격하지 않는다.
     try:
-        previous = json.loads(subprocess.check_output(
+        previous_audit = json.loads(subprocess.check_output(
             ["git", "show", "HEAD:" + os.path.join(root, "assets-wanted.json")],
-            timeout=30, stderr=subprocess.DEVNULL))["animalSourcePractice"]["candidates"]
+            timeout=30, stderr=subprocess.DEVNULL))["animalSourcePractice"]
+        previous = previous_audit["candidates"]
+        last = previous_audit.get("lastPreviewRun")
+        if isinstance(last, dict):
+            # 과거 실행 요약만 보존하며 신규 다운로드·렌더 승인으로 재사용하지 않는다.
+            report["lastPreviewRun"] = last
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
         previous = []
     prior = {(r.get("name"), r.get("sourceSha256"), tuple(m.get("sha256") for m in r.get("modelMembers", []))): r
@@ -1351,6 +1404,23 @@ animal_audit = animal_source_practice()
 if animal_audit:
     preview_arg = next((arg.split("=", 1)[1] for arg in sys.argv if arg.startswith("--animal-preview-dir=")), "")
     render_animal_review_candidates(animal_audit, preview_arg)
+    if preview_arg:
+        animal_audit["lastPreviewRun"] = {
+            "runId": os.environ.get("GITHUB_RUN_ID", ""),
+            "publisherSearchState": animal_audit.get("publisherSearchState"),
+            "publisherExactNameCandidates": animal_audit.get("publisherExactNameCandidates", 0),
+            "scenePublisherExactNameCandidates": animal_audit.get("scenePublisherExactNameCandidates", 0),
+            "scenePublisherRoleCandidates": animal_audit.get("scenePublisherRoleCandidates", 0),
+            "downloadAttempts": animal_audit.get("downloadAttempts", 0),
+            "newOriginalCount": len(animal_audit.get("newOriginals", [])),
+            "sourcePreviewState": animal_audit.get("sourcePreviewState"),
+            "renderedCount": sum(row.get("sourcePreview", {}).get("state") == "RENDERED_AWAITING_VISUAL_REVIEW"
+                                 for row in animal_audit.get("candidates", [])),
+            "renderFailures": [{"name": row["name"], "reason": row["sourcePreview"].get("failureReason")}
+                               for row in animal_audit.get("candidates", [])
+                               if row.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY"][:3],
+            "registrationApproved": False, "nativeRuntimeVerified": False,
+        }
     out["animalSourcePractice"] = animal_audit
     print("MARE_ANIMAL_COMPANY_ARCHIVE_CANDIDATES=" + str(len(animal_audit["candidates"])))
     print("MARE_ANIMAL_COMPANY_ARCHIVE_INVENTORY=" + animal_audit["archiveInventoryState"])

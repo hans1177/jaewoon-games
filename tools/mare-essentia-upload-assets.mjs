@@ -111,6 +111,11 @@ if (animalReviewArg) {
     }
   }
   if(audit)audit.sourceVisualObservationState=billingBlocked?'FREE_VISION_BILLING_BLOCKED':!candidates.length?'NO_RENDERED_CANDIDATES':!configured?'LOCAL_VISION_NOT_CONFIGURED':observed===candidates.length?'SOURCE_OBSERVATION_RECORDED':observed?'PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED':'VISION_RETRY_REQUIRED';
+  if(audit?.lastPreviewRun){
+    audit.lastPreviewRun.sourceVisualObservationState=audit.sourceVisualObservationState;
+    audit.lastPreviewRun.visualObservationCount=observed;
+    audit.lastPreviewRun.visionRoute=localConfigured?'LOCAL':freeProviders.length?'VERIFIED_FREE':'UNAVAILABLE';
+  }
   await fs.writeFile(ledgerPath,JSON.stringify(ledger,null,1)+'\n');
   console.log('MARE_ANIMAL_VISUAL_OBSERVATIONS='+observed);
   console.log('MARE_ANIMAL_VISION_ROUTE='+(localConfigured?'LOCAL':freeProviders.length?'VERIFIED_FREE':'UNAVAILABLE'));
