@@ -1,6 +1,6 @@
 # 파일명: .github/workflows/owner-mare-essentia-assets.yml
 # Mare Essentia: CC0 모델과 CC BY 3.0 메뉴 그림을 기존 Open Cloud 등록 통로로 등록한다.
-# main 자산 변경 또는 수동 실행 시 동작하며 게임 게시 기본값은 꺼져 있다.
+# main 자산 변경·정기·수동 등록. 정기 실행은 검증된 등록 변경이 실제 main에 반영될 때만 기존 게시기로 연결한다.
 name: Owner Mare Essentia Register Assets
 run-name: Owner Mare Essentia assets · ${{ github.sha }}
 
@@ -456,6 +456,7 @@ jobs:
           retention-days: 3
 
       - name: Commit registered asset IDs (API, main이 움직여도 안전)
+        id: registered_commit
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -794,8 +795,32 @@ jobs:
             exit 1
           fi
 
+          # [정기 등록 후 게시] 원본 확보·렌더 장부만 바뀐 경우에는 게시하지 않는다.
+          # 등록 성공과 현재 main의 두 실제 등록 파일 일치가 모두 확인된 경우만 후속 게시를 요청한다.
+          registry=roblox-games/mare-essentia/assets-registered.json
+          ids=roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau
+          changed=false
+          if [[ "$MARE_ASSET_OUTCOME" == "success" ]] && ! git diff --quiet HEAD -- "$registry" "$ids"; then
+            for f in "$registry" "$ids"; do
+              actual="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha)"
+              expected="$(git hash-object "$f")"
+              if [[ "$actual" != "$expected" ]]; then
+                echo "::error::MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f"
+                exit 1
+              fi
+            done
+            changed=true
+          fi
+          echo "registered_change=$changed" >> "$GITHUB_OUTPUT"
+          echo "MARE_REGISTERED_CHANGE_VERIFIED=$changed"
+
       - name: Publish the place with the new asset IDs
-        if: ${{ inputs.publish_after_register == true && inputs.studio_regrant != true && success() }}
+        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (github.event_name == 'schedule' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="${{ inputs.universe_id }}"
+          MARE_PUBLISH_UNIVERSE: ${{ inputs.universe_id || '10775310508' }}
+        run: |
+          set -euo pipefail
+          gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"
+          # [증거 분리] 게시 요청은 실제 게시 성공 또는 게임 배치/Studio 통과가 아니다.
+          echo "MARE_ASSET_PUBLISH_REQUESTED=YES"
