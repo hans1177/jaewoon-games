@@ -671,7 +671,7 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
   assert.match(script,/"tradeGoods3DPractice"/);
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
-  assert.match(workflow,/schedule:\s*\n\s*- cron: '7,27,47 \* \* \* \*'/);
+  assert.match(workflow,/schedule:\s*\n\s*- cron: '\*/5 \* \* \* \*'/);
   assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ github\.event_name == 'schedule' \}\}/);
   assert.match(workflow,/run: node tools\/mare-essentia-upload-assets\.mjs --animal-source-preflight/);
   assert.match(workflow,/github\.event_name != 'schedule' \|\| steps\.animal_practice\.outputs\.pending == 'true'/);
@@ -995,11 +995,11 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`
-import ast, json, struct, math, hashlib, os, re, tempfile, http.client
+import ast, csv, json, struct, math, hashlib, os, re, tempfile, http.client
 from unittest.mock import patch
 from pathlib import Path
 tree=ast.parse(Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8'))
-names={'inspect_held_animal_glb','restore_pinned_animal_glb','gobkit_animal_sources','read_gobkit_free'}
+names={'inspect_held_animal_glb','restore_pinned_animal_glb','gobkit_animal_sources','read_gobkit_free','scene_source_targets'}
 exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names],type_ignores=[]),'assets_wanted.py','exec'))
 def glb(triangles=1000, bad_index=False, nan=False, negative_accessor=False, external=False, invalid_joint=False):
     pos=struct.pack('<9f',0,0,0,1,0,0,0,1,float('nan') if nan else 0)
@@ -1078,11 +1078,37 @@ with patch.object(http.client,'HTTPSConnection') as connection:
         except ValueError: pass
         else: raise AssertionError('unsafe publisher download')
 print('MARE_ANIMAL_PUBLISHER_FIXTURES=10')
+with tempfile.TemporaryDirectory() as root:
+    docs=Path(root)/'docs'
+    ports=docs/'ports'
+    ports.mkdir(parents=True)
+    tick=chr(96)
+    (ports/'README.md').write_text('| [A](a.md) | x |\n| [B](b.md) | x |\n',encoding='utf-8')
+    (ports/'a.md').write_text('#### '+tick+'a_house_1'+tick+' — house\n- building · 1단계 · size\n#### '+tick+'a_lamp'+tick+' — lamp\n- lamp · 3단계 · size\n',encoding='utf-8')
+    (ports/'b.md').write_text('#### '+tick+'b_house_1'+tick+' — house\n- building · 1단계 · size\n',encoding='utf-8')
+    (docs/'port_asset_prompts.csv').write_text('port_id,asset_id,tier\na,a_house_1,1\nb,b_plaza,2\nb,a_unrelated,2\n',encoding='utf-8')
+    (docs/'battle_backdrops').mkdir()
+    (docs/'battle_backdrops'/'backdrop_prompts.csv').write_text('category,asset_id\nfield,field_one\nnaval-near,naval_one\n',encoding='utf-8')
+    hold=Path(root)/'assets'/'inbox-hold'/'Town'
+    hold.mkdir(parents=True)
+    (hold/'gobkit-free-a_lamp.glb').touch()
+    (hold/'gobkit-free-a_lamp.glb.license.json').touch()
+    status={}
+    outstanding=scene_source_targets({'Town/a_house_1':{'assetId':'10','assetType':'Model','usePermissionGranted':True},
+                                      'Town/b_house_1':{'assetId':'11','assetType':'Image','usePermissionGranted':True}},status)
+    assert status['portCount']==2 and status['planned']==4 and status['registeredModelRights']==1
+    assert status['heldUnverified']==1 and status['missingOriginal']==2
+    assert status['nativeRuntimeVerified'] is False and status['visualQualityApproved'] is False
+    assert status['ports'][0]['stages']['3']=={'planned':1,'registeredModelRights':0}
+    assert status['ports'][1]['nextMissing']==[{'assetKey':'Town/b_house_1','tier':1},{'assetKey':'Town/b_plaza','tier':2}]
+    assert outstanding=={'a_lamp':'Town','b_house_1':'Town','b_plaza':'Town','field_one':'Terrain','naval_one':'Naval'}
+print('MARE_PORT_BRIEF_COVERAGE_FIXTURES=7')
 `;
   const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
   assert.match(output,/MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8/);
   assert.match(output,/MARE_HELD_ANIMAL_RESTORE_FIXTURES=8/);
   assert.match(output,/MARE_ANIMAL_PUBLISHER_FIXTURES=10/);
+  assert.match(output,/MARE_PORT_BRIEF_COVERAGE_FIXTURES=7/);
 });
 
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{

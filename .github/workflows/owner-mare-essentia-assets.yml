@@ -18,9 +18,9 @@ on:
       - 'tools/mare-essentia-upload-assets.mjs'
       - 'tools/mare-essentia-character-finish.mjs'
       - 'tools/mare-essentia-ship-v5.py'
-  # [동물 원본] 20분마다 동물·항구·해전·지상전 원본을 기존 절차에서 찾는다.
+  # [동물 원본] 5분마다 동물·항구·해전·지상전 원본을 기존 절차에서 찾는다.
   schedule:
-    - cron: '7,27,47 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
       universe_id:
