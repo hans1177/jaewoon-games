@@ -699,7 +699,110 @@
  "registryAudit": {
   "state": "STATIC_SCAN_OK",
   "scope": "STATIC_LITERAL_REFERENCES_ONLY",
-  "nativeRuntimeVerified": false
+  "nativeRuntimeVerified": false,
+  "referenceEvidence": {
+   "dynamicPrefixCandidateCount": 1082,
+   "dynamicPrefixes": [
+    "Animals/",
+    "CardArt/",
+    "CardArt/event_",
+    "CardArt/event_chart_",
+    "CardArt/leader_",
+    "Cargo/",
+    "Goods/",
+    "Menu/",
+    "Naval/",
+    "People/",
+    "Portraits/",
+    "Portraits/companions_",
+    "Portraits/npc_",
+    "Portraits/person_",
+    "Portraits/scholar_",
+    "Relics/",
+    "Terrain/",
+    "Town/"
+   ],
+   "groups": {
+    "Animals": {
+     "dynamicPrefixCandidateCount": 13,
+     "literalOrPlacementReferenceCount": 3,
+     "unresolvedReferenceCount": 0
+    },
+    "CardArt": {
+     "dynamicPrefixCandidateCount": 256,
+     "literalOrPlacementReferenceCount": 73,
+     "unresolvedReferenceCount": 0
+    },
+    "Cargo": {
+     "dynamicPrefixCandidateCount": 93,
+     "literalOrPlacementReferenceCount": 75,
+     "unresolvedReferenceCount": 0
+    },
+    "Castle": {
+     "dynamicPrefixCandidateCount": 0,
+     "literalOrPlacementReferenceCount": 18,
+     "unresolvedReferenceCount": 13
+    },
+    "Goods": {
+     "dynamicPrefixCandidateCount": 94,
+     "literalOrPlacementReferenceCount": 10,
+     "unresolvedReferenceCount": 0
+    },
+    "Interior": {
+     "dynamicPrefixCandidateCount": 0,
+     "literalOrPlacementReferenceCount": 7,
+     "unresolvedReferenceCount": 10
+    },
+    "Materials": {
+     "dynamicPrefixCandidateCount": 0,
+     "literalOrPlacementReferenceCount": 0,
+     "unresolvedReferenceCount": 10
+    },
+    "Menu": {
+     "dynamicPrefixCandidateCount": 15,
+     "literalOrPlacementReferenceCount": 31,
+     "unresolvedReferenceCount": 0
+    },
+    "Monsters": {
+     "dynamicPrefixCandidateCount": 0,
+     "literalOrPlacementReferenceCount": 0,
+     "unresolvedReferenceCount": 4
+    },
+    "Naval": {
+     "dynamicPrefixCandidateCount": 146,
+     "literalOrPlacementReferenceCount": 50,
+     "unresolvedReferenceCount": 0
+    },
+    "People": {
+     "dynamicPrefixCandidateCount": 62,
+     "literalOrPlacementReferenceCount": 38,
+     "unresolvedReferenceCount": 0
+    },
+    "Portraits": {
+     "dynamicPrefixCandidateCount": 77,
+     "literalOrPlacementReferenceCount": 4,
+     "unresolvedReferenceCount": 0
+    },
+    "Relics": {
+     "dynamicPrefixCandidateCount": 10,
+     "literalOrPlacementReferenceCount": 26,
+     "unresolvedReferenceCount": 0
+    },
+    "Terrain": {
+     "dynamicPrefixCandidateCount": 101,
+     "literalOrPlacementReferenceCount": 141,
+     "unresolvedReferenceCount": 0
+    },
+    "Town": {
+     "dynamicPrefixCandidateCount": 215,
+     "literalOrPlacementReferenceCount": 84,
+     "unresolvedReferenceCount": 0
+    }
+   },
+   "literalOrPlacementReferenceCount": 560,
+   "scope": "STATIC_REFERENCE_CANDIDATES_NOT_RUNTIME_PLACEMENT",
+   "unresolvedReferenceCount": 37
+  }
  },
  "registry": {
   "used": 373,
@@ -2247,35 +2350,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "c9b62944ea3f58ca-c9b62944ea3f58ca",
-     "sourceMemberSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
-     "triangles": 734,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "b4effece1c2f5c45ac49becb9ca96ad3b3e66de775b6108a327399356b0efb7e",
-       "bytes": 249596
-      },
-      {
-       "name": "rear.png",
-       "sha256": "20039d5792d6cf64173ffeb10645a764853db3993ec6b2d390809b7bb0e133c5",
-       "bytes": 263989
-      },
-      {
-       "name": "side.png",
-       "sha256": "05ef29f6133a9f25838b3a2e619a1e9e6e1bc142369b3068eaf9a4843b89ecf3",
-       "bytes": 251969
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "pelican",
@@ -2376,35 +2451,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "b2e80ab8c4ce8c2f-b2e80ab8c4ce8c2f",
-     "sourceMemberSha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517",
-     "triangles": 494,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "8102006c11b3e46de4989199dd58145aaa24040189149e0af83a156fc70b2163",
-       "bytes": 234535
-      },
-      {
-       "name": "rear.png",
-       "sha256": "637608afe97cbc160ec2892f5d9aec06813cfe7a01f44ff642b060fb0e2aea67",
-       "bytes": 236844
-      },
-      {
-       "name": "side.png",
-       "sha256": "f0eebf00b39f196bea149d4e56aeb619b6b1ca5c1c2fcbe8af318530f68701b1",
-       "bytes": 238952
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "toucan",
@@ -2459,55 +2506,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "4e1b93cc5a4d8de9-4e1b93cc5a4d8de9",
-     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-     "triangles": 432,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "c4a66f9f855b55b475182bdc5ece339b752067283dc3cd9379ef8094f5b5dabc",
-       "bytes": 227100
-      },
-      {
-       "name": "rear.png",
-       "sha256": "d5412bd444085227db3606e674e7f6b994b55673c097b52f8d11859a13d3ce14",
-       "bytes": 225803
-      },
-      {
-       "name": "side.png",
-       "sha256": "33cfcb7fb8f66f648e5e93008a451c0897051a17ccf2e9e38bd79068d9747497",
-       "bytes": 232972
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "qualityCandidate": {
-     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
-     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "nativeRuntimeVerified": false,
-     "originalPreserved": true,
-     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
-    },
-    "sourceVisualLastAttempt": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "56cd2c2e96111acbadf9aa1d55a247e72b46997f",
-     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "FREE_QUOTA_LIMIT",
-     "httpStatuses": [
-      429
-     ]
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "hippo",
@@ -2961,14 +2960,7 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
    },
    {
     "name": "oryx",
@@ -3122,7 +3114,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
+  "publisherSearchState": "NOT_REQUESTED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -15364,9 +15356,6 @@
     }
    ]
   },
-  "publisherExactNameCandidates": 0,
-  "scenePublisherExactNameCandidates": 0,
-  "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
    "runId": "45856334599",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
@@ -15389,7 +15378,6 @@
    "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
+  "sourcePreviewState": "NOT_REQUESTED"
  }
 }
