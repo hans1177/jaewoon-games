@@ -894,6 +894,11 @@ def render_animal_review_candidates(report, out):
                                     "exitCode": completed.returncode,
                                     "exceptionType": types[-1] if types else "UNKNOWN",
                                     "scriptLine": int(locations[-1]) if locations else None}
+                        if evidence["exceptionType"] == "ModuleNotFoundError":
+                            missing = re.findall(r"(?m)^ModuleNotFoundError: No module named ['\"]([A-Za-z_][A-Za-z0-9_.]{0,79})['\"]\s*$", tail)
+                            allowed = {"numpy", "requests", "cattrs", "packaging", "PIL", "zstandard", "io_scene_gltf2", "bpy", "mathutils", "certifi", "urllib3", "charset_normalizer", "idna"}
+                            module = missing[-1].split(".")[0] if missing else ""
+                            evidence["missingModule"] = module if module in allowed else "OTHER"
                         row["sourcePreview"]["failureDiagnostic"] = evidence
                         print("MARE_ANIMAL_RENDER_DIAGNOSTIC", row["name"], json.dumps(evidence, sort_keys=True))
                         raise ValueError(reason)

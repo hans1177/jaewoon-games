@@ -377,11 +377,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if ! command -v blender >/dev/null; then
-            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
-            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 install -y --no-install-recommends blender libegl1 libgl1 libgl1-mesa-dri
-          fi
+          # 배포판 Blender의 glTF 파이썬 의존성을 명시적으로 설치한다.
+          # setup-node나 별도 Python 가상환경에 설치하지 않고 Blender 시스템 ABI를 사용한다.
+          sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
+          sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           blender --version | head -n 1
+          # 실제 렌더 호출과 같은 격리 환경에서 모듈을 확인한다.
+          preview_home="$(mktemp -d)"
+          trap 'rm -rf "$preview_home"' EXIT
+          env -i PATH="$PATH" HOME="$preview_home" TMPDIR="$preview_home" LANG=C.UTF-8 LIBGL_ALWAYS_SOFTWARE=1 \
+            blender --background --factory-startup --disable-autoexec --python-exit-code 1 \
+            --python-expr "import numpy; import io_scene_gltf2; print('MARE_BLENDER_IMPORT_DEPENDENCIES_OK', numpy.__version__)"
 
       - name: Refresh asset practice ledger after Roblox registration
         id: asset_ledger
