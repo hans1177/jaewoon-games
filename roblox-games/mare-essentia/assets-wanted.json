@@ -1804,35 +1804,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "72fed180b8a909ee-72fed180b8a909ee",
-     "sourceMemberSha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986",
-     "triangles": 660,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "b7ee285c502bc12d675e210e6e2a6d71df0d6a367058bfa22924dc9e070be7e2",
-       "bytes": 235575
-      },
-      {
-       "name": "rear.png",
-       "sha256": "b93906168365c5109578ae094e0ec20cf4aadccd26c629bbd6046faf69157ca7",
-       "bytes": 244280
-      },
-      {
-       "name": "side.png",
-       "sha256": "a4d7dbf2076439b02a5484ca1e960cdfac2ddc1f7f525137d34b3d380bad9513",
-       "bytes": 238485
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "flamingo",
@@ -1924,7 +1896,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "e8ae3e18ce5a31d78c1fb60d9f74c034b0eceb44",
+     "sourceRevision": "ba4410b83c20cbd95fb947001da9dafc1f60fd9f",
      "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -1934,7 +1906,35 @@
       503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "triangles": 404,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "fa16c856ec7e029158f165df94c90df6adb6af6833c771add9fd6a028bef976f",
+       "bytes": 231953
+      },
+      {
+       "name": "rear.png",
+       "sha256": "07be7ed2c87dc476ec50db4c368bdd18cdbe050b0381b90bc88b6fc50eb650b4",
+       "bytes": 235713
+      },
+      {
+       "name": "side.png",
+       "sha256": "986a8fa436c7cf9bdcc75729473f01553855bbb8f98f48c42d72efb81271642a",
+       "bytes": 231825
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "goat",
@@ -1971,7 +1971,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "acb5cd77902bf02ce27f73ec07635cac378824a6",
+     "sourceRevision": "ba4410b83c20cbd95fb947001da9dafc1f60fd9f",
      "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -1981,7 +1981,35 @@
       503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
+     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
+     "triangles": 396,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "2288b298bc5274b596a29102b98979cf53bf81baa255fb36f5925b4bb5f34c16",
+       "bytes": 245616
+      },
+      {
+       "name": "rear.png",
+       "sha256": "153c7b720f6f713c252229e45f6e8f1e2edb40346b686fadb881df51c484fbca",
+       "bytes": 239317
+      },
+      {
+       "name": "side.png",
+       "sha256": "5d8214078d669d26c919a4d8a845d92c54c11a0755e8b50da81062db03474964",
+       "bytes": 239532
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "hummingbird",
@@ -2434,17 +2462,17 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "516c000d587857c90c3b8bed85fcef2cced4692bd7ea6c4a3a3876fdf607d0bd",
+       "sha256": "b4640a506a74198d67f4a47f930bf410baba09ca135d3e9db966c16638a3ca2f",
        "bytes": 227100
       },
       {
        "name": "rear.png",
-       "sha256": "92023140387ad244d1b0f1c2348c69d0a3a0a810df8cd992c96b0687b15d5977",
+       "sha256": "6e9cf2d301e96fe220a5838a91ee648b30a8103cce6335d6d2b060b0ad931fd1",
        "bytes": 225803
       },
       {
        "name": "side.png",
-       "sha256": "b90b2a8f1f470cc9be7f65dac2620d63ec17dc5d14500f1612b711c4ed65aa3c",
+       "sha256": "2b933ec83f2799b01769b4207545b6157bad3f8378f4eb629682c4684830b386",
        "bytes": 232972
       }
      ],
@@ -2462,6 +2490,18 @@
      "nativeRuntimeVerified": false,
      "originalPreserved": true,
      "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "ba4410b83c20cbd95fb947001da9dafc1f60fd9f",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429,
+      503
+     ]
     }
    },
    {
@@ -2845,35 +2885,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "e02ec4e264812692-e02ec4e264812692",
-     "sourceMemberSha256": "e02ec4e264812692c86528cb36e1d6c2fbb3447aefea184b279f834f40f1b67a",
-     "triangles": 606,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "fa25e566ea39bda72a7592a5005463c1ad35b09248ce965ffb5d16b0f67e990c",
-       "bytes": 230855
-      },
-      {
-       "name": "rear.png",
-       "sha256": "a2b27fd90586c972935912d5aeca4cbca449301dacd75f24059b8d67ad4a5417",
-       "bytes": 234898
-      },
-      {
-       "name": "side.png",
-       "sha256": "72d762fbbd742ec29242ad1d67f319d99f9dc0f873471618c6ddb9f223b23477",
-       "bytes": 234568
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "penguin",
@@ -15352,7 +15364,7 @@
   "scenePublisherExactNameCandidates": 0,
   "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "45816141034",
+   "runId": "45817714324",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
@@ -15369,11 +15381,11 @@
    ],
    "registrationApproved": false,
    "nativeRuntimeVerified": false,
-   "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED",
-   "visualObservationCount": 2,
+   "sourceVisualObservationState": "VISION_RETRY_REQUIRED",
+   "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
   "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED"
+  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
  }
 }
