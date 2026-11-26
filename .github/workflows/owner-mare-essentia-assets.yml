@@ -466,23 +466,48 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import pathlib, struct
+          import hashlib, json, pathlib
           root = pathlib.Path('roblox-games/mare-essentia/assets')
-          count = 0
-          for folder in ('cardart', 'portraits', 'inbox', 'inbox-hold'):
+          registered = json.loads((root.parent / 'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          # 현재 등록 SHA와 일치하는 파일만 실제 등록본 후보로 구분한다.
+          # 보관 원본/대기 파일은 삭제하지 않으며 기존 색상 차단 검사는 별도로 유지한다.
+          registered_by_sha = {}
+          for key, row in registered.items():
+              digest = row.get('sourceSha256')
+              if digest and row.get('assetType') == 'Image':
+                  registered_by_sha.setdefault(digest, []).append(key)
+          count = registered_files = other_files = 0
+          registered_keys = set()
+          for folder in ('cardart', 'portraits', 'inbox', 'inbox-hold', 'icons', 'materials', 'menu', 'goods'):
               base = root / folder
               if not base.exists():
                   continue
-              for path in sorted(base.rglob('*.png')):
+              for path in sorted(base.rglob('*')):
+                  if not path.is_file() or path.suffix.lower() != '.png':
+                      continue
                   with path.open('rb') as f:
                       header = f.read(26)
-                  if header[:8] != b'\x89PNG\r\n\x1a\n' or len(header) < 26:
-                      print('ART_PNG_INVALID ' + str(path), flush=True)
-                      continue
-                  if header[25] == 3:
-                      count += 1
-                      print('ART_PALETTE256_FOUND ' + str(path), flush=True)
+                      if header[:8] != b'\x89PNG\r\n\x1a\n' or len(header) < 26:
+                          print('ART_PNG_INVALID ' + str(path), flush=True)
+                          continue
+                      if header[25] != 3:
+                          continue
+                      f.seek(0)
+                      keys = sorted(registered_by_sha.get(hashlib.file_digest(f, 'sha256').hexdigest(), []))
+                  count += 1
+                  print('ART_PALETTE256_FOUND ' + str(path), flush=True)
+                  if keys:
+                      registered_files += 1
+                      registered_keys.update(keys)
+                      print('ART_PALETTE256_REGISTERED_SHA_MATCH ' + str(path) + ' ' + ','.join(keys), flush=True)
+                  else:
+                      other_files += 1
+                      print('ART_PALETTE256_OTHER_SOURCE ' + str(path), flush=True)
           print('ART_PALETTE256_TOTAL=' + str(count), flush=True)
+          print('ART_PALETTE256_REGISTERED_FILES=' + str(registered_files), flush=True)
+          print('ART_PALETTE256_REGISTERED_KEYS=' + str(len(registered_keys)), flush=True)
+          print('ART_PALETTE256_OTHER_FILES=' + str(other_files), flush=True)
+          print('ART_PALETTE256_SCOPE=PNG_INDEXED_HEADER_ONLY_NOT_FULL_COLOR_OR_RUNTIME_AUDIT', flush=True)
           PY
 
       - name: Practice and verify approved trade goods using existing asset ledger
