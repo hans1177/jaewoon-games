@@ -1860,12 +1860,53 @@
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "bb571c63094b50ea08c03fe7c76eb07f3ee7eeeb",
+     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
+     "sourceRevision": "a0019d665bef0df086264534152b87ca4433e2ad",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "model": "gemini-3.6-flash",
+     "provider": "gemini:gemini-3.6-flash",
+     "frameSha256": [
+      "8c70c251fa4746e9a6423ea804144a7ed34d5ff3dfd1b07bb8aad11637677da3",
+      "49149522c67b50c6fdcc46b595cc6f783f48ab880bc996292785cb3583835fb9",
+      "ec486ed9f2b54764a1258820dd749844b0c5397f954b888800a4d8946d430a1b"
+     ],
+     "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
+     "speciesMatch": true,
+     "contentSafe": true,
+     "silhouetteClear": true,
+     "uncertain": false,
+     "mobileGeometryWithinBudget": false
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "triangles": 404,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "8c70c251fa4746e9a6423ea804144a7ed34d5ff3dfd1b07bb8aad11637677da3",
+       "bytes": 231953
+      },
+      {
+       "name": "rear.png",
+       "sha256": "49149522c67b50c6fdcc46b595cc6f783f48ab880bc996292785cb3583835fb9",
+       "bytes": 235713
+      },
+      {
+       "name": "side.png",
+       "sha256": "ec486ed9f2b54764a1258820dd749844b0c5397f954b888800a4d8946d430a1b",
+       "bytes": 231825
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
      "registrationApproved": false,
      "visualQualityApproved": false
-    },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    }
    },
    {
     "name": "goat",
@@ -1902,16 +1943,16 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "bb571c63094b50ea08c03fe7c76eb07f3ee7eeeb",
+     "sourceRevision": "a0019d665bef0df086264534152b87ca4433e2ad",
+     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
      "registrationApproved": false,
      "visualQualityApproved": false,
-     "model": "gemini-3.6-flash",
-     "provider": "gemini:gemini-3.6-flash",
-     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
+     "model": "gemini-3.7-flash",
+     "provider": "gemini:gemini-3.7-flash",
      "frameSha256": [
-      "9c3bf8be21425222609a1137e8fbbfc345d75f0d0add38e01b40051cb23e5906",
-      "5c5747bfac8c26ef4b49839ef5f9a6fc8d36dbb2a12b5d3057f882f3a1614adc",
-      "ecebf8af10704616cfb183672a6915274fcb38baed8434eff2ba19965d2a1a91"
+      "674be98dcddbd460cf1ad92caf59ca0d66eafd4e8b739dd28896ef23ab79e0d2",
+      "2e77fb54d6ac7bfd82fc07630c78aae9dbd5697d674cd278b8d56010e25e3991",
+      "0d0c7bb4c7a2b5f66117364526f562bef5b29e0adb33f22db4bac2a5b13e293b"
      ],
      "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
      "speciesMatch": true,
@@ -1920,7 +1961,43 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
+     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
+     "triangles": 396,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "674be98dcddbd460cf1ad92caf59ca0d66eafd4e8b739dd28896ef23ab79e0d2",
+       "bytes": 245616
+      },
+      {
+       "name": "rear.png",
+       "sha256": "2e77fb54d6ac7bfd82fc07630c78aae9dbd5697d674cd278b8d56010e25e3991",
+       "bytes": 239317
+      },
+      {
+       "name": "side.png",
+       "sha256": "0d0c7bb4c7a2b5f66117364526f562bef5b29e0adb33f22db4bac2a5b13e293b",
+       "bytes": 239532
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
+    }
    },
    {
     "name": "hummingbird",
@@ -2535,7 +2612,19 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false
+    "actualRobloxRuntimeVerified": false,
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureDiagnostic": {
+      "stage": "TEXTURE",
+      "exitCode": 1,
+      "exceptionType": "ValueError",
+      "scriptLine": 322
+     },
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    }
    },
    {
     "name": "oryx",
@@ -2561,6 +2650,41 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false
+   },
+   {
+    "name": "peacock",
+    "targets": [
+     "zoo_peacock"
+    ],
+    "source": "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-peacock.glb",
+    "directModel": true,
+    "modelMembers": [
+     {
+      "member": "gobkit-free-peacock.glb",
+      "format": "GLB",
+      "bytes": 100504,
+      "sha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6"
+     }
+    ],
+    "sourceSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
+    "bytes": 100504,
+    "license": "CC0-1.0",
+    "sourceUrl": "https://gobkit.com/freebies/birds/Peacock.glb",
+    "licenseEvidenceUrl": "https://gobkit.com/api/free",
+    "geometry": {
+     "triangles": 734,
+     "jointCount": 16,
+     "animationCount": 4,
+     "mobileGeometryWithinBudget": false,
+     "speciesVerified": false,
+     "visualQualityApproved": false
+    },
+    "speciesVerified": false,
+    "visualQualityApproved": false,
+    "registrationApproved": false,
+    "actualRobloxRuntimeVerified": false,
+    "state": "HELD_PUBLISHER_GLB_GEOMETRY_VERIFIED_VISUAL_REVIEW_PENDING",
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    }
   ],
   "rejected": [
@@ -2667,9 +2791,14 @@
   ],
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
-  "newOriginals": [],
-  "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
-  "sourcePreviewState": "NOT_REQUESTED"
+  "newOriginals": [
+   "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-peacock.glb"
+  ],
+  "downloadAttempts": 1,
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
+  "publisherExactNameCandidates": 1,
+  "scenePublisherExactNameCandidates": 0,
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED"
  }
 }
