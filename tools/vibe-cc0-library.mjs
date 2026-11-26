@@ -16,7 +16,8 @@ import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import {runPython} from './vibe-python.mjs';
 
-const MODEL_EXT=/\.(obj|glb|gltf)$/i,IMAGE_EXT=/\.(png|jpe?g|webp|svg)$/i;
+const MODEL_EXT=/\.(obj|glb|gltf)$/i,IMAGE_EXT=/\.(png|jpe?g|webp|svg|tga|exr|hdr)$/i;
+const AUDIO_EXT=/\.(wav|ogg|mp3|flac|opus|aiff|m4a)$/i,MOTION_EXT=/\.(fbx|blend|bvh|dae)$/i;
 const CC0_TEXT=/CC0|Creative Commons Zero|public domain dedication/i;
 // CC0가 아닌 다른 조건이 같이 적혀 있으면 거절한다(예: "CC0 아님, CC-BY 사용")
 // 제한적인 다른 조건(CC-BY, 비영리, 동일조건, 파생금지, 저작자 표시 필수 등). 'No attribution required' 같은 CC0 정상 문구는 걸리지 않게 한다.
@@ -64,12 +65,12 @@ export function scanLibrary(dir){
     const packDir=path.join(dir,e.name),lic=checkLicense(packDir);
     const files=[];
     if(lic.ok)for(const f of walk(packDir)){
-      const kind=MODEL_EXT.test(f)?'model':IMAGE_EXT.test(f)?'image':null;
+      const kind=MODEL_EXT.test(f)?'model':IMAGE_EXT.test(f)?'image':AUDIO_EXT.test(f)?'audio':MOTION_EXT.test(f)?'motion':null;
       if(!kind)continue;
       files.push({path:path.relative(dir,f).split(path.sep).join('/'),kind,bytes:fs.statSync(f).size,sha256:sha256(f)});
     }
     packs.push({name:e.name,licenseOk:lic.ok,licenseReason:lic.reason,sourceUrl:lic.sourceUrl||null,family:lic.family||'PROP',sourceId:lic.sourceId||null,
-      models:files.filter(f=>f.kind==='model').length,images:files.filter(f=>f.kind==='image').length,files});
+      models:files.filter(f=>f.kind==='model').length,images:files.filter(f=>f.kind==='image').length,audio:files.filter(f=>f.kind==='audio').length,motion:files.filter(f=>f.kind==='motion').length,files});
   }
   const index={version:1,scannedAt:new Date().toISOString(),packs};
   fs.writeFileSync(path.join(dir,'library-index.json'),JSON.stringify(index,null,1));
@@ -85,23 +86,26 @@ export function approvePack(dir,name,by){
   if(!pack)throw new Error('PACK_NOT_FOUND:'+name);
   if(!pack.licenseOk)throw new Error('PACK_LICENSE_NOT_VERIFIED:'+pack.licenseReason);
   const ap=readApprovals(dir);
-  ap.packs[name]={approvedBy:String(by).trim(),approvedAt:new Date().toISOString(),models:pack.models,images:pack.images,fileHashes:Object.fromEntries(pack.files.map(f=>[f.path,f.sha256]))};
+  ap.packs[name]={approvedBy:String(by).trim(),approvedAt:new Date().toISOString(),models:pack.models,images:pack.images,audio:pack.audio,motion:pack.motion,fileHashes:Object.fromEntries(pack.files.map(f=>[f.path,f.sha256]))};
   fs.writeFileSync(approvalPath(dir),JSON.stringify(ap,null,1));
   return ap.packs[name];
 }
 
 // 변형 연습장에 내줄 부모: 승인된 팩 + 승인 당시 해시와 지금 해시가 같은 모델 파일만(승인 뒤 바뀐 파일은 제외)
-export function approvedLibraryParents(dir){
+export function approvedLibraryParents(dir,{includeSupportingAssets=false}={}){
   if(!dir||!fs.existsSync(dir))return [];
   const ap=readApprovals(dir),out=[];
   for(const [name,info] of Object.entries(ap.packs||{})){
     const packDir=path.join(dir,name);
-    if(!fs.existsSync(packDir)||!checkLicense(packDir).ok)continue;
+    if(!fs.existsSync(packDir))continue;
+    const lic=checkLicense(packDir);
+    if(!lic.ok)continue;
+    const family=String(lic.family||'PROP').toUpperCase();
     for(const [rel,hash] of Object.entries(info.fileHashes||{})){
-      if(!MODEL_EXT.test(rel))continue;
-      const abs=path.join(dir,rel);
-      if(!fs.existsSync(abs)||sha256(abs)!==hash)continue;
-      const lic=checkLicense(packDir);
+      const supported=includeSupportingAssets&&((family==='AUDIO'&&AUDIO_EXT.test(rel))||(family==='MOTION'&&MOTION_EXT.test(rel))||(['UI','MATERIAL','VFX','SKILL'].includes(family)&&IMAGE_EXT.test(rel))||(['CHARACTER','CREATURE','BUILDING','ENVIRONMENT','WEAPON','PROP'].includes(family)&&MOTION_EXT.test(rel)));
+      if(!MODEL_EXT.test(rel)&&!supported)continue;
+      const abs=path.resolve(dir,rel);
+      if(!abs.startsWith(path.resolve(packDir)+path.sep)||!fs.existsSync(abs)||sha256(abs)!==hash)continue;
       out.push({id:`lib:${rel}`,family:lic.family||'PROP',file:abs,license:'CC0',source:'LOCAL_LIBRARY',pack:name,approvedBy:info.approvedBy});
     }
   }

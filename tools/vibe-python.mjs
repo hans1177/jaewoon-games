@@ -23,11 +23,11 @@ export function findBlender(){
   if(env)return spawnSync(env,['--version']).status===0?env:null;
   if(spawnSync('blender',['--version']).status===0)return 'blender';
   if(process.platform==='win32'){
-    for(const root of [process.env.ProgramFiles||'C:\\Program Files','D:\\Program Files','E:\\Program Files']){
+    for(const root of [process.env.ProgramFiles||'C:\\Program Files','D:\\Program Files','E:\\Program Files',process.env.LOCALAPPDATA&&path.join(process.env.LOCALAPPDATA,'Programs')].filter(Boolean)){
       const base=path.join(root,'Blender Foundation');
       if(!fs.existsSync(base))continue;
       const dirs=fs.readdirSync(base).filter(n=>/^Blender/i.test(n)).sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
-      for(const d of dirs){const exe=path.join(base,d,'blender.exe');if(fs.existsSync(exe))return exe}
+      for(const d of dirs){const exe=path.join(base,d,'blender.exe');if(fs.existsSync(exe)&&spawnSync(exe,['--version']).status===0)return exe}
     }
   }
   return null;
