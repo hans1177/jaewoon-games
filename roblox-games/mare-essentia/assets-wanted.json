@@ -1933,53 +1933,7 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "f3e51ff8d9c34fae-8651275a052611fa",
-     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
-     "triangles": 684,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "8f56c3b95b8b5ada0c05323214b2eb980622f5c230d7e225fa699955fa83db0c",
-       "bytes": 249452
-      },
-      {
-       "name": "rear.png",
-       "sha256": "c8abb88f3de5fbf699450aff736ada211bdaacfbaffd05547f10edfa7d3da535",
-       "bytes": 238916
-      },
-      {
-       "name": "side.png",
-       "sha256": "707442a7f35a8ff14e5c0829713af60ffc1312bf70d0504952af8ca4160941a9",
-       "bytes": 239992
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "118e5f928e2b0a51a1713195cde944efcb289614",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "model": "gemini-3.7-flash",
-     "provider": "gemini:gemini-3.7-flash",
-     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
-     "frameSha256": [
-      "8f56c3b95b8b5ada0c05323214b2eb980622f5c230d7e225fa699955fa83db0c",
-      "c8abb88f3de5fbf699450aff736ada211bdaacfbaffd05547f10edfa7d3da535",
-      "707442a7f35a8ff14e5c0829713af60ffc1312bf70d0504952af8ca4160941a9"
-     ],
-     "responseSha256": "bc28f45e4232b877f296cd254c6b6a8eb71be715ac18a69c9788cecc70eeeb55",
-     "speciesMatch": true,
-     "contentSafe": true,
-     "silhouetteClear": true,
-     "uncertain": false,
-     "mobileGeometryWithinBudget": false
-    }
+    "actualRobloxRuntimeVerified": false
    },
    {
     "name": "hippo",
@@ -2004,13 +1958,7 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
-    }
+    "actualRobloxRuntimeVerified": false
    },
    {
     "name": "oryx",
@@ -2035,13 +1983,7 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false,
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
-    }
+    "actualRobloxRuntimeVerified": false
    }
   ],
   "rejected": [
@@ -2146,8 +2088,6 @@
     "state": "HELD_SOURCE_UNVERIFIED"
    }
   ],
-  "archiveInventoryState": "AVAILABLE",
-  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED"
+  "archiveInventoryState": "AVAILABLE"
  }
 }
