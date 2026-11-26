@@ -826,14 +826,14 @@ def render_animal_review_candidates(report, out):
                 and observation.get("registrationApproved") is False
                 and observation.get("visualQualityApproved") is False):
             row["sourceVisualObservation"] = observation
-        if old.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY":
+        if old.get("priorRenderRetry") is True or old.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY":
             row["priorRenderRetry"] = True
         geometry = row.get("geometry", {})
         if type(geometry.get("triangles")) is int:
             row["geometryQualityState"] = ("MOBILE_BUDGET_MET" if geometry.get("mobileGeometryWithinBudget") is True
                                            else "SOURCE_GEOMETRY_REPAIR_REQUIRED")
-    report["sourcePreviewState"] = "NO_MODEL_CANDIDATES"
-    if not candidates:
+    report["sourcePreviewState"] = "NOT_REQUESTED" if not out else "NO_MODEL_CANDIDATES"
+    if not out or not candidates:
         return
     import shutil
     blender = shutil.which("blender")
@@ -1004,8 +1004,7 @@ if audit_3d:
 animal_audit = animal_source_practice()
 if animal_audit:
     preview_arg = next((arg.split("=", 1)[1] for arg in sys.argv if arg.startswith("--animal-preview-dir=")), "")
-    if preview_arg:
-        render_animal_review_candidates(animal_audit, preview_arg)
+    render_animal_review_candidates(animal_audit, preview_arg)
     out["animalSourcePractice"] = animal_audit
     print("MARE_ANIMAL_COMPANY_ARCHIVE_CANDIDATES=" + str(len(animal_audit["candidates"])))
     print("MARE_ANIMAL_COMPANY_ARCHIVE_INVENTORY=" + animal_audit["archiveInventoryState"])
