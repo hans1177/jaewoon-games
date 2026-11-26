@@ -11,6 +11,7 @@ ap.add_argument('--input', required=True)
 ap.add_argument('--output', required=True)
 ap.add_argument('--candidate-output', default=None)
 ap.add_argument('--source-preview-dir', default=None)
+ap.add_argument('--animal-quality-candidate', action='store_true')
 args = ap.parse_args(argv)
 if args.source_preview_dir:
     print("MARE_SOURCE_PREVIEW_STAGE IMPORT", flush=True)
@@ -369,6 +370,95 @@ if args.source_preview_dir:
                                'frames': frames, 'renderer': 'BLENDER_WORKBENCH_TEXTURE',
                                'ignoredReferenceImages': ignored_reference_images,
                                'visualQualityApproved': False, 'registrationApproved': False}
+
+# [동물 품질 수리] 원본 렌더 완료 후 별도 후보만 제작한다. 기존 범용 후보 차단은 유지한다.
+if args.animal_quality_candidate:
+    from pathlib import Path
+    candidate = Path(args.candidate_output or '').resolve()
+    candidate_safe = bool(args.candidate_output and args.source_preview_dir
+                          and candidate.parent == Path(args.source_preview_dir).resolve()
+                          and candidate.name == 'quality.glb'
+                          and candidate != Path(args.input).resolve()
+                          and not candidate.exists())
+    repair = {'attempted': True, 'created': False, 'originalPreserved': True,
+              'nativeRuntimeVerified': False, 'gameApplied': False,
+              'productionPromotionAllowed': False}
+    result['candidate'] = repair
+    try:
+        if not candidate_safe or not args.input.lower().endswith('.glb'):
+            raise ValueError('ANIMAL_QUALITY_INPUT_UNSUPPORTED')
+        if (not 0 < result['triangles'] < 1000 or not arms
+                or not 0 < sum(len(a.data.bones) for a in arms) <= 50
+                or not acts or sorted(source_mesh_names) != sorted(o.name for o in meshes)
+                or any(o.data.shape_keys or len(o.data.polygons) == 0 for o in meshes)):
+            raise ValueError('ANIMAL_QUALITY_SOURCE_UNSUPPORTED')
+        # 실제 곡면을 개선하는 한 단계 Catmull-Clark만 선택한다.
+        # 원본의 부품·UV·재질은 삭제하지 않으며 단순 면 개수 채우기는 사용하지 않는다.
+        predicted = result['triangles']
+        selected = []
+        for obj in sorted(meshes, key=lambda o: (-len(o.data.polygons), o.name)):
+            before = sum(max(1, len(p.vertices) - 2) for p in obj.data.polygons)
+            after = sum(2 * len(p.vertices) for p in obj.data.polygons)
+            if after > before and predicted + after - before <= 3000:
+                selected.append(obj)
+                predicted += after - before
+        if not selected or predicted < 1000:
+            raise ValueError('ANIMAL_QUALITY_BUDGET_UNREACHABLE')
+        for obj in selected:
+            bpy.context.view_layer.objects.active = obj
+            obj.select_set(True)
+            mod = obj.modifiers.new('MareAnimalSurface', 'SUBSURF')
+            mod.subdivision_type = 'CATMULL_CLARK'
+            mod.levels = mod.render_levels = 1
+            # 스킨 변형 전에 기본 메시에서 수리한다.
+            while obj.modifiers.find(mod.name) > 0:
+                if 'FINISHED' not in bpy.ops.object.modifier_move_up(modifier=mod.name):
+                    raise ValueError('ANIMAL_QUALITY_MODIFIER_ORDER')
+            if 'FINISHED' not in bpy.ops.object.modifier_apply(modifier=mod.name):
+                raise ValueError('ANIMAL_QUALITY_MODIFIER_FAILED')
+        actual = sum(sum(max(1, len(p.vertices) - 2) for p in o.data.polygons) for o in meshes)
+        if not 1000 <= actual <= 3000:
+            raise ValueError('ANIMAL_QUALITY_BUDGET_INVALID')
+        # 내보내기에서 스킨 가중치가 누락되거나 잘리는 모델은 보류한다.
+        for obj in meshes:
+            if any(m.type == 'ARMATURE' for m in obj.modifiers):
+                if not obj.vertex_groups:
+                    raise ValueError('ANIMAL_QUALITY_WEIGHT_INVALID')
+                for vertex in obj.data.vertices:
+                    weights = [g.weight for g in vertex.groups if g.weight > 1e-6]
+                    if (not 1 <= len(weights) <= 4 or abs(sum(weights) - 1.0) > 0.02):
+                        raise ValueError('ANIMAL_QUALITY_WEIGHT_INVALID')
+        # 검수 카메라·원본에 없는 보조 메시를 제외하고 실제 모델 및 상위 노드만 내보낸다.
+        export_objects = set(meshes + arms)
+        for obj in list(export_objects):
+            parent = obj.parent
+            while parent is not None:
+                export_objects.add(parent)
+                parent = parent.parent
+        if any(o.type not in ('MESH', 'ARMATURE', 'EMPTY') or
+               o.name not in bpy.context.view_layer.objects for o in export_objects):
+            raise ValueError('ANIMAL_QUALITY_EXPORT_SCOPE_INVALID')
+        for obj in bpy.context.view_layer.objects:
+            obj.select_set(obj in export_objects)
+        for arm in arms:
+            arm.data.pose_position = 'POSE'
+        bpy.context.view_layer.update()
+        if 'FINISHED' not in bpy.ops.export_scene.gltf(filepath=str(candidate), export_format='GLB',
+                use_selection=True, export_skins=True, export_animations=True, export_apply=False):
+            raise ValueError('ANIMAL_QUALITY_EXPORT_FAILED')
+        if not candidate.is_file() or not 0 < candidate.stat().st_size <= 5_000_000:
+            raise ValueError('ANIMAL_QUALITY_EXPORT_SIZE')
+        repair.update(created=True, reason='ANIMAL_QUALITY_CANDIDATE_EXPORTED',
+                      method='CATMULL_CLARK_BUDGETED_ONE_LEVEL',
+                      sourceSha256=result['sourcePreview']['sourceSha256'],
+                      sha256=hashlib.sha256(candidate.read_bytes()).hexdigest(),
+                      trianglesBefore=result['triangles'], trianglesAfter=actual,
+                      modifiedMeshes=[o.name for o in selected])
+    except (OSError, RuntimeError, ValueError, TypeError, AttributeError, KeyError) as error:
+        if candidate_safe and candidate.is_file():
+            candidate.unlink()
+        reason = str(error)
+        repair['reason'] = reason if re.fullmatch(r'ANIMAL_QUALITY_[A-Z_]+', reason) else 'ANIMAL_QUALITY_CANDIDATE_FAILED'
 
 if args.source_preview_dir:
     print("MARE_SOURCE_PREVIEW_STAGE OUTPUT", flush=True)

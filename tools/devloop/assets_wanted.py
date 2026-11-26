@@ -900,15 +900,26 @@ def render_animal_review_candidates(report, out):
              row.get("sourceVisualObservation", {}).get("state") == "SOURCE_VISUAL_RETRY_REQUIRED"]
     fresh = [row for row in ordered if not row.get("sourceVisualObservation") and not row.get("priorRenderRetry")]
     preferred = [row for row in fresh if row.get("geometryQualityState") != "SOURCE_GEOMETRY_REPAIR_REQUIRED"]
-    # 재시도는 한 자리 우선, 나머지는 새 원본에 배정해 반복 실패가 전체 순환을 막지 않게 한다.
+    # 한 자리만 실제 수리에 배정하고 기존 신규·재시도 순환도 유지한다.
+    quality = [row for row in ordered if row.get("license") == "CC0-1.0"
+               and row.get("directModel") is True
+               and row.get("geometryQualityState") == "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+               and 0 < (row.get("geometry", {}).get("triangles") or 0) < 1000
+               and len(row["modelMembers"]) == 1 and row["modelMembers"][0]["format"] == "GLB"
+               and row.get("sourceVisualObservation", {}).get("state") == "SOURCE_VISUAL_OBSERVED_ONLY"
+               and row["sourceVisualObservation"].get("sourceMemberSha256") == row["modelMembers"][0]["sha256"]
+               and row["sourceVisualObservation"].get("contentSafe") is True
+               and row["sourceVisualObservation"].get("speciesMatch") is True
+               and row["sourceVisualObservation"].get("uncertain") is False]
     selected = []
-    for pool, limit in ((retry, 1), (preferred, 1), (fresh, 3), (retry, 3), (ordered, 3)):
+    for pool, limit in ((retry, 1), (quality, 1), (preferred, 1), (fresh, 3), (retry, 3), (ordered, 3)):
         for row in pool:
             if len(selected) >= 3 or limit <= 0:
                 break
             if row not in selected:
                 selected.append(row)
                 limit -= 1
+    quality_selected = next((row for row in selected if row in quality), None)
     for row in selected:
         row.pop("priorRenderRetry", None)
         row["sourcePreview"] = {"state": "UNVERIFIED", "registrationApproved": False,
@@ -954,12 +965,15 @@ def render_animal_review_candidates(report, out):
                 safe_env = {"PATH": os.environ.get("PATH", ""), "HOME": temp, "TMPDIR": temp,
                             "LANG": "C.UTF-8", "LIBGL_ALWAYS_SOFTWARE": "1"}
                 os.makedirs(frame_dir, exist_ok=True)
+                quality_path = os.path.join(frame_dir, "quality.glb")
+                repair_args = (["--animal-quality-candidate", "--candidate-output", quality_path]
+                               if row is quality_selected else [])
                 with tempfile.TemporaryFile() as diagnostic:
                     completed = subprocess.run([blender, "--background", "--factory-startup", "--disable-autoexec",
                                     "--python-exit-code", "1", "--python",
                                     os.path.abspath("tools/vibe_mesh_audit.py"), "--",
                                     "--input", source, "--output", audit_path,
-                                    "--source-preview-dir", frame_dir], cwd=temp, env=safe_env,
+                                    "--source-preview-dir", frame_dir] + repair_args, cwd=temp, env=safe_env,
                                    timeout=600, check=False, stdout=diagnostic, stderr=subprocess.STDOUT)
                     if completed.returncode:
                         # 원본 모델의 임의 텍스트나 경로를 기록하지 않는다. 고정 단계·오류 종류·코드 위치만 남긴다.
@@ -1010,6 +1024,80 @@ def render_animal_review_candidates(report, out):
                                         "renderer": preview["renderer"],
                                         "ignoredReferenceImages": preview["ignoredReferenceImages"],
                                         "registrationApproved": False, "visualQualityApproved": False}
+                if repair_args:
+                    repair = audit.get("candidate", {})
+                    quality_evidence = {"state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+                                        "sourceMemberSha256": member["sha256"],
+                                        "registrationApproved": False, "visualQualityApproved": False,
+                                        "nativeRuntimeVerified": False, "originalPreserved": True}
+                    row["qualityCandidate"] = quality_evidence
+                    quality_frames_dir = os.path.join(frame_dir, "quality")
+                    try:
+                        if repair.get("created") is not True:
+                            raise ValueError(repair.get("reason", "ANIMAL_QUALITY_CANDIDATE_FAILED"))
+                        with open(quality_path, "rb") as handle:
+                            derived = handle.read(5_000_001)
+                        digest = hashlib.sha256(derived).hexdigest()
+                        if (len(derived) > 5_000_000 or digest != repair.get("sha256")
+                                or repair.get("sourceSha256") != member["sha256"] or digest == member["sha256"]):
+                            raise ValueError("ANIMAL_QUALITY_CANDIDATE_HASH")
+                        before_geometry = inspect_held_animal_glb(data)
+                        after_geometry = inspect_held_animal_glb(derived)
+                        if (after_geometry["mobileGeometryWithinBudget"] is not True
+                                or after_geometry["triangles"] != repair["trianglesAfter"]
+                                or after_geometry["jointCount"] != before_geometry["jointCount"]
+                                or after_geometry["animationCount"] != before_geometry["animationCount"]):
+                            raise ValueError("ANIMAL_QUALITY_CANDIDATE_STRUCTURE")
+                        before_doc = json.loads(data[20:20 + struct.unpack_from("<I", data, 12)[0]])
+                        after_doc = json.loads(derived[20:20 + struct.unpack_from("<I", derived, 12)[0]])
+                        # 다시 내보낼 때 재압축은 허용하지만 재질·이미지·동작의 소실은 허용하지 않는다.
+                        for field in ("materials", "images", "textures"):
+                            if len(after_doc.get(field, [])) < len(before_doc.get(field, [])):
+                                raise ValueError("ANIMAL_QUALITY_CANDIDATE_MATERIAL_LOSS")
+                        candidate_audit_path = os.path.join(temp, "quality-audit.json")
+                        subprocess.run([blender, "--background", "--factory-startup", "--disable-autoexec",
+                                        "--python-exit-code", "1", "--python", os.path.abspath("tools/vibe_mesh_audit.py"),
+                                        "--", "--input", quality_path, "--output", candidate_audit_path,
+                                        "--source-preview-dir", quality_frames_dir], cwd=temp, env=safe_env,
+                                       timeout=600, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        checked = read_json(candidate_audit_path)
+                        if (sorted(sorted(a["boneNames"]) for a in checked["armatures"]) !=
+                                sorted(sorted(a["boneNames"]) for a in audit["armatures"])
+                                or sorted((a["name"], a["frames"], a["movingBoneCurves"]) for a in checked["actions"]) !=
+                                sorted((a["name"], a["frames"], a["movingBoneCurves"]) for a in audit["actions"])
+                                or checked["triangles"] != after_geometry["triangles"]
+                                or abs(checked["height"] - audit["height"]) > max(0.0001, 0.1 * audit["height"])
+                                or abs(checked["groundOffsetRatio"] - audit["groundOffsetRatio"]) > 0.1):
+                            raise ValueError("ANIMAL_QUALITY_CANDIDATE_REGRESSION")
+                        candidate_preview = checked["sourcePreview"]
+                        candidate_frames = candidate_preview["frames"]
+                        if (candidate_preview["sourceSha256"] != digest or len(candidate_frames) != 3
+                                or {f["name"] for f in candidate_frames} != {"front.png", "rear.png", "side.png"}):
+                            raise ValueError("ANIMAL_QUALITY_CANDIDATE_FRAME_EVIDENCE")
+                        for frame in candidate_frames:
+                            with open(os.path.join(quality_frames_dir, frame["name"]), "rb") as handle:
+                                blob = handle.read(5_000_001)
+                            if (len(blob) != frame["bytes"] or not 128 <= len(blob) <= 5_000_000
+                                    or not blob.startswith(b"\x89PNG\r\n\x1a\n")
+                                    or hashlib.sha256(blob).hexdigest() != frame["sha256"]):
+                                raise ValueError("ANIMAL_QUALITY_CANDIDATE_FRAME_HASH")
+                        quality_evidence.update(state="QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON",
+                                                sha256=digest, bytes=len(derived), method=repair["method"],
+                                                trianglesBefore=before_geometry["triangles"],
+                                                trianglesAfter=after_geometry["triangles"],
+                                                jointCount=after_geometry["jointCount"],
+                                                animationCount=after_geometry["animationCount"],
+                                                artifactDirectory=key + "/quality", frames=candidate_frames)
+                        print("MARE_ANIMAL_QUALITY_CANDIDATE_RENDERED", row["name"],
+                              before_geometry["triangles"], after_geometry["triangles"])
+                    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
+                        if os.path.isfile(quality_path):
+                            os.remove(quality_path)
+                        shutil.rmtree(quality_frames_dir, ignore_errors=True)
+                        reason = str(error)
+                        quality_evidence["failureReason"] = (reason if re.fullmatch(r"ANIMAL_QUALITY_[A-Z_]+", reason)
+                                                             else "ANIMAL_QUALITY_CANDIDATE_RECHECK_FAILED")
+                        print("MARE_ANIMAL_QUALITY_CANDIDATE_RETRY", row["name"], quality_evidence["failureReason"])
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
                 tarfile.TarError, zipfile.BadZipFile) as error:
             shutil.rmtree(frame_dir, ignore_errors=True)
