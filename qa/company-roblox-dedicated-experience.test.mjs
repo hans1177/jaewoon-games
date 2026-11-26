@@ -1178,17 +1178,25 @@ with tempfile.TemporaryDirectory() as root:
     (docs/'residents'/'jobs.md').write_text('| Sailor ('+tick+'sailor'+tick+') | x |',encoding='utf-8')
     (docs/'discoveries').mkdir()
     (docs/'discoveries'/'MISSING.md').write_text('- zoo_otter test',encoding='utf-8')
-    seed=[]
-    missing=[('example.luau','Monsters/example')]
+    (shared/'Weapons.luau').write_text('Weapons.List = {\n{ id = "sword", model = "weapon-sword" },\n{ id = "fist", model = nil },\n}\nlocal regionalDefs = {\n{ "rapier", "Rapier", "sword", "RAPIER", "europe", "note" },\n{ "cutlass", "Cutlass", "sword", "SABRE", "sea", "note", "weapon-cutlass" },\n}\n',encoding='utf-8')
+    (docs/'ships').mkdir()
+    (docs/'ships'/'ship_prompts.csv').write_text('asset_id,category\nship_test_v5,ship\nship_test_damage,ship\n',encoding='utf-8')
+    seed=[{'kind':'Town','missing':['kite','blocked-prop'],'blocked':['blocked-prop'],'status':'missing'}]
+    missing=[('example.luau','Monsters/example'),('example.luau','Cargo/real-good'),('example.luau','CardArt/test')]
     hold=Path(root)/'assets'/'inbox-hold'/'Town'
     hold.mkdir(parents=True)
     (hold/'gobkit-free-a_lamp.glb').touch()
     (hold/'gobkit-free-a_lamp.glb.license.json').touch()
     status={}
     battle_status={}
+    asset_status={}
     outstanding=scene_source_targets({'Town/a_house_1':{'assetId':'10','assetType':'Model','usePermissionGranted':True},
                                       'Town/b_house_1':{'assetId':'11','assetType':'Image','usePermissionGranted':True},
-                                      'Naval/sea_test_far':{'assetId':'12','assetType':'Model','usePermissionGranted':True}},status,battle_status)
+                                      'Naval/sea_test_far':{'assetId':'12','assetType':'Model','usePermissionGranted':True}, 'Relics/weapon-sword':{'assetId':'13','assetType':'Model','usePermissionGranted':True}},status,battle_status,asset_status)
+    assert outstanding['weapon-rapier']=='Relics' and outstanding['weapon-cutlass']=='Relics' and 'weapon-sword' not in outstanding and 'weapon-fist' not in outstanding
+    assert outstanding['test-v5']=='Naval' and 'test_damage' not in outstanding
+    assert outstanding['kite']=='Town' and 'blocked-prop' not in outstanding and outstanding['real-good']=='Cargo' and 'test' not in outstanding
+    assert asset_status['categories']['Relics']['missingModelRights']==2 and asset_status['nativeRuntimeVerified'] is False
     assert status['portCount']==2 and status['planned']==4 and status['registeredModelRights']==1
     assert status['heldUnverified']==1 and status['missingOriginal']==2
     assert status['nativeRuntimeVerified'] is False and status['visualQualityApproved'] is False

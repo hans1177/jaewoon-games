@@ -153,18 +153,29 @@ export function plan({registry,repoRoot,libDir,family=null,sourceId=null,max=2,d
     for(const row of design){
       const live=wanted.wanted.find(x=>x.id===row.id&&x.kind===row.kind);
       if(!live||/portrait|card.?art|illustration|artwork/i.test(String(row.kind)+' '+String(row.id)))continue;
-      for(const req of row.localAcquisition||[]){
+      const hasMissing=Array.isArray(live.missing)&&live.missing.length>0;
+      const needsSource=hasMissing||['missing','using-stand-ins','missing-models-auto-practice'].includes(live.status);
+      const requests=row.localAcquisition||[];
+      if(needsSource&&!requests.length)demand.push({demandId:row.id,kind:row.kind,state:'EXACT_SOURCE_MAPPING_REQUIRED'});
+      for(const req of requests){
         const animal=typeof req.animal==='string'?req.animal:null;
-        const unresolved=animal?(wanted.animalSourcePractice?.candidates||[]).some(x=>x.name===animal&&x.registrationApproved===false&&(x.sourcePreview?.failureReason||x.geometryQualityState==='SOURCE_GEOMETRY_REPAIR_REQUIRED'||x.state==='HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET'))&&!((wanted.animalSourcePractice?.candidates||[]).some(x=>x.name===animal&&x.registrationApproved===true)) : ['missing','using-stand-ins','missing-models-auto-practice'].includes(live.status);
+        const unresolved=animal?(wanted.animalSourcePractice?.candidates||[]).some(x=>x.name===animal&&x.registrationApproved===false&&(x.sourcePreview?.failureReason||x.geometryQualityState==='SOURCE_GEOMETRY_REPAIR_REQUIRED'||x.state==='HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET'))&&!((wanted.animalSourcePractice?.candidates||[]).some(x=>x.name===animal&&x.registrationApproved===true)) : needsSource;
         if(!unresolved||seen.has(req.sourceId)||have.has(req.sourceId))continue;
         const src=(registry.externalSources||[]).find(x=>x.id===req.sourceId);
-        if(!src||!candidateSources(registry,String(src.category),have).some(x=>x.id===src.id))continue;
+        if(!src||!candidateSources(registry,String(src.category),have).some(x=>x.id===src.id)){
+          demand.push({demandId:row.id,sourceId:req.sourceId,state:'SOURCE_POLICY_OR_CATALOG_REQUIRED'});continue;
+        }
+        if(family&&String(src.category).toUpperCase()!==family.toUpperCase())continue;
         const method=methodFor(src,{allowLocal});
         if(method==='manual'){demand.push({demandId:row.id,sourceId:src.id,family:src.category,state:'NO_AUTOMATIC_SOURCE'});continue;}
         if((perFamily[src.category]||0)>=max)continue;
         seen.add(src.id);perFamily[src.category]=(perFamily[src.category]||0)+1;
         picks.push({family:src.category,missing:null,src,method,demandId:row.id,game:wanted.game});
       }
+    }
+    // 실제 원본 검색 결과의 전용 무기/선박/모션 부족 현황은 기존 제작자 검색 경로로 이어진다.
+    for(const [kind,coverage] of Object.entries(wanted.animalSourcePractice?.assetSourceCoverage?.categories||{})){
+      if(coverage.missingModelRights>0)demand.push({kind,missing:coverage.missingModelRights,state:'EXACT_SOURCE_SEARCH_EXISTING_MARE_PIPELINE'});
     }
     return {counts,short:[],picks,demand};
   }
