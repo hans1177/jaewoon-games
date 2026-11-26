@@ -2,7 +2,7 @@
 # 캐릭터 .blend/.glb 의 메쉬·리그 품질을 숫자로 검사한다. (Blender 또는 pip bpy 필요)
 # 사용: blender --background --python tools/vibe_mesh_audit.py -- --input hero.blend --output audit.json
 # 판정은 tools/vibe-mesh-audit.mjs 가 한다. 이 파일은 측정만 한다.
-import bpy, sys, json, argparse, math, re, struct
+import bpy, sys, json, argparse, math, re, struct, hashlib, os
 from mathutils import Vector
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
@@ -10,13 +10,17 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--input', required=True)
 ap.add_argument('--output', required=True)
 ap.add_argument('--candidate-output', default=None)
+ap.add_argument('--source-preview-dir', default=None)
 args = ap.parse_args(argv)
 
 if args.input.lower().endswith(('.glb', '.gltf')):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=args.input)
 else:
-    bpy.ops.wm.open_mainfile(filepath=args.input)
+    if args.source_preview_dir:
+        bpy.ops.wm.open_mainfile(filepath=args.input, use_scripts=False)
+    else:
+        bpy.ops.wm.open_mainfile(filepath=args.input)
 
 # 저장 시점의 포즈가 아니라 기본 자세(rest)에서 측정한다.
 for _a in bpy.data.objects:
@@ -276,6 +280,66 @@ if args.candidate_output:
         'nativeRuntimeVerified': False, 'gameApplied': False,
         'productionPromotionAllowed': False,
     }
+# [원본 시각 증거] 별도 검수용 씬에서 실제 원본 메쉬의 여러 방향을 렌더한다.
+# 원본/등록 파일을 저장하거나 시각 안전·종 일치·승인 결론을 만들지 않는다.
+if args.source_preview_dir:
+    from pathlib import Path
+    source = Path(args.input).resolve()
+    out = Path(args.source_preview_dir).resolve()
+    out.mkdir(parents=True, exist_ok=True)
+    if not boxes or not meshes or not all(math.isfinite(x) for x in (*all_lo, *all_hi)):
+        raise ValueError('SOURCE_PREVIEW_NO_FINITE_MESH')
+    # 외부 라이브러리나 임의 파일 참조는 검수 화면을 만들기 전에 차단한다.
+    if bpy.data.libraries:
+        raise ValueError('SOURCE_PREVIEW_EXTERNAL_LIBRARY')
+    for im in bpy.data.images:
+        if im.source == 'FILE' and not im.packed_file:
+            image_path = Path(bpy.path.abspath(im.filepath)).resolve()
+            if image_path.parent != source.parent or not image_path.is_file():
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+    scene = bpy.data.scenes.new('SourceReviewEvidence')
+    for obj in meshes + arms:
+        scene.collection.objects.link(obj)
+    scene.render.engine = 'BLENDER_WORKBENCH'
+    scene.render.film_transparent = False
+    scene.render.resolution_x = 640
+    scene.render.resolution_y = 640
+    scene.render.resolution_percentage = 100
+    scene.render.image_settings.file_format = 'PNG'
+    scene.render.image_settings.color_mode = 'RGB'
+    scene.display.shading.light = 'STUDIO'
+    scene.display.shading.color_type = 'TEXTURE'
+    scene.display.shading.show_backface_culling = False
+    scene.display.shading.show_shadows = True
+    scene.display.shading.background_type = 'WORLD'
+    scene.world = bpy.data.worlds.new('SourceReviewWorld')
+    scene.world.color = (0.16, 0.16, 0.16)
+    cam = bpy.data.objects.new('SourceReviewCamera', bpy.data.cameras.new('SourceReviewCamera'))
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+    cam.data.type = 'ORTHO'
+    center = (all_lo + all_hi) / 2
+    size = max(all_hi[i] - all_lo[i] for i in range(3))
+    if not math.isfinite(size) or size <= 0:
+        raise ValueError('SOURCE_PREVIEW_EMPTY_BOUNDS')
+    cam.data.ortho_scale = size * 1.85
+    cam.data.clip_start = max(1e-6, size * 0.001)
+    cam.data.clip_end = max(100, size * 20)
+    frames = []
+    for name, vector in [('front', (1, -2, 1)), ('rear', (-1, 2, 1)), ('side', (2, 0, 0.5))]:
+        cam.location = center + Vector(vector).normalized() * size * 3
+        cam.rotation_euler = (center - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        png = out / (name + '.png')
+        scene.render.filepath = str(png)
+        bpy.ops.render.render(write_still=True, scene=scene.name)
+        data = png.read_bytes()
+        if len(data) < 128 or data[:8] != b'\x89PNG\r\n\x1a\n':
+            raise ValueError('SOURCE_PREVIEW_INVALID_IMAGE')
+        frames.append({'name': png.name, 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)})
+    result['sourcePreview'] = {'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+                               'frames': frames, 'renderer': 'BLENDER_WORKBENCH_TEXTURE',
+                               'visualQualityApproved': False, 'registrationApproved': False}
+
 with open(args.output, 'w', encoding='utf8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1)
 print('VIBE_MESH_AUDIT_MEASURED', len(rows))

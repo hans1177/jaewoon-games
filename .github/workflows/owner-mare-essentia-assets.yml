@@ -362,12 +362,28 @@ jobs:
           set -euo pipefail
           node --test --test-name-pattern='Mare external CC0 (nau|coastal) original hull and Roblox registration integrity' qa/company-roblox-dedicated-experience.test.mjs
 
+      # [동물 원본 시각 증거] 기존 무료 Blender 검사기를 같은 등록 흐름에서 사용한다.
+      - name: Prepare free Blender source preview
+        if: ${{ always() && github.event_name == 'schedule' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v blender >/dev/null; then
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 install -y --no-install-recommends blender libegl1 libgl1 libgl1-mesa-dri
+          fi
+
       - name: Refresh asset practice ledger after Roblox registration
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods
+          preview_args=()
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            preview_args+=("--animal-preview-dir=$RUNNER_TEMP/mare-animal-source-preview")
+          fi
+          python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods "${preview_args[@]}"
           if [[ "${{ github.event_name }}" != "schedule" ]]; then
             python3 - <<'PY'
           import json
@@ -389,6 +405,15 @@ jobs:
           print("TRADE_GOODS_3D_RUNTIME_AND_VISUAL_QA=UNVERIFIED")
           PY
           fi
+
+      - name: Keep bounded animal source review frames
+        if: ${{ always() && github.event_name == 'schedule' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mare-animal-source-preview
+          path: ${{ runner.temp }}/mare-animal-source-preview/**/*.png
+          if-no-files-found: ignore
+          retention-days: 3
 
       - name: Commit registered asset IDs (API, main이 움직여도 안전)
         if: always()
