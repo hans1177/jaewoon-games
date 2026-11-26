@@ -2304,7 +2304,46 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "b2e80ab8c4ce8c2f-b2e80ab8c4ce8c2f",
+     "sourceMemberSha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517",
+     "triangles": 494,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "f6c14c82fe07d567ca2bc15d975da5849ade9078fdbac1897e4dfc9dec796834",
+       "bytes": 234535
+      },
+      {
+       "name": "rear.png",
+       "sha256": "b5b85f884af2ae690d1a7b730596c4b2c59f7a017ed4347462fcbc1d3158a14c",
+       "bytes": 236844
+      },
+      {
+       "name": "side.png",
+       "sha256": "9a3596f68619ea2626f3d1ece81b87df3c99cf5e6d0d85506c53d7eb1dd0e302",
+       "bytes": 238952
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "sourceVisualObservation": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "b2387362ede1250d90eb314379096fb791916ac6",
+     "sourceMemberSha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "toucan",
@@ -2359,7 +2398,55 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "4e1b93cc5a4d8de9-4e1b93cc5a4d8de9",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "triangles": 432,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "0f816d5b2e7630754b97f57ae407de825b519c165d8a1772937ff0ae55c88382",
+       "bytes": 227100
+      },
+      {
+       "name": "rear.png",
+       "sha256": "29020123d63cadc509c1863c82ca68928f1c48c5225da691fae3881248bc338a",
+       "bytes": 225803
+      },
+      {
+       "name": "side.png",
+       "sha256": "1711df59c4ba9472265f4816bf9692e7549be5856df5722e1ce7f5a1608dbfef",
+       "bytes": 232972
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "b2387362ede1250d90eb314379096fb791916ac6",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "hippo",
@@ -2451,7 +2538,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "c153795ba182fa62df717fc96cd37604e6b9ad6a",
+     "sourceRevision": "b2387362ede1250d90eb314379096fb791916ac6",
      "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2460,7 +2547,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "41e008751c798c66-41e008751c798c66",
+     "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
+     "triangles": 732,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "fd8d34f84e49e4f57844e018bd13b04219f40db88bd43684cbdde82d74af5fe2",
+       "bytes": 240107
+      },
+      {
+       "name": "rear.png",
+       "sha256": "7efac6e26fa0d623554e256a3f15a741ba3467ce89dadd347aa8e534148c0dbe",
+       "bytes": 247597
+      },
+      {
+       "name": "side.png",
+       "sha256": "803117e3e9ab7b97aba496f63d650e5db72628d68303dbaa4fc3362e8414e85f",
+       "bytes": 240950
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "narwhal",
@@ -2778,7 +2893,14 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
    },
    {
     "name": "oryx",
@@ -2930,9 +3052,13 @@
   ],
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
-  "newOriginals": [],
-  "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "newOriginals": [
+   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_benguela_desert.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_malabar_far.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_colombo_cinnamon.glb"
+  ],
+  "downloadAttempts": 3,
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -15174,12 +15300,15 @@
     }
    ]
   },
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 24,
   "lastPreviewRun": {
-   "runId": "45761296737",
+   "runId": "45765770952",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
-   "scenePublisherRoleCandidates": 27,
+   "scenePublisherRoleCandidates": 24,
    "downloadAttempts": 3,
    "newOriginalCount": 3,
    "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
@@ -15196,6 +15325,7 @@
    "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
  }
 }
