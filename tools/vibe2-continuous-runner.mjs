@@ -953,6 +953,12 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       +' observedFailure='+String(qualityWork.mode==='REPAIR_CURRENT_CAUSAL_FAILURE_FIRST'),
     'authorizedExistingOwnerCandidates='+(qualityAuthorizedOwners.join(' | ')||'NONE_OWNER_DISCOVERY_REQUIRED'),
     'qualityTarget='+clean(qualityWork.id)+' evidence='+clean(qualityWork.evidence),
+    // [자동 아이템 보완] 실제 게임 데이터에서 발견한 누락 항목 ID만 기존 소스 작업기에 전달한다.
+    // 탐지 결과는 쓰기 권한이나 라이선스 검수, 실제 Studio PASS를 절대 대체하지 않는다.
+    ...(qualityWork.id==='UNBOUND_DATA_DEFINED_ITEMS'&&Array.isArray(qualityWork.missingItemIds)?[
+      'unboundInventoryItems='+qualityWork.missingItemIds.filter(id=>/^[a-z][a-z0-9_]*$/.test(id)).slice(0,64).join('|'),
+      'Repair matching asset binding only in authorized existing game owner: company-verified licensed original 3D first, then repository-approved image. Never invent a primitive, reuse unrelated item art, or upload blocked regulated art. Unverified items remain unresolved until exact QA/Studio.'
+    ]:[]),
     'Must identify cause in exact authorized existing owner before source mutation; candidate list does not change work-order write scope.',
     'If no matching owner is authorized, report scope/ownership blocker instead of editing another file or making an unverified fix.',
     'Preserve game rules, economy, saves, approved balance, and F0-F9 gates. Re-run exact failed QA; static hints never imply PASS.'
