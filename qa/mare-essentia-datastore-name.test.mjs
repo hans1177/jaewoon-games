@@ -4399,3 +4399,20 @@ test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 �
  for(const token of ['"sea_" .. briefSea .. "_" .. layer[1]','AssetIds["Naval/" .. asset]','AssetIds[kind .. "/" .. spec[1]]','NavalBriefAssetKey','NavalBriefPlaced_','node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'])assert.ok(naval.includes(token),token);
  for(const token of ['local asset = "field_" .. siteId','AssetIds["Terrain/" .. asset]','entry.band, entry.horizon, entry.briefBackdrop = "far", true, true','FieldBriefBackdropPlaced','FieldBriefAssetKey','stageFeature(entry)'])assert.ok(field.includes(token),token);
 });
+
+// [동물 지상 보행] 수입 회전축을 덮지 않고 실제 해부 방향·종별 보폭·발밑 지형을 사용한다.
+test('마레 지상 동물은 실제 전방과 종별 보폭으로 움직이며 바닥에서 벗어나지 않는다',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const wild=field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]')));
+  for(const name of ['horse','cow','donkey','llama','sheep','pig','elephant','dog-pug','cat','chicken']) assert.ok(wild.includes(name));
+  assert.ok(wild.includes('ANATOMICAL_FORWARD')&&wild.includes('UNVERIFIED_STATIC'));
+  assert.ok(wild.includes('facingKnown and legCount >='));
+  assert.ok(wild.includes('local delta = target - a.travel'));
+  assert.ok(wild.includes('math.abs(remainingTurn) < 0.12'));
+  assert.ok(wild.includes('a.forward * proposed'));
+  assert.ok(wild.includes('a.center.Rotation'));
+  assert.ok(wild.includes('a.profile[1]')&&wild.includes('a.profile[3]'));
+  assert.ok(wild.includes('a.homeFloor + a.groundOffset - low'));
+  assert.ok(!wild.includes('PivotTo(upright'));
+  assert.ok(!wild.includes('CFrame.new(0, 0, -a.travel)'));
+});
