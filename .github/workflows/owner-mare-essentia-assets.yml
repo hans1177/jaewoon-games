@@ -383,6 +383,9 @@ jobs:
 
       - name: Refresh asset practice ledger after Roblox registration
         if: always()
+        env:
+          VIBE2_VISION_MODEL: ${{ vars.VIBE2_VISION_MODEL }}
+          VIBE2_LOCAL_AI_OWNER_APPROVED: ${{ vars.VIBE2_LOCAL_AI_OWNER_APPROVED }}
         shell: bash
         run: |
           set -euo pipefail
@@ -391,6 +394,9 @@ jobs:
             preview_args+=("--animal-preview-dir=$RUNNER_TEMP/mare-animal-source-preview")
           fi
           python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods "${preview_args[@]}"
+          if [[ "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
+            node tools/mare-essentia-upload-assets.mjs --animal-source-visual-review="$RUNNER_TEMP/mare-animal-source-preview"
+          fi
           if [[ "${{ github.event_name }}" != "schedule" ]]; then
             python3 - <<'PY'
           import json
