@@ -4353,6 +4353,27 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(model,/MareModelAuditTotals/);
   assert.match(model,/pending == 0/);
   assert.match(model,/loaded = loaded, failed = failed, errors = failedKeys/);
+  // 초기 모델 범위는 등록된 실제 시작 장면에 한정하고 전체 검사는 기존 큐에서 유지한다.
+  const startupBlock=model.match(/local startupModels = \{([\s\S]*?)\n\}/)?.[1];
+  assert.ok(startupBlock);
+  const startupKeys=[...startupBlock.matchAll(/\["([^"]+)"\] = true/g)].map(m=>m[1]);
+  assert.equal(startupKeys.length,15);
+  assert.equal(new Set(startupKeys).size,15);
+  const assetSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  for(const key of startupKeys) assert.ok(assetSource.includes('["'+key+'"]'),'missing registered startup model '+key);
+  assert.match(model,/startup = startupModels\[key\] == true or earlyScenery\[key\] == true/);
+  assert.match(model,/if a\.startup ~= b\.startup then return a\.startup end/);
+  assert.match(model,/if asset\.startup then priorityPending \+= 1 end/);
+  assert.match(model,/if item\.startup then priorityPending -= 1 end/);
+  assert.match(model,/for _ = 1, 12 do/);
+  assert.match(model,/if pending == 0 then\s+ReplicatedStorage:SetAttribute\("MareAssetsSettled", true\)/);
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  assert.match(client,/if not H\.assetWaitDone then/);
+  assert.match(client,/while not RS:GetAttribute\("MareAssetsReady"\) and os\.clock\(\) - t0 < 5 and player\.Parent do/);
+  assert.match(client,/while not RS:GetAttribute\("MareAssetsSettled"\) and player\.Parent do/);
+  assert.match(client,/if player\.Parent and RS:GetAttribute\("MareAssetsSettled"\) and view then\s+sceneKey = nil\s+if not sceneHold and not inField then\s+syncScene\(\)/);
+  assert.match(qa,/local modelReadyDeadline = os\.clock\(\) \+ 60/);
+  assert.match(qa,/while ReplicatedStorage:GetAttribute\("MareAssetsSettled"\) ~= true and os\.clock\(\) < modelReadyDeadline do/);
   // [항구 우물 회귀] 실측 실패한 5개 텍스처를 기존 모델 로더에서만 제거한다.
   const wellRepair=model.indexOf('if item.key == "Town/village-well" then');
   const libraryParent=model.indexOf('model.Parent = group',wellRepair);

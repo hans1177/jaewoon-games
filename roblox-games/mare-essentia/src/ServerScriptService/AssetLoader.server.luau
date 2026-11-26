@@ -9,11 +9,15 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local library = ReplicatedStorage:WaitForChild("MareAssets")
+-- [초기/전체 분리] 준비 플래그는 입장용, Settled는 모든 등록 요청의 종료용이다.
+-- 전체 성공 여부는 기존 실패 기록과 Studio 감사만 판정한다.
+ReplicatedStorage:SetAttribute("MareAssetsSettled", false)
 local ok, ids = pcall(function()
 	return require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("AssetIds"))
 end)
 if not ok or type(ids) ~= "table" then
 	warn("[MareEssentia] 자산 등록번호를 불러올 수 없음")
+	ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
 	ReplicatedStorage:SetAttribute("MareAssetsReady", true)
 	return
 end
@@ -141,6 +145,15 @@ local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castl
 -- [항구·탐험 초반 조경] 먼저 등록된 승인 메시만 기존 로딩 큐의 맨 앞에서 수입한다.
 -- 별도 작업 큐나 임시 모델을 만들지 않고, 기존 우선 선박 두 종 다음에 배치한다.
 local earlyScenery = { ["Terrain/Grass_Small"] = true, ["Terrain/Bush_Small"] = true, ["Terrain/Rock_2"] = true }
+-- [첫 장면] 프롤로그의 실제 범선 후보와 공용 항구 기본 외형만 초기 대기에 포함한다.
+-- 지역별 건물·선박·교역품은 기존 전체 큐에서 계속 로드하며 완료 후 항구를 갱신한다.
+local startupModels = {
+	["Naval/ship-large"] = true, ["Naval/ship-medium"] = true, ["Naval/boat-sail-a"] = true,
+	["Town/house"] = true, ["Town/house_chimney"] = true, ["Town/house_door"] = true,
+	["Town/cobblestones"] = true, ["Town/bench_A"] = true, ["Town/bench_B"] = true,
+	["Naval/dock-side"] = true, ["Naval/dock-corner"] = true, ["Naval/structure-platform-dock-small"] = true,
+	["Cargo/box-open"] = true, ["Cargo/bag"] = true, ["Cargo/barrel"] = true,
+}
 -- [R15 실물 복식] 현재 주민·동료 프로필이 실제 사용하는 People 메시만 기존 로더에서 앞당긴다.
 -- 장면 진입 후 지연 로드 재장착도 유지하며, 새 큐·모델·다운로드 경로를 만들지 않는다.
 local earlyMobParts = {
@@ -216,15 +229,16 @@ for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
 	-- UI 이미지(메뉴·교역품·초상화·도감/이벤트 원화)는 모델이 아니므로 InsertService에서 제외한다.
 	if kind and name and kind ~= "Menu" and kind ~= "Goods" and kind ~= "Portraits" and kind ~= "CardArt" and kind ~= "Materials" and type(assetId) == "number" and assetId > 0 then
-		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
+		table.insert(queue, { kind = kind, name = name, id = assetId, key = key, startup = startupModels[key] == true or earlyScenery[key] == true })
 		if kind == "People" and string.sub(name, 1, 7) == "outfit_" then r15GarmentExpected += 1 end
 		if kind == "People" and string.sub(name, 1, 4) == "acc_" then r15AccessoryExpected += 1 end
 		if kind == "People" and string.sub(name, 1, 4) == "cc0_" then externalExpected += 1 end
 	end
 end
 -- 시작 프롤로그에서 사용하는 승인된 실물 범선을 먼저 로드한다.
--- 항구 필수 모델을 제외하거나 기존 큐·동시성 구조를 변경하지 않는다.
+-- 최초 대기 대상과 실제 수입 순서를 일치시킨다. 기존 전체 큐·동시성은 유지한다.
 table.sort(queue, function(a, b)
+	if a.startup ~= b.startup then return a.startup end
 	local ap = if a.key == "Naval/ship-large" then -1 elseif a.key == "Naval/ship-medium" then 0 elseif earlyScenery[a.key] then 0.5
 		elseif a.kind == "Relics" and string.match(a.name, "^weapon%-") then 0.75
 		elseif earlyMobParts[a.key] then 0.8 else order[a.kind] or 99
@@ -262,9 +276,10 @@ if studioAudit then
 end
 local priorityPending = 0
 for _, asset in queue do
-	if (order[asset.kind] or 99) <= 3 or earlyScenery[asset.key] then priorityPending += 1 end
+	if asset.startup then priorityPending += 1 end
 end
 
+if #queue == 0 then ReplicatedStorage:SetAttribute("MareAssetsSettled", true) end
 if studioAudit and #queue == 0 then
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = 0, loaded = 0, failed = 0, errors = { "NO_REGISTERED_MODELS" }}))
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "FAIL")
@@ -402,13 +417,14 @@ for _ = 1, 12 do
 				warn("[MareEssentia] 모델 불러오기 실패", item.key, item.id, container)
 			end
 			pending -= 1
-			if (order[item.kind] or 99) <= 3 or earlyScenery[item.key] then priorityPending -= 1 end
+			if item.startup then priorityPending -= 1 end
 			if item.kind == "People" and (string.sub(item.name, 1, 7) == "outfit_"
 				or string.sub(item.name, 1, 4) == "acc_") then
 				ReplicatedStorage:SetAttribute("MareR15GarmentsLoaded", r15GarmentLoaded)
 				ReplicatedStorage:SetAttribute("MareR15AccessoriesLoaded", r15AccessoryLoaded)
 			end
 			if pending == 0 then
+				ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
 				local wearablesReady = r15GarmentExpected > 0 and r15AccessoryExpected > 0
 					and r15GarmentLoaded == r15GarmentExpected and r15AccessoryLoaded == r15AccessoryExpected
 				ReplicatedStorage:SetAttribute("MareR15WearablesState",
