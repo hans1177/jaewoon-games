@@ -630,6 +630,25 @@ test('Mare trade goods practice validates existing originals, rights and blocked
 });
 
 
+// [정기 자산 등록 → 기존 게시] 원본 장부 갱신만으로 게시하거나 실제 배치 통과를 기록하지 않는다.
+test('Mare scheduled verified asset registration dispatches existing publisher only on committed registry change',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const publisher=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
+  const studio=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.match(workflow,/id: registered_commit\s*\n\s*if: always\(\)/);
+  assert.ok(workflow.includes('[[ "$MARE_ASSET_OUTCOME" == "success" ]] && ! git diff --quiet HEAD -- "$registry" "$ids"'));
+  assert.ok(workflow.includes('for f in "$registry" "$ids"; do'));
+  assert.ok(workflow.includes('MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f'));
+  assert.ok(workflow.includes('echo "registered_change=$changed" >> "$GITHUB_OUTPUT"'));
+  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (github.event_name == 'schedule' && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
+  assert.ok(workflow.includes('gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"'));
+  assert.ok(workflow.includes('MARE_ASSET_PUBLISH_REQUESTED=YES'));
+  assert.ok(publisher.includes('MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED:'));
+  assert.ok(publisher.includes('MARE_CANONICAL_TARGET_MISMATCH'));
+  assert.ok(studio.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
+  assert.ok(publisher.includes("github.event.workflow_run.event != 'schedule'")); // 정기 작업의 중복 workflow_run 게시 금지
+});
+
 // [교역품 3D] 남은 69종의 실물·권한·자동개선 관문을 검증한다.
 test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe asset lane',()=>{
   const root='roblox-games/mare-essentia';
