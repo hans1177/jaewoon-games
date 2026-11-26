@@ -24,10 +24,22 @@ seed = []
 if os.path.isfile(seed_path):
     with open(seed_path, encoding="utf-8") as f:
         seed = json.load(f)
-check = subprocess.run([sys.executable, os.path.join(here, "asset_check.py"), root],
+# 게임별 기존 검사기를 호출한다. 정적 참조 결과는 실제 화면 배치 증거가 아니다.
+check_path = os.path.join(root, "tools", "devloop", "asset_check.py")
+check = subprocess.run([sys.executable, check_path, root],
                        capture_output=True, text=True)
 missing = sorted(set(re.findall(r"^\s+(\S+): (\w+/[\w\-\.]+)$", check.stdout, re.M)))
 counts = re.search(r"사용 (\d+)종 / 등록 (\d+)종 / 미사용 (\d+)종", check.stdout)
+registry_audit = {
+    "state": ("STATIC_SCAN_OK" if counts and check.returncode == 0 and not missing
+              else "MISSING_REFERENCES" if counts and check.returncode == 1 and missing
+              else "SCAN_ERROR"),
+    "scope": "STATIC_LITERAL_REFERENCES_ONLY",
+    "nativeRuntimeVerified": False,
+}
+if registry_audit["state"] == "SCAN_ERROR":
+    print("MARE_ASSET_REFERENCE_SCAN_ERROR", check.returncode, file=sys.stderr)
+    counts = None
 inbox = os.path.join(root, "assets", "inbox")
 pending = sorted(os.path.join(d, f) for d, _, files in os.walk(inbox)
                  for f in files if not f.endswith((".md", ".license.json"))) if os.path.isdir(inbox) else []
@@ -1505,7 +1517,8 @@ if audit:
         goal["status"] = "missing-or-review-blocked"
 out = {
     "game": os.path.basename(root), "wanted": seed,
-    "codeReferencesNotRegistered": [{"file": file, "asset": asset} for file, asset in missing],
+    "codeReferencesNotRegistered": [{"file": file, "asset": asset} for file, asset in missing] if counts else None,
+    "registryAudit": registry_audit,
     "registry": {"used": int(counts[1]), "registered": int(counts[2]), "unused": int(counts[3])} if counts else None,
     "inboxWaiting": pending,
 }
