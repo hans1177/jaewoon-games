@@ -183,7 +183,7 @@ jobs:
               if not token:
                   raise SystemExit('CARD_DROPBOX_ACCESS_TOKEN_MISSING')
               arg = json.dumps({'path':'/Vibe2Transfer/'+name+'-original.png'})
-              raw = request('https://content.dropboxapi.com/2/files/download',{'Authorization':'Bearer '+token,'Dropbox-API-Arg':arg},b'',20*1024*1024)
+              raw = request('https://content.dropboxapi.com/2/files/download',{'Authorization':'Bearer '+token,'Dropbox-API-Arg':arg},None,20*1024*1024)
               if len(raw)!=candidate['bytes'] or len(raw)<50000 or hashlib.sha256(raw).hexdigest()!=digest:
                   raise SystemExit('CARD_DROPBOX_ORIGINAL_HASH_OR_SIZE_MISMATCH:'+card)
               if raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6):
