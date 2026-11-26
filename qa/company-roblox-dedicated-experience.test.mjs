@@ -1975,10 +1975,12 @@ test('Mare generated original art is promoted only after model-source visual QA 
       robloxSafety:true, commercialRights:true};
     const record = {approved:{[id]:hash},modelOriginals:{[id]:review}};
     const save = () => fs.writeFileSync(path.join(root,'assets/APPROVED_IMAGES.json'),JSON.stringify(record));
-    const execute = () => runInNewContext('(async()=>{' + intake + '\n})()', {
+    const execute = (modelsOnly = false) => runInNewContext('(async()=>{' + intake + '\n})()', {
       ROOT:root,JSON_OUT:path.join(root,'assets-registered.json'),fs:fs.promises,path,crypto:{createHash},Buffer,
-      studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
+      modelsOnly,studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
     });
+    await execute(true);
+    assert.equal(fs.existsSync(dest),false);
     review.subjectMatch=false;
     save();
     await assert.rejects(execute(), /MODEL_ORIGINAL_QA_REQUIRED/);
