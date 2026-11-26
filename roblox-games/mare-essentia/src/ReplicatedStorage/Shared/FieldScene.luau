@@ -1904,6 +1904,9 @@ function FieldScene.start(opts)
 			m:SetAttribute("FieldHorizon", true)
 			if entry.horizonNature then
 				m:SetAttribute("FieldHorizonNature", true)
+			elseif entry.briefBackdrop then
+				m:SetAttribute("FieldBriefAssetKey", entry[1] .. "/" .. entry[2])
+				folder:SetAttribute("FieldBriefBackdropPlaced", entry[2])
 			else
 				folder:SetAttribute("FieldHorizonPlaced", (folder:GetAttribute("FieldHorizonPlaced") or 0) + 1)
 			end
@@ -2875,6 +2878,20 @@ function FieldScene.start(opts)
 		end
 		local original = (opts.portId or "") .. "_landmark_full"
 		local horizonZ = -math.max(400, half + 150) -- 실제 400스터드 밖의 항구 실루엣
+		-- [탐험 지시서 원본] 기존 원경 배치/지연 로드 경로로 정확한 지점 모델을 연결한다.
+		-- 닫힌 광산·전투 통로·조사 대상·복셀 지형은 바꾸지 않는다. 실제 배치는 별도 증거로 기록한다.
+		do
+			local siteId = opts.siteId
+			if type(siteId) == "string" and string.match(siteId, "^[a-z0-9_]+$") then
+				local asset = "field_" .. siteId
+				if AssetIds["Terrain/" .. asset] then
+					local entry = { "Terrain", asset, if visualMobile then 60 else 85, nil, nil, false }
+					entry.position = ORIGIN + Vector3.new(half * 0.65, 0, horizonZ)
+					entry.band, entry.horizon, entry.briefBackdrop = "far", true, true
+					stageFeature(entry)
+				end
+			end
+		end
 		local groups, groupCount = {}, 0
 		folder:SetAttribute("FieldHorizonPlaced", 0)
 		folder:SetAttribute("FieldPortLandmarkOriginalMissing", not AssetIds["Town/" .. original])
