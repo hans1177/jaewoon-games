@@ -1795,17 +1795,44 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "8d0687e93023a8c4209a1e8a59bdfd20a19adf39",
+     "sourceRevision": "d572ee7ed5fecbbab54f7a1d2722ebf417ac1dc5",
      "sourceMemberSha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429,
-      503
+      429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "72fed180b8a909ee-72fed180b8a909ee",
+     "sourceMemberSha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986",
+     "triangles": 660,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "28616538da5bcd200c017c43112c63cbd93461eede1bbb303eff351a110521ce",
+       "bytes": 235575
+      },
+      {
+       "name": "rear.png",
+       "sha256": "b83f33f848ee18619f4ba737a1cdaa7db8b6446fa5da7d21e5087df46ebef018",
+       "bytes": 244280
+      },
+      {
+       "name": "side.png",
+       "sha256": "9d353c560d99e68cab42d65ed58d8685bbee0d28fceb847ef2c9153968f6f11f",
+       "bytes": 238485
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "flamingo",
@@ -1897,16 +1924,45 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "8d0687e93023a8c4209a1e8a59bdfd20a19adf39",
+     "sourceRevision": "d572ee7ed5fecbbab54f7a1d2722ebf417ac1dc5",
      "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429
+      429,
+      503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "triangles": 404,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "4b0b64ce806e11de1cfa5bd918d0ea36ec73b1795f1b974c27da7ec31d389ae7",
+       "bytes": 231953
+      },
+      {
+       "name": "rear.png",
+       "sha256": "f89a6f52ab312cba711fe541f401b8628ce495cb249a090330c61a4193398bc4",
+       "bytes": 235713
+      },
+      {
+       "name": "side.png",
+       "sha256": "9ee931b7bbe18078e7795f12c52b9603eb86ef28729a0af968833dd575eebfe2",
+       "bytes": 231825
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "goat",
@@ -2238,35 +2294,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "c9b62944ea3f58ca-c9b62944ea3f58ca",
-     "sourceMemberSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
-     "triangles": 734,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "1b6ee0e6fbe4d35bb06a309c6a128faeafc1e08aac410867b9b8a38e25df1eeb",
-       "bytes": 249596
-      },
-      {
-       "name": "rear.png",
-       "sha256": "3840c17d4c1b5787c18e7e8b2336a47113412fb44c86f6b04d5d33f4affff687",
-       "bytes": 263989
-      },
-      {
-       "name": "side.png",
-       "sha256": "c769331b05f6697a39eec358dea38b73c8bbfca08f2d289402918139f06ceac3",
-       "bytes": 251969
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "pelican",
@@ -2367,35 +2395,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "b2e80ab8c4ce8c2f-b2e80ab8c4ce8c2f",
-     "sourceMemberSha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517",
-     "triangles": 494,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "8c02d51ad1afe4c2558492ac14080a8677f8078a62440ef92c9393b7ab691bfc",
-       "bytes": 234535
-      },
-      {
-       "name": "rear.png",
-       "sha256": "2b1b5690d6963a17195e9b254405ab5155d9f2b21825de7324f6046aebcbe679",
-       "bytes": 236844
-      },
-      {
-       "name": "side.png",
-       "sha256": "b80962bc2808112e1984d910c74c95a919d4a453ba1479a54bab3a45a18750f7",
-       "bytes": 238952
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "toucan",
@@ -2459,17 +2459,17 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "893486b3ca014cb547810e9d0b0cf7ee7ad30e1d69f6177a8b7578b735f7f934",
+       "sha256": "96780c6bbf71df8689f94395bf0a3fa5c1b138c6fe60b25bf7872af92799db72",
        "bytes": 227100
       },
       {
        "name": "rear.png",
-       "sha256": "6cdeba410fc283168dc5a793b0da5d24c9aab081200ba40a1af052bf8f77410e",
+       "sha256": "62df975d77198f214434534bf7e936a9d071ee05484cc2adf72c437ee747b60b",
        "bytes": 225803
       },
       {
        "name": "side.png",
-       "sha256": "ec27256c569d857334786291cb27f09b386d8cca3a729ee10da54987c5a0f336",
+       "sha256": "4935c2ce6afa057facdf53b23faad836b2acdd0e3c8077d90554de594a0208e0",
        "bytes": 232972
       }
      ],
@@ -2490,13 +2490,14 @@
     },
     "sourceVisualLastAttempt": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "4d11b1c69dd707f526d166c2338aab5aa875f951",
+     "sourceRevision": "d572ee7ed5fecbbab54f7a1d2722ebf417ac1dc5",
      "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429
+      429,
+      503
      ]
     }
    },
@@ -15359,7 +15360,7 @@
   "scenePublisherExactNameCandidates": 0,
   "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "45838125444",
+   "runId": "45841645687",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
