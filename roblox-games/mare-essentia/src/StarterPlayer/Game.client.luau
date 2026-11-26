@@ -6348,7 +6348,7 @@ function RENDERERS.harbor()
 	end
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
-		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
+		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces or {}, ", "), table.concat(h.demands or {}, ", ")), 16, COLORS.text, true)
 	end)
 	-- [국가·지도자·항구] 항구 주인 나라의 지도자·군사·연구와 이 항구의 문화권·입장·관세 (시뮬 표시 전용)
 	if h.sim and h.sim.nation and h.sim.nation.lines then
