@@ -4646,13 +4646,23 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
   assert.match(port,/for _, blueprint in ShipsMod.Blueprints do/);
   assert.match(port,/BLUEPRINT_SHIP_SIZE\[shipId\] or 26 \* s/);
   assert.match(port,/SHIP_MESH\[blueprint.id\] = meshName/);
+  // [선박 원본 방향] 축 회전과 원본 비율을 보존한 채 월드 선체 길이로 정렬한다.
+  assert.match(port,/if kind == "Naval" then/);
+  assert.match(port,/local worldX = math\.abs\(box\.RightVector\.X\) \* size\.X/);
+  assert.match(port,/local worldZ = math\.abs\(box\.RightVector\.Z\) \* size\.X/);
+  assert.match(port,/if worldZ > worldX then m:PivotTo/);
+  assert.match(port,/m:ScaleTo\(scale\)/);
   assert.doesNotMatch(port,/blueprintMeshSources/,'unverified shared hull must never substitute a unique blueprint');
   const steps=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-ships.json','utf8'));
   const expected=['europe','east_asia','new_world','middle_east','southeast_asia','africa','lost'];
   assert.equal(steps.filter(x=>x.type==='capture').length,7);
   for(const f of expected){
     assert.ok(steps.some(x=>x.type==='capture'&&x.name==='ships_'+f),'missing continent capture: '+f);
-    assert.ok(steps.some(x=>x.code?.includes('SHIP_CONTINENT_RUNTIME_PASS:'+f)),'missing runtime loading: '+f);
+    const script=steps.find(x=>x.code?.includes('SHIP_CONTINENT_RUNTIME_PASS:'+f));
+    assert.ok(script,'missing runtime loading: '+f);
+    assert.match(script.code,/local length=math\.abs\(box\.RightVector\.X\)\*size\.X\+math\.abs\(box\.UpVector\.X\)\*size\.Y\+math\.abs\(box\.LookVector\.X\)\*size\.Z/);
+    assert.match(script.code,/SHIP_LENGTH_OUT_OF_RANGE:/);
+    assert.doesNotMatch(script.code,/size\.X>=bp\.targetLengthStuds/,'never measure ship beam as hull length');
   }
   assert.ok(!steps.some(x=>x.code?.includes('atlantic_brigantine="brigantine-custom"')
     || x.code?.includes('zanzibar_jahazi="jahazi-custom"')),'Studio must load two new unique original GLBs');
