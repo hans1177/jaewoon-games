@@ -1429,5 +1429,95 @@
       "replacesAssetId": "122487478364635"
     }
   },
-  "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지."
+  "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지.",
+  "dropboxPending": {
+    "CardArt/eu_18": {
+      "bytes": 3432440,
+      "width": 1049,
+      "height": 1499,
+      "review": {
+        "sourceType": "IMAGE_GENERATION_MODEL",
+        "sourceFile": "assets/cardart/src/eu_18-original.png",
+        "sourceSha256": "52a6f4ecf35177c45f8755633e6aed9a0bfa528ecf22d68bbe2e238a1a790add",
+        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+        "reviewedAt": "2026-11-26",
+        "license": "PROJECT_ORIGINAL_ART",
+        "subjectMatch": true,
+        "historicalContext": true,
+        "houseStyle": true,
+        "singleFinishedScene": true,
+        "noPartsOrSprites": true,
+        "robloxSafety": true,
+        "commercialRights": true,
+        "replacesSha256": "07fd604220dd7185dc59be394a7d22ba4ac60abffc44844ea5cbb5a35d48560a",
+        "replacesAssetId": "126950872045007"
+      }
+    },
+    "CardArt/eu_19": {
+      "bytes": 3104729,
+      "width": 1049,
+      "height": 1499,
+      "review": {
+        "sourceType": "IMAGE_GENERATION_MODEL",
+        "sourceFile": "assets/cardart/src/eu_19-original.png",
+        "sourceSha256": "ba824d640a21b8c5644b9f09655a15104c452d31241267c36504f3ce9cb7b773",
+        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+        "reviewedAt": "2026-11-26",
+        "license": "PROJECT_ORIGINAL_ART",
+        "subjectMatch": true,
+        "historicalContext": true,
+        "houseStyle": true,
+        "singleFinishedScene": true,
+        "noPartsOrSprites": true,
+        "robloxSafety": true,
+        "commercialRights": true,
+        "replacesSha256": "61e6abde1ab153b0de73450124f77252e754f7973af4e867fb43142657396e9a",
+        "replacesAssetId": "92147706333539"
+      }
+    },
+    "CardArt/eu_20": {
+      "bytes": 3007589,
+      "width": 1049,
+      "height": 1499,
+      "review": {
+        "sourceType": "IMAGE_GENERATION_MODEL",
+        "sourceFile": "assets/cardart/src/eu_20-original.png",
+        "sourceSha256": "ec8128cb5f04a2aba9c7e6fa3e2fb139be01214cee7715d66718a1cf2e5d8c01",
+        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+        "reviewedAt": "2026-11-26",
+        "license": "PROJECT_ORIGINAL_ART",
+        "subjectMatch": true,
+        "historicalContext": true,
+        "houseStyle": true,
+        "singleFinishedScene": true,
+        "noPartsOrSprites": true,
+        "robloxSafety": true,
+        "commercialRights": true,
+        "replacesSha256": "599b38ae26e1cdf3a79fa64594cff7423379a74ede070ff62207841916bd44e7",
+        "replacesAssetId": "117980789382750"
+      }
+    },
+    "CardArt/eu_28": {
+      "bytes": 3384962,
+      "width": 1049,
+      "height": 1499,
+      "review": {
+        "sourceType": "IMAGE_GENERATION_MODEL",
+        "sourceFile": "assets/cardart/src/eu_28-original.png",
+        "sourceSha256": "0cbd7c50bfc6ec508d5fe703da22b8a852a1fdffe154dfe54420ef951bf51033",
+        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+        "reviewedAt": "2026-11-26",
+        "license": "PROJECT_ORIGINAL_ART",
+        "subjectMatch": true,
+        "historicalContext": true,
+        "houseStyle": true,
+        "singleFinishedScene": true,
+        "noPartsOrSprites": true,
+        "robloxSafety": true,
+        "commercialRights": true,
+        "replacesSha256": "66be96a3a47dfb49b8352b80b406c338b8f9ca36c44fcb3a15d22156c701005a",
+        "replacesAssetId": "119582764082804"
+      }
+    }
+  }
 }
