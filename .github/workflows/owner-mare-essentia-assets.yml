@@ -382,6 +382,7 @@ jobs:
           fi
 
       - name: Refresh asset practice ledger after Roblox registration
+        id: asset_ledger
         if: always()
         env:
           VIBE2_VISION_MODEL: ${{ vars.VIBE2_VISION_MODEL }}
@@ -439,6 +440,7 @@ jobs:
           MARE_NAU_CHECK_OUTCOME: ${{ steps.nau_check.outcome }}
           MARE_LONDON_SOURCE_OUTCOME: ${{ steps.london_source.outcome }}
           MARE_CARGO_QUALITY_OUTCOME: ${{ steps.cargo_quality.outcome }}
+          MARE_ASSET_LEDGER_OUTCOME: ${{ steps.asset_ledger.outcome }}
         run: |
           set -euo pipefail
           # 검수된 생성 모델 원화만 기존 등록기에서 승격했다면 같은 정식 카드 폴더로 GitHub에 자동 전송한다.
@@ -530,7 +532,39 @@ jobs:
               london_files+=("$dest" "$dest.license.json")
             done < <(git diff --name-only --diff-filter=D)
           fi
-          for f in "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json "$asset_root"/relics/weapon-flintlock-pistol.glb "$asset_root"/relics/weapon-flintlock-pistol.glb.license.json "$asset_root"/relics/weapon-flintlock-musket.glb "$asset_root"/relics/weapon-flintlock-musket.glb.license.json "$asset_root"/naval/fishing-net.glb "$asset_root"/naval/fishing-net.glb.license.json "$asset_root"/naval/net-floats.glb "$asset_root"/naval/net-floats.glb.license.json "$asset_root"/naval/galleon-heritage.glb "$asset_root"/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png "$asset_root"/terrain/kenney_*.glb* "$asset_root"/SOURCES.md "$asset_root"/naval/*-v5*.glb* "$asset_root"/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* "$asset_root"/animals/discovery_*.glb* "$asset_root"/animals/{goat,camel,turkey}.glb* "$asset_root"/town/{greenhouse-source,clock-tower-source,scarecrow-source,bread-oven-source,stage-curtain-source}.glb*; do
+          # 누락 복구 원본은 보관 폴더에만 저장한다. 메인에 이미 존재하는 승인 증빙과
+          # 실제 원본 해시를 다시 대조하고, 등록 파일/승인 목록은 변경하지 않는다.
+          restored_animals=()
+          if [[ "${MARE_ASSET_LEDGER_OUTCOME}" == "success" && "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
+            restored_list="$(mktemp)"
+            python3 - "$restored_list" <<'PYRESTORED'
+          import hashlib, json, pathlib, re, subprocess, sys
+          root=pathlib.Path('roblox-games/mare-essentia')
+          report=json.loads((root/'assets-wanted.json').read_text())['animalSourcePractice']
+          restored=report.get('restoredOriginals',[])
+          if not isinstance(restored,list) or len(restored)>3 or len(set(restored))!=len(restored):
+              raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
+          with open(sys.argv[1],'w',encoding='utf-8') as out:
+              for file in restored:
+                  if not re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/Animals/[a-zA-Z0-9_-]+\.glb',file):
+                      raise SystemExit('MARE_ANIMAL_RESTORED_PATH_INVALID')
+                  path=pathlib.Path(file)
+                  proof_path=file+'.license.json'
+                  proof=json.loads(subprocess.check_output(['git','show','HEAD:'+proof_path]))
+                  data=path.read_bytes()
+                  digest=hashlib.sha256(data).hexdigest()
+                  if (path.is_symlink() or proof.get('license')!='CC0-1.0'
+                      or proof.get('commercialUseAllowed') is not True
+                      or proof.get('bytes')!=len(data) or not 0<len(data)<=5_000_000
+                      or proof.get('sourceSha256')!=digest or proof.get('originalSha256')!=digest
+                      or proof.get('pinnedBlobSha')!=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()):
+                      raise SystemExit('MARE_ANIMAL_RESTORED_PROOF_INVALID')
+                  out.write(file+'\n')
+          PYRESTORED
+            mapfile -t restored_animals < "$restored_list"
+            rm -f "$restored_list"
+          fi
+          for f in "${restored_animals[@]}" "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json "$asset_root"/relics/weapon-flintlock-pistol.glb "$asset_root"/relics/weapon-flintlock-pistol.glb.license.json "$asset_root"/relics/weapon-flintlock-musket.glb "$asset_root"/relics/weapon-flintlock-musket.glb.license.json "$asset_root"/naval/fishing-net.glb "$asset_root"/naval/fishing-net.glb.license.json "$asset_root"/naval/net-floats.glb "$asset_root"/naval/net-floats.glb.license.json "$asset_root"/naval/galleon-heritage.glb "$asset_root"/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png "$asset_root"/terrain/kenney_*.glb* "$asset_root"/SOURCES.md "$asset_root"/naval/*-v5*.glb* "$asset_root"/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* "$asset_root"/animals/discovery_*.glb* "$asset_root"/animals/{goat,camel,turkey}.glb* "$asset_root"/town/{greenhouse-source,clock-tower-source,scarecrow-source,bread-oven-source,stage-curtain-source}.glb*; do
             if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${MARE_ASSET_OUTCOME}" != "success" || "${MARE_NAU_CHECK_OUTCOME}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue

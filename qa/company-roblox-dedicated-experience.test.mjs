@@ -951,6 +951,12 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(uploader,/askChain\(/);
   assert.match(uploader,/FREE_VISION_BILLING_BLOCKED/);
   assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
+  assert.match(source,/"directModel": True/);
+  assert.match(source,/SOURCE_PREVIEW_DIRECT_EVIDENCE/);
+  assert.match(source,/restore_pinned_animal_glb\(proof, source\)/);
+  assert.match(source,/HELD_SOURCE_RESTORE_HASH/);
+  assert.match(workflow,/MARE_ANIMAL_RESTORED_PROOF_INVALID/);
+  assert.match(workflow,/inbox-hold\/Animals/);
   assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
   assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
   assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);

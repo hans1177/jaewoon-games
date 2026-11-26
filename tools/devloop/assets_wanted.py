@@ -377,6 +377,48 @@ def inspect_held_animal_glb(data):
 
 # [동물 원본 충원] 회사에 이미 확보된 CC0 원본부터 가져온다. 복제 저장하지 않고
 # 기존 부족 장부에 실제 원본 경로·해시·검수 대기 상태를 기록한다.
+# [원본 복구] 메인에 남아 있는 출처·라이선스·정확한 원본 해시가 모두 맞는 경우만
+# 고정 공개 GitHub 원본을 재확보한다. 리다이렉트/인증/임의 외부 호스트/새로운 승인 금지.
+def restore_pinned_animal_glb(proof, source):
+    import http.client
+    pinned = re.fullmatch(
+        r"https://(?:raw\.githubusercontent\.com/([\w.-]+)/([\w.-]+)/|"
+        r"github\.com/([\w.-]+)/([\w.-]+)/blob/)([a-f0-9]{40})/([\w./%()-]+\.glb)",
+        str(proof.get("source", "")))
+    if not pinned or os.path.lexists(source):
+        raise ValueError("HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS")
+    owner, repo = (pinned[1], pinned[2]) if pinned[1] else (pinned[3], pinned[4])
+    if any(part in ("", ".", "..") for part in pinned[6].split("/")) or "%" in pinned[6]:
+        raise ValueError("HELD_SOURCE_RESTORE_PATH")
+    size = proof["bytes"]
+    if (proof.get("license") != "CC0-1.0" or proof.get("commercialUseAllowed") is not True
+            or type(size) is not int or not 0 < size <= 5_000_000
+            or not re.fullmatch(r"[a-f0-9]{64}", str(proof.get("sourceSha256", "")))
+            or proof.get("originalSha256") != proof["sourceSha256"]
+            or not re.fullmatch(r"[a-f0-9]{40}", str(proof.get("pinnedBlobSha", "")))):
+        raise ValueError("HELD_SOURCE_RESTORE_PROVENANCE")
+    conn = http.client.HTTPSConnection("raw.githubusercontent.com", timeout=25)
+    try:
+        conn.request("GET", "/" + "/".join((owner, repo, pinned[5], pinned[6])),
+                     headers={"Accept-Encoding": "identity", "User-Agent": "Mare-CC0-source-recovery"})
+        response = conn.getresponse()
+        if response.status != 200:
+            raise ValueError("HELD_SOURCE_RESTORE_HTTP")
+        data = response.read(size + 1)
+    finally:
+        conn.close()
+    if (len(data) != size or hashlib.sha256(data).hexdigest() != proof["sourceSha256"]
+            or hashlib.sha1(("blob %d\0" % size).encode() + data).hexdigest() != proof["pinnedBlobSha"]):
+        raise ValueError("HELD_SOURCE_RESTORE_HASH")
+    geometry = inspect_held_animal_glb(data)
+    if proof.get("triangles") != geometry["triangles"]:
+        raise ValueError("HELD_SOURCE_RESTORE_GEOMETRY")
+    # x 모드: 기존 파일 또는 동시 복구 결과를 덮지 않는다.
+    with open(source, "xb") as handle:
+        handle.write(data)
+    return data
+
+
 def animal_source_practice():
     goal = next((row for row in seed if row.get("id") == "mare-farm-animals"), None)
     if not goal:
@@ -439,9 +481,11 @@ def animal_source_practice():
 
     # 보관 원본은 외부 재검색보다 먼저 확인하되 검수 승인 증거를 생성하지 않는다.
     seen = set()
+    restored = []
+    report["restoredOriginals"] = restored
     hold = os.path.join(root, "assets", "inbox-hold", "Animals")
     wanted_cards = {card: name for name, cards in targets.items() for card in cards if not card.startswith("farm:")}
-    if os.path.isdir(hold):
+    if os.path.isdir(hold) and not os.path.islink(hold):
         for name in sorted(os.listdir(hold)):
             if not re.fullmatch(r"[a-zA-Z0-9_-]+\.glb\.license\.json", name):
                 continue
@@ -465,10 +509,18 @@ def animal_source_practice():
                     raise ValueError("HELD_SOURCE_POLICY_OR_PROVENANCE_INVALID")
                 if digest in seen:
                     continue
-                if os.path.getsize(source) != size:
-                    raise ValueError("HELD_SOURCE_SIZE_MISMATCH")
-                with open(source, "rb") as handle:
-                    data = handle.read(5_000_001)
+                # 일반 장부 조회는 읽기 전용. 실제 정기/수동 시각 검사에서만
+                # 검증된 출처의 누락 원본을 최대 세 개 복구한다.
+                recovered = False
+                if (not os.path.lexists(source) and len(restored) < 3
+                        and any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)):
+                    data = restore_pinned_animal_glb(proof, source)
+                    recovered = True
+                else:
+                    if os.path.getsize(source) != size:
+                        raise ValueError("HELD_SOURCE_SIZE_MISMATCH")
+                    with open(source, "rb") as handle:
+                        data = handle.read(5_000_001)
                 if (len(data) != size or hashlib.sha256(data).hexdigest() != digest
                         or hashlib.sha1(("blob %d\0" % size).encode()+data).hexdigest() != proof["pinnedBlobSha"]):
                     raise ValueError("HELD_SOURCE_HASH_MISMATCH")
@@ -482,8 +534,14 @@ def animal_source_practice():
                 report["rejected"].append({"name": name, "state": "HELD_SOURCE_UNVERIFIED"})
                 continue
             seen.add(digest)
+            if recovered:
+                restored.append(source)
+                print("MARE_ANIMAL_HELD_ORIGINAL_RESTORED", name, digest)
             report["candidates"].append({
                 "name": wanted_cards[card], "targets": [card], "source": source,
+                "directModel": True,
+                "modelMembers": [{"member": os.path.basename(source), "format": "GLB",
+                                  "bytes": size, "sha256": digest}],
                 "sourceSha256": digest, "bytes": size, "license": proof["license"],
                 "sourceUrl": proof["source"], "licenseEvidenceUrl": proof["sourcePage"],
                 "geometry": geometry, "speciesVerified": False, "visualQualityApproved": False,
@@ -546,7 +604,7 @@ def animal_source_practice():
     return report
 
 
-# [시각 검수 준비] 이미 원본 무결성이 검증된 회사 보관 압축 모델만 실제 렌더한다.
+# [시각 검수 준비] 이미 원본 무결성이 검증된 회사 보관 압축·직접 GLB 모델만 실제 렌더한다.
 # 파일명/렌더/형상은 승인이 아니다. 기존 시각 검수 권한을 우회하지 않는다.
 def materialize_animal_review_member(data, filename, target, member, dest):
     matches = inspect_animal_archive(data, filename, target)
@@ -598,7 +656,7 @@ def materialize_animal_review_member(data, filename, target, member, dest):
 
 def render_animal_review_candidates(report, out):
     candidates = [row for row in report["candidates"] if row.get("modelMembers")]
-    report["sourcePreviewState"] = "NO_ARCHIVE_MODEL_CANDIDATES"
+    report["sourcePreviewState"] = "NO_MODEL_CANDIDATES"
     if not candidates:
         return
     import shutil
@@ -623,17 +681,35 @@ def render_animal_review_candidates(report, out):
         key = row["sourceSha256"][:16] + "-" + member["sha256"][:16]
         frame_dir = os.path.join(out, key)
         try:
-            size = int(subprocess.check_output(["git", "cat-file", "-s", "HEAD:" + row["source"]],
-                                              timeout=30, stderr=subprocess.DEVNULL))
-            if size != row["bytes"] or not 0 < size <= 5_000_000:
-                raise ValueError("SOURCE_PREVIEW_SIZE")
-            data = subprocess.check_output(["git", "show", "HEAD:" + row["source"]],
-                                           timeout=45, stderr=subprocess.DEVNULL)
+            if row.get("directModel") is True:
+                if os.path.islink(row["source"]):
+                    raise ValueError("SOURCE_PREVIEW_DIRECT_PATH")
+                size = os.path.getsize(row["source"])
+                if size != row["bytes"] or not 0 < size <= 5_000_000:
+                    raise ValueError("SOURCE_PREVIEW_SIZE")
+                with open(row["source"], "rb") as handle:
+                    data = handle.read(5_000_001)
+            else:
+                size = int(subprocess.check_output(["git", "cat-file", "-s", "HEAD:" + row["source"]],
+                                                  timeout=30, stderr=subprocess.DEVNULL))
+                if size != row["bytes"] or not 0 < size <= 5_000_000:
+                    raise ValueError("SOURCE_PREVIEW_SIZE")
+                data = subprocess.check_output(["git", "show", "HEAD:" + row["source"]],
+                                               timeout=45, stderr=subprocess.DEVNULL)
             if len(data) != size or hashlib.sha256(data).hexdigest() != row["sourceSha256"]:
                 raise ValueError("SOURCE_PREVIEW_ARCHIVE_HASH")
             with tempfile.TemporaryDirectory(prefix="mare-animal-review-") as temp:
-                source = materialize_animal_review_member(data, os.path.basename(row["source"]),
-                                                          row["name"], member, temp)
+                if row.get("directModel") is True:
+                    if (member["sha256"] != row["sourceSha256"] or member["bytes"] != size
+                            or member["format"] != "GLB" or member["member"] != os.path.basename(row["source"])):
+                        raise ValueError("SOURCE_PREVIEW_DIRECT_EVIDENCE")
+                    inspect_held_animal_glb(data)
+                    source = os.path.join(temp, "original.glb")
+                    with open(source, "xb") as handle:
+                        handle.write(data)
+                else:
+                    source = materialize_animal_review_member(data, os.path.basename(row["source"]),
+                                                              row["name"], member, temp)
                 audit_path = os.path.join(temp, "audit.json")
                 # 외부 모델을 여는 파서는 자동 스크립트를 실행하지 않고 인증 환경도 넘기지 않는다.
                 safe_env = {"PATH": os.environ.get("PATH", ""), "HOME": temp, "TMPDIR": temp,
