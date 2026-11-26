@@ -140,6 +140,30 @@ jobs:
           else
             echo "기존 대기 회차 ${queued}개 보존: 중복 예약 생략"
           fi
+          # [마레 정기 누락 복구] 이미 실행 중인 무료 연습 체인에서 기존 자산 작업만 깨운다.
+          # 5분 내 정기/복구 요청 또는 실행 중인 등록이 있으면 건너뛴다. 조회 실패는 실행하지 않는다.
+          if mare_runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/owner-mare-essentia-assets.yml/runs?branch=main&per_page=100"); then
+            cutoff=$(date -u -d '5 minutes ago' +%s)
+            if jq -e --argjson cutoff "$cutoff" '
+              .workflow_runs | type == "array"
+            ' <<< "$mare_runs" >/dev/null && jq -e --argjson cutoff "$cutoff" '
+              [.workflow_runs[] | select(
+                .status != "completed" or
+                ((.event == "schedule" or ((.display_title // "") | endswith(" · periodic"))) and
+                 ((.created_at | fromdateiso8601) >= $cutoff))
+              )] | length == 0
+            ' <<< "$mare_runs" >/dev/null; then
+              if gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true; then
+                echo "MARE_PERIODIC_RECOVERY_REQUESTED=YES"
+              else
+                echo "MARE_PERIODIC_RECOVERY_REQUEST_FAILED=RETRY_NEXT_CHAIN"
+              fi
+            else
+              echo "MARE_PERIODIC_RECOVERY_SKIP=BUSY_RECENT_OR_INVALID"
+            fi
+          else
+            echo "MARE_PERIODIC_RECOVERY_SKIP=HISTORY_UNVERIFIED"
+          fi
           # 매시 정각 5분 안에 걸린 회차는 룩 승급도 한 번 깨운다(워크플로 쪽에서 열린 PR 이 있으면 알아서 건너뛴다).
           if [ "$(date -u +%M)" -lt 5 ]; then
             gh api -X POST "repos/${{ github.repository }}/actions/workflows/vibe-look-promotion.yml/dispatches" -f ref=main || true
