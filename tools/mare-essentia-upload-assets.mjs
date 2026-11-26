@@ -250,6 +250,8 @@ if (!animalReviewArg && !process.argv.some(arg=>arg.startsWith('--studio-regrant
         || proof.publisherEntry?.url!==proof.source
         || proof.publisherEntry?.license!=='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
         || JSON.stringify(proof.candidateTargetIds)!==JSON.stringify([id])
+        || proof.regionalAdaptationRequired===true
+        || proof.publisherEntry?.regionalAdaptationRequired===true
         || review?.reviewScope!=='SOURCE_REGISTRATION_ONLY' || !review.method
         || review.targetAssetKey!==id || review.subjectMatch!==true || review.contentSafe!==true
         || review.sourceSha256!==proof.sourceSha256 || blockedHashes.has(proof.sourceSha256)
