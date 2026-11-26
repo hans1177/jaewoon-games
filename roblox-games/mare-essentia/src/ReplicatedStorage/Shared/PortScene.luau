@@ -4958,7 +4958,16 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		elseif key == "britain" then
 			rowOf("Town", "cart", 5, -100, -180, 26, 8)
 			rowOf("Cargo", "barrel", 2.4, -104, -180, 16, -7.4)
-			rowOf("Terrain", "log-stack", 3, -112, -180, 30, 7.4)
+			local firewoodSource = info.portId .. "-firewood-01-source"
+			if RunService:IsStudio() and AssetIds["Town/" .. firewoodSource] then
+				for x = -112, -180, -30 do
+					if not one("Town", firewoodSource, 3, x, 0, 7.4) then
+						one("Terrain", "log-stack", 3, x, 0, 7.4)
+					end
+				end
+			else
+				rowOf("Terrain", "log-stack", 3, -112, -180, 30, 7.4)
+			end
 			one("Town", "stall-green", 6.5, -110, 0, -10)
 			one("Town", "bench_A", 3.8, -140, 0, 7)
 		elseif key == "brick" then
@@ -5589,7 +5598,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		for x = -30, -150, -24 do
 			importedModel(folder, "Town", "cart", Vector3.new(x - 6, 0, side * 36.2), 5, false)
 			local benchAt = Vector3.new(x - 14, 0, side * 41.6)
-			local benchSource = info.portId .. "-column-leg-bench-source"
+			local benchSource = info.portId .. (if side > 0 then "-column-leg-bench-source" else "-curved-stone-bench-source")
 			if not (RunService:IsStudio() and x == -30 and AssetIds["Town/" .. benchSource]
 				and importedModel(folder, "Town", benchSource, benchAt, 3.8, false)) then
 				importedModel(folder, "Town", "bench_A", benchAt, 3.8, false)
@@ -6831,7 +6840,7 @@ function PortScene.build(info, onFacility)
 				-- 장면 첫 방문/같은 단계 재입항/하락 단계에서는 시공을 재생하지 않는다.
 				if upgrade then
 					local delay = 0.15 + facilityUpgradeAnimations * 0.38
-					local scaffoldSource = info.portId .. "-building-scaffolding-source"
+					local scaffoldSource = info.portId .. (if facilityTier >= 4 then "-wall-open-scaffold-source" else "-building-scaffolding-source")
 					local scaffold = if RunService:IsStudio() and AssetIds["Town/" .. scaffoldSource]
 						then importedModel(folder, "Town", scaffoldSource, at(-14, 4), 6.5, false, nil, delay) else nil
 					if not scaffold then
@@ -6908,7 +6917,11 @@ function PortScene.build(info, onFacility)
 					if lv >= 5 then importedModel(folder, "Cargo", "textiles-stack-large-colored", at(7, 0), 2.6, false) importedModel(folder, "Cargo", "gold-bars-stack-large", at(11, 0), 2.2, false) end
 				elseif f.name == "주점" then
 					-- 굴뚝 솟은 비대칭 여관 본관 + 넓은 식사 차양: 시장이나 학술관과 다른 실루엣.
-					importedModel(folder, "Town", "overhang", at(0, 3), 10.5, false, style.roofs[1])
+					local awningSource = info.portId .. (if lv % 2 == 0 then "-awning-02-source" else "-awning-01-source")
+					if not (RunService:IsStudio() and AssetIds["Town/" .. awningSource]
+						and importedModel(folder, "Town", awningSource, at(0, 3), 10.5, false)) then
+						importedModel(folder, "Town", "overhang", at(0, 3), 10.5, false, style.roofs[1])
+					end
 					importedModel(folder, "Town", "chimney", f.pos + Vector3.new(-3.6, visualFloors * 6.8 * grow, 0), 4.8, false)
 					importedModel(folder, "Cargo", "barrel", at(-8, 1), 2.7, false)
 					importedModel(folder, "Town", "bench_A", at(8, 2), 4.2, false)
