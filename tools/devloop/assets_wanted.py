@@ -676,6 +676,7 @@ def animal_source_practice():
         })
     # 회사 보관 원본과 기존 게임 원본에서 확보하지 못한 종만 제작자 무료 목록에 요청한다.
     report["newOriginals"] = []
+    report["downloadAttempts"] = restore_attempts
     report["publisherSearchState"] = "NOT_REQUESTED"
     if (not any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)
             or not os.path.isdir(hold) or os.path.islink(hold)):
@@ -700,7 +701,9 @@ def animal_source_practice():
     if not picks:
         return report
     start = int(time.time()//3600)*3
-    for i in range(min(3,len(picks))):
+    for i in range(len(picks)):
+        if report["downloadAttempts"] >= 3:
+            break
         name = picks[(start+i)%len(picks)]
         entry = catalog[name]
         source = os.path.join(hold,"gobkit-free-"+name+".glb")
@@ -708,6 +711,7 @@ def animal_source_practice():
         if (source in blocked_paths or proof_path in blocked_paths
                 or os.path.lexists(proof_path) or os.path.islink(source)):
             continue
+        report["downloadAttempts"] += 1
         try:
             data = read_gobkit_free(entry["url"].removeprefix("https://gobkit.com"),5_000_000)
             digest = hashlib.sha256(data).hexdigest()

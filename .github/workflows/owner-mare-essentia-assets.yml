@@ -545,7 +545,9 @@ jobs:
           acquired=report.get('newOriginals',[])
           if any(not isinstance(items,list) or len(items)>3 or len(set(items))!=len(items) for items in (restored,acquired)):
               raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
-          if set(restored)&set(acquired):
+          attempts=report.get('downloadAttempts')
+          if (set(restored)&set(acquired) or type(attempts) is not int
+              or not len(restored)+len(acquired)<=attempts<=3):
               raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
           with open(sys.argv[1],'w',encoding='utf-8') as out:
               for file in restored:

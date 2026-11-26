@@ -957,6 +957,10 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(source,/HELD_SOURCE_RESTORE_HASH/);
   assert.match(workflow,/MARE_ANIMAL_RESTORED_PROOF_INVALID/);
   assert.match(workflow,/MARE_ANIMAL_PUBLISHER_PROOF_INVALID/);
+  assert.ok(source.includes('report["downloadAttempts"] = restore_attempts'));
+  assert.ok(source.includes('if report["downloadAttempts"] >= 3:'));
+  assert.ok(source.includes('report["downloadAttempts"] += 1'));
+  assert.ok(workflow.includes('len(restored)+len(acquired)<=attempts<=3'));
   assert.match(source,/PUBLISHER_FREE_CATALOG_HELD_ONLY/);
   assert.match(workflow,/inbox-hold\/Animals/);
   assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
@@ -1830,8 +1834,54 @@ test('Mare European card art hides unverified ratios and styles without deleting
     const key='CardArt/'+id;
     assert.ok(approved.approved[key],key+' approved source preserved');
     assert.ok(registered.assets[key]?.assetId,key+' Roblox asset preserved');
-    assert.equal(registered.assets[key].sourceSha256,approved.approved[key],key+' approved and registered SHA unchanged');
-    assert.ok(ids.includes('["'+key+'"] = '+registered.assets[key].assetId),key+' Luau ID unchanged');
+    const previous=registered.assets[key];
+    assert.ok(ids.includes('["'+key+'"] = '+previous.assetId),key+' Luau ID unchanged');
+    if (previous.sourceSha256!==approved.approved[key]) {
+      // [원화 교체 대기] 기존 등록 이미지와 신규 검수 원본 양쪽의 실제 해시·권한을 검증한다.
+      // 등록 완료 전 신규 원화가 게임에 노출되는 것은 허용하지 않는다.
+      const review=approved.modelOriginals?.[key];
+      assert.ok(!permitted.includes(id),key+' pending replacement must remain hidden');
+      assert.equal(review?.replacesSha256,previous.sourceSha256,key+' previous source identity');
+      assert.equal(String(review?.replacesAssetId),String(previous.assetId),key+' previous asset identity');
+      assert.equal(previous.assetType,'Image');
+      assert.equal(previous.usePermissionGranted,true);
+      assert.match(String(previous.assetId),/^[1-9][0-9]*$/);
+      assert.equal(review.sourceType,'IMAGE_GENERATION_MODEL');
+      assert.equal(review.reviewer,'VIBE_AGENT_VISUAL_REVIEW');
+      assert.equal(review.license,'PROJECT_ORIGINAL_ART');
+      assert.match(review.reviewedAt,/^\d{4}-\d{2}-\d{2}$/);
+      for(const field of ['subjectMatch','historicalContext','houseStyle','singleFinishedScene','noPartsOrSprites','robloxSafety','commercialRights'])
+        assert.equal(review[field],true,key+' '+field);
+      const oldPath='assets/cardart/'+id+'.png';
+      const original='assets/cardart/src/'+id+'-original.png';
+      const portrait='assets/cardart/src/'+id+'-1400x2000.png';
+      assert.ok([original,portrait].includes(review.sourceFile),key+' replacement source path');
+      const old=fs.readFileSync(root+oldPath);
+      const next=fs.readFileSync(root+review.sourceFile);
+      assert.equal(createHash('sha256').update(old).digest('hex'),previous.sourceSha256,key+' existing bytes preserved');
+      assert.equal(createHash('sha256').update(next).digest('hex'),review.sourceSha256,key+' replacement bytes');
+      assert.equal(review.sourceSha256,approved.approved[key],key+' replacement approved hash');
+      assert.ok(next.length>=50000 && next.length<=20*1024*1024);
+      assert.ok(next.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
+      assert.equal(next.toString('ascii',12,16),'IHDR');
+      const w=next.readUInt32BE(16),h=next.readUInt32BE(20);
+      assert.ok(w>=768 && h>=768 && w<=4096 && h<=4096);
+      assert.ok(Math.abs(w*10-h*7)<=h*0.05);
+      if(review.sourceFile===portrait){assert.equal(w,1400);assert.equal(h,2000);}
+      assert.equal(next[24],8);
+      assert.ok([2,6].includes(next[25]),key+' true-color replacement required');
+      const safety=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+        .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+      assert.equal(safety.enabled,true);
+      for(const blocked of safety.blockedAssets){
+        assert.ok(!(blocked.sha256||[]).some(hash=>[previous.sourceSha256,review.sourceSha256].includes(hash)));
+        assert.ok(!(blocked.assetIds||[]).map(String).includes(String(previous.assetId)));
+        assert.ok(!(blocked.sourcePaths||[]).some(file=>[oldPath,review.sourceFile,root+oldPath,root+review.sourceFile].includes(file)));
+      }
+      console.log('MARE_CARD_REPLACEMENT_PENDING_REGISTRATION',key);
+      continue;
+    }
+    assert.equal(previous.sourceSha256,approved.approved[key],key+' approved and registered SHA unchanged');
     if (!permitted.includes(id))continue;
     const review=approved.modelOriginals[key];
     assert.equal(review?.sourceSha256,approved.approved[key],key+' model original reviewed');
