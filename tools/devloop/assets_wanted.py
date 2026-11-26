@@ -1139,6 +1139,9 @@ def render_animal_review_candidates(report, out):
             row["sourceVisualObservation"] = observation
         if old.get("priorRenderRetry") is True or old.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY":
             row["priorRenderRetry"] = True
+            reason = old.get("sourcePreview", {}).get("failureReason") or old.get("priorRenderFailureReason")
+            if isinstance(reason, str) and re.fullmatch(r"SOURCE_PREVIEW_[A-Z_]+", reason):
+                row["priorRenderFailureReason"] = reason
         geometry = row.get("geometry", {})
         if type(geometry.get("triangles")) is int:
             row["geometryQualityState"] = ("MOBILE_BUDGET_MET" if geometry.get("mobileGeometryWithinBudget") is True
@@ -1160,6 +1163,34 @@ def render_animal_review_candidates(report, out):
     ordered = candidates[slot % len(candidates):] + candidates[:slot % len(candidates)]
     retry = [row for row in ordered if row.get("priorRenderRetry") or
              row.get("sourceVisualObservation", {}).get("state") == "SOURCE_VISUAL_RETRY_REQUIRED"]
+    # 동일 종의 손상된 구형 압축 원본이 반복 검사 자리를 독점하지 않게 한다.
+    # 이미 해시·GLB 구조를 검증한 다른 원본이 있으면 먼저 시각 검사한다.
+    # 기존 원본 자체의 실패는 별도로 남기고 승인·수리 완료로 표시하지 않는다.
+    deferred = []
+    for row in list(retry):
+        if (row.get("directModel") is True
+                or row.get("priorRenderFailureReason") != "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"):
+            continue
+        alternatives = [other for other in ordered
+                        if other.get("directModel") is True and other["name"] == row["name"]
+                        and set(other["targets"]) == set(row["targets"])
+                        and other.get("license") == "CC0-1.0"
+                        and (other.get("geometry", {}).get("triangles") or 0) > 0
+                        and other.get("priorRenderFailureReason") != "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+                        and other.get("sourceVisualObservation", {}).get("state")
+                            not in ("VISUAL_CONTENT_BLOCKED", "VISUAL_IDENTITY_REPAIR_REQUIRED")]
+        if alternatives:
+            replacement = alternatives[0]
+            retry.remove(row)
+            deferred.append(row)
+            row["sourcePreview"] = {"state": "RENDER_FAILED_RETRY",
+                                    "failureReason": row["priorRenderFailureReason"],
+                                    "registrationApproved": False, "visualQualityApproved": False}
+            row["alternateSourceState"] = "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
+            if replacement in retry:
+                retry.remove(replacement)
+            retry.insert(0, replacement)
+            print("MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY", row["name"])
     fresh = [row for row in ordered if not row.get("sourceVisualObservation") and not row.get("priorRenderRetry")]
     preferred = [row for row in fresh if row.get("geometryQualityState") != "SOURCE_GEOMETRY_REPAIR_REQUIRED"]
     # 한 자리만 실제 수리에 배정하고 기존 신규·재시도 순환도 유지한다.
@@ -1178,12 +1209,13 @@ def render_animal_review_candidates(report, out):
         for row in pool:
             if len(selected) >= 3 or limit <= 0:
                 break
-            if row not in selected:
+            if row not in selected and row not in deferred:
                 selected.append(row)
                 limit -= 1
     quality_selected = next((row for row in selected if row in quality), None)
     for row in selected:
         row.pop("priorRenderRetry", None)
+        row.pop("priorRenderFailureReason", None)
         row["sourcePreview"] = {"state": "UNVERIFIED", "registrationApproved": False,
                                 "visualQualityApproved": False}
         members = [m for m in row["modelMembers"] if m["format"] in ("BLEND", "GLB")]
@@ -1285,6 +1317,7 @@ def render_animal_review_candidates(report, out):
                                         "triangles": audit["triangles"], "frames": frames,
                                         "renderer": preview["renderer"],
                                         "ignoredReferenceImages": preview["ignoredReferenceImages"],
+                                        "restoredTextureReferences": preview.get("restoredTextureReferences", 0),
                                         "registrationApproved": False, "visualQualityApproved": False}
                 if repair_args:
                     repair = audit.get("candidate", {})
