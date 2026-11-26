@@ -228,9 +228,18 @@ jobs:
           if(company.operations?.productionTiers)throw new Error('legacy company production tier state remains');
           if(!company.operations?.productionClasses)throw new Error('semantic company production class state missing');
           const focus=company.operations?.autonomousFocus;
-          const expectedTargetSlots=Math.max(0,Number(focusPolicy.targetFocusedGames??focusPolicy.maxFocusedGames??0)||0);
-          const maxFocusedGames=Math.max(expectedTargetSlots,Number(focusPolicy.maxFocusedGames??expectedTargetSlots)||0);
-          if(!focus||focus.targetSlots!==expectedTargetSlots||focus.focusedGameIds?.length>maxFocusedGames)throw new Error('autonomous focus contract failed');
+          // 중앙 오너 완료 추구 정책은 일반 포트폴리오 집중 슬롯보다 우선한다.
+          const canonical=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const ownerFocus=canonical.developmentLifecycleMachine?.focusedDevelopmentCaretakers;
+          const ownerMode=ownerFocus?.enabled===true&&ownerFocus?.completionPursuit?.enabled===true;
+          const effectiveFocus=ownerMode?ownerFocus:focusPolicy;
+          const expectedTargetSlots=Math.max(0,Number(effectiveFocus.targetFocusedGames??effectiveFocus.maxFocusedGames??0)||0);
+          const maxFocusedGames=Math.max(expectedTargetSlots,Number(effectiveFocus.maxFocusedGames??expectedTargetSlots)||0);
+          if(!focus||!Array.isArray(focus.focusedGameIds)||!Array.isArray(focus.games)||focus.targetSlots!==expectedTargetSlots||focus.focusedGameIds.length>maxFocusedGames||focus.filledSlots!==focus.games.length)throw new Error('autonomous focus contract failed');
+          if(ownerMode){
+            if(JSON.stringify(focus.focusedGameIds)!==JSON.stringify(ownerFocus.ownerFocusedGameIds)||JSON.stringify(focus.games.map(game=>game.gameId))!==JSON.stringify(ownerFocus.ownerFocusedGameIds))throw new Error('canonical owner focus IDs mismatch');
+            if(ownerFocus.focusScope==='OWNER_EXACT_GAME_AND_PLATFORM_ONLY'&&focus.games.some(game=>game.selectedPlatform!==ownerFocus.ownerFocusedGamePlatforms?.[game.gameId]))throw new Error('canonical owner focus platform mismatch');
+          }
           if((focus.games||[]).some(game=>game.lane!=='selected-platform'||Object.hasOwn(game,'unityReady')))throw new Error('autonomous focus still uses Unity-only lane');
           if(JSON.stringify(focus.platformPriority)!==JSON.stringify(['ROBLOX','UNITY'])||focus.priorityMeaning!=='DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE')throw new Error('platform focus priority contract failed');
           console.log('COMPANY_STATUS_SYNC_QA=PASS');
