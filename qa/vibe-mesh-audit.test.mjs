@@ -232,6 +232,18 @@ test('Mare asset ledger executes the existing game-local reference scanner and d
     fs.writeFileSync(source,'importedModel(parent, "Town", "absent")\n');
     assert.equal(run().audit.state,'MISSING_REFERENCES');
     assert.deepEqual(run().missing,[['scene.luau','Town/absent']]);
+    fs.writeFileSync(path.join(fixture,'assets-registered.json'),JSON.stringify({assets:{
+      'Town/house':{assetType:'Model'},'Town/roof':{assetType:'Model'},
+      'Town/bench':{assetType:'Model'},'CardArt/one':{assetType:'Image'},'CardArt/two':{assetType:'Image'}
+    }}));
+    fs.writeFileSync(path.join(fixture,'src','AssetIds.luau'),'return { ["Town/bench"] = 123 }\n');
+    fs.writeFileSync(source,'importedModel(parent, "Town", "house")\nlocal a=AssetIds["Town/roof"]\nlocal b=AssetIds["CardArt/" .. name]\n-- "Town/bench"\n');
+    const evidence=run().audit.referenceEvidence;
+    assert.equal(evidence.literalOrPlacementReferenceCount,2);
+    assert.equal(evidence.dynamicPrefixCandidateCount,2);
+    assert.equal(evidence.unresolvedReferenceCount,1);
+    assert.deepEqual(evidence.dynamicPrefixes,['CardArt/']);
+    assert.equal(evidence.groups.Town.unresolvedReferenceCount,1);
     fs.unlinkSync(scanner);
     const failed=run();
     assert.equal(failed.audit.state,'SCAN_ERROR');

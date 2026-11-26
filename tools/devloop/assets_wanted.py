@@ -37,6 +37,19 @@ registry_audit = {
     "scope": "STATIC_LITERAL_REFERENCES_ONLY",
     "nativeRuntimeVerified": False,
 }
+# 기존 검사기의 추가 증거만 읽는다. 동적 후보를 실제 배치 성공으로 간주하지 않는다.
+evidence_line = next((line.split("=", 1)[1] for line in check.stdout.splitlines()
+                      if line.startswith("MARE_ASSET_REFERENCE_EVIDENCE=")), None)
+if counts and evidence_line:
+    try:
+        evidence = json.loads(evidence_line)
+        total = sum(evidence[name] for name in ("literalOrPlacementReferenceCount",
+                                               "dynamicPrefixCandidateCount", "unresolvedReferenceCount"))
+        if evidence["scope"] != "STATIC_REFERENCE_CANDIDATES_NOT_RUNTIME_PLACEMENT" or total != int(counts[2]):
+            raise ValueError("reference evidence count mismatch")
+        registry_audit["referenceEvidence"] = evidence
+    except (ValueError, TypeError, KeyError):
+        registry_audit["referenceEvidence"] = None
 if registry_audit["state"] == "SCAN_ERROR":
     print("MARE_ASSET_REFERENCE_SCAN_ERROR", check.returncode, file=sys.stderr)
     counts = None
