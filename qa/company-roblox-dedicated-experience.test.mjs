@@ -894,6 +894,7 @@ print('MARE_SOURCE_PREVIEW_FIXTURES=3')
   const mesh=fs.readFileSync('tools/vibe_mesh_audit.py','utf8');
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   assert.match(source,/--disable-autoexec/);
+  assert.match(source,/timeout=600, check=False, stdout=diagnostic, stderr=subprocess\.STDOUT\)/);
   assert.match(source,/RENDERED_AWAITING_VISUAL_REVIEW/);
   assert.match(mesh,/use_scripts=False/);
   assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
