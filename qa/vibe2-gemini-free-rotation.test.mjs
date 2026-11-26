@@ -858,3 +858,33 @@ test('free model cooldown is shared across runs through the persisted file and m
     if(prev===undefined)delete process.env.VIBE2_FREE_AI_COOLDOWN_FILE;else process.env.VIBE2_FREE_AI_COOLDOWN_FILE=prev;
   }
 });
+
+test('specialist selection preserves cooldown retry evidence even when no route is eligible',async()=>{
+  await withExternalFixture(async()=>{
+    delete process.env.GROQ_API_KEY;
+    delete process.env.OPENROUTER_API_KEY;
+    const previous=process.env.VIBE2_FREE_AI_COOLDOWN_FILE;
+    delete process.env.VIBE2_FREE_AI_COOLDOWN_FILE;
+    try{
+      const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?specialist-retry='+Date.now());
+      const retryAt=Date.now()+120000;
+      let calls=0;
+      await assert.rejects(isolated({apiKey:'fixture',specialistDepartment:'DEVELOPMENT',
+        contents:[{role:'user',parts:[{text:'source'}]}],
+        geminiRetryAt:new Date(retryAt).toISOString(),
+        fetchImpl:async()=>{calls++;throw new Error('unexpected provider call');}
+      }),error=>{
+        assert.equal(error.vibe2GenerationFailureClass,'EXTERNAL_AI_UNAVAILABLE');
+        for(const model of GEMINI_FREE_MODELS)assert.ok(error.message.includes(model+':COOLDOWN'));
+        assert.equal(Date.parse(error.nextRetryAt),retryAt);
+        assert.ok(error.retryAfterMs>0);
+        assert.ok(error.message.includes('NEXT_RETRY_AT='));
+        return true;
+      });
+      assert.equal(calls,0);
+    }finally{
+      if(previous===undefined)delete process.env.VIBE2_FREE_AI_COOLDOWN_FILE;
+      else process.env.VIBE2_FREE_AI_COOLDOWN_FILE=previous;
+    }
+  });
+});
