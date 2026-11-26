@@ -2412,17 +2412,26 @@ for (const item of plan) {
       console.log('REGIONAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
     }
   }
-  // [중립 카드 원화] 승인된 원화 변경은 새 이미지 권한이 확인된 뒤에만 등록 번호를 교체한다.
-  if (item.kind === 'CardArt' && /^lo_\d{2}$/.test(item.name)) {
+  // [카드배틀 화면] 승인된 새 이미지의 사용 권한을 확인한 뒤에 기존 번호를 교체한다.
+  const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && /^ui_[a-z0-9_]+$/.test(item.name);
+  if (item.kind === 'CardArt' && (/^lo_\d{2}$/.test(item.name) || battleUiArt)) {
     const old = registry.assets[id];
-    if (old?.assetId && old.sourceSha256 && old.sourceSha256 !== sourceSha256) {
+    if (battleUiArt && old?.sourceSha256 !== sourceSha256 && approvedImages[id] === sourceSha256
+      && (originalBytes.length < 33
+        || !originalBytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+        || originalBytes.toString('ascii', 12, 16) !== 'IHDR'
+        || originalBytes[24] !== 8 || ![2, 6].includes(originalBytes[25]))) {
+      failures.push(id + ': CARD_BATTLE_UI_FULL_COLOR_PNG_REQUIRED');
+      continue;
+    }
+    if (old?.assetId && old.sourceSha256 !== sourceSha256 && (old.sourceSha256 || battleUiArt)) {
       if (approvedImages[id] !== sourceSha256) {
-        failures.push(id + ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH');
+        failures.push(id + (battleUiArt ? ': CARD_BATTLE_UI_APPROVAL_HASH_MISMATCH' : ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH'));
         continue;
       }
       previousTypeAssets.set(id, {...old});
       delete registry.assets[id];
-      console.log('NEUTRAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
+      console.log(battleUiArt ? 'CARD_BATTLE_UI_APPROVED_SOURCE_CHANGED_REUPLOAD' : 'NEUTRAL_CARD_ART_APPROVED_SOURCE_CHANGED_REUPLOAD', id);
     }
   }
   // [선박 원본 교체] 증빙된 모델의 바이너리가 바뀌면 기존 등록번호를 새 모델에 재사용하지 않는다.
