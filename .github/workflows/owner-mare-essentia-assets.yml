@@ -81,7 +81,7 @@ concurrency:
 
 jobs:
   register:
-    if: ${{ (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.head_repository.full_name == github.repository && startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-card-'))) && (inputs.scheduled_recovery != true || (inputs.studio_regrant != true && inputs.register_v5 != true && inputs.upgrade_cargo_quality != true && inputs.publish_after_register != true)) }}
+    if: ${{ (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_repository.full_name == github.repository && startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-card-'))) && (inputs.scheduled_recovery != true || (inputs.studio_regrant != true && inputs.register_v5 != true && inputs.upgrade_cargo_quality != true && inputs.publish_after_register != true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
@@ -283,18 +283,46 @@ jobs:
           raw=contents(original,head)
           if len(raw)!=candidate['bytes'] or hashlib.sha256(raw).hexdigest()!=review['sourceSha256']:
               raise SystemExit('CARD_DROPBOX_PR_ORIGINAL_MISMATCH')
-          runs=api('repos/'+repo+'/actions/runs?event=pull_request&head_sha='+head+'&per_page=100')['workflow_runs']
+          # 기본 GITHUB_TOKEN이 생성한 PR은 pull_request 검사를 자동 시작하지 않을 수 있다.
+          # 기존 3개 검사를 정확한 후보 SHA에서 실행하며 필수 PR 보호 검사는 아래에서 그대로 확인한다.
+          branch=os.environ['CARD_BRANCH']
+          if pr['head']['ref']!=branch or api('repos/'+repo+'/git/ref/heads/'+branch)['object']['sha']!=head:
+              raise SystemExit('CARD_DROPBOX_PR_HEAD_CHANGED')
+          runs=api('repos/'+repo+'/actions/runs?head_sha='+head+'&per_page=100')['workflow_runs']
           latest={}
           for row in sorted(runs,key=lambda x:x['id'],reverse=True):
+              if row.get('head_sha')!=head or row.get('head_repository',{}).get('full_name')!=repo or row.get('head_branch')!=branch or row.get('event') not in ('pull_request','workflow_dispatch'):
+                  continue
               latest.setdefault(row['name'],row)
-          required={'All Games Development Sync','Vibe QA','Devloop Gates (Mare Essentia)'}
-          if not required.issubset(latest) or any(r['status']!='completed' or r['conclusion']!='success' for r in latest.values()):
+          workflows={
+              'All Games Development Sync':('game-development-sync.yml',['-f','game_id=mare-essentia']),
+              'Vibe QA':('vibe-qa.yml',[]),
+              'Devloop Gates (Mare Essentia)':('devloop-gates.yml',[]),
+          }
+          missing=[name for name in workflows if name not in latest]
+          if missing:
+              # 후보 검사 정의가 현재 main과 같은 경우에만 실행한다. 변경된 정의의 실행은 금지한다.
+              for name in missing:
+                  filename,args=workflows[name]
+                  workflow='.github/workflows/'+filename
+                  if contents(workflow,head)!=contents(workflow,'main'):
+                      raise SystemExit('CARD_DROPBOX_QA_DEFINITION_DRIFT:'+filename)
+              for name in missing:
+                  filename,args=workflows[name]
+                  if api('repos/'+repo+'/git/ref/heads/'+branch)['object']['sha']!=head:
+                      raise SystemExit('CARD_DROPBOX_PR_HEAD_CHANGED')
+                  subprocess.run(['gh','workflow','run',filename,'--repo',repo,'--ref',branch,*args],check=True)
+                  print('CARD_DROPBOX_QA_REQUESTED',name,head)
+              raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING')
+          if any(r['status']!='completed' or r['conclusion']!='success' for r in latest.values()):
               raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING_OR_FAILED')
           print('CARD_DROPBOX_PR_CHECKS_VERIFIED',head)
           PYPR
           gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required
           gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"
           echo "CARD_DROPBOX_PR_MERGED=$pr"
+          # 봇 병합은 push를 일으키지 않을 수 있으므로 최신 main에서 기존 등록기를 재개한다.
+          gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true
 
       - name: Check reviewed animal originals and rotate missing source search
         id: animal_practice
