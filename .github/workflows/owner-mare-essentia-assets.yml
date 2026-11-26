@@ -590,7 +590,7 @@ jobs:
                       raise SystemExit('MARE_ANIMAL_RESTORED_PROOF_INVALID')
                   out.write(file+'\n')
               for file in acquired:
-                  match=re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/(Animals|Town|Naval|Terrain)/gobkit-free-([a-z0-9_]+)\.glb',file)
+                  match=re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/(Animals|Town|Naval|Terrain|People|Outfits|Monsters|Rig|Motion)/gobkit-free-([a-z0-9_-]+)\.glb',file)
                   if not match:
                       raise SystemExit('MARE_ANIMAL_PUBLISHER_PATH_INVALID')
                   path=pathlib.Path(file)
@@ -604,6 +604,8 @@ jobs:
                   pack = r'(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)' if kind == 'Animals' else r'[A-Za-z0-9_-]+'
                   if (path.parent.is_symlink()
                       or (kind != 'Animals' and proof.get('candidateTargetIds') != [kind+'/'+asset])
+                      or (kind in ('Rig','Motion') and not (type(proof.get('jointCount')) is int and proof['jointCount'] > 0))
+                      or (kind == 'Motion' and not (type(proof.get('animationCount')) is int and proof['animationCount'] > 0))
                       or proof.get('sourceAcquisition')!='PUBLISHER_FREE_CATALOG_HELD_ONLY'
                       or proof.get('sourcePage')!='https://gobkit.com/api/free'
                       or not re.fullmatch(r'https://gobkit\.com/freebies/'+pack+r'/[A-Za-z0-9_-]+\.glb',proof.get('source',''))

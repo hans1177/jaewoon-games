@@ -370,8 +370,24 @@ def inspect_held_animal_glb(data):
     if any(type(joint) is not int or not 0 <= joint < len(model.get("nodes", []))
            for skin in skins for joint in skin["joints"]):
         raise ValueError("GLB_INVALID_JOINT")
+    animations = model.get("animations", [])
+    for clip in animations:
+        channels = clip.get("channels", [])
+        samplers = clip.get("samplers", [])
+        if not channels or not samplers:
+            raise ValueError("GLB_EMPTY_ANIMATION")
+        for channel in channels:
+            target = channel.get("target", {})
+            index, node = channel.get("sampler"), target.get("node")
+            if (type(index) is not int or not 0 <= index < len(samplers)
+                    or type(node) is not int or not 0 <= node < len(model.get("nodes", []))):
+                raise ValueError("GLB_ANIMATION_CHANNEL")
+        for sampler in samplers:
+            if any(type(sampler.get(key)) is not int or not 0 <= sampler[key] < len(model["accessors"])
+                   for key in ("input", "output")):
+                raise ValueError("GLB_ANIMATION_SAMPLER")
     return {"triangles": triangles, "jointCount": joint_count,
-            "animationCount": len(model.get("animations", [])),
+            "animationCount": len(animations),
             "mobileGeometryWithinBudget": 1000 <= triangles <= 3000 and joint_count <= 50,
             "speciesVerified": False, "visualQualityApproved": False}
 
@@ -451,6 +467,10 @@ def gobkit_animal_sources(manifest, targets, scene=False):
     listed = set(manifest.get("glbs", []))
     selected = {}
     pack_path = r"[A-Za-z0-9_-]+" if scene else r"(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)"
+    target_names = {}
+    for target in sorted(targets):
+        key = target.replace("-", "_") if scene else target.replace("_", "").replace("-", "")
+        target_names.setdefault(key, []).append(target)
     for pack in manifest["packs"]:
         for model in pack.get("models", []):
             name = model.get("name", "")
@@ -464,11 +484,14 @@ def gobkit_animal_sources(manifest, targets, scene=False):
                 continue
             normalized = (re.sub(r"[ -]+", "_", name.lower()) if scene
                           else re.sub(r"[^a-z0-9]", "", name.lower()))
-            for target in targets:
-                if normalized == (target if scene else target.replace("_", "").replace("-", "")):
-                    entry = {"name":name,"url":url,"license":license_text}
-                    if target not in selected or url < selected[target]["url"]:
-                        selected[target] = entry
+            # 여러 자산 키로 해석되는 제작자 이름은 후보로 고르지 않는다.
+            matches = target_names.get(normalized, [])
+            if len(matches) != 1:
+                continue
+            target = matches[0]
+            entry = {"name":name,"url":url,"license":license_text}
+            if target not in selected or url < selected[target]["url"]:
+                selected[target] = entry
     return selected
 
 
@@ -514,6 +537,36 @@ def scene_source_targets(registry, progress=None, battle_progress=None):
                     match = re.fullmatch(r"field_([a-z0-9_]+)", asset)
                     if match:
                         field_assets[match.group(1)] = asset
+    # 주민 외형은 실제 조립 코드와 미등록 자산 참조에서만 가져온다.
+    shared = os.path.join(root, "src", "ReplicatedStorage", "Shared")
+    with open(os.path.join(shared, "Pose.luau"), encoding="utf-8") as handle:
+        for asset in re.findall(r'"((?:hair|outfit|acc)_[a-z0-9_]+)"', handle.read()):
+            targets.setdefault(asset, "People")
+    for _, asset_key in missing:
+        kind, _, asset = asset_key.partition("/")
+        if kind in ("People", "Outfits", "Monsters", "Animals") and re.fullmatch(r"[a-z0-9_-]+", asset):
+            targets.setdefault(asset, kind)
+
+    # 공용 R15 동작은 재수집하지 않는다. 직업별 작업 동작과 동물별 리그·클립만 찾는다.
+    with open(os.path.join(docs, "residents", "jobs.md"), encoding="utf-8") as handle:
+        for job in re.findall(r"^\| [^\n|]+? \(`([a-z0-9_]+)`\)", handle.read(), re.M):
+            targets.setdefault(job + "_work", "Motion")
+    for name in ("rig_f", "rig_m"):
+        if not os.path.isfile(os.path.join(root, "assets", "people", name + ".glb")):
+            targets.setdefault(name, "Rig")
+
+    animal_goal = next((row for row in seed if row.get("id") == "mare-farm-animals"), {})
+    species = set(animal_goal.get("missing", [])) | set(animal_goal.get("sourceReady", []))
+    with open(os.path.join(docs, "discoveries", "MISSING.md"), encoding="utf-8") as handle:
+        species.update(re.findall(r"^- (?:am|pac|zoo)_([a-z0-9_]+) ", handle.read(), re.M))
+    species.update(key.split("/", 1)[1] for key in registry if key.startswith(("Animals/", "Monsters/")))
+    for name in sorted(species):
+        if not re.fullmatch(r"[a-z0-9_-]+", name):
+            continue
+        targets.setdefault(name + "_rig", "Rig")
+        for action in ("idle", "idle_look", "walk", "run", "alert", "flee_start", "threat",
+                       "attack", "hit", "death"):
+            targets.setdefault(name + "_" + action, "Motion")
     def registered(asset, kind):
         row = registry.get(kind + "/" + asset, {})
         asset_id = str(row.get("assetId") or "")
@@ -526,7 +579,7 @@ def scene_source_targets(registry, progress=None, battle_progress=None):
             stages = {str(i): {"planned": 0, "registeredModelRights": 0} for i in range(1, 6)}
             stages["unspecified"] = {"planned": 0, "registeredModelRights": 0}
             held = 0
-            missing = []
+            missing_assets = []
             for asset, tier in sorted(port_assets[port].items(), key=lambda pair: (pair[1] or 6, pair[0])):
                 bucket = stages[str(tier) if tier else "unspecified"]
                 bucket["planned"] += 1
@@ -539,12 +592,12 @@ def scene_source_targets(registry, progress=None, battle_progress=None):
                         and not os.path.islink(path) and not os.path.islink(path + ".license.json")):
                     held += 1
                 else:
-                    missing.append({"assetKey": "Town/" + asset, "tier": tier})
+                    missing_assets.append({"assetKey": "Town/" + asset, "tier": tier})
             planned = len(port_assets[port])
             rights = sum(v["registeredModelRights"] for v in stages.values())
             rows.append({"portId": port, "planned": planned, "registeredModelRights": rights,
-                         "heldUnverified": held, "missingOriginal": len(missing),
-                         "stages": stages, "nextMissing": missing[:3]})
+                         "heldUnverified": held, "missingOriginal": len(missing_assets),
+                         "stages": stages, "nextMissing": missing_assets[:3]})
         progress.update({"state": "BRIEF_SOURCE_COVERAGE_ONLY",
                          "portCount": len(rows),
                          "planned": sum(row["planned"] for row in rows),
@@ -608,7 +661,7 @@ def scene_source_targets(registry, progress=None, battle_progress=None):
             sort_keys=True))
     print("MARE_SCENE_SOURCE_TARGETS",
           json.dumps({"ports": len(ports), **{kind: sum(v == kind for v in outstanding.values())
-                                            for kind in ("Town", "Naval", "Terrain")}}, sort_keys=True))
+                                            for kind in sorted(set(targets.values()))}}, sort_keys=True))
     return outstanding
 
 
@@ -852,20 +905,47 @@ def animal_source_practice():
     picks = sorted([(False, name) for name in catalog] + [(True, name) for name in scene_catalog])
     if not picks:
         return report
+    from concurrent.futures import ThreadPoolExecutor
     slot = int(time.time() // 300)
     start = slot * 3
     picks = picks[start % len(picks):] + picks[:start % len(picks)]
-    priority = ("Town", "Naval", "Terrain", "Animals")
-    priority = priority[slot % len(priority):] + priority[:slot % len(priority)]
-    # 각 분야의 첫 후보를 앞에 두고 남은 후보는 기존 순환 순서대로 검사한다.
-    first_picks = []
-    for kind in priority:
-        first = next((pair for pair in picks if
-                      (scene_targets[pair[1]] if pair[0] else "Animals") == kind), None)
-        if first is not None:
-            first_picks.append(first)
-            picks.remove(first)
-    picks = first_picks + picks
+    # 분야마다 먼저 한 자리를 배정한다. 세 자리에서 밀린 분야는 다음 회차에 먼저 본다.
+    fields = ("harbor", "wildlife", "field", "naval")
+    fields = fields[slot % len(fields):] + fields[:slot % len(fields)]
+    field_for_kind = {"Town": "harbor", "People": "harbor", "Outfits": "harbor",
+                      "Naval": "naval", "Terrain": "field"}
+    batch = []
+    remaining = 3 - report["downloadAttempts"]
+    for scene, name in picks:
+        if remaining <= 0:
+            break
+        kind = scene_targets[name] if scene else "Animals"
+        path = os.path.join(os.path.dirname(hold), kind, "gobkit-free-" + name + ".glb")
+        proof_path = path + ".license.json"
+        if (os.path.islink(os.path.dirname(path)) or os.path.islink(path)
+                or path in blocked_paths or proof_path in blocked_paths or os.path.lexists(proof_path)):
+            continue
+        batch.append((field_for_kind.get(kind, "wildlife"), scene, name))
+    batch.sort(key=lambda pair: fields.index(pair[0]))
+    primary, extra = [], []
+    selected_fields = set()
+    for field, scene, name in batch:
+        if field in selected_fields:
+            extra.append((scene, name))
+        else:
+            selected_fields.add(field)
+            primary.append((scene, name))
+    picks = (primary + extra)[:remaining]
+    if not picks:
+        return report
+    # 내려받기만 병렬로 실행하고 파일·증빙·중복 검사 상태는 아래 한 곳에서 갱신한다.
+    with ThreadPoolExecutor(max_workers=len(picks)) as workers:
+        downloads = {
+            (scene, name): workers.submit(read_gobkit_free,
+                (scene_catalog if scene else catalog)[name]["url"].removeprefix("https://gobkit.com"),
+                5_000_000, scene=scene)
+            for scene, name in picks
+        }
     for scene, name in picks:
         if report["downloadAttempts"] >= 3:
             break
@@ -882,12 +962,16 @@ def animal_source_practice():
             continue
         report["downloadAttempts"] += 1
         try:
-            data = read_gobkit_free(entry["url"].removeprefix("https://gobkit.com"), 5_000_000, scene=scene)
+            data = downloads[(scene, name)].result()
             digest = hashlib.sha256(data).hexdigest()
             if (digest in blocked_hashes or digest in seen
                     or any(row.get("sourceSha256")==digest for row in registry.values())):
                 raise ValueError("PUBLISHER_SOURCE_DUPLICATE_OR_BLOCKED")
             geometry = inspect_held_animal_glb(data)
+            if source_kind in ("Rig", "Motion") and geometry["jointCount"] == 0:
+                raise ValueError("PUBLISHER_SOURCE_RIG_REQUIRED")
+            if source_kind == "Motion" and geometry["animationCount"] == 0:
+                raise ValueError("PUBLISHER_SOURCE_ANIMATION_REQUIRED")
             proof = {"license":"CC0-1.0","commercialUseAllowed":True,"author":"Gobkit / Alsomind Tech Co., Ltd.",
                      "source":entry["url"],"sourcePage":"https://gobkit.com/api/free",
                      "sourceAcquisition":"PUBLISHER_FREE_CATALOG_HELD_ONLY",
@@ -895,6 +979,7 @@ def animal_source_practice():
                      "externalRevisionPinned":False,"sourceSha256":digest,"originalSha256":digest,
                      "downloadedBlobSha":hashlib.sha1(("blob %d\0"%len(data)).encode()+data).hexdigest(),
                      "bytes":len(data),"triangles":geometry["triangles"],
+                     "jointCount":geometry["jointCount"],"animationCount":geometry["animationCount"],
                      "candidateTargetIds":target_ids,"speciesVerified":False,
                      "originalModelHandcraftedVerified":False,"registration":"PENDING_SOURCE_AND_VISUAL_REVIEW",
                      "actualRobloxRuntimeVerified":False,"visualQualityApproved":False}

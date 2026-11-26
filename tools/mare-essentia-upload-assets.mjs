@@ -237,7 +237,7 @@ if (process.argv.includes('--animal-source-preflight')) {
       .filter(match=>!acquiredDiscoveryCards.has(match[1]) && !reviewedDiscoveryCards.has(match[1]))
       .map(match=>match[2])])];
   if (missing.length && process.env.GH_TOKEN) {
-    const start=Math.floor(Date.now()/1200000)*3;
+    const start=Math.floor(Date.now()/300000)*3;
     for(let i=0;i<Math.min(3,missing.length);i++){
       const name=missing[(start+i)%missing.length];
       if(!/^[a-z0-9_]+$/.test(name)) continue;

@@ -1091,6 +1091,15 @@ with tempfile.TemporaryDirectory() as root:
     (docs/'battle_backdrops').mkdir()
     (docs/'battle_backdrops'/'backdrop_prompts.csv').write_text('category,asset_id\nfield,field_one\nnaval-near,sea_test_near\nnaval-far,sea_test_far\nnaval-mid,sea_test_mid\n',encoding='utf-8')
     (docs/'battle_backdrops'/'quests.md').write_text('| Test ('+tick+'q_test'+tick+') | field | current site |\n| Sea ('+tick+'q_sea'+tick+') | war_clear | naval/test.md |\n',encoding='utf-8')
+    shared=Path(root)/'src'/'ReplicatedStorage'/'Shared'
+    shared.mkdir(parents=True)
+    (shared/'Pose.luau').write_text('"hair_test"',encoding='utf-8')
+    (docs/'residents').mkdir()
+    (docs/'residents'/'jobs.md').write_text('| Sailor ('+tick+'sailor'+tick+') | x |',encoding='utf-8')
+    (docs/'discoveries').mkdir()
+    (docs/'discoveries'/'MISSING.md').write_text('- zoo_otter test',encoding='utf-8')
+    seed=[]
+    missing=[('example.luau','Monsters/example')]
     hold=Path(root)/'assets'/'inbox-hold'/'Town'
     hold.mkdir(parents=True)
     (hold/'gobkit-free-a_lamp.glb').touch()
@@ -1105,7 +1114,9 @@ with tempfile.TemporaryDirectory() as root:
     assert status['nativeRuntimeVerified'] is False and status['visualQualityApproved'] is False
     assert status['ports'][0]['stages']['3']=={'planned':1,'registeredModelRights':0}
     assert status['ports'][1]['nextMissing']==[{'assetKey':'Town/b_house_1','tier':1},{'assetKey':'Town/b_plaza','tier':2}]
-    assert outstanding=={'a_lamp':'Town','b_house_1':'Town','b_plaza':'Town','field_one':'Terrain','sea_test_near':'Naval','sea_test_mid':'Naval'}
+    assert outstanding['hair_test']=='People' and outstanding['example']=='Monsters'
+    assert outstanding['sailor_work']=='Motion' and outstanding['otter_rig']=='Rig'
+    assert {k:v for k,v in outstanding.items() if v in ('Town','Naval','Terrain')}=={'a_lamp':'Town','b_house_1':'Town','b_plaza':'Town','field_one':'Terrain','sea_test_near':'Naval','sea_test_mid':'Naval'}
     assert battle_status['seaCount']==1 and battle_status['siteCount']==1 and battle_status['questBriefCount']==2
     assert battle_status['planned']==4 and battle_status['registeredModelRights']==1 and battle_status['missingOriginal']==3
     assert battle_status['seas'][0]['layers']['far']['state']=='REGISTERED_MODEL_RIGHTS'
