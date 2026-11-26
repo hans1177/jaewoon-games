@@ -2046,8 +2046,15 @@ test('Mare European card art hides unverified ratios and styles without deleting
     assert.equal(review?.robloxSafety,true);
     const png=fs.readFileSync(root+review.sourceFile);
     assert.equal(png.toString('ascii',1,4),'PNG',key+' actual PNG');
-    assert.equal(png.readUInt32BE(16),1400,key+' original width');
-    assert.equal(png.readUInt32BE(20),2000,key+' original height');
+    // 원본 직접 등록 규격: 실제 7:10 원본을 임의 확대하지 않는다.
+    const w=png.readUInt32BE(16), h=png.readUInt32BE(20);
+    assert.ok(w>=768 && h>=768 && w<=4096 && h<=4096,key+' original dimensions');
+    assert.ok(Math.abs(w*10-h*7)<=h*0.05,key+' original portrait ratio');
+    if(review.sourceFile.endsWith('-1400x2000.png')){
+      assert.equal(w,1400,key+' named portrait width');
+      assert.equal(h,2000,key+' named portrait height');
+    }
+    assert.equal(createHash('sha256').update(png).digest('hex'),review.sourceSha256,key+' actual approved source bytes');
   }
 });
 
