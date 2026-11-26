@@ -696,6 +696,10 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
   assert.match(script,/"tradeGoods3DPractice"/);
   assert.match(script,/BRIEF_BUILDING_ROLE_CANDIDATE_ONLY/);
+  assert.match(script,/BRIEF_SCENE_COMPONENT_CANDIDATE_ONLY/);
+  assert.match(script,/component_targets\[role\]\.append\(asset\)/);
+  assert.match(script,/if asset in scene_catalog:/);
+  assert.match(script,/if entry\.get\("regionalAdaptationRequired"\) is True:/);
   assert.match(script,/regionalAdaptationRequired/);
   assert.match(script,/report\["lastPreviewRun"\] = last/);
   assert.match(script,/animal_audit\["lastPreviewRun"\] = \{/);
