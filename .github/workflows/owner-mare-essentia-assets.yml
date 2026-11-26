@@ -20,7 +20,7 @@ on:
       - 'tools/mare-essentia-ship-v5.py'
   # [동물 원본] 5분마다 동물·항구·해전·지상전 원본을 기존 절차에서 찾는다.
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch:
     inputs:
       universe_id:

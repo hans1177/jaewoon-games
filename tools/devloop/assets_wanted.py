@@ -874,7 +874,7 @@ def animal_source_practice():
     report["newOriginals"] = []
     report["downloadAttempts"] = restore_attempts
     report["publisherSearchState"] = "NOT_REQUESTED"
-    # 일반 자산 등록이나 20분 원본 탐색에서도 같은 지시서 장부를 갱신한다.
+    # 일반 자산 등록이나 5분 원본 탐색에서도 같은 지시서 장부를 갱신한다.
     report["portImplementation"] = {}
     report["battleImplementation"] = {}
     scene_targets = scene_source_targets(registry, report["portImplementation"], report["battleImplementation"])
@@ -900,7 +900,7 @@ def animal_source_practice():
     report["scenePublisherExactNameCandidates"] = len(scene_catalog)
     # 검색 결과가 아니라 실제 부족 목표와 정확히 일치하는 항목만 최대 세 개 받는다.
     import time
-    # 20분마다 항구·해전·지상 탐험·동물의 우선순위를 순환한다.
+    # 5분마다 항구·해전·지상 탐험·동물의 우선순위를 순환한다.
     # 총 다운로드 시도 3건 상한과 기존 검증·보관 경로는 유지한다.
     picks = sorted([(False, name) for name in catalog] + [(True, name) for name in scene_catalog])
     if not picks:
