@@ -1942,17 +1942,17 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "312536d78fd6cf28dc5bcb74db75783a415f1445c6fabada485bc92aee234067",
+       "sha256": "8f56c3b95b8b5ada0c05323214b2eb980622f5c230d7e225fa699955fa83db0c",
        "bytes": 249452
       },
       {
        "name": "rear.png",
-       "sha256": "f4698c8012a67e7a32b83e2dc1332bf90ee9b1523c66dbdb9b742c1629006129",
+       "sha256": "c8abb88f3de5fbf699450aff736ada211bdaacfbaffd05547f10edfa7d3da535",
        "bytes": 238916
       },
       {
        "name": "side.png",
-       "sha256": "6604e91ab7ffa5f78fe8c822f4399964597f8c7060911da4009db927518c0cad",
+       "sha256": "707442a7f35a8ff14e5c0829713af60ffc1312bf70d0504952af8ca4160941a9",
        "bytes": 239992
       }
      ],
@@ -1961,10 +1961,24 @@
      "visualQualityApproved": false
     },
     "sourceVisualObservation": {
-     "state": "LOCAL_VISION_UNAVAILABLE",
-     "sourceRevision": "e6b67f1e19864114cc512b21611bea80f6cce4e8",
+     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
+     "sourceRevision": "118e5f928e2b0a51a1713195cde944efcb289614",
      "registrationApproved": false,
-     "visualQualityApproved": false
+     "visualQualityApproved": false,
+     "model": "gemini-3.7-flash",
+     "provider": "gemini:gemini-3.7-flash",
+     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
+     "frameSha256": [
+      "8f56c3b95b8b5ada0c05323214b2eb980622f5c230d7e225fa699955fa83db0c",
+      "c8abb88f3de5fbf699450aff736ada211bdaacfbaffd05547f10edfa7d3da535",
+      "707442a7f35a8ff14e5c0829713af60ffc1312bf70d0504952af8ca4160941a9"
+     ],
+     "responseSha256": "bc28f45e4232b877f296cd254c6b6a8eb71be715ac18a69c9788cecc70eeeb55",
+     "speciesMatch": true,
+     "contentSafe": true,
+     "silhouetteClear": true,
+     "uncertain": false,
+     "mobileGeometryWithinBudget": false
     }
    },
    {
@@ -1995,7 +2009,7 @@
      "state": "RENDER_FAILED_RETRY",
      "registrationApproved": false,
      "visualQualityApproved": false,
-     "failureReason": "SOURCE_PREVIEW_BLENDER_FAILED"
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
     }
    },
    {
@@ -2026,7 +2040,7 @@
      "state": "RENDER_FAILED_RETRY",
      "registrationApproved": false,
      "visualQualityApproved": false,
-     "failureReason": "SOURCE_PREVIEW_BLENDER_FAILED"
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
     }
    }
   ],
@@ -2134,6 +2148,6 @@
   ],
   "archiveInventoryState": "AVAILABLE",
   "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "LOCAL_VISION_NOT_CONFIGURED"
+  "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED"
  }
 }
