@@ -16,6 +16,7 @@ const UNIVERSE_ID = process.env.MARE_UNIVERSE_ID || '10775310508';
 const ROOT = 'roblox-games/mare-essentia';
 const JSON_OUT = ROOT + '/assets-registered.json';
 const LUAU_OUT = ROOT + '/src/ReplicatedStorage/Shared/AssetIds.luau';
+const modelsOnly = process.env.MARE_MODELS_ONLY === 'true';
 // [이미지 정책] 경고 원본·파생본은 경로/해시/등록번호가 바뀌어도 다시 사용하지 않는다.
 const contentSafety = JSON.parse(await fs.readFile('company-learning/platform-release-roadmap.json', 'utf8'))
   .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
@@ -165,6 +166,53 @@ for (const dir of ['animals','inbox/Animals','inbox-hold/Animals']) {
       animalOriginal:true,discoveryBird:discovery?proof.discoveryCardId:undefined,originalModel:proof.originalModel||name,approvedProof:proof});
   }
 }
+// [항구·전투 원본] 메인에 검수 증빙까지 들어온 보관 모델만 기존 등록 큐에 연결한다.
+const reviewedSceneModels = [];
+if (!animalReviewArg && !process.argv.some(arg=>arg.startsWith('--studio-regrant='))) {
+  for (const kind of ['Town','Naval','Terrain']) {
+    const dir = path.join(ROOT,'assets','inbox-hold',kind);
+    const realDir = await fs.realpath(dir).catch(error=>{
+      if (error.code==='ENOENT') return null;
+      throw error;
+    });
+    if (realDir!==path.resolve(dir)) continue;
+    for (const proofName of (await fs.readdir(dir)).sort()) {
+      const match = /^gobkit-free-([a-z0-9_]+)\.glb\.license\.json$/.exec(proofName);
+      if (!match) continue;
+      const name = match[1], id = kind+'/'+name;
+      const file = path.join(dir,proofName.slice(0,-'.license.json'.length));
+      const sidecar = path.join(dir,proofName);
+      if (!(await fs.lstat(sidecar)).isFile()) continue;
+      const proof = JSON.parse(await fs.readFile(sidecar,'utf8'));
+      const review = proof.sourceVisualContentReview;
+      if (proof.license!=='CC0-1.0' || proof.commercialUseAllowed!==true
+        || proof.originalModelHandcrafted!==true || !proof.sourceModelingMethod || !proof.author
+        || proof.sourceAcquisition!=='PUBLISHER_FREE_CATALOG_HELD_ONLY'
+        || proof.sourcePage!=='https://gobkit.com/api/free'
+        || !/^https:\/\/gobkit\.com\/freebies\/[A-Za-z0-9_-]+\/[A-Za-z0-9_-]+\.glb$/.test(proof.source || '')
+        || proof.publisherEntry?.url!==proof.source
+        || proof.publisherEntry?.license!=='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
+        || JSON.stringify(proof.candidateTargetIds)!==JSON.stringify([id])
+        || review?.reviewScope!=='SOURCE_REGISTRATION_ONLY' || !review.method
+        || review.targetAssetKey!==id || review.subjectMatch!==true || review.contentSafe!==true
+        || review.sourceSha256!==proof.sourceSha256 || blockedHashes.has(proof.sourceSha256)
+        || blockedPaths.has(file) || blockedPaths.has(path.join(ROOT,'assets',kind.toLowerCase(),name+'.glb'))) continue;
+      const row = animalRegistry[id];
+      if (row?.assetId && (row.sourceSha256!==proof.sourceSha256 || row.assetType!=='Model' || row.usePermissionGranted===true)) continue;
+      const stat = await fs.lstat(file).catch(error=>{
+        if (error.code==='ENOENT') return null;
+        throw error;
+      });
+      if (!stat?.isFile() || stat.size!==proof.bytes || stat.size<28 || stat.size>5000000) continue;
+      const bytes = await fs.readFile(file);
+      const hash = crypto.createHash('sha256').update(bytes).digest('hex');
+      const blob = crypto.createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+      if (hash!==proof.sourceSha256 || hash!==proof.originalSha256 || blob!==proof.downloadedBlobSha
+        || bytes.toString('ascii',0,4)!=='glTF' || bytes.readUInt32LE(4)!==2 || bytes.readUInt32LE(8)!==bytes.length) continue;
+      reviewedSceneModels.push({kind,name,file,ext:'.glb',assetType:'Model',license:proof.license,sourceLicense:proof});
+    }
+  }
+}
 if (process.argv.includes('--animal-source-preflight')) {
   const pending = [];
   for (const item of approvedAnimalOriginals.values()) {
@@ -189,7 +237,7 @@ if (process.argv.includes('--animal-source-preflight')) {
       .filter(match=>!acquiredDiscoveryCards.has(match[1]) && !reviewedDiscoveryCards.has(match[1]))
       .map(match=>match[2])])];
   if (missing.length && process.env.GH_TOKEN) {
-    const start=Math.floor(Date.now()/3600000)*3;
+    const start=Math.floor(Date.now()/1200000)*3;
     for(let i=0;i<Math.min(3,missing.length);i++){
       const name=missing[(start+i)%missing.length];
       if(!/^[a-z0-9_]+$/.test(name)) continue;
@@ -200,7 +248,8 @@ if (process.argv.includes('--animal-source-preflight')) {
     }
   }
   console.log('MARE_ANIMAL_APPROVED_PENDING',pending.length,'UNREVIEWED_SEARCH_TARGETS',missing.length);
-  if(process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT,'pending='+(pending.length?'true':'false')+'\n');
+  console.log('MARE_SCENE_APPROVED_PENDING',reviewedSceneModels.length);
+  if(process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT,'pending='+Boolean(pending.length||reviewedSceneModels.length)+'\n');
   process.exit(0);
 }
 const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY;
@@ -1650,10 +1699,10 @@ const plan = [];
 const planFailures = [];
 // [모델 원화 제작 분리·자동 인입] 생성 모델의 단일 완성 PNG만 바이브의 실제 시각 검수 뒤 기존 승인 통로로 승격한다.
 // SVG·파츠·시트·미리보기로 등록하지 않으며 검수 증빙/원본 해시가 다르면 업로드 전에 중단한다.
-const cardApprovalDocument = JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8'));
+const cardApprovalDocument = modelsOnly ? {} : JSON.parse(await fs.readFile(ROOT + '/assets/APPROVED_IMAGES.json', 'utf8'));
 const modelOriginals = cardApprovalDocument.modelOriginals || {};
 if (typeof modelOriginals !== 'object' || Array.isArray(modelOriginals)) throw new Error('MODEL_ORIGINAL_REVIEW_MAP_INVALID');
-if (!studioRegrantPath) for (const [id, review] of Object.entries(modelOriginals)) {
+if (!studioRegrantPath && !modelsOnly) for (const [id, review] of Object.entries(modelOriginals)) {
   const match = /^CardArt\/((?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9]))$/.exec(id);
   if (!match) throw new Error('MODEL_ORIGINAL_CARD_ID_INVALID:' + id);
   const name = match[1];
@@ -1943,6 +1992,7 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
     const name = compressedGlb ? path.basename(f, '.glb.gz') : path.basename(f, ext);
     const sourceFileName = compressedGlb ? f.slice(0, -3) : f;
     const image = kind === 'Menu' || kind === 'Goods' || kind === 'Portraits' || kind === 'CardArt' || kind === 'Materials';
+    if (image && modelsOnly) continue;
     if (image ? !['.png', '.jpg', '.jpeg'].includes(ext) : ext !== '.glb' && ext !== '.fbx') continue;
     // [원본 증빙] Cargo와 Naval 모델은 파일별 라이선스·해시 증빙을 등록 파이프라인에서 확인한다.
     let sourceLicense = null;
@@ -2177,6 +2227,10 @@ if (!studioRegrantPath) for (const [dir, kind] of [['naval', 'Naval'], ['town', 
   }
 }
 
+for (const item of reviewedSceneModels) {
+  if (!plan.some(entry=>entry.kind===item.kind && entry.name===item.name)) plan.push(item);
+}
+
 let registry = {schema: 1, universeId: UNIVERSE_ID, license: 'CC0-1.0', assets: {}};
 try { registry = JSON.parse(await fs.readFile(JSON_OUT, 'utf8')); } catch (error) {
   if (error.code !== 'ENOENT') throw error; // 읽기 오류로 기존 번호를 잃거나 중복 등록하지 않는다.
@@ -2186,7 +2240,7 @@ for (const [name, row] of Object.entries(registry.assets)) {
   if (blockedPaths.has(row.source) || blockedIds.has(String(row.assetId))) delete registry.assets[name];
 }
 let approvedImages = {...(cardApprovalDocument.approved || {})};
-try { for (const sid of Object.keys(JSON.parse(await fs.readFile(ROOT + '/assets/cardart/SEALED.json', 'utf8')).sealed || {})) delete approvedImages['CardArt/' + sid]; } catch {} // 봉인 카드: 승인돼 있어도 업로드 금지
+if (!modelsOnly) try { for (const sid of Object.keys(JSON.parse(await fs.readFile(ROOT + '/assets/cardart/SEALED.json', 'utf8')).sealed || {})) delete approvedImages['CardArt/' + sid]; } catch {} // 봉인 카드: 승인돼 있어도 업로드 금지
 // [원본 보호] 종류 변경 중 신규 업로드나 Universe 사용 권한 확인이 실패하면 기존 등록 ID를 보존한다.
 const previousTypeAssets = new Map();
 for (const item of plan) {
