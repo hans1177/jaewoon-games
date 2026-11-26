@@ -1933,7 +1933,39 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false
+    "actualRobloxRuntimeVerified": false,
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "f3e51ff8d9c34fae-8651275a052611fa",
+     "sourceMemberSha256": "8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6",
+     "triangles": 684,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "312536d78fd6cf28dc5bcb74db75783a415f1445c6fabada485bc92aee234067",
+       "bytes": 249452
+      },
+      {
+       "name": "rear.png",
+       "sha256": "f4698c8012a67e7a32b83e2dc1332bf90ee9b1523c66dbdb9b742c1629006129",
+       "bytes": 238916
+      },
+      {
+       "name": "side.png",
+       "sha256": "6604e91ab7ffa5f78fe8c822f4399964597f8c7060911da4009db927518c0cad",
+       "bytes": 239992
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "sourceVisualObservation": {
+     "state": "LOCAL_VISION_UNAVAILABLE",
+     "sourceRevision": "e6b67f1e19864114cc512b21611bea80f6cce4e8",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "hippo",
@@ -1958,7 +1990,13 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false
+    "actualRobloxRuntimeVerified": false,
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "SOURCE_PREVIEW_BLENDER_FAILED"
+    }
    },
    {
     "name": "oryx",
@@ -1983,7 +2021,13 @@
     "speciesVerified": false,
     "visualQualityApproved": false,
     "registrationApproved": false,
-    "actualRobloxRuntimeVerified": false
+    "actualRobloxRuntimeVerified": false,
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "SOURCE_PREVIEW_BLENDER_FAILED"
+    }
    }
   ],
   "rejected": [
@@ -2088,6 +2132,8 @@
     "state": "HELD_SOURCE_UNVERIFIED"
    }
   ],
-  "archiveInventoryState": "AVAILABLE"
+  "archiveInventoryState": "AVAILABLE",
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "LOCAL_VISION_NOT_CONFIGURED"
  }
 }
