@@ -363555,11 +363555,156 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_138f9c5c51579051f7acfd70",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15337",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "f627cab81dd17e2f5b604bcbfd2ad2fd5351ad71",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15337,
+        "baseBranch": "main",
+        "headBranch": "art/mare-eu-32-fullcolor",
+        "baseSha": "f627cab81dd17e2f5b604bcbfd2ad2fd5351ad71",
+        "headSha": "3a2941328fce2b9a47bc2c9f0305dbfc0624b661",
+        "mergeCommitSha": "4265cec55c3d9632f20c903ba35578d8d2d6d464",
+        "mergedAt": "2026-11-26T03:00:40Z",
+        "authorLogin": "hans1177",
+        "titleHash": "baac13bdcaf66144414169021a0ddaca6ca0bddd351b0156e69ccc006e1126a9",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "art/mare-eu-32-fullcolor",
+        "candidateSha": "3a2941328fce2b9a47bc2c9f0305dbfc0624b661"
+      },
+      "changeStats": {
+        "changedFileCount": 19,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 835,
+        "deletedLineCount": 201,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/src/eu_32-original.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-beaver.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-beaver.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-flamingo.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-flamingo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-ostrich.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-ostrich.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-pelican.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-pelican.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-puffin.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-puffin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-toucan.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-toucan.glb.license.json",
+          "tools/devloop/assets_wanted.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-beaver.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-flamingo.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-ostrich.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-pelican.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-puffin.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-toucan.glb.license.json",
+          "tools/devloop/assets_wanted.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15337",
+        "merge-commit:4265cec55c3d9632f20c903ba35578d8d2d6d464",
+        "base-main:f627cab81dd17e2f5b604bcbfd2ad2fd5351ad71"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2873
+    "total": 2874
   }
 }
