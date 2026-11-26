@@ -640,7 +640,8 @@ return function(D, S)
 	view.room = S.Room.viewOf(state)
 		view.people = S.People.viewOf(state)
 
-		-- 학자
+		-- 학자: 일반 보고는 현재 항구에서 항상 접수, 실존 학자는 기존 방문 조건 유지.
+		view.portReportable = S.Knowledge.reportableCount(state, nil)
 		view.scholars = {}
 		for _, sc in D.Scholars.Scholars do
 			if sc.portId == port.id then

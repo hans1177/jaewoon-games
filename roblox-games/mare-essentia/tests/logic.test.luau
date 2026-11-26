@@ -4001,6 +4001,38 @@ do
 	check("지식: 같은 걸 다시 보고하면 새 발견 없음", select(1, act(st, "ReportKnowledge", { scholarId = "newton" })) == false)
 	check("지식: 다른 항구의 학자에게는 보고 불가", (function() st.portId = "amsterdam" local r = select(1, act(st, "ReportKnowledge", { scholarId = "newton" })) st.portId = "london" return r == false end)())
 	check("지식: 잘못된 학자 id 는 거부", select(1, act(st, "ReportKnowledge", { scholarId = "nobody" })) == false)
+	-- [모든 항구 보고] 실존 학자가 없는 항구에서도 보상·저장·선행 조건은 동일하다.
+	do
+		local general = newState("england")
+		general.portId = "marseille"
+		general.discovered.phy_gravity = true
+		local denied = select(1, act(general, "ReportKnowledge", { scholarId = "port_scholar" }))
+		check("일반 보고: 선행 미이해 지식은 차단", denied == false and not general.reported.phy_gravity)
+		general.discovered.phy_lever = true
+		general.discovered.phy_pendulum = true
+		local count = S.Knowledge.reportableCount(general, nil)
+		local beforeCoins, beforeFame = general.coins, general.fame
+		local ok, msg = act(general, "ReportKnowledge", { scholarId = "port_scholar" })
+		local reward = { Common = 3, Uncommon = 6, Rare = 12, Epic = 25, Legendary = 50 }
+		local expectedFame = 0
+		for _, id in { "phy_lever", "phy_pendulum", "phy_gravity" } do
+			expectedFame += reward[D.Cards.ById[id].rarity]
+		end
+		check("일반 보고: 학자 없는 항구에서 선행 연쇄 보고", count > 0 and ok and general.reported.phy_gravity, msg)
+		check("일반 보고: 기존 등급 보상 그대로", general.coins - beforeCoins == expectedFame * 8 and general.fame - beforeFame == expectedFame)
+		check("일반 보고: 실존 학자 방문 상태 불변", next(general.scholarsMet) == nil)
+		general.portId = "amsterdam"
+		local coins, fame = general.coins, general.fame
+		check("일반 보고: 다른 항구로 옮겨도 중복 보상 금지", not select(1, act(general, "ReportKnowledge", { scholarId = "port_scholar" })) and general.coins == coins and general.fame == fame)
+		local everyPort = true
+		for portId in D.Ports.Ports do
+			local sample = newState("england")
+			sample.portId = portId
+			sample.discovered.phy_lever = true
+			if S.Knowledge.reportableCount(sample, nil) < 1 then everyPort = false; break end
+		end
+		check("일반 보고: 모든 등록 항구에 접수 가능", everyPort)
+	end
 	-- 효과: 지레(phy_lever)를 이해하면 목재·대리석 값이 오른다
 	check("지식: 이해한 지식이 교역품 값을 올림", K.goodsMult(st, "timber") > 1.0 and K.goodsMult(st, "wool") == 1.0)
 	-- 천문: 항해 속도 효과는 상한이 있다

@@ -9288,9 +9288,17 @@ function RENDERERS.explore()
 		end)
 		add(function() return mkLabel(content, "역사의 현장은 학문과 이어져요. 같은 학문의 노트 3개와 그 학문 지식으로 초안을 쓰고, 아래 학회에서 발표한 뒤 출판해요.", 14, COLORS.muted, false) end)
 	end
-	add(function() return mkHeader(content, "이 항구의 학자") end)
+	add(function() return mkHeader(content, "지식 보고 · 모든 항구") end)
+	add(function()
+		local rep = view.portReportable or 0
+		return mkRow(content, "항구 학자", if rep > 0 then string.format("보고 가능 %d장 · 코인과 명성 획득", rep) else "보고할 새 지식을 발견하거나 선행 지식을 이해하세요.", {
+			{ text = if rep > 0 then string.format("보고 (%d)", rep) else "보고", color = COLORS.green, enabled = rep > 0,
+				onClick = function() call("ReportKnowledge", { scholarId = "port_scholar" }) end },
+		}, 56)
+	end)
+	add(function() return mkHeader(content, "이 항구의 실존 학자") end)
 	if #view.scholars == 0 then
-		add(function() return mkLabel(content, "지금 이 항구에는 학자가 없어요. 지식 카드 보고는 학자가 있는 항구의 서재에서만 받아 줘요.", 13, COLORS.muted, false) end)
+		add(function() return mkLabel(content, "실존 학자 방문과 공동 발표는 해당 항구에서 가능해요. 일반 지식 보고는 위에서 할 수 있어요.", 13, COLORS.muted, false) end)
 		-- 어디로 가면 되는지 알려 준다: 올해 활동 중인 학자와 그 항구
 		local where = {}
 		for _, sc in require(Shared:WaitForChild("Scholars")).Scholars do
