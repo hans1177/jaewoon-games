@@ -204,22 +204,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Find Blender and imaging libs (report only, no system changes except pip --user)
-        shell: pwsh
-        run: |
-          $bl = $null
-          if ($env:VIBE2_BLENDER_BINARY) { $bl = $env:VIBE2_BLENDER_BINARY }
-          else {
-            $dir = Get-ChildItem 'C:\Program Files\Blender Foundation' -Directory -ErrorAction SilentlyContinue | Sort-Object Name -Descending | Select-Object -First 1
-            if ($dir) { $bl = Join-Path $dir.FullName 'blender.exe' }
-          }
-          if (-not $bl -or -not (Test-Path $bl)) { throw 'Blender를 찾지 못했다. 설치하거나 저장소 변수/환경변수 VIBE2_BLENDER_BINARY 에 blender.exe 경로를 지정하라.' }
-          "VIBE2_BLENDER_BINARY=$bl" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
-          $ver = (& $bl --version | Select-Object -First 1)
-          "Blender: $ver ($bl)" | Tee-Object -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          node --version
-          python -c "import PIL, numpy; print('imaging OK')"
-          if ($LASTEXITCODE -ne 0) { python -m pip install --user --quiet pillow numpy; python -c "import PIL, numpy; print('imaging OK')" }
       - name: Ingest inbox, scan library, plan shortage fill
         shell: pwsh
         env:
@@ -227,7 +211,9 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path "$env:VIBE_CC0_LIBRARY_DIR\_inbox" | Out-Null
           node tools/vibe-cc0-library.mjs ingest
+          if ($LASTEXITCODE -ne 0) { throw 'Local inbox ingest failed' }
           node tools/vibe-cc0-library.mjs scan
+          if ($LASTEXITCODE -ne 0) { throw 'Local library scan failed' }
           # 부족한 분야가 있을 때만, 레지스트리에 CC0로 검증된 출처에서만 받는다(받은 팩은 승인 전 후보).
           if ($env:VIBE_SELECTED_SOURCE) {
             node tools/vibe-cc0-fetch.mjs --execute --source $env:VIBE_SELECTED_SOURCE
@@ -236,6 +222,20 @@ jobs:
           }
           if ($LASTEXITCODE -ne 0) { throw 'Local source acquisition failed' }
           node tools/vibe-cc0-library.mjs scan
+      - name: Find Blender and imaging libs (report only, no system changes except pip --user)
+        shell: pwsh
+        env:
+          VIBE_CONFIGURED_BLENDER: ${{ vars.VIBE2_BLENDER_BINARY }}
+        run: |
+          if ($env:VIBE_CONFIGURED_BLENDER) { $env:VIBE2_BLENDER_BINARY = $env:VIBE_CONFIGURED_BLENDER }
+          $bl = node --input-type=module -e "import {findBlender} from './tools/vibe-python.mjs'; const p=findBlender(); if(!p) process.exit(1); console.log(p)"
+          if ($LASTEXITCODE -ne 0 -or -not $bl) { throw 'LOCAL_BLENDER_UNAVAILABLE: 원본 확보 단계와 별개로 렌더링 연습 실패' }
+          "VIBE2_BLENDER_BINARY=$bl" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          $ver = (& $bl --version | Select-Object -First 1)
+          "Blender: $ver ($bl)" | Tee-Object -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          node --version
+          python -c "import PIL, numpy; print('imaging OK')"
+          if ($LASTEXITCODE -ne 0) { python -m pip install --user --quiet pillow numpy; python -c "import PIL, numpy; print('imaging OK')" }
       - name: Pull learned stats and learned lights
         shell: pwsh
         run: |
