@@ -18,6 +18,9 @@ const clean=value=>String(value??'').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const sha256=value=>crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex');
 const GIT_POLICY_SNAPSHOT_MAX_BUFFER=16*1024*1024;
+// [정책 조회] 작업 프로세스 안에서만 재사용한다. 원격 최신 확인이나 보안 검증은 생략하지 않는다.
+let cachedLocalPolicy=null;
+let cachedGitPolicy=null;
 
 function workerExecutionPolicyProjection(policy={}){
   const effectiveScope=resolveActiveOwnerPolicy(policy,{allowMissing:true});
@@ -210,34 +213,65 @@ function policyValidationErrors(policy={}){
   return errors;
 }
 
-export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CANONICAL_VIBE_POLICY_PATH,required=false}={}){
+export function loadCentralPolicySnapshot({repoRoot=process.cwd(),policyPath=CANONICAL_VIBE_POLICY_PATH,required=false,selectPaths=null}={}){
+  // [원본 조회] inode/크기/나노초 수정·상태시간이 모두 같을 때만 검증된 파싱 결과 재사용.
   const file=path.resolve(repoRoot,policyPath);
-  if(!fs.existsSync(file)){
+  let stamp;
+  try{
+    const stat=fs.statSync(file,{bigint:true});
+    if(!stat.isFile())throw new Error('NOT_FILE');
+    stamp=[file,stat.dev,stat.ino,stat.size,stat.mtimeNs,stat.ctimeNs].join(':');
+  }catch{
+    cachedLocalPolicy=null;
     return{
       required:required===true,present:false,valid:false,path:policyPath,
       fingerprint:null,executionFingerprint:null,version:null,status:null,policySource:null,syncMode:null,
       errors:['CENTRAL_POLICY_MISSING'],document:null
     };
   }
-  let raw='',document=null;
-  try{
-    raw=fs.readFileSync(file,'utf8');
-    document=JSON.parse(raw);
-  }catch(error){
-    return{
-      required:required===true,present:true,valid:false,path:policyPath,
-      fingerprint:raw?sha256(raw):null,executionFingerprint:null,version:null,status:null,policySource:null,
-      syncMode:null,errors:['CENTRAL_POLICY_PARSE:'+clean(error?.message||error)],document:null
+  let snapshot=cachedLocalPolicy?.stamp===stamp?cachedLocalPolicy.snapshot:null;
+  if(!snapshot){
+    let raw='',document=null;
+    try{
+      raw=fs.readFileSync(file,'utf8');
+      document=JSON.parse(raw);
+    }catch(error){
+      cachedLocalPolicy=null;
+      return{
+        required:required===true,present:true,valid:false,path:policyPath,
+        fingerprint:raw?sha256(raw):null,executionFingerprint:null,version:null,status:null,policySource:null,
+        syncMode:null,errors:['CENTRAL_POLICY_PARSE:'+clean(error?.message||error)],document:null
+      };
+    }
+    const errors=policyValidationErrors(document);
+    snapshot={
+      present:true,valid:errors.length===0,path:policyPath,
+      fingerprint:sha256(raw),executionFingerprint:workerExecutionPolicyFingerprint(document),version:Number(document.version)||null,
+      status:clean(document.status)||null,policySource:clean(document.policySource)||null,
+      syncMode:clean(document?.developmentLifecycleMachine?.sharedWorkerContext?.syncMode)||null,
+      errors,document
     };
+    cachedLocalPolicy={stamp,snapshot};
   }
-  const errors=policyValidationErrors(document);
-  return{
-    required:required===true,present:true,valid:errors.length===0,path:policyPath,
-    fingerprint:sha256(raw),executionFingerprint:workerExecutionPolicyFingerprint(document),version:Number(document.version)||null,
-    status:clean(document.status)||null,policySource:clean(document.policySource)||null,
-    syncMode:clean(document?.developmentLifecycleMachine?.sharedWorkerContext?.syncMode)||null,
-    errors,document
-  };
+  if(selectPaths===null)return{...snapshot,required:required===true};
+  // [선택 조회] 전체 정본을 먼저 검증하고 JSON Pointer 경로만 반환한다. 축약본은 정책 권한이 없다.
+  if(!Array.isArray(selectPaths))throw new Error('CENTRAL_POLICY_SELECT_PATHS_INVALID');
+  if(!snapshot.valid)return{...snapshot,required:required===true,selected:null};
+  const selected={};
+  for(const pointer of selectPaths){
+    if(typeof pointer!=='string'||!pointer.startsWith('/')||pointer.length<2)
+      throw new Error('CENTRAL_POLICY_POINTER_INVALID:'+String(pointer));
+    let value=snapshot.document;
+    for(const token of pointer.slice(1).split('/')){
+      if(/~(?![01])/.test(token))throw new Error('CENTRAL_POLICY_POINTER_INVALID:'+pointer);
+      const key=token.replace(/~1/g,'/').replace(/~0/g,'~');
+      if(value===null||typeof value!=='object'||!Object.prototype.hasOwnProperty.call(value,key))
+        throw new Error('CENTRAL_POLICY_POINTER_MISSING:'+pointer);
+      value=value[key];
+    }
+    selected[pointer]=value;
+  }
+  return{...snapshot,required:required===true,document:null,selected};
 }
 
 function remoteBranchHeadSha({repoRoot=process.cwd(),ref='origin/main'}={}){
@@ -262,6 +296,7 @@ export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),poli
   try{
     const gitRoot=clean(execFileSync('git',['-C',repoRoot,'rev-parse','--show-toplevel'],{encoding:'utf8',stdio:['ignore','pipe','pipe']}));
     if(!gitRoot)throw new Error('GIT_ROOT_MISSING');
+    // [원격 최신성] 캐시 여부와 관계없이 기존 fetch와 실패 차단을 먼저 수행한다.
     if(fetchRemote===true){
       const slash=resolvedRef.indexOf('/');
       if(slash<=0||slash===resolvedRef.length-1)throw new Error('LIVE_REF_MUST_BE_REMOTE_BRANCH');
@@ -269,16 +304,24 @@ export function loadCentralPolicySnapshotFromGitRef({repoRoot=process.cwd(),poli
       const branch=resolvedRef.slice(slash+1);
       execFileSync('git',['-C',gitRoot,'fetch','--quiet','--no-tags',remote,`+refs/heads/${branch}:refs/remotes/${remote}/${branch}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
     }
+    // [변경 감지] git blob SHA가 같은 원본만 파싱·검증 결과를 재사용한다.
+    const blobSha=clean(execFileSync('git',['-C',gitRoot,'rev-parse','--verify',`${resolvedRef}:${policyPath}`],{encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+    if(!/^[a-f0-9]{40}$/i.test(blobSha))throw new Error('CENTRAL_POLICY_BLOB_SHA_INVALID');
+    const cacheKey=[gitRoot,resolvedRef,policyPath,blobSha].join(':');
+    if(cachedGitPolicy?.key===cacheKey)
+      return{...cachedGitPolicy.snapshot,required:required===true,source:'GIT_REF',ref:resolvedRef};
     const raw=execFileSync('git',['-C',gitRoot,'show',`${resolvedRef}:${policyPath}`],{encoding:'utf8',stdio:['ignore','pipe','pipe'],maxBuffer:GIT_POLICY_SNAPSHOT_MAX_BUFFER});
     const document=JSON.parse(raw);
     const errors=policyValidationErrors(document);
-    return{
-      required:required===true,present:true,valid:errors.length===0,path:policyPath,
+    const snapshot={
+      present:true,valid:errors.length===0,path:policyPath,
       fingerprint:sha256(raw),executionFingerprint:workerExecutionPolicyFingerprint(document),version:Number(document.version)||null,
       status:clean(document.status)||null,policySource:clean(document.policySource)||null,
       syncMode:clean(document?.developmentLifecycleMachine?.sharedWorkerContext?.syncMode)||null,
       errors,document,source:'GIT_REF',ref:resolvedRef
     };
+    cachedGitPolicy={key:cacheKey,snapshot};
+    return{...snapshot,required:required===true};
   }catch(error){
     const detail=clean(error?.stderr||error?.message||error).replace(/\s+/g,' ').slice(0,240)||'UNKNOWN';
     return{

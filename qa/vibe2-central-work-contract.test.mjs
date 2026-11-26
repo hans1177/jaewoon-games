@@ -326,6 +326,35 @@ test('verified learning memory is validated once per cohort and workers reuse on
   assert.doesNotMatch(worker,/VERIFIED_PLAYBOOK_SOURCE_REQUIRED/);
 });
 
+test('validated policy reuses local parse until the canonical file actually changes',()=>{
+  const root=tempRoot();
+  writePolicy(root,196);
+  const first=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  const cached=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(first.valid,true);
+  assert.strictEqual(first.document,cached.document);
+  assert.equal(first.fingerprint,cached.fingerprint);
+  const selected=loadCentralPolicySnapshot({repoRoot:root,required:true,selectPaths:[
+    '/status','/developmentLifecycleMachine/sharedWorkerContext/syncMode','/ownerCanonicalRules/rule1/id'
+  ]});
+  assert.equal(selected.document,null);
+  assert.equal(selected.selected['/status'],'OWNER_DIRECT_LOCKED');
+  assert.equal(selected.selected['/developmentLifecycleMachine/sharedWorkerContext/syncMode'],'ROADMAP_FIRST_FAIL_CLOSED');
+  assert.equal(selected.selected['/ownerCanonicalRules/rule1/id'],'RULE_1_NEVER_STOP_CONTINUOUS_GAME_DEVELOPMENT');
+  assert.throws(()=>loadCentralPolicySnapshot({repoRoot:root,selectPaths:['/missing']}),/CENTRAL_POLICY_POINTER_MISSING/);
+  assert.throws(()=>loadCentralPolicySnapshot({repoRoot:root,selectPaths:['relative']}),/CENTRAL_POLICY_POINTER_INVALID/);
+  writePolicy(root,197);
+  const changed=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.notStrictEqual(changed.document,first.document);
+  assert.equal(changed.version,197);
+  fs.writeFileSync(path.join(root,CANONICAL_VIBE_POLICY_PATH),'{','utf8');
+  const invalid=loadCentralPolicySnapshot({repoRoot:root,required:true});
+  assert.equal(invalid.valid,false);
+  assert.ok(invalid.errors.some(error=>error.startsWith('CENTRAL_POLICY_PARSE:')));
+  writePolicy(root,198);
+  assert.equal(loadCentralPolicySnapshot({repoRoot:root,required:true}).version,198);
+});
+
 test('central roadmap snapshot rejects execution authority expansion',()=>{
   const root=tempRoot();
   writePolicy(root,196);
@@ -413,6 +442,8 @@ test('live git-ref loader accepts central policy snapshots larger than one MiB',
   assert.equal(snapshot.present,true);
   assert.equal(snapshot.version,196);
   assert.equal(snapshot.errors.length,0);
+  const cached=loadCentralPolicySnapshotFromGitRef({repoRoot:worker,required:true,ref:'origin/main',fetchRemote:false});
+  assert.strictEqual(cached.document,snapshot.document);
 });
 
 test('pinned worker ignores unrelated live roadmap progress but detects execution-policy change',()=>{
