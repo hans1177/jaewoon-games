@@ -853,6 +853,7 @@ def render_animal_review_candidates(report, out):
     preferred = [row for row in fresh if row.get("geometryQualityState") != "SOURCE_GEOMETRY_REPAIR_REQUIRED"]
     # 한 자리만 실제 수리에 배정하고 기존 신규·재시도 순환도 유지한다.
     quality = [row for row in ordered if row.get("license") == "CC0-1.0"
+               and row.get("directModel") is True
                and row.get("geometryQualityState") == "SOURCE_GEOMETRY_REPAIR_REQUIRED"
                and 0 < (row.get("geometry", {}).get("triangles") or 0) < 1000
                and len(row["modelMembers"]) == 1 and row["modelMembers"][0]["format"] == "GLB"
