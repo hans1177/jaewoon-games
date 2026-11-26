@@ -1088,27 +1088,39 @@ with tempfile.TemporaryDirectory() as root:
     (ports/'b.md').write_text('#### '+tick+'b_house_1'+tick+' — house\n- building · 1단계 · size\n',encoding='utf-8')
     (docs/'port_asset_prompts.csv').write_text('port_id,asset_id,tier\na,a_house_1,1\nb,b_plaza,2\nb,a_unrelated,2\n',encoding='utf-8')
     (docs/'battle_backdrops').mkdir()
-    (docs/'battle_backdrops'/'backdrop_prompts.csv').write_text('category,asset_id\nfield,field_one\nnaval-near,naval_one\n',encoding='utf-8')
+    (docs/'battle_backdrops'/'backdrop_prompts.csv').write_text('category,asset_id\nfield,field_one\nnaval-near,sea_test_near\nnaval-far,sea_test_far\nnaval-mid,sea_test_mid\n',encoding='utf-8')
+    (docs/'battle_backdrops'/'quests.md').write_text('| Test ('+tick+'q_test'+tick+') | field | current site |\n| Sea ('+tick+'q_sea'+tick+') | war_clear | naval/test.md |\n',encoding='utf-8')
     hold=Path(root)/'assets'/'inbox-hold'/'Town'
     hold.mkdir(parents=True)
     (hold/'gobkit-free-a_lamp.glb').touch()
     (hold/'gobkit-free-a_lamp.glb.license.json').touch()
     status={}
+    battle_status={}
     outstanding=scene_source_targets({'Town/a_house_1':{'assetId':'10','assetType':'Model','usePermissionGranted':True},
-                                      'Town/b_house_1':{'assetId':'11','assetType':'Image','usePermissionGranted':True}},status)
+                                      'Town/b_house_1':{'assetId':'11','assetType':'Image','usePermissionGranted':True},
+                                      'Naval/sea_test_far':{'assetId':'12','assetType':'Model','usePermissionGranted':True}},status,battle_status)
     assert status['portCount']==2 and status['planned']==4 and status['registeredModelRights']==1
     assert status['heldUnverified']==1 and status['missingOriginal']==2
     assert status['nativeRuntimeVerified'] is False and status['visualQualityApproved'] is False
     assert status['ports'][0]['stages']['3']=={'planned':1,'registeredModelRights':0}
     assert status['ports'][1]['nextMissing']==[{'assetKey':'Town/b_house_1','tier':1},{'assetKey':'Town/b_plaza','tier':2}]
-    assert outstanding=={'a_lamp':'Town','b_house_1':'Town','b_plaza':'Town','field_one':'Terrain','naval_one':'Naval'}
+    assert outstanding=={'a_lamp':'Town','b_house_1':'Town','b_plaza':'Town','field_one':'Terrain','sea_test_near':'Naval','sea_test_mid':'Naval'}
+    assert battle_status['seaCount']==1 and battle_status['siteCount']==1 and battle_status['questBriefCount']==2
+    assert battle_status['planned']==4 and battle_status['registeredModelRights']==1 and battle_status['missingOriginal']==3
+    assert battle_status['seas'][0]['layers']['far']['state']=='REGISTERED_MODEL_RIGHTS'
+    assert battle_status['sites'][0]['siteId']=='one'
+    assert battle_status['quests'][0]['route']=='CURRENT_EXPLORATION_SITE'
+    assert battle_status['quests'][1]['explicitSeaCandidates']==['test']
+    assert battle_status['nativeRuntimeVerified'] is False and battle_status['quests'][1]['runtimeRouteVerified'] is False
 print('MARE_PORT_BRIEF_COVERAGE_FIXTURES=7')
+print('MARE_BATTLE_BRIEF_COVERAGE_FIXTURES=7')
 `;
   const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
   assert.match(output,/MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8/);
   assert.match(output,/MARE_HELD_ANIMAL_RESTORE_FIXTURES=8/);
   assert.match(output,/MARE_ANIMAL_PUBLISHER_FIXTURES=10/);
   assert.match(output,/MARE_PORT_BRIEF_COVERAGE_FIXTURES=7/);
+  assert.match(output,/MARE_BATTLE_BRIEF_COVERAGE_FIXTURES=7/);
 });
 
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{
