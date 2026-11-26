@@ -96,6 +96,123 @@ jobs:
         with:
           node-version: '20'
 
+
+      # [드롭박스 원화 인입] 검수 완료된 원본만 기존 승인표와 함께 후보 브랜치에 보관한다.
+      # 활성 승인·main·기존 Roblox 번호는 직접 바꾸지 않는다. 기존 PR 검사를 통과해야 등록한다.
+      - name: Stage reviewed Dropbox original in existing card transfer lane
+        if: ${{ inputs.studio_regrant != true }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 후보가 없으면 외부 인증 및 네트워크 접근을 하지 않는다.
+          python3 - <<'PYDROPBOX'
+          import base64, hashlib, json, os, pathlib, re, struct, subprocess
+          import urllib.request, urllib.parse, urllib.error
+          root = pathlib.Path('roblox-games/mare-essentia')
+          manifest = root/'assets/APPROVED_IMAGES.json'
+          doc = json.loads(manifest.read_text(encoding='utf-8'))
+          pending = doc.get('dropboxPending', {})
+          if not pending:
+              print('CARD_DROPBOX_NO_REVIEWED_CANDIDATE')
+              raise SystemExit(0)
+          if not isinstance(pending, dict):
+              raise SystemExit('CARD_DROPBOX_PENDING_INVALID')
+          # 중앙 검증기는 기존 책임 파일을 그대로 실행한다.
+          safe_env = {k:v for k,v in os.environ.items() if not k.startswith('DROPBOX_')}
+          subprocess.run(['node','tools/company-shared-context.mjs'], env=safe_env, check=True)
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          opener = urllib.request.build_opener(NoRedirect())
+          def request(url, headers, data, limit):
+              try:
+                  with opener.open(urllib.request.Request(url, data=data, headers=headers, method='POST'), timeout=45) as response:
+                      result = response.read(limit+1)
+                  if len(result)>limit:
+                      raise SystemExit('CARD_DROPBOX_RESPONSE_LIMIT')
+                  return result
+              except urllib.error.HTTPError as exc:
+                  raise SystemExit('CARD_DROPBOX_HTTP_'+str(exc.code)) from None
+              except (urllib.error.URLError, TimeoutError):
+                  raise SystemExit('CARD_DROPBOX_NETWORK_ERROR') from None
+          def gh(endpoint, payload):
+              result = subprocess.run(['gh','api','--method','POST','repos/'+os.environ['GITHUB_REPOSITORY']+'/'+endpoint,'--input','-','--jq','.sha // .object.sha // empty'],input=json.dumps(payload),text=True,capture_output=True,env=safe_env)
+              if result.returncode:
+                  raise SystemExit('CARD_DROPBOX_GIT_OBJECT_WRITE_FAILED:'+endpoint)
+              return result.stdout.strip()
+          registry = json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          checks = ['subjectMatch','historicalContext','houseStyle','singleFinishedScene','noPartsOrSprites','robloxSafety','commercialRights']
+          for card, candidate in sorted(pending.items()):
+              match = re.fullmatch(r'CardArt/((?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9]))',card)
+              if not match:
+                  raise SystemExit('CARD_DROPBOX_ID_INVALID')
+              name = match.group(1)
+              relative = 'assets/cardart/src/'+name+'-original.png'
+              review = candidate['review']
+              digest = review['sourceSha256']
+              previous = registry.get(card,{})
+              if not re.fullmatch(r'[a-f0-9]{64}',digest) or review.get('sourceFile')!=relative or review.get('sourceType')!='IMAGE_GENERATION_MODEL' or review.get('reviewer')!='VIBE_AGENT_VISUAL_REVIEW' or review.get('license')!='PROJECT_ORIGINAL_ART' or not re.fullmatch(r'\d{4}-\d{2}-\d{2}',review.get('reviewedAt','')) or not all(review.get(k) is True for k in checks):
+                  raise SystemExit('CARD_DROPBOX_REVIEW_INVALID:'+card)
+              if doc['approved'].get(card)==digest:
+                  print('CARD_DROPBOX_ALREADY_APPROVED',card)
+                  continue
+              if previous.get('sourceSha256')!=review.get('replacesSha256') or doc['approved'].get(card)!=review.get('replacesSha256') or str(previous.get('assetId'))!=str(review.get('replacesAssetId')) or previous.get('assetType')!='Image' or previous.get('usePermissionGranted') is not True:
+                  raise SystemExit('CARD_DROPBOX_REPLACEMENT_STALE:'+card)
+              target = root/'assets/cardart'/ (name+'.png')
+              if hashlib.sha256(target.read_bytes()).hexdigest()!=review['replacesSha256']:
+                  raise SystemExit('CARD_DROPBOX_REGISTERED_BYTES_CHANGED:'+card)
+              branch = 'mare-dropbox-card-'+name+'-'+digest[:12]
+              remote = subprocess.run(['git','ls-remote','--exit-code','--heads','origin','refs/heads/'+branch],capture_output=True,env=safe_env)
+              if remote.returncode == 0:
+                  print('CARD_DROPBOX_CANDIDATE_EXISTS',card,branch)
+                  continue
+              if remote.returncode != 2:
+                  raise SystemExit('CARD_DROPBOX_REF_CHECK_FAILED')
+              keys = [os.environ.get(k,'') for k in ('DROPBOX_APP_KEY','DROPBOX_APP_SECRET','DROPBOX_REFRESH_TOKEN')]
+              if not all(keys):
+                  raise SystemExit('CARD_DROPBOX_AUTH_NOT_CONFIGURED')
+              basic = base64.b64encode((keys[0]+':'+keys[1]).encode()).decode()
+              grant = urllib.parse.urlencode({'grant_type':'refresh_token','refresh_token':keys[2]}).encode()
+              token = json.loads(request('https://api.dropboxapi.com/oauth2/token',{'Authorization':'Basic '+basic,'Content-Type':'application/x-www-form-urlencoded'},grant,65536)).get('access_token')
+              if not token:
+                  raise SystemExit('CARD_DROPBOX_ACCESS_TOKEN_MISSING')
+              arg = json.dumps({'path':'/Vibe2Transfer/'+name+'-original.png'})
+              raw = request('https://content.dropboxapi.com/2/files/download',{'Authorization':'Bearer '+token,'Dropbox-API-Arg':arg},b'',20*1024*1024)
+              if len(raw)!=candidate['bytes'] or len(raw)<50000 or hashlib.sha256(raw).hexdigest()!=digest:
+                  raise SystemExit('CARD_DROPBOX_ORIGINAL_HASH_OR_SIZE_MISMATCH:'+card)
+              if raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6):
+                  raise SystemExit('CARD_DROPBOX_RGB_PNG_REQUIRED:'+card)
+              width,height=struct.unpack('>II',raw[16:24])
+              if (width,height)!=(candidate['width'],candidate['height']) or width<1049 or height<1499 or width>4096 or height>4096 or abs(width*10-height*7)>height*0.05:
+                  raise SystemExit('CARD_DROPBOX_DIMENSIONS_INVALID:'+card)
+              # SHA로 고정된 실물과 승인 변경만 같은 후보 커밋에 저장한다.
+              blob = gh('git/blobs',{'content':base64.b64encode(raw).decode(),'encoding':'base64'})
+              if blob!=hashlib.sha1(('blob '+str(len(raw))+'\0').encode()+raw).hexdigest():
+                  raise SystemExit('CARD_DROPBOX_GIT_BLOB_MISMATCH')
+              doc['approved'][card]=digest
+              doc['modelOriginals'][card]=review
+              del doc['dropboxPending'][card]
+              if not doc['dropboxPending']:
+                  del doc['dropboxPending']
+              base = subprocess.check_output(['git','rev-parse','HEAD'],text=True,env=safe_env).strip()
+              tree = subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True,env=safe_env).strip()
+              candidate_tree=gh('git/trees',{'base_tree':tree,'tree':[
+                  {'path':str(root/relative),'mode':'100644','type':'blob','sha':blob},
+                  {'path':str(manifest),'mode':'100644','type':'blob','content':json.dumps(doc,ensure_ascii=False,indent=2)+'\n'}]})
+              commit=gh('git/commits',{'message':'Mare Essentia: verified Dropbox original '+name,'tree':candidate_tree,'parents':[base]})
+              ref=gh('git/refs',{'ref':'refs/heads/'+branch,'sha':commit})
+              if ref!=commit:
+                  raise SystemExit('CARD_DROPBOX_REF_MISMATCH')
+              print('CARD_DROPBOX_CANDIDATE_READY',card,branch,commit,digest)
+              break
+          PYDROPBOX
+
       - name: Check reviewed animal originals and rotate missing source search
         id: animal_practice
         if: ${{ env.MARE_MODELS_ONLY == 'true' }}
