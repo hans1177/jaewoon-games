@@ -205,3 +205,37 @@ print(materialize_animal_review_member(data,'penguin.tar.gz','penguin',members[0
     assert.equal(sha(fs.readFileSync(archive)),archiveSha);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('Mare asset ledger executes the existing game-local reference scanner and distinguishes scan failure from zero missing references', () => {
+  const script=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  const prefix=script.split('# 유틸: 원본의 형식')[0];
+  assert.ok(prefix.includes('registry_audit'));
+  const fixture=fs.mkdtempSync(path.join(os.tmpdir(),'mare-reference-scan-'));
+  try{
+    const scanner=path.join(fixture,'tools','devloop','asset_check.py');
+    fs.mkdirSync(path.dirname(scanner),{recursive:true});
+    fs.copyFileSync('roblox-games/mare-essentia/tools/devloop/asset_check.py',scanner);
+    fs.mkdirSync(path.join(fixture,'src'),{recursive:true});
+    fs.writeFileSync(path.join(fixture,'assets-registered.json'),JSON.stringify({assets:{'Town/house':{assetType:'Model'}}}));
+    fs.writeFileSync(path.join(fixture,'default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{MareAssets:{Town:{}}}}}));
+    const source=path.join(fixture,'src','scene.luau');
+    const run=()=>{
+      const code="__file__='tools/devloop/assets_wanted.py'\n"+prefix+
+        "\nprint(json.dumps({'audit':registry_audit,'counts':list(counts.groups()) if counts else None,'missing':missing}))";
+      const result=spawnSync('python3',['-c',code,fixture],{encoding:'utf8',timeout:30000});
+      assert.equal(result.status,0,result.stderr);
+      return JSON.parse(result.stdout.trim());
+    };
+    fs.writeFileSync(source,'importedModel(parent, "Town", "house")\n');
+    assert.equal(run().audit.state,'STATIC_SCAN_OK');
+    assert.deepEqual(run().counts,['1','1','0']);
+    fs.writeFileSync(source,'importedModel(parent, "Town", "absent")\n');
+    assert.equal(run().audit.state,'MISSING_REFERENCES');
+    assert.deepEqual(run().missing,[['scene.luau','Town/absent']]);
+    fs.unlinkSync(scanner);
+    const failed=run();
+    assert.equal(failed.audit.state,'SCAN_ERROR');
+    assert.equal(failed.audit.nativeRuntimeVerified,false);
+    assert.equal(failed.counts,null);
+  }finally{fs.rmSync(fixture,{recursive:true,force:true});}
+});
