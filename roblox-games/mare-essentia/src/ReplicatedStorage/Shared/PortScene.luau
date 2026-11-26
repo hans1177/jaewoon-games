@@ -6719,27 +6719,44 @@ function PortScene.build(info, onFacility)
 			local form = (style.house or {}).form
 			local localArchitecture = style.kit == "eastasia" or form == "flat" or form == "courtyard"
 				or form == "carved" or form == "stilt" or form == "coastal"
-			-- [런던 방문 시설] 문화권·경제 발전 단계에 정확히 대응하는 등록 실물만 우선한다.
-			local londonKind = if info.portId == "london" then
-				(if f.name == "교역소" then "trade" elseif f.name == "주점" then "tavern"
-					elseif f.name == "항만청" then "harbor" elseif f.name == "은행" then "bank"
-					elseif f.name == "상인 길드" then "guild" elseif f.name == "학자의 서재" then "scholar"
-					else nil) else nil
-			local londonFacility = if londonKind then "london_" .. londonKind .. "_"
+			-- [항구별 방문 시설] 지시서의 <항구>_<시설>_<외형 단계> 정식 키를 모든 항구에서 사용한다.
+			-- 기존 경제/해금 판정을 보존한다. 다른 항구 모델을 가져오거나 미등록 모델을 요청하지 않는다.
+			local facilityKind = if f.tab == "trade" then "trade" elseif f.tab == "board" then "tavern"
+				elseif f.tab == "route" then "harbor" elseif f.tab == "harbor" then "bank"
+				elseif f.tab == "market" then "guild" elseif f.tab == "tech" then "scholar" else nil
+			local originalFacility = if identity and facilityKind then info.portId .. "_" .. facilityKind .. "_"
 				.. tostring(if facilityTier >= 5 then 3 elseif facilityTier >= 3 then 2 else 1) else nil
-			if londonFacility and not AssetIds["Town/" .. londonFacility] then londonFacility = nil end
+			if originalFacility then
+				folder:SetAttribute("CityPortExpectedFacility_" .. f.tab, originalFacility)
+				-- 점령 이후 문화권이 바뀐 항구의 옛 현지 원본은 새 시대의 시설로 자동 승격하지 않는다.
+				if culture ~= REGION[info.portId] then
+					folder:SetAttribute("CityPortFacilityEraMismatch_" .. f.tab, originalFacility)
+					originalFacility = nil
+				elseif not AssetIds["Town/" .. originalFacility] then
+					folder:SetAttribute("CityPortMissingFacility_" .. f.tab, originalFacility)
+					originalFacility = nil
+				end
+			end
 			local signatureAsset = if localArchitecture then nil
 				elseif f.name == "학자의 서재" then "quaternius_large_square_tower"
 				elseif f.name == "도서관 (도감)" then "temple-stone"
 				else nil
-			if londonFacility then signatureAsset = londonFacility end
+			if originalFacility then signatureAsset = originalFacility end
 			local signature = signatureAsset and importedModel(folder, "Town", signatureAsset, f.pos,
-				math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055), true, tone)
+				math.max(f.w, f.d) * grow * HOUSE_SCALE * (1 + math.max(0, facilityTier - 2) * 0.055),
+				true, if originalFacility then nil else tone)
+			if originalFacility and not signature then
+				folder:SetAttribute("CityPortMissingFacility_" .. f.tab, originalFacility)
+			end
 			if signature then
-				signature.Name = if londonFacility then "LondonFacility_" .. f.tab
+				signature.Name = if originalFacility then
+					(if info.portId == "london" then "LondonFacility_" else "PortFacility_") .. f.tab
 					elseif f.name == "학자의 서재" then "ScholarStudyTower" else "HarborLibraryHall"
 				signature:SetAttribute("FacilityIdentity", f.tab)
-				if londonFacility then signature:SetAttribute("PortOriginalFacility", londonFacility) end
+				if originalFacility then
+					signature:SetAttribute("PortOriginalFacility", originalFacility)
+					folder:SetAttribute("CityPortAppliedFacility_" .. f.tab, originalFacility)
+				end
 			end
 			local body = (signature and signature:FindFirstChildWhichIsA("BasePart", true))
 				or house(folder, f.pos, f.w * grow, f.d * grow, visualFloors, style, rng, tone)

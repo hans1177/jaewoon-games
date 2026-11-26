@@ -135,6 +135,19 @@ for _, must in {
 end
 -- [CC0 배경 회귀] AssetIds에 등록된 모델만 항구 문화권별로 요청되어야 한다.
 local Registered = require("./AssetIds")
+-- [항구별 지시서 시설] 실제 등록된 전용 모델만 해당 항구의 기존 1~5단계 빌드에서 요청한다.
+-- 등록되지 않은 원본을 테스트용 실제 자산으로 만들거나 런타임 성공으로 표시하지 않는다.
+for _, portId in ports do
+	for _, kind in { "trade", "tavern", "harbor", "bank", "guild", "scholar" } do
+		for tier = 1, 3 do
+			local assetId = "Town/" .. portId .. "_" .. kind .. "_" .. tostring(tier)
+			if Registered[assetId] and portId == "london" and not State.used[assetId] then
+				fails += 1
+				print("회귀 실패: 런던 지시서 등록 방문 시설 요청되지 않음 " .. assetId)
+			end
+		end
+	end
+end
 for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
 	"Naval/rocks-a", "Naval/rocks-b", "Naval/patch-sand-foliage", "Castle/ground-hills",
 	"Terrain/Grass_Small", "Terrain/Bush_Small", "Terrain/Rock_2" } do
