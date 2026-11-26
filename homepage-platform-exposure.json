@@ -11,7 +11,7 @@
     "UNITY"
   ],
   "unityWebEnabled": false,
-  "generatedAt": "2026-11-26T15:52:16.797Z",
+  "generatedAt": "2026-11-26T15:52:53.464Z",
   "games": [
     {
       "gameId": "amusement-tycoon",
@@ -1350,20 +1350,20 @@
             "records": []
           },
           "floorProgress": {
-            "tracked": false,
-            "queueState": "NOT_IN_ACTIVE_ROBLOX_RUNTIME_QUEUE",
-            "currentFloor": null,
-            "stage": null,
-            "result": "UNCONFIRMED",
+            "tracked": true,
+            "queueState": "ACTIVE_QUEUE_REGISTERED_NOT_LIVE_JOB_PROOF",
+            "currentFloor": "F0_BEFORE_SOURCE_BIND",
+            "stage": "TARGET_PLATFORM_SOURCE_BIND",
+            "result": "PRE_F0_OR_PENDING",
             "verifiedAt": null,
-            "checkedAt": null,
+            "checkedAt": "2026-11-26T15:52:44.329Z",
             "lastFailureAt": null,
             "f0PassedAt": null,
             "candidatePublishedAt": null,
             "failureCode": null,
             "completedCycles": 0
           },
-          "developmentState": "WAITING_SOURCE",
+          "developmentState": "NATIVE_DEVELOPMENT",
           "runtimePassed": false,
           "independentQaPassed": false,
           "regressionPassed": false,
@@ -1373,13 +1373,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1387,7 +1387,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1430,13 +1429,13 @@
             "ready": false,
             "homepageReady": false,
             "technicalReady": false,
-            "designReady": false,
+            "designReady": true,
             "lobbyReady": false,
             "ownerConfirmed": false,
             "basis": "PENDING_EVIDENCE",
             "experience": "DEVELOPMENT",
             "checks": {
-              "design": false,
+              "design": true,
               "publication": false,
               "exactRuntime": false,
               "lobby": false,
@@ -1444,7 +1443,6 @@
               "noRuntimeErrors": false
             },
             "blockers": [
-              "design",
               "publication",
               "exactRuntime",
               "lobby",
@@ -1463,7 +1461,7 @@
           "publicUrl": null
         }
       ],
-      "updatedAt": "2026-11-10T01:52:05.391Z"
+      "updatedAt": "2026-11-26T15:52:44.329Z"
     },
     {
       "gameId": "fifty-days",
