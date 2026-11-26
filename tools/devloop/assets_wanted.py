@@ -1068,11 +1068,31 @@ def render_animal_review_candidates(report, out):
     candidates = [row for row in report["candidates"] if row.get("modelMembers")]
     # 기존 메인 장부의 동일 원본 관찰만 순환 우선순위에 사용한다. 승인이나 현재 렌더 증거로 승격하지 않는다.
     try:
-        previous = json.loads(subprocess.check_output(
+        previous_report = json.loads(subprocess.check_output(
             ["git", "show", "HEAD:" + os.path.join(root, "assets-wanted.json")],
-            timeout=30, stderr=subprocess.DEVNULL))["animalSourcePractice"]["candidates"]
+            timeout=30, stderr=subprocess.DEVNULL))["animalSourcePractice"]
+        previous = previous_report["candidates"]
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
-        previous = []
+        previous_report, previous = {}, []
+    # [검수 이력] 일반 등록 실행이 직전 실제 검수 결과를 덮어쓰지 않는다.
+    # 이전 실행 요약은 현재 렌더/승인 증거가 아니며 등록 경로에서 사용하지 않는다.
+    if previous_report.get("sourcePreviewState") in ("RENDER_EVIDENCE_ONLY", "BLENDER_UNAVAILABLE", "NO_MODEL_CANDIDATES"):
+        report["lastPreviewSummary"] = {
+            "state": "HISTORICAL_PREVIEW_ONLY",
+            "runId": previous_report.get("previewRunId"),
+            "previewState": previous_report.get("sourcePreviewState"),
+            "visualState": previous_report.get("sourceVisualObservationState"),
+            "publisherSearchState": previous_report.get("publisherSearchState"),
+            "scenePublisherExactNameCandidates": previous_report.get("scenePublisherExactNameCandidates"),
+            "downloadAttempts": previous_report.get("downloadAttempts"),
+            "newOriginalCount": len(previous_report.get("newOriginals", [])),
+            "renderedCount": sum(r.get("sourcePreview", {}).get("state") == "RENDERED_AWAITING_VISUAL_REVIEW"
+                                 for r in previous),
+            "registrationApproved": False, "nativeRuntimeVerified": False}
+    elif isinstance(previous_report.get("lastPreviewSummary"), dict):
+        report["lastPreviewSummary"] = previous_report["lastPreviewSummary"]
+    if out:
+        report["previewRunId"] = os.environ.get("GITHUB_RUN_ID")
     prior = {(r.get("name"), r.get("sourceSha256"), tuple(m.get("sha256") for m in r.get("modelMembers", []))): r
              for r in previous if isinstance(r, dict)}
     for row in candidates:
@@ -1086,6 +1106,17 @@ def render_animal_review_candidates(report, out):
             row["sourceVisualObservation"] = observation
         if old.get("priorRenderRetry") is True or old.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY":
             row["priorRenderRetry"] = True
+        # 해시가 동일한 원본의 마지막 시도만 보존한다. 현재 실행의 sourcePreview/qualityCandidate와 분리한다.
+        for current, historical in (("sourcePreview", "lastSourcePreview"), ("qualityCandidate", "lastQualityCandidate")):
+            old_evidence = old.get(current) or old.get(historical)
+            if (isinstance(old_evidence, dict) and old_evidence.get("registrationApproved") is False
+                    and old_evidence.get("visualQualityApproved") is False):
+                row[historical] = {k: old_evidence[k] for k in
+                                   ("state", "failureReason", "failureDiagnostic", "structureDiagnostic",
+                                    "triangles", "trianglesBefore", "trianglesAfter", "sourceMemberSha256")
+                                   if k in old_evidence}
+                row[historical].update(registrationApproved=False, visualQualityApproved=False,
+                                       historicalOnly=True)
         geometry = row.get("geometry", {})
         if type(geometry.get("triangles")) is int:
             row["geometryQualityState"] = ("MOBILE_BUDGET_MET" if geometry.get("mobileGeometryWithinBudget") is True
@@ -1256,6 +1287,14 @@ def render_animal_review_candidates(report, out):
                                 or after_geometry["triangles"] != repair["trianglesAfter"]
                                 or after_geometry["jointCount"] != before_geometry["jointCount"]
                                 or after_geometry["animationCount"] != before_geometry["animationCount"]):
+                            quality_evidence["structureDiagnostic"] = {
+                                "budgetMet": after_geometry["mobileGeometryWithinBudget"],
+                                "expectedTriangles": repair["trianglesAfter"], "actualTriangles": after_geometry["triangles"],
+                                "originalJoints": before_geometry["jointCount"], "candidateJoints": after_geometry["jointCount"],
+                                "originalAnimations": before_geometry["animationCount"],
+                                "candidateAnimations": after_geometry["animationCount"]}
+                            print("MARE_ANIMAL_QUALITY_STRUCTURE_DIAGNOSTIC", row["name"],
+                                  json.dumps(quality_evidence["structureDiagnostic"], sort_keys=True))
                             raise ValueError("ANIMAL_QUALITY_CANDIDATE_STRUCTURE")
                         before_doc = json.loads(data[20:20 + struct.unpack_from("<I", data, 12)[0]])
                         after_doc = json.loads(derived[20:20 + struct.unpack_from("<I", derived, 12)[0]])
