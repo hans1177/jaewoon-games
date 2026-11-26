@@ -386,6 +386,8 @@ jobs:
         env:
           VIBE2_VISION_MODEL: ${{ vars.VIBE2_VISION_MODEL }}
           VIBE2_LOCAL_AI_OWNER_APPROVED: ${{ vars.VIBE2_LOCAL_AI_OWNER_APPROVED }}
+          VIBE2_GEMINI_FREE_TIER_VERIFIED: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED }}
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
         shell: bash
         run: |
           set -euo pipefail

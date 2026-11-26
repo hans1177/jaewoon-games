@@ -553,25 +553,45 @@ def materialize_animal_review_member(data, filename, target, member, dest):
     if member not in matches or member["format"] not in ("GLB", "BLEND"):
         raise ValueError("SOURCE_PREVIEW_MEMBER_UNVERIFIED")
     name = member["member"]
-    texture = name.rsplit(".", 1)[0] + ".png"
+    # 검증된 아카이브 안의 동일 폴더 텍스처만 원래 파일명으로 복원한다.
+    # 다른 디렉터리, 실행 파일, 외부 참조는 여전히 허용하지 않는다.
+    folder = os.path.dirname(name)
+    def collect(entries, read):
+        images = {}
+        for entry in entries:
+            if os.path.dirname(entry) != folder:
+                continue
+            ext = os.path.splitext(entry)[1].lower()
+            if ext not in (".png", ".jpg", ".jpeg"):
+                continue
+            base = os.path.basename(entry)
+            if not re.fullmatch(r"[a-zA-Z0-9_. -]+\.(?i:png|jpg|jpeg)", base) or base in images:
+                raise ValueError("SOURCE_PREVIEW_TEXTURE_NAME")
+            image = read(entry)
+            valid = (image.startswith(b"\x89PNG\r\n\x1a\n") if ext == ".png"
+                     else image.startswith(b"\xff\xd8\xff") and image.endswith(b"\xff\xd9"))
+            if not valid or not 0 < len(image) <= 5_000_000:
+                raise ValueError("SOURCE_PREVIEW_TEXTURE_INVALID")
+            images[base] = image
+        if len(images) > 16 or sum(map(len, images.values())) > 15_000_000:
+            raise ValueError("SOURCE_PREVIEW_TEXTURE_BUDGET")
+        return images
     if filename.endswith(".zip"):
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             body = archive.read(name)
-            image = archive.read(texture) if texture in archive.namelist() else None
+            images = collect([info.filename for info in archive.infolist() if not info.is_dir()], archive.read)
     else:
         with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
             body = archive.extractfile(name).read(5_000_001)
-            info = archive.getmember(texture) if texture in archive.getnames() else None
-            image = archive.extractfile(info).read(5_000_001) if info and info.isfile() else None
+            images = collect([info.name for info in archive.getmembers() if info.isfile()],
+                             lambda entry: archive.extractfile(entry).read(5_000_001))
     if len(body) != member["bytes"] or hashlib.sha256(body).hexdigest() != member["sha256"]:
         raise ValueError("SOURCE_PREVIEW_MEMBER_HASH_MISMATCH")
     source = os.path.join(dest, os.path.basename(name))
     with open(source, "wb") as handle:
         handle.write(body)
-    if image is not None:
-        if len(image) > 5_000_000 or not image.startswith(b"\x89PNG\r\n\x1a\n"):
-            raise ValueError("SOURCE_PREVIEW_TEXTURE_INVALID")
-        with open(os.path.join(dest, os.path.basename(texture)), "wb") as handle:
+    for base, image in images.items():
+        with open(os.path.join(dest, base), "wb") as handle:
             handle.write(image)
     return source
 
@@ -619,12 +639,22 @@ def render_animal_review_candidates(report, out):
                 safe_env = {"PATH": os.environ.get("PATH", ""), "HOME": temp, "TMPDIR": temp,
                             "LANG": "C.UTF-8", "LIBGL_ALWAYS_SOFTWARE": "1"}
                 os.makedirs(frame_dir, exist_ok=True)
-                subprocess.run([blender, "--background", "--factory-startup", "--disable-autoexec",
-                                "--python-exit-code", "1", "--python",
-                                os.path.abspath("tools/vibe_mesh_audit.py"), "--",
-                                "--input", source, "--output", audit_path,
-                                "--source-preview-dir", frame_dir], cwd=temp, env=safe_env,
-                               timeout=180, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                with tempfile.TemporaryFile() as diagnostic:
+                    completed = subprocess.run([blender, "--background", "--factory-startup", "--disable-autoexec",
+                                    "--python-exit-code", "1", "--python",
+                                    os.path.abspath("tools/vibe_mesh_audit.py"), "--",
+                                    "--input", source, "--output", audit_path,
+                                    "--source-preview-dir", frame_dir], cwd=temp, env=safe_env,
+                                   timeout=180, check=False, stdout=diagnostic, stderr=subprocess.STDOUT)
+                    if completed.returncode:
+                        # 로그 원문은 저장하지 않고 알려진 실패 코드만 남긴다.
+                        diagnostic.seek(max(0, diagnostic.tell()-65536))
+                        tail = diagnostic.read(65536).decode("utf-8", errors="replace")
+                        reasons = ("SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE", "SOURCE_PREVIEW_EXTERNAL_LIBRARY",
+                                   "SOURCE_PREVIEW_NO_FINITE_MESH", "SOURCE_PREVIEW_EMPTY_BOUNDS",
+                                   "SOURCE_PREVIEW_INVALID_IMAGE")
+                        raise ValueError(next((reason for reason in reasons if reason in tail),
+                                              "SOURCE_PREVIEW_BLENDER_FAILED"))
                 audit = read_json(audit_path)
                 preview = audit["sourcePreview"]
                 if preview["sourceSha256"] != member["sha256"] or len(preview["frames"]) != 3:
