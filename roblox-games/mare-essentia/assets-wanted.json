@@ -2126,16 +2126,45 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "6e04282ead4106993c08aa86c4fa07117edad2e1",
+     "sourceRevision": "8f15f7080973f133ea481c7cb0be1c5a35f063dc",
      "sourceMemberSha256": "ca6b72eae8c3c18849589ab266b8178843fb43a862ed482d9073ebd18a54ee82",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429
+      429,
+      503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "ca6b72eae8c3c188-ca6b72eae8c3c188",
+     "sourceMemberSha256": "ca6b72eae8c3c18849589ab266b8178843fb43a862ed482d9073ebd18a54ee82",
+     "triangles": 394,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "11384d68c1007c38890730034347be7d2cb4437365db26979ed4ddb1dd7d8ec1",
+       "bytes": 229483
+      },
+      {
+       "name": "rear.png",
+       "sha256": "9154fe4cc3c7e6bce65053c0c50a382c98201cc8b164a03a9fb8ddb4164b278b",
+       "bytes": 240226
+      },
+      {
+       "name": "side.png",
+       "sha256": "f00368e85092c24e4d52721c25b4c610afe2e2a1268477c2c1486693c58133aa",
+       "bytes": 231040
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "ostrich",
@@ -2227,16 +2256,45 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "fcfd03b9bb4cab93a88d86621936770dc6ee7db6",
+     "sourceRevision": "8f15f7080973f133ea481c7cb0be1c5a35f063dc",
      "sourceMemberSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429
+      429,
+      503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "c9b62944ea3f58ca-c9b62944ea3f58ca",
+     "sourceMemberSha256": "c9b62944ea3f58cadff953ccbe2af7399de79bdae9422969af4e456bcdcf4cd6",
+     "triangles": 734,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "cfe484b70545814d0955237d8533b16ca530d4f0ee808490f00cd593a332ae68",
+       "bytes": 249550
+      },
+      {
+       "name": "rear.png",
+       "sha256": "3e57b9b6c2710acca38d909c70c7084912dca94e0063c772f6514a66b700281a",
+       "bytes": 263937
+      },
+      {
+       "name": "side.png",
+       "sha256": "e8ae38528296f40b6b0bf852eeb6f0a992a1e7c9c15772a19a9e3f0ceff177f2",
+       "bytes": 251908
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "pelican",
@@ -2393,7 +2451,56 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "4e1b93cc5a4d8de9-4e1b93cc5a4d8de9",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "triangles": 432,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "8764f147c87f62837a4f284a32842558d546c54e4e704f11d7f48bd4c85e5b14",
+       "bytes": 227042
+      },
+      {
+       "name": "rear.png",
+       "sha256": "4749eb7c23d88a730e8c6bac0fb08efdb89ada142ad47540701d8fe747e46f91",
+       "bytes": 225747
+      },
+      {
+       "name": "side.png",
+       "sha256": "052bf11c286da2cefcf2206adcbd3310d9a0bd5ea22b65344b0258f232b5c05e",
+       "bytes": 232916
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "8f15f7080973f133ea481c7cb0be1c5a35f063dc",
+     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429,
+      503
+     ]
+    }
    },
    {
     "name": "hippo",
@@ -2549,56 +2656,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "f3497a82d21198bc-f3497a82d21198bc",
-     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
-     "triangles": 572,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "50f3301ffe2421156cce811bd3b543754c6172359820d7b23c6fe518db2ed868",
-       "bytes": 230292
-      },
-      {
-       "name": "rear.png",
-       "sha256": "35539028354cd3c7360f88bfa3b865bf039bfc09d707d3a8ad94622de9625109",
-       "bytes": 223681
-      },
-      {
-       "name": "side.png",
-       "sha256": "ddf5bb69a6279e51c29fd813d1c66bce4ba8320fdee94e9120487a294ee34e45",
-       "bytes": 225409
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "qualityCandidate": {
-     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
-     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "nativeRuntimeVerified": false,
-     "originalPreserved": true,
-     "failureReason": "ANIMAL_QUALITY_BUDGET_UNREACHABLE"
-    },
-    "sourceVisualLastAttempt": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "2ce4acdfe356ffc3c73cf5b24dd2f590640bae7c",
-     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "FREE_QUOTA_LIMIT",
-     "httpStatuses": [
-      429,
-      503
-     ]
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "platypus",
@@ -2700,35 +2758,7 @@
       503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "27f54f879846af5c-27f54f879846af5c",
-     "sourceMemberSha256": "27f54f879846af5ca48419da73a9e92e3b8c107b0cb0f0eabf8c89c99e99569f",
-     "triangles": 696,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "f03652317d8a082921ef208e2da4b581f94d6b56f3f66e928be1a153a2bf12c4",
-       "bytes": 231199
-      },
-      {
-       "name": "rear.png",
-       "sha256": "ec1fbc836ac84833d771854dd1733ad25d8ea02cb25470aefbbf827e0fd83d75",
-       "bytes": 233889
-      },
-      {
-       "name": "side.png",
-       "sha256": "ae024d18073e32247e5d06900f6ba4ba91e3d3598c7ccbfd7ec22eda2f4daa04",
-       "bytes": 234301
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "seal",
@@ -2830,35 +2860,7 @@
       503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "e02ec4e264812692-e02ec4e264812692",
-     "sourceMemberSha256": "e02ec4e264812692c86528cb36e1d6c2fbb3447aefea184b279f834f40f1b67a",
-     "triangles": 606,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "2fd1831330ace7e5e344882c285793ec050cdd95041e33472bdafe87d0a45d09",
-       "bytes": 230855
-      },
-      {
-       "name": "rear.png",
-       "sha256": "3734b0887ebc4f5e72f63cf175d1df2d60b2d8dc53cf2396652a16fb8aa87093",
-       "bytes": 234898
-      },
-      {
-       "name": "side.png",
-       "sha256": "b655fa6b1c652b6c85e62b9c6cc38bc80bc3f394c38fbf371c177cc99a0b44ff",
-       "bytes": 234568
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "penguin",
@@ -3090,9 +3092,9 @@
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
   "newOriginals": [
-   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_london_tower_armory.glb",
-   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_lubeck_baltic_coast.glb",
-   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_palermo_etna.glb"
+   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_amsterdam_garden.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_language_gothenburg_low.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_mineral_bergen_low.glb"
   ],
   "downloadAttempts": 3,
   "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
@@ -11622,8 +11624,8 @@
    "questBriefCount": 37,
    "planned": 673,
    "registeredModelRights": 0,
-   "heldUnverified": 23,
-   "missingOriginal": 650,
+   "heldUnverified": 26,
+   "missingOriginal": 647,
    "nativeRuntimeVerified": false,
    "visualQualityApproved": false,
    "seas": [
@@ -14036,7 +14038,7 @@
     {
      "siteId": "london_tower_armory",
      "assetKey": "Terrain/field_london_tower_armory",
-     "state": "MISSING_ORIGINAL"
+     "state": "HELD_UNVERIFIED"
     },
     {
      "siteId": "louis_dodo",
@@ -14056,7 +14058,7 @@
     {
      "siteId": "lubeck_baltic_coast",
      "assetKey": "Terrain/field_lubeck_baltic_coast",
-     "state": "MISSING_ORIGINAL"
+     "state": "HELD_UNVERIFIED"
     },
     {
      "siteId": "lubeck_hansa_hall",
@@ -14391,7 +14393,7 @@
     {
      "siteId": "palermo_etna",
      "assetKey": "Terrain/field_palermo_etna",
-     "state": "MISSING_ORIGINAL"
+     "state": "HELD_UNVERIFIED"
     },
     {
      "siteId": "palermo_etna2",
@@ -15339,13 +15341,13 @@
   },
   "publisherExactNameCandidates": 0,
   "scenePublisherExactNameCandidates": 0,
-  "scenePublisherRoleCandidates": 9,
+  "scenePublisherRoleCandidates": 6,
   "lastPreviewRun": {
-   "runId": "45792107817",
+   "runId": "45795972242",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
-   "scenePublisherRoleCandidates": 9,
+   "scenePublisherRoleCandidates": 6,
    "downloadAttempts": 3,
    "newOriginalCount": 3,
    "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
