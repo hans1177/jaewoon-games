@@ -540,7 +540,7 @@
     "CardArt/af_29": "66badf1b1fb1268fcac533d98d0feba8bb97228206a1a1231435d94603614825",
     "CardArt/af_30": "8f724cca57108f3a0117c6a5154fa370010abae2359674cf83056c8d0f63a7cc",
     "CardArt/eu_18": "52a6f4ecf35177c45f8755633e6aed9a0bfa528ecf22d68bbe2e238a1a790add",
-    "CardArt/eu_19": "61e6abde1ab153b0de73450124f77252e754f7973af4e867fb43142657396e9a",
+    "CardArt/eu_19": "ba824d640a21b8c5644b9f09655a15104c452d31241267c36504f3ce9cb7b773",
     "CardArt/eu_20": "599b38ae26e1cdf3a79fa64594cff7423379a74ede070ff62207841916bd44e7",
     "CardArt/eu_21": "8b8bad0fc9585a4efbba9d09225d890ccff320079af81fbf08c4c31bf6baf78d",
     "CardArt/eu_22": "c1b73e8f60595b1c2dedded74650ec26e78b91c39c18e27402285bb9d133e4ab",
@@ -1160,10 +1160,10 @@
     },
     "CardArt/eu_19": {
       "sourceType": "IMAGE_GENERATION_MODEL",
-      "sourceFile": "assets/cardart/src/eu_19-1400x2000.png",
-      "sourceSha256": "61e6abde1ab153b0de73450124f77252e754f7973af4e867fb43142657396e9a",
+      "sourceFile": "assets/cardart/src/eu_19-original.png",
+      "sourceSha256": "ba824d640a21b8c5644b9f09655a15104c452d31241267c36504f3ce9cb7b773",
       "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
-      "reviewedAt": "2026-11-23",
+      "reviewedAt": "2026-11-26",
       "license": "PROJECT_ORIGINAL_ART",
       "subjectMatch": true,
       "historicalContext": true,
@@ -1172,8 +1172,8 @@
       "noPartsOrSprites": true,
       "robloxSafety": true,
       "commercialRights": true,
-      "replacesSha256": "353e724a6ff9dfa44fc56d2329089a81c4ee032afe9c2a29addeae1d95344d45",
-      "replacesAssetId": "77805456081903"
+      "replacesSha256": "61e6abde1ab153b0de73450124f77252e754f7973af4e867fb43142657396e9a",
+      "replacesAssetId": "92147706333539"
     },
     "CardArt/eu_20": {
       "sourceType": "IMAGE_GENERATION_MODEL",
@@ -1431,28 +1431,6 @@
   },
   "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지.",
   "dropboxPending": {
-    "CardArt/eu_19": {
-      "bytes": 3104729,
-      "width": 1049,
-      "height": 1499,
-      "review": {
-        "sourceType": "IMAGE_GENERATION_MODEL",
-        "sourceFile": "assets/cardart/src/eu_19-original.png",
-        "sourceSha256": "ba824d640a21b8c5644b9f09655a15104c452d31241267c36504f3ce9cb7b773",
-        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
-        "reviewedAt": "2026-11-26",
-        "license": "PROJECT_ORIGINAL_ART",
-        "subjectMatch": true,
-        "historicalContext": true,
-        "houseStyle": true,
-        "singleFinishedScene": true,
-        "noPartsOrSprites": true,
-        "robloxSafety": true,
-        "commercialRights": true,
-        "replacesSha256": "61e6abde1ab153b0de73450124f77252e754f7973af4e867fb43142657396e9a",
-        "replacesAssetId": "92147706333539"
-      }
-    },
     "CardArt/eu_20": {
       "bytes": 3007589,
       "width": 1049,
