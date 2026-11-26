@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # 파일명: tools/devloop/assets_wanted.py
 # 임포트
+import csv
 import hashlib
 import io
 import math
@@ -423,9 +424,10 @@ def restore_pinned_animal_glb(proof, source):
 
 # [제작자 공개 무료 목록] 고정 호스트의 공개 CC0 목록과 실제 원본만 읽는다.
 # 원본 외부 버전은 고정되지 않았으므로 관찰 후보로만 보관하고 등록 승인은 생성하지 않는다.
-def read_gobkit_free(path, limit):
+def read_gobkit_free(path, limit, scene=False):
     import http.client
-    if path != "/api/free" and not re.fullmatch(r"/freebies/(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)/[A-Za-z0-9_-]+\.glb", path):
+    pack = r"[A-Za-z0-9_-]+" if scene else r"(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)"
+    if path != "/api/free" and not re.fullmatch(r"/freebies/" + pack + r"/[A-Za-z0-9_-]+\.glb", path):
         raise ValueError("PUBLISHER_SOURCE_PATH")
     conn = http.client.HTTPSConnection("gobkit.com", timeout=25)
     try:
@@ -443,11 +445,12 @@ def read_gobkit_free(path, limit):
     return data
 
 
-def gobkit_animal_sources(manifest, targets):
+def gobkit_animal_sources(manifest, targets, scene=False):
     if manifest.get("schemaVersion") != 2 or not isinstance(manifest.get("packs"), list):
         raise ValueError("PUBLISHER_MANIFEST_SCHEMA")
     listed = set(manifest.get("glbs", []))
     selected = {}
+    pack_path = r"[A-Za-z0-9_-]+" if scene else r"(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)"
     for pack in manifest["packs"]:
         for model in pack.get("models", []):
             name = model.get("name", "")
@@ -455,17 +458,51 @@ def gobkit_animal_sources(manifest, targets):
             license_text = model.get("license", "")
             if (not isinstance(name,str) or not re.fullmatch(r"[A-Za-z0-9 _-]{1,80}",name)
                     or not isinstance(url,str)
-                    or not re.fullmatch(r"https://gobkit\.com/freebies/(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)/[A-Za-z0-9_-]+\.glb",url)
+                    or not re.fullmatch(r"https://gobkit\.com/freebies/" + pack_path + r"/[A-Za-z0-9_-]+\.glb",url)
                     or url not in listed or model.get("format") != "glb"
                     or license_text != "CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required."):
                 continue
-            normalized = re.sub(r"[^a-z0-9]","",name.lower())
+            normalized = (re.sub(r"[ -]+", "_", name.lower()) if scene
+                          else re.sub(r"[^a-z0-9]", "", name.lower()))
             for target in targets:
-                if normalized == target.replace("_","").replace("-",""):
+                if normalized == (target if scene else target.replace("_", "").replace("-", "")):
                     entry = {"name":name,"url":url,"license":license_text}
                     if target not in selected or url < selected[target]["url"]:
                         selected[target] = entry
     return selected
+
+
+# [항구·전투 원본] 제작 지시서의 정확한 자산 키만 확보 대상으로 사용한다.
+def scene_source_targets(registry):
+    docs = os.path.join(root, "docs")
+    ports_dir = os.path.join(docs, "ports")
+    with open(os.path.join(ports_dir, "README.md"), encoding="utf-8") as handle:
+        ports = sorted(set(re.findall(r"^\| \[[^\n]+?\]\(([a-z0-9_]+)\.md\)", handle.read(), re.M)))
+    targets = {}
+    for port in ports:
+        with open(os.path.join(ports_dir, port + ".md"), encoding="utf-8") as handle:
+            for asset in re.findall(r"^#### `(" + re.escape(port) + r"_[a-z0-9_]+)`", handle.read(), re.M):
+                targets[asset] = "Town"
+    with open(os.path.join(docs, "port_asset_prompts.csv"), encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle):
+            if row["port_id"] in ports and re.fullmatch(r"[a-z0-9_]+", row["asset_id"]):
+                targets[row["asset_id"]] = "Town"
+    battle_csv = os.path.join(docs, "battle_backdrops", "backdrop_prompts.csv")
+    with open(battle_csv, encoding="utf-8", newline="") as handle:
+        for row in csv.DictReader(handle):
+            category, asset = row["category"], row["asset_id"]
+            if re.fullmatch(r"[a-z0-9_]+", asset):
+                if category in ("naval-near", "naval-mid", "naval-far"):
+                    targets[asset] = "Naval"
+                elif category == "field":
+                    targets[asset] = "Terrain"
+    outstanding = {asset: kind for asset, kind in targets.items()
+                   if not (registry.get(kind + "/" + asset, {}).get("assetId")
+                           and registry[kind + "/" + asset].get("usePermissionGranted") is True)}
+    print("MARE_SCENE_SOURCE_TARGETS",
+          json.dumps({"ports": len(ports), **{kind: sum(v == kind for v in outstanding.values())
+                                            for kind in ("Town", "Naval", "Terrain")}}, sort_keys=True))
+    return outstanding
 
 
 def animal_source_practice():
@@ -502,7 +539,6 @@ def animal_source_practice():
               "archiveInventoryState": "UNAVAILABLE"}
     if not targets:
         report["archiveInventoryState"] = "NO_MISSING_TARGETS"
-        return report
 
     # 기존 sparse checkout에서 빠진 회사 공용 원본도 동일 체크아웃 HEAD에서만 읽는다.
     # 외부 코드를 실행하거나 압축을 풀지 않는다. 선택된 부족 목표만 요청한다.
@@ -679,41 +715,50 @@ def animal_source_practice():
     report["downloadAttempts"] = restore_attempts
     report["publisherSearchState"] = "NOT_REQUESTED"
     if (not any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)
-            or not os.path.isdir(hold) or os.path.islink(hold)):
+            or os.path.islink(os.path.dirname(hold)) or os.path.islink(hold)):
         return report
     covered = {row["name"] for row in report["candidates"]}
     missing = sorted(set(targets)-covered)
-    if not missing:
+    scene_targets = scene_source_targets(registry)
+    if not missing and not scene_targets:
         report["publisherSearchState"] = "NO_MISSING_SOURCE_TARGETS"
         return report
     try:
         manifest_bytes = read_gobkit_free("/api/free", 4_000_000)
-        catalog = gobkit_animal_sources(json.loads(manifest_bytes),missing)
+        manifest = json.loads(manifest_bytes)
+        catalog = gobkit_animal_sources(manifest, missing)
+        scene_catalog = gobkit_animal_sources(manifest, scene_targets, scene=True)
     except (OSError,ValueError,TypeError,KeyError,AttributeError) as error:
         report["publisherSearchState"] = "PUBLISHER_CATALOG_RETRY"
         print("MARE_ANIMAL_PUBLISHER_CATALOG_RETRY")
         return report
     report["publisherSearchState"] = "PUBLISHER_CATALOG_CHECKED"
     report["publisherExactNameCandidates"] = len(catalog)
+    report["scenePublisherExactNameCandidates"] = len(scene_catalog)
     # 검색 결과가 아니라 실제 부족 목표와 정확히 일치하는 항목만 최대 세 개 받는다.
     import time
-    picks = sorted(catalog)
+    picks = sorted([(False, name) for name in catalog] + [(True, name) for name in scene_catalog])
     if not picks:
         return report
-    start = int(time.time()//3600)*3
+    start = int(time.time() // 1200)*3
     for i in range(len(picks)):
         if report["downloadAttempts"] >= 3:
             break
-        name = picks[(start+i)%len(picks)]
-        entry = catalog[name]
-        source = os.path.join(hold,"gobkit-free-"+name+".glb")
+        scene, name = picks[(start+i)%len(picks)]
+        entry = (scene_catalog if scene else catalog)[name]
+        source_kind = scene_targets[name] if scene else "Animals"
+        target_ids = [source_kind + "/" + name] if scene else sorted(targets[name])
+        source_dir = os.path.join(os.path.dirname(hold), source_kind)
+        source = os.path.join(source_dir, "gobkit-free-" + name + ".glb")
+        if os.path.islink(source_dir):
+            continue
         proof_path = source+".license.json"
         if (source in blocked_paths or proof_path in blocked_paths
                 or os.path.lexists(proof_path) or os.path.islink(source)):
             continue
         report["downloadAttempts"] += 1
         try:
-            data = read_gobkit_free(entry["url"].removeprefix("https://gobkit.com"),5_000_000)
+            data = read_gobkit_free(entry["url"].removeprefix("https://gobkit.com"), 5_000_000, scene=scene)
             digest = hashlib.sha256(data).hexdigest()
             if (digest in blocked_hashes or digest in seen
                     or any(row.get("sourceSha256")==digest for row in registry.values())):
@@ -726,9 +771,10 @@ def animal_source_practice():
                      "externalRevisionPinned":False,"sourceSha256":digest,"originalSha256":digest,
                      "downloadedBlobSha":hashlib.sha1(("blob %d\0"%len(data)).encode()+data).hexdigest(),
                      "bytes":len(data),"triangles":geometry["triangles"],
-                     "candidateTargetIds":sorted(targets[name]),"speciesVerified":False,
+                     "candidateTargetIds":target_ids,"speciesVerified":False,
                      "originalModelHandcraftedVerified":False,"registration":"PENDING_SOURCE_AND_VISUAL_REVIEW",
                      "actualRobloxRuntimeVerified":False,"visualQualityApproved":False}
+            os.makedirs(source_dir, exist_ok=True)
             if os.path.exists(source):
                 with open(source,"rb") as handle:
                     if handle.read(5_000_001)!=data:
@@ -745,6 +791,9 @@ def animal_source_practice():
             continue
         seen.add(digest)
         report["newOriginals"].append(source)
+        if scene:
+            print("MARE_SCENE_PUBLISHER_ORIGINAL_HELD", target_ids[0], digest)
+            continue
         report["candidates"].append({
             "name":name,"targets":sorted(targets[name]),"source":source,
             "directModel":True,"modelMembers":[{"member":os.path.basename(source),"format":"GLB",
@@ -845,7 +894,7 @@ def render_animal_review_candidates(report, out):
     report["sourcePreviewState"] = "RENDER_EVIDENCE_ONLY"
     # 한 번에 세 건씩만 순환하고 원본별 렌더 시간을 제한한다.
     import time
-    slot = int(time.time() // 3600) * 3
+    slot = int(time.time() // 1200) * 3
     ordered = candidates[slot % len(candidates):] + candidates[:slot % len(candidates)]
     retry = [row for row in ordered if row.get("priorRenderRetry") or
              row.get("sourceVisualObservation", {}).get("state") == "SOURCE_VISUAL_RETRY_REQUIRED"]

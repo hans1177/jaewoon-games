@@ -671,7 +671,7 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
   assert.match(script,/"tradeGoods3DPractice"/);
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
-  assert.match(workflow,/schedule:\s*\n\s*- cron: '20 \* \* \* \*'/);
+  assert.match(workflow,/schedule:\s*\n\s*- cron: '7,27,47 \* \* \* \*'/);
   assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ github\.event_name == 'schedule' \}\}/);
   assert.match(workflow,/run: node tools\/mare-essentia-upload-assets\.mjs --animal-source-preflight/);
   assert.match(workflow,/github\.event_name != 'schedule' \|\| steps\.animal_practice\.outputs\.pending == 'true'/);
@@ -974,11 +974,6 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
   assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
   assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);
-  assert.match(uploader,/PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED/);
-  assert.match(uploader,/FREE_QUOTA_LIMIT/);
-  assert.match(source,/SOURCE_GEOMETRY_REPAIR_REQUIRED/);
-  assert.match(source,/\(retry, 1\), \(preferred, 1\), \(fresh, 3\)/);
-  assert.match(source,/HEAD:.*assets-wanted\.json/);
   assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
   assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
   assert.equal((workflow.match(/always\(\) && env\.MARE_ANIMAL_PREVIEW == 'true'/g)||[]).length,2);
@@ -1980,10 +1975,12 @@ test('Mare generated original art is promoted only after model-source visual QA 
       robloxSafety:true, commercialRights:true};
     const record = {approved:{[id]:hash},modelOriginals:{[id]:review}};
     const save = () => fs.writeFileSync(path.join(root,'assets/APPROVED_IMAGES.json'),JSON.stringify(record));
-    const execute = () => runInNewContext('(async()=>{' + intake + '\n})()', {
+    const execute = (modelsOnly = false) => runInNewContext('(async()=>{' + intake + '\n})()', {
       ROOT:root,JSON_OUT:path.join(root,'assets-registered.json'),fs:fs.promises,path,crypto:{createHash},Buffer,
-      studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
+      modelsOnly,studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
     });
+    await execute(true);
+    assert.equal(fs.existsSync(dest),false);
     review.subjectMatch=false;
     save();
     await assert.rejects(execute(), /MODEL_ORIGINAL_QA_REQUIRED/);

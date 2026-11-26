@@ -18,9 +18,9 @@ on:
       - 'tools/mare-essentia-upload-assets.mjs'
       - 'tools/mare-essentia-character-finish.mjs'
       - 'tools/mare-essentia-ship-v5.py'
-  # [동물 원본] 매시간 기존 무료 등록 절차에서 부족 원본을 탐색·검증한다.
+  # [동물 원본] 20분마다 동물·항구·해전·지상전 원본을 기존 절차에서 찾는다.
   schedule:
-    - cron: '20 * * * *'
+    - cron: '7,27,47 * * * *'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -69,6 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
+      MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' }}
       MARE_ANIMAL_PREVIEW: ${{ github.event_name == 'schedule' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-animal-preview]')) || (github.event_name == 'workflow_dispatch' && inputs.animal_preview == true && inputs.studio_regrant != true) }}
     steps:
       - uses: actions/checkout@v4
@@ -587,7 +588,8 @@ jobs:
                       raise SystemExit('MARE_ANIMAL_RESTORED_PROOF_INVALID')
                   out.write(file+'\n')
               for file in acquired:
-                  if not re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/Animals/gobkit-free-[a-z0-9_]+\.glb',file):
+                  match=re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/(Animals|Town|Naval|Terrain)/gobkit-free-([a-z0-9_]+)\.glb',file)
+                  if not match:
                       raise SystemExit('MARE_ANIMAL_PUBLISHER_PATH_INVALID')
                   path=pathlib.Path(file)
                   proof_path=pathlib.Path(file+'.license.json')
@@ -596,9 +598,13 @@ jobs:
                   proof=json.loads(proof_path.read_text(encoding='utf8'))
                   data=path.read_bytes()
                   digest=hashlib.sha256(data).hexdigest()
-                  if (proof.get('sourceAcquisition')!='PUBLISHER_FREE_CATALOG_HELD_ONLY'
+                  kind, asset = match.groups()
+                  pack = r'(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)' if kind == 'Animals' else r'[A-Za-z0-9_-]+'
+                  if (path.parent.is_symlink()
+                      or (kind != 'Animals' and proof.get('candidateTargetIds') != [kind+'/'+asset])
+                      or proof.get('sourceAcquisition')!='PUBLISHER_FREE_CATALOG_HELD_ONLY'
                       or proof.get('sourcePage')!='https://gobkit.com/api/free'
-                      or not re.fullmatch(r'https://gobkit\.com/freebies/(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)/[A-Za-z0-9_-]+\.glb',proof.get('source',''))
+                      or not re.fullmatch(r'https://gobkit\.com/freebies/'+pack+r'/[A-Za-z0-9_-]+\.glb',proof.get('source',''))
                       or proof.get('publisherEntry',{}).get('url')!=proof.get('source')
                       or proof.get('publisherEntry',{}).get('license')!='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
                       or proof.get('license')!='CC0-1.0' or proof.get('commercialUseAllowed') is not True
