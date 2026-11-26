@@ -1795,13 +1795,14 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "fa95bee7f0875d0be48aaf5c4639732ed39f6f10",
+     "sourceRevision": "8d0687e93023a8c4209a1e8a59bdfd20a19adf39",
      "sourceMemberSha256": "72fed180b8a909ee24bc17751ac427a7de76e232a997f1cc8bd5ba1870d9b986",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429
+      429,
+      503
      ]
     },
     "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
@@ -1813,17 +1814,17 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "8e7ca7a77d1b301e3585680c3d005df66533d40267eb7f394aa6ea7b018c9ebe",
+       "sha256": "41ec417e474a73ab575ba343fcfd52aa61198745e12fd4f448c975f01804acbb",
        "bytes": 235575
       },
       {
        "name": "rear.png",
-       "sha256": "866823c3b681727656e1ab8feb31279c562337ba956a64604ba8c40e32982178",
+       "sha256": "7191b3a8583c5b93e2b263800cb052cbb589b416da00cd9c5b073a590bbade73",
        "bytes": 244280
       },
       {
        "name": "side.png",
-       "sha256": "dc049896b8944cf03d53667b9b4741fae12584b8882bfd375e6cc2232b71f904",
+       "sha256": "7c1214ce4a501a0e058c98e8456d0eb7f75b2217c809778d4a92d25f9ef7dbd6",
        "bytes": 238485
       }
      ],
@@ -1924,7 +1925,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "fa95bee7f0875d0be48aaf5c4639732ed39f6f10",
+     "sourceRevision": "8d0687e93023a8c4209a1e8a59bdfd20a19adf39",
      "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -1942,17 +1943,17 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "90bda3d03a673c76b12ca41e119fdfd0a1f6c2a09250e201bec10e5ee6dabda0",
+       "sha256": "533094843f2c4e783fba5908d31cde271de406d68234e612bce5d0df989f7ea3",
        "bytes": 231953
       },
       {
        "name": "rear.png",
-       "sha256": "e2723193ed276e20f00f2e9b5a054c676e7471b8b972a2c11d3e73b03b7e7a44",
+       "sha256": "a614741105d0f1c4ab5c898bb17a78fef363a31c502f3d6c8c66bf0fa10d35ca",
        "bytes": 235713
       },
       {
        "name": "side.png",
-       "sha256": "7581866cc59382a153ab0ae344d370b5b8903bb1039d9283212043fb93fae8a5",
+       "sha256": "607df8bf315fbd4b2c8159e7ba391369d2e6cb863b62d9b2a9fb9b4dcaf99b2e",
        "bytes": 231825
       }
      ],
@@ -2842,17 +2843,17 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "33712e76530b832cfab32ab697892a8072640c59ef5187ade16f20e97f3c679f",
+       "sha256": "3cd812c0fc8e2147c792b9ba333546ce899a4ca3fe62598b9370edf0afefe3a8",
        "bytes": 230855
       },
       {
        "name": "rear.png",
-       "sha256": "e14317f44a9a937e81a64271e54035ea7ca3148f050f7499e5bc9556ffb10fff",
+       "sha256": "6867093f6975164cedc5834aaf6a1a4f9b6c8b025c5f40a00bee8fcbea23f4ce",
        "bytes": 234898
       },
       {
        "name": "side.png",
-       "sha256": "3414ce16c1d269f964a11b5e864817a8a32566117ceaeb69b1d432e8558f5e98",
+       "sha256": "52b3d6e7f83e852da0ee9fc90f17154c68b8b104c121fb2da93941bd508214ce",
        "bytes": 234568
       }
      ],
@@ -2873,7 +2874,7 @@
     },
     "sourceVisualLastAttempt": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "fa95bee7f0875d0be48aaf5c4639732ed39f6f10",
+     "sourceRevision": "8d0687e93023a8c4209a1e8a59bdfd20a19adf39",
      "sourceMemberSha256": "e02ec4e264812692c86528cb36e1d6c2fbb3447aefea184b279f834f40f1b67a",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -15360,7 +15361,7 @@
   "scenePublisherExactNameCandidates": 0,
   "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "45828099557",
+   "runId": "45834610021",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
