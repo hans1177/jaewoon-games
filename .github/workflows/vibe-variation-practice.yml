@@ -24,11 +24,12 @@ on:
       - 'qa/vibe-practice-session.test.mjs'
       - 'qa/vibe-light-bake.test.mjs'
       - 'qa/vibe-mesh-audit.test.mjs'
-      - 'qa/vibe-cc0-library.test.mjs'
+      - 'tools/vibe-python.mjs'
       - '.github/workflows/vibe-variation-practice.yml'
   pull_request:
     branches: [main]
     paths:
+      - 'tools/vibe-python.mjs'
       - 'tools/vibe-cc0-fetch.mjs'
       - 'tools/vibe-cc0-library.mjs'
       - 'qa/vibe-cc0-library.test.mjs'
@@ -222,16 +223,26 @@ jobs:
           }
           if ($LASTEXITCODE -ne 0) { throw 'Local source acquisition failed' }
           node tools/vibe-cc0-library.mjs scan
-      - name: Find Blender and imaging libs (report only, no system changes except pip --user)
+      - name: Verify or install free Blender and imaging libs
         shell: pwsh
         env:
           VIBE_CONFIGURED_BLENDER: ${{ vars.VIBE2_BLENDER_BINARY }}
         run: |
           if ($env:VIBE_CONFIGURED_BLENDER) { $env:VIBE2_BLENDER_BINARY = $env:VIBE_CONFIGURED_BLENDER }
           $bl = node --input-type=module -e "import {findBlender} from './tools/vibe-python.mjs'; const p=findBlender(); if(!p) process.exit(1); console.log(p)"
-          if ($LASTEXITCODE -ne 0 -or -not $bl) { throw 'LOCAL_BLENDER_UNAVAILABLE: 원본 확보 단계와 별개로 렌더링 연습 실패' }
+          if ($LASTEXITCODE -ne 0 -or -not $bl) {
+            if ($env:VIBE2_BLENDER_BINARY) { throw 'LOCAL_BLENDER_CONFIGURED_PATH_INVALID' }
+            # 기존 Unity 작업기의 무료 공식 패키지 설치 방식과 동일하게 설치된 프로그램을 우선 재사용한다.
+            $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
+            if (-not $winget) { throw 'LOCAL_BLENDER_UNAVAILABLE: winget unavailable' }
+            & $winget.Source install --id BlenderFoundation.Blender --exact --source winget --silent --disable-interactivity --accept-package-agreements --accept-source-agreements
+            $installExit = $LASTEXITCODE
+            $bl = node --input-type=module -e "import {findBlender} from './tools/vibe-python.mjs'; const p=findBlender(); if(!p) process.exit(1); console.log(p)"
+            if ($LASTEXITCODE -ne 0 -or -not $bl) { throw "LOCAL_BLENDER_UNAVAILABLE: install exit $installExit; executable not verified" }
+          }
           "VIBE2_BLENDER_BINARY=$bl" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
           $ver = (& $bl --version | Select-Object -First 1)
+          if ($LASTEXITCODE -ne 0) { throw 'LOCAL_BLENDER_VERSION_FAILED' }
           "Blender: $ver ($bl)" | Tee-Object -FilePath $env:GITHUB_STEP_SUMMARY -Append
           node --version
           python -c "import PIL, numpy; print('imaging OK')"
