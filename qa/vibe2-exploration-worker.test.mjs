@@ -289,6 +289,15 @@ test('Vibe4 local model has no network fallback, requires approval and loopback 
     assert.equal(posted.stream,false);
     assert.equal(posted.options.num_predict,256);
     assert.equal(posted.options.num_ctx,4096);
+    assert.equal(posted.images,undefined);
+    await assert.rejects(requestVibe4LoopbackModel({model:'vision:local',prompt:'inspect',port,ownerApproved:true,images:['bad']}),/VIBE4_LOCAL_IMAGE_INVALID/);
+    assert.equal(called,1);
+    const png=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),Buffer.alloc(128)]).toString('base64');
+    await requestVibe4LoopbackModel({model:'vision:local',prompt:'inspect',port,ownerApproved:true,images:[png]});
+    const visual=JSON.parse(requestBody);
+    assert.deepEqual(visual.images,[png]);
+    assert.equal(visual.format,'json');
+    assert.equal(called,2);
   }finally{
     await new Promise(resolve=>server.close(resolve));
   }
