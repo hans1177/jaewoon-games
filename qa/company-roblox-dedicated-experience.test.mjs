@@ -969,11 +969,12 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`
-import ast, json, struct, math
+import ast, json, struct, math, hashlib, os, re, tempfile, http.client
+from unittest.mock import patch
 from pathlib import Path
 tree=ast.parse(Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8'))
-fn=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='inspect_held_animal_glb')
-exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+names={'inspect_held_animal_glb','restore_pinned_animal_glb'}
+exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names],type_ignores=[]),'assets_wanted.py','exec'))
 def glb(triangles=1000, bad_index=False, nan=False, negative_accessor=False, external=False, invalid_joint=False):
     pos=struct.pack('<9f',0,0,0,1,0,0,0,1,float('nan') if nan else 0)
     idx=struct.pack('<'+'H'*(3*triangles),*([0,1,3 if bad_index else 2]*triangles))
@@ -991,9 +992,46 @@ for option,reason in [('bad_index','GLB_INDEX_RANGE'),('nan','GLB_NONFINITE_POSI
     except ValueError as e: assert str(e)==reason,(option,e)
     else: raise AssertionError(option)
 print('MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8')
+data=glb()
+digest=hashlib.sha256(data).hexdigest()
+proof={'source':'https://github.com/owner/repo/blob/'+'a'*40+'/animal/Goat.glb',
+       'license':'CC0-1.0','commercialUseAllowed':True,'bytes':len(data),'triangles':1000,
+       'sourceSha256':digest,'originalSha256':digest,
+       'pinnedBlobSha':hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()}
+with tempfile.TemporaryDirectory() as dest:
+    target=str(Path(dest)/'goat.glb')
+    with patch.object(http.client,'HTTPSConnection') as connection:
+        response=connection.return_value.getresponse.return_value
+        response.status=200
+        response.read.return_value=data
+        assert restore_pinned_animal_glb(proof,target)==data
+        assert Path(target).read_bytes()==data
+        connection.assert_called_once_with('raw.githubusercontent.com',timeout=25)
+        assert connection.return_value.request.call_args.args==('GET','/owner/repo/'+'a'*40+'/animal/Goat.glb')
+        response.read.assert_called_once_with(len(data)+1)
+        for case, expected in [(proof,'HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS')]:
+            try: restore_pinned_animal_glb(case,target)
+            except ValueError as e: assert str(e)==expected
+            else: raise AssertionError('overwrite allowed')
+        Path(target).unlink()
+        for case,status,body,expected in [
+            ({**proof,'source':'https://example.com/Goat.glb'},200,data,'HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS'),
+            ({**proof,'license':'CC-BY-4.0'},200,data,'HELD_SOURCE_RESTORE_PROVENANCE'),
+            (proof,302,data,'HELD_SOURCE_RESTORE_HTTP'),
+            (proof,200,data+b'x','HELD_SOURCE_RESTORE_HASH'),
+            (proof,200,b'x'+data[1:],'HELD_SOURCE_RESTORE_HASH'),
+            ({**proof,'triangles':999},200,data,'HELD_SOURCE_RESTORE_GEOMETRY')]:
+            response.status=status
+            response.read.return_value=body
+            try: restore_pinned_animal_glb(case,target)
+            except ValueError as e: assert str(e)==expected,(expected,e)
+            else: raise AssertionError(expected)
+            assert not Path(target).exists()
+print('MARE_HELD_ANIMAL_RESTORE_FIXTURES=8')
 `;
   const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
   assert.match(output,/MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8/);
+  assert.match(output,/MARE_HELD_ANIMAL_RESTORE_FIXTURES=8/);
 });
 
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{

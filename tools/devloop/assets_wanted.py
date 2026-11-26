@@ -405,6 +405,8 @@ def restore_pinned_animal_glb(proof, source):
         if response.status != 200:
             raise ValueError("HELD_SOURCE_RESTORE_HTTP")
         data = response.read(size + 1)
+    except http.client.HTTPException as error:
+        raise ValueError("HELD_SOURCE_RESTORE_HTTP") from error
     finally:
         conn.close()
     if (len(data) != size or hashlib.sha256(data).hexdigest() != proof["sourceSha256"]
@@ -482,6 +484,7 @@ def animal_source_practice():
     # 보관 원본은 외부 재검색보다 먼저 확인하되 검수 승인 증거를 생성하지 않는다.
     seen = set()
     restored = []
+    restore_attempts = 0
     report["restoredOriginals"] = restored
     hold = os.path.join(root, "assets", "inbox-hold", "Animals")
     wanted_cards = {card: name for name, cards in targets.items() for card in cards if not card.startswith("farm:")}
@@ -509,11 +512,15 @@ def animal_source_practice():
                     raise ValueError("HELD_SOURCE_POLICY_OR_PROVENANCE_INVALID")
                 if digest in seen:
                     continue
+                if any(str(row.get("assetId")) in blocked_ids for row in registry.values()
+                       if row.get("sourceSha256") == digest):
+                    raise ValueError("HELD_SOURCE_BLOCKED_ASSET_ID")
                 # 일반 장부 조회는 읽기 전용. 실제 정기/수동 시각 검사에서만
                 # 검증된 출처의 누락 원본을 최대 세 개 복구한다.
                 recovered = False
-                if (not os.path.lexists(source) and len(restored) < 3
+                if (not os.path.lexists(source) and restore_attempts < 3
                         and any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)):
+                    restore_attempts += 1
                     data = restore_pinned_animal_glb(proof, source)
                     recovered = True
                 else:
@@ -524,9 +531,6 @@ def animal_source_practice():
                 if (len(data) != size or hashlib.sha256(data).hexdigest() != digest
                         or hashlib.sha1(("blob %d\0" % size).encode()+data).hexdigest() != proof["pinnedBlobSha"]):
                     raise ValueError("HELD_SOURCE_HASH_MISMATCH")
-                if any(str(row.get("assetId")) in blocked_ids for row in registry.values()
-                       if row.get("sourceSha256") == digest):
-                    raise ValueError("HELD_SOURCE_BLOCKED_ASSET_ID")
                 geometry = inspect_held_animal_glb(data)
                 if proof.get("triangles") != geometry["triangles"]:
                     raise ValueError("HELD_SOURCE_TRIANGLE_EVIDENCE_MISMATCH")
