@@ -648,9 +648,16 @@ def render_animal_review_candidates(report, out):
                                         "renderer": preview["renderer"],
                                         "registrationApproved": False, "visualQualityApproved": False}
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
-                tarfile.TarError, zipfile.BadZipFile):
+                tarfile.TarError, zipfile.BadZipFile) as error:
             shutil.rmtree(frame_dir, ignore_errors=True)
             row["sourcePreview"]["state"] = "RENDER_FAILED_RETRY"
+            message = str(error)
+            reason = (message if re.fullmatch(r"SOURCE_PREVIEW_[A-Z_]+", message)
+                      else "SOURCE_PREVIEW_TIMEOUT" if isinstance(error, subprocess.TimeoutExpired)
+                      else "SOURCE_PREVIEW_BLENDER_FAILED" if isinstance(error, subprocess.CalledProcessError)
+                      else "SOURCE_PREVIEW_UNCLASSIFIED")
+            row["sourcePreview"]["failureReason"] = reason
+            print("MARE_ANIMAL_PREVIEW_RETRY", row["name"], reason)
     print("MARE_ANIMAL_SOURCE_PREVIEWS=" + str(sum(
         row.get("sourcePreview", {}).get("state") == "RENDERED_AWAITING_VISUAL_REVIEW" for row in candidates)))
 
