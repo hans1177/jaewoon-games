@@ -976,6 +976,33 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=10')
   assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
   assert.match(source,/VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED/);
   assert.match(source,/MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY/);
+  const alternateRetryFixture=String.raw`
+from pathlib import Path
+import textwrap
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+block=textwrap.dedent(source.split('    deferred = []\n',1)[1].split('    fresh = ',1)[0])
+def check(observation, expected_first, alternatives=True):
+    old={'name':'hippo','targets':['zoo_hippo'],'priorRenderRetry':True,'priorRenderFailureReason':'SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE'}
+    other={'name':'goat','priorRenderRetry':True}
+    alt={'name':'hippo','targets':['zoo_hippo'],'directModel':True,'license':'CC0-1.0','geometry':{'triangles':382},'modelMembers':[{'sha256':'exact'}],'sourceVisualObservation':observation}
+    retry=[other,old]
+    scope={'ordered':[other,old,alt] if alternatives else [other,old],'retry':retry,'deferred':[]}
+    exec(block,scope)
+    assert retry[0]['name']==expected_first
+    if alternatives:
+        assert old in scope['deferred'] and old not in retry
+        assert old['sourcePreview']['registrationApproved'] is False
+        assert old['sourcePreview']['visualQualityApproved'] is False
+    else:
+        assert old in retry and not scope['deferred']
+check({},'hippo')
+valid={'state':'SOURCE_VISUAL_OBSERVED_ONLY','sourceMemberSha256':'exact','contentSafe':True,'speciesMatch':True,'uncertain':False}
+check(valid,'goat')
+check(dict(valid,sourceMemberSha256='stale'),'hippo')
+check({},'goat',False)
+print('MARE_ALTERNATE_RETRY_FIXTURES=4')
+`;
+  assert.match(execFileSync('python3',['-c',alternateRetryFixture],{encoding:'utf8',timeout:15000}),/MARE_ALTERNATE_RETRY_FIXTURES=4/);
   assert.match(source,/"directModel": True/);
   assert.match(source,/SOURCE_PREVIEW_DIRECT_EVIDENCE/);
   assert.match(source,/restore_pinned_animal_glb\(proof, source\)/);
