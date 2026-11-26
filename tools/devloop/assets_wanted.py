@@ -909,6 +909,50 @@ def animal_source_practice():
         match = re.fullmatch(r"[a-z0-9_]+_bld_([a-z0-9_]+)", asset)
         if match and match.group(1) not in ("house", "building", "tower", "wall", "gate"):
             role_targets.setdefault(match.group(1), []).append(asset)
+    # [자연 부품] 완성 지시서 ID와 제작자 부품명은 다르다. 실제 지시서 본문의 역할만 연결한다.
+    # 공통 프롬프트(재질·출처 설명)는 검색에서 제외하고 지역 전용 모델로 승인하지 않는다.
+    component_patterns = {
+        "bush": r"\b(?:bush(?:es)?|shrubs?|hedgerows?)\b",
+        "cliff": r"\bcliffs?\b", "grass": r"\b(?:grass|grassland|grasses)\b",
+        "hill": r"\bhills?\b", "hillsand": r"\b(?:sand dunes?|dunes?)\b",
+        "mountain": r"\bmountains?\b", "mountainfar": r"\bmountains?\b",
+        "reed": r"\breeds?\b", "rock": r"\b(?:rocks?|boulders?|standing stones?)\b",
+        "stalactite": r"\bstalactites?\b",
+        "treehigh": r"\b(?:trees?|forest|woodland)\b",
+        "treemed": r"\b(?:trees?|forest|woodland)\b",
+        "treelow": r"\b(?:trees?|forest|woodland)\b",
+        "cloud": r"\bclouds?\b",
+    }
+    component_targets = {role: [] for role in component_patterns}
+    for csv_path in (os.path.join(root, "docs", "port_asset_prompts.csv"),
+                     os.path.join(root, "docs", "battle_backdrops", "backdrop_prompts.csv")):
+        with open(csv_path, encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                asset = row["asset_id"]
+                if scene_targets.get(asset) not in ("Town", "Naval", "Terrain") or asset in scene_catalog:
+                    continue
+                body = row.get("prompt_en", "").partition("so colors can be tinted in-engine.")[2]
+                if "as derived." in body:
+                    body = body.partition("as derived.")[2]
+                for role, pattern in component_patterns.items():
+                    if re.search(pattern, body, re.I):
+                        component_targets[role].append(asset)
+    component_roles = set()
+    for pack in manifest["packs"]:
+        if pack.get("id") != "gobkit-nature-kit":
+            continue
+        for model in pack.get("models", []):
+            name = model.get("name", "")
+            if not isinstance(name, str):
+                continue
+            key = re.sub(r"[ -]+", "_", name.lower())
+            match = re.fullmatch(r"([a-z]+)_[0-9]{3}", key)
+            if not match or not component_targets.get(match.group(1)):
+                continue
+            if not re.fullmatch(r"https://gobkit\.com/freebies/environment/[A-Za-z0-9_-]+\.glb", model.get("url", "")):
+                continue
+            role_targets[key] = sorted(set(component_targets[match.group(1)]))
+            component_roles.add(key)
     role_catalog = gobkit_animal_sources(manifest, role_targets, scene=True)
     held_urls = set()
     for kind in ("Town", "Naval", "Terrain", "People", "Outfits", "Monsters", "Rig", "Motion", "Animals"):
@@ -934,9 +978,23 @@ def animal_source_practice():
     for role, entry in sorted(role_catalog.items()):
         if entry["url"] in held_urls or entry["url"] in chosen_urls:
             continue
-        options = role_targets[role]
+        is_component = role in component_roles
+        if is_component and not re.fullmatch(r"https://gobkit\.com/freebies/environment/[A-Za-z0-9_-]+\.glb", entry["url"]):
+            continue
+        options = []
+        for asset in role_targets[role]:
+            if asset in scene_catalog:
+                continue
+            kind = scene_targets[asset]
+            candidate = os.path.join(os.path.dirname(hold), kind, "gobkit-free-" + asset + ".glb")
+            if os.path.lexists(candidate + ".license.json") or os.path.lexists(candidate) or candidate in blocked_paths:
+                continue
+            options.append(asset)
+        if not options:
+            continue
         target = options[slot % len(options)]
-        scene_catalog[target] = {**entry, "matchMode": "BRIEF_BUILDING_ROLE_CANDIDATE_ONLY",
+        scene_catalog[target] = {**entry, "matchMode": ("BRIEF_SCENE_COMPONENT_CANDIDATE_ONLY" if is_component
+                                                        else "BRIEF_BUILDING_ROLE_CANDIDATE_ONLY"),
                                  "sourceRole": role, "regionalAdaptationRequired": True}
         chosen_urls.add(entry["url"])
         role_candidates += 1
@@ -1028,8 +1086,9 @@ def animal_source_practice():
                      "candidateTargetIds":target_ids,"speciesVerified":False,
                      "originalModelHandcraftedVerified":False,"registration":"PENDING_SOURCE_AND_VISUAL_REVIEW",
                      "actualRobloxRuntimeVerified":False,"visualQualityApproved":False}
-            if entry.get("matchMode") == "BRIEF_BUILDING_ROLE_CANDIDATE_ONLY":
+            if entry.get("regionalAdaptationRequired") is True:
                 proof["sourceMatchMode"] = entry["matchMode"]
+                proof["sourceRole"] = entry["sourceRole"]
                 proof["regionalAdaptationRequired"] = True
             os.makedirs(source_dir, exist_ok=True)
             if os.path.exists(source):
