@@ -135,6 +135,34 @@ test('자동 확보(zip): 해시가 맞으면 받고, 틀리면 거절·삭제, 
   }finally{server.close()}
 });
 
+test('직접 GLB: 명시 선택, 파일 크기·해시·구조 검증, 승인 분리와 중복 방지', async () => {
+  const doc={asset:{version:'2.0'},meshes:[{primitives:[{attributes:{POSITION:0}}]}],buffers:[{byteLength:12}],bufferViews:[{buffer:0,byteLength:12}],accessors:[{bufferView:0,componentType:5126,count:1,type:'VEC3'}]};
+  const json=Buffer.from(JSON.stringify(doc).padEnd(Math.ceil(JSON.stringify(doc).length/4)*4,' '));
+  const bytes=Buffer.alloc(28+json.length+12);bytes.write('glTF');bytes.writeUInt32LE(2,4);bytes.writeUInt32LE(bytes.length,8);
+  bytes.writeUInt32LE(json.length,12);bytes.writeUInt32LE(0x4e4f534a,16);json.copy(bytes,20);bytes.writeUInt32LE(12,20+json.length);bytes.writeUInt32LE(0x004e4942,24+json.length);
+  const sha=(await import('node:crypto')).createHash('sha256').update(bytes).digest('hex');
+  const server=http.createServer((q,r)=>{r.writeHead(200);r.end(q.url==='/bad.glb'?Buffer.from('not a model'):bytes)});
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const url='http://127.0.0.1:'+server.address().port;
+  const selected=src({id:'hippo',category:'CREATURE',sourceUrl:'https://example.com/model',downloadUrl:url+'/model.glb',downloadSha256:sha});
+  try{
+    assert.equal(methodFor(selected),'manual');
+    assert.equal(methodFor(selected,{allowLocal:true}),'glb');
+    const lib=tmp(),registry={assets:[],externalSources:[selected]};
+    assert.equal(plan({registry,repoRoot:lib,libDir:lib,sourceId:'hippo',minPerFamily:{},allowLocal:true}).picks.length,1);
+    assert.equal((await acquire(selected,lib,{allowLocal:true})).status,'ACQUIRED_NEEDS_OWNER_APPROVAL');
+    const prov=JSON.parse(fs.readFileSync(path.join(lib,'hippo','provenance.json'),'utf8'));
+    assert.equal(prov.sourceSha256,sha);assert.equal(prov.approved,false);assert.equal(prov.runtimeVerified,false);
+    assert.equal(plan({registry,repoRoot:lib,libDir:lib,sourceId:'hippo',minPerFamily:{},allowLocal:true}).picks.length,0);
+    assert.equal((await acquire({...selected,id:'bad',downloadUrl:url+'/bad.glb',downloadSha256:null},lib,{allowLocal:true})).status,'INVALID_GLB');
+    assert.equal((await acquire({...selected,id:'hash',downloadSha256:'0'.repeat(64)},lib,{allowLocal:true})).status,'HASH_MISMATCH');
+    assert.equal((await acquire({...selected,id:'large'},lib,{allowLocal:true,maxBytes:10})).status,'DOWNLOAD_TOO_LARGE');
+    assert.equal((await acquire({...selected,id:'paid',license:'CC-BY'},lib,{allowLocal:true})).status,'SOURCE_POLICY_REJECTED');
+    assert.deepEqual(readApprovals(lib).packs,{});
+    assert.equal(scanLibrary(lib).packs.length,1);
+  }finally{server.close()}
+});
+
 test('학습 상태 저장소: main 등 허용되지 않은 브랜치는 거부하고, 전용 브랜치에는 요약만 쌓고 불러온다', () => {
   for(const b of ['main','master','claude/x','vibe-gym','release'])assert.throws(()=>guardBranch(b),/BRANCH_NOT_ALLOWED/,b);
   assert.equal(guardBranch('vibe-gym-data'),'vibe-gym-data');
