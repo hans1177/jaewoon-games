@@ -640,17 +640,19 @@ test('Mare scheduled verified asset registration dispatches existing publisher o
   assert.ok(workflow.includes('for f in "$registry" "$ids"; do'));
   assert.ok(workflow.includes('MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f'));
   assert.ok(workflow.includes('echo "registered_change=$changed" >> "$GITHUB_OUTPUT"'));
-  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || ((env.MARE_MODELS_ONLY == 'true' || steps.card_recovery.outputs.pending == 'true') && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
+  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
   assert.ok(workflow.includes('gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"'));
   assert.ok(workflow.includes('MARE_ASSET_PUBLISH_REQUESTED=YES'));
   assert.ok(publisher.includes('MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED:'));
   assert.ok(publisher.includes('MARE_CANONICAL_TARGET_MISMATCH'));
   assert.ok(studio.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
-  assert.ok(publisher.includes("github.event.workflow_run.event != 'schedule'")); // 정기 작업의 중복 workflow_run 게시 금지
-  assert.ok(publisher.includes("!endsWith(github.event.workflow_run.display_title, ' · periodic')"));
-  assert.ok(publisher.includes("github.event.workflow_run.head_repository.full_name == github.repository"));
+  assert.doesNotMatch(publisher,/^  workflow_run:/m); // 등록 후 중복 게시 트리거 금지
+  assert.match(publisher,/^  workflow_dispatch:/m);
+  assert.match(publisher,/^  push:/m);
+  assert.equal(workflow.split('gh workflow run owner-mare-essentia-direct-publish.yml').length - 1, 1);
+  assert.match(publisher,/cancel-in-progress: false/);
   assert.ok(workflow.includes("MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}"));
-  assert.ok(workflow.includes("inputs.scheduled_recovery == true && ' · periodic'"));
+  assert.ok(workflow.includes("inputs.scheduled_recovery == true || github.event_name == 'repository_dispatch' || github.event_name == 'workflow_run'"));
   assert.ok(workflow.includes("inputs.scheduled_recovery != true || (inputs.studio_regrant != true"));
   assert.ok(workflow.includes('if [[ "$MARE_MODELS_ONLY" != "true" ]]; then'));
 });
@@ -2044,8 +2046,15 @@ test('Mare European card art hides unverified ratios and styles without deleting
     assert.equal(review?.robloxSafety,true);
     const png=fs.readFileSync(root+review.sourceFile);
     assert.equal(png.toString('ascii',1,4),'PNG',key+' actual PNG');
-    assert.equal(png.readUInt32BE(16),1400,key+' original width');
-    assert.equal(png.readUInt32BE(20),2000,key+' original height');
+    // 원본 직접 등록 규격: 실제 7:10 원본을 임의 확대하지 않는다.
+    const w=png.readUInt32BE(16), h=png.readUInt32BE(20);
+    assert.ok(w>=768 && h>=768 && w<=4096 && h<=4096,key+' original dimensions');
+    assert.ok(Math.abs(w*10-h*7)<=h*0.05,key+' original portrait ratio');
+    if(review.sourceFile.endsWith('-1400x2000.png')){
+      assert.equal(w,1400,key+' named portrait width');
+      assert.equal(h,2000,key+' named portrait height');
+    }
+    assert.equal(createHash('sha256').update(png).digest('hex'),review.sourceSha256,key+' actual approved source bytes');
   }
 });
 
