@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-ux2els",
+      "worker": "vibe2",
+      "taskId": "recovery-recovery-bb68001c178e5045366a",
+      "gameId": "mare-essentia",
+      "files": [
+        "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau"
+      ],
+      "baseSha": "89d5ba9c396d3bcf05fbd7ac5646f4464a541f39",
+      "runId": "45750066999",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-26T03:44:59.616Z",
+      "expiresAt": "2026-11-26T04:29:59.616Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:recovery-recovery-bb68001c178e5045366a"
+      ]
+    }
+  ]
 }
