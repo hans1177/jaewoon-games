@@ -771,6 +771,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		m:Destroy()
 		return nil
 	end
+	-- [항구 자산 실측] 배치에 성공한 등록 모델에만 원본 키를 남긴다. 로딩/등록 성공과 구분한다.
+	-- 실제 Studio 감사 전용이며 일반 플레이의 모델 속성·부하를 변경하지 않는다.
+	if RunService:IsStudio() and kind == "Town" and AssetIds["Town/" .. asset] then
+		m:SetAttribute("PortPlacedAssetKey", "Town/" .. asset)
+	end
 	-- [실제 3D 설치 모션] 요청된 장식과 공사 단계에만 적용한다. 원본 메시의 최종 좌표·충돌을 복원한다.
 	-- 보이는 파츠가 너무 많은 원본은 모바일 드로콜/트윈 폭증을 피하기 위해 즉시 설치한다.
 	if type(buildDelay) == "number" and buildDelay >= 0 then
@@ -4508,8 +4513,18 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					end
 				end
 				if stalls >= 2 and warehouseBuilt > 0 then
-					put("Town", "cart", 4, cx - 14, cz, false)
-					put("Cargo", "box-open", 2.4, cx + 13, cz, false)
+					-- [등록 원본 자동 검증] 같은 항구의 정확한 역할 원본만 기존 시장 슬롯에서 평가한다.
+					-- 원본 등록 전용 자산은 Studio 후보이며, 실제 플레이의 승인된 소품은 유지한다.
+					local cartSource = info.portId .. "-wheelbarrow-source"
+					local crateSource = info.portId .. "-wooden-produce-crate-source"
+					if not (RunService:IsStudio() and AssetIds["Town/" .. cartSource]
+						and put("Town", cartSource, 4, cx - 14, cz, false)) then
+						put("Town", "cart", 4, cx - 14, cz, false)
+					end
+					if not (RunService:IsStudio() and AssetIds["Town/" .. crateSource]
+						and put("Town", crateSource, 2.4, cx + 13, cz, false)) then
+						put("Cargo", "box-open", 2.4, cx + 13, cz, false)
+					end
 				end
 				-- [장날] 런던만 같은 승인 가판대를 두 줄로 진열, 다른 항구는 기존 연출을 보존한다.
 				if stalls > 0 then
@@ -5334,10 +5349,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			one("Town", "workbench-anvil", 3.4, 2, 0, lay.freightZ + 9)
 		end
 		-- [런던 조선항] 기존 등록 밧줄 소품을 원자재 필지에 놓고 전용 공장으로 위장하지 않는다.
-		if info.portId == "london" and lay.freight and lay.shipyardBuilt
-			and AssetIds["Relics/rope-bundle-a"] then
-			local rope = one("Relics", "rope-bundle-a", 3, -4, 0, lay.freightZ - 12)
-			if rope then rope:SetAttribute("LondonHarborRopeSupply", true) end
+		if lay.freight and lay.shipyardBuilt then
+			local ropeSource = info.portId .. "-rope-twist-02-source"
+			local rope = if RunService:IsStudio() and AssetIds["Town/" .. ropeSource]
+				then one("Town", ropeSource, 3, -4, 0, lay.freightZ - 12) else nil
+			if not rope and info.portId == "london" and AssetIds["Relics/rope-bundle-a"] then
+				rope = one("Relics", "rope-bundle-a", 3, -4, 0, lay.freightZ - 12)
+			end
+			if rope and info.portId == "london" then rope:SetAttribute("LondonHarborRopeSupply", true) end
 		end
 		-- [지역 특산품 하역] 이 항구가 실제 생산하고 등록된 품목만 원자재 필지에 놓는다.
 		-- 주류·담배·약물 시각 자산은 새로 사용하지 않는다.
@@ -5522,7 +5541,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	if growth.sidePier then
 		for i = 0, visibleCargo - 1 do
 			local c = dockCargo[i % #dockCargo + 1]
-			importedModel(folder, c[1], c[2], Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6)), 2.6, false)
+			local at = Vector3.new(26 + i * 4.2, 2, 46 + (if i % 2 == 0 then 1.6 else -1.6))
+			local barrelSource = info.portId .. "-wood-barrel-source"
+			if not (c[1] == "Cargo" and c[2] == "barrel" and RunService:IsStudio()
+				and AssetIds["Town/" .. barrelSource] and importedModel(folder, "Town", barrelSource, at, 2.6, false)) then
+				importedModel(folder, c[1], c[2], at, 2.6, false)
+			end
 		end
 	end
 	local mainCargo = math.min(5, math.max(1, math.floor(visibleCargo / 2)))
@@ -5564,7 +5588,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	for _, side in { 1, -1 } do
 		for x = -30, -150, -24 do
 			importedModel(folder, "Town", "cart", Vector3.new(x - 6, 0, side * 36.2), 5, false)
-			importedModel(folder, "Town", "bench_A", Vector3.new(x - 14, 0, side * 41.6), 3.8, false)
+			local benchAt = Vector3.new(x - 14, 0, side * 41.6)
+			local benchSource = info.portId .. "-column-leg-bench-source"
+			if not (RunService:IsStudio() and x == -30 and AssetIds["Town/" .. benchSource]
+				and importedModel(folder, "Town", benchSource, benchAt, 3.8, false)) then
+				importedModel(folder, "Town", "bench_A", benchAt, 3.8, false)
+			end
 		end
 		for x = -20, -160, -10 do
 			importedModel(folder, "Town", "fence_straight", Vector3.new(x, 0, side * 130), 8, false)
@@ -6802,7 +6831,12 @@ function PortScene.build(info, onFacility)
 				-- 장면 첫 방문/같은 단계 재입항/하락 단계에서는 시공을 재생하지 않는다.
 				if upgrade then
 					local delay = 0.15 + facilityUpgradeAnimations * 0.38
-					local scaffold = importedModel(folder, "Terrain", "wood-structure", at(-14, 4), 6.5, false, nil, delay)
+					local scaffoldSource = info.portId .. "-building-scaffolding-source"
+					local scaffold = if RunService:IsStudio() and AssetIds["Town/" .. scaffoldSource]
+						then importedModel(folder, "Town", scaffoldSource, at(-14, 4), 6.5, false, nil, delay) else nil
+					if not scaffold then
+						scaffold = importedModel(folder, "Terrain", "wood-structure", at(-14, 4), 6.5, false, nil, delay)
+					end
 					if scaffold then
 						scaffold.Name = "FacilityUpgradeScaffold_" .. f.tab
 						scaffold:SetAttribute("BuildPlotId", info.portId .. ":facility:" .. f.name)
@@ -9150,6 +9184,46 @@ function PortScene.build(info, onFacility)
 		end
 	end
 	sliceMark("shadowPass")
+	-- [전 항구 배치 감사] 최종 장면에 남은 실제 모델의 등록 키를 집계한다.
+	-- 발전도별 대체 모델과 원본 부품은 미배치만으로 실패/승인 처리하지 않는다.
+	-- 이 증거는 장면 구성 확인이며 화면 품질·충돌·모바일 성능 승인과 별개다.
+	if RunService:IsStudio() then
+		local registered, placed, unplaced, sourcePending = {}, {}, {}, {}
+		local underscore = "Town/" .. info.portId .. "_"
+		local hyphen = "Town/" .. info.portId .. "-"
+		for assetKey in AssetIds do
+			if assetKey:sub(1, #underscore) == underscore or assetKey:sub(1, #hyphen) == hyphen then
+				registered[assetKey] = true
+			end
+		end
+		local observed = {}
+		for _, model in folder:GetDescendants() do
+			if model:IsA("Model") then
+				local assetKey = model:GetAttribute("PortPlacedAssetKey")
+				if assetKey and registered[assetKey] then observed[assetKey] = true end
+			end
+		end
+		for assetKey in registered do
+			if observed[assetKey] then
+				table.insert(placed, assetKey)
+			elseif assetKey:sub(-7) == "-source" then
+				table.insert(sourcePending, assetKey)
+			else
+				table.insert(unplaced, assetKey)
+			end
+		end
+		table.sort(placed)
+		table.sort(unplaced)
+		table.sort(sourcePending)
+		folder:SetAttribute("PortAssetPlacedKeys", table.concat(placed, ";"))
+		folder:SetAttribute("PortAssetUnplacedKeys", table.concat(unplaced, ";"))
+		folder:SetAttribute("PortAssetUnplacedSourceKeys", table.concat(sourcePending, ";"))
+		folder:SetAttribute("PortAssetRegisteredCount", #placed + #unplaced + #sourcePending)
+		folder:SetAttribute("PortAssetPlacedCount", #placed)
+		folder:SetAttribute("PortAssetAuditScope", "STUDIO_SCENE_CONSTRUCTION_ONLY")
+		print(("[QA] PORT_ASSET_PLACEMENT port=%s level=%d registered=%d placed=%d unplaced=%d unplacedSource=%d"):format(
+			info.portId, sceneLevel, #placed + #unplaced + #sourcePending, #placed, #unplaced, #sourcePending))
+	end
 	local spanText = {}
 	for _, row in spans do table.insert(spanText, row.ms .. "ms@" .. row.at) end
 	folder:SetAttribute("BuildMaxSpanMs", if spans[1] then spans[1].ms else 0)
