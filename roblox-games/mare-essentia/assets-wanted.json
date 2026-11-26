@@ -1860,26 +1860,53 @@
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "a0019d665bef0df086264534152b87ca4433e2ad",
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "8a265b59853479a12be312b12a383cb3d1977a85",
      "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
      "registrationApproved": false,
      "visualQualityApproved": false,
-     "model": "gemini-3.6-flash",
-     "provider": "gemini:gemini-3.6-flash",
-     "frameSha256": [
-      "8c70c251fa4746e9a6423ea804144a7ed34d5ff3dfd1b07bb8aad11637677da3",
-      "49149522c67b50c6fdcc46b595cc6f783f48ab880bc996292785cb3583835fb9",
-      "ec486ed9f2b54764a1258820dd749844b0c5397f954b888800a4d8946d430a1b"
-     ],
-     "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
-     "speciesMatch": true,
-     "contentSafe": true,
-     "silhouetteClear": true,
-     "uncertain": false,
-     "mobileGeometryWithinBudget": false
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "triangles": 404,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "29e3687e8afbe5e194ed54383593b0083afd03d18474265e4b2ee624195065bd",
+       "bytes": 231953
+      },
+      {
+       "name": "rear.png",
+       "sha256": "3652b0f3c1dfa910705f49b7ea7165644d553ef99ceeb3c6aca6f06b1a8bc06e",
+       "bytes": 235713
+      },
+      {
+       "name": "side.png",
+       "sha256": "afdcfbc460286c41f2b2f1e83d89f3e0e7d6ff7467936ae06f4caf25272b9a98",
+       "bytes": 231825
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
+    }
    },
    {
     "name": "goat",
@@ -2366,7 +2393,54 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "f3497a82d21198bc-f3497a82d21198bc",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "triangles": 572,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "b26fbeddacf16132d18921b094176e79e3597e9d79a0e8035328f5d1b6eff23a",
+       "bytes": 230292
+      },
+      {
+       "name": "rear.png",
+       "sha256": "95fa869920a78dbf489cd5e24b27b23367caafd0a3af96466542575938b43f21",
+       "bytes": 223681
+      },
+      {
+       "name": "side.png",
+       "sha256": "67012df9011c6a30dcfe308897ac71ed4427536656bc0d2b3d7e45574d2e6b1e",
+       "bytes": 225409
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "sourceVisualObservation": {
+     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
+     "sourceRevision": "8a265b59853479a12be312b12a383cb3d1977a85",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "model": "gemini-3.6-flash",
+     "provider": "gemini:gemini-3.6-flash",
+     "frameSha256": [
+      "b26fbeddacf16132d18921b094176e79e3597e9d79a0e8035328f5d1b6eff23a",
+      "95fa869920a78dbf489cd5e24b27b23367caafd0a3af96466542575938b43f21",
+      "67012df9011c6a30dcfe308897ac71ed4427536656bc0d2b3d7e45574d2e6b1e"
+     ],
+     "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
+     "speciesMatch": true,
+     "contentSafe": true,
+     "silhouetteClear": true,
+     "uncertain": false,
+     "mobileGeometryWithinBudget": false
+    }
    },
    {
     "name": "platypus",
@@ -2577,7 +2651,18 @@
     "visualQualityApproved": false,
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
-    "priorRenderRetry": true
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureDiagnostic": {
+      "stage": "TEXTURE",
+      "exitCode": 1,
+      "exceptionType": "ValueError",
+      "scriptLine": 322
+     },
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    }
    },
    {
     "name": "oryx",
@@ -2731,7 +2816,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -14973,6 +15058,32 @@
     }
    ]
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 0,
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "lastPreviewRun": {
+   "runId": "45750349714",
+   "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
+   "publisherExactNameCandidates": 0,
+   "scenePublisherExactNameCandidates": 0,
+   "scenePublisherRoleCandidates": 0,
+   "downloadAttempts": 0,
+   "newOriginalCount": 0,
+   "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+   "renderedCount": 2,
+   "renderFailures": [
+    {
+     "name": "hippo",
+     "reason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    }
+   ],
+   "registrationApproved": false,
+   "nativeRuntimeVerified": false,
+   "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED",
+   "visualObservationCount": 1,
+   "visionRoute": "VERIFIED_FREE"
+  },
+  "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED"
  }
 }
