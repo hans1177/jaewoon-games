@@ -773,8 +773,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	end
 	-- [항구 자산 실측] 배치에 성공한 등록 모델에만 원본 키를 남긴다. 로딩/등록 성공과 구분한다.
 	-- 실제 Studio 감사 전용이며 일반 플레이의 모델 속성·부하를 변경하지 않는다.
-	if RunService:IsStudio() and kind == "Town" and AssetIds["Town/" .. asset] then
-		m:SetAttribute("PortPlacedAssetKey", "Town/" .. asset)
+	if RunService:IsStudio() and AssetIds[kind .. "/" .. asset] then
+		m:SetAttribute("PortPlacedAssetKey", kind .. "/" .. asset)
 	end
 	-- [실제 3D 설치 모션] 요청된 장식과 공사 단계에만 적용한다. 원본 메시의 최종 좌표·충돌을 복원한다.
 	-- 보이는 파츠가 너무 많은 원본은 모바일 드로콜/트윈 폭증을 피하기 위해 즉시 설치한다.
@@ -3161,6 +3161,8 @@ local function placeSignature(folder, info)
 	-- 1개 표시(2단계) / 기존 전체 수량(3단계 이상)을 유지해 모바일 모델 수는 늘리지 않는다.
 	local visualGroups = {}
 	local sceneryCount = 0
+	local sceneryExpected = 0
+	local sceneryFailed = if RunService:IsStudio() then {} else nil
 	-- [항구 실루엣] 같은 등록 모델의 배치라도 항구별 간격과 방향은 고유하게 구성한다.
 	local layoutRng = seeded(info.portId .. ":signature-layout")
 	local layoutAngle = math.rad(layoutRng:NextInteger(-20, 20))
@@ -3193,7 +3195,9 @@ local function placeSignature(folder, info)
 					e.y * variation.scale,
 					(e.dx * layoutSin + e.dz * layoutCos) * layoutWidth * span + variation.shiftZ)
 			local size = (if early then math.min(16, e.size * 0.58) else e.size) * variation.scale
+			sceneryExpected += 1
 			local m = importedModel(folder, e.kind, e.asset, at, size, not early and not e.waterfront, e.tint)
+			if not m and sceneryFailed then sceneryFailed[e.kind .. "/" .. e.asset] = true end
 			if m then
 				m.Name = if early then "EarlyRegionalScenery" else "RegionalScenery_" .. tostring(index)
 				m:SetAttribute("PortSceneryAsset", e.kind .. "/" .. e.asset)
@@ -3209,10 +3213,19 @@ local function placeSignature(folder, info)
 			elseif nation == "norway" or nation == "sweden" or nation == "finland" then "house"
 			elseif nation == "germany" or nation == "poland" or nation == "prussia" then "bell-tower"
 			else "church"
+		sceneryExpected += 1
 		local m = importedModel(folder, "Town", asset, signatureCenter, 16, true)
-		if m then sceneryCount += 1 end
+		if m then sceneryCount += 1 elseif sceneryFailed then sceneryFailed["Town/" .. asset] = true end
 	end
 	folder:SetAttribute("CityPortSceneryPlacedCount", sceneryCount)
+	if sceneryFailed then
+		local failedKeys = {}
+		for key in sceneryFailed do table.insert(failedKeys, key) end
+		table.sort(failedKeys)
+		folder:SetAttribute("CityPortSceneryExpectedCount", sceneryExpected)
+		folder:SetAttribute("CityPortSceneryFailedCount", sceneryExpected - sceneryCount)
+		folder:SetAttribute("CityPortSceneryFailedKeys", table.concat(failedKeys, ";"))
+	end
 	if sceneLevel < 3 then return end
 	-- [항구 대표경관] 각 대륙의 상징 건물 주위에 3~5단계의 같은 문화권 부속 경관을 추가한다.
 	-- 멀리서는 지붕·탑 실루엣, 가까이에서는 현관·정원·시장의 순서로 디테일이 드러난다.
@@ -9209,13 +9222,25 @@ function PortScene.build(info, onFacility)
 				registered[assetKey] = true
 			end
 		end
-		local observed = {}
+		local observed, allObserved = {}, {}
 		for _, model in folder:GetDescendants() do
 			if model:IsA("Model") then
 				local assetKey = model:GetAttribute("PortPlacedAssetKey")
-				if assetKey and registered[assetKey] then observed[assetKey] = true end
+				if assetKey and AssetIds[assetKey] then
+					allObserved[assetKey] = true
+					if registered[assetKey] then observed[assetKey] = true end
+				end
 			end
 		end
+		local allKeys = {}
+		for key in allObserved do table.insert(allKeys, key) end
+		table.sort(allKeys)
+		folder:SetAttribute("PortAssetObservedImportKeys", table.concat(allKeys, ";"))
+		folder:SetAttribute("PortAssetObservedImportCount", #allKeys)
+		folder:SetAttribute("PortAssetObservedImportScope", "IMPORTED_MODEL_SCENE_CONSTRUCTION_ONLY")
+		print(("[QA] PORT_ASSET_IMPORT_OBSERVED port=%s level=%d unique=%d sceneryExpected=%s sceneryFailed=%s missingLandmark=%s"):format(
+			info.portId, sceneLevel, #allKeys, tostring(folder:GetAttribute("CityPortSceneryExpectedCount")),
+			tostring(folder:GetAttribute("CityPortSceneryFailedCount")), tostring(folder:GetAttribute("CityPortMissingLandmark"))))
 		for assetKey in registered do
 			if observed[assetKey] then
 				table.insert(placed, assetKey)

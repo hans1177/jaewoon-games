@@ -4399,3 +4399,17 @@ test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 �
  for(const token of ['"sea_" .. briefSea .. "_" .. layer[1]','AssetIds["Naval/" .. asset]','AssetIds[kind .. "/" .. spec[1]]','NavalBriefAssetKey','NavalBriefPlaced_','node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'])assert.ok(naval.includes(token),token);
  for(const token of ['local asset = "field_" .. siteId','AssetIds["Terrain/" .. asset]','entry.band, entry.horizon, entry.briefBackdrop = "far", true, true','FieldBriefBackdropPlaced','FieldBriefAssetKey','stageFeature(entry)'])assert.ok(field.includes(token),token);
 });
+
+test('Mare port construction audit records shared imported assets and separates attempted scenery failures',()=>{
+  const source=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
+  assert.match(source,/if RunService:IsStudio\(\) and AssetIds\[kind \.\. "\/" \.\. asset\] then/);
+  assert.match(source,/m:SetAttribute\("PortPlacedAssetKey", kind \.\. "\/" \.\. asset\)/);
+  assert.match(source,/sceneryExpected \+= 1/);
+  assert.match(source,/CityPortSceneryFailedCount", sceneryExpected - sceneryCount/);
+  assert.match(source,/CityPortSceneryFailedKeys/);
+  assert.match(source,/PortAssetObservedImportKeys/);
+  assert.match(source,/PortAssetObservedImportCount/);
+  assert.match(source,/IMPORTED_MODEL_SCENE_CONSTRUCTION_ONLY/);
+  assert.match(source,/PortAssetAuditScope", "STUDIO_SCENE_CONSTRUCTION_ONLY"/);
+  assert.match(source,/CityPortMissingLandmark/);
+});
