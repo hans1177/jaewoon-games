@@ -987,6 +987,11 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(workflow,/mare-animal-source-preview\/\*\*\/quality\.glb/);
   execFileSync('python3',['-c',"import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('tools/vibe_mesh_audit.py','tools/devloop/assets_wanted.py')]"],{timeout:15000});
   assert.match(source,/HEAD:.*assets-wanted\.json/);
+  assert.match(source,/HISTORICAL_PREVIEW_ONLY/);
+  assert.match(source,/lastPreviewSummary/);
+  assert.match(source,/lastSourcePreview/);
+  assert.match(source,/lastQualityCandidate/);
+  assert.match(source,/MARE_ANIMAL_QUALITY_STRUCTURE_DIAGNOSTIC/);
   assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
   assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
   assert.equal((workflow.match(/always\(\) && env\.MARE_ANIMAL_PREVIEW == 'true'/g)||[]).length,2);
