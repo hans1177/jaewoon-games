@@ -292,11 +292,33 @@ if args.source_preview_dir:
     # 외부 라이브러리나 임의 파일 참조는 검수 화면을 만들기 전에 차단한다.
     if bpy.data.libraries:
         raise ValueError('SOURCE_PREVIEW_EXTERNAL_LIBRARY')
+    # 구형 원본의 화면 참고 사진과 실제 재질 텍스처를 구분한다.
+    # 외부 파일은 읽지 않고, 렌더에 연결된 이미지나 사용처가 불명확한 이미지는 계속 차단한다.
+    ignored_reference_images = 0
+    image_users = bpy.data.user_map()
+    unused_references = []
     for im in bpy.data.images:
-        if im.source == 'FILE' and not im.packed_file:
-            image_path = Path(bpy.path.abspath(im.filepath)).resolve()
-            if image_path.parent != source.parent or not image_path.is_file():
-                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+        if im.source != 'FILE' or im.packed_file:
+            continue
+        image_path = Path(bpy.path.abspath(im.filepath)).resolve()
+        if image_path.parent == source.parent and image_path.is_file():
+            continue
+        owners = image_users.get(im, set())
+        # ID 사용처가 없는 이미지, 편집기 화면, 렌더되지 않는 이미지 Empty만 제외한다.
+        # Texture/Material/NodeTree 등 실제 데이터 사용처는 미사용으로 추정하지 않는다.
+        reference_only = all(
+            isinstance(owner, bpy.types.Screen)
+            or (isinstance(owner, bpy.types.Object) and owner.type == 'EMPTY'
+                and owner.data == im)
+            for owner in owners
+        )
+        if not reference_only:
+            raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+        unused_references.append(im)
+    # 원본은 저장하지 않으며 검수 프로세스 메모리에서만 참조를 제거한다.
+    for im in unused_references:
+        bpy.data.images.remove(im, do_unlink=True)
+        ignored_reference_images += 1
     scene = bpy.data.scenes.new('SourceReviewEvidence')
     for obj in meshes + arms:
         scene.collection.objects.link(obj)
@@ -338,6 +360,7 @@ if args.source_preview_dir:
         frames.append({'name': png.name, 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)})
     result['sourcePreview'] = {'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                                'frames': frames, 'renderer': 'BLENDER_WORKBENCH_TEXTURE',
+                               'ignoredReferenceImages': ignored_reference_images,
                                'visualQualityApproved': False, 'registrationApproved': False}
 
 with open(args.output, 'w', encoding='utf8') as f:

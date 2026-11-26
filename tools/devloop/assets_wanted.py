@@ -645,7 +645,7 @@ def render_animal_review_candidates(report, out):
                                     os.path.abspath("tools/vibe_mesh_audit.py"), "--",
                                     "--input", source, "--output", audit_path,
                                     "--source-preview-dir", frame_dir], cwd=temp, env=safe_env,
-                                   timeout=180, check=False, stdout=diagnostic, stderr=subprocess.STDOUT)
+                                   timeout=600, check=False, stdout=diagnostic, stderr=subprocess.STDOUT)
                     if completed.returncode:
                         # 로그 원문은 저장하지 않고 알려진 실패 코드만 남긴다.
                         diagnostic.seek(max(0, diagnostic.tell()-65536))
@@ -676,6 +676,7 @@ def render_animal_review_candidates(report, out):
                                         "artifactDirectory": key, "sourceMemberSha256": member["sha256"],
                                         "triangles": audit["triangles"], "frames": frames,
                                         "renderer": preview["renderer"],
+                                        "ignoredReferenceImages": preview["ignoredReferenceImages"],
                                         "registrationApproved": False, "visualQualityApproved": False}
         except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError,
                 tarfile.TarError, zipfile.BadZipFile) as error:
