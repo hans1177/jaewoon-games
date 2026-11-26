@@ -1085,8 +1085,9 @@ jobs:
           echo "registered_change=$changed" >> "$GITHUB_OUTPUT"
           echo "MARE_REGISTERED_CHANGE_VERIFIED=$changed"
 
+      # [단일 게시 인계] 모든 등록 트리거는 검증된 장부 변경 또는 명시적 게시 요청에서만 기존 게시기를 호출한다.
       - name: Publish the place with the new asset IDs
-        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || ((env.MARE_MODELS_ONLY == 'true' || github.event_name == 'repository_dispatch' || github.event_name == 'workflow_run' || steps.card_recovery.outputs.pending == 'true') && steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
+        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
         env:
           GH_TOKEN: ${{ github.token }}
           MARE_PUBLISH_UNIVERSE: ${{ inputs.universe_id || '10775310508' }}
