@@ -45,6 +45,11 @@ on:
       variants:
         description: 부모당 변형 수
         default: '4'
+      local_source:
+        description: '명시적으로 선택한 무료 원본 출처 ID (로컬 작업기에서만 다운로드)'
+        required: false
+        type: string
+        default: ''
 permissions:
   contents: write
   actions: write
@@ -211,12 +216,19 @@ jobs:
           if ($LASTEXITCODE -ne 0) { python -m pip install --user --quiet pillow numpy; python -c "import PIL, numpy; print('imaging OK')" }
       - name: Ingest inbox, scan library, plan shortage fill
         shell: pwsh
+        env:
+          VIBE_SELECTED_SOURCE: ${{ inputs.local_source }}
         run: |
           New-Item -ItemType Directory -Force -Path "$env:VIBE_CC0_LIBRARY_DIR\_inbox" | Out-Null
           node tools/vibe-cc0-library.mjs ingest
           node tools/vibe-cc0-library.mjs scan
           # 부족한 분야가 있을 때만, 레지스트리에 CC0로 검증된 출처에서만 받는다(받은 팩은 승인 전 후보).
-          node tools/vibe-cc0-fetch.mjs --execute --max 1
+          if ($env:VIBE_SELECTED_SOURCE) {
+            node tools/vibe-cc0-fetch.mjs --execute --source $env:VIBE_SELECTED_SOURCE
+          } else {
+            node tools/vibe-cc0-fetch.mjs --execute --max 1
+          }
+          if ($LASTEXITCODE -ne 0) { throw 'Local source acquisition failed' }
           node tools/vibe-cc0-library.mjs scan
       - name: Pull learned stats and learned lights
         shell: pwsh
