@@ -4379,3 +4379,23 @@ test('지역별 공방·우물·종교·시장·제분 시설은 해당 항구 �
    assert.ok(brief.includes(port+'_bld_'+role),port+':'+role);
  }
 });
+
+// [전투 지시서 원본 연결] 등록 키와 실제 배치 증거를 분리하고 잘못 분류된 항구는 보류한다.
+test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 승인 키만 사용한다',()=>{
+ const root='roblox-games/mare-essentia/';
+ const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
+ const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
+ const map=naval.match(/local briefPorts = \{([\s\S]*?)\n\s*\}/)[1];
+ const held=new Set(["acapulco","san_francisco","buenos_aires","st_helena","genoa","venice","ancona","split","trieste","honolulu","guam","perth","darwin"]);
+ const used=new Set();
+ for(const [,sea,ports] of map.matchAll(/([a-z_]+) = "([^"]*)"/g)){
+  const brief=readText(root+'docs/battle_backdrops/naval/'+sea+'.md');
+  const line=brief.split('\n').find(x=>x.startsWith('- 이 해역 항구:'));
+  const expected=[...line.matchAll(/\x60([a-z0-9_]+)\x60/g)].map(m=>m[1]).filter(p=>!held.has(p));
+  assert.deepEqual(ports.split(' ').filter(Boolean),expected);
+  for(const p of expected){assert.ok(!used.has(p),p);used.add(p);}
+ }
+ assert.equal([...map.matchAll(/([a-z_]+) = "/g)].length,27);
+ for(const token of ['"sea_" .. briefSea .. "_" .. layer[1]','AssetIds["Naval/" .. asset]','AssetIds[kind .. "/" .. spec[1]]','NavalBriefAssetKey','NavalBriefPlaced_','node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'])assert.ok(naval.includes(token),token);
+ for(const token of ['local asset = "field_" .. siteId','AssetIds["Terrain/" .. asset]','entry.band, entry.horizon, entry.briefBackdrop = "far", true, true','FieldBriefBackdropPlaced','FieldBriefAssetKey','stageFeature(entry)'])assert.ok(field.includes(token),token);
+});
