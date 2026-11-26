@@ -1052,6 +1052,14 @@ print('MARE_ALTERNATE_RETRY_FIXTURES=4')
   assert.match(source,/ANIMAL_QUALITY_CANDIDATE_REGRESSION/);
   assert.match(source,/QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON/);
   assert.match(source,/ANIMAL_QUALITY_CANDIDATE_FRAME_HASH/);
+  assert.match(uploader,/SOURCE_QUALITY_MODEL_HASH/);
+  assert.match(uploader,/sets\.push\(\{directory:key\+'\/quality',frames:quality\.frames\}\)/);
+  assert.match(uploader,/QUALITY_COMPARISON_OBSERVED_ONLY/);
+  assert.match(uploader,/QUALITY_COMPARISON_CONTENT_BLOCKED/);
+  assert.match(uploader,/candidateFrameSha256:quality\.frames\.map/);
+  assert.match(uploader,/row\.sourceVisualLastAttempt=review/);
+  assert.match(source,/row\["lastQualityComparison"\] = comparison/);
+  assert.match(source,/"QUALITY_COMPARISON_OBSERVED_ONLY", "QUALITY_COMPARISON_CONTENT_BLOCKED"/);
   assert.match(workflow,/mare-animal-source-preview\/\*\*\/quality\.glb/);
   execFileSync('python3',['-c',"import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('tools/vibe_mesh_audit.py','tools/devloop/assets_wanted.py')]"],{timeout:15000});
   assert.match(source,/HEAD:.*assets-wanted\.json/);
