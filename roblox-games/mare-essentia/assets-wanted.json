@@ -2396,7 +2396,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "b25d7e8976601ae0de18cdc82b0d310ab154cfbc",
+     "sourceRevision": "d9c8e92cf1ae2362a47e5f584b64491a4a1727e7",
      "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2405,7 +2405,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "41e008751c798c66-41e008751c798c66",
+     "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
+     "triangles": 732,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "fec6a8fd0a98c4bbacfcf77d2e2be45fff6bae04b947a50b48dd76482527e36f",
+       "bytes": 240107
+      },
+      {
+       "name": "rear.png",
+       "sha256": "8c729ce5bbb15a52cad2c5174507c51ba6d77b1e7d47b9d86a532eb99ca7fe5c",
+       "bytes": 247597
+      },
+      {
+       "name": "side.png",
+       "sha256": "2c288aac83a52154149b9f9daa7ad50043500d329101aafb41d2cc21974cccd2",
+       "bytes": 240950
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "narwhal",
@@ -2442,16 +2470,16 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "8a265b59853479a12be312b12a383cb3d1977a85",
+     "sourceRevision": "d9c8e92cf1ae2362a47e5f584b64491a4a1727e7",
      "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "model": "gemini-3.6-flash",
      "provider": "gemini:gemini-3.6-flash",
      "frameSha256": [
-      "b26fbeddacf16132d18921b094176e79e3597e9d79a0e8035328f5d1b6eff23a",
-      "95fa869920a78dbf489cd5e24b27b23367caafd0a3af96466542575938b43f21",
-      "67012df9011c6a30dcfe308897ac71ed4427536656bc0d2b3d7e45574d2e6b1e"
+      "4d5852e435459b4b5de3635689e8353d6279b54d420122df25c4389956afa74b",
+      "b03b2bfc412aa82977e7374ab4219121dc8ee49dabc27901429aef4661c0978d",
+      "76154cafac45c236940dda8e62105a681b65b01403627d40f082e05f4db06bfc"
      ],
      "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
      "speciesMatch": true,
@@ -2460,7 +2488,44 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "f3497a82d21198bc-f3497a82d21198bc",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "triangles": 572,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "4d5852e435459b4b5de3635689e8353d6279b54d420122df25c4389956afa74b",
+       "bytes": 230292
+      },
+      {
+       "name": "rear.png",
+       "sha256": "b03b2bfc412aa82977e7374ab4219121dc8ee49dabc27901429aef4661c0978d",
+       "bytes": 223681
+      },
+      {
+       "name": "side.png",
+       "sha256": "76154cafac45c236940dda8e62105a681b65b01403627d40f082e05f4db06bfc",
+       "bytes": 225409
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_BUDGET_UNREACHABLE"
+    }
    },
    {
     "name": "platypus",
@@ -2550,7 +2615,46 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "27f54f879846af5c-27f54f879846af5c",
+     "sourceMemberSha256": "27f54f879846af5ca48419da73a9e92e3b8c107b0cb0f0eabf8c89c99e99569f",
+     "triangles": 696,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "b9514d7325afbccaeaafcd4a366e22f52c48a1ec14b0ea1ae3cb02d4f3b4d635",
+       "bytes": 231199
+      },
+      {
+       "name": "rear.png",
+       "sha256": "4faed43ad760a4b598d514cef8664cea4a0a1d56dfd90795c7e4e1aecd73fb18",
+       "bytes": 233889
+      },
+      {
+       "name": "side.png",
+       "sha256": "4807e64afd6f7e498c2e339d055191f0a186e3e4945ab150a368ff5e33d5cdf5",
+       "bytes": 234301
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "sourceVisualObservation": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "d9c8e92cf1ae2362a47e5f584b64491a4a1727e7",
+     "sourceMemberSha256": "27f54f879846af5ca48419da73a9e92e3b8c107b0cb0f0eabf8c89c99e99569f",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "seal",
@@ -2712,7 +2816,14 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
    },
    {
     "name": "oryx",
@@ -2864,9 +2975,13 @@
   ],
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
-  "newOriginals": [],
-  "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "newOriginals": [
+   "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_japan_sea_far.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Town/gobkit-free-seville_plaza_center.glb",
+   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_chemistry_marseille_low.glb"
+  ],
+  "downloadAttempts": 3,
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -15108,14 +15223,17 @@
     }
    ]
   },
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 33,
   "lastPreviewRun": {
-   "runId": "45757169190",
+   "runId": "45758257607",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
-   "scenePublisherRoleCandidates": 0,
-   "downloadAttempts": 0,
-   "newOriginalCount": 0,
+   "scenePublisherRoleCandidates": 33,
+   "downloadAttempts": 3,
+   "newOriginalCount": 3,
    "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
    "renderedCount": 3,
    "renderFailures": [
@@ -15127,9 +15245,10 @@
    "registrationApproved": false,
    "nativeRuntimeVerified": false,
    "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED",
-   "visualObservationCount": 2,
+   "visualObservationCount": 1,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED"
  }
 }
