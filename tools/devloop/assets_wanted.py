@@ -1137,6 +1137,15 @@ def render_animal_review_candidates(report, out):
                 and observation.get("registrationApproved") is False
                 and observation.get("visualQualityApproved") is False):
             row["sourceVisualObservation"] = observation
+        # 이전 개선 비교는 기록만 보존하고 현재 파일/렌더 또는 승인으로 사용하지 않는다.
+        previous_quality = old.get("qualityCandidate", {})
+        comparison = previous_quality.get("comparison") or old.get("lastQualityComparison")
+        if (isinstance(comparison, dict) and len(row["modelMembers"]) == 1
+                and comparison.get("sourceMemberSha256") == row["modelMembers"][0]["sha256"]
+                and comparison.get("registrationApproved") is False
+                and comparison.get("visualQualityApproved") is False
+                and comparison.get("nativeRuntimeVerified") is False):
+            row["lastQualityComparison"] = comparison
         if old.get("priorRenderRetry") is True or old.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY":
             row["priorRenderRetry"] = True
             reason = old.get("sourcePreview", {}).get("failureReason") or old.get("priorRenderFailureReason")
@@ -1209,6 +1218,8 @@ def render_animal_review_candidates(report, out):
                and row.get("geometryQualityState") == "SOURCE_GEOMETRY_REPAIR_REQUIRED"
                and 0 < (row.get("geometry", {}).get("triangles") or 0) < 1000
                and len(row["modelMembers"]) == 1 and row["modelMembers"][0]["format"] == "GLB"
+               and row.get("lastQualityComparison", {}).get("state") not in (
+                   "QUALITY_COMPARISON_OBSERVED_ONLY", "QUALITY_COMPARISON_CONTENT_BLOCKED")
                and row.get("sourceVisualObservation", {}).get("state") == "SOURCE_VISUAL_OBSERVED_ONLY"
                and row["sourceVisualObservation"].get("sourceMemberSha256") == row["modelMembers"][0]["sha256"]
                and row["sourceVisualObservation"].get("contentSafe") is True
