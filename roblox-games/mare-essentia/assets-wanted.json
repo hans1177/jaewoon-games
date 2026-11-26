@@ -2124,35 +2124,6 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "ca6b72eae8c3c188-ca6b72eae8c3c188",
-     "sourceMemberSha256": "ca6b72eae8c3c18849589ab266b8178843fb43a862ed482d9073ebd18a54ee82",
-     "triangles": 394,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "dd9a8343b1d1aa8267328204c164318d1a457d2e9dc47c465b9b7c5f18c949cb",
-       "bytes": 229508
-      },
-      {
-       "name": "rear.png",
-       "sha256": "d8f8eefd88b4d64e3ae86af5e2ea8d536336814080065a6f5a9b97cf6d9ad364",
-       "bytes": 240294
-      },
-      {
-       "name": "side.png",
-       "sha256": "615ca3eb527f4833cd37e72970bd9d90d0115cd900ea3877af5fbaa104f2abcb",
-       "bytes": 231059
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
      "sourceRevision": "6e04282ead4106993c08aa86c4fa07117edad2e1",
@@ -2163,7 +2134,8 @@
      "httpStatuses": [
       429
      ]
-    }
+    },
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "ostrich",
@@ -2522,35 +2494,7 @@
       503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "41e008751c798c66-41e008751c798c66",
-     "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
-     "triangles": 732,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "0a924a1852dd7dfa20f9c229c0bca8c6f0eb8fd6d71d2bdd037cb13d3075d49b",
-       "bytes": 240107
-      },
-      {
-       "name": "rear.png",
-       "sha256": "e7c3a686c381ff4ac753666265d25a6f501d6ab14ee765e630b07bdf8814d025",
-       "bytes": 247597
-      },
-      {
-       "name": "side.png",
-       "sha256": "8a86612941e784ab949e41cee0efa94490eeccbe49dad0ddf368e6c999bf1fe3",
-       "bytes": 240950
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "narwhal",
@@ -2605,56 +2549,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "f3497a82d21198bc-f3497a82d21198bc",
-     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
-     "triangles": 572,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "413007ddf46b2228411eb1eec4c64f92ea2120811f967e1c2f4a4f7ad4a5ec71",
-       "bytes": 230292
-      },
-      {
-       "name": "rear.png",
-       "sha256": "24f183630514f78d5e9b13592e04b30040ed790a21c88356d799a4d8b9db9e3b",
-       "bytes": 223681
-      },
-      {
-       "name": "side.png",
-       "sha256": "ceb828a72755eda1ec208a724470dc84fa725ebb15aeb8d43dd56777528d9c90",
-       "bytes": 225409
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "qualityCandidate": {
-     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
-     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "nativeRuntimeVerified": false,
-     "originalPreserved": true,
-     "failureReason": "ANIMAL_QUALITY_BUDGET_UNREACHABLE"
-    },
-    "sourceVisualLastAttempt": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "6e04282ead4106993c08aa86c4fa07117edad2e1",
-     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "FREE_QUOTA_LIMIT",
-     "httpStatuses": [
-      429,
-      503
-     ]
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "platypus",
@@ -2929,14 +2824,7 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
-    "sourcePreview": {
-     "state": "RENDER_FAILED_RETRY",
-     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
    },
    {
     "name": "oryx",
@@ -3088,13 +2976,9 @@
   ],
   "archiveInventoryState": "AVAILABLE",
   "restoredOriginals": [],
-  "newOriginals": [
-   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_philosophy_bordeaux_low.glb",
-   "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_south_china_mid.glb",
-   "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_busan_waegwan.glb"
-  ],
-  "downloadAttempts": 3,
-  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
+  "newOriginals": [],
+  "downloadAttempts": 0,
+  "publisherSearchState": "NOT_REQUESTED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -11621,8 +11505,8 @@
    "questBriefCount": 37,
    "planned": 673,
    "registeredModelRights": 0,
-   "heldUnverified": 20,
-   "missingOriginal": 653,
+   "heldUnverified": 23,
+   "missingOriginal": 650,
    "nativeRuntimeVerified": false,
    "visualQualityApproved": false,
    "seas": [
@@ -12009,7 +11893,7 @@
       },
       "mid": {
        "assetKey": "Naval/sea_south_china_mid",
-       "state": "MISSING_ORIGINAL"
+       "state": "HELD_UNVERIFIED"
       },
       "far": {
        "assetKey": "Naval/sea_south_china_far",
@@ -12970,7 +12854,7 @@
     {
      "siteId": "auto_philosophy_bordeaux_low",
      "assetKey": "Terrain/field_auto_philosophy_bordeaux_low",
-     "state": "MISSING_ORIGINAL"
+     "state": "HELD_UNVERIFIED"
     },
     {
      "siteId": "auto_philosophy_edinburgh_high",
@@ -13415,7 +13299,7 @@
     {
      "siteId": "busan_waegwan",
      "assetKey": "Terrain/field_busan_waegwan",
-     "state": "MISSING_ORIGINAL"
+     "state": "HELD_UNVERIFIED"
     },
     {
      "siteId": "cadiz_bay",
@@ -15336,9 +15220,6 @@
     }
    ]
   },
-  "publisherExactNameCandidates": 0,
-  "scenePublisherExactNameCandidates": 0,
-  "scenePublisherRoleCandidates": 12,
   "lastPreviewRun": {
    "runId": "45785400723",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
@@ -15361,7 +15242,6 @@
    "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
-  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
+  "sourcePreviewState": "NOT_REQUESTED"
  }
 }
