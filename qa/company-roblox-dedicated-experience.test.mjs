@@ -2753,3 +2753,16 @@ test('Mare Dropbox candidate recognizes exact successful check runs without weak
   assert.ok(!block.includes('--admin'));
   assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
 });
+
+test('Mare indexed PNG audit separates exact registered SHA from archived and pending originals',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('      - name: Audit 256-color indexed'),workflow.indexOf('      - name: Practice and verify approved trade goods'));
+  assert.ok(block.includes("hashlib.file_digest(f, 'sha256').hexdigest()"));
+  assert.ok(block.includes("row.get('sourceSha256')"));
+  assert.ok(block.includes("row.get('assetType') == 'Image'"));
+  assert.ok(block.includes("'icons', 'materials', 'menu', 'goods'"));
+  assert.ok(block.includes('ART_PALETTE256_REGISTERED_SHA_MATCH'));
+  assert.ok(block.includes('ART_PALETTE256_OTHER_SOURCE'));
+  assert.ok(block.includes('ART_PALETTE256_REGISTERED_KEYS='));
+  assert.ok(block.includes('PNG_INDEXED_HEADER_ONLY_NOT_FULL_COLOR_OR_RUNTIME_AUDIT'));
+});
