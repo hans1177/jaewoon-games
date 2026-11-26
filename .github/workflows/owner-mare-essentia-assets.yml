@@ -377,11 +377,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if ! command -v blender >/dev/null; then
+          # 배포판 Blender의 내장 파이썬은 별도 pip 환경이 아니라 시스템 NumPy를 사용한다.
+          if ! command -v blender >/dev/null || ! dpkg-query -W -f='${db:Status-Status}' python3-numpy 2>/dev/null | grep -qx installed; then
             sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
-            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 install -y --no-install-recommends blender libegl1 libgl1 libgl1-mesa-dri
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
           fi
           blender --version | head -n 1
+          # 외부 원본이 아닌 고정 삼각형으로 실제 가져오기와 격리 환경의 모듈 로딩을 검사한다.
+          probe="$(mktemp -d)"
+          trap 'rm -rf "$probe"' EXIT
+          python3 - "$probe/probe.gltf" <<'PY'
+          import base64, json, struct, sys
+          data = struct.pack("<9f", 0, 0, 0, 1, 0, 0, 0, 1, 0)
+          model = {"asset": {"version": "2.0"}, "scene": 0, "scenes": [{"nodes": [0]}],
+                   "nodes": [{"mesh": 0}], "meshes": [{"primitives": [{"attributes": {"POSITION": 0}}]}],
+                   "buffers": [{"byteLength": len(data), "uri": "data:application/octet-stream;base64," + base64.b64encode(data).decode("ascii")}],
+                   "bufferViews": [{"buffer": 0, "byteLength": len(data), "target": 34962}],
+                   "accessors": [{"bufferView": 0, "componentType": 5126, "count": 3, "type": "VEC3",
+                                  "min": [0, 0, 0], "max": [1, 1, 0]}]}
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(model, handle)
+          PY
+          env -i PATH="$PATH" HOME="$probe" TMPDIR="$probe" LANG=C.UTF-8 LIBGL_ALWAYS_SOFTWARE=1 blender \
+            --background --factory-startup --disable-autoexec --python-exit-code 1 \
+            --python-expr 'import bpy, numpy, os; bpy.ops.wm.read_factory_settings(use_empty=True); assert "FINISHED" in bpy.ops.import_scene.gltf(filepath=os.path.join(os.environ["HOME"], "probe.gltf")); assert any(o.type == "MESH" for o in bpy.data.objects); print("MARE_BLENDER_GLTF_PREFLIGHT=PASS")'
 
       - name: Refresh asset practice ledger after Roblox registration
         id: asset_ledger
