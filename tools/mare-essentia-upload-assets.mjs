@@ -48,7 +48,8 @@ if (animalReviewArg) {
   let observed=0;
   for(const row of candidates){
     const preview=row.sourcePreview;
-    const review={state:'LOCAL_VISION_UNAVAILABLE',sourceRevision,registrationApproved:false,visualQualityApproved:false};
+    const review={state:'LOCAL_VISION_UNAVAILABLE',sourceRevision,sourceMemberSha256:preview.sourceMemberSha256,
+      registrationApproved:false,visualQualityApproved:false};
     row.sourceVisualObservation=review;
     if(!configured||billingBlocked)continue;
     try{
@@ -92,14 +93,23 @@ if (animalReviewArg) {
       Object.assign(review,{state:value.uncertain?'VISUAL_OBSERVATION_UNCERTAIN':!value.contentSafe?'VISUAL_CONTENT_BLOCKED':!value.speciesMatch||!value.silhouetteClear?'VISUAL_IDENTITY_REPAIR_REQUIRED':'SOURCE_VISUAL_OBSERVED_ONLY',
         model:localConfigured?model:provider.slice('gemini:'.length),provider,sourceMemberSha256:preview.sourceMemberSha256,frameSha256:preview.frames.map(frame=>frame.sha256),
         responseSha256:crypto.createHash('sha256').update(raw).digest('hex'),speciesMatch:value.speciesMatch,contentSafe:value.contentSafe,
-        silhouetteClear:value.silhouetteClear,uncertain:value.uncertain,mobileGeometryWithinBudget:Number.isInteger(preview.triangles)&&preview.triangles>=1000&&preview.triangles<=3000});
+        silhouetteClear:value.silhouetteClear,uncertain:value.uncertain,mobileGeometryWithinBudget:row.geometryQualityState==='MOBILE_BUDGET_MET'});
       observed++;
     }catch(error){
       billingBlocked=error?.status===402;
       review.state=billingBlocked?'FREE_VISION_BILLING_BLOCKED':'SOURCE_VISUAL_RETRY_REQUIRED';
+      // 공급자 응답 원문이나 키를 남기지 않고 고정 오류 분류와 HTTP 상태만 보존한다.
+      const statuses=[...new Set([error?.status,...(Array.isArray(error?.trace)?error.trace.map(t=>t.status):[])]
+        .filter(n=>Number.isInteger(n)&&n>=400&&n<=599))].sort((a,b)=>a-b);
+      review.failureReason=billingBlocked?'BILLING_BLOCKED':statuses.includes(429)?'FREE_QUOTA_LIMIT':
+        statuses.some(n=>n>=500)?'PROVIDER_TEMPORARY_FAILURE':statuses.length?'PROVIDER_HTTP_FAILURE':
+        error instanceof SyntaxError||error?.message==='SOURCE_VISUAL_RESPONSE_INVALID'?'INVALID_VISUAL_RESPONSE':
+        error?.name==='AbortError'||error?.trace?.some(t=>/abort|timeout/i.test(String(t.message)))?'PROVIDER_TIMEOUT':
+        'SOURCE_VISUAL_EVIDENCE_OR_PROVIDER_FAILURE';
+      review.httpStatuses=statuses;
     }
   }
-  if(audit)audit.sourceVisualObservationState=billingBlocked?'FREE_VISION_BILLING_BLOCKED':!candidates.length?'NO_RENDERED_CANDIDATES':!configured?'LOCAL_VISION_NOT_CONFIGURED':observed?'SOURCE_OBSERVATION_RECORDED':'VISION_RETRY_REQUIRED';
+  if(audit)audit.sourceVisualObservationState=billingBlocked?'FREE_VISION_BILLING_BLOCKED':!candidates.length?'NO_RENDERED_CANDIDATES':!configured?'LOCAL_VISION_NOT_CONFIGURED':observed===candidates.length?'SOURCE_OBSERVATION_RECORDED':observed?'PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED':'VISION_RETRY_REQUIRED';
   await fs.writeFile(ledgerPath,JSON.stringify(ledger,null,1)+'\n');
   console.log('MARE_ANIMAL_VISUAL_OBSERVATIONS='+observed);
   console.log('MARE_ANIMAL_VISION_ROUTE='+(localConfigured?'LOCAL':freeProviders.length?'VERIFIED_FREE':'UNAVAILABLE'));

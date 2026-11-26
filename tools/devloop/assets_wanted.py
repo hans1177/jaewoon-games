@@ -808,8 +808,32 @@ def materialize_animal_review_member(data, filename, target, member, dest):
 
 def render_animal_review_candidates(report, out):
     candidates = [row for row in report["candidates"] if row.get("modelMembers")]
-    report["sourcePreviewState"] = "NO_MODEL_CANDIDATES"
-    if not candidates:
+    # 기존 메인 장부의 동일 원본 관찰만 순환 우선순위에 사용한다. 승인이나 현재 렌더 증거로 승격하지 않는다.
+    try:
+        previous = json.loads(subprocess.check_output(
+            ["git", "show", "HEAD:" + os.path.join(root, "assets-wanted.json")],
+            timeout=30, stderr=subprocess.DEVNULL))["animalSourcePractice"]["candidates"]
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+        previous = []
+    prior = {(r.get("name"), r.get("sourceSha256"), tuple(m.get("sha256") for m in r.get("modelMembers", []))): r
+             for r in previous if isinstance(r, dict)}
+    for row in candidates:
+        identity = (row["name"], row["sourceSha256"], tuple(m["sha256"] for m in row["modelMembers"]))
+        old = prior.get(identity, {})
+        observation = old.get("sourceVisualObservation", {})
+        if (observation.get("state") in ("SOURCE_VISUAL_RETRY_REQUIRED", "SOURCE_VISUAL_OBSERVED_ONLY",
+                "VISUAL_OBSERVATION_UNCERTAIN", "VISUAL_CONTENT_BLOCKED", "VISUAL_IDENTITY_REPAIR_REQUIRED")
+                and observation.get("registrationApproved") is False
+                and observation.get("visualQualityApproved") is False):
+            row["sourceVisualObservation"] = observation
+        if old.get("priorRenderRetry") is True or old.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY":
+            row["priorRenderRetry"] = True
+        geometry = row.get("geometry", {})
+        if type(geometry.get("triangles")) is int:
+            row["geometryQualityState"] = ("MOBILE_BUDGET_MET" if geometry.get("mobileGeometryWithinBudget") is True
+                                           else "SOURCE_GEOMETRY_REPAIR_REQUIRED")
+    report["sourcePreviewState"] = "NOT_REQUESTED" if not out else "NO_MODEL_CANDIDATES"
+    if not out or not candidates:
         return
     import shutil
     blender = shutil.which("blender")
@@ -822,8 +846,22 @@ def render_animal_review_candidates(report, out):
     # 한 번에 세 건씩만 순환하고 원본별 렌더 시간을 제한한다.
     import time
     slot = int(time.time() // 3600) * 3
-    for i in range(min(3, len(candidates))):
-        row = candidates[(slot + i) % len(candidates)]
+    ordered = candidates[slot % len(candidates):] + candidates[:slot % len(candidates)]
+    retry = [row for row in ordered if row.get("priorRenderRetry") or
+             row.get("sourceVisualObservation", {}).get("state") == "SOURCE_VISUAL_RETRY_REQUIRED"]
+    fresh = [row for row in ordered if not row.get("sourceVisualObservation") and not row.get("priorRenderRetry")]
+    preferred = [row for row in fresh if row.get("geometryQualityState") != "SOURCE_GEOMETRY_REPAIR_REQUIRED"]
+    # 재시도는 한 자리 우선, 나머지는 새 원본에 배정해 반복 실패가 전체 순환을 막지 않게 한다.
+    selected = []
+    for pool, limit in ((retry, 1), (preferred, 1), (fresh, 3), (retry, 3), (ordered, 3)):
+        for row in pool:
+            if len(selected) >= 3 or limit <= 0:
+                break
+            if row not in selected:
+                selected.append(row)
+                limit -= 1
+    for row in selected:
+        row.pop("priorRenderRetry", None)
         row["sourcePreview"] = {"state": "UNVERIFIED", "registrationApproved": False,
                                 "visualQualityApproved": False}
         members = [m for m in row["modelMembers"] if m["format"] in ("BLEND", "GLB")]
@@ -914,6 +952,9 @@ def render_animal_review_candidates(report, out):
                     frames.append(frame)
                 if len({f["name"] for f in frames}) != 3:
                     raise ValueError("SOURCE_PREVIEW_FRAME_DUPLICATE")
+                row["geometryQualityState"] = ("MOBILE_BUDGET_MET" if 1000 <= audit["triangles"] <= 3000
+                                               and sum(a["bones"] for a in audit["armatures"]) <= 50
+                                               else "SOURCE_GEOMETRY_REPAIR_REQUIRED")
                 row["sourcePreview"] = {"state": "RENDERED_AWAITING_VISUAL_REVIEW",
                                         "artifactDirectory": key, "sourceMemberSha256": member["sha256"],
                                         "triangles": audit["triangles"], "frames": frames,
@@ -963,8 +1004,7 @@ if audit_3d:
 animal_audit = animal_source_practice()
 if animal_audit:
     preview_arg = next((arg.split("=", 1)[1] for arg in sys.argv if arg.startswith("--animal-preview-dir=")), "")
-    if preview_arg:
-        render_animal_review_candidates(animal_audit, preview_arg)
+    render_animal_review_candidates(animal_audit, preview_arg)
     out["animalSourcePractice"] = animal_audit
     print("MARE_ANIMAL_COMPANY_ARCHIVE_CANDIDATES=" + str(len(animal_audit["candidates"])))
     print("MARE_ANIMAL_COMPANY_ARCHIVE_INVENTORY=" + animal_audit["archiveInventoryState"])

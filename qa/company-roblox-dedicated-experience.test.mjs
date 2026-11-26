@@ -974,6 +974,11 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
   assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
   assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);
+  assert.match(uploader,/PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED/);
+  assert.match(uploader,/FREE_QUOTA_LIMIT/);
+  assert.match(source,/SOURCE_GEOMETRY_REPAIR_REQUIRED/);
+  assert.match(source,/\(retry, 1\), \(preferred, 1\), \(fresh, 3\)/);
+  assert.match(source,/HEAD:.*assets-wanted\.json/);
   assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
   assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
   assert.equal((workflow.match(/always\(\) && env\.MARE_ANIMAL_PREVIEW == 'true'/g)||[]).length,2);
