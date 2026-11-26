@@ -365645,11 +365645,159 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1fc029231ae96b46115ea62b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15380",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d9c8e92cf1ae2362a47e5f584b64491a4a1727e7",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15380,
+        "baseBranch": "main",
+        "headBranch": "mare-battle-brief-binding-20261126",
+        "baseSha": "d9c8e92cf1ae2362a47e5f584b64491a4a1727e7",
+        "headSha": "c6b21f1aefb98311047075ff9e7ce70dc6963330",
+        "mergeCommitSha": "46087216906c4026fd92e4db2819f6e477d2d651",
+        "mergedAt": "2026-11-26T05:34:20Z",
+        "authorLogin": "hans1177",
+        "titleHash": "4fed25dba46193ac5dcb441e27e542b1d1e1c601507c2c51c7aae9de3b61586a",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-battle-brief-binding-20261126",
+        "candidateSha": "c6b21f1aefb98311047075ff9e7ce70dc6963330"
+      },
+      "changeStats": {
+        "changedFileCount": 20,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 631,
+        "deletedLineCount": 38,
+        "changedFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "company-asset-library.json",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_arabian_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_arabian_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_japan_sea_far.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_japan_sea_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_algiers_oasis.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_algiers_oasis.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_chemistry_marseille_low.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_chemistry_marseille_low.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_tripoli_oasis.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_tripoli_oasis.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Town/gobkit-free-seville_plaza_center.glb",
+          "roblox-games/mare-essentia/assets/inbox-hold/Town/gobkit-free-seville_plaza_center.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "tools/vibe-cc0-fetch.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-variation-practice.yml",
+          "company-asset-library.json",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/vibe-cc0-library.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_arabian_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Naval/gobkit-free-sea_japan_sea_far.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_algiers_oasis.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_auto_chemistry_marseille_low.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Terrain/gobkit-free-field_tripoli_oasis.glb.license.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/Town/gobkit-free-seville_plaza_center.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "tools/vibe-cc0-fetch.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15380",
+        "merge-commit:46087216906c4026fd92e4db2819f6e477d2d651",
+        "base-main:d9c8e92cf1ae2362a47e5f584b64491a4a1727e7"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2890
+    "total": 2891
   }
 }
