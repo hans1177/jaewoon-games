@@ -875,14 +875,28 @@ def render_animal_review_candidates(report, out):
                                     "--source-preview-dir", frame_dir], cwd=temp, env=safe_env,
                                    timeout=600, check=False, stdout=diagnostic, stderr=subprocess.STDOUT)
                     if completed.returncode:
-                        # 로그 원문은 저장하지 않고 알려진 실패 코드만 남긴다.
+                        # 원본 모델의 임의 텍스트나 경로를 기록하지 않는다. 고정 단계·오류 종류·코드 위치만 남긴다.
                         diagnostic.seek(max(0, diagnostic.tell()-65536))
                         tail = diagnostic.read(65536).decode("utf-8", errors="replace")
                         reasons = ("SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE", "SOURCE_PREVIEW_EXTERNAL_LIBRARY",
                                    "SOURCE_PREVIEW_NO_FINITE_MESH", "SOURCE_PREVIEW_EMPTY_BOUNDS",
                                    "SOURCE_PREVIEW_INVALID_IMAGE")
-                        raise ValueError(next((reason for reason in reasons if reason in tail),
-                                              "SOURCE_PREVIEW_BLENDER_FAILED"))
+                        stages = re.findall(r"(?m)^MARE_SOURCE_PREVIEW_STAGE (IMPORT|MEASURE|TEXTURE|SCENE|RENDER_FRONT|RENDER_REAR|RENDER_SIDE|OUTPUT)\s*$", tail)
+                        locations = re.findall(r'(?m)^\s*File "[^"\r\n]*/vibe_mesh_audit\.py", line ([0-9]{1,5}),', tail)
+                        types = re.findall(r"(?m)^(AttributeError|TypeError|ValueError|RuntimeError|ImportError|ModuleNotFoundError|OSError|NameError|KeyError|MemoryError|SystemError):", tail)
+                        gpu = bool(re.search(r"(?i)(EGL_NOT_INITIALIZED|EGL_BAD_[A-Z_]+|failed to create (?:an? )?(?:EGL|OpenGL) context|unable to open a display|GPU context creation failed)", tail))
+                        reason = next((reason for reason in reasons if reason in tail), None)
+                        if reason is None:
+                            reason = ("SOURCE_PREVIEW_GPU_CONTEXT" if gpu else
+                                      "SOURCE_PREVIEW_PROCESS_SIGNAL" if completed.returncode < 0 else
+                                      "SOURCE_PREVIEW_PYTHON_EXCEPTION" if types else "SOURCE_PREVIEW_BLENDER_FAILED")
+                        evidence = {"stage": stages[-1] if stages else "STARTUP",
+                                    "exitCode": completed.returncode,
+                                    "exceptionType": types[-1] if types else "UNKNOWN",
+                                    "scriptLine": int(locations[-1]) if locations else None}
+                        row["sourcePreview"]["failureDiagnostic"] = evidence
+                        print("MARE_ANIMAL_RENDER_DIAGNOSTIC", row["name"], json.dumps(evidence, sort_keys=True))
+                        raise ValueError(reason)
                 audit = read_json(audit_path)
                 preview = audit["sourcePreview"]
                 if preview["sourceSha256"] != member["sha256"] or len(preview["frames"]) != 3:

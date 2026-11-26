@@ -12,6 +12,8 @@ ap.add_argument('--output', required=True)
 ap.add_argument('--candidate-output', default=None)
 ap.add_argument('--source-preview-dir', default=None)
 args = ap.parse_args(argv)
+if args.source_preview_dir:
+    print("MARE_SOURCE_PREVIEW_STAGE IMPORT", flush=True)
 
 if args.input.lower().endswith(('.glb', '.gltf')):
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -22,6 +24,8 @@ else:
     else:
         bpy.ops.wm.open_mainfile(filepath=args.input)
 
+if args.source_preview_dir:
+    print("MARE_SOURCE_PREVIEW_STAGE MEASURE", flush=True)
 # 저장 시점의 포즈가 아니라 기본 자세(rest)에서 측정한다.
 for _a in bpy.data.objects:
     if _a.type == 'ARMATURE':
@@ -294,6 +298,7 @@ if args.source_preview_dir:
         raise ValueError('SOURCE_PREVIEW_EXTERNAL_LIBRARY')
     # 구형 원본의 화면 참고 사진과 실제 재질 텍스처를 구분한다.
     # 외부 파일은 읽지 않고, 렌더에 연결된 이미지나 사용처가 불명확한 이미지는 계속 차단한다.
+    print("MARE_SOURCE_PREVIEW_STAGE TEXTURE", flush=True)
     ignored_reference_images = 0
     image_users = bpy.data.user_map()
     unused_references = []
@@ -320,6 +325,7 @@ if args.source_preview_dir:
         bpy.data.images.remove(im, do_unlink=True)
         ignored_reference_images += 1
     scene = bpy.data.scenes.new('SourceReviewEvidence')
+    print("MARE_SOURCE_PREVIEW_STAGE SCENE", flush=True)
     for obj in meshes + arms:
         scene.collection.objects.link(obj)
     scene.render.engine = 'BLENDER_WORKBENCH'
@@ -353,6 +359,7 @@ if args.source_preview_dir:
         cam.rotation_euler = (center - cam.location).to_track_quat('-Z', 'Y').to_euler()
         png = out / (name + '.png')
         scene.render.filepath = str(png)
+        print("MARE_SOURCE_PREVIEW_STAGE RENDER_" + name.upper(), flush=True)
         bpy.ops.render.render(write_still=True, scene=scene.name)
         data = png.read_bytes()
         if len(data) < 128 or data[:8] != b'\x89PNG\r\n\x1a\n':
@@ -363,6 +370,8 @@ if args.source_preview_dir:
                                'ignoredReferenceImages': ignored_reference_images,
                                'visualQualityApproved': False, 'registrationApproved': False}
 
+if args.source_preview_dir:
+    print("MARE_SOURCE_PREVIEW_STAGE OUTPUT", flush=True)
 with open(args.output, 'w', encoding='utf8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1)
 print('VIBE_MESH_AUDIT_MEASURED', len(rows))

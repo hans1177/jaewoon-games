@@ -944,6 +944,14 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(workflow,/retention-days: 3/);
   assert.match(workflow,/--animal-source-visual-review=/);
   assert.match(source,/failureReason/);
+  assert.match(source,/MARE_ANIMAL_RENDER_DIAGNOSTIC/);
+  assert.match(source,/failureDiagnostic/);
+  assert.match(source,/SOURCE_PREVIEW_GPU_CONTEXT/);
+  assert.match(source,/SOURCE_PREVIEW_PYTHON_EXCEPTION/);
+  assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE IMPORT/);
+  assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE SCENE/);
+  assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE RENDER_/);
+  assert.ok(workflow.includes("blender --version"));
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   assert.match(uploader,/SOURCE_VISUAL_FRAME_HASH/);
   assert.match(uploader,/VIBE2_GEMINI_FREE_TIER_VERIFIED==='YES'/);
