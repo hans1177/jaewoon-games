@@ -485,6 +485,47 @@ function NavalBattle.play(opts)
 		if mode == "fog" and sceneSeed % 3 == 0 then coastIndex = 12 end
 		if roughSeas and sceneSeed % 4 == 0 then coastIndex = 2 end
 		local coast = coasts[coastIndex]
+		-- [해역 지시서] 날씨 테마와 실제 지역 원본을 분리한다.
+		-- 지시서와 지리가 충돌한 항구는 별도 지시서 정정 전까지 기존 경관 유지.
+		local briefSea
+		do
+			local briefPorts = {
+			north_sea = "london amsterdam antwerp bergen edinburgh rotterdam plymouth hull glasgow",
+			baltic = "copenhagen gothenburg hamburg stockholm gdansk lubeck oslo riga tallinn helsinki st_petersburg koenigsberg visby",
+			channel = "rouen dublin",
+			biscay = "bordeaux la_rochelle",
+			iberian_atlantic = "lisbon porto cadiz casablanca safi agadir",
+			med_west = "seville marseille livorno barcelona valencia algiers tunis tangier palma cagliari ajaccio toulon oran malaga gibraltar cartagena bone",
+			med_east = "naples tripoli palermo valletta ragusa athens istanbul alexandria syracuse thessaloniki candia rhodes famagusta smyrna acre benghazi messina corfu beirut damietta",
+			red_sea = "mocha jeddah",
+			arabian = "aden muscat bandar_abbas basra",
+			swahili = "mozambique kilwa mombasa zanzibar mogadishu port_louis",
+			cape = "cape_town",
+			malabar = "diu surat goa calicut cochin",
+			bengal = "colombo madras calcutta rangoon",
+			malacca = "malacca bangkok singapore batavia",
+			spice_islands = "makassar ternate ambon banda",
+			south_china = "manila macau canton tainan hoi_an brunei",
+			east_china = "amoy ningbo shanghai tianjin nagasaki busan incheon",
+			japan_sea = "osaka edo hakodate",
+			caribbean = "nassau havana kingston santo_domingo san_juan bridgetown port_of_spain la_guaira cartagena_indias portobelo paramaribo panama",
+			gulf_mexico = "new_orleans veracruz campeche",
+			brazil = "belem recife salvador rio montevideo",
+			pacific_south_america = "guayaquil callao valparaiso",
+			north_atlantic_america = "halifax st_johns quebec boston new_york philadelphia charleston",
+			west_africa = "praia saint_louis dakar bissau freetown elmina ouidah lagos calabar sao_tome luanda benguela",
+			atlantic_islands = "las_palmas funchal ponta_delgada",
+			south_pacific = "sydney hobart auckland port_moresby suva tahiti",
+			north_pacific = "sitka vancouver",
+			}
+			for id, ports in briefPorts do
+				for port in string.gmatch(ports, "%S+") do
+					if port == opts.portId then briefSea = id; break end
+				end
+				if briefSea then break end
+			end
+		end
+		folder:SetAttribute("NavalBriefSea", briefSea or "")
 		-- [해역 고유 정체성] 지중해는 노을, 야간 해역은 달빛, 유령 해역은 해무를 반드시 유지한다.
 		if coast.id == "mediterranean" or coast.id == "gold_coast" then phase = "sunset"
 		elseif coast.id == "moonlight" or coast.id == "ghost" then phase = "night" end
@@ -741,14 +782,31 @@ function NavalBattle.play(opts)
 					table.insert(shoreModels, spec)
 				end
 			end
+			-- [승인 해역 배경] 기존 해안 배치 반복문에 정확한 원본만 전달한다.
+			-- 전투 수치와 충돌을 바꾸지 않고, 실제 복제에 성공한 층만 별도 기록한다.
+			if briefSea then
+				for _, layer in {
+					{ "near", 14, 105, -40 },
+					{ "mid", 64, -310, -95 },
+					{ "far", if MOBILE_VFX then 350 else 500, 0, if MOBILE_VFX then -475 else -620 },
+				} do
+					local asset = "sea_" .. briefSea .. "_" .. layer[1]
+					if AssetIds["Naval/" .. asset] then
+						table.insert(shoreModels, { asset, layer[2], layer[3], layer[4], "Naval", string.upper(layer[1]) })
+					end
+				end
+			end
 			for index, spec in shoreModels do
-				local template = terrain:FindFirstChild(spec[1])
-				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
+				local kind = spec[5] or "Terrain"
+				local group = lib:FindFirstChild(kind)
+				local template = group and group:FindFirstChild(spec[1])
+				if template and template:IsA("Model") and AssetIds[kind .. "/" .. spec[1]] and template:FindFirstChildWhichIsA("BasePart", true) then
 					local model = template:Clone()
-					local farShore = index > originalCoastCount
+					local briefBand = spec[6]
+					local farShore = index > originalCoastCount and not briefBand or briefBand == "FAR"
 					-- [실거리 3층] 원경은 기존 해안선보다 먼 곳에 낮게 배치한다.
 					-- 모바일에서는 물 바깥으로 크게 밀리지 않게 거리를 더 적게 늘린다.
-					local depthDistance = if farShore then (if MOBILE_VFX then 1.10 else 1.25) else 1
+					local depthDistance = if farShore and not briefBand then (if MOBILE_VFX then 1.10 else 1.25) else 1
 					for _, node in model:GetDescendants() do
 						if node:IsA("BasePart") then
 							node.Anchored = true
@@ -771,18 +829,21 @@ function NavalBattle.play(opts)
 						end
 					end
 					model.Name = "NavalCoast"
-					model:SetAttribute("NavalSceneryBand", if farShore then "FAR" else "MID")
-					if farShore then model:SetAttribute("NavalDepthCliff", true) end
+					model:SetAttribute("NavalSceneryBand", briefBand or (if farShore then "FAR" else "MID"))
+					if farShore and not briefBand then model:SetAttribute("NavalDepthCliff", true) end
 					model.Parent = folder
 					local ok = pcall(function()
 						local _, dims = model:GetBoundingBox()
-						model:ScaleTo(spec[2] * (if farShore then 0.82 else 1) / math.max(dims.X, dims.Z, 0.01))
+						model:ScaleTo(model:GetScale() * spec[2] * (if farShore and not briefBand then 0.82 else 1) / math.max(dims.X, dims.Z, 0.01))
 						local box, ext = model:GetBoundingBox()
 						local bottom = box.Position - Vector3.new(0, ext.Y * 0.5, 0)
 						local target = ORIGIN + Vector3.new(spec[3] * depthDistance, 0, spec[4] * depthDistance)
 						model:PivotTo(CFrame.new(target - bottom) * model:GetPivot())
 					end)
 					if not ok then model:Destroy()
+					elseif briefBand then
+						model:SetAttribute("NavalBriefAssetKey", kind .. "/" .. spec[1])
+						folder:SetAttribute("NavalBriefPlaced_" .. briefBand, spec[1])
 					elseif index > originalCoastCount then
 						folder:SetAttribute("NavalDepthCoastCount", (folder:GetAttribute("NavalDepthCoastCount") or 0) + 1)
 						if shoreBreakCount < (if MOBILE_VFX then 1 else 2)
