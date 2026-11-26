@@ -448,7 +448,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mare-animal-source-preview
-          path: ${{ runner.temp }}/mare-animal-source-preview/**/*.png
+          path: |
+            ${{ runner.temp }}/mare-animal-source-preview/**/*.png
+            ${{ runner.temp }}/mare-animal-source-preview/**/quality.glb
           if-no-files-found: ignore
           retention-days: 3
 

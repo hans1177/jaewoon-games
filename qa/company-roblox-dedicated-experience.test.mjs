@@ -977,7 +977,14 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=8')
   assert.match(uploader,/PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED/);
   assert.match(uploader,/FREE_QUOTA_LIMIT/);
   assert.match(source,/SOURCE_GEOMETRY_REPAIR_REQUIRED/);
-  assert.match(source,/\(retry, 1\), \(preferred, 1\), \(fresh, 3\)/);
+  assert.match(source,/\(retry, 1\), \(quality, 1\), \(preferred, 1\), \(fresh, 3\)/);
+  assert.match(mesh,/CATMULL_CLARK_BUDGETED_ONE_LEVEL/);
+  assert.match(mesh,/ANIMAL_QUALITY_WEIGHT_INVALID/);
+  assert.match(source,/ANIMAL_QUALITY_CANDIDATE_REGRESSION/);
+  assert.match(source,/QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON/);
+  assert.match(source,/ANIMAL_QUALITY_CANDIDATE_FRAME_HASH/);
+  assert.match(workflow,/mare-animal-source-preview\/\*\*\/quality\.glb/);
+  execFileSync('python3',['-c',"import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('tools/vibe_mesh_audit.py','tools/devloop/assets_wanted.py')]"],{timeout:15000});
   assert.match(source,/HEAD:.*assets-wanted\.json/);
   assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
   assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
