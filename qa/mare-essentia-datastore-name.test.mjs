@@ -403,7 +403,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/combatBtns\.dodge = \{ btn = b, label = "회피" \}/);
   assert.equal((field.match(/bindPress\(b, function\(\) useMove\("dodge"\) end\)/g)||[]).length,1,'회피 입력 중복 금지');
   assert.doesNotMatch(field,/FieldSkillCaption|Name = "FieldSkill_|local function mkSkill\(/);
-  assert.match(field,/if timer then timer\.Visible = false end/);
+  assert.match(field,/if timer and timer\.Visible then timer\.Visible = false end/);
   assert.match(field,/shade\.BackgroundTransparency = 0\.24 \+ \(1 - fraction\) \* 0\.68/);
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
   assert.match(field,/pl\.autoNormalHits % 5 == 0/);
