@@ -2077,6 +2077,13 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   // [모자 원본 교체] 헤어는 예비 장식을 숨기고, 깃털모자는 기존 윗면만 남겨 정수리 구멍을 막는다.
   assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == "Hat" then/, '깃털모자 원형만 교체');
   assert.match(pose,/piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/, '모자 정수리 보존');
+  assert.match(pose,/hairOffsetY = math\.max\(hairOffsetY, 0\.30 \+ ext\.Y \* 0\.5 \/ target\.Size\.Y\)/, "머리띠 아래 경계가 이마 위에 위치");
+  assert.match(pose,/local featherHat = model:FindFirstChild\("R15Asset_acc_feather_hat_Head"\)/);
+  assert.match(pose,/if featherVisible then\s+piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1\s+else\s+piece\.Transparency = 0/, "실물 모자가 숨겨지거나 교체되면 기존 모자 복원");
+  for (const height of [0.1, 0.2, 0.4, 0.8]) {
+    const center = Math.max(0.14, 0.30 + height * 0.5);
+    assert.ok(center - height * 0.5 >= 0.30 - 1e-9);
+  }
   assert.match(pose,/piece\.Transparency = if wornHair or hoodVisible then 1 else 0/, '실물 헤어와 성직자 두건 착용 시 보조모발 숨김');
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
   const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
