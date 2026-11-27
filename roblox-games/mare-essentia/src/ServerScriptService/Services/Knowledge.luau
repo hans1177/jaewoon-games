@@ -56,12 +56,13 @@ return function(D, S)
 		return out
 	end
 
-	-- 지금 이 학자에게 보고할 수 있는 노드 수
+	-- 현재 항구의 일반 학자 접수는 모든 분야, 실존 학자는 기존 담당 분야만 받는다.
 	local function reportableCount(state, scholar)
-		local discs = scholarDisciplines(scholar)
+		if not D.Ports.Ports[state.portId] then return 0 end
+		local discs = scholar and scholarDisciplines(scholar)
 		local n = 0
 		for _, node in K.Nodes do
-			if table.find(discs, node.disc) and K.status(state, node) == "ready" then
+			if (not discs or table.find(discs, node.disc)) and K.status(state, node) == "ready" then
 				n += 1
 			end
 		end
@@ -88,20 +89,25 @@ return function(D, S)
 	end
 
 	function handlers.ReportKnowledge(state, p)
-		local scholar = type(p.scholarId) == "string" and findScholar(p.scholarId)
-		if not scholar then
+		if type(p) ~= "table" or type(p.scholarId) ~= "string" or not D.Ports.Ports[state.portId] then
 			return false, "잘못된 요청"
 		end
-		if scholar.portId ~= state.portId then
-			return false, "이 항구에 있지 않아요"
-		end
-		local year = S.State.year(state)
-		if year < scholar.fromYear or year > scholar.toYear then
-			return false, string.format("지금(%d년)은 만날 수 없어요", year)
-		end
-		local discs = scholarDisciplines(scholar)
-		if #discs == 0 then
-			return false, "이 학자는 보고를 받지 않아요"
+		-- [모든 항구의 일반 보고] 실제 현재 항구에서 접수한다. 원격 실존 학자 방문·공동 발표는 허용하지 않는다.
+		local localReport = p.scholarId == "port_scholar"
+		local scholar = if localReport then nil else findScholar(p.scholarId)
+		local discs, reporter
+		if localReport then
+			reporter = "항구 학자"
+		else
+			if not scholar then return false, "잘못된 요청" end
+			if scholar.portId ~= state.portId then return false, "이 항구에 있지 않아요" end
+			local year = S.State.year(state)
+			if year < scholar.fromYear or year > scholar.toYear then
+				return false, string.format("지금(%d년)은 만날 수 없어요", year)
+			end
+			discs = scholarDisciplines(scholar)
+			if #discs == 0 then return false, "이 학자는 보고를 받지 않아요" end
+			reporter = scholar.name
 		end
 		state.reported = state.reported or {}
 		local msgs = {}
@@ -112,7 +118,7 @@ return function(D, S)
 		while progressed do
 			progressed = false
 			for _, node in K.Nodes do
-				if table.find(discs, node.disc) and K.status(state, node) == "ready" then
+				if (not discs or table.find(discs, node.disc)) and K.status(state, node) == "ready" then
 					state.reported[node.id] = true
 					progressed = true
 					if S.Econ and S.Econ.teach then
@@ -138,7 +144,7 @@ return function(D, S)
 			-- 왜 못 했는지 알려 준다 (인과 관계)
 			local hints = {}
 			for _, node in K.Nodes do
-				if table.find(discs, node.disc) then
+				if not discs or table.find(discs, node.disc) then
 					local st, missing = K.status(state, node)
 					if st == "blocked" and #hints < 2 then
 						local names = {}
@@ -150,11 +156,11 @@ return function(D, S)
 				end
 			end
 			if #hints > 0 then
-				return false, scholar.name .. ": 아직 이어 설명할 수 없네.\n" .. table.concat(hints, "\n")
+				return false, reporter .. ": 아직 이어 설명할 수 없네.\n" .. table.concat(hints, "\n")
 			end
-			return false, scholar.name .. ": 새로 보고할 발견이 없네. 더 탐험하고 오게."
+			return false, reporter .. ": 새로 보고할 발견이 없네. 더 탐험하고 오게."
 		end
-		table.insert(msgs, 1, string.format("%s에게 발견을 보고했다.", scholar.name))
+		table.insert(msgs, 1, string.format("%s에게 발견을 보고했다.", reporter))
 		table.insert(msgs, string.format("보고 보상: 명성 +%d, +%d코인", totalFame, totalCoins))
 		-- [연구 단계 분리] 보고는 이해만 기록한다. 다음 문헌·비교 연구는 도감에서 직접 시작한다.
 		-- 같은 학자에게 즉시 재보고해 후속 연구가 자동 수령되는 현상을 막는다.

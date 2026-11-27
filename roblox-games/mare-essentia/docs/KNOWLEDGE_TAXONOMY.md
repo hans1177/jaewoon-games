@@ -4,7 +4,7 @@
 - **오브젝트 소재:** 기존 지구·인류 7대 영역과 17개 소재를 유지하고, 무형 지식 5종과 확장 개체 유형 20종을 더한 총 42개.
 - **백과 주제(14):** 인물·인류, 국가·사회, 역사·사건, 경제·금융, 법·정치, 생활·문화, 언어·정보, 종교·사상, 기술·산업, 의학·생명, 자연·환경, 우주·시간, 예술·활동, 수학·정보학. KnowledgeCards.Topics에 존재하며 학문 분류·세계 영역·소재 유형과 독립된 탐색 축이다.
 - **학문:** 기존 7대 학문 분야, 21개 뿌리 학문, 기존 활성 세부 학문 31개에 문헌학·윤리학·종교학·법학·정치학 5개를 더해 총 57개 활성 학문.
-- **카드 주학문:** `KnowledgeCards.Rows`의 `meta.discipline` 지정 시 해당 학문 우선, 없으면 `Field`에 연결된 학문. 다른 학문에는 `meta.relatedDisciplines`와 `KnowledgeTree.CardRelatedDisciplines`로 교차 연결. 보상·보고 회수는 카드당 최초 1회.
+- **카드 주학문:** `KnowledgeCards.Rows`의 `meta.discipline` 지정 시 해당 학문 우선, 없으면 `Field`에 연결된 학문. 다른 학문에는 `meta.relatedDisciplines`와 `KnowledgeTree.CardRelatedDisciplines`로 교차 연결. 보상·보고 회수는 카드당 최초 1회. 일반 지식 보고는 모든 항구의 학자 접수에서 가능하며, 선행 이해와 학문 해금 조건·등급별 코인/명성 보상은 기존대로 유지한다. 실존 학자 방문·특수 연구 시작·공동 발표는 기존 장소/시대/학문 조건을 유지한다.
 - **세부 학문:** `KnowledgeTaxonomy.SubOf` 에 지정. 학문 자체의 `parent`는 연구 계통도를 뜻하며 카드 소재 분류와 별개.
 - **존재 형태:** `meta.entityType` (실물·장소·문헌·무형 개념·제도·의례·인물·국가·조직·사건·인체 기관 등). 시대 `meta.era`, 지역 `meta.region`, 별명·표지·연관 대상 `meta.relations`은 서로 독립. 등장·연구 가능 시기 제한은 기존 `fromYear`만 사용.
 - **사실·가설·전설·창작:** `meta.evidence`에 `documented`(기록·관찰), `hypothesis`(가설), `legend`(전승), `fiction`(게임 창작), `unreviewed`(근거 미분류) 중 하나를 둔다. 신규 카드는 명시한다. 기존 미분류 카드는 일괄 사실 판정하지 않고 별도 분류로 남겨 둔다. 분류 자체가 외부 사료 검증을 대신하지 않는다.
