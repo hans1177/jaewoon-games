@@ -2780,6 +2780,9 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(block,/surfaceHasMaps\(sa\)/);
  assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
  assert.match(block,/if architecture and importedWhite/);
+ assert.match(block,/local role = p\.Name:lower\(\)/);
+ assert.match(block,/if role:find\(key, 1, true\) then name = role; break end/);
+ assert.match(port,/local painted = appearance ~= nil or surface\.MaterialVariant ~= ""/);
  assert.match(block,/if not textured then/);
  assert.match(block,/Enum\.Material\.Brick, wallColor/);
  assert.match(block,/Enum\.Material\.Slate, roofColor/);
