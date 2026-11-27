@@ -1930,7 +1930,8 @@ function VoyageScene.play(info)
 				local point = surface + fwd * shipLen * 0.40 + rgt * jet.side * shipLen * 0.115
 				local sprayDirection = fwd * 0.26 + rgt * jet.side * 0.78 + Vector3.new(0, 0.58, 0)
 				jet.anchor.CFrame = CFrame.lookAt(point, point + sprayDirection)
-				jet.emitter.Rate = math.floor(flow * (15 + 10 * roughness))
+				local jetRate = math.floor(flow * (15 + 10 * roughness))
+				if jet.emitter.Rate ~= jetRate then jet.emitter.Rate = jetRate end
 				local force = 8 + 11 * flow + 7 * roughness
 				jet.emitter.Speed = NumberRange.new(force * 0.57, force)
 				if breakWave then
@@ -1939,11 +1940,13 @@ function VoyageScene.play(info)
 			end
 			local stern = surface - fwd * shipLen * 0.41
 			sternPart.CFrame = CFrame.lookAt(stern, stern - fwd + Vector3.new(0, 0.14, 0))
-			sternEm.Rate = math.floor(flow * 16)
+			local sternRate = math.floor(flow * 16)
+			if sternEm.Rate ~= sternRate then sternEm.Rate = sternRate end
 			for _, wake in trailParts do
 				local point = stern + rgt * wake.side * shipLen * 0.14
 				wake.anchor.CFrame = CFrame.new(point) * CFrame.Angles(0, yaw, 0)
-				wake.trail.Enabled = flow > 0.12
+				local trailEnabled = flow > 0.12
+				if wake.trail.Enabled ~= trailEnabled then wake.trail.Enabled = trailEnabled end
 			end
 			fillChunksAround(pos, 1)
 		end
@@ -1963,7 +1966,8 @@ function VoyageScene.play(info)
 		end
 		for _, g in gulls do
 			local visible = k < 0.3
-			g.model.Parent = if visible then folder else nil
+			local gullParent = if visible then folder else nil
+			if g.model.Parent ~= gullParent then g.model.Parent = gullParent end
 			if visible then
 				local a = t * g.speed + g.phase
 				local gp = pos + Vector3.new(math.cos(a) * g.radius, g.height + math.sin(t + g.phase) * 2, math.sin(a) * g.radius)
@@ -2026,11 +2030,13 @@ function VoyageScene.play(info)
 			local high = if weather.kind == "snow" then 24 else 45
 			local cloud = Vector3.new(pos.X, high, pos.Z)
 			precipAnchor.CFrame = CFrame.new(cloud - right * 17)
-			precip.Rate = math.floor(weather.rate * weatherLevel * (if mobile then 0.60 else 1))
+			local precipRate = math.floor(weather.rate * weatherLevel * (if mobile then 0.60 else 1))
+			if precip.Rate ~= precipRate then precip.Rate = precipRate end
 		end
 		if hailBurst then
 			hailAnchor.CFrame = CFrame.new(pos.X, waterline + 0.16, pos.Z) * CFrame.Angles(0, yaw, 0)
-			hailBurst.Rate = math.floor(weatherLevel * (if mobile then 12 else 22))
+			local hailRate = math.floor(weatherLevel * (if mobile then 12 else 22))
+			if hailBurst.Rate ~= hailRate then hailBurst.Rate = hailRate end
 		end
 		if weather.thunder and weatherLevel > 0.42 and t > lightning then
 			lightning = t + rng:NextNumber(2.0, 4.2)
@@ -2248,6 +2254,11 @@ function VoyageScene.play(info)
 	end)
 	for _, cn in helmConns do
 		cn:Disconnect()
+	end
+	table.clear(helmConns)
+	-- [항해 정리] 숨겨진 갈매기는 폴더 밖에 있으므로 명시적으로 제거한다.
+	for _, g in gulls do
+		if not g.model.Parent then g.model:Destroy() end
 	end
 	folder:Destroy()
 	gui:Destroy()
