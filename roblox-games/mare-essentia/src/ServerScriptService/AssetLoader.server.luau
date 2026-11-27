@@ -365,13 +365,14 @@ local startupTotal = priorityPending
 for _ = 1, 12 do
 	task.spawn(function()
 		while cursor <= #queue do
+			-- [우선순위 유지] 대기 중에는 항목을 예약하지 않아 현재 항구 변경이 큐에 반영된다.
+			while priorityPending > 0 and cursor <= #queue and not queue[cursor].startup
+				and os.clock() < initialPriorityDeadline do
+				task.wait(0.1)
+			end
+			if cursor > #queue then break end
 			local item = queue[cursor]
 			cursor += 1
-			if not item.startup then
-				while priorityPending > 0 and os.clock() < initialPriorityDeadline do
-					task.wait(0.1)
-				end
-			end
 			local good, container = pcall(InsertService.LoadAsset, InsertService, item.id)
 			if good and container then
 				local model = container:FindFirstChildWhichIsA("Model") or container
