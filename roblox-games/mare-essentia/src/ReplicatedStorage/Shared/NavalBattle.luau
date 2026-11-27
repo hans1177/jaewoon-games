@@ -5973,7 +5973,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 카드 대결 무대: 두 배 갑판 위에 로블록스 캐릭터 선원이 서 있고, 카드를 낼 때마다 그 줄의 병종이 움직인다
 	local crews = { me = {}, foe = {} }
 	local crewMode = { me = nil, foe = nil } -- { kind, untilT }
+	-- [선원 종료 정리] 장면 소유 모델은 폴더가 제거하고 보관 참조도 함께 비운다.
+	folder.Destroying:Connect(function()
+		table.clear(crews.me)
+		table.clear(crews.foe)
+		table.clear(crewMode)
+	end)
 	local function spawnCrew(sh, side, coat, role)
+		if finished or not folder.Parent or not sh.model.Parent then return end
 		local box, size = sh.model:GetBoundingBox()
 		local deckY = box.Position.Y - size.Y / 2 + size.Y * 0.3
 		local along = size.X >= size.Z
@@ -5989,8 +5996,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		local pivot = sh.model:GetPivot()
 		for i = 1, (if MOBILE_VFX then 2 else 4) do
+			if finished or not folder.Parent then return end
 			local seed = i * 17 + (if side == "me" then 1 else 99)
 			local ok, rig = pcall(Pose.createR15, folder, Vector3.zero, 0, coat, Random.new(seed), role, 5)
+			-- 비동기 R15 생성은 중간 취소하지 않고 종료 후 도착한 모델만 해제한다.
+			if finished or not folder.Parent then
+				if ok and rig then rig:Destroy() end
+				return
+			end
 			if ok and rig then
 				for _, d in rig:GetDescendants() do
 					if d:IsA("BasePart") then
@@ -6485,8 +6498,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					shake = 1.6
 					Sfx.play("sfx_horn")
 					Sfx.play("sfx_naval_ram", 0.5, 1.05, "sfx_creak")
-					task.delay(1.0, function()
-						if finished then return end
+					local boardingTimer = task.delay(1.0, function()
+						conns[coroutine.running()] = nil
+						if finished or not gui.Parent or not folder.Parent then return end
 						startBoarding(opts.card, function(m, acts)
 							-- 서버가 기록을 다시 돌려 확정한 승패를 따른다 (서버가 거부하면 서버의 기존 판정)
 							local okCards, res, rewardId = true, nil, nil
@@ -6608,6 +6622,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							crewAct(side, card)
 						end)
 					end)
+					conns[boardingTimer] = boardingTimer
 				end
 				if not opts.card and not RT and (d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue)) then
 					phase = "board"
