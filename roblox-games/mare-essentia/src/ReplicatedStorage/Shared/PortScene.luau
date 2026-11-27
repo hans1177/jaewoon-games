@@ -1336,7 +1336,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if roof then
 				roof.Name = "HarborRoofDetail"
 				uniformMaterial(roof, style, "roof")
-				table.insert(facadeDetails, { model = roof, top = true })
+				table.insert(facadeDetails, { model = roof, top = true, multi = true })
 			end
 		end
 		-- [입면 정밀 배치] 기존 승인 창호·현관만 실제 주택 표면에 맞춘다.
@@ -1377,7 +1377,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if chim then
 				chim.Name = "HarborChimney"
 				uniformMaterial(chim, style)
-				table.insert(facadeDetails, { model = chim, top = true })
+				table.insert(facadeDetails, { model = chim, top = true, multi = true })
 			end
 		end
 		if architecture.balcony and houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
@@ -1385,11 +1385,11 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if bal then
 				bal.Name = "HarborBalcony"
 				uniformMaterial(bal, style, "trim")
-				table.insert(facadeDetails, { model = bal })
+				table.insert(facadeDetails, { model = bal, multi = true })
 			end
 		end
-		-- [입면·지붕 정밀 배치] 모델이 workspace에 연결되기 전에는 Raycast가 불가능하다.
-		-- 실제 보이는 부품의 회전된 경계 상자를 검사하여 접점을 계산한다. 메시 표면 자체는 Studio에서 확인한다.
+		-- [입면·지붕 정밀 배치] 생성 중 실제 부품의 회전 경계로 접점을 추정한다.
+		-- 지붕·굴뚝은 바닥 중앙/양축, 발코니는 벽 접합 좌우를 검사한다. 메시 표면은 Studio에서 검증한다.
 		if #facadeDetails > 0 then
 			local houseCF, houseSize = mesh:GetBoundingBox()
 			local reach = houseSize.Magnitude + 2
@@ -1403,38 +1403,70 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				local detail = item.model
 				local detailCF, detailSize = detail:GetBoundingBox()
 				local direction = if item.top then Vector3.new(0, -1, 0) else Vector3.new(0, 0, -front)
-				local origin = if item.top
+				local centerOrigin = if item.top
 					then Vector3.new(detailCF.Position.X, houseCF.Position.Y + reach, detailCF.Position.Z)
 					else Vector3.new(detailCF.Position.X, detailCF.Position.Y, houseCF.Position.Z + front * reach)
-				local nearest = math.huge
-				for _, piece in visibleParts do
-					-- 회전된 부품의 로컬 좌표계에서 3축 구간 교차를 계산한다.
-					local rayOrigin = piece.CFrame:PointToObjectSpace(origin)
-					local rayDir = piece.CFrame:VectorToObjectSpace(direction)
-					local half = piece.Size * 0.5
-					local enter, exit = 0, reach * 2
-					for _, axis in { "X", "Y", "Z" } do
-						local o, v, h = rayOrigin[axis], rayDir[axis], half[axis]
-						if math.abs(v) < 0.000001 then
-							if math.abs(o) > h then enter = math.huge; break end
-						else
-							local lo, hi = (-h - o) / v, (h - o) / v
-							enter = math.max(enter, math.min(lo, hi))
-							exit = math.min(exit, math.max(lo, hi))
-							if enter > exit then break end
-						end
+				local halfDepth = (math.abs(detailCF.RightVector:Dot(direction)) * detailSize.X
+					+ math.abs(detailCF.UpVector:Dot(direction)) * detailSize.Y
+					+ math.abs(detailCF.LookVector:Dot(direction)) * detailSize.Z) * 0.5
+				local origins = { centerOrigin }
+				if item.multi then
+					local spanX = (math.abs(detailCF.RightVector.X) * detailSize.X
+						+ math.abs(detailCF.UpVector.X) * detailSize.Y
+						+ math.abs(detailCF.LookVector.X) * detailSize.Z) * 0.30
+					table.insert(origins, centerOrigin + Vector3.new(-spanX, 0, 0))
+					table.insert(origins, centerOrigin + Vector3.new(spanX, 0, 0))
+					if item.top then
+						local spanZ = (math.abs(detailCF.RightVector.Z) * detailSize.X
+							+ math.abs(detailCF.UpVector.Z) * detailSize.Y
+							+ math.abs(detailCF.LookVector.Z) * detailSize.Z) * 0.30
+						table.insert(origins, centerOrigin + Vector3.new(0, 0, -spanZ))
+						table.insert(origins, centerOrigin + Vector3.new(0, 0, spanZ))
 					end
-					if enter <= exit then nearest = math.min(nearest, enter) end
 				end
-				if nearest < math.huge then
-					local halfDepth = (math.abs(detailCF.RightVector:Dot(direction)) * detailSize.X
-						+ math.abs(detailCF.UpVector:Dot(direction)) * detailSize.Y
-						+ math.abs(detailCF.LookVector:Dot(direction)) * detailSize.Z) * 0.5
-					local contact = origin + direction * nearest
+				local centerDistance, farthest, closest, supported = math.huge, 0, math.huge, 0
+				for sample, origin in origins do
+					local nearest = math.huge
+					for _, piece in visibleParts do
+						local rayOrigin = piece.CFrame:PointToObjectSpace(origin)
+						local rayDir = piece.CFrame:VectorToObjectSpace(direction)
+						local half = piece.Size * 0.5
+						local enter, exit = 0, reach * 2
+						for _, axis in { "X", "Y", "Z" } do
+							local o, v, h = rayOrigin[axis], rayDir[axis], half[axis]
+							if math.abs(v) < 0.000001 then
+								if math.abs(o) > h then enter = math.huge; break end
+							else
+								local lo, hi = (-h - o) / v, (h - o) / v
+								enter = math.max(enter, math.min(lo, hi))
+								exit = math.min(exit, math.max(lo, hi))
+								if enter > exit then break end
+							end
+						end
+						if enter <= exit then nearest = math.min(nearest, enter) end
+					end
+					if sample == 1 then centerDistance = nearest end
+					if nearest < math.huge then
+						supported += 1
+						closest = math.min(closest, nearest)
+						farthest = math.max(farthest, nearest)
+					end
+				end
+				-- 충분한 지지가 있는 평면만 깊은 접점을 사용한다. 경사가 큰 곳의 과도한 매몰은 금지.
+				local contactDistance = centerDistance
+				local maxEmbed = math.min(0.35, halfDepth * 0.30)
+				if item.multi and supported >= 3 and farthest - closest <= maxEmbed then
+					contactDistance = farthest
+				end
+				if contactDistance < math.huge then
+					local contact = centerOrigin + direction * contactDistance
 					local target = contact - direction * math.max(0, halfDepth - 0.08)
+					-- 원래 회전을 유지하고 접합축 방향으로만 이동한다.
 					detail:PivotTo(CFrame.new(target - detailCF.Position) * detail:GetPivot())
+				elseif item.multi and supported == 0 and #visibleParts > 0 then
+					-- 다중 검사에서 본체 지지면이 전혀 없는 신규 비충돌 장식만 제거한다.
+					detail:Destroy()
 				end
-				-- 경계 교차가 없으면 기존 배치를 유지한다. 정상 장식을 임의로 삭제하지 않는다.
 			end
 		end
 		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.

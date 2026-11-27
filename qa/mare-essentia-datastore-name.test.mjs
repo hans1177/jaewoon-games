@@ -4770,7 +4770,23 @@ test('Mare building trim preserves original roof and window materials and fits d
   assert.match(house,/piece\.CFrame:VectorToObjectSpace\(direction\)/);
   assert.match(house,/if enter <= exit then nearest = math\.min\(nearest, enter\) end/);
   assert.match(house,/local target = contact - direction \* math\.max\(0, halfDepth - 0\.08\)/);
-  assert.doesNotMatch(house,/workspace:Raycast|detail:Destroy\(\)/);
+  assert.doesNotMatch(house,/workspace:Raycast/);
+  for(const name of ['roof','chim']) assert.ok(house.includes('model = '+name+', top = true, multi = true'));
+  assert.ok(house.includes('model = bal, multi = true'));
+  assert.match(house,/local origins = \{ centerOrigin \}/);
+  assert.match(house,/supported >= 3/);
+  assert.match(house,/farthest - closest <= maxEmbed/);
+  assert.match(house,/elseif item.multi and supported == 0 and #visibleParts > 0 then\s+--[^\n]+\s+detail:Destroy\(\)/);
+  const contact=(samples,halfDepth)=>{
+    const hits=samples.filter(Number.isFinite);
+    if(hits.length===0)return null;
+    if(hits.length>=3 && Math.max(...hits)-Math.min(...hits)<=Math.min(0.35,halfDepth*0.30))return Math.max(...hits);
+    return samples[0];
+  };
+  assert.equal(contact([10,10.05,10.1,10,10.15],1),10.15);
+  assert.equal(contact([10,10.1,13,10,10],1),10);
+  assert.equal(contact([10,Infinity,10.1],1),10);
+  assert.equal(contact([Infinity,Infinity,Infinity],1),null);
   for(const [o,v,h,expected] of [[12,-1,2,10],[-12,1,2,10],[0,1,2,0]]){
     const lo=(-h-o)/v,hi=(h-o)/v;
     assert.equal(Math.max(0,Math.min(lo,hi)),expected);
