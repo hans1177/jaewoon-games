@@ -1199,17 +1199,21 @@ def materialize_animal_review_member(data, filename, target, member, dest):
 def render_animal_review_candidates(report, out):
     candidates = [row for row in report["candidates"] if row.get("modelMembers")]
     # 기존 메인 장부의 동일 원본 관찰만 순환 우선순위에 사용한다. 승인이나 현재 렌더 증거로 승격하지 않는다.
+    last = {}
     try:
         previous_audit = json.loads(subprocess.check_output(
             ["git", "show", "HEAD:" + os.path.join(root, "assets-wanted.json")],
             timeout=30, stderr=subprocess.DEVNULL))["animalSourcePractice"]
         previous = previous_audit["candidates"]
-        last = previous_audit.get("lastPreviewRun")
+        last = previous_audit.get("lastPreviewRun", {})
         if isinstance(last, dict):
             # 과거 실행 요약만 보존하며 신규 다운로드·렌더 승인으로 재사용하지 않는다.
             report["lastPreviewRun"] = last
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
         previous = []
+        last = {}
+    if not isinstance(last, dict):
+        last = {}
     prior = {(r.get("name"), r.get("sourceSha256"), tuple(m.get("sha256") for m in r.get("modelMembers", []))): r
              for r in previous if isinstance(r, dict)}
     for row in candidates:
@@ -1225,7 +1229,7 @@ def render_animal_review_candidates(report, out):
                  ("QUALITY_CANDIDATE_RETRY_REQUIRED", "QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON"))):
             latest = old.get(live_key, {})
             historical = old.get(history_key, {})
-            for evidence, run_id in ((latest, previous_audit.get("lastPreviewRun", {}).get("runId", "")),
+            for evidence, run_id in ((latest, last.get("runId", "")),
                                      (historical, historical.get("runId", "") if isinstance(historical, dict) else "")):
                 if (not isinstance(evidence, dict) or evidence.get("state") not in valid_states
                         or evidence.get("sourceMemberSha256") not in member_hashes
@@ -1354,6 +1358,7 @@ def render_animal_review_candidates(report, out):
         if len(members) != 1:
             continue
         member = members[0]
+        row["sourcePreview"]["sourceMemberSha256"] = member["sha256"]
         key = row["sourceSha256"][:16] + "-" + member["sha256"][:16]
         frame_dir = os.path.join(out, key)
         try:

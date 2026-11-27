@@ -1114,6 +1114,10 @@ bad['sourcePreview']=dict(old['sourcePreview'],sourceMemberSha256='d'*64)
 assert 'lastSourcePreview' not in run(bad)
 bad['sourcePreview']=dict(old['sourcePreview'],registrationApproved=True)
 assert 'lastSourcePreview' not in run(bad)
+report={'candidates':[row()]}
+with patch.object(subprocess,'check_output',side_effect=OSError('no prior ledger')):
+    render_animal_review_candidates(report,'')
+assert 'lastSourcePreview' not in report['candidates'][0]
 print('MARE_HISTORICAL_RENDER_FIXTURES=PASS')
 `;
   assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_HISTORICAL_RENDER_FIXTURES=PASS/);
