@@ -578,7 +578,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					end
 				end
 			end
-			if tint and not preserveArchitectureTexture then
+			-- 건축 표면은 아래 부위별 복원에서만 색을 변경한다. 원래 색이 있는 지붕·문틀은 보존한다.
+			if tint and not architecture and not preserveArchitectureTexture then
 				if kind == "Animals" then
 					-- [원본 동물 재질] 텍스처·PBR·품종 무늬는 손대지 않고 색이 유실된 단색 몸통만 복원한다.
 					local sa = p:FindFirstChildOfClass("SurfaceAppearance")
@@ -683,7 +684,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						if sandy then material = Enum.Material.Plaster
 						elseif east or mediterranean then material = Enum.Material.ClayRoofTiles
 						else material = Enum.Material.RoofShingles end
-						if tint then paint = paint:Lerp(tint, 0.8) end
+						-- 주택 전체에 전달한 외벽색으로 기와색을 덮지 않는다. 지붕 전용 모듈만 지정색 사용.
+						if tint and asset:find("roof", 1, true) and not asset:find("house", 1, true) then
+							paint = paint:Lerp(tint, 0.8)
+						end
 					elseif name:find("wood", 1, true) or name:find("timber", 1, true)
 						or name:find("beam", 1, true) or name:find("door", 1, true)
 						or name:find("frame", 1, true) or name:find("floor", 1, true)
@@ -1001,7 +1005,11 @@ local function uniformMaterial(m, style, surface)
 			for _, ch in p:GetChildren() do
 				if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 			end
-			if not textured then
+			-- 복원된 석재·기와·목재 및 원본의 명시적 재질은 다시 덮지 않는다.
+			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
+			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
+			if not textured and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)
+				and low >= 0.78 and high - low <= 0.14 then
 				local role = p.Name:lower()
 				local selected = mat
 				if not surface then
