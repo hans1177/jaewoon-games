@@ -5847,8 +5847,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 			local stern = ORIGIN + sh.pos - heading * sh.length * 0.40 + Vector3.new(0, 0.3, 0)
 			sh.wake.WorldCFrame = CFrame.lookAt(stern, stern - heading)
-			sh.wakeFx.Enabled = (sh.speed or 0) > 2 and not sink
-			sh.wakeFx.Rate = math.clamp((sh.speed or 0) * (if MOBILE_VFX then 0.42 else 0.75), 1.5, if MOBILE_VFX then 8 else 16)
+			-- [항적 중복 갱신] 속도와 침몰 상태가 같으면 입자 속성을 다시 쓰지 않는다.
+			local enabled = (sh.speed or 0) > 2 and not sink
+			local rate = math.clamp((sh.speed or 0) * (if MOBILE_VFX then 0.42 else 0.75), 1.5, if MOBILE_VFX then 8 else 16)
+			if sh.wakeFx.Enabled ~= enabled then sh.wakeFx.Enabled = enabled end
+			if sh.wakeRate ~= rate then
+				sh.wakeFx.Rate = rate
+				sh.wakeRate = rate
+			end
 		end
 	end
 
@@ -5917,13 +5923,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	local function updateCrews(now)
 		-- [해전 백병전] 갑판에 별도 R15 인형을 만들지 않는다. 접현 연출과 카드 전용 선원만 유지한다.
 		for side, list in crews do
+			if #list == 0 then continue end
 			local sh = if side == "me" then me else foe
 			local other = if side == "me" then foe else me
 			local mode = crewMode[side]
 			local active = mode and now < mode.untilT
+			-- [선원 좌표 재사용] 같은 함선의 모든 선원은 이번 갱신의 동일한 선체 좌표를 사용한다.
+			local shipPivot = sh.model:GetPivot()
+			local otherPosition = other.model:GetPivot().Position
 			for _, c in list do
-				local pos = (sh.model:GetPivot() * c.off).Position
-				local look = Vector3.new(other.model:GetPivot().Position.X, pos.Y, other.model:GetPivot().Position.Z)
+				local pos = (shipPivot * c.off).Position
+				local look = Vector3.new(otherPosition.X, pos.Y, otherPosition.Z)
 				if (look - pos).Magnitude > 1 then
 					c.rig:PivotTo(CFrame.lookAt(pos, look))
 				end
