@@ -278,7 +278,7 @@ return {
 	["CardArt/ui_frame_middle_east"] = 106415088367396,
 	["CardArt/ui_frame_new_world"] = 137876353495968,
 	["CardArt/ui_frame_southeast_asia"] = 105510375344056,
-	["CardArt/ui_icon_bow"] = 113535103445611,
+	["CardArt/ui_icon_bow"] = 99220390067279,
 	["CardArt/ui_icon_hourglass"] = 98293311136584,
 	["CardArt/ui_icon_shield"] = 76299895168311,
 	["CardArt/ui_icon_victory"] = 122157483454836,
