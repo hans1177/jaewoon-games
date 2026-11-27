@@ -375948,11 +375948,151 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_aa0a4425473636233177ea17",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15605",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "516636ca301d25346ad7737afbc0eacac8d1815e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15605,
+        "baseBranch": "main",
+        "headBranch": "mare-villager-face-diagnosis",
+        "baseSha": "516636ca301d25346ad7737afbc0eacac8d1815e",
+        "headSha": "ff00f95bbba905f2e000882d815a06d1218283c5",
+        "mergeCommitSha": "b657045cf86ff31c8513ebf0b7741800935deae4",
+        "mergedAt": "2026-11-27T16:17:06Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8cf13775b933e977417fa59b68e15feb0a86975b9416b6a522eb5a1ebf8a554b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-villager-face-diagnosis",
+        "candidateSha": "ff00f95bbba905f2e000882d815a06d1218283c5"
+      },
+      "changeStats": {
+        "changedFileCount": 13,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 1491,
+        "deletedLineCount": 220,
+        "changedFiles": [
+          ".github/workflows/devloop-studio.yml",
+          ".github/workflows/vibe-brain.yml",
+          "qa/vibe-brain.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cardflow.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-repair.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-voyage-manual.json",
+          "tools/vibe-brain.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/devloop-studio.yml",
+          ".github/workflows/vibe-brain.yml",
+          "qa/vibe-brain.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-cardflow.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-repair.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-voyage-manual.json",
+          "tools/vibe-brain.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15605",
+        "merge-commit:b657045cf86ff31c8513ebf0b7741800935deae4",
+        "base-main:516636ca301d25346ad7737afbc0eacac8d1815e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2972
+    "total": 2973
   }
 }
