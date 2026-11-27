@@ -4839,3 +4839,21 @@ test('시장 가판대와 외곽 진열물이 중앙 보행축을 공유하지 �
  assert.ok(33-22-7/2-4/2>=5);
  assert.ok(33+4/2<43);
 });
+
+// [광장·시장 동선] 실제 모델 경계 후보와 비충돌 가판대 검사를 기존 생성 시점에 수행한다.
+test('광장 가장자리 장식과 시장 가판대의 보행 간섭을 검사한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const plaza=scene.slice(scene.indexOf('-- [광장 실제 점유]'),scene.indexOf('sliceMark("beforeDestroyOld")'));
+ assert.match(plaza,/local ok, box, ext = pcall\(obj.GetBoundingBox, obj\)/);
+ assert.match(plaza,/nearX \* nearX \+ nearZ \* nearZ < radius2/);
+ assert.match(plaza,/CentralPlazaEdgeCandidates", plazaEdgeBlocked/);
+ assert.match(plaza,/else\s+plazaEdgeBlocked \+= 1/);
+ const intersects=(dx,dz,hx,hz)=>Math.max(0,Math.abs(dx)-hx)**2+Math.max(0,Math.abs(dz)-hz)**2<26**2;
+ assert.equal(intersects(30,0,6,2),true);
+ assert.equal(intersects(30,0,3,2),false);
+ assert.equal(intersects(28,28,5,5),false);
+ assert.match(scene,/originalStall.Name = "CityMarketStall"/);
+ assert.match(scene,/extra.Name = "CityMarketStall"/);
+ assert.match(scene,/hit:FindFirstAncestor\("CityMarketStall"\)/);
+ assert.match(scene,/\(hit.CanCollide or visualMarket\)/);
+});

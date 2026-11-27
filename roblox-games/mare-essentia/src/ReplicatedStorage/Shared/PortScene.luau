@@ -4681,10 +4681,14 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						originalStall = put("Town", stallAsset, 7, x, cz + side * stallRowZ, false,
 							if side > 0 then face else face + math.pi)
 					end
-					if londonMarketDay and originalStall and
-						put("Town", stallAsset, 7, x, cz + side * festivalRowZ, false,
-							if side > 0 then face else face + math.pi) then
-						londonExtraStalls += 1
+					if originalStall then originalStall.Name = "CityMarketStall" end
+					if londonMarketDay and originalStall then
+						local extra = put("Town", stallAsset, 7, x, cz + side * festivalRowZ, false,
+							if side > 0 then face else face + math.pi)
+						if extra then
+							extra.Name = "CityMarketStall"
+							londonExtraStalls += 1
+						end
 					end
 				end
 				if stalls >= 2 and warehouseBuilt > 0 then
@@ -8928,23 +8932,40 @@ function PortScene.build(info, onFacility)
 		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
 	end
 
-	-- [광장 실제 점유] 배치 전 검사는 기준점(pos)만 보지만, 집 모델은 앞뒤 뒤집기·크기 변주·피벗 차이로
-	-- 몸체 중심이 광장 안으로 들어올 수 있다(마을 검사 44928264116: 리스본 HarborHouse 몸체 중심 -6,24 → 광장 반경 26 안).
-	-- 완성된 실제 경계 상자 중심이 광장 안에 있는 고정 구조물만 걷어낸다(사람·동물·바닥판 제외, 반경 그대로).
-	local plazaRemoved = 0
+	-- [광장 실제 점유] 중심점뿐 아니라 회전된 경계의 광장 가장자리 침범도 검사한다.
+	-- 기존 중심점 제거 정책은 유지하고, 가장자리의 필수 시설/본체는 삭제하지 않고 별도 진단한다.
+	local plazaRemoved, plazaEdgeBlocked = 0, 0
 	for _, obj in folder:GetChildren() do
 		if obj:IsA("Model") and not obj:FindFirstChildOfClass("Humanoid") and not obj:FindFirstChildOfClass("AnimationController") then
-			local ok, box = pcall(obj.GetBoundingBox, obj)
-			if ok and box then
+			local ok, box, ext = pcall(obj.GetBoundingBox, obj)
+			if ok and box and ext then
 				local dx, dz = box.Position.X + 6, box.Position.Z
-				if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then
+				local radius2 = CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS
+				if dx * dx + dz * dz < radius2 then
 					obj:Destroy()
 					plazaRemoved += 1
+				else
+					local hx = (math.abs(box.RightVector.X) * ext.X + math.abs(box.UpVector.X) * ext.Y
+						+ math.abs(box.LookVector.X) * ext.Z) * 0.5
+					local hz = (math.abs(box.RightVector.Z) * ext.X + math.abs(box.UpVector.Z) * ext.Y
+						+ math.abs(box.LookVector.Z) * ext.Z) * 0.5
+					local nearX, nearZ = math.max(0, math.abs(dx) - hx), math.max(0, math.abs(dz) - hz)
+					if nearX * nearX + nearZ * nearZ < radius2 then
+						if obj.Name == "HarborRoofDetail" or obj.Name == "HarborWindowDetail"
+							or obj.Name == "HarborChimney" or obj.Name == "HarborBalcony"
+							or obj.Name == "CityCulturalHouseFront" or obj.Name == "CityMerchantRoofGrowth" then
+							obj:Destroy()
+							plazaRemoved += 1
+						else
+							plazaEdgeBlocked += 1
+						end
+					end
 				end
 			end
 		end
 	end
 	folder:SetAttribute("CentralPlazaRemovedStructures", plazaRemoved)
+	folder:SetAttribute("CentralPlazaEdgeCandidates", plazaEdgeBlocked)
 	sliceMark("beforeDestroyOld")
 	-- [교체 분할] 실측(44926863645): 기존 항구 한 번에 삭제 529ms + 새 항구 한 번에 workspace 연결 584ms가
 	-- 같은 프레임에 몰려 최대 1.46초 멈춤. 최상위 묶음 단위로 나눠 프레임 예산 안에서 지우고 붙인다.
@@ -8993,8 +9014,11 @@ function PortScene.build(info, onFacility)
 			local box = cf * CFrame.new(0, 3.1, -half)
 			for _, hit in workspace:GetPartBoundsInBox(box, Vector3.new(4.4, 5, length + 4), params) do
 				local owner = hit:FindFirstAncestorOfClass("Model")
-				if hit.CanCollide and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
-					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= 2
+				-- 비충돌 승인 가판대와 특산품도 주민이 시각적으로 관통하지 않도록 기존 생성 직후 검사에 포함한다.
+				local visualMarket = hit:FindFirstAncestor("CityMarketStall") ~= nil
+					or (owner and string.find(owner.Name, "MarketSpecialtyDisplay_", 1, true) == 1)
+				if (hit.CanCollide or visualMarket) and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
+					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= (if visualMarket then 0.5 else 2)
 					and not (actor and hit:IsDescendantOf(actor))
 					and not (owner and owner:FindFirstChildOfClass("Humanoid")) then
 					return true
