@@ -5473,16 +5473,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
         edge.Thickness = 1.5
         edge.Parent = l
         -- 글자·배경·테두리를 함께 지워 빈 알림 테두리가 남지 않게 한다.
-        task.delay(0.92, function()
-            if not l.Parent then return end
+        -- [알림 정리] 기존 전투 종료 목록에 예약 작업을 등록한다.
+        local fadeTimer = task.delay(0.92, function()
+            conns[coroutine.running()] = nil
+            if finished or not l.Parent then return end
             local fade = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
             tweenService:Create(l, fade, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
             tweenService:Create(edge, fade, { Transparency = 1 }):Play()
         end)
-		task.delay(1.28, function()
+        conns[fadeTimer] = fadeTimer
+		local removeTimer = task.delay(1.28, function()
+			conns[coroutine.running()] = nil
 			if l.Parent then l:Destroy() end
 			if currentAnnouncement == l then currentAnnouncement = nil end
 		end)
+		conns[removeTimer] = removeTimer
 	end
 	skillPop = popText
 	skillFx = function(id, dur)
@@ -5525,15 +5530,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				navalHitCueScale.Scale = 1.08
 				local tweenService = game:GetService("TweenService")
 				tweenService:Create(navalHitCueScale, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-				task.delay(1.8, function()
+				local fadeTimer = task.delay(1.8, function()
+					conns[coroutine.running()] = nil
 					if finished or navalHitCueSerial ~= cueSerial or not navalHitCue.Parent then return end
 					local fade = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 					tweenService:Create(navalHitCue, fade, { TextTransparency = 1, TextStrokeTransparency = 1, BackgroundTransparency = 1 }):Play()
 					tweenService:Create(navalHitCueStroke, fade, { Transparency = 1 }):Play()
-					task.delay(0.26, function()
-						if navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end
+					local hideTimer = task.delay(0.26, function()
+						conns[coroutine.running()] = nil
+						if not finished and navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end
 					end)
+					conns[hideTimer] = hideTimer
 				end)
+				conns[fadeTimer] = fadeTimer
 			end
 			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
 				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
@@ -5560,7 +5569,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.ZIndex = 22
 		local TS = game:GetService("TweenService")
 		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
-		task.delay(1.2, function() l:Destroy() end)
+		local removeTimer = task.delay(1.2, function()
+			conns[coroutine.running()] = nil
+			if l.Parent then l:Destroy() end
+		end)
+		conns[removeTimer] = removeTimer
 	end
 	-- [맵 보급 안내] 실제 등록 부표/기뢰만 배의 선수 기준 방향·거리를 상단에 보여 준다.
 	local pickupCue = label(gui, "", if battleViewport.X < 480 then 13 else 15, Color3.fromRGB(156, 239, 247))
