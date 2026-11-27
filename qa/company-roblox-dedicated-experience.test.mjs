@@ -2823,6 +2823,31 @@ test('Mare Dropbox candidate recognizes exact successful check runs without weak
   assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
 });
 
+test('Mare Dropbox candidate allows only exact post-merge skipped workflows while required checks stay fail closed',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const start=workflow.indexOf('          post_merge_only=');
+  const end=workflow.indexOf('          # 수동 실행 검사도',start);
+  assert.ok(start>=0&&end>start);
+  const gate=workflow.slice(start,end).split('\n').map(line=>line.slice(10)).join('\n');
+  const success={status:'completed',conclusion:'success',event:'pull_request'};
+  const sync='Roblox Changed Source Runtime Sync', provenance='Vibe2 Merged PR Provenance';
+  const skipped={status:'completed',conclusion:'skipped',event:'pull_request'};
+  const good={...skipped,path:'.github/workflows/company-roblox-source-drift-sync.yml'};
+  const prov={...skipped,path:'.github/workflows/vibe2-merged-pr-provenance.yml'};
+  const required={'All Games Development Sync':success,'Vibe QA':success,'Devloop Gates (Mare Essentia)':success};
+  const cases=[
+    [{...required,[sync]:good,[provenance]:prov},true],
+    [{...required,'Vibe QA':skipped},false],
+    [{...required,[sync]:{...good,conclusion:'failure'}},false],
+    [{...required,[sync]:{...good,status:'in_progress'}},false],
+    [{...required,[sync]:{...good,path:'.github/workflows/other.yml'}},false],
+    [{...required,[sync]:{...good,event:'workflow_dispatch'}},false],
+    [{...required,'unknown skipped check':skipped},false],
+  ];
+  const program='import json,sys\ncases=json.loads(sys.argv[1])\nfor latest,expected in cases:\n    try:\n'+gate.split('\n').filter(Boolean).map(line=>'        '+line).join('\n')+'\n    except SystemExit:\n        assert not expected\n    else:\n        assert expected\n';
+  execFileSync('python3',['-c',program,JSON.stringify(cases)],{encoding:'utf8',timeout:10000});
+});
+
 test('Mare Dropbox UI replacement preserves existing verified registration and exact candidate checks',()=>{
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   const stage=workflow.slice(workflow.indexOf('      - name: Stage reviewed Dropbox original'),workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'));
