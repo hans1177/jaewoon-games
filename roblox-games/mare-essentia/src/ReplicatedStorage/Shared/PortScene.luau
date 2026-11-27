@@ -578,7 +578,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					end
 				end
 			end
-			if tint and not preserveArchitectureTexture then
+			-- 건축 표면은 아래 부위별 복원에서만 색을 변경한다. 원래 색이 있는 지붕·문틀은 보존한다.
+			if tint and not architecture and not preserveArchitectureTexture then
 				if kind == "Animals" then
 					-- [원본 동물 재질] 텍스처·PBR·품종 무늬는 손대지 않고 색이 유실된 단색 몸통만 복원한다.
 					local sa = p:FindFirstChildOfClass("SurfaceAppearance")
@@ -683,7 +684,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						if sandy then material = Enum.Material.Plaster
 						elseif east or mediterranean then material = Enum.Material.ClayRoofTiles
 						else material = Enum.Material.RoofShingles end
-						if tint then paint = paint:Lerp(tint, 0.8) end
+						-- 주택 전체에 전달한 외벽색으로 기와색을 덮지 않는다. 지붕 전용 모듈만 지정색 사용.
+						if tint and asset:find("roof", 1, true) and not asset:find("house", 1, true) then
+							paint = paint:Lerp(tint, 0.8)
+						end
 					elseif name:find("wood", 1, true) or name:find("timber", 1, true)
 						or name:find("beam", 1, true) or name:find("door", 1, true)
 						or name:find("frame", 1, true) or name:find("floor", 1, true)
@@ -1001,7 +1005,11 @@ local function uniformMaterial(m, style, surface)
 			for _, ch in p:GetChildren() do
 				if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 			end
-			if not textured then
+			-- 복원된 석재·기와·목재 및 원본의 명시적 재질은 다시 덮지 않는다.
+			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
+			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
+			if not textured and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)
+				and low >= 0.78 and high - low <= 0.14 then
 				local role = p.Name:lower()
 				local selected = mat
 				if not surface then
@@ -1317,6 +1325,8 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		-- 문화권별 승인된 지붕창·박공·창호 메시를 일부 주택에만 올려 주택 형태를 차별화한다.
 		-- 기존 본체 메시와 충돌하지 않도록 장식만 비충돌로 두고, 주택/시설의 고유 판정은 유지한다.
 		local _, ext = mesh:GetBoundingBox()
+		-- [건축 장식 접합] 마을이 아직 workspace에 연결되기 전에도 실제 부품의 경계를 사용한다.
+		local facadeDetails = {}
 		if architecture.roof and not vacant and seed % (if houseTier >= 3 then 3 else 4) == 0 then
 			local roofColor = style.roofs[rng:NextInteger(1, #style.roofs)]
 			if scenePortId then roofColor = roofColor:Lerp(portRoof, 0.72) end
@@ -1326,8 +1336,11 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if roof then
 				roof.Name = "HarborRoofDetail"
 				uniformMaterial(roof, style, "roof")
+				table.insert(facadeDetails, { model = roof, top = true })
 			end
 		end
+		-- [입면 정밀 배치] 기존 승인 창호·현관만 실제 주택 표면에 맞춘다.
+		-- 모델의 두께/피벗 차이로 벽 속에 묻히거나 바깥에 떠 있는 문제를 방지한다.
 		if architecture.trim and not vacant and seed % (if houseTier >= 3 then 2 else 3) == 0 then
 			local trim = importedModel(parent, "Town", architecture.trim,
 				pos + Vector3.new(ext.X * 0.2, ext.Y * 0.40, front * ext.Z * 0.51),
@@ -1335,6 +1348,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if trim then
 				trim.Name = "HarborWindowDetail"
 				uniformMaterial(trim, style, "trim")
+				table.insert(facadeDetails, { model = trim })
 			end
 		end
 		-- 승인된 문의 둥근 아치/목재 형태로 집 입면을 구분한다.
@@ -1346,6 +1360,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if doorway then
 				doorway.Name = "HarborDoorDetail"
 				uniformMaterial(doorway, style, "entry")
+				table.insert(facadeDetails, { model = doorway })
 			end
 		end
 		local size = math.max(w, d) * variation
@@ -1359,13 +1374,67 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 		end
 		if architecture.chimney and houseTier >= 2 and (houseTier >= 3 or math.floor(math.abs(pos.X * 7 + pos.Z * 13)) % 2 == 0) then
 			local chim = importedModel(parent, "Town", "chimney", pos + Vector3.new(0, size * 0.7, 0), size * 0.4, false, Color3.fromRGB(122, 98, 84))
-			if chim then chim.Name = "HarborChimney" uniformMaterial(chim, style) end
+			if chim then
+				chim.Name = "HarborChimney"
+				uniformMaterial(chim, style)
+				table.insert(facadeDetails, { model = chim, top = true })
+			end
 		end
 		if architecture.balcony and houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
 			local bal = importedModel(parent, "Town", "balcony-wall-fence", pos + Vector3.new(0, size * 0.55, front * size * 0.52), size * 0.7, false, tintColor)
 			if bal then
 				bal.Name = "HarborBalcony"
 				uniformMaterial(bal, style, "trim")
+				table.insert(facadeDetails, { model = bal })
+			end
+		end
+		-- [입면·지붕 정밀 배치] 모델이 workspace에 연결되기 전에는 Raycast가 불가능하다.
+		-- 실제 보이는 부품의 회전된 경계 상자를 검사하여 접점을 계산한다. 메시 표면 자체는 Studio에서 확인한다.
+		if #facadeDetails > 0 then
+			local houseCF, houseSize = mesh:GetBoundingBox()
+			local reach = houseSize.Magnitude + 2
+			local visibleParts = {}
+			for _, piece in mesh:GetDescendants() do
+				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					table.insert(visibleParts, piece)
+				end
+			end
+			for _, item in facadeDetails do
+				local detail = item.model
+				local detailCF, detailSize = detail:GetBoundingBox()
+				local direction = if item.top then Vector3.new(0, -1, 0) else Vector3.new(0, 0, -front)
+				local origin = if item.top
+					then Vector3.new(detailCF.Position.X, houseCF.Position.Y + reach, detailCF.Position.Z)
+					else Vector3.new(detailCF.Position.X, detailCF.Position.Y, houseCF.Position.Z + front * reach)
+				local nearest = math.huge
+				for _, piece in visibleParts do
+					-- 회전된 부품의 로컬 좌표계에서 3축 구간 교차를 계산한다.
+					local rayOrigin = piece.CFrame:PointToObjectSpace(origin)
+					local rayDir = piece.CFrame:VectorToObjectSpace(direction)
+					local half = piece.Size * 0.5
+					local enter, exit = 0, reach * 2
+					for _, axis in { "X", "Y", "Z" } do
+						local o, v, h = rayOrigin[axis], rayDir[axis], half[axis]
+						if math.abs(v) < 0.000001 then
+							if math.abs(o) > h then enter = math.huge; break end
+						else
+							local lo, hi = (-h - o) / v, (h - o) / v
+							enter = math.max(enter, math.min(lo, hi))
+							exit = math.min(exit, math.max(lo, hi))
+							if enter > exit then break end
+						end
+					end
+					if enter <= exit then nearest = math.min(nearest, enter) end
+				end
+				if nearest < math.huge then
+					local halfDepth = (math.abs(detailCF.RightVector:Dot(direction)) * detailSize.X
+						+ math.abs(detailCF.UpVector:Dot(direction)) * detailSize.Y
+						+ math.abs(detailCF.LookVector:Dot(direction)) * detailSize.Z) * 0.5
+					local contact = origin + direction * nearest
+					local target = contact - direction * math.max(0, halfDepth - 0.08)
+					detail:PivotTo(CFrame.new(target - detailCF.Position) * detail:GetPivot())
+				end
+				-- 경계 교차가 없으면 기존 배치를 유지한다. 정상 장식을 임의로 삭제하지 않는다.
 			end
 		end
 		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.
