@@ -302,7 +302,7 @@ test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고
   const source = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
   const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
   for (const needle of [
-    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage)",
+    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage, arg('studio-dir'))",
     'coverage.sourceRevision === revision',
     'reviewed.has(label)',
     'STUDIO_VISUAL_REVIEWED=',
@@ -380,7 +380,8 @@ test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는
   assert.ok(capture >= 0 && sourceFetch > capture && pin > sourceFetch,
     'Studio 증거 SHA 를 코드 SHA 재조회 전에 고정해야 한다');
   assert.match(workflow, /git show "\$frames_sha:report\.json"/);
-  assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
+  assert.match(workflow, /gh run download "\$capture_run"/);
+  assert.match(workflow, /captureArtifact\.runId/);
   assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
   assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
 });
@@ -480,4 +481,17 @@ test('촬영본 분석 수정은 실제 화면 속성을 바꿀 때만 채택한
   assert.equal(visualDelta('frame.Size = UDim2.fromOffset(200, 40)', 'frame.Size = UDim2.fromOffset(240, 48)'), true);
   assert.equal(visualDelta('label.TextSize = 14', 'label.TextSize = 18'), true);
   assert.equal(visualDelta('local n = count + 1', 'local n = (count or 0) + 1'), false);
+});
+
+// [실물 화면 보관] 원본은 Git 기록에 추가하지 않고 1일 결과물로만 전달한다.
+test('Studio screenshot artifact expires in one day and visual review verifies exact hashes', () => {
+  const studio = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const brain = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
+  assert.match(studio, /retention-days: 1/);
+  assert.match(studio, /filter: file => !imageExt\.test\(file\)/);
+  assert.match(studio, /entry\.isFile\(\) && !imageExt\.test\(entry\.name\)/);
+  assert.match(studio, /steps\.studio_photo_artifact\.outcome == 'success'/);
+  assert.doesNotMatch(studio, /residentReviewFrames/);
+  assert.match(brain, /checks\.sourceRevision !== revision/);
+  assert.match(brain, /digest\('hex'\) !== hashes\.get\(file\)/);
 });
