@@ -2868,7 +2868,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			st.Parent = target
 			dropGlow = st
-			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
+			-- [배치 강조 종료] 반복 트윈은 강조 테두리의 수명과 함께 종료한다.
+			local glowTween = TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 })
+			st.Destroying:Once(function()
+				glowTween:Cancel()
+				glowTween:Destroy()
+				if dropGlow == st then dropGlow = nil end
+			end)
+			glowTween:Play()
 		end
 		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
 		local deployAbilities = {
@@ -3195,9 +3202,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			render()
 			if opts.cardOnly and not res then
 				local rendered = previousBoard
-				task.defer(function()
-					if g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
-				end)
+				cardTimers[task.defer(function()
+					cardTimers[coroutine.running()] = nil
+					if not finished and g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
+				end)] = true
 			end
 		end
 		local passArmedAt = 0
