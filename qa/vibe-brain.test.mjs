@@ -557,7 +557,8 @@ test('Mare field climate survey uses real seasonal weather and lighting in Studi
   assert.match(field,/RunService:IsStudio\(\) and type\(opts\.studioCaptureMonth\)/);
   assert.match(field,/if RunService:IsStudio\(\) then\s+if type\(opts\.studioCaptureWeather\)/);
   assert.match(field,/table\.find\(weatherOptions, wanted\)/);
-  assert.match(field,/local captureHour = biome\.clock/);
+  assert.match(field,/biome\.clock = opts\.studioCaptureHour/);
+  assert.match(field,/local clock = \(biome\.clock \+ \(now - clockStart\)/);
   assert.match(workflow,/FIELD_SURVEY_WRONG_MONTH/);
   assert.match(workflow,/FIELD_SURVEY_WRONG_PHASE/);
   assert.match(workflow,/FIELD_SURVEY_PRECIPITATION_WRONG/);

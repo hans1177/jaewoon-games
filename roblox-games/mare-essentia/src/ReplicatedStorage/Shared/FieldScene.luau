@@ -4188,7 +4188,6 @@ function FieldScene.start(opts)
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
 		-- [Studio 기후 촬영] 해당 지형에서 실제 허용되는 기상만 선택한다. 실제 플레이의 난수·시간·보상은 유지.
-		local captureHour = biome.clock
 		if RunService:IsStudio() then
 			if type(opts.studioCaptureWeather) == "table" then
 				for _, wanted in opts.studioCaptureWeather do
@@ -4199,7 +4198,7 @@ function FieldScene.start(opts)
 				end
 			end
 			if type(opts.studioCaptureHour) == "number" and opts.studioCaptureHour >= 0 and opts.studioCaptureHour < 24 then
-				captureHour = opts.studioCaptureHour
+				biome.clock = opts.studioCaptureHour
 			end
 		end
 		folder:SetAttribute("FieldWeather", weather) -- [발견물 조건] 비 온 뒤에만 보이는 실물
@@ -4292,7 +4291,7 @@ function FieldScene.start(opts)
 				if weather ~= old then say("탐험 날씨 변화: " .. weather) end
 			end
 			-- 12분마다 한 바퀴의 새벽→낮→황혼→밤. 조명은 탐험 종료 시 기존 값으로 복구한다.
-			local clock = (captureHour + (now - clockStart) * (24 / 720)) % 24
+			local clock = (biome.clock + (now - clockStart) * (24 / 720)) % 24
 			local sun = math.clamp(math.sin((clock - 6) * math.pi / 12) * 1.15 + 0.16, 0, 1)
 			local phase = if clock < 5 or clock >= 20 then "밤"
 				elseif clock < 8 then "새벽" elseif clock < 17 then "낮" else "황혼"
