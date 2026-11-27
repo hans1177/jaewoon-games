@@ -6430,7 +6430,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						-- 대형 포격선은 포문 수에 맞춰 추가 포탄 궤적 한 발만 표현한다. 피해 판정은 마지막 포탄 1회 그대로.
 						local volley = if now < skillUntil.rapid then (if shipDef and shipDef.cannons >= 14 and not MOBILE_VFX then 4 else 3) else 2
 						for k = 0, volley - 1 do
-							task.delay(k * 0.08, function()
+							local volleyTimer = task.delay(k * 0.08, function()
+								conns[coroutine.running()] = nil
 								if finished or rt.ended then
 									return
 								end
@@ -6453,6 +6454,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 									shoot(me.pos, lead + offset, nil, cannon, nil, if near then 1.15 else 0.7)
 								end
 							end)
+							conns[volleyTimer] = volleyTimer
 						end
 					end
 					if now - rt.start > 9 and hint.Text:sub(1, 3) == "배의 " then
@@ -6506,7 +6508,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						popText(if volley >= 4 then "일제 사격!!" else "일제 사격!", Color3.fromRGB(255, 200, 90))
 					end
 					for k = 0, volley - 1 do
-						task.delay(k * 0.08, function()
+						local volleyTimer = task.delay(k * 0.08, function()
+							conns[coroutine.running()] = nil
 							if not finished then
 								shoot(me.pos, foe.pos, if k == volley - 1 then function()
 									shake = 1.2
@@ -6514,6 +6517,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								end else nil, cannon)
 							end
 						end)
+						conns[volleyTimer] = volleyTimer
 					end
 				end
 				if not opts.card and not RT and d < 95 and now >= nextFoeFire and meDone < #foeQueue then
@@ -6522,7 +6526,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
 					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
 					for k = 0, volley - 1 do
-						task.delay(k * 0.08, function()
+						local volleyTimer = task.delay(k * 0.08, function()
+							conns[coroutine.running()] = nil
 							if not finished then
 								shoot(foe.pos, me.pos, if k == volley - 1 then function()
 									shake = 1.6
@@ -6530,6 +6535,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								end else nil)
 							end
 						end)
+						conns[volleyTimer] = volleyTimer
 					end
 				end
 				-- 두 배가 맞닿으면 바로 접현 (백병전)
