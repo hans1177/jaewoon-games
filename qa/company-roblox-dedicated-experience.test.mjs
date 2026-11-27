@@ -2754,6 +2754,28 @@ test('Mare Dropbox candidate recognizes exact successful check runs without weak
   assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
 });
 
+test('Mare Dropbox UI replacement preserves existing verified registration and exact candidate checks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const stage=workflow.slice(workflow.indexOf('      - name: Stage reviewed Dropbox original'),workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'));
+  const pr=workflow.slice(workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'),workflow.indexOf('      - name: Check reviewed animal originals'));
+  const recovery=workflow.slice(workflow.indexOf('      - name: Select existing full registration'),workflow.indexOf('      - name: Restore full-color originals'));
+  assert.ok(stage.includes("ui = name.startswith('ui_')"));
+  assert.ok(stage.includes("relative = 'assets/cardart/'+name+'.png' if ui else"));
+  assert.ok(stage.includes("old_raw[25]!=3"));
+  assert.ok(stage.includes("previous.get('source')!=str(target)"));
+  assert.ok(stage.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+  assert.ok(stage.includes("if not ui:"));
+  assert.ok(pr.includes("original=root+'cardart/'+name+'.png' if ui else"));
+  assert.ok(pr.includes("CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:"));
+  assert.ok(pr.includes("CARD_DROPBOX_UI_PR_PNG_INVALID:"));
+  assert.ok(pr.includes("pr['changed_files']!=2"));
+  assert.ok(pr.includes("if not ui:"));
+  assert.ok(recovery.includes("CARD_UI_APPROVED_REGISTRATION_RECOVERY"));
+  assert.ok(recovery.includes("old.get('sourceSha256')==digest"));
+  assert.ok(recovery.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+  assert.ok(recovery.includes("MARE_MODELS_ONLY=false"));
+});
+
 test('Mare indexed PNG audit separates exact registered SHA from archived and pending originals',()=>{
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
   const block=workflow.slice(workflow.indexOf('      - name: Audit 256-color indexed'),workflow.indexOf('      - name: Practice and verify approved trade goods'));
