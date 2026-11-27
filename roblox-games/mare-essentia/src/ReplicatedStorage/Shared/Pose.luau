@@ -113,7 +113,13 @@ end
 
 -- 주민 얼굴은 머리 메시의 원본 데칼을 사용한다.
 local function drawFace(head)
-	local decal = head:FindFirstChildWhichIsA("Decal")
+	local decal = head:FindFirstChild("face")
+	if not (decal and decal:IsA("Decal")) then
+		decal = nil
+		for _, item in head:GetChildren() do
+			if item:IsA("Decal") and item.Face == Enum.NormalId.Front then decal = item; break end
+		end
+	end
 	if not decal then
 		decal = Instance.new("Decal")
 		decal.Name = "face"
@@ -125,6 +131,12 @@ local function drawFace(head)
 	decal.Texture = "rbxasset://textures/face.png"
 	decal.Color3 = Color3.new(1, 1, 1)
 	decal.Transparency = 0
+	-- 정면 얼굴은 하나만 표시한다. 다른 면의 데칼과 원본 머리 형상은 그대로 둔다.
+	for _, item in head:GetChildren() do
+		if item ~= decal and item:IsA("Decal") and item.Face == Enum.NormalId.Front then
+			item.Transparency = 1
+		end
+	end
 end
 
 
@@ -407,6 +419,11 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			if descendant == root then
 				descendant.Transparency = 1
 			elseif n == "Head" then
+				-- [주민 얼굴 단일 표현] 빈 R15 리그의 머리 텍스처와 정면 데칼이 중첩되지 않게 한다.
+				-- 주민 기본 머리만 대상으로 하며 등록 헤어·수염·복장 PBR과 전투 리그는 보존한다.
+				if citizenCloth and not parent:IsA("WorldModel") and descendant:IsA("MeshPart") then
+					descendant.TextureID = ""
+				end
 				descendant.Color = skin
 				descendant.Material = Enum.Material.SmoothPlastic
 			elseif string.find(n, "Hand") then

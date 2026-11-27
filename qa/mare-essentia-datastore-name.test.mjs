@@ -2856,6 +2856,10 @@ test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 �
   assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);
   assert.match(face,/decal\.Transparency\s*=\s*0/);
   assert.doesNotMatch(face,/decal:Destroy\(\)/);
+  assert.match(face,/item ~= decal and item:IsA\("Decal"\) and item.Face == Enum.NormalId.Front then\s+item.Transparency = 1/);
+  const generated=source.slice(source.indexOf("function Pose.createR15("),source.indexOf("local headPart = model:FindFirstChild"));
+  assert.match(generated,/if citizenCloth and not parent:IsA\("WorldModel"\) and descendant:IsA\("MeshPart"\) then\s+descendant.TextureID = ""\s+end\s+descendant.Color = skin/);
+  assert.equal((generated.match(/descendant\.TextureID = ""/g)||[]).length,1);
 });
 
 // [무료 네모트론 디자인 검증] Studio 사진과 책임 코드에서 전 시각 범주를 안전하게 수정한다.
