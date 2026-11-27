@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 const root = 'roblox-games/mare-essentia/';
 const id = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/PortIdentity.luau', 'utf8');
 const ports = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/Ports.luau', 'utf8');
@@ -696,4 +699,39 @@ test('원거리 주민은 위치와 보행 위상을 보존하고 관절 갱신�
   assert.match(walk, /if close and now >= w\.groundCheckAt then/);
   assert.match(walk, /local pivot = w\.base \* CFrame\.new\(0, w\.groundOffset \+ bob, d\) \* CFrame\.Angles\(0, w\.hd, 0\)\s+w\.model:PivotTo\(pivot\)/);
   assert.match(scene, /if math\.max\(sz\.X, sz\.Y, sz\.Z\) < 4 then\s+d\.CastShadow = false/);
+});
+
+test('항구 기본 전수 181곳은 기존 마을 실측 검사를 동일 구도에서 한 번씩 실행한다', () => {
+  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const generator = workflow.split("$generate = @'\n")[1]?.split("\n          '@")[0];
+  assert.ok(generator, '기존 촬영 생성기');
+  const scripts = path.resolve(root, 'tools/devloop/studio-scripts');
+  const town = JSON.parse(fs.readFileSync(path.join(scripts, 'mare-town.json'), 'utf8'));
+  const audit = town.find(row => row.type === 'luau' && row.code.includes('TOWN_LIVE_SPACING_PASS'));
+  assert.ok(audit);
+  const expected = JSON.parse(fs.readFileSync(path.join(scripts, 'mare-qa-click.json'), 'utf8'))
+    .map(row => row.code?.match(/^-- \[항구 위치\] ([a-z0-9_]+)/)?.[1]).filter(Boolean);
+  const seen = [];
+  let frames = 0;
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'mare-port-audit-'));
+  try {
+    for (let batch = 1; batch <= 19; batch++) {
+      const out = path.join(temp, 'survey.json');
+      const run = spawnSync(process.execPath, ['-', scripts, out, String(batch)], {input: generator, encoding: 'utf8'});
+      assert.equal(run.status, 0, run.stderr);
+      const rows = JSON.parse(fs.readFileSync(out, 'utf8'));
+      frames += rows.filter(row => row.type === 'capture').length;
+      for (const [i, row] of rows.entries()) {
+        if (!row.label?.endsWith('_audit')) continue;
+        const id = row.label.slice(5, -6);
+        assert.equal(rows[i-1].name, 'port_'+id+'_07_wall');
+        assert.ok(row.code.endsWith(audit.code), id+' 기존 검사 판정 보존');
+        assert.ok(row.code.includes('CityPortVisualIdentity') && row.code.includes('local id="'+id+'"'));
+        seen.push(id);
+      }
+    }
+    assert.deepEqual(seen, expected);
+    assert.equal(seen.length, 181);
+    assert.equal(frames, 1991);
+  } finally { fs.rmSync(temp, {recursive: true, force: true}); }
 });
