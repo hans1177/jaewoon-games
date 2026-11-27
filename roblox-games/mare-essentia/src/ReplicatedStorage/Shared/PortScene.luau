@@ -837,13 +837,12 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					end
 				end
 				task.wait(0.76)
-				if m.Parent and parent.Parent then
-					for _, piece in pieces do
-						if piece.part.Parent then piece.part.CanCollide = piece.solid end
-					end
-					m:SetAttribute("BuildVisualState", "complete")
-				end
 				installCleanup:Disconnect()
+				if not m.Parent or not parent.Parent then return end
+				for _, piece in pieces do
+					if piece.part.Parent then piece.part.CanCollide = piece.solid end
+				end
+				m:SetAttribute("BuildVisualState", "complete")
 			end)
 			installCleanup = m.Destroying:Once(function()
 				if coroutine.status(installThread) == "suspended" then task.cancel(installThread) end
