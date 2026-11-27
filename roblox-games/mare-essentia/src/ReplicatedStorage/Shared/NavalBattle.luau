@@ -7049,20 +7049,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local active = now < skillUntil[sk.id]
 			local ready = left <= 0
 			local ratio = math.clamp(left / math.max(sk.cd, 0.1), 0, 1)
+			local art = b:FindFirstChild("NavalButtonArtwork")
 			local shade = b:FindFirstChild("NavalCooldownShade")
 			if shade then
 				-- [해상·지상 통일] 원화가 있으면 원 음영 대신 아이콘만 어두워진다.
-				shade.Visible = not ready and b:FindFirstChild("NavalButtonArtwork") == nil
-				shade.BackgroundTransparency = 0.22 + (1 - ratio) * 0.70
+				local visible = not ready and art == nil
+				local transparency = 0.22 + (1 - ratio) * 0.70
+				if shade.Visible ~= visible then shade.Visible = visible end
+				if shade.BackgroundTransparency ~= transparency then shade.BackgroundTransparency = transparency end
 			end
 			-- [한글 선명도] 초 숫자·그림자 제거. 아이콘은 어두운 상태에서 점점 원래 색으로 복귀한다.
 			if b.Text ~= sk.text then b.Text = sk.text end
 			local buttonColor = sk.col:Lerp(Color3.fromRGB(49, 59, 75), ratio)
 			if b.BackgroundColor3 ~= buttonColor then b.BackgroundColor3 = buttonColor end
-			local art = b:FindFirstChild("NavalButtonArtwork")
 			if art and art:IsA("ImageLabel") then
-				art.ImageTransparency = if ready then 0 else ratio * 0.28
-				art.ImageColor3 = Color3.fromRGB(255, 255, 255):Lerp(Color3.fromRGB(84, 96, 110), ratio)
+				local transparency = if ready then 0 else ratio * 0.28
+				if art.ImageTransparency ~= transparency then art.ImageTransparency = transparency end
 				local caption = b:FindFirstChild("NavalButtonCaption")
 				if caption and caption:IsA("TextLabel") then
 					if caption.Text ~= sk.text then caption.Text = sk.text end
@@ -7100,16 +7102,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if b.Active ~= interactable then b.Active = interactable end
 			if b.AutoButtonColor ~= interactable then b.AutoButtonColor = interactable end
 			local rim = b:FindFirstChildOfClass("UIStroke")
+			local pulse = if rim then math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.55, 0, 1) else 0
+			-- [준비광] 기본색과 준비광을 합성한 최종색만 기록한다.
+			if art and art:IsA("ImageLabel") then
+				local color = Color3.fromRGB(255, 255, 255):Lerp(Color3.fromRGB(84, 96, 110), ratio)
+				if pulse > 0 then color = color:Lerp(Color3.fromRGB(255, 232, 143), pulse * 0.9) end
+				if art.ImageColor3 ~= color then art.ImageColor3 = color end
+			end
 			if rim then
-				local pulse = math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.55, 0, 1)
 				local baseColor = if active then Color3.fromRGB(255, 234, 148)
 					elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(96, 108, 123)
-				rim.Color = baseColor:Lerp(Color3.fromRGB(255, 248, 164), pulse)
-                rim.Thickness = 2.2 + 2.6 * pulse
-                if art and art:IsA("ImageLabel") and pulse > 0 then
-                    art.ImageColor3 = art.ImageColor3:Lerp(Color3.fromRGB(255, 232, 143), pulse * 0.9)
-                end
-				rim.Transparency = if ready or active then 0.06 else 0.28
+				local color = baseColor:Lerp(Color3.fromRGB(255, 248, 164), pulse)
+				local thickness = 2.2 + 2.6 * pulse
+				local transparency = if ready or active then 0.06 else 0.28
+				if rim.Color ~= color then rim.Color = color end
+				if rim.Thickness ~= thickness then rim.Thickness = thickness end
+				if rim.Transparency ~= transparency then rim.Transparency = transparency end
 			end
 		end
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
