@@ -3998,7 +3998,9 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   assert.match(naval,/if sh\.wakeFx\.Enabled ~= enabled then sh\.wakeFx\.Enabled = enabled end/);
   assert.match(naval,/local rate = math\.clamp\(\(sh\.speed or 0\) \* \(if MOBILE_VFX then 0\.42 else 0\.75\), 1\.5, if MOBILE_VFX then 8 else 16\)/);
   assert.match(naval,/if sh\.wakeRate ~= rate then\s+sh\.wakeFx\.Rate = rate\s+sh\.wakeRate = rate\s+end/);
-  assert.match(naval,/if #list == 0 then continue end[\s\S]*?local shipPivot = sh\.model:GetPivot\(\)\s+local otherPosition = other\.model:GetPivot\(\)\.Position\s+for _, c in list do\s+local pos = \(shipPivot \* c\.off\)\.Position\s+local look = Vector3\.new\(otherPosition\.X, pos\.Y, otherPosition\.Z\)/);
+  assert.match(naval,/if #crews.me == 0 and #crews.foe == 0 then return end[\s\S]*?local mePivot, foePivot = me\.model:GetPivot\(\), foe\.model:GetPivot\(\)/);
+  assert.match(naval,/local shipPivot = if side == "me" then mePivot else foePivot\s+local otherPosition = if side == "me" then foePivot.Position else mePivot.Position\s+for _, c in list do\s+local pos = \(shipPivot \* c\.off\)\.Position\s+local look = Vector3\.new\(otherPosition\.X, pos\.Y, otherPosition\.Z\)/);
+  for(const token of ['last.pos, last.t, last.frame = sh.pos, now, (last.frame or 0) + 1','FX.wakeAt[key] = last','if moved <= 0.35 or (sh.speed or 0) <= 1.5 then return end','local step = if MOBILE_VFX then 0.31 else 0.22','local crossCos = if seaMood == "card" then 0 else math.cos(crossTime)','crossCos * 0.27','crossCos * 0.038','poseShip(me, now, meSink, seaMood)','poseShip(foe, now, foeSink, seaMood)','poseShip(e, now, nil, seaMood)','poseShip(al, now, nil, seaMood)']) assert.ok(naval.includes(token),token);
   assert.match(naval,/local stern = ORIGIN \+ sh\.pos - heading \* sh\.length \* 0\.40/);
   assert.match(naval,/cliff-cornerlarge-rock/);
   assert.match(naval,/cliff-waterfall-stone/);
