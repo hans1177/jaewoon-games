@@ -4783,7 +4783,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- [전투 맵 아이템] 기존 등록 3D 보급 부표/화약폭탄 모델을 재사용한다. 미등록이면 생성하지 않는다.
 	local FX = { wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
 		sink = nil, outcomeReason = nil, items = {}, itemSerial = 0, nextItemAt = os.clock() + 6,
-		mineCharges = 0, burstTimers = {} }
+		mineCharges = 0, burstTimers = {}, effectTimers = {} }
 	-- 지형에 붙인 순간 입자는 장면 폴더의 자손이 아니므로 종료 시 직접 해제한다.
 	folder.Destroying:Connect(function()
 		for anchor, timer in FX.burstTimers do
@@ -4791,6 +4791,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			anchor:Destroy()
 		end
 		table.clear(FX.burstTimers)
+		for _, timer in FX.effectTimers do task.cancel(timer) end
+		table.clear(FX.effectTimers)
 	end)
 	local C_SMOKE, C_DARK, C_WATER = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245)
 	-- [해상전투 이펙트] 임의 원통·구·사각 파편과 매 프레임 크기 변경을 폐기한다.
@@ -5153,13 +5155,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			{ tex = "spark", c0 = ringColor, c1 = light.color, s0 = 1.1, s1 = 0.18, life = 0.75, v0 = 14, v1 = 34, spread = 100, glow = 0.9, n = if MOBILE_VFX then 10 else 24, a0 = 0 },
 			{ tex = if id == "rapid" then "fire" else "smoke", c0 = light.color, c1 = ringColor, s0 = 2.6, s1 = 5.2, life = 0.65, v0 = 3, v1 = 18, spread = 90, glow = 0.7, n = if MOBILE_VFX then 5 else 12, a0 = 0.22 },
 		}, { color = ringColor, bright = if MOBILE_VFX then 2 else 4, range = 30, dur = 0.33 })
-		task.delay(dur, function()
+		FX.effectTimers[at] = task.delay(dur, function()
+			FX.effectTimers[at] = nil
 			if finished or not at.Parent or not lt.Parent then return end
 			for _, pe in ems do
 				pe.Enabled = false
 			end
 			TweenService:Create(lt, TweenInfo.new(0.5), { Brightness = 0 }):Play()
-			task.delay(2, function()
+			FX.effectTimers[at] = task.delay(2, function()
+				FX.effectTimers[at] = nil
 				if at.Parent then at:Destroy() end
 				if lt.Parent then lt:Destroy() end
 			end)
@@ -5629,6 +5633,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local k = math.clamp((os.clock() - t0) / 1.6, 0, 1)
 			if finished or not folder.Parent or not pole.Parent or not sail.Parent then
 				conn:Disconnect()
+				conns[conn] = nil
 				if pole.Parent then pole:Destroy() end
 				if sail.Parent then sail:Destroy() end
 				return
@@ -5639,16 +5644,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			sail.CFrame = CFrame.new(base) * CFrame.Angles(0, 0, ang * dirSide) * CFrame.new(0, 16 - k * 6, 0)
 			if k >= 1 then
 				conn:Disconnect()
+				conns[conn] = nil
 				local at = Vector3.new(pole.Position.X, 0, pole.Position.Z)
 				FX.splash(at)
 				Sfx.play("sfx_naval_splash", 0.7, 0.75)
 				shake = math.max(shake, 1.2)
-				task.delay(2.5, function()
-					pole:Destroy()
-					sail:Destroy()
+				FX.effectTimers[pole] = task.delay(2.5, function()
+					FX.effectTimers[pole] = nil
+					if pole.Parent then pole:Destroy() end
+					if sail.Parent then sail:Destroy() end
 				end)
 			end
 		end)
+		conns[conn] = conn
 	end
 	-- [포격 시네마] 함선 중앙이 아닌 실제 좌·우 선측 포구에서 번갈아 발사한다.
 	local function shoot(fromPos, toPos, fx, nc, hitTest, splashScale)
@@ -5734,6 +5742,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			-- 장면 종료·교체 후에는 이전 포탄의 프레임 계산과 명중 효과를 중단한다.
 			if finished or not folder.Parent or not ball.Parent then
 				conn:Disconnect()
+				conns[conn] = nil
 				if ball.Parent then ball:Destroy() end
 				return
 			end
@@ -5743,6 +5752,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			ball.CFrame = CFrame.lookAt(bpos, bpos + velocity.Unit)
 			if u >= 1 then
 				conn:Disconnect()
+				conns[conn] = nil
 				ball:Destroy()
 				if finished then
 					return
@@ -5799,6 +5809,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 		end)
+		conns[conn] = conn
 	end
 
 	local function forward(theta)
