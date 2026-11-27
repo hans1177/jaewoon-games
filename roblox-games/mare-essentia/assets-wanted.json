@@ -701,7 +701,7 @@
   "scope": "STATIC_LITERAL_REFERENCES_ONLY",
   "nativeRuntimeVerified": false,
   "referenceEvidence": {
-   "dynamicPrefixCandidateCount": 1079,
+   "dynamicPrefixCandidateCount": 1078,
    "dynamicPrefixes": [
     "Animals/",
     "CardArt/",
@@ -734,14 +734,14 @@
      "unresolvedReferenceCount": 0
     },
     "Cargo": {
-     "dynamicPrefixCandidateCount": 93,
-     "literalOrPlacementReferenceCount": 75,
+     "dynamicPrefixCandidateCount": 92,
+     "literalOrPlacementReferenceCount": 76,
      "unresolvedReferenceCount": 0
     },
     "Castle": {
      "dynamicPrefixCandidateCount": 0,
-     "literalOrPlacementReferenceCount": 18,
-     "unresolvedReferenceCount": 13
+     "literalOrPlacementReferenceCount": 19,
+     "unresolvedReferenceCount": 12
     },
     "Goods": {
      "dynamicPrefixCandidateCount": 94,
@@ -750,8 +750,8 @@
     },
     "Interior": {
      "dynamicPrefixCandidateCount": 0,
-     "literalOrPlacementReferenceCount": 7,
-     "unresolvedReferenceCount": 10
+     "literalOrPlacementReferenceCount": 10,
+     "unresolvedReferenceCount": 7
     },
     "Materials": {
      "dynamicPrefixCandidateCount": 0,
@@ -799,9 +799,44 @@
      "unresolvedReferenceCount": 0
     }
    },
-   "literalOrPlacementReferenceCount": 563,
+   "literalOrPlacementReferenceCount": 568,
    "scope": "STATIC_REFERENCE_CANDIDATES_NOT_RUNTIME_PLACEMENT",
-   "unresolvedReferenceCount": 37
+   "unresolvedReferenceCount": 33,
+   "unresolvedReferenceKeys": [
+    "Castle/door",
+    "Castle/metal-gate",
+    "Castle/stairs-stone",
+    "Castle/tower-hexagon-top-wood",
+    "Castle/tower-square-mid-door",
+    "Castle/wall-corner",
+    "Castle/wall-doorway",
+    "Castle/wall-half",
+    "Castle/wall-narrow-stairs",
+    "Castle/wall-narrow-wood-fence",
+    "Castle/wall-pillar",
+    "Castle/wall-to-narrow",
+    "Interior/beddouble",
+    "Interior/coatrackstanding",
+    "Interior/ruground",
+    "Interior/sidetable",
+    "Interior/sidetabledrawers",
+    "Interior/tablecloth",
+    "Interior/tableround",
+    "Materials/london-dry-mud-field-001-source",
+    "Materials/mat_stone_paving_historic_bc",
+    "Materials/mat_stone_paving_historic_n",
+    "Materials/mat_stone_paving_historic_r",
+    "Materials/mat_wall_plaster_beige_bc",
+    "Materials/mat_wall_plaster_beige_n",
+    "Materials/mat_wall_plaster_beige_r",
+    "Materials/mat_wood_planks_worn_bc",
+    "Materials/mat_wood_planks_worn_n",
+    "Materials/mat_wood_planks_worn_r",
+    "Monsters/demon",
+    "Monsters/ghost",
+    "Monsters/skeleton-mage",
+    "Monsters/skeleton-warrior"
+   ]
   }
  },
  "registry": {
