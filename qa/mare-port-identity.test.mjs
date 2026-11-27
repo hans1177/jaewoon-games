@@ -618,3 +618,21 @@ test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광�
   assert.ok(scene.includes('if table.find((port and port.produces) or {}, mineral)'),
     '등록된 실물 생산품만 하역');
 });
+
+test('항구 분할 교체 중 이전 모션을 중단하고 새 장면의 낙하 복구 연결을 보존한다', () => {
+  const retiring = scene.indexOf('old:SetAttribute("PortSceneActive", false)');
+  const destroy = scene.indexOf('child:Destroy()', retiring);
+  const attach = scene.indexOf('folder.Parent = workspace', destroy);
+  const ready = scene.indexOf('folder:SetAttribute("PortSceneActive", true)', attach);
+  const holder = scene.indexOf('holder:Destroy()', attach);
+  assert.ok(retiring >= 0 && destroy > retiring && attach > destroy && holder > attach && ready > holder);
+  const safety = scene.split('-- 안전망: 어떤 이유로든 바다나 허공')[1].split('-- 한낮의 열기')[0];
+  assert.match(safety, /if not folder\.Parent or folder:GetAttribute\("PortSceneActive"\) ~= true then return end/);
+  assert.match(safety, /folder\.Destroying:Connect\(function\(\) conn:Disconnect\(\) end\)/);
+  assert.match(safety, /hrp\.Position\.Y < -12/);
+  assert.match(safety, /char:PivotTo\(CFrame\.new\(-6, 6, 10\)\)/);
+  for (const loop of ['swayConn = RunService.Heartbeat', 'local walkConn = RunService.PreSimulation', 'local climateConn = RunService.Heartbeat', 'followConn = RunService.PreSimulation']) {
+    const start = scene.indexOf(loop);
+    assert.ok(start >= 0 && scene.slice(start, start + 500).includes('folder:GetAttribute("PortSceneActive") ~= true'), loop);
+  }
+});
