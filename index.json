@@ -2,15 +2,15 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "46042703791",
+    "runId": "46045379958",
     "kind": "deep",
     "portBatch": null,
-    "at": "2026-11-27T17:51:44.981Z",
-    "sourceRevision": "4e5f28de7eed0da8174c0a356ea53dcddbbaf211",
+    "at": "2026-11-27T18:10:00.511Z",
+    "sourceRevision": "e22a876386e31a0dd43a019049eb9f8246f4244b",
     "captureArtifact": {
-      "name": "studio-frames-46042703791",
+      "name": "studio-frames-46045379958",
       "retentionDays": 1,
-      "runId": "46042703791"
+      "runId": "46045379958"
     },
     "result": "FAIL",
     "frames": 70,
@@ -25,10 +25,36 @@
       "capturedFrames": 70,
       "abortedEarly": false
     },
-    "path": "runs/46042703791"
+    "path": "runs/46045379958"
   },
-  "lastDeepAt": "2026-11-27T17:51:44.981Z",
+  "lastDeepAt": "2026-11-27T18:10:00.511Z",
   "runs": [
+    {
+      "runId": "46045379958",
+      "kind": "deep",
+      "portBatch": null,
+      "at": "2026-11-27T18:10:00.511Z",
+      "sourceRevision": "e22a876386e31a0dd43a019049eb9f8246f4244b",
+      "captureArtifact": {
+        "name": "studio-frames-46045379958",
+        "retentionDays": 1,
+        "runId": "46045379958"
+      },
+      "result": "FAIL",
+      "frames": 70,
+      "changedFrames": 69,
+      "summary": {
+        "plannedSteps": 1000,
+        "completedSteps": 1000,
+        "plannedClicks": 12,
+        "successfulClicks": 12,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 70,
+        "capturedFrames": 70,
+        "abortedEarly": false
+      },
+      "path": "runs/46045379958"
+    },
     {
       "runId": "46042703791",
       "kind": "deep",
@@ -106,32 +132,6 @@
         "abortedEarly": false
       },
       "path": "runs/46036736135"
-    },
-    {
-      "runId": "46034985236",
-      "kind": "deep",
-      "portBatch": null,
-      "at": "2026-11-27T16:54:46.337Z",
-      "sourceRevision": "7d77ed21b6cd50932fbe13092b87ca6f50d7fe77",
-      "captureArtifact": {
-        "name": "studio-frames-46034985236",
-        "retentionDays": 1,
-        "runId": "46034985236"
-      },
-      "result": "PASS",
-      "frames": 70,
-      "changedFrames": 69,
-      "summary": {
-        "plannedSteps": 1000,
-        "completedSteps": 1000,
-        "plannedClicks": 12,
-        "successfulClicks": 12,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 70,
-        "capturedFrames": 70,
-        "abortedEarly": false
-      },
-      "path": "runs/46034985236"
     },
     {
       "runId": "46032462531",
