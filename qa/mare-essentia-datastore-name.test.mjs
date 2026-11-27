@@ -4382,6 +4382,19 @@ test('지역별 공방·우물·종교·시장·제분 시설은 해당 항구 �
  }
 });
 
+test('Mare naval finish releases connection references and cancels pending timeout without cancelling itself',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
+  assert.match(finish,/finished = true/);
+  assert.match(finish,/for _, c in conns do\s+local ok, err = pcall\(function\(\) c:Disconnect\(\) end\)/);
+  assert.match(finish,/table\.clear\(conns\)\s+gui:Destroy\(\)\s+folder:Destroy\(\)/);
+  assert.ok(finish.includes('opts.onDone(math.floor(flair), replay == true)'));
+  const timeout=naval.slice(naval.indexOf('local timeout = task.delay(130'),naval.lastIndexOf('return { finish = finish }'));
+  assert.match(timeout,/while cardBusy and not finished do/);
+  assert.match(timeout,/if not finished then\s+finish\(\)/);
+  assert.match(timeout,/timeout ~= coroutine.running\(\) and coroutine.status\(timeout\) ~= "dead" then\s+task.cancel\(timeout\)/);
+});
+
 // [전투 지시서 원본 연결] 등록 키와 실제 배치 증거를 분리하고 잘못 분류된 항구는 보류한다.
 test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 승인 키만 사용한다',()=>{
  const root='roblox-games/mare-essentia/';
