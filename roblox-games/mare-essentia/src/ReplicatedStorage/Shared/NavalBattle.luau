@@ -6807,8 +6807,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		FX.damage(me, "me", now)
 		FX.damage(foe, "foe", now)
-		meFill.Size = UDim2.fromScale(meHp, 1)
-		foeFill.Size = UDim2.fromScale(foeHp, 1)
+		-- [전투 HUD] 실제 표시 값이 바뀌는 경우만 속성을 갱신한다.
+		do
+			local meSize, foeSize = UDim2.fromScale(meHp, 1), UDim2.fromScale(foeHp, 1)
+			if meFill.Size ~= meSize then meFill.Size = meSize end
+			if foeFill.Size ~= foeSize then foeFill.Size = foeSize end
+		end
 		if not opts.cardOnly then
 			local dv = (foe.pos - me.pos).Magnitude
 			local inRange = dv < cannon.range
@@ -6816,8 +6820,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			distLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
 			local cdNow = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local prog = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cdNow), 0, 1)
-			reloadFill.Size = UDim2.new(prog, -8 * prog, 0, 3)
-			reloadFill.BackgroundColor3 = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
+			do
+				local reloadSize = UDim2.new(prog, -8 * prog, 0, 3)
+				local reloadColor = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
+				if reloadFill.Size ~= reloadSize then reloadFill.Size = reloadSize end
+				if reloadFill.BackgroundColor3 ~= reloadColor then reloadFill.BackgroundColor3 = reloadColor end
+			end
 			reloadText.Text = if not inRange then "사거리 밖"
 				elseif prog >= 1 then "장전 완료"
 				else "장전 중"
@@ -6859,16 +6867,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		foeFill.BackgroundColor3 = Color3.fromRGB(214, 82, 76):Lerp(Color3.fromRGB(255, 218, 153), enemyFlash)
 		-- [선체 숫자 선명도] 버프 문구 때문에 폰트가 10px까지 줄던 문제를 막는다.
 		-- 선체 체력은 항상 14px로, 기존 활성 스킬 시간은 아래 3px 상태 막대로만 표현한다.
-		buffFill.Visible = false
-		mePct.TextSize = 14
-		for _, sk in SKILLS do
-			local remaining = math.max(0, skillUntil[sk.id] - now)
-			if remaining > 0 and sk.id ~= "fire" then
-				buffFill.BackgroundColor3 = sk.col
-				buffFill.Size = UDim2.new(math.clamp(remaining / sk.dur, 0, 1), 0, 0, 3)
-				buffFill.Visible = true
-				break
+		do
+			local buffVisible = false
+			if mePct.TextSize ~= 14 then mePct.TextSize = 14 end
+			for _, sk in SKILLS do
+				local remaining = math.max(0, skillUntil[sk.id] - now)
+				if remaining > 0 and sk.id ~= "fire" then
+					local buffSize = UDim2.new(math.clamp(remaining / sk.dur, 0, 1), 0, 0, 3)
+					if buffFill.BackgroundColor3 ~= sk.col then buffFill.BackgroundColor3 = sk.col end
+					if buffFill.Size ~= buffSize then buffFill.Size = buffSize end
+					buffVisible = true
+					break
+				end
 			end
+			if buffFill.Visible ~= buffVisible then buffFill.Visible = buffVisible end
 		end
 		for _, sk in SKILLS do
 			local b = skillBtn[sk.id]
@@ -6883,16 +6895,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				shade.BackgroundTransparency = 0.22 + (1 - ratio) * 0.70
 			end
 			-- [한글 선명도] 초 숫자·그림자 제거. 아이콘은 어두운 상태에서 점점 원래 색으로 복귀한다.
-			b.Text = sk.text
-			b.BackgroundColor3 = sk.col:Lerp(Color3.fromRGB(49, 59, 75), ratio)
+			if b.Text ~= sk.text then b.Text = sk.text end
+			local buttonColor = sk.col:Lerp(Color3.fromRGB(49, 59, 75), ratio)
+			if b.BackgroundColor3 ~= buttonColor then b.BackgroundColor3 = buttonColor end
 			local art = b:FindFirstChild("NavalButtonArtwork")
 			if art and art:IsA("ImageLabel") then
 				art.ImageTransparency = if ready then 0 else ratio * 0.28
 				art.ImageColor3 = Color3.fromRGB(255, 255, 255):Lerp(Color3.fromRGB(84, 96, 110), ratio)
 				local caption = b:FindFirstChild("NavalButtonCaption")
 				if caption and caption:IsA("TextLabel") then
-					caption.Text = sk.text
-					caption.TextStrokeTransparency = 1
+					if caption.Text ~= sk.text then caption.Text = sk.text end
+					if caption.TextStrokeTransparency ~= 1 then caption.TextStrokeTransparency = 1 end
 				end
 			end
 			if not ready then
@@ -6921,9 +6934,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
                     game:GetService("TweenService"):Create(readyScale, TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
                 end
 			end
-			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
-			b.Active = b.Interactable
-			b.AutoButtonColor = b.Interactable
+			local interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
+			if b.Interactable ~= interactable then b.Interactable = interactable end
+			if b.Active ~= interactable then b.Active = interactable end
+			if b.AutoButtonColor ~= interactable then b.AutoButtonColor = interactable end
 			local rim = b:FindFirstChildOfClass("UIStroke")
 			if rim then
 				local pulse = math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.55, 0, 1)
