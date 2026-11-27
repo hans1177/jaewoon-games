@@ -4628,3 +4628,14 @@ test('Mare naval skill icons compose readiness glow once and skip identical writ
   assert.equal(skill.split('art.ImageColor3 =').length-1,1);
   for(const token of ['if shade.Visible ~= visible then shade.Visible = visible end','if shade.BackgroundTransparency ~= transparency then shade.BackgroundTransparency = transparency end','if art.ImageTransparency ~= transparency then art.ImageTransparency = transparency end','if art.ImageColor3 ~= color then art.ImageColor3 = color end','if pulse > 0 then color = color:Lerp(Color3.fromRGB(255, 232, 143), pulse * 0.9) end','if rim.Color ~= color then rim.Color = color end','if rim.Thickness ~= thickness then rim.Thickness = thickness end','if rim.Transparency ~= transparency then rim.Transparency = transparency end','b:SetAttribute("NavalReadyPulseUntil", now + 0.55)','TweenInfo.new(0.47','TweenInfo.new(0.42','local interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card']) assert.ok(skill.includes(token),token);
 });
+
+
+test('Mare naval tracking reuses trajectory appearance and skips unchanged coordinates',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const tracking=naval.slice(naval.indexOf('-- [해전 사거리 레이더]'),naval.indexOf('-- [선체 숫자 선명도]'));
+  for(const token of ['if radar.origin.Position ~= originPosition then radar.origin.Position = originPosition end','if radar.edge.Position ~= edgePosition then radar.edge.Position = edgePosition end','local dotDivisor = #trajDots + 1','local u = i / dotDivisor','if dot.CFrame ~= frame then dot.CFrame = frame end','if foeArrow.Position ~= arrowPosition then foeArrow.Position = arrowPosition end','if foeArrow.Rotation ~= arrowRotation then foeArrow.Rotation = arrowRotation end','if foeArrowTag.Position ~= tagPosition then foeArrowTag.Position = tagPosition end','local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25','math.sin(u * math.pi) * cannon.arc','elseif dot.Transparency ~= 1 then']) assert.ok(tracking.includes(token),token);
+  const loop=tracking.indexOf('for i, dot in trajDots do');
+  assert.ok(tracking.indexOf('local alpha = if not aligned then 0.88 elseif inRange then 0.3 else 0.78') < loop);
+  assert.ok(tracking.indexOf('local tint = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)') < loop);
+  assert.ok(loop > 0);
+});
