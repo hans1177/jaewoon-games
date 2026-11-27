@@ -2861,6 +2861,9 @@ test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 �
   assert.match(face,/child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front/);
   assert.match(face,/child ~= decal and child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front then\s+child.Transparency = 1/);
   assert.doesNotMatch(face,/head\.TextureID\s*=/);
+  const generated=source.slice(source.indexOf("function Pose.createR15("),source.indexOf("local headPart = model:FindFirstChild"));
+  assert.match(generated,/if citizenCloth and not parent:IsA\("WorldModel"\) and descendant:IsA\("MeshPart"\) then\s+descendant.TextureID = ""\s+end\s+descendant.Color = skin/);
+  assert.equal((generated.match(/descendant\.TextureID = ""/g)||[]).length,1);
   assert.match(source,/hairStyle == "short" and crownY - ext.Y \/ target.Size.Y < 0.20/);
   assert.match(source,/hairOffsetZ \+= math.clamp\(frontOverlap, 0, 0.18\)/);
   const shift=(style, height, depth, original=0)=>style==='short'&&0.65-height<0.20
