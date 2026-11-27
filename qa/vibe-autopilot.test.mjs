@@ -185,3 +185,41 @@ test('실제 Studio 콘솔 실패는 HEALTH 없이도 지시서를 만들고 실
   assert.ok(openOrders(ledger).some(x => x.id === 'studio-unreachable'));
 });
 
+
+// [스튜디오 자체 복구] 기존 Windows 인증 실행기 복구 정본만 재사용하고 중복 실행을 막는다.
+test('바이브 자동 판단은 Studio 실행기 오프라인에만 기존 복구 워크플로를 호출한다',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe-autopilot.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('VIBE_STUDIO_RUNNER=UNVERIFIED_API_ACCESS'));
+  assert.ok(workflow.includes('STALE_QUEUE_CONFIRMED'));
+  assert.ok(workflow.includes('NO_STALE_QUEUE_OR_STUDIO_RUNNING'));
+  assert.ok(workflow.includes('now - 900'));
+  assert.ok(workflow.includes('status == "in_progress"'));
+  assert.ok(workflow.includes('"$status" != "offline"'));
+  assert.ok(workflow.includes('company-roblox-runner-pwsh-bootstrap.yml'));
+  assert.ok(workflow.includes('now - 1800'));
+  assert.ok(workflow.includes('ALREADY_RUNNING_OR_COOLDOWN'));
+  assert.doesNotMatch(workflow,/config.cmd|New-ScheduledTask/);
+});
+
+test('Studio 단계 단언 실패를 실제 책임 함수와 분류로 묶는다', async () => {
+  const { studioStepFailure } = await import('../tools/vibe-autopilot.mjs');
+  const motion = 'step230:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:x:101: y:54: AssistantCommand:57: MOTION_FOOTPLANT_STATIC:0.0591';
+  const sf = studioStepFailure(motion);
+  assert.equal(sf.step, 230);
+  assert.equal(sf.marker, 'MOTION_FOOTPLANT_STATIC');
+  assert.equal(sf.category, 'animation');
+  assert.equal(sf.sourceFile, 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau');
+  assert.match(sf.sourceFunction, /^Pose\./);
+  const src = fs.readFileSync(sf.sourceFile, 'utf8').split('\n');
+  assert.match(src[sf.sourceLine - 1], new RegExp('function ' + sf.sourceFunction.replace('.', '\\.')));
+  // 실제 회차처럼 단언 실패로 중단(abortedEarly)되어도 Studio 연결 불가로 오분류하지 않는다.
+  const found = findingsFrom('mare-essentia', parseReport({ errors: [motion], log: [], summary: { capturedFrames: 57, abortedEarly: true } }));
+  assert.equal(found.length, 1);
+  assert.equal(found[0].kind, 'error');
+  assert.equal(found[0].sourceFile, sf.sourceFile);
+  assert.equal(found[0].fingerprint, 'mare-essentia:studio-step-motion-footplant-static');
+  // 자산·Studio 실행 문제는 코드 작업으로 보내지 않는다.
+  const asset = studioStepFailure('step9:E:AssistantCommand:3: ASSET_TIMEOUT:1');
+  assert.equal(asset.kind, 'asset_link');
+  assert.equal(studioStepFailure('STUDIO_ASSET_AUDIT_FAILED'), null);
+});

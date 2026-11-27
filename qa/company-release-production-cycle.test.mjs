@@ -87,3 +87,11 @@ test('release baseline is gated by same-build runtime, independent QA and final 
   ],'release pipeline ordering');
   assert.match(pipeline,/RELEASE_STALE_FINAL_ARTIFACT_GUARD=ENABLED/);
 });
+
+test('release final risk watch assigns canonical audio reviewer and retains planning QA balance protection',()=>{
+  assert.match(runner,/const ROLES=\['planning','graphics','development','qa','audio'\]/);
+  assert.doesNotMatch(runner,/const ROLES=\[[^\]]*'balance'/);
+  assert.match(runner,/role==='planning'\?'핵심루프, 기존 난이도·보상·성장·경제 수치/);
+  assert.match(runner,/role==='qa'\?'전투 수치·저장·보상·드롭률 회귀/);
+  assert.match(runner,/role==='audio'\?'효과음·배경음악 이벤트 동기화/);
+});

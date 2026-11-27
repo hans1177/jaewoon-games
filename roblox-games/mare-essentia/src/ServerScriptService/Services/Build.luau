@@ -56,7 +56,9 @@ return function(D, S)
 		state.portStages[state.portId][chain.id] = stageOf(state, state.portId, chain.id) + 1
 		local fame = math.floor(st.cost / 100)
 		state.fame += fame
-		return true, string.format("%s에 %s이(가) 들어섰다! %s 명성 +%d", D.Ports.Ports[state.portId].name, st.name, st.lore, fame)
+		-- [건축 시뮬] 효과는 즉시, 화면에는 공사 기간 동안 공사장과 진행률, 끝나면 완공 알림
+		local days = B.Projects.start(state, state.portId, chain.id, st.name, st.cost)
+		return true, string.format("%s에서 %s 공사 시작! (약 %d일) %s 명성 +%d", D.Ports.Ports[state.portId].name, st.name, days, st.lore, fame)
 	end
 
 	local function sum(state, field, onlyPort)

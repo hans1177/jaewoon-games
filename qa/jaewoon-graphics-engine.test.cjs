@@ -68,6 +68,195 @@ test('single game cannot become company graphics DNA; 3 games and 2 contexts can
   assert.equal(promotion.requiresJayVerdict,true);
 });
 
+// [그래픽 QA] 실제 모션·화풍·거리 변경 결함을 기존 이상징후 검사에서 구분한다.
+test('graphics audits articulated rig, motion contact, style, LOD and mobile frame issues',()=>{
+  const found=Graphics.detectVisualAnomalies({
+    rigJointMotionMissing:true,footContactSliding:true,animationTransitionPop:true,
+    mobileFrameBudgetExceeded:true,lodTransitionPop:true,runtimeVisualRegression:true
+  });
+  assert.deepEqual(found,[
+    'RIG_JOINT_MOTION_MISSING','FOOT_CONTACT_SLIDING','ANIMATION_TRANSITION_POP',
+    'MOBILE_FRAME_BUDGET_EXCEEDED','LOD_TRANSITION_POP','RUNTIME_VISUAL_REGRESSION'
+  ]);
+  assert.ok(Graphics.inferVisualAnomalies('발 미끄러짐').includes('FOOT_CONTACT_SLIDING'));
+  const plan=Graphics.planGraphicsImplementation({
+    anomalies:['RIG_JOINT_MOTION_MISSING'],
+    files:['GameCore.cs','Actors/HeroAnimator.cs','Assets/UI/HudView.cs'],
+    goal:'관절 움직임 누락 수정'
+  });
+  assert.equal(plan.run,true);
+  assert.deepEqual(plan.scope,['Actors/HeroAnimator.cs','Assets/UI/HudView.cs']);
+  assert.ok(!plan.scope.includes('GameCore.cs'));
+});
+
+test('mobile visual budget uses only verified samples and protects readable core',()=>{
+  const low=Graphics.deviceVisualBudget('LOW',{
+    runtimeVerified:true,observedFps:20,targetFps:60,samples:120
+  });
+  assert.equal(low.validatedRuntimeSample,true);
+  assert.equal(low.adaptive,true);
+  assert.ok(low.decorativeParticles<Graphics.deviceVisualBudget('LOW').decorativeParticles);
+  assert.equal(low.coreSilhouette,1);
+  assert.equal(low.attackReadability,1);
+  assert.equal(low.uiHud,1);
+  assert.equal(low.playerFeedback,1);
+  const untrusted=Graphics.deviceVisualBudget('LOW',{
+    runtimeVerified:false,observedFps:10,targetFps:60,samples:120
+  });
+  assert.equal(untrusted.adaptive,false);
+  assert.equal(untrusted.decorativeParticles,Graphics.deviceVisualBudget('LOW').decorativeParticles);
+  const plan=Graphics.planGraphicsImplementation({
+    anomalies:['MOBILE_FRAME_BUDGET_EXCEEDED'],files:['Assets/Vfx/Particles.cs'],
+    goal:'모바일 프레임 저하 개선',deviceTier:'LOW',
+    deviceTelemetry:{runtimeVerified:true,observedFps:20,targetFps:60,samples:120}
+  });
+  assert.equal(plan.run,true);
+  assert.equal(plan.deviceBudget.uiHud,1);
+  assert.equal(plan.deviceBudget.adaptive,true);
+});
+
+test('native graphics comparisons require exact before-after captures and style locks when requested',()=>{
+  const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
+    samePerformanceLimit:true,requireRuntimeEvidence:true,requireStyleLock:true};
+  const baseline={evidence:fullEvidence(.55),styleDnaHash:'style-v1',
+    runtimeCapture:{id:'before',sourceRevision:'revision-1',sceneId:'boss-room',
+      deviceId:'android-low',cameraId:'boss-camera',viewportWidth:393,viewportHeight:852,sha256:'a'.repeat(64)}};
+  const ready={id:'candidate',target:'candidate',evidence:fullEvidence(.8),
+    styleDnaHash:'style-v1',runtimeVerified:true,independentQaPassed:true,
+    beforeAfterVisualRegressionPass:true,
+    runtimeCapture:{id:'after',sourceRevision:'revision-2',sceneId:'boss-room',
+      deviceId:'android-low',cameraId:'boss-camera',viewportWidth:393,viewportHeight:852,sha256:'b'.repeat(64)}};
+  const valid=Graphics.evaluateGraphicsExperiment({baseline,candidates:[ready],conditions});
+  assert.equal(valid.pass,true);
+  assert.equal(valid.winner.runtimeVerified,true);
+  assert.equal(valid.winner.evidenceScope,'EXACT_NATIVE_CAPTURE_COMPARISON');
+  for(const candidate of [
+    {...ready,runtimeVerified:false},{...ready,independentQaPassed:false},
+    {...ready,beforeAfterVisualRegressionPass:false},
+    {...ready,styleDnaHash:'other'},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,id:'before'}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,sha256:''}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,deviceId:'android-high'}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,cameraId:'different-angle'}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,viewportWidth:390}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,viewportHeight:780}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,cameraId:''}},
+    {...ready,runtimeCapture:{...ready.runtimeCapture,viewportHeight:NaN}}
+  ]){
+    const blocked=Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions});
+    assert.equal(blocked.pass,false);
+  }
+  const advisory=Graphics.evaluateGraphicsExperiment({baseline,candidates:[ready],
+    conditions:{sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,samePerformanceLimit:true}});
+  assert.equal(advisory.winner.runtimeVerified,false,'non-strict score cannot claim native runtime validation');
+});
+
+// [모바일 계측 회귀] 평균 FPS가 좋아도 긴 프레임 지연을 감추지 않는다.
+test('graphics visual budget uses observed p90 frame-time rather than optimistic FPS',()=>{
+  const frameTimesMs=[...Array(26).fill(16),...Array(4).fill(100)];
+  const budget=Graphics.deviceVisualBudget('LOW',{
+    runtimeVerified:true,targetFps:60,observedFps:120,
+    samples:frameTimesMs.length,frameTimesMs
+  });
+  assert.equal(budget.validatedRuntimeSample,true);
+  assert.equal(budget.telemetryMethod,'P90_FRAME_TIME');
+  assert.equal(budget.p90FrameMs,100);
+  assert.equal(budget.measuredFps,10);
+  assert.equal(budget.performanceRatio,.35);
+  assert.equal(budget.adaptive,true);
+  assert.equal(budget.coreSilhouette,1);
+  assert.equal(budget.attackReadability,1);
+  assert.equal(budget.uiHud,1);
+  assert.equal(budget.playerFeedback,1);
+  assert.equal(budget.telemetryEvidence,'CALLER_REPORTED_NOT_INDEPENDENTLY_VERIFIED');
+});
+
+test('graphics visual budget rejects incomplete or manipulated runtime frame traces',()=>{
+  const valid=Array(30).fill(20),base=Graphics.deviceVisualBudget('LOW');
+  const candidates=[
+    {frameTimesMs:[...valid.slice(0,29)],samples:29},
+    {frameTimesMs:[...valid.slice(0,29),NaN],samples:30},
+    {frameTimesMs:[...valid.slice(0,29),Infinity],samples:30},
+    {frameTimesMs:[...valid.slice(0,29),-1],samples:30},
+    {frameTimesMs:[...valid.slice(0,29),0],samples:30},
+    {frameTimesMs:valid,samples:999},
+    {frameTimesMs:'not samples',samples:30},
+    {frameTimesMs:valid,samples:30,runtimeVerified:false}
+  ];
+  for(const input of candidates){
+    const result=Graphics.deviceVisualBudget('LOW',{
+      runtimeVerified:true,targetFps:60,observedFps:1,...input
+    });
+    assert.equal(result.validatedRuntimeSample,false);
+    assert.equal(result.adaptive,false);
+    assert.equal(result.decorativeParticles,base.decorativeParticles);
+    assert.equal(result.telemetryMethod,'NONE');
+    assert.equal(result.measuredFps,null);
+  }
+  const legacy=Graphics.deviceVisualBudget('MID',{
+    runtimeVerified:true,targetFps:60,observedFps:30,samples:60
+  });
+  assert.equal(legacy.telemetryMethod,'AGGREGATE_FPS');
+  assert.equal(legacy.performanceRatio,.5);
+});
+
+test('strict before-after graphics evidence rejects identical frame hashes',()=>{
+  const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
+    samePerformanceLimit:true,requireRuntimeEvidence:true,requireStyleLock:true};
+  const capture={id:'before',sourceRevision:'revision-1',sceneId:'room',
+    deviceId:'mobile',cameraId:'room-camera',viewportWidth:393,viewportHeight:852,sha256:'a'.repeat(64)};
+  const baseline={evidence:{
+    readability:.5,identity:.5,actors:.5,environment:.5,uiHud:.5,
+    combatVfx:.5,signatureScene:.5,motionStyleMatch:.5,mobilePerformance:.5,
+    licenseRegressionSafety:.5
+  },styleDnaHash:'style',runtimeCapture:capture};
+  const candidate={id:'changed',target:'candidate',
+    evidence:Object.fromEntries(Object.keys(baseline.evidence).map(key=>[key,.8])),
+    styleDnaHash:'style',runtimeVerified:true,independentQaPassed:true,
+    beforeAfterVisualRegressionPass:true,
+    runtimeCapture:{...capture,id:'after',sourceRevision:'revision-2'}
+  };
+  const unchanged=Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions});
+  assert.equal(unchanged.pass,false);
+  assert.equal(unchanged.comparisons[0].runtimeEvidencePass,false);
+  const changed=Graphics.evaluateGraphicsExperiment({baseline,candidates:[{
+    ...candidate,runtimeCapture:{...candidate.runtimeCapture,sha256:'b'.repeat(64)}
+  }],conditions});
+  assert.equal(changed.pass,true);
+  assert.equal(changed.winner.runtimeVerified,true);
+});
+
+// [실제 화면] 동일 장면·기기라도 서로 다른 시점·해상도는 A/B 증거로 혼용 금지.
+test('native graphics cannot validate missing camera or nonmatching viewport even with perfect score',()=>{
+  const evidence=fullEvidence(.5),improved=fullEvidence(.95);
+  const baseCapture={id:'before',sourceRevision:'one',sceneId:'arena',deviceId:'phone',
+    cameraId:'follow-camera',viewportWidth:390,viewportHeight:844,sha256:'a'.repeat(64)};
+  const baseline={evidence,runtimeCapture:baseCapture};
+  const afterCapture={...baseCapture,id:'after',sourceRevision:'two',sha256:'b'.repeat(64)};
+  const candidate={id:'after',target:'candidate',evidence:improved,
+    runtimeVerified:true,independentQaPassed:true,beforeAfterVisualRegressionPass:true,
+    runtimeCapture:afterCapture};
+  const conditions={sameDevice:true,sameScene:true,sameCharacter:true,sameInput:true,
+    samePerformanceLimit:true,requireRuntimeEvidence:true};
+  assert.equal(Graphics.evaluateGraphicsExperiment({baseline,candidates:[candidate],conditions}).pass,true);
+  for(const badCapture of [
+    {...afterCapture,cameraId:'side-camera'},
+    {...afterCapture,cameraId:''},
+    {...afterCapture,viewportWidth:391},
+    {...afterCapture,viewportHeight:0},
+    {...afterCapture,viewportWidth:Infinity}
+  ]){
+    const trial=Graphics.evaluateGraphicsExperiment({
+      baseline,candidates:[{...candidate,runtimeCapture:badCapture}],conditions});
+    assert.equal(trial.pass,false);
+    assert.equal(trial.comparisons[0].runtimeEvidencePass,false);
+  }
+  assert.equal(Graphics.evaluateGraphicsExperiment({
+    baseline:{...baseline,runtimeCapture:{...baseCapture,cameraId:''}},
+    candidates:[candidate],conditions
+  }).pass,false);
+});
+
 test('asset strategy preserves usable originals instead of replacing by default', () => {
   assert.equal(Graphics.classifyAsset({currentQuality:.9,readability:.9,identityFit:.9}), 'KEEP');
   assert.equal(Graphics.classifyAsset({currentQuality:.6,readability:.6,identityFit:.7}), 'ENHANCE');
@@ -282,4 +471,60 @@ test('model-free graphics fails closed on licenses, invalid source pixels and un
     /GRAPHICS_SOURCE_RGBA_INVALID/);
   assert.throws(()=>Graphics.harmonizeSourceRaster({...valid,pixels:new Uint8Array([0,0,0,0]),
     source:{license:'CC0',sha256:'a'.repeat(64)}}),/GRAPHICS_SOURCE_FULLY_TRANSPARENT/);
+});
+
+
+// [바이브 5.9 전문 그래픽] 실제 화면 증거에 묶인 결함만 기존 그래픽 책임 파일로 배정한다.
+test('professional graphic defects route exact screenshot-bound source and reject forged findings',()=>{
+  const rev='graphic-rev-1',hash='a'.repeat(64),sourceHash='b'.repeat(64);
+  const finding={id:'uv-shading',sourcePath:'assets/vibe-visual-autopilot.js',
+    imageSha256:hash,sourceHash,candidateRevision:rev,observed:true,reviewed:true,
+    severity:'BLOCKER',observation:'real UV seam visible',targetId:'hero',property:'material',
+    region:{x:.1,y:.2,width:.4,height:.3}};
+  const files=['assets/vibe-visual-autopilot.js','web-games/demo/ui/hud.css'];
+  const planned=Graphics.planGraphicsImplementation({files,observedFindings:[finding],candidateRevision:rev});
+  assert.equal(planned.run,true);
+  assert.equal(planned.scope[0],finding.sourcePath);
+  assert.equal(planned.tasks[0].findings[0].id,finding.id);
+  assert.equal(planned.tasks[0].recaptureRequired,true);
+  assert.equal(planned.visualRuntimePass,false);
+  assert.equal(planned.productionVerified,false);
+  for(const broken of [
+    {...finding,candidateRevision:'stale'}, {...finding,sourcePath:'../save.js'},
+    {...finding,sourcePath:'GameCore.cs'}, {...finding,imageSha256:'fake'},
+    {...finding,region:{x:.8,y:.5,width:.4,height:.6}},
+    {...finding,observed:false},{...finding,reviewed:false}
+  ]){
+    const result=Graphics.planGraphicsImplementation({files,observedFindings:[broken],candidateRevision:rev});
+    assert.equal(result.run,false);
+    assert.equal(result.acceptedFindings.length,0);
+    assert.equal(result.rejectedFindings.length,1);
+  }
+  assert.ok(Graphics.inferVisualAnomalies('재질 플라스틱 광택 과도').includes('PBR_SURFACE_MISMATCH'));
+  assert.ok(Graphics.inferVisualAnomalies('카메라 시야 차단').includes('CAMERA_SUBJECT_OCCLUDED'));
+});
+
+test('professional visual budget responds to measured GPU resources without hiding gameplay',()=>{
+  const frames=Array(60).fill(16),hash='a'.repeat(64);
+  const base=Graphics.deviceVisualBudget('HIGH',{runtimeVerified:true,targetFps:60,observedFps:60,
+    samples:frames.length,frameTimesMs:frames});
+  const pressured=Graphics.deviceVisualBudget('HIGH',{runtimeVerified:true,targetFps:60,
+    observedFps:60,samples:frames.length,frameTimesMs:frames,
+    resources:{observed:true,source:'native-runtime-telemetry',captureHash:hash,deviceId:'phone',
+      memoryPeakMb:1024,drawCalls:600,visibleTriangles:600000}});
+  assert.equal(pressured.resourceObserved,true);
+  assert.equal(pressured.adaptive,true);
+  assert.ok(pressured.postFx<base.postFx);
+  assert.ok(pressured.distantEffects<base.distantEffects);
+  assert.equal(pressured.coreSilhouette,1);
+  assert.equal(pressured.attackReadability,1);
+  assert.equal(pressured.uiHud,1);
+  assert.equal(pressured.playerFeedback,1);
+  assert.equal(pressured.actualRendererMutationPerformed,false);
+  const forged=Graphics.deviceVisualBudget('HIGH',{runtimeVerified:true,targetFps:60,
+    observedFps:60,samples:frames.length,frameTimesMs:frames,
+    resources:{observed:true,source:'native-runtime-telemetry',captureHash:'bad',deviceId:'phone',
+      memoryPeakMb:10000,drawCalls:10000,visibleTriangles:10000000}});
+  assert.equal(forged.resourceObserved,false);
+  assert.equal(forged.postFx,base.postFx);
 });

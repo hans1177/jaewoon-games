@@ -3766,7 +3766,10 @@ test('Studio Auto QA dispatches only Mare and cancels older Forest-only captures
   assert.ok(workflow.includes('gh run cancel'));
   assert.equal(workflow.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(workflow.includes('group: studio-autoqa-dispatch-mare-essentia'));
-  assert.ok(workflow.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.ok(workflow.includes('STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope'));
+  assert.ok(workflow.includes('STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED'));
+  assert.ok(workflow.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  assert.ok(workflow.includes('SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
   assert.ok(workflow.includes('script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
   assert.doesNotMatch(workflow,/scripts\+=\(/);
   const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
@@ -3827,7 +3830,7 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   const gen=fs.readFileSync('tools/gen-qa-click-scripts.py','utf8');
   const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json','utf8'));
   assert.ok(gen.includes('("mare-cardbattle", "mare-voyage", "mare-battle")'));
-  assert.equal(steps.length,241);
+  assert.equal(steps.length,1000);
   assert.equal(steps.filter(step=>step.code?.includes('NPC_ROUTE_AUDIT_PASS checked=')).length,1);
   const slowIntro=steps.filter(step=>step.code?.includes('FIELD_QA_INTRO_MODAL_NOT_FINISHED'));
   assert.equal(slowIntro.length,1);
@@ -3839,9 +3842,9 @@ test('Mare Studio deep script validates current gameplay and excludes removed ta
   assert.match(slowIntro[0].code,/stable>=3/);
   assert.doesNotMatch(slowIntro[0].code,/for attempt=1,120 do/);
   assert.doesNotMatch(slowIntro[0].code,/InvokeServer\("Intro(?:Name|Companion|Portrait)"/);
-  assert.equal(steps.filter(step=>step.timeoutMs!==undefined).length,1);
-  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,10);
-  assert.equal(steps.filter(step=>step.type==='capture').length,62);
+  assert.deepEqual(steps.filter(step=>step.timeoutMs!==undefined).map(step=>step.timeoutMs).sort((a,b)=>a-b),[65000,85000,90000]);
+  assert.equal(steps.filter(step=>step.type==='click_from_luau').length,12);
+  assert.equal(steps.filter(step=>step.type==='capture').length,70);
   // [장면 생명주기] 카드판 스킵은 실제 입력으로 종료하고 전투 잠금이 해제된 뒤 항해/지상맵을 실행한다.
   const cardExitIndex=steps.findIndex(step=>step.label==='card_practice_exit');
   assert.ok(cardExitIndex>steps.findIndex(step=>step.type==='capture'&&step.name==='cb2'));
@@ -3910,7 +3913,7 @@ test('Mare exploration sites, regional backgrounds and discovery quest routes ma
 });
 
 // [탐험 원본 검사] 22개 지역의 지상 장면·적 R15·무기·철수 정리와 정기검사 연결을 회귀검증한다.
-test('Mare scheduled Studio expeditions cover all 22 cultural regions without silent crashes',()=>{
+test('Mare Studio expedition suite covers all 22 cultural regions without silent crashes',()=>{
   const root='roblox-games/mare-essentia/';
   const steps=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-regions.json','utf8'));
   const field=fs.readFileSync(root+'src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
@@ -3942,10 +3945,12 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
   assert.ok(steps.some(row=>row.code?.includes('REGION_QA_CLEAN_EXIT_PASS')));
   const auto=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(auto.includes("cron: '*/10 * * * *'"));
-  assert.ok(auto.includes("2) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json"));
-  assert.ok(auto.includes("STUDIO_ROTATION_SKIP=RUNNER_BUSY"));
-  assert.ok(auto.includes("STUDIO_ROTATION_SLOT=$slot"));
-  assert.ok(auto.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.ok(auto.includes('STUDIO_WATCHDOG_SKIP=RUNNER_BUSY'));
+  assert.ok(auto.includes('STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED'));
+  assert.ok(auto.includes('STUDIO_WATCHDOG_RECOVERY=SOURCE_NOT_YET_CHECKED'));
+  assert.ok(auto.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.ok(runner.includes('      script:')&&runner.includes('|| inputs.script }}'),'dedicated region suite must remain directly executable');
   assert.ok(auto.includes('gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"'));
   assert.doesNotMatch(auto,/for script in|scripts\+=\(/);
   assert.equal(auto.split('gh workflow run devloop-studio.yml').length-1,1);
@@ -3954,7 +3959,7 @@ test('Mare scheduled Studio expeditions cover all 22 cultural regions without si
 // [실제 무기별 평타·스킬] 데이터, 공용 원본 R15 클립, 기존 동료 자동스킬 및 공식 Studio 입력을 함께 확인한다.
 // [퀘스트 등급·병종 회귀] 원래 목표/보상은 유지하고 1~5단의 UI·현장 조합을 구분한다.
 // [지역 탐험 40단계] 실존 Sites 카드 연결, 항구별 자동완료, 이동 안내를 검증한다.
-test('Mare overseas exploration quests cover eight regions and forty real site card goals',()=>{
+test('Mare exploration quests cover ten routes and fifty real site card goals',()=>{
   const base='roblox-games/mare-essentia/src/';
   const quests=fs.readFileSync(base+'ReplicatedStorage/Shared/Quests.luau','utf8');
   const sites=fs.readFileSync(base+'ReplicatedStorage/Shared/Sites.luau','utf8');
@@ -3967,8 +3972,13 @@ test('Mare overseas exploration quests cover eight regions and forty real site c
   assert.ok(begin>=0 && end>begin,'regional quests must use the canonical quest pipeline');
   const block=quests.slice(begin,end);
   const items=[...block.matchAll(/^\s*\{ "[^"]+", "([^"]+)", "([^"]+)", "([^"]+)", "[^"]+", "[^"]+", "[^"]+" \},$/gm)];
-  assert.equal(items.length,40,'eight overseas regions must have five field quests each');
-  for(const region of ['red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific']){
+  assert.equal(items.length,50,'ten routes must have five field quests each');
+  const regions=['north_sea','baltic','red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific'];
+  const groups=[...block.matchAll(/^\s*\{ "([a-z_]+)", "[^"]+", \{\s*\n([\s\S]*?)^\s*\} \},$/gm)];
+  assert.equal(groups.length,regions.length);
+  assert.deepEqual(groups.map(group=>group[1]).sort(),[...regions].sort());
+  for(const group of groups)assert.equal([...group[2].matchAll(/^\s*\{ "[^"]+", "[^"]+", "[^"]+", "[^"]+", "[^"]+", "[^"]+", "[^"]+" \},$/gm)].length,5,'five stages per route: '+group[1]);
+  for(const region of ['north_sea','baltic','red_sea','west_africa','east_africa','south_asia','southeast_asia','east_asia','americas','pacific']){
     assert.ok(block.includes('{ "'+region+'", '),'missing region: '+region);
   }
   const seen=new Set();
@@ -3984,7 +3994,7 @@ test('Mare overseas exploration quests cover eight regions and forty real site c
   assert.ok(block.includes('after = prev')&&block.includes('difficulty = stage')&&block.includes('kind = "discover_card"'));
   assert.ok(service.includes('if quest.exploreSite and quest.portId ~= state.portId then return false end'));
   assert.ok(view.includes('fieldQuest = fieldQuest')&&view.includes('view.quests.fieldRoutes = {}'));
-  assert.ok(client.includes('현장 의뢰: ')&&client.includes('세계 현장 탐험 · 8개 권역'));
+  assert.ok(client.includes('현장 의뢰: ')&&client.includes('세계 탐험 · %d대 항로')&&client.includes('view.quests.routeCount or 10')&&view.includes('for _ in routeIds do view.quests.routeCount += 1 end'));
 });
 
 test('Mare quests and field encounters expose five meaningful difficulty grades',()=>{
@@ -4007,7 +4017,7 @@ test('Mare quests and field encounters expose five meaningful difficulty grades'
 });
 
 // [현장 모션 회귀] R15 관절/실제 발보폭/진입·정지·회피/지연 회전은 기존 공용 모션 경로를 사용한다.
-test('Mare enemies and companions have grounded speed responsive R15 locomotion',()=>{
+test('Mare solo field enemies have grounded speed responsive R15 locomotion',()=>{
   const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const field=fs.readFileSync(base+'FieldScene.luau','utf8');
   const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
@@ -4031,18 +4041,19 @@ test('Mare enemies and companions have grounded speed responsive R15 locomotion'
   assert.ok(field.includes('kindId == "archer" or e.throwAsset ~= nil')&&
     field.includes('e.root.CFrame.RightVector:Dot(e.moveVel)'),
     'enemy strafe/backpedal must use physical velocity');
-  assert.ok(field.includes('a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))')&&
-    field.includes('a.moveVel.Magnitude * math.clamp(dt'),
-    'companions must accelerate and decelerate without snapping');
-  assert.ok(field.includes('a.gait = (a.gait or 0) + walked / 5.2')&&
-    field.includes('math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25)'),
-    'companion gait must advance by actual displacement and match the bounded walking speed');
+  assert.ok(field.includes('e.moveVel = (e.moveVel or Vector3.zero):Lerp(desired, 1 - math.exp(-response * enemyDt))')&&
+    field.includes('local delta = e.moveVel * enemyDt'),
+    'enemies must accelerate and decelerate without snapping');
+  assert.ok(field.includes('e.gait = (e.gait or 0) + traveled / (if e.boss then 7 else 5.2)')&&
+    field.includes('math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25)'),
+    'enemy gait must advance by actual displacement and match bounded walking speed');
+  assert.ok(field.includes('status:SetAttribute("CombatEnabled", false)')&&!field.includes('a.moveVel ='),'party remains UI-only in solo field combat');
   assert.ok(field.includes('AC.moveWish(e.ac, dist)')&&field.includes('AC.damageEnemy(')&&field.includes('AC.takeHit(pl,'),
     'original combat authority, attack/defense flows must remain');
 });
 
 // [무기별 모션 회귀] 적·동료는 동일한 공용 무기 원본+전신 모션을 통과하고 공격 차례별 자세를 순환한다.
-test('Mare enemy and companion weapon motions use grounded shared combo and recoil',()=>{
+test('Mare enemy weapon motions use grounded shared combo and recoil in solo field combat',()=>{
   const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
   const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
@@ -4054,9 +4065,10 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
   assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
     !scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
     'enemy can vary authored weapon poses but allies do not accrue three-hit combo beats');
-  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
-    !scene.includes('FM.sample(ac, math.min(ap * 1.6, 1)'),
-    'ally must no longer bypass planted feet, torso recoil and transition');
+  assert.ok(scene.includes('FM.actor(e.fm, st, ph, visualDt')&&
+    scene.includes('local visualDt = if farVisual and not visualChanged then e.visualElapsed else enemyDt')&&
+    scene.includes('and (e.ac.state == "idle" or e.ac.state == "chase")')&&scene.includes('if e.throwAsset then nil else (e.weapon and e.weapon.motion)')&&
+    !scene.includes('FM.actor(a.fm,'),'enemy uses original full-body weapon path; no field ally animation');
   for(const marker of ['local gun = grip == "PISTOL" or grip == "RIFLE"',
     'elseif bow then','elseif crossbow then','elseif spear then','elseif dagger then',
     'elseif axe then','elseif blunt then','local point = grip == "RAPIER"',
@@ -4068,14 +4080,13 @@ test('Mare enemy and companion weapon motions use grounded shared combo and reco
     motion.includes('local follow = if state == "ATTACK"')&&
     motion.includes('local returnGrip = if state == "RECOVERY"'),
     'weapon wind-up, strike, follow-through and recover must stay on original timing');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
-    scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
-    scene.includes('a.nextAt = now + 1.3 / aw.speed'),
-    'original attack authority, ally power and cooldown remain intact');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&
+    !scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&!scene.includes('a.nextAt = now + 1.3 / aw.speed'),
+    'original enemy attack authority remains; no ally damage or cooldown path');
 });
 
 // [무기 모션 연속성] 기존 공격 판정은 그대로 두고 준비·타격·착지·복귀 경계를 지킨다.
-test('Mare enemy and companion weapon motion transition and foot contact are continuous',()=>{
+test('Mare enemy weapon motion transition and foot contact are continuous',()=>{
   const root='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const motion=fs.readFileSync(root+'FieldMotion.luau','utf8');
   const scene=fs.readFileSync(root+'FieldScene.luau','utf8');
@@ -4092,17 +4103,17 @@ test('Mare enemy and companion weapon motion transition and foot contact are con
   assert.ok(motion.includes('h.sideEffort = (h.sideEffort or side)')&&
     motion.includes('local inertia = if axe or blunt then 1'),
     'side steps must ease and weapon mass must drive torso recoil');
-  assert.ok(scene.includes('FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35')&&
-    !scene.includes('math.min(ap * 1.6, 1) * 0.35'),
-    'companion weapon animation must not freeze before the original attack finishes');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
-    scene.includes('a.nextAt = now + 1.3 / aw.speed')&&
-    scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
-    'enemy authority and companion cooldown, range and damage are unchanged');
+  assert.ok(scene.includes('FM.actor(e.fm, st, ph, visualDt')&&
+    scene.includes('local visualDt = if farVisual and not visualChanged then e.visualElapsed else enemyDt')&&
+    scene.includes('and (e.ac.state == "idle" or e.ac.state == "chase")')&&scene.includes('e.attackStep)')&&
+    !scene.includes('FM.actor(a.fm,'),'enemy full-body phase and attack advance stay continuous; party has no combat animation');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&
+    !scene.includes('a.nextAt = now + 1.3 / aw.speed')&&!scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
+    'enemy authority is unchanged and the retired ally attack path cannot return');
 });
 
 // [전투 모션 연속] 타격 이벤트 시 키프레임 접촉과 관절별 반응 속도가 같은 기존 공용 경로로 이어진다.
-test('Mare R15 enemy ally authored weapon impact matches strike event timing',()=>{
+test('Mare R15 enemy authored weapon impact matches strike event timing',()=>{
   const base='roblox-games/mare-essentia/src/ReplicatedStorage/Shared/';
   const motion=fs.readFileSync(base+'FieldMotion.luau','utf8');
   const scene=fs.readFileSync(base+'FieldScene.luau','utf8');
@@ -4128,10 +4139,9 @@ test('Mare R15 enemy ally authored weapon impact matches strike event timing',()
   assert.ok(motion.includes('local beatSide = if (h.weaponBeat or 1) % 2 == 0 then -1 else 1')&&
     motion.includes('not (gun or bow or crossbow)'),
     'melee alternating sides must not disrupt ranged weapon aiming');
-  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&
-    scene.includes('strikeEnemy(tgt, 0.6 * aw.power')&&
-    scene.includes('a.nextAt = now + 1.3 / aw.speed'),
-    'enemy combat authority and ally damage, speed, range and reward flow remain unchanged');
+  assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.damageEnemy(e.ac, BASE_DMG')&&
+    scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&!scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
+    'enemy damage and hit authority remain intact; party cannot contribute to combat');
 });
 
 // [무기 스킬·직업 회피] 무기별 스킬은 정확히 두 유형, 기본 회피/방어·카드·저장/게임 규칙은 독립적이다.
@@ -4195,16 +4205,19 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('(pl.cd.heavy or -100) <= os.clock()')&&
     scene.includes('pl.stamina >= AC.Moves.heavy.stamina')&&
     scene.includes('equipped.heavy, equipped.sweep = true, false')&&
-    scene.includes('aw.family == "axe", true, false, nil, aw'),
-    'automatic skill must use original cooldown stamina and keep ally damage outside owner streak');
+    scene.includes('status:SetAttribute("CombatEnabled", false)')&&!scene.includes('aw.family == "axe", true, false, nil, aw'),
+    'automatic skill must use original cooldown and stamina; party cannot contribute to owner streak');
   // [모바일 반원형 3메달] 기존 공격·회피 두 행동 + 주·보조 무기교체. 별도 스킬/방어 버튼 없음.
-  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 450')&&
-    scene.includes('UDim2.fromOffset(if compactTouch then 118 elseif visualMobile then 128 else 112,')&&
-    scene.includes('if compactTouch then 96 elseif visualMobile then 106 else 94')&&
-    scene.includes('if compactTouch then UDim2.new(0, math.max(226, workspace.CurrentCamera.ViewportSize.X - 120), 1, -211)')&&
+  assert.ok(scene.includes('workspace.CurrentCamera.ViewportSize.X < 520')&&
+    scene.includes('workspace.CurrentCamera.ViewportSize.X <= workspace.CurrentCamera.ViewportSize.Y')&&
+    scene.includes('UDim2.fromOffset(if compactTouch then 104 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 104')&&
+    scene.includes('UDim2.fromOffset(if compactTouch then 86 elseif visualMobile and workspace.CurrentCamera.ViewportSize.Y < 330 then 88')&&
+    scene.includes('1, if compactTouch then -85')&&
+    scene.includes('if compactTouch then UDim2.new(1, -62, 1, -202)')&&
     scene.includes('else UDim2.new(1, attackBtn.Position.X.Offset - 146, 1, attackBtn.Position.Y.Offset - 66)')&&
     scene.includes('combatBtns.dodge = { btn = b, label = "회피" }'),
     'large dodge and attack must be separated for thumb reach on portrait mobile');
+  assert.ok(202-85 > (104+86)/2,'portrait attack and dodge must not overlap');
   assert.ok(scene.includes('button.Name == "FieldAttack" or button.Name == "FieldDodge"')&&
     scene.includes('attackCaption.Name = "FieldAttackCaption"')&&
     scene.includes('dodgeCaption.Name = "FieldDodgeCaption"')&&
@@ -4222,7 +4235,8 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
   assert.ok(scene.includes('comboLabel.Font = Enum.Font.Bangers')&&
     scene.includes('comboLabel.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)')&&
     scene.includes('if visualMobile then 63 else 76')&&
-    scene.includes('TextSize = targetSize, Rotation = 0')&&
+    scene.includes('comboLabel.TextSize = targetSize')&&
+    scene.includes('comboLabel.Rotation = 0')&&scene.includes('comboPopScale.Scale = if milestone then 1.20 else 1.13')&&
     scene.includes('comboInfo.Font = Enum.Font.GothamBlack')&&
     scene.includes('초당 %.1f타'),
     'large high-contrast combo lettering and speed HUD must preserve real hit-count logic');
@@ -4289,15 +4303,16 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
     && active.includes('if stage == chain then')
     && !active.includes('strikeEnemy('),
     'bonus visual beats must be purely cinematic, use authored finishers and never add damage or experience');
-  assert.ok(field.includes('if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then')
-    && field.includes('a.skillCd[sid] = now + def.cooldown')
-    && field.includes('castEffect(sid, a.name')
-    && field.includes('if ally.healer then table.insert(activeHealers, ally) end'),
-    'companion skills and out-of-combat healer assistance must remain automatic');
+  assert.ok(field.includes('local party = if type(opts.allies) == "table" then opts.allies else {}')
+    && field.includes('status:SetAttribute("CompanionId", member.id)')
+    && field.includes('status:SetAttribute("CombatEnabled", false)')
+    && field.includes('FieldAllyPortrait')&&field.includes('local companionRows: { any } = {}')
+    && !field.includes('a.nextSkill')&&!field.includes('a.skillCd[sid]')&&!field.includes('castEffect(sid, a.name')&&!field.includes('activeHealers'),
+    'party IDs and portraits are preserved but party combat and healing must stay disabled');
   assert.ok(field.includes('not fieldStreakResult.credited[creditedSeq]')
     && field.includes('if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak("헛손질") end')
     && field.includes('now - lastCombatAt >= 8')
-    && field.includes('0.12 + math.min(healers, 2) * 0.18'),
+    && field.includes('pl.hp = math.min(pl.maxHp, pl.hp + 0.12 * math.min(dt, 0.1))'),
     'cumulative streak must be scored per attack and passive healing must remain tiny and non-combat only');
   assert.ok(allies.includes('function JobSkills.allySkills'));
   // [투척병·접지 회귀] 기존 사수 체력/피해/재사용은 그대로, 승인된 메시만 궤도로 움직인다.
@@ -4323,9 +4338,29 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.ok(steps.some(row=>row.code?.includes('WEAPON_QA_FINAL_CLEAN_EXIT_PASS')));
   const daily=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
   assert.ok(daily.includes("cron: '*/10 * * * *'"));
-  assert.ok(daily.includes("3) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json"));
-  assert.ok(daily.includes("0) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json"));
-  assert.ok(daily.includes("4) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json"));
+  assert.ok(daily.includes('STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED'));
+  assert.ok(daily.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  assert.ok(daily.includes('SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json'));
+  const runner=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.ok(runner.includes('      script:')&&runner.includes('|| inputs.script }}'),'dedicated weapon and town suites must remain directly executable');
+});
+
+test('Mare active port priority reorders only pending registered models using server-owned state',()=>{
+  const root='roblox-games/mare-essentia/src/ServerScriptService/';
+  const model=fs.readFileSync(root+'AssetLoader.server.luau','utf8');
+  const core=fs.readFileSync(root+'Core.server.luau','utf8');
+  assert.match(core,/script:SetAttribute\("MareAssetPort_" \.\. player\.UserId, session\.state and session\.state\.portId or nil\)/);
+  assert.match(core,/script:SetAttribute\("MareAssetPort_" \.\. player\.UserId, newState\.portId\)/);
+  assert.match(core,/script:SetAttribute\(portAttribute, state\.portId\)/);
+  assert.match(core,/script:SetAttribute\("MareAssetPort_" \.\. player\.UserId, nil\)/);
+  assert.match(model,/for index = cursor, #queue do/);
+  assert.match(model,/item\.priority = if item\.startup then 0/);
+  assert.match(model,/elseif item\.portId and activePorts\[item\.portId\] then 1/);
+  assert.match(model,/elseif seaModels\[item\.key\] then 2/);
+  assert.match(model,/elseif item\.portId and activeTiers\[portTiers\[item\.portId\]\] then 3/);
+  assert.match(model,/return a\.originalOrder < b\.originalOrder/);
+  assert.match(model,/queue\[cursor \+ offset - 1\] = item/);
+  assert.match(model,/portPriorityConnection:Disconnect\(\)/);
 });
 
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
@@ -4340,6 +4375,38 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(model,/MareModelAuditTotals/);
   assert.match(model,/pending == 0/);
   assert.match(model,/loaded = loaded, failed = failed, errors = failedKeys/);
+  // 초기 모델 범위는 등록된 실제 시작 장면에 한정하고 전체 검사는 기존 큐에서 유지한다.
+  const startupBlock=model.match(/local startupModels = \{([\s\S]*?)\n\}/)?.[1];
+  assert.ok(startupBlock);
+  const startupKeys=[...startupBlock.matchAll(/\["([^"]+)"\] = true/g)].map(m=>m[1]);
+  assert.equal(startupKeys.length,15);
+  assert.equal(new Set(startupKeys).size,15);
+  const assetSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  for(const key of startupKeys) assert.ok(assetSource.includes('["'+key+'"]'),'missing registered startup model '+key);
+  assert.match(model,/startup = startupModels\[key\] == true or earlyScenery\[key\] == true/);
+  assert.match(model,/if a\.startup ~= b\.startup then return a\.startup end/);
+  assert.match(model,/if asset\.startup then priorityPending \+= 1 end/);
+  assert.match(model,/if item\.startup then priorityPending -= 1 end/);
+  assert.match(model,/for _ = 1, 12 do/);
+  // [초기 요청 격리] 후순위 요청만 최대 5초 양보하며 기존 전체 로딩과 실패 판정은 유지한다.
+  assert.match(model,/local loadStarted = os\.clock\(\)\s+local initialPriorityDeadline = loadStarted \+ 5\s+local startupTotal = priorityPending\s+for _ = 1, 12 do/);
+  assert.match(model,/local deadline = loadStarted \+ 30/);
+  assert.match(model,/startupTotal - priorityPending, startupTotal, os\.clock\(\) - loadStarted/);
+  assert.match(model,/loaded, #queue, failed, os\.clock\(\) - loadStarted/);
+  assert.match(model,/while priorityPending > 0 and cursor <= #queue and not queue\[cursor\]\.startup\s+and os\.clock\(\) < initialPriorityDeadline do\s+task\.wait\(0\.1\)\s+end\s+if cursor > #queue then break end\s+local item = queue\[cursor\]\s+cursor \+= 1\s+local good, container = pcall\(InsertService\.LoadAsset, InsertService, item\.id\)/);
+  assert.match(model,/if pending == 0 then\s+ReplicatedStorage:SetAttribute\("MareAssetsSettled", true\)/);
+  const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  assert.match(client,/if not H\.assetWaitDone then/);
+  assert.match(client,/while not RS:GetAttribute\("MareAssetsReady"\) and os\.clock\(\) - t0 < 5 and player\.Parent do/);
+  assert.match(client,/while not RS:GetAttribute\("MareAssetsSettled"\) and player\.Parent do/);
+  assert.match(client,/if player\.Parent and RS:GetAttribute\("MareAssetsSettled"\) and view then\s+sceneKey = nil\s+if not sceneHold and not inField then\s+syncScene\(\)/);
+  // [항구 중복 생성] 다른 항구의 공사 완료와 생성 중 이전 키 복귀를 구분한다.
+  assert.match(client,/H\.shownLv\[pid\] = nil[^\n]*\n[^\n]*\n\s+if view and view\.player and view\.player\.portId == pid then\s+sceneKey = nil\s+if syncScene then pcall\(syncScene\) end/);
+  const sceneSync=client.slice(client.indexOf('syncScene = function()'),client.indexOf('function H.measurePortTransition'));
+  assert.match(sceneSync,/if H\.portBuilding then\s+H\.portBuildPending = true\s+return\s+end\s+if key == sceneKey then/);
+  assert.match(sceneSync,/if H\.portBuildPending then[\s\S]*?H\.portBuildPending = false\s+task\.defer\(function\(\) if syncScene then syncScene\(\) end end\)/);
+  assert.match(qa,/local modelReadyDeadline = os\.clock\(\) \+ 60/);
+  assert.match(qa,/while ReplicatedStorage:GetAttribute\("MareAssetsSettled"\) ~= true and os\.clock\(\) < modelReadyDeadline do/);
   // [항구 우물 회귀] 실측 실패한 5개 텍스처를 기존 모델 로더에서만 제거한다.
   const wellRepair=model.indexOf('if item.key == "Town/village-well" then');
   const libraryParent=model.indexOf('model.Parent = group',wellRepair);
@@ -4356,7 +4423,9 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(qa,/for i = 1, #items, 12 do/);
   assert.match(qa,/task\.delay\(16, function\(\)/);
   assert.match(qa,/complete\("TIMEOUT_16S"\)/);
-  assert.match(qa,/ContentProvider, \{ row\.inst \}/);
+  assert.match(qa,/ContentProvider\.PreloadAsync, ContentProvider, \{ row\.it\.url \}, function\(_, status\)/);
+  assert.match(qa,/elseif fetchStatus == Enum\.AssetFetchStatus\.Success then\s+complete\("SUCCESS"\)/);
+  assert.match(qa,/complete\(if fetchStatus then tostring\(fetchStatus\) else "NO_CALLBACK"\)/);
   assert.match(qa,/#failedMedia < 128/);
   assert.doesNotMatch(qa,/for i = 1, #items, 30 do/);
   assert.match(qa,/task\.delay\(140, function\(\)/);
@@ -4389,13 +4458,18 @@ test('Mare official Studio QA records complete registered media, model loading a
   const activeSource=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
   const active=new Map([...activeSource.matchAll(/\["([^"]+)"\]\s*=\s*([0-9]+)/g)].map(m=>[m[1],m[2]]));
   assert.equal(active.size,Object.keys(registered).length);
-  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt']);
+  const imageKinds=new Set(['Menu','Goods','Portraits','CardArt','Materials']);
+  assert.ok(model.includes('kind ~= "Materials"'),'material images must not enter model loading');
+  assert.ok(qa.includes('string.find(key, "Materials/", 1, true)'));
+  assert.ok(qa.includes('string.find(it.key, ".Materials/", 1, true)'));
+  assert.ok(script.includes('Goods|Menu|Portraits|CardArt|Materials'),'client media audit must include registered materials');
   const originals=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets/APPROVED_IMAGES.json','utf8')).approved;
   const cardKeys=Object.keys(registered).filter(key=>key.startsWith('CardArt/'));
   assert.ok(cardKeys.length>=17,'Mare approved discovery/event illustrations must be registered');
   for(const [key,row] of Object.entries(registered)){
     const kind=key.split('/')[0];
     assert.equal(row.assetType,imageKinds.has(kind)?'Image':'Model','wrong Mare asset category: '+key);
+    if(kind==='Materials')assert.equal(row.usePermissionGranted,true,'material image usage permission missing: '+key);
     if(kind==='CardArt'){
       assert.equal(row.usePermissionGranted,true,'CardArt usage permission missing: '+key);
       const actualSha=crypto.createHash('sha256').update(fs.readFileSync(row.source)).digest('hex');
@@ -4489,11 +4563,40 @@ test('Mare Client retries missing media once while requiring complete approved I
   assert.ok(script.includes('const batchSize=60;'));
   assert.ok(script.includes('await auditBatch(allRows.slice(offset,offset+batchSize))'));
   assert.ok(script.includes('pendingRows=allRows.filter(row=>'));
-  assert.ok(script.includes('missingCount>0&&missingCount<=8'));
+  assert.ok(script.includes('missingCount>0&&missingCount<=24'));
   assert.ok(script.includes("throw Error('STUDIO_CLIENT_MEDIA_BATCH_EVIDENCE_INVALID')"));
   assert.ok(script.includes('missing.every(key=>allowed.has(key))'));
   assert.ok(script.includes('proof.expected===imageRows.length&&proof.loaded===imageRows.length'));
   assert.ok(script.includes('proof.soundExpected===soundRows.length&&proof.soundLoaded===soundRows.length'));
+});
+
+// [실제 재시도 분기] 8개 이미지+1개 음원 누락과 24개 한계 및 잔여 실패를 재현한다.
+test('Mare client media retries nine missing assets and retains failures with bounded batches',async()=>{
+  const start=helper.indexOf('        const missingCount=proof.missing.length+proof.soundMissing.length;');
+  const end=helper.indexOf('        proof.loaded=proof.expected-proof.missing.length;',start);
+  assert.ok(start>=0&&end>start);
+  const retry=new Function('proof','allRows','auditBatch','return (async()=>{'+helper.slice(start,end)+'})()');
+  for(const count of [0,9,24,25]){
+    const missing=Array.from({length:Math.max(0,count-1)},(_,i)=>'image'+i);
+    const soundMissing=count?['sound']:[], proof={missing:[...missing],soundMissing:[...soundMissing]};
+    const rows=[...missing.map(key=>({kind:'Image',key})),...soundMissing.map(key=>({kind:'Sound',key})),{kind:'Image',key:'alreadyLoaded'}];
+    const calls=[];
+    await retry(proof,rows,async batch=>{
+      calls.push(batch.map(row=>row.key));
+      return {missing:[],soundMissing:batch.some(row=>row.kind==='Sound')?['sound']:[]};
+    });
+    if(count===9||count===24){
+      assert.equal(calls.flat().length,count);
+      assert.ok(calls.every(batch=>batch.length<=12&&!batch.includes('alreadyLoaded')));
+      assert.deepEqual(proof.firstPassMissing,{images:missing,sounds:soundMissing});
+      assert.deepEqual(proof.missing,[]);
+      assert.deepEqual(proof.soundMissing,['sound']);
+    }else{
+      assert.equal(calls.length,0);
+      assert.deepEqual(proof.missing,missing);
+      assert.deepEqual(proof.soundMissing,soundMissing);
+    }
+  }
 });
 
 // [대항해시대] 서버 이미지 선로딩 타임아웃은 실제 Studio Client 이미지 로딩 증거로만 정정할 수 있다.
@@ -4516,7 +4619,7 @@ test('Mare server media timeout requires full official Client image and sound Is
   assert.match(script,/const failed=media\.failedMedia/);
   assert.match(script,/row\?\.status!=='TIMEOUT_16S'/);
   assert.match(script,/asset\.usePermissionGranted!==true/);
-  assert.match(script,/\(\?:Goods\|Menu\|Portraits\|CardArt\)/);
+  assert.match(script,/\(\?:Goods\|Menu\|Portraits\|CardArt\|Materials\)/);
   assert.match(script,/AudioIds\.luau/);
   assert.match(script,/const allRows=\[\.\.\.imageRows,\.\.\.soundRows\]/);
   assert.match(script,/Number\(media\.imagesSounds\)!==allRows\.length/);
@@ -4641,16 +4744,40 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
 
 
 // [마을 주민 전방 검증] 기존 주민 모션 코드와 공식 Studio 실물 얼굴 검사만 확인한다.
+test('Mare resident capture retains six distinct subjects and frames their actual feet and head',()=>{
+  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json','utf8'));
+  const camera=steps.find(step=>step.code?.includes('VILLAGER_TRACKED_CAMERA_READY')).code;
+  assert.match(camera,/local bottom=math\.min\(left\.Position\.Y-left\.Size\.Y\*0\.5,rightFoot\.Position\.Y-rightFoot\.Size\.Y\*0\.5\)/);
+  assert.match(camera,/shotRay\.FilterDescendantsInstances=\{m\}/);
+  assert.match(camera,/workspace:Raycast\(focus,offset,shotRay\)/);
+  assert.match(camera,/offset=offset\.Unit\*safe/);
+  const roster=steps.filter(step=>step.code?.includes('VILLAGER_CAPTURE_ROSTER_TOO_SMALL'));
+  assert.equal(roster.length,6);
+  for(const [i,step] of roster.entries()){
+    assert.ok(step.code.includes('local k='+(i+1)+' '));
+    assert.ok(step.code.includes('if not _G.VRoster then'));
+    assert.ok(step.code.includes('local t=assert(_G.VRoster[k])'));
+  }
+  for(const n of [6,7,10,25,100]){
+    const indices=Array.from({length:6},(_,i)=>Math.floor(i*(n-1)/5));
+    assert.equal(new Set(indices).size,6);
+    assert.equal(indices[5],n-1);
+  }
+  assert.equal(steps.filter(step=>step.type==='capture').length,30);
+  assert.ok(steps.at(-1).code.includes('_G.VRoster=nil'));
+});
+
 test('Mare town villagers keep arm gestures in front and faces aligned with torso without changing NPC jobs',()=>{
   const root='roblox-games/mare-essentia/';
   const pose=fs.readFileSync(root+'src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync(root+'src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   const script=JSON.parse(fs.readFileSync(root+'tools/devloop/studio-scripts/mare-town.json','utf8'));
-  assert.match(pose,/gui\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
+  assert.match(pose,/decal\.Texture = "rbxasset:\/\/textures\/face\.png"/);
   assert.match(pose,/faceHead\.CFrame\.LookVector:Dot\(faceTorso\.CFrame\.LookVector\) < -0\.35/);
   assert.match(pose,/model:SetAttribute\("NpcFaceReversed",/);
   assert.match(pose,/motor == m\.leftArm or motor == m\.rightArm/);
-  assert.match(pose,/pitch < -0\.30 then cf = CFrame\.Angles\(-pitch, yaw, roll\)/);
+  assert.match(pose,/pitch < 0 then cf = CFrame\.Angles\(-pitch, yaw, roll\)/);
   assert.match(pose,/motor == m\.neck and model:GetAttribute\("NpcFaceReversed"\)/);
   assert.match(pose,/joint == m\.neck and model:GetAttribute\("NpcFaceReversed"\)/);
   assert.match(pose,/state ~= "walk" and state ~= "run"/);
@@ -4673,7 +4800,16 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   assert.match(port,/for sample = 0, 7 do/);
   assert.match(port,/walker.cx \+= offset.X/);
   assert.match(port,/walker.model:PivotTo\(CFrame.new\(walker.cx \+ walker.r, safe.Position.Y, walker.cz\)/);
-  assert.equal(script.length,45,'existing town gameplay and capture sequence must remain unchanged');
+  // [마을 촬영 회귀] 기존 46단계에 추가된 4개 세부 촬영(각 3단계)을 모두 유지한다.
+  assert.equal(script.length,58,'existing town gameplay, ground measurement and four detail captures must remain');
+  assert.deepEqual(script.filter(row=>row.type==='capture').map(row=>row.name),[
+    '01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall',
+    ...Array.from({length:8},(_,i)=>'08_harbor_npc_sparring_'+String(i+1).padStart(2,'0')),
+    '09_rural','10_economy','11_npc_front','12_npc_hair'
+  ]);
+  assert.deepEqual(script.slice(46).map(row=>row.type),
+    Array.from({length:4},()=>['luau','wait','capture']).flat());
+  assert.ok(script.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
 });
 
 test('Mare central plaza is reserved as empty walking space and all original civic structures moved outside',()=>{
@@ -4686,12 +4822,12 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(port,/local function house\(parent, pos, w, d, floors, style, rng, wallColor\)[\s\S]{0,250}CENTRAL_PLAZA_RADIUS/);
   assert.match(port,/folder:SetAttribute\("CentralPlazaClearRadius", CENTRAL_PLAZA_RADIUS\)/);
   assert.match(port,/folder:SetAttribute\("CentralPlazaReserved", true\)/);
-  for(const kept of ['disc(24, 0.17, plazaCol[sceneLevel], plazaMat[sceneLevel])','{ name = "교역소", tab = "trade"','{ name = "주점", tab = "quest"','local extraStalls =']){
+  for(const kept of ['part(folder, Vector3.new(36, 0.3, 36), CFrame.new(-6, 0.15, 0), roadColor(style), roadMat())','{ name = "교역소", tab = "trade"','{ name = "주점", tab = "board"','local extraStalls =']){
     assert.ok(port.includes(kept),'plaza paving, facility access, and trading must remain intact: '+kept);
   }
   for(const marker of [
     'Vector3.new(-124, 0, 126)', 'local ax, az = -160, -128',
-    'CFrame.new(-106, 1, 122)', 'Vector3.new(-108, 0, 122)',
+    'importedModel(folder, "Town", "fountain-square", Vector3.new(-108, 0, 122), 7, true)',
     'Vector3.new(-94, 0, -13)', 'Vector3.new(-94, 0, 13)',
     'Vector3.new(-114, 0, -14)', 'Vector3.new(-114, 0, 14)',
     'Vector3.new(-136, 0, 14)', 'Vector3.new(-126, 0, 32)',
@@ -4711,5 +4847,17 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(check.code,/TOWN_CENTRAL_PLAZA_PART:/);
   assert.match(check.code,/CentralPlazaClearRadius/);
   assert.match(check.code,/plaza_structures=0 inspected=%d/);
-  assert.equal(town.length,45,'all existing town screenshots, game layout checks and capture stages must remain');
+  assert.equal(town.length,58,'all existing town screenshots, layout, ground checks and four detail captures must remain');
+  assert.ok(town.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
+  assert.ok(port.includes('CityPortPlazaAccessConnected')&&port.includes('CentralPlazaRemovedStructures'),'new plaza access and final occupancy cleanup must remain');
+});
+
+// [실제 Studio 회복] 초기 지연을 숨기지 않고 전수 검사 성공 때만 구분한다.
+test('Mare Studio priority model delay remains a failure unless full recovery is proven',()=>{
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const gate=workflow.slice(workflow.indexOf('$modelRecovered = ('),workflow.indexOf('$foreignProcessing = {',workflow.indexOf('$modelRecovered = (')));
+  for(const evidence of ["$env:CAP_GAME -ceq 'mare-essentia'","[string]$modelAudit.status -ceq 'PASS'","[int]$modelAudit.registered -gt 0","[int]$modelAudit.loaded -eq [int]$modelAudit.registered","$null -ne $modelAudit.failed -and [int]$modelAudit.failed -eq 0","@($modelAudit.errors).Count -eq 0","[string]$report.assetRegistryAudit.status -ceq 'PASS'","$mediaOk -and","[string]$report.assetAudit.features.status -ceq 'PASS'","$report.summary.abortedEarly -eq $false","[int]$report.summary.completedSteps -eq [int]$report.summary.plannedSteps","@($report.errors).Count -eq 0"])assert.ok(gate.includes(evidence),evidence);
+  assert.ok(workflow.includes("$modelRecovered -and $_ -cmatch '^\\[MareEssentia\\] 우선 모델 불러오기 제한시간 도달\\s+[1-9][0-9]*\\s*$'"));
+  assert.ok(workflow.includes('STUDIO_PRIORITY_MODEL_DELAY_RECOVERED='));
+  assert.ok(workflow.includes('-not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)'));
 });

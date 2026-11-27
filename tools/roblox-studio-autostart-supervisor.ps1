@@ -2,6 +2,7 @@
 # 재부팅 뒤에도 로그온만 되면 install-roblox-studio-autostart.ps1 이 등록한 예약 작업이 이 스크립트를 시작한다.
 # 비밀번호·토큰·쿠키는 다루지 않는다. Studio 는 이미 저장된 Roblox 로그인으로 열리고, 러너는 이미 등록된 것만 쓴다.
 # 멈추려면 상태 폴더에 STOP 파일을 만들거나 예약 작업을 지운다.
+# [안전] 프로세스 감시는 실제 MCP 연결·플레이 PASS의 증거가 아니다. 작업 중 Studio 재시작 및 강제 종료는 금지한다.
 [CmdletBinding()]
 param(
   [Parameter(Mandatory = $true)][string]$RunnerRoot,
@@ -37,7 +38,8 @@ function Write-Log([string]$msg) {
 }
 
 function Get-Config {
-  $c = [pscustomobject]@{ placeId = ''; universeId = ''; startStudio = $false; startRunner = $true }
+  # [설정] 설치된 config.json 의 명시적 비활성화는 유지한다.
+  $c = [pscustomobject]@{ placeId = ''; universeId = ''; startStudio = $true; startRunner = $true }
   if (Test-Path -LiteralPath $ConfigPath) {
     try {
       $j = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
@@ -66,8 +68,34 @@ function Find-StudioExe {
   return $null
 }
 
+# [스튜디오 상태] 같은 대화형 세션만 관찰한다. GUI가 응답해도 MCP와 실제 플레이는 미검증이다.
+function Get-StudioProcesses {
+  return @(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue |
+    Where-Object { [int]$_.SessionId -eq $sessionId })
+}
 function Test-StudioRunning {
-  return (@(Get-Process -Name 'RobloxStudioBeta' -ErrorAction SilentlyContinue | Where-Object { [int]$_.SessionId -eq $sessionId }).Count -gt 0)
+  return (@(Get-StudioProcesses).Count -gt 0)
+}
+function Get-StudioHealth {
+  $studio = @(Get-StudioProcesses)
+  if ($studio.Count -eq 0) { return 'NOT_RUNNING' }
+  $windows = @($studio | Where-Object { $_.MainWindowHandle -ne 0 })
+  if ($windows.Count -eq 0) { return 'PROCESS_ONLY_UNVERIFIED' }
+  if (@($windows | Where-Object { -not $_.Responding }).Count -gt 0) { return 'GUI_UNRESPONSIVE' }
+  return 'GUI_RESPONSIVE_MCP_UNVERIFIED'
+}
+# [안전 복구] CloseMainWindow만 요청한다. 저장 확인 창이나 응답 없는 프로세스를 강제로 죽이지 않는다.
+function Request-GracefulStudioRecovery {
+  if (Test-JobActive) { return $false }
+  $hung = @(Get-StudioProcesses | Where-Object { $_.MainWindowHandle -ne 0 -and -not $_.Responding })
+  if ($hung.Count -eq 0) { return $false }
+  foreach ($process in $hung) {
+    if (Test-JobActive) { return $false }
+    try { $null = $process.CloseMainWindow() }
+    catch { Write-Log ('STUDIO_HANG_CLOSE_REQUEST_FAILED ' + $_.Exception.Message) }
+  }
+  Start-Sleep -Seconds 5
+  return ((Get-StudioHealth) -ne 'GUI_UNRESPONSIVE')
 }
 
 # GitHub 작업이 도는 중(Runner.Worker 가 있음)에는 Studio 를 절대 열지 않는다. 작업(devloop-studio)이 Studio 를 직접 끄고 자기 것을 열기 때문에 둘이 겹치면 캡처가 실패한다.
@@ -76,9 +104,13 @@ function Test-JobActive {
 }
 
 function Test-RunnerRunning {
-  $root = [IO.Path]::GetFullPath($RunnerRoot).TrimEnd('\')
+  # [실행기] 접두 경로가 비슷한 다른 러너를 이 러너의 정상 실행으로 오인하지 않는다.
+  $expected = [IO.Path]::GetFullPath((Join-Path $RunnerRoot 'bin\Runner.Listener.exe'))
   foreach ($p in @(Get-Process -Name 'Runner.Listener' -ErrorAction SilentlyContinue)) {
-    try { if ($p.Path -and $p.Path.StartsWith($root, [StringComparison]::OrdinalIgnoreCase) -and [int]$p.SessionId -eq $sessionId) { return $true } } catch { }
+    try {
+      if ($p.Path -and [string]::Equals([IO.Path]::GetFullPath($p.Path),$expected,[StringComparison]::OrdinalIgnoreCase) -and
+        [int]$p.SessionId -eq $sessionId) { return $true }
+    } catch { }
   }
   return $false
 }
@@ -93,6 +125,9 @@ function Assert-RunnerRegistered {
 # 실패가 반복되면 30분 쉬어서 계속 창을 띄우는 루프에 빠지지 않는다.
 $studioFails = 0; $studioNextTry = [datetime]::MinValue
 $runnerFails = 0; $runnerNextTry = [datetime]::MinValue
+$studioHangObservations = 0
+$lastStudioHealth = ''
+$lastRecoveryAction = 'NONE'
 $loops = 0
 Write-Log ('START session=' + $sessionId + ' runnerRoot=' + $RunnerRoot)
 try {
@@ -101,6 +136,31 @@ try {
     if (Test-Path -LiteralPath $stopFile) { Write-Log 'STOP_FILE_FOUND exiting'; break }
     $cfgNow = Get-Config
     $now = Get-Date
+    $jobActive = Test-JobActive
+    $studioHealth = Get-StudioHealth
+    if ($studioHealth -ne $lastStudioHealth) {
+      Write-Log ('STUDIO_HEALTH=' + $studioHealth)
+      $lastStudioHealth = $studioHealth
+    }
+
+    # [멈춤 감지] 단발성 GUI 지연은 무시하고 3회 연속 응답 없음 + 작업 비활성일 때만 시도한다.
+    if ($cfgNow.startStudio -and -not $jobActive -and $studioHealth -eq 'GUI_UNRESPONSIVE') {
+      $studioHangObservations++
+      if ($studioHangObservations -ge 3 -and $now -ge $studioNextTry) {
+        if (-not (Test-JobActive)) {
+          Write-Log 'STUDIO_HANG_RECOVERY_GRACEFUL_REQUEST'
+          $lastRecoveryAction = 'STUDIO_HANG_GRACEFUL_CLOSE_REQUEST'
+          if (Request-GracefulStudioRecovery) {
+            Write-Log 'STUDIO_HANG_GRACEFUL_CLOSE_VERIFIED_MCP_UNVERIFIED'
+            $studioNextTry = [datetime]::MinValue
+          } else {
+            Write-Log 'STUDIO_HANG_CLOSE_UNVERIFIED_NO_FORCE_KILL'
+            $studioNextTry = $now.AddMinutes(10)
+          }
+        }
+        $studioHangObservations = 0
+      }
+    } else { $studioHangObservations = 0 }
 
     if ($cfgNow.startStudio -and -not (Test-JobActive) -and -not (Test-StudioRunning) -and $now -ge $studioNextTry) {
       $exe = Find-StudioExe
@@ -114,11 +174,20 @@ try {
           } else {
             Start-Process -FilePath $exe
           }
-          Write-Log 'STUDIO_STARTED'
+          # [실행 검증] 시작 명령 성공만으로 복구 완료 처리하지 않는다.
+          Start-Sleep -Seconds 20
+          if (Test-StudioRunning) {
+            $studioFails = 0
+            Write-Log ('STUDIO_START_VERIFIED_PROCESS_ONLY_MCP_UNVERIFIED health=' + (Get-StudioHealth))
+            $lastRecoveryAction = 'STUDIO_PROCESS_RESTART_VERIFIED'
+          } else {
+            $studioFails++
+            Write-Log 'STUDIO_START_UNVERIFIED'
+            $lastRecoveryAction = 'STUDIO_PROCESS_RESTART_UNVERIFIED'
+          }
         } catch { Write-Log ('STUDIO_START_FAILED ' + $_.Exception.Message); $studioFails++ }
       }
       $studioNextTry = $now.AddMinutes($(if ($studioFails -ge 5) { 30 } else { 3 }))
-      Start-Sleep -Seconds 20
     } elseif (Test-StudioRunning) { $studioFails = 0 }
 
     if ($cfgNow.startRunner -and -not (Test-RunnerRunning) -and $now -ge $runnerNextTry) {
@@ -128,7 +197,15 @@ try {
       } else {
         try {
           Start-Process -FilePath $cmd -WorkingDirectory $RunnerRoot -WindowStyle Minimized
-          Write-Log 'RUNNER_STARTED'
+          # [러너 실행 검증] 프로세스가 실제로 올라오지 않으면 다음 주기에 재시도한다.
+          Start-Sleep -Seconds 5
+          if (Test-RunnerRunning) {
+            $runnerFails = 0
+            Write-Log 'RUNNER_START_VERIFIED'
+          } else {
+            $runnerFails++
+            Write-Log 'RUNNER_START_UNVERIFIED'
+          }
         } catch { Write-Log ('RUNNER_START_FAILED ' + $_.Exception.Message); $runnerFails++ }
       }
       $runnerNextTry = $now.AddMinutes($(if ($runnerFails -ge 5) { 30 } else { 2 }))
@@ -138,6 +215,10 @@ try {
       [pscustomobject]@{
         at = (Get-Date).ToUniversalTime().ToString('o'); session = $sessionId
         studioRunning = (Test-StudioRunning); runnerRunning = (Test-RunnerRunning)
+        studioHealth = (Get-StudioHealth); jobActive = (Test-JobActive)
+        studioMcpVerified = $false; actualPlayVerified = $false
+        lastRecoveryAction = $lastRecoveryAction
+        studioHangObservations = $studioHangObservations
         studioFails = $studioFails; runnerFails = $runnerFails
       } | ConvertTo-Json | Set-Content -LiteralPath $statusFile -Encoding UTF8
     } catch { }

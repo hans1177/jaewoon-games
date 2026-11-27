@@ -2077,13 +2077,14 @@ function deterministicDepartmentReview(role,scored){
   const failures=(scored.rejectionReasons||[]).filter(reason=>roleAxes.includes(reason?.axis));
   const weakest=[...roleAxes].sort((a,b)=>Number(scored.evidenceLevels?.[a]||0)-Number(scored.evidenceLevels?.[b]||0))[0]||'NONE';
   const strongest=[...roleAxes].sort((a,b)=>Number(scored.evidenceLevels?.[b]||0)-Number(scored.evidenceLevels?.[a]||0))[0]||'NONE';
-  const firstFailure=failures[0];
+  // [부서별 결함 검토] 동일 부서의 독립 축 결함 3개까지 제시해 첫 번째 실패만 반복 수정하지 않는다.
+  const actionable=failures.filter((reason,index)=>failures.findIndex(prior=>prior.axis===reason.axis)===index).slice(0,3);
   const short=value=>clip(clean(value),125);
   return {
     keep:[short(`${strongest} evidence=${Number(scored.evidenceLevels?.[strongest]||0)} deterministic`)],
-    fix:firstFailure?[short(firstFailure.requiredAction||`${firstFailure.axis} deterministic evidence 보강`)]:[],
+    fix:actionable.map(reason=>short(reason.requiredAction||`${reason.axis} deterministic evidence 보강`)),
     add:[],
-    risks:firstFailure?[short(`${firstFailure.code}:${firstFailure.axis}`)]:[],
+    risks:actionable.map(reason=>short(`${reason.code}:${reason.axis}`)),
     evidence:[short(roleAxes.map(axis=>`${axis}=${Number(scored.evidenceLevels?.[axis]||0)}`).join(','))],
     questions:[]
   };

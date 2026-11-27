@@ -1,248 +1,675 @@
 [
- {
-  "id": "hero-portraits-real",
-  "kind": "Portraits",
-  "purpose": "시작 주인공 9명 실존 인물 초상화",
-  "status": "blocked-needs-owner-upload",
-  "candidates": [
-   "위키미디어 공용: 1900년 이전 초상화(퍼블릭 도메인)만. 파일별 원본 URL 필수"
-  ],
-  "inboxPath": "assets/inbox/Portraits/<hero_id>.png"
- },
- {
-  "id": "npc-outfit-items",
-  "kind": "Outfits",
-  "purpose": "문화권별 의상 아이템(셔츠·바지·모자) 실물 모델",
-  "status": "missing",
-  "candidates": [
-   "Quaternius 의상 팩(CC0)",
-   "Kenney Mini Characters(CC0)"
-  ],
-  "inboxPath": "assets/inbox/People/"
- },
- {
-  "id": "mob-vfx-meshes",
-  "kind": "Naval",
-  "purpose": "전투 효과(포연·물보라) 메시",
-  "status": "missing",
-  "candidates": [
-   "Kenney Particle Pack(CC0)"
-  ],
-  "inboxPath": "assets/inbox/Naval/"
- },
- {
-  "id": "culture-landmarks",
-  "kind": "Terrain",
-  "purpose": "문화권 전용 랜드마크(돔 모스크·도리이·종탑)",
-  "status": "using-stand-ins",
-  "candidates": [
-   "Kenney Castle Kit / Fantasy Town Kit의 추가 부품(CC0)"
-  ],
-  "inboxPath": "assets/inbox/Castle/"
- },
- {
-  "id": "trade-goods-icons-missing",
-  "kind": "Goods",
-  "purpose": "16종 교역품의 승인 원본·최소 64px·해시·Roblox 자산 ID·체험 권한을 자동 검사. 맥주·청주 그림은 정책상 차단",
-  "status": "auto-practice-check",
-  "candidates": [
-   "기존 등록 원본 우선 재사용(CC0 2종, 프로젝트 전용 원화 14종)",
-   "추가 원본은 품목 일치·라이선스·이미지 승인 해시 확인 후 기존 업로더만 사용"
-  ],
-  "inboxPath": "assets/inbox/Goods/<good_id>.png",
-  "goods": [
-   "feathers",
-   "cloves",
-   "nutmeg",
-   "cinnamon",
-   "indigo",
-   "rice",
-   "lacquer",
-   "camphor",
-   "ginseng",
-   "vanilla",
-   "cochineal",
-   "sealskin",
-   "guano",
-   "nitrate",
-   "ambergris",
-   "gum_arabic"
-  ],
-  "blockedGoods": [
-   "beer",
-   "sake"
-  ]
- },
- {
-  "id": "trade-goods-3d-models",
-  "kind": "Cargo",
-  "purpose": "게임의 현재 교역품 전종(Ports.luau)을 기존 승인 CC0 실물 3D와 정확히 대조한다. 부족 품목은 원본 후보·라이선스·원본 해시·Roblox Universe 권한·동일 빌드 시각검증 확보 전까지 미완성으로 둔다.",
-  "status": "missing-models-auto-practice",
-  "candidates": [
-   "검증된 회사 라이브러리와 현행 Cargo 실물 메시의 동일 품목 우선 사용",
-   "일치 품목이 없으면 CC0 실물 원본 확보·수정 후 동일 품목만 사용(기본 도형 파츠·임의 대체 금지)",
-   "기존 Vibe 자산 제작·디자인 경쟁·실제 Roblox 동일 버전 화면 검사만 사용"
-  ],
-  "inboxPath": "assets/inbox/Cargo/<good_id>.glb",
-  "autoPractice": "EXISTING_ASSET_REGISTER_WORKFLOW_AND_VIBE_ASSET_DEVELOPMENT",
-  "replacementGate": "LICENSE_SOURCE_HASH_UNIVERSE_PERMISSION_NATIVE_VISUAL_RUNTIME",
-  "noNewPipeline": true
- },
- {
-  "id": "naval-melee-audio",
-  "kind": "Audio",
-  "purpose": "백병전 전용 효과음(칼 부딪힘·함성·갑판 발소리). 지금은 기존 타격음(sfx_hit)을 높낮이만 바꿔 겹쳐 쓴다",
-  "status": "using-stand-ins",
-  "candidates": [
-   "Kenney Impact Sounds / RPG Audio(CC0)",
-   "OpenGameArt CC0 검 소리 묶음(라이선스 확인 필수)"
-  ],
-  "inboxPath": "assets/inbox/Audio/"
- },
- {
-  "id": "mare-farm-animals",
-  "kind": "Animals",
-  "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
-  "status": "source-registered-runtime-unverified",
-  "sourceReady": [
-   "cow",
-   "horse",
-   "sheep",
-   "pig",
-   "llama",
-   "dog-pug",
-   "chicken",
-   "cat",
-   "elephant",
-   "donkey"
-  ],
-  "missing": [
-   "goat",
-   "pigeon",
-   "camel",
-   "turkey"
-  ],
-  "candidates": [
-   "Quaternius Farm Animal Pack (CC0)",
-   "Quaternius Ultimate Animated Animal Pack (CC0)",
-   "원본 라이선스와 종별 형태·해시를 확인한 무료 CC0 모델"
-  ],
-  "sourceFolder": "assets/animals/",
-  "replacementGate": "EXACT_SPECIES_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
-  "autoBindWithoutRuntimeProof": false,
-  "regionalUseGuidance": {
-   "cow": [
-    "유럽·아프리카·아시아 농장"
-   ],
-   "horse": [
-    "유럽·오스만·인도양 마차·농장"
-   ],
-   "sheep": [
-    "유럽·오스만 목장"
-   ],
-   "pig": [
-    "지역·종교 관습에 맞는 농가만"
-   ],
-   "llama": [
-    "아메리카 안데스 지역만"
-   ],
-   "dog-pug": [
-    "유럽·아시아 거리·가정, 품종 시대 적합성 별도 확인"
-   ],
-   "chicken": [
-    "전 지역 농촌·시장"
-   ],
-   "cat": [
-    "항구 창고·거리, 고품질 화풍 확인 전 배치 금지"
-   ],
-   "elephant": [
-    "말라바르·인도양의 지역 장식용, 전투·수레에 자동 적용 금지"
-   ],
-   "camel": [
-    "오스만·홍해 지역, 원본 부족으로 아직 미배치"
-   ],
-   "turkey": [
-    "아메리카 및 16세기 이후 유입 지역, 원본 부족"
-   ],
-   "pigeon": [
-    "도시 광장·항구, 원본 부족"
-   ],
-   "donkey": [
-    "유럽·오스만·북아프리카의 짐 운반·항구. 현재 원본 정지형 메시만 등록, 실제 움직임·게임 내 화면 검증 전 배치 금지"
-   ],
-   "goat": [
-    "유럽·지중해·아프리카 목장, 원본 부족"
-   ]
+  {
+    "id": "hero-portraits-real",
+    "kind": "Portraits",
+    "purpose": "시작 주인공 9명 실존 인물 초상화",
+    "status": "blocked-needs-owner-upload",
+    "candidates": [
+      "위키미디어 공용: 1900년 이전 초상화(퍼블릭 도메인)만. 파일별 원본 URL 필수"
+    ],
+    "inboxPath": "assets/inbox/Portraits/<hero_id>.png"
   },
-  "eraScope": "대항해시대 및 게임 설정에 포함된 근세·19세기 구간. 지역별 전파 시기·문화권을 따르고, 한 시대의 자산을 모든 항구에 자동 노출하지 않는다.",
-  "visualQualityStatus": "SOURCE_ONLY_HOLD_UNTIL_NATIVE_GAMEPLAY_VISUAL_QA",
-  "animationPending": [
-   "donkey"
-  ],
-  "actualStudioAnimationVerified": false
- },
- {
-  "id": "mare-harbor-life-props",
-  "kind": "Town",
-  "purpose": "항구·수레·대장간·물레방아·거리·어린이 소품. 기존 검증 자산 재사용, 술 소품 금지.",
-  "status": "partly-source-registered-runtime-unverified",
-  "newlyRegistered": [
-   "watermill",
-   "wheel",
-   "workbench-anvil",
-   "cart-high",
-   "workbench-grind",
-   "anchor"
-  ],
-  "alreadyInGameSources": [
-   "town/cart.glb",
-   "town/windmill.glb",
-   "relics/rope-bundle-a.glb",
-   "relics/rope-bundle-b.glb",
-   "naval/mast-ropes.glb"
-  ],
-  "missing": [
-   "fishing-net",
-   "net-drying-frame",
-   "clothesline",
-   "kite",
-   "play-ball"
-  ],
-  "suggestedNext": [
-   "harbor-crane",
-   "ship-repair-slipway",
-   "fish-stall",
-   "customs-house-sign"
-  ],
-  "blocked": [
-   "beer-barrel",
-   "wine-prop"
-  ],
-  "replacementGate": "CC0_LICENSE_SOURCE_SHA256_EXACT_ROLE_NATIVE_VISUAL_QA",
-  "autoBindWithoutRuntimeProof": false,
-  "eraScope": "돛단배 항구의 닻·밧줄·그물·양륙 작업이 우선. 현대식 플라스틱·전동 공구·현대 어선 장비는 불허.",
-  "regionalUseGuidance": {
-   "anchor": [
-    "유럽·지중해·인도양 돛단배 항구"
-   ],
-   "fishing-net": [
-    "전통 어업 항구; 아직 미확보"
-   ],
-   "net-drying-frame": [
-    "연안 어촌; 아직 미확보"
-   ],
-   "harbor-crane": [
-    "인력·수동 도르래식만 후보"
-   ],
-   "ship-repair-slipway": [
-    "목조 선박 정비 장소 후보"
-   ],
-   "kite": [
-    "시대·지역 사료에 맞는 어린이 놀이 후보"
-   ],
-   "play-ball": [
-    "가죽·천 등 시대 재질만 후보"
-   ]
+  {
+    "id": "npc-outfit-items",
+    "kind": "Outfits",
+    "purpose": "문화권별 의상 아이템(셔츠·바지·모자) 실물 모델",
+    "status": "missing",
+    "candidates": [
+      "Quaternius 의상 팩(CC0)",
+      "Kenney Mini Characters(CC0)"
+    ],
+    "inboxPath": "assets/inbox/People/"
+  },
+  {
+    "id": "mob-vfx-meshes",
+    "kind": "Naval",
+    "purpose": "전투 효과(포연·물보라) 메시",
+    "status": "missing",
+    "candidates": [
+      "Kenney Particle Pack(CC0)"
+    ],
+    "inboxPath": "assets/inbox/Naval/"
+  },
+  {
+    "id": "culture-landmarks",
+    "localAcquisition": [{"sourceId":"kenney-fantasy-town-kit"}],
+    "kind": "Terrain",
+    "purpose": "문화권 전용 랜드마크(돔 모스크·도리이·종탑)",
+    "status": "using-stand-ins",
+    "candidates": [
+      "Kenney Castle Kit / Fantasy Town Kit의 추가 부품(CC0)"
+    ],
+    "inboxPath": "assets/inbox/Castle/"
+  },
+  {
+    "id": "trade-goods-icons-missing",
+    "kind": "Goods",
+    "purpose": "16종 교역품의 승인 원본·최소 64px·해시·Roblox 자산 ID·체험 권한을 자동 검사. 맥주·청주 그림은 정책상 차단",
+    "status": "auto-practice-check",
+    "candidates": [
+      "기존 등록 원본 우선 재사용(CC0 2종, 프로젝트 전용 원화 14종)",
+      "추가 원본은 품목 일치·라이선스·이미지 승인 해시 확인 후 기존 업로더만 사용"
+    ],
+    "inboxPath": "assets/inbox/Goods/<good_id>.png",
+    "goods": [
+      "feathers",
+      "cloves",
+      "nutmeg",
+      "cinnamon",
+      "indigo",
+      "rice",
+      "lacquer",
+      "camphor",
+      "ginseng",
+      "vanilla",
+      "cochineal",
+      "sealskin",
+      "guano",
+      "nitrate",
+      "ambergris",
+      "gum_arabic"
+    ],
+    "blockedGoods": [
+      "beer",
+      "sake"
+    ]
+  },
+  {
+    "id": "trade-goods-3d-models",
+    "kind": "Cargo",
+    "purpose": "게임의 현재 교역품 전종(Ports.luau)을 기존 승인 CC0 실물 3D와 정확히 대조한다. 부족 품목은 원본 후보·라이선스·원본 해시·Roblox Universe 권한·동일 빌드 시각검증 확보 전까지 미완성으로 둔다.",
+    "status": "missing-models-auto-practice",
+    "candidates": [
+      "검증된 회사 라이브러리와 현행 Cargo 실물 메시의 동일 품목 우선 사용",
+      "일치 품목이 없으면 CC0 실물 원본 확보·수정 후 동일 품목만 사용(기본 도형 파츠·임의 대체 금지)",
+      "기존 Vibe 자산 제작·디자인 경쟁·실제 Roblox 동일 버전 화면 검사만 사용"
+    ],
+    "inboxPath": "assets/inbox/Cargo/<good_id>.glb",
+    "autoPractice": "EXISTING_ASSET_REGISTER_WORKFLOW_AND_VIBE_ASSET_DEVELOPMENT",
+    "replacementGate": "LICENSE_SOURCE_HASH_UNIVERSE_PERMISSION_NATIVE_VISUAL_RUNTIME",
+    "noNewPipeline": true
+  },
+  {
+    "id": "naval-melee-audio",
+    "localAcquisition": [{"sourceId":"kenney-rpg-audio"},{"sourceId":"kenney-impact-sounds"}],
+    "kind": "Audio",
+    "purpose": "백병전 전용 효과음(칼 부딪힘·함성·갑판 발소리). 지금은 기존 타격음(sfx_hit)을 높낮이만 바꿔 겹쳐 쓴다",
+    "status": "using-stand-ins",
+    "candidates": [
+      "Kenney Impact Sounds / RPG Audio(CC0)",
+      "OpenGameArt CC0 검 소리 묶음(라이선스 확인 필수)"
+    ],
+    "inboxPath": "assets/inbox/Audio/"
+  },
+  {
+    "id": "mare-farm-animals",
+    "localAcquisition": [{"sourceId":"innerscene-hippopotamus","animal":"hippo"}],
+    "kind": "Animals",
+    "purpose": "농장·수레·거리·지역 동물은 사용자 지정 동물 종류와 일치하는 CC0 실물 3D 원본으로만 제작. 게임 적용 전 개별 권한·실제 화면 검증.",
+    "status": "source-registered-runtime-unverified",
+    "sourceReady": [
+      "cow",
+      "horse",
+      "sheep",
+      "pig",
+      "llama",
+      "dog-pug",
+      "chicken",
+      "cat",
+      "elephant",
+      "donkey"
+    ],
+    "missing": [
+      "goat",
+      "pigeon",
+      "camel",
+      "turkey"
+    ],
+    "candidates": [
+      "Quaternius Farm Animal Pack (CC0)",
+      "Quaternius Ultimate Animated Animal Pack (CC0)",
+      "원본 라이선스와 종별 형태·해시를 확인한 무료 CC0 모델"
+    ],
+    "sourceFolder": "assets/animals/",
+    "replacementGate": "EXACT_SPECIES_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
+    "autoBindWithoutRuntimeProof": false,
+    "regionalUseGuidance": {
+      "cow": [
+        "유럽·아프리카·아시아 농장"
+      ],
+      "horse": [
+        "유럽·오스만·인도양 마차·농장"
+      ],
+      "sheep": [
+        "유럽·오스만 목장"
+      ],
+      "pig": [
+        "지역·종교 관습에 맞는 농가만"
+      ],
+      "llama": [
+        "아메리카 안데스 지역만"
+      ],
+      "dog-pug": [
+        "유럽·아시아 거리·가정, 품종 시대 적합성 별도 확인"
+      ],
+      "chicken": [
+        "전 지역 농촌·시장"
+      ],
+      "cat": [
+        "항구 창고·거리, 고품질 화풍 확인 전 배치 금지"
+      ],
+      "elephant": [
+        "말라바르·인도양의 지역 장식용, 전투·수레에 자동 적용 금지"
+      ],
+      "camel": [
+        "오스만·홍해 지역, 원본 부족으로 아직 미배치"
+      ],
+      "turkey": [
+        "아메리카 및 16세기 이후 유입 지역, 원본 부족"
+      ],
+      "pigeon": [
+        "도시 광장·항구, 원본 부족"
+      ],
+      "donkey": [
+        "유럽·오스만·북아프리카의 짐 운반·항구. 현재 원본 정지형 메시만 등록, 실제 움직임·게임 내 화면 검증 전 배치 금지"
+      ],
+      "goat": [
+        "유럽·지중해·아프리카 목장, 원본 부족"
+      ]
+    },
+    "eraScope": "대항해시대 및 게임 설정에 포함된 근세·19세기 구간. 지역별 전파 시기·문화권을 따르고, 한 시대의 자산을 모든 항구에 자동 노출하지 않는다.",
+    "visualQualityStatus": "SOURCE_ONLY_HOLD_UNTIL_NATIVE_GAMEPLAY_VISUAL_QA",
+    "animationPending": [
+      "donkey"
+    ],
+    "actualStudioAnimationVerified": false
+  },
+  {
+    "id": "mare-harbor-life-props",
+    "kind": "Town",
+    "purpose": "항구·수레·대장간·물레방아·거리·어린이 소품. 기존 검증 자산 재사용, 술 소품 금지.",
+    "status": "partly-source-registered-runtime-unverified",
+    "newlyRegistered": [
+      "watermill",
+      "wheel",
+      "workbench-anvil",
+      "cart-high",
+      "workbench-grind",
+      "anchor"
+    ],
+    "alreadyInGameSources": [
+      "town/cart.glb",
+      "town/windmill.glb",
+      "relics/rope-bundle-a.glb",
+      "relics/rope-bundle-b.glb",
+      "naval/mast-ropes.glb"
+    ],
+    "missing": [
+      "fishing-net",
+      "net-drying-frame",
+      "clothesline",
+      "kite",
+      "play-ball"
+    ],
+    "suggestedNext": [
+      "harbor-crane",
+      "ship-repair-slipway",
+      "fish-stall",
+      "customs-house-sign"
+    ],
+    "blocked": [
+      "beer-barrel",
+      "wine-prop"
+    ],
+    "replacementGate": "CC0_LICENSE_SOURCE_SHA256_EXACT_ROLE_NATIVE_VISUAL_QA",
+    "autoBindWithoutRuntimeProof": false,
+    "eraScope": "돛단배 항구의 닻·밧줄·그물·양륙 작업이 우선. 현대식 플라스틱·전동 공구·현대 어선 장비는 불허.",
+    "regionalUseGuidance": {
+      "anchor": [
+        "유럽·지중해·인도양 돛단배 항구"
+      ],
+      "fishing-net": [
+        "전통 어업 항구; 아직 미확보"
+      ],
+      "net-drying-frame": [
+        "연안 어촌; 아직 미확보"
+      ],
+      "harbor-crane": [
+        "인력·수동 도르래식만 후보"
+      ],
+      "ship-repair-slipway": [
+        "목조 선박 정비 장소 후보"
+      ],
+      "kite": [
+        "시대·지역 사료에 맞는 어린이 놀이 후보"
+      ],
+      "play-ball": [
+        "가죽·천 등 시대 재질만 후보"
+      ]
+    }
+  },
+  {
+    "id": "culture-palace-architecture",
+    "localAcquisition": [{"sourceId":"kenney-fantasy-town-kit"}],
+    "kind": "Town",
+    "purpose": "문화권별 왕궁 실물 부품: 동아시아 기와 우진각·팔작 지붕, 조선 궁문·행각, 오스만 돔·회랑 아치, 남아시아 차트리 정자·아치 회랑, 중국 전각·패루, 일본 천수각 지붕",
+    "status": "missing",
+    "evidence": "Studio mare-palaces 44970048347: 8개 문화권 왕궁이 같은 상자형 본체(기본 파츠 16~25개). 기존 Town/eastasia-roof 원본은 두께 0.15 평판(RoomRoof)이라 기와지붕 대체 불가, 오스만 돔은 기본 구체 파츠",
+    "candidates": [
+      "Kenney 및 Quaternius 기존 출처의 추가 CC0 건축 팩 우선, 기타 출처는 개별 CC0 라이선스·원본 해시 확인 후"
+    ],
+    "inboxPath": "assets/inbox/Town/"
+  },
+  {
+    "id": "port-identity-landmark",
+    "kind": "Town",
+    "purpose": "항구별 상징물(공사 중·완성) (30종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=landmark)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_landmark_base",
+      "london_landmark_full",
+      "amsterdam_landmark_base",
+      "amsterdam_landmark_full",
+      "rouen_landmark_base",
+      "rouen_landmark_full",
+      "copenhagen_landmark_base",
+      "copenhagen_landmark_full",
+      "gothenburg_landmark_base",
+      "gothenburg_landmark_full",
+      "venice_landmark_base",
+      "venice_landmark_full",
+      "istanbul_landmark_base",
+      "istanbul_landmark_full",
+      "zanzibar_landmark_base",
+      "zanzibar_landmark_full",
+      "calicut_landmark_base",
+      "calicut_landmark_full",
+      "nagasaki_landmark_base",
+      "nagasaki_landmark_full",
+      "veracruz_landmark_base",
+      "veracruz_landmark_full",
+      "canton_landmark_base",
+      "canton_landmark_full",
+      "seville_landmark_base",
+      "seville_landmark_full",
+      "busan_landmark_base",
+      "busan_landmark_full",
+      "lisbon_landmark_base",
+      "lisbon_landmark_full"
+    ]
+  },
+  {
+    "id": "port-identity-house",
+    "kind": "Town",
+    "purpose": "항구별 주택 3종(1·2·3층) (45종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=house)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_house_1",
+      "london_house_2",
+      "london_house_3",
+      "amsterdam_house_1",
+      "amsterdam_house_2",
+      "amsterdam_house_3",
+      "rouen_house_1",
+      "rouen_house_2",
+      "rouen_house_3",
+      "copenhagen_house_1",
+      "copenhagen_house_2",
+      "copenhagen_house_3",
+      "gothenburg_house_1",
+      "gothenburg_house_2",
+      "gothenburg_house_3",
+      "venice_house_1",
+      "venice_house_2",
+      "venice_house_3",
+      "istanbul_house_1",
+      "istanbul_house_2",
+      "istanbul_house_3",
+      "zanzibar_house_1",
+      "zanzibar_house_2",
+      "zanzibar_house_3",
+      "calicut_house_1",
+      "calicut_house_2",
+      "calicut_house_3",
+      "nagasaki_house_1",
+      "nagasaki_house_2",
+      "nagasaki_house_3",
+      "veracruz_house_1",
+      "veracruz_house_2",
+      "veracruz_house_3",
+      "canton_house_1",
+      "canton_house_2",
+      "canton_house_3",
+      "seville_house_1",
+      "seville_house_2",
+      "seville_house_3",
+      "busan_house_1",
+      "busan_house_2",
+      "busan_house_3",
+      "lisbon_house_1",
+      "lisbon_house_2",
+      "lisbon_house_3"
+    ]
+  },
+  {
+    "id": "port-identity-district",
+    "kind": "Town",
+    "purpose": "항구별 구역 특산 건물 (45종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=district)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_signature_1",
+      "london_signature_2",
+      "london_signature_3",
+      "amsterdam_signature_1",
+      "amsterdam_signature_2",
+      "amsterdam_signature_3",
+      "rouen_signature_1",
+      "rouen_signature_2",
+      "rouen_signature_3",
+      "copenhagen_signature_1",
+      "copenhagen_signature_2",
+      "copenhagen_signature_3",
+      "gothenburg_signature_1",
+      "gothenburg_signature_2",
+      "gothenburg_signature_3",
+      "venice_signature_1",
+      "venice_signature_2",
+      "venice_signature_3",
+      "istanbul_signature_1",
+      "istanbul_signature_2",
+      "istanbul_signature_3",
+      "zanzibar_signature_1",
+      "zanzibar_signature_2",
+      "zanzibar_signature_3",
+      "calicut_signature_1",
+      "calicut_signature_2",
+      "calicut_signature_3",
+      "nagasaki_signature_1",
+      "nagasaki_signature_2",
+      "nagasaki_signature_3",
+      "veracruz_signature_1",
+      "veracruz_signature_2",
+      "veracruz_signature_3",
+      "canton_signature_1",
+      "canton_signature_2",
+      "canton_signature_3",
+      "seville_signature_1",
+      "seville_signature_2",
+      "seville_signature_3",
+      "busan_signature_1",
+      "busan_signature_2",
+      "busan_signature_3",
+      "lisbon_signature_1",
+      "lisbon_signature_2",
+      "lisbon_signature_3"
+    ]
+  },
+  {
+    "id": "port-identity-plaza",
+    "kind": "Town",
+    "purpose": "항구별 중앙 광장 중심물 (15종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=plaza)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_plaza_center",
+      "amsterdam_plaza_center",
+      "rouen_plaza_center",
+      "copenhagen_plaza_center",
+      "gothenburg_plaza_center",
+      "venice_plaza_center",
+      "istanbul_plaza_center",
+      "zanzibar_plaza_center",
+      "calicut_plaza_center",
+      "nagasaki_plaza_center",
+      "veracruz_plaza_center",
+      "canton_plaza_center",
+      "seville_plaza_center",
+      "busan_plaza_center",
+      "lisbon_plaza_center"
+    ]
+  },
+  {
+    "id": "port-identity-lamp",
+    "kind": "Town",
+    "purpose": "항구별 가로등(밤 발광) (15종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=lamp)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_street_lamp",
+      "amsterdam_street_lamp",
+      "rouen_street_lamp",
+      "copenhagen_street_lamp",
+      "gothenburg_street_lamp",
+      "venice_street_lamp",
+      "istanbul_street_lamp",
+      "zanzibar_street_lamp",
+      "calicut_street_lamp",
+      "nagasaki_street_lamp",
+      "veracruz_street_lamp",
+      "canton_street_lamp",
+      "seville_street_lamp",
+      "busan_street_lamp",
+      "lisbon_street_lamp"
+    ]
+  },
+  {
+    "id": "port-identity-sign",
+    "kind": "Town",
+    "purpose": "항구별 그림 간판 세트 (15종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=sign)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_shop_sign",
+      "amsterdam_shop_sign",
+      "rouen_shop_sign",
+      "copenhagen_shop_sign",
+      "gothenburg_shop_sign",
+      "venice_shop_sign",
+      "istanbul_shop_sign",
+      "zanzibar_shop_sign",
+      "calicut_shop_sign",
+      "nagasaki_shop_sign",
+      "veracruz_shop_sign",
+      "canton_shop_sign",
+      "seville_shop_sign",
+      "busan_shop_sign",
+      "lisbon_shop_sign"
+    ]
+  },
+  {
+    "id": "port-identity-goods",
+    "kind": "Town",
+    "purpose": "특산물 진열 가판대·창고 재고 3단계 (75종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=goods)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_stall_wool",
+      "london_stall_coal",
+      "london_stall_tin",
+      "london_warehouse_stock",
+      "amsterdam_stall_spice",
+      "amsterdam_stall_cheese",
+      "amsterdam_stall_tea",
+      "amsterdam_stall_porcelain",
+      "amsterdam_warehouse_stock",
+      "rouen_stall_wine",
+      "rouen_stall_cloth",
+      "rouen_stall_salt",
+      "rouen_stall_tin",
+      "rouen_warehouse_stock",
+      "copenhagen_stall_amber",
+      "copenhagen_stall_fish",
+      "copenhagen_stall_beer",
+      "copenhagen_stall_whale_oil",
+      "copenhagen_warehouse_stock",
+      "gothenburg_stall_iron",
+      "gothenburg_stall_timber",
+      "gothenburg_stall_fish",
+      "gothenburg_warehouse_stock",
+      "venice_stall_glass",
+      "venice_stall_silk",
+      "venice_stall_coffee",
+      "venice_warehouse_stock",
+      "istanbul_stall_silk",
+      "istanbul_stall_spice",
+      "istanbul_stall_coffee",
+      "istanbul_stall_porcelain",
+      "istanbul_stall_saffron",
+      "istanbul_stall_carpet",
+      "istanbul_stall_pearls",
+      "istanbul_warehouse_stock",
+      "zanzibar_stall_cloves",
+      "zanzibar_stall_ivory",
+      "zanzibar_stall_ambergris",
+      "zanzibar_warehouse_stock",
+      "calicut_stall_pepper",
+      "calicut_stall_cinnamon",
+      "calicut_stall_ivory",
+      "calicut_stall_cotton",
+      "calicut_warehouse_stock",
+      "nagasaki_stall_copper",
+      "nagasaki_stall_silver",
+      "nagasaki_stall_lacquer",
+      "nagasaki_stall_porcelain",
+      "nagasaki_warehouse_stock",
+      "veracruz_stall_silver",
+      "veracruz_stall_cochineal",
+      "veracruz_stall_vanilla",
+      "veracruz_stall_cocoa",
+      "veracruz_warehouse_stock",
+      "canton_stall_tea",
+      "canton_stall_porcelain",
+      "canton_stall_silk",
+      "canton_stall_lacquer",
+      "canton_warehouse_stock",
+      "seville_stall_wine",
+      "seville_stall_sugar",
+      "seville_stall_leather",
+      "seville_stall_pepper",
+      "seville_warehouse_stock",
+      "busan_stall_ginseng",
+      "busan_stall_rice",
+      "busan_stall_fish",
+      "busan_stall_cotton",
+      "busan_warehouse_stock",
+      "lisbon_stall_salt",
+      "lisbon_stall_sugar",
+      "lisbon_stall_spice",
+      "lisbon_stall_porcelain",
+      "lisbon_stall_pepper",
+      "lisbon_warehouse_stock"
+    ]
+  },
+  {
+    "id": "port-identity-workshop",
+    "kind": "Town",
+    "purpose": "특산물 공방 (60종, 시작 항구 15곳)",
+    "status": "missing",
+    "prompts": "docs/port_asset_prompts.csv (category=workshop)",
+    "candidates": [
+      "docs/port_asset_prompts.csv 의 prompt_en 으로 3D 생성(직접 제작물) 후 라이선스 파일 동봉",
+      "CC0 대체: Kenney Castle/Fantasy Town Kit 부품 조합"
+    ],
+    "inboxPath": "assets/inbox/Town/<asset_id>.glb",
+    "assets": [
+      "london_workshop_wool",
+      "london_workshop_coal",
+      "london_workshop_tin",
+      "amsterdam_workshop_spice",
+      "amsterdam_workshop_cheese",
+      "amsterdam_workshop_tea",
+      "amsterdam_workshop_porcelain",
+      "rouen_workshop_wine",
+      "rouen_workshop_cloth",
+      "rouen_workshop_salt",
+      "rouen_workshop_tin",
+      "copenhagen_workshop_amber",
+      "copenhagen_workshop_fish",
+      "copenhagen_workshop_beer",
+      "copenhagen_workshop_whale_oil",
+      "gothenburg_workshop_iron",
+      "gothenburg_workshop_timber",
+      "gothenburg_workshop_fish",
+      "venice_workshop_glass",
+      "venice_workshop_silk",
+      "venice_workshop_coffee",
+      "istanbul_workshop_silk",
+      "istanbul_workshop_spice",
+      "istanbul_workshop_coffee",
+      "istanbul_workshop_porcelain",
+      "istanbul_workshop_saffron",
+      "istanbul_workshop_carpet",
+      "istanbul_workshop_pearls",
+      "zanzibar_workshop_cloves",
+      "zanzibar_workshop_ivory",
+      "zanzibar_workshop_ambergris",
+      "calicut_workshop_pepper",
+      "calicut_workshop_cinnamon",
+      "calicut_workshop_ivory",
+      "calicut_workshop_cotton",
+      "nagasaki_workshop_copper",
+      "nagasaki_workshop_silver",
+      "nagasaki_workshop_lacquer",
+      "nagasaki_workshop_porcelain",
+      "veracruz_workshop_silver",
+      "veracruz_workshop_cochineal",
+      "veracruz_workshop_vanilla",
+      "veracruz_workshop_cocoa",
+      "canton_workshop_tea",
+      "canton_workshop_porcelain",
+      "canton_workshop_silk",
+      "canton_workshop_lacquer",
+      "seville_workshop_wine",
+      "seville_workshop_sugar",
+      "seville_workshop_leather",
+      "seville_workshop_pepper",
+      "busan_workshop_ginseng",
+      "busan_workshop_rice",
+      "busan_workshop_fish",
+      "busan_workshop_cotton",
+      "lisbon_workshop_salt",
+      "lisbon_workshop_sugar",
+      "lisbon_workshop_spice",
+      "lisbon_workshop_porcelain",
+      "lisbon_workshop_pepper"
+    ]
   }
- }
 ]

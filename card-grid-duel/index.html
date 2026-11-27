@@ -30,6 +30,24 @@ h1{font-size:22px;margin:0}
 .board.giant{width:800px;min-width:800px;flex-shrink:0}
 /* 8스테이지 8×8 전장 */
 .board.giant.stageEight{width:640px;min-width:640px}
+/* 10스테이지: 그림을 따른 연결형 비정형 통로와 고정 상호작용 지점 */
+.board.giant.stageTen{width:800px;min-width:800px}
+.board.stageTen .cell{background:#3a443c;border:1px solid #586a4b}
+.board.stageTen .cell.homeBlue,.board.stageTen .cell.homeRed{background:#3a443c}
+.board.stageTen .cell.voidCell{visibility:hidden;pointer-events:none}
+.board.stageTen .cell.banditCell{border-color:#9d6a4f}
+/* 10스테이지 거대 블랙 슬라임은 한 칸을 점유하되 크기와 색감으로 구분한다. */
+.board.stageTen .cell.blackSlimeCell{border:2px solid #8f76c7;background:#242335;box-shadow:inset 0 0 16px #4e3a69}
+.board.stageTen .cell.blackSlimeCell .portrait{transform:scale(1.25);transform-origin:center}
+.board.stageTen .cell.shopCell{background:#3c3850;border:2px solid #b5a0e5}
+.board.stageTen .cell.questCell{background:#274d46;border:2px solid #6bcbaf}
+.stageTenObject{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:clamp(10px,1.8vw,14px);font-weight:900;pointer-events:none}
+.stageTenObject span{font-size:26px}
+#stageTenShop{padding:12px;margin:10px 0;background:#23253e;border:1px solid #9179c8;border-radius:12px;text-align:center}
+#stageTenShop p{font-size:13px;color:#ded6ef;line-height:1.5}
+#stageTenShop button{min-height:46px;margin:4px;padding:0 14px;border:0;border-radius:9px;background:#634aa0;color:#fff;font-weight:900}
+#stageTenShop button:disabled{opacity:.4}
+#endingNext{display:block;margin:30px auto 0;min-height:50px;padding:0 22px;background:#4169e1;color:#fff;border:0;border-radius:10px;font-weight:900}
 .mapControls{display:flex;gap:8px;justify-content:center;margin:8px auto}
 .mapControls button{min-height:44px;border:1px solid #3b7251;background:#1e4436;color:#e0ffe5;border-radius:10px;padding:4px 14px;font-size:13px;font-weight:900}
 .cell.jungle{background:radial-gradient(ellipse at 20% 18%,#356d3d 0%,transparent 48%),radial-gradient(ellipse at 83% 75%,#275236 0%,transparent 55%),linear-gradient(140deg,#112a20,#1b442c 55%,#142a1c);border:1px solid #366742}
@@ -188,6 +206,12 @@ h1{font-size:22px;margin:0}
       </small>
     </div>
     <div class="boardWrap"><div id="board" class="board"></div></div>
+    <div id="stageTenShop" class="hidden" aria-label="10스테이지 상점">
+      <b>10스테이지 상점</b>
+      <p id="stageTenShopInfo">75골드 · 모든 아군 체력과 공격력 +10% · 최대 3회</p>
+      <button id="stageTenBuy" type="button">75골드로 강화</button>
+      <button id="stageTenClose" type="button">닫기</button>
+    </div>
     <div class="statusRow">
       <span id="deckInfo">골드 -</span>
       <span id="modeInfo">대기</span>
@@ -225,6 +249,7 @@ h1{font-size:22px;margin:0}
       <p>그 수호신은</p>
       <p class="lastLine">바로 전, 당신과 병사들에게 죽었습니다</p>
     </div>
+    <button id="endingNext" type="button">10스테이지 시작</button>
     <button id="endingRestart" type="button">처음부터 다시 시작</button>
   </main>
 </div>
@@ -245,8 +270,31 @@ const STAGES={
   // 8스테이지: 8×8 · 2/5/7/10 웨이브에 총 16마리.
   8:{redMax:16,enemyScale:1,redPool:['ORC','POISON_SCORPION','CHARGE_ORC','BEAR','ORC_MAGE','BOAR','MOUNTED_ORC','RUIN_GUARDIAN']},
   // 9스테이지: 5스테이지와 같은 5×10 전장 · 3/7/10/15턴 지정 증원.
-  9:{redMax:8,enemyScale:1,redPool:['HYENA','MOUNTED_ORC','BEAR','RUIN_GUARDIAN','SILPERIA']}
+  9:{redMax:8,enemyScale:1,redPool:['HYENA','MOUNTED_ORC','BEAR','RUIN_GUARDIAN','SILPERIA']},
+  10:{redMax:30,enemyScale:1,redPool:['BANDIT','BANDIT_LEADER']}
 };
+// 10스테이지: 스케치의 윗머리·좌우 날개·긴 아랫길을 한 장의 연결 지도에 배치한다.
+const STAGE_TEN_MAP=[
+  '...###....','...###....','...###....',
+  '...######.','...######.',
+  '.########.','.########.',
+  '...#####..','...#####..','...#####..','...#####..','...#####..'
+];
+// 원본 스케치 좌표(행·열): / 상자 4개, X 상점 1개, ○ 의뢰인 1명.
+// 동그라미 친 /는 북쪽 도적 두목, -는 도적 7명의 고정 배치 위치다.
+const STAGE_TEN_CHESTS=[{r:4,c:4},{r:5,c:8},{r:7,c:7},{r:11,c:4}];
+const STAGE_TEN_SHOPS=[{r:6,c:2}];
+const STAGE_TEN_QUEST={r:7,c:8};
+const STAGE_TEN_BANDITS=[
+  {card:'BANDIT_LEADER',r:2,c:5},
+  {card:'BANDIT',r:1,c:6},
+  {card:'BANDIT',r:2,c:4},
+  {card:'BANDIT',r:3,c:4},
+  {card:'BANDIT',r:8,c:4},
+  {card:'BANDIT',r:9,c:8},
+  {card:'BANDIT',r:10,c:4},
+  {card:'BANDIT',r:11,c:8}
+];
 // 중갑병은 다른 카드(각 2칸)보다 낮은 확률(1칸)로 뽑힌다.
 const GACHA_POOL=['LANCER','LANCER','CROSSBOW','CROSSBOW','HAMMER','HAMMER','RIFLEMAN','RIFLEMAN','HEAVY_INFANTRY'];
 // 7스테이지 클리어 후 선택 가능한 강화 뽑기. 기마병 2/3, 성직자 1/3.
@@ -342,19 +390,32 @@ const CARDS={
     MOUNTED_ORC:{name:'기마병 오크',icon:'🐎👹',hp:200,atk:48,range:1,move:2,cost:0,reward:75,desc:'최대 2칸 이동 · 장애물·전투 상황에서는 1칸'},
     HYENA:{name:'하이에나',icon:'🐺',hp:80,atk:45,range:1,move:2,cost:0,reward:40,desc:'체력 80 · 공격 45 · 기본 2칸 이동, 상황에 따라 1칸'},
     URSUS:{name:'우르수스',icon:'🐻',hp:1200,atk:86,range:1,cost:0,reward:150,roar:true,desc:'7스테이지 보스 · 포효 시 3턴 공격력 2배 · 아군 2명 공격 봉인'},
-    SILPERIA:{name:'실페리아',icon:'🌿👑',hp:2500,atk:77,range:1,cost:0,reward:0,desc:'9스테이지 보스 · 뿌리 공격 / 심판의 이클린스'}
+    SILPERIA:{name:'실페리아',icon:'🌿👑',hp:2500,atk:77,range:1,cost:0,reward:0,desc:'9스테이지 보스 · 뿌리 공격 / 심판의 이클린스'},
+    BANDIT:{name:'도적',icon:'🗡️',hp:100,atk:30,range:1,cost:0,reward:0,desc:'중립 · 먼저 공격받아야 반격하고 이동'},
+    BANDIT_LEADER:{name:'도적 두목',icon:'⚔️👑',hp:450,atk:44,range:1,cost:0,reward:0,desc:'중립 · 공격받은 뒤 턴마다 15% 암살(66 피해·1턴 행동불가)'},
+    BLACK_SLIME:{name:'블랙 슬라임',icon:'⚫',hp:270,atk:30,range:1,cost:0,reward:60,desc:'거대 · 매 적 턴 20% 잠식 · 사망 시 미니 블랙 슬라임'},
+    CORRUPTED_SLIME:{name:'잠식 슬라임',icon:'🟣',hp:50,atk:0,range:0,cost:0,reward:0,desc:'잠식으로 생성 · 이동 및 공격 불가'},
+    MINI_BLACK_SLIME:{name:'미니 블랙 슬라임',icon:'⚫',hp:66,atk:66,range:1,cost:0,reward:30,desc:'블랙 슬라임 사망 위치에서 생성'},
+    RAGE_SKELETON:{name:'분노의 스켈레톤',icon:'💀⛓️',hp:444,atk:58,range:1,cost:0,reward:90,desc:'2턴마다 40% · 무작위 아군 1~4턴 봉쇄 및 매턴 30 피해'},
+    WILD_BOAR:{name:'야생의 멧돼지',icon:'🐗',hp:193,atk:73,range:1,cost:0,reward:75,desc:'3턴마다 77% · 적 최대 4명 체력 20% 회복, 2턴간 공격력 1.5배'}
 
   }
 };
 const BASE_BLUE_IDS=['SWORDSMAN','ARCHER','MAGE','GUARDIAN'];
 const IDS={BLUE:Object.keys(CARDS.BLUE),RED:Object.keys(CARDS.RED)};
 const $=s=>document.querySelector(s), notice=$('#notice'),board=$('#board'),hand=$('#hand'),turnEl=$('#turn'),playersEl=$('#players'),deckInfo=$('#deckInfo'),modeInfo=$('#modeInfo');
-let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThinking=false,healingTargeting=false;
+let state=null,side='BLUE',selectedUnit=null,selectedCard='',mode='idle',aiThinking=false,healingTargeting=false,stageTenShopOpen=false;
 
 function msg(t){notice.textContent=t}
 function other(s){return s==='BLUE'?'RED':'BLUE'}
-function boardRows(){return state?.stage===6||state?.stage===7?10:state?.stage===8?8:state?.stage===4?7:BASE_ROWS}
-function boardCols(){return state?.stage===6||state?.stage===7?10:state?.stage===8?8:state?.stage===5||state?.stage===9?BASE_COLS*2:BASE_COLS}
+function boardRows(){return state?.stage===10?STAGE_TEN_MAP.length:state?.stage===6||state?.stage===7?10:state?.stage===8?8:state?.stage===4?7:BASE_ROWS}
+function boardCols(){return state?.stage===10?STAGE_TEN_MAP[0].length:state?.stage===6||state?.stage===7?10:state?.stage===8?8:state?.stage===5||state?.stage===9?BASE_COLS*2:BASE_COLS}
+function stageTenObjectAt(r,c){
+  if(state?.stage!==10)return null;
+  if(STAGE_TEN_SHOPS.some(p=>p.r===r&&p.c===c))return 'SHOP';
+  if(!state.quest10?.claimed&&STAGE_TEN_QUEST.r===r&&STAGE_TEN_QUEST.c===c)return 'QUEST';
+  return null
+}
 function homeRow(s){return s==='BLUE'?boardRows():1}
 function moveDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
 function attackDist(a,b){return Math.abs(a.r-b.r)+Math.abs(a.c-b.c)}
@@ -450,7 +511,59 @@ function loadProgress(){
       if(saved.chests)saved.chests=saved.chests.map(rotate);
       saved.mapOrientation='wide'
     }
-    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>9
+    // 과거 무작위 도적·상점 2개 버전의 10스테이지를 현재 지도에 맞춘다.
+    // 이미 처치한 적·열어 본 상자·골드·HP·턴·퀘스트·강화 내역은 그대로 유지한다.
+    let movedStageTenLayout=false;
+    if(saved?.stage===10&&saved.stageTenLayoutVersion!==1
+      &&Array.isArray(saved.units)&&Array.isArray(saved.chests)&&saved.quest10){
+      const reserved=new Set(STAGE_TEN_SHOPS.map(p=>p.r+','+p.c));
+      if(!saved.quest10.claimed)reserved.add(STAGE_TEN_QUEST.r+','+STAGE_TEN_QUEST.c);
+      const valid=p=>Number.isInteger(p.r)&&Number.isInteger(p.c)
+        &&STAGE_TEN_MAP[p.r-1]?.[p.c-1]==='#';
+      const available=p=>valid(p)&&!reserved.has(p.r+','+p.c);
+      // 기존 진행 중인 아군·적대화된 적은 먼저 배치하여 전투 진행을 보존한다.
+      const neutral=saved.units.filter(u=>u.side==='RED'
+        &&(u.card==='BANDIT'||u.card==='BANDIT_LEADER')&&!u.provoked);
+      const active=saved.units.filter(u=>!neutral.includes(u));
+      const relocate=(entity,preferred)=>{
+        if(available(preferred)){
+          entity.r=preferred.r;entity.c=preferred.c;
+          reserved.add(entity.r+','+entity.c);
+          return true
+        }
+        if(available(entity)){
+          reserved.add(entity.r+','+entity.c);
+          return true
+        }
+        const open=[];
+        for(let r=1;r<=STAGE_TEN_MAP.length;r++)
+          for(let c=1;c<=STAGE_TEN_MAP[r-1].length;c++)
+            if(available({r,c}))open.push({r,c});
+        if(!open.length)return false;
+        open.sort((a,b)=>Math.abs(a.r-entity.r)+Math.abs(a.c-entity.c)
+          -Math.abs(b.r-entity.r)-Math.abs(b.c-entity.c));
+        entity.r=open[0].r;entity.c=open[0].c;
+        reserved.add(entity.r+','+entity.c);
+        return true
+      };
+      for(const u of active)if(!relocate(u,u))return null;
+      // 남아 있는 상자만 재배치하며 이미 획득한 상자는 다시 생성하지 않는다.
+      for(const chest of saved.chests){
+        const target=chest.r===3&&chest.c===4?{r:4,c:4}
+          :chest.r===7&&chest.c===6?{r:7,c:7}:chest;
+        if(!relocate(chest,target))return null
+      }
+      const remaining=[...STAGE_TEN_BANDITS];
+      for(const u of neutral){
+        const index=remaining.findIndex(p=>p.card===u.card);
+        if(index<0)return null;
+        const preferred=remaining.splice(index,1)[0];
+        if(!relocate(u,preferred))return null
+      }
+      saved.stageTenLayoutVersion=1;
+      movedStageTenLayout=true
+    }
+    if(!saved||!Number.isInteger(saved.stage)||saved.stage<1||saved.stage>10
       ||!Number.isInteger(saved.turn)||saved.turn<1||!['BATTLE','REST'].includes(saved.phase)
       ||!['BLUE','RED'].includes(saved.current)||!['','BLUE','RED'].includes(saved.winner)
       ||!Number.isInteger(saved.keys)||saved.keys<0
@@ -460,13 +573,29 @@ function loadProgress(){
       ||!saved.summons||!Number.isInteger(saved.summons.BLUE)||!Number.isInteger(saved.summons.RED)
       ||saved.units.some(u=>!u||!CARDS[u.side]?.[u.card]||!Number.isFinite(u.hp)
         ||!Number.isInteger(u.r)||!Number.isInteger(u.c)
-        ||u.r<1||u.r>(saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===4?7:BASE_ROWS)
-        ||u.c<1||u.c>(saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===5||saved.stage===9?BASE_COLS*2:BASE_COLS))
+        ||u.r<1||u.r>(saved.stage===10?STAGE_TEN_MAP.length:saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===4?7:BASE_ROWS)
+        ||u.c<1||u.c>(saved.stage===10?STAGE_TEN_MAP[0].length:saved.stage===6||saved.stage===7?10:saved.stage===8?8:saved.stage===5||saved.stage===9?BASE_COLS*2:BASE_COLS)
+        ||(saved.stage===10&&STAGE_TEN_MAP[u.r-1]?.[u.c-1]!=='#'))
       ||saved.unlocked.some(id=>!CARDS.BLUE[id])
       ||(saved.chests!==undefined&&(!Array.isArray(saved.chests)
         ||saved.chests.some(x=>!x||!Number.isInteger(x.r)||!Number.isInteger(x.c)
-          ||x.r<1||x.r>BASE_ROWS||x.c<1||x.c>(saved.stage===5||saved.stage===9?BASE_COLS*2:BASE_COLS))))
+          ||x.r<1||x.r>(saved.stage===10?STAGE_TEN_MAP.length:BASE_ROWS)
+           ||x.c<1||x.c>(saved.stage===10?STAGE_TEN_MAP[0].length:saved.stage===5||saved.stage===9?BASE_COLS*2:BASE_COLS)
+           ||(saved.stage===10&&STAGE_TEN_MAP[x.r-1]?.[x.c-1]!=='#'))))
       ||(saved.specialTiles!==undefined&&!Array.isArray(saved.specialTiles)))return null;
+    if(saved.stage===10){
+      if(!saved.quest10||typeof saved.quest10.accepted!=='boolean'
+        ||typeof saved.quest10.bossDefeated!=='boolean'||typeof saved.quest10.claimed!=='boolean'
+        ||!Number.isInteger(saved.shop10Used)||saved.shop10Used<0||saved.shop10Used>3)return null;
+      const occupied=new Set(STAGE_TEN_SHOPS.map(p=>p.r+','+p.c));
+      if(!saved.quest10.claimed)occupied.add(STAGE_TEN_QUEST.r+','+STAGE_TEN_QUEST.c);
+      for(const p of saved.chests||[]){
+        const k=p.r+','+p.c;if(occupied.has(k))return null;occupied.add(k)
+      }
+      for(const u of saved.units){
+        const k=u.r+','+u.c;if(occupied.has(k))return null;occupied.add(k)
+      }
+    }
     // 예전 5스테이지 최종 승리 저장을 새 6스테이지 입장 전 휴식 화면으로 이전한다.
     if(saved.stage===5&&saved.winner==='BLUE'&&saved.phase==='BATTLE'){
       if(!saved.stageFiveRewarded){
@@ -514,7 +643,7 @@ function loadProgress(){
       localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved))
     }
     saved.diamonds=diamondWallet();
-    if(resizedStageSix)localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved));
+    if(resizedStageSix||movedStageTenLayout)localStorage.setItem(PROGRESS_KEY,JSON.stringify(saved));
     return saved
   }catch(error){
     console.warn('카드워즈 진행 저장 불러오기 실패',error);
@@ -530,14 +659,18 @@ function scaledStat(id,key){
 }
 function enemyStageScale(){return Number(stageConfig().enemyScale||1)}
 function enemyStat(id,key){return Math.round((card('RED',id)?.[key]||0)*enemyStageScale())}
-function unitMaxHp(u){return u.side==='BLUE'?scaledStat(u.card,'hp'):enemyStat(u.card,'hp')}
+function unitMaxHp(u){
+  const base=u.side==='BLUE'?scaledStat(u.card,'hp'):enemyStat(u.card,'hp');
+  return state?.stage===10&&u.side==='BLUE'?Math.round(base*(1+0.1*(state.shop10Used||0))):base
+}
 function unitAtk(u){
   const base=u.side==='BLUE'?scaledStat(u.card,'atk'):enemyStat(u.card,'atk');
-  return u.side==='RED'&&u.card==='URSUS'&&(u.roarTurns||0)>0?base*2:base
+  const boosted=state?.stage===10&&u.side==='BLUE'?Math.round(base*(1+0.1*(state.shop10Used||0))):base;
+  return u.side==='RED'&&u.card==='URSUS'&&(u.roarTurns||0)>0?boosted*2:u.side==='RED'&&(u.wildBuffTurns||0)>0?Math.round(boosted*1.5):boosted
 }
 function at(r,c){return state?.units.find(u=>u.r===r&&u.c===c)}
 function byId(id){return state?.units.find(u=>u.id===id)}
-function chestAt(r,c){return state?.stage===5?(state.chests||[]).find(x=>x.r===r&&x.c===c):null}
+function chestAt(r,c){return state&&(state.stage===5||state.stage===10)?(state.chests||[]).find(x=>x.r===r&&x.c===c):null}
 function canAct(){return state&&!state.winner&&state.phase==='BATTLE'&&state.current===side}
 function livingCount(s){return state.units.filter(u=>u.side===s).length}
 function stageConfig(){return STAGES[state?.stage||1]||STAGES[1]}
@@ -562,16 +695,22 @@ function applyDamage(target,amount,attackerSide){
   const before=target.hp;
   target.hp-=hit;
   if(target.side==='BLUE'&&hit>0)state.stageTookDamage=true;
+  if(state.stage===10&&attackerSide==='BLUE'&&target.side==='RED')target.provoked=true;
   if(before>0&&target.hp<=0){
+    if(state.stage===10&&target.card==='BANDIT_LEADER')state.quest10.bossDefeated=true;
     if(attackerSide==='BLUE'){
       state.gold.BLUE+=Number.isFinite(target.rewardOverride)?target.rewardOverride:(d.reward||30);
     }
     if(d.split)target.splitPending=true;
+    if(state.stage===10&&target.card==='BLACK_SLIME')target.blackSplitPending=true;
     return true
   }
   return false
 }
-function isInside(r,c){return r>=1&&r<=boardRows()&&c>=1&&c<=boardCols()}
+function isInside(r,c){
+  if(r<1||r>boardRows()||c<1||c>boardCols())return false;
+  return state?.stage!==10||STAGE_TEN_MAP[r-1]?.[c-1]==='#'
+}
 function splitSecondSpot(dead){
   const dirs=[
     {r:dead.r,c:dead.c-1},
@@ -605,8 +744,17 @@ function spawnSmallSlime(r,c){
   return true
 }
 function removeDeadAndSplit(){
+  // 10스테이지 블랙 슬라임은 사망 칸에 정확히 1마리로 분열한다.
+  const blackSlimes=state.stage===10?state.units.filter(u=>u.hp<=0&&u.blackSplitPending):[];
   const deadSlimes=state.units.filter(u=>u.hp<=0&&u.splitPending);
   state.units=state.units.filter(u=>u.hp>0);
+  for(const dead of blackSlimes){
+    if(isInside(dead.r,dead.c)&&!at(dead.r,dead.c))state.units.push({
+      id:crypto.randomUUID(),side:'RED',card:'MINI_BLACK_SLIME',hp:66,
+      r:dead.r,c:dead.c,moved:false,attacked:false,freeze:0,attackLock:0,
+      frozenNow:false,attackLockedNow:false
+    })
+  }
   for(const dead of deadSlimes){
     spawnSmallSlime(dead.r,dead.c);
     const second=splitSecondSpot(dead);
@@ -614,6 +762,7 @@ function removeDeadAndSplit(){
   }
 }
 function exhausted(s){
+  if(state.stage===10&&s==='RED')return false;
   if(livingCount(s)!==0)return false;
   if(s==='RED'){
     // 6스테이지의 마지막 8턴 증원을 모두 처리했다면 저장된 소환 수가
@@ -689,6 +838,7 @@ function clearStageEight(){
 }
 function checkWin(){
   if(!state||state.phase!=='BATTLE'||state.winner)return;
+  if(state.stage===10&&state.quest10?.claimed){state.winner='BLUE';return}
   if(exhausted('BLUE')){state.winner='RED';return}
   if(exhausted('RED')){
     if(state.stage===1){clearStageOne();return}
@@ -715,20 +865,22 @@ function resolveHammerHits(s){
     const target=byId(hammer.hammerTarget);
     hammer.hammerTarget='';
     if(!target||target.hp<=0)continue;
-    applyDamage(target,scaledStat('HAMMER','atk'),s);
+    applyDamage(target,unitAtk(hammer),s);
     removeDeadAndSplit();
     checkWin();
     if(state.winner||state.phase!=='BATTLE')break
   }
 }
 function resolveStageFourEnemyTurn(){
-  if(state.stage!==4)return;
+  if(state.stage!==4&&state.stage!==10)return;
   state.enemyTurns=(state.enemyTurns||0)+1;
   for(const orc of [...state.units].filter(u=>u.side==='RED'&&u.card==='CHARGE_ORC'&&u.hp>0)){
     if(Math.random()>=0.40)continue;
     let r=orc.r;
     while(r<boardRows()){
-      const nextR=r+1,target=at(nextR,orc.c);
+      const nextR=r+1;
+      if(!isInside(nextR,orc.c)||chestAt(nextR,orc.c)||stageTenObjectAt(nextR,orc.c))break;
+      const target=at(nextR,orc.c);
       if(target){
         if(target.side==='BLUE'){
           applyDamage(target,55,'RED');
@@ -764,7 +916,7 @@ function createStageFiveChests(){
 }
 // 스테이지 5·6·7·8 증원은 같은 책임 함수에서 정해진 아군 라운드에만 실행한다.
 function spawnScriptedWave(){
-  if(!state||state.phase!=='BATTLE'||![5,6,7,8,9].includes(state.stage))return;
+  if(!state||state.phase!=='BATTLE'||![5,6,7,8,9,10].includes(state.stage))return;
   const round=Math.ceil(state.turn/2);
   if(round<2||round===state.lastWaveRound)return;
   const waves=state.stage===5?{
@@ -785,28 +937,36 @@ function spawnScriptedWave(){
     5:['CHARGE_ORC','BEAR','ORC_MAGE','BOAR'],
     7:['MOUNTED_ORC','CHARGE_ORC','ORC_MAGE','POISON_SCORPION'],
     10:['BEAR','MOUNTED_ORC','ORC_MAGE','CHARGE_ORC','RUIN_GUARDIAN']
-  }:{
+  }:state.stage===9?{
     3:['HYENA','HYENA','HYENA'],
     7:['MOUNTED_ORC','MOUNTED_ORC','BEAR'],
     10:['RUIN_GUARDIAN'],
     15:['SILPERIA']
+  }:{
+    5:['HYENA','HYENA','HYENA','BLACK_SLIME'],
+    9:['CHARGE_ORC','CHARGE_ORC','RAGE_SKELETON'],
+    16:['BLACK_SLIME','ORC_MAGE','ORC_MAGE','CHARGE_ORC','CHARGE_ORC'],
+    23:['WILD_BOAR','MOUNTED_ORC','MOUNTED_ORC','BEAR'],
+    30:['RAGE_SKELETON','BEAR','BEAR','MOUNTED_ORC','MOUNTED_ORC','MOUNTED_ORC']
   };
-  // 8스테이지는 증원 자리가 모자라면 누락된 웨이브부터 다음 턴에 재시도한다.
-  // 이전 스테이지의 지정 턴 출현 규칙은 변경하지 않는다.
+  // 지정 턴을 지나 저장 재개하거나 자리가 부족하면 다음 아군 턴에 순서대로 재시도한다.
   const waveRound=state.stage===8
     ?[2,5,7,10].find(n=>n<=round&&n>(state.lastWaveRound||0))
     :state.stage===9
       ?[3,7,10,15].find(n=>n<=round&&n>(state.lastWaveRound||0))
-      :round;
+      :state.stage===10
+        ?[5,9,16,23,30].find(n=>n<=round&&n>(state.lastWaveRound||0))
+        :round;
   const enemies=waves[waveRound];
   if(!enemies)return;
   const free=[];
-  // 정글 치유 칸은 비워두고, 6스테이지 적은 맵 북쪽에서 증원한다.
   const lastRow=state.stage===7?5:boardRows();
   for(let r=1;r<=lastRow;r++){
     const row=[];
     for(let c=1;c<=boardCols();c++){
-      if(!at(r,c)&&!chestAt(r,c)&&!(state.stage===6&&tileAt(r,c)))row.push({r,c})
+      if(!isInside(r,c)||at(r,c)||chestAt(r,c)
+        ||(state.stage===6&&tileAt(r,c))||stageTenObjectAt(r,c))continue;
+      row.push({r,c})
     }
     for(let i=row.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
@@ -814,7 +974,7 @@ function spawnScriptedWave(){
     }
     free.push(...row)
   }
-  if(free.length<enemies.length)return msg('증원 공간이 부족해.');
+  if(free.length<enemies.length)return msg('증원 공간이 부족해. 다음 아군 턴에 다시 등장해.');
   for(const id of enemies){
     const pos=free.shift();
     state.units.push({
@@ -829,12 +989,11 @@ function spawnScriptedWave(){
   state.lastWaveRound=waveRound;
   msg(state.stage+'스테이지 '+waveRound+'턴 · 적 '+enemies.length+'마리 출현!'+(enemies.includes('URSUS')?' 우르수스 등장!':''))
   if(enemies.includes('URSUS'))syncBossMusic()
-
 }
 // 오크 마법사: 적 턴마다 60% 확률로 주변 8칸에 공격력 50을 적용.
 // 맞고 살아남은 아군은 다음 자기 턴에 이동 가능, 공격만 불가.
 function resolveOrcMageEnemyTurn(){
-  if(state.stage!==5&&state.stage!==6)return;
+  if(state.stage!==5&&state.stage!==6&&state.stage!==10)return;
   for(const mage of [...state.units].filter(u=>u.side==='RED'&&u.card==='ORC_MAGE'&&u.hp>0)){
     if(mage.frozenNow||Math.random()>=0.6)continue;
     const nearby=state.units.filter(u=>u.side==='BLUE'&&u.hp>0&&
@@ -914,11 +1073,92 @@ function startTurn(s){
     u.attackLockedNow=(u.attackLock||0)>0;
     if(u.attackLockedNow)u.attackLock--
   }
-  if(s==='BLUE')spawnScriptedWave();
+  if(s==='BLUE'){
+    spawnScriptedWave();
+    if(state.stage===10){
+      // 사슬 피해는 아군 턴마다 정확히 30 고정 피해. 봉쇄 기간은 1~4 아군 턴.
+      for(const u of [...state.units.filter(x=>x.side==='BLUE'&&x.hp>0&&(x.chainTurns||0)>0)]){
+        u.hp-=30;
+        state.stageTookDamage=true;
+        u.chainTurns--;
+        if(u.hp<=0)msg(card('BLUE',u.card).name+'이(가) 분노의 사슬로 쓰러졌어.');
+      }
+      removeDeadAndSplit();
+      checkWin();
+    }
+  }
+  if(state.winner||state.phase!=='BATTLE')return;
   if(s==='RED'){
     resolveOrcMageEnemyTurn();
+    if(state.winner||state.phase!=='BATTLE')return;
     resolveUrsusRoar();
-    resolveSilperiaSpecials()
+    resolveSilperiaSpecials();
+    if(state.winner||state.phase!=='BATTLE')return;
+    if(state.stage===10){
+      // 야생의 포효 효과는 이번 적 턴과 다음 적 턴, 총 2번 공격에 적용한다.
+      for(const u of state.units.filter(x=>x.side==='RED'&&(x.wildBuffTurns||0)>0))u.wildBuffTurns--;
+      for(const u of [...state.units.filter(x=>x.side==='RED'&&x.hp>0&&!x.frozenNow)]){
+        if(u.card==='BLACK_SLIME'&&Math.random()<0.20){
+          const target=state.units.filter(x=>x.side==='BLUE'&&x.hp>0)
+            .sort((a,b)=>moveDist(u,a)-moveDist(u,b))[0];
+          if(target){
+            const place={r:target.r,c:target.c};
+            target.hp=0;
+            state.stageTookDamage=true;
+            removeDeadAndSplit();
+            if(!at(place.r,place.c))state.units.push({
+              id:crypto.randomUUID(),side:'RED',card:'CORRUPTED_SLIME',hp:50,
+              ...place,moved:true,attacked:true,freeze:0,attackLock:0,
+              frozenNow:false,attackLockedNow:false
+            });
+            msg('블랙 슬라임 · 잠식! '+card('BLUE',target.card).name+' 즉사');
+            checkWin();
+            if(state.winner)return
+          }
+        }
+        if(u.card==='RAGE_SKELETON'){
+          u.specialEnemyTurns=(u.specialEnemyTurns||0)+1;
+          if(u.specialEnemyTurns%2===0&&Math.random()<0.40){
+            const targets=state.units.filter(x=>x.side==='BLUE'&&x.hp>0);
+            if(targets.length){
+              const target=targets[Math.floor(Math.random()*targets.length)];
+              const duration=1+Math.floor(Math.random()*4);
+              target.chainTurns=Math.max(target.chainTurns||0,duration);
+              target.freeze=Math.max(target.freeze||0,target.chainTurns);
+              msg('분노의 사슬! '+card('BLUE',target.card).name+' '+duration+'턴 봉쇄 · 턴당 30 피해')
+            }
+          }
+        }
+        if(u.card==='WILD_BOAR'){
+          u.specialEnemyTurns=(u.specialEnemyTurns||0)+1;
+          if(u.specialEnemyTurns%3===0&&Math.random()<0.77){
+            const targets=state.units.filter(x=>x.side==='RED'&&x.hp>0);
+            for(let i=targets.length-1;i>0;i--){
+              const j=Math.floor(Math.random()*(i+1));
+              [targets[i],targets[j]]=[targets[j],targets[i]]
+            }
+            for(const friend of targets.slice(0,4)){
+              friend.hp=Math.min(unitMaxHp(friend),friend.hp+Math.round(unitMaxHp(friend)*0.20));
+              friend.wildBuffTurns=Math.max(friend.wildBuffTurns||0,2);
+            }
+            if(targets.length)msg('야생의 포효! 최대 4마리 체력 20% 회복 · 2턴간 공격력 1.5배')
+          }
+        }
+      }
+    }
+    // 중립 도적 두목은 아군의 선제공격 이후에만 암살을 사용한다.
+    const leader=state.stage===10?state.units.find(u=>u.card==='BANDIT_LEADER'&&u.hp>0&&u.provoked):null;
+    if(leader&&!leader.frozenNow&&Math.random()<0.15){
+      const allies=state.units.filter(u=>u.side==='BLUE'&&u.hp>0);
+      if(allies.length){
+        const victim=allies[Math.floor(Math.random()*allies.length)];
+        applyDamage(victim,66,'RED');
+        if(victim.hp>0)victim.freeze=Math.max(victim.freeze||0,1);
+        removeDeadAndSplit();
+        checkWin();
+        msg('도적 두목의 암살! '+card('BLUE',victim.card).name+'에게 66 피해 · 1턴 공격/이동 봉인')
+      }
+    }
   }
 }
 function processAction(actor,p){
@@ -929,7 +1169,8 @@ function processAction(actor,p){
     if(state.summons[actor]>=maxSummons(actor))return false;
     const id=String(p.card||'');
     const d=card(actor,id);
-    if(!d||p.r!==homeRow(actor)||at(p.r,p.c)||chestAt(p.r,p.c))return false;
+    if(!d||!isInside(p.r,p.c)||(p.r!==homeRow(actor)&&!(state.stage===10&&actor==='BLUE'))
+      ||at(p.r,p.c)||chestAt(p.r,p.c)||stageTenObjectAt(p.r,p.c))return false;
     if(actor==='BLUE'){
       if(!bluePool().includes(id)||state.gold.BLUE<d.cost)return false;
       state.gold.BLUE-=d.cost;
@@ -954,10 +1195,10 @@ function processAction(actor,p){
     state.summonUsed=true;
   }else if(p.type==='move'){
     const u=byId(p.unit);
-    if(!u||u.side!==actor||u.moved||u.frozenNow||!isInside(p.r,p.c)||at(p.r,p.c)||chestAt(p.r,p.c))return false;
+    if(!u||u.side!==actor||u.moved||u.frozenNow||!isInside(p.r,p.c)||at(p.r,p.c)||chestAt(p.r,p.c)||stageTenObjectAt(p.r,p.c))return false;
     const distance=moveDist(u,{r:p.r,c:p.c});
-    const enemyMounted=(state.stage===6||state.stage===8||state.stage===9)&&u.side==='RED'&&u.card==='MOUNTED_ORC';
-    const enemyHyena=state.stage===9&&u.side==='RED'&&u.card==='HYENA';
+    const enemyMounted=(state.stage===6||state.stage===8||state.stage===9||state.stage===10)&&u.side==='RED'&&u.card==='MOUNTED_ORC';
+    const enemyHyena=(state.stage===9||state.stage===10)&&u.side==='RED'&&u.card==='HYENA';
     const allyMounted=u.side==='BLUE'&&u.card==='CAVALRY';
     if(distance!==1&&!(distance===2&&(u.r===p.r||u.c===p.c)&&(enemyMounted||enemyHyena||allyMounted)))return false;
     if(distance===1){
@@ -968,7 +1209,7 @@ function processAction(actor,p){
       const middle={r:u.r+Math.sign(p.r-u.r),c:u.c+Math.sign(p.c-u.c)};
       const blocker=at(middle.r,middle.c);
       // 적의 뒤칸이 점유되어 있으면 돌격할 수 없고 겹치지 않는다.
-      if(at(p.r,p.c)||chestAt(middle.r,middle.c))return false;
+      if(at(p.r,p.c)||chestAt(middle.r,middle.c)||stageTenObjectAt(middle.r,middle.c))return false;
       if(blocker){
         if(!allyMounted||blocker.side!=='RED')return false;
         blocker.r=p.r;blocker.c=p.c;
@@ -989,11 +1230,38 @@ function processAction(actor,p){
   }else if(p.type==='attackChest'){
     const a=byId(p.unit),chest=chestAt(p.r,p.c);
     if(actor!=='BLUE'||!a||a.side!==actor||!chest||a.attacked||a.frozenNow||a.attackLockedNow||!canAttackTarget(a,chest))return false;
-    const gold=10+Math.floor(Math.random()*61);
+    const gold=state.stage===10?40:10+Math.floor(Math.random()*61);
     state.gold.BLUE+=gold;
     state.chests=state.chests.filter(x=>x!==chest);
     a.attacked=true;
     msg('골드 상자 파괴 · '+gold+'골드 획득!');
+  }else if(p.type==='shopUpgrade'){
+    if(actor!=='BLUE'||state.stage!==10||!stageTenShopOpen
+      ||state.shop10Used>=3||state.gold.BLUE<75)return false;
+    const previousHp=new Map(state.units.filter(u=>u.side==='BLUE').map(u=>[u.id,unitMaxHp(u)]));
+    state.gold.BLUE-=75;
+    state.shop10Used++;
+    for(const u of state.units.filter(u=>u.side==='BLUE')){
+      u.hp=Math.min(unitMaxHp(u),u.hp+unitMaxHp(u)-previousHp.get(u.id))
+    }
+    msg('상점 강화 '+state.shop10Used+'/3 · 이번 10스테이지 아군 전체 체력·공격력 +'+(state.shop10Used*10)+'%');
+  }else if(p.type==='talkQuest'){
+    const a=byId(p.unit),q=state.quest10;
+    if(actor!=='BLUE'||state.stage!==10||!q||q.claimed||!a
+      ||a.side!=='BLUE'||a.card==='PRIEST'||a.attacked||a.frozenNow||a.attackLockedNow
+      ||!canAttackTarget(a,STAGE_TEN_QUEST))return false;
+    a.attacked=true;
+    if(!q.accepted){
+      q.accepted=true;
+      msg('의뢰인: 도적 두목을 잡아줘!');
+    }else if(!q.bossDefeated){
+      msg('의뢰인: 도적 두목을 잡고 다시 와줘.');
+    }else{
+      q.claimed=true;
+      state.gold.BLUE+=111;
+      msg('의뢰인: 고마워! 111골드를 줄게. · 의뢰인 퇴장 · 10스테이지 클리어!')
+      checkWin()
+    }
   }else if(p.type==='heal'){
     // 성직자는 플레이어가 지정한 아군만 거리 제한 없이 한 턴에 한 번 회복한다.
     const healer=byId(p.unit),target=byId(p.target);
@@ -1043,7 +1311,7 @@ function processAction(actor,p){
     }
 
     const tr=t.r,tc=t.c,tid=t.id;
-    applyDamage(t,actor==='BLUE'?scaledStat(a.card,'atk'):unitAtk(a),actor);
+    applyDamage(t,unitAtk(a),actor);
 
     if(actor==='RED'&&d.rockThrow&&Math.random()<0.40){
       const low=state.units.filter(u=>u.side==='BLUE'&&u.hp>0).sort((a,b)=>a.hp-b.hp)[0];
@@ -1061,6 +1329,13 @@ function processAction(actor,p){
     const alive=byId(tid);
     if(alive&&alive.hp>0&&d.freeze&&Math.random()<d.freeze)alive.freeze=Math.max(alive.freeze||0,1);
     a.attacked=true;
+    // 한 번이라도 공격당한 중립 도적은 이후 이동·반격하고, 생존 시 사거리 안에서 즉시 반격한다.
+    if(state.stage===10&&actor==='BLUE'&&t.side==='RED'&&t.hp>0
+      &&(t.card==='BANDIT'||t.card==='BANDIT_LEADER')&&t.provoked&&!t.frozenNow&&canAttackTarget(t,a)&&t.counterTurn!==state.turn){
+      t.counterTurn=state.turn;
+      applyDamage(a,unitAtk(t),'RED');
+      msg(card('RED',t.card).name+'의 반격! '+unitAtk(t)+' 피해')
+    }
     removeDeadAndSplit();
     checkWin();
   }else if(p.type==='end'){
@@ -1130,8 +1405,10 @@ function unitText(u){
   const charge=u.card==='HAMMER'?(u.hammerTarget?' · 공격예약':' · 대상지정 필요'):'';
   const lock=u.attackLockedNow?' · 공격불가':'';
   const rage=u.card==='URSUS'&&u.roarTurns>0?' · 포효 '+u.roarTurns+'턴':'';
+  const chain=u.chainTurns>0?' · 사슬 '+u.chainTurns+'턴':'';
+  const wild=u.wildBuffTurns>0?' · 강화 '+u.wildBuffTurns+'턴':'';
   const maxHp=unitMaxHp(u),atk=unitAtk(u);
-  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · '+(d.heal?'회복 '+d.heal:'공'+atk+' 사'+d.range)+charge+(u.frozenNow?' · 봉인':'')+lock+rage+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
+  return '<div class="unit '+(u.side==='BLUE'?'blue':'red')+'">'+portraitHtml(u.card,d)+'<b>'+d.name+'</b><small>'+u.hp+'/'+maxHp+' · '+(d.heal?'회복 '+d.heal:'공'+atk+' 사'+d.range)+charge+(u.frozenNow?' · 봉인':'') +lock+rage+chain+wild+'</small><span class="hp"><i style="width:'+Math.max(0,u.hp/maxHp*100)+'%"></i></span></div>'
 }
 function createStageFourTiles(){
   const cells=[];
@@ -1178,17 +1455,41 @@ function render(){
   const rows=boardRows(),cols=boardCols();
   board.classList.toggle('wide',state?.stage===5||state?.stage===9);
   board.parentElement.classList.toggle('wide',state?.stage===5||state?.stage===9);
-  board.classList.toggle('giant',state?.stage===6||state?.stage===7||state?.stage===8);
+  board.classList.toggle('giant',state?.stage===6||state?.stage===7||state?.stage===8||state?.stage===10);
+  board.classList.toggle('stageTen',state?.stage===10);
   board.classList.toggle('stageEight',state?.stage===8);
-  board.parentElement.classList.toggle('giant',state?.stage===6||state?.stage===7||state?.stage===8);
-  $('#mapControls').classList.toggle('hidden',![6,7,8].includes(state?.stage));
+  board.parentElement.classList.toggle('giant',state?.stage===6||state?.stage===7||state?.stage===8||state?.stage===10);
+  $('#mapControls').classList.toggle('hidden',![6,7,8,10].includes(state?.stage));
+  const showShop=state?.stage===10&&state.phase==='BATTLE'&&state.current==='BLUE'&&!state.winner&&stageTenShopOpen;
+  $('#stageTenShop').classList.toggle('hidden',!showShop);
+  if(showShop){
+    $('#stageTenShopInfo').textContent='75골드 · 아군 전체 체력·공격력 +10% · '+(state.shop10Used||0)+'/3회 (10스테이지에서만)';
+    $('#stageTenBuy').disabled=state.shop10Used>=3||state.gold.BLUE<75;
+    $('#stageTenBuy').textContent=state.shop10Used>=3?'최대 3회 강화 완료':'75골드로 모두 강화'
+  }
   board.style.gridTemplateColumns='repeat('+cols+',1fr)';
   board.style.gridTemplateRows='repeat('+rows+',1fr)';
   board.style.aspectRatio=cols+'/'+rows;
   for(let r=1;r<=rows;r++)for(let c=1;c<=cols;c++){
     const b=document.createElement('button');
     b.className='cell '+(r===1?'homeRed ':'')+(r===homeRow('BLUE')?'homeBlue ':'');
+    if(!isInside(r,c)){
+      b.classList.add('voidCell');
+      b.disabled=true;
+      board.appendChild(b);
+      continue
+    }
     const u=state?at(r,c):null,tile=state?tileAt(r,c):null,chest=state?chestAt(r,c):null;
+    const stageTenObject=stageTenObjectAt(r,c);
+    if(stageTenObject==='SHOP'){
+      b.classList.add('shopCell');
+      b.title='상점 · 75골드로 모든 아군 체력·공격력 10% 증가 · 최대 3번';
+      b.innerHTML='<span class="stageTenObject"><span>🏪</span>상점</span>'
+    }else if(stageTenObject==='QUEST'){
+      b.classList.add('questCell');
+      b.title='퀘스트 의뢰인 · 아군을 선택해 공격해서 대화';
+      b.innerHTML='<span class="stageTenObject"><span>📜</span>의뢰인</span>'
+    }
     if(state?.stage===6&&c>=8){
       b.classList.add('jungle');
       if((r+c)%3===0)b.classList.add('bush');
@@ -1198,12 +1499,14 @@ function render(){
     if(tile){b.dataset.tile=tile.type;b.title=({SPIKE:'가시 발판',HEAL:'회복 발판',JUMP:'점프 발판',CRACK:'균열 발판'})[tile.type]||'특수 발판';b.style.boxShadow='inset 0 0 0 3px '+({SPIKE:'#d9534f',HEAL:'#47b96b',JUMP:'#5b8cff',CRACK:'#b57cff'})[tile.type];b.insertAdjacentHTML('beforeend',tileHtml(tile.type))}
     if(chest&&!u){
       b.classList.add('goldChestCell');
-      b.title='골드 상자 · 공격하면 10~70골드';
+      b.title=state.stage===10?'골드 상자 · 공격하면 40골드':'골드 상자 · 공격하면 10~70골드';
       b.insertAdjacentHTML('beforeend','<span class="goldChest gameArt" role="img" aria-label="골드 상자" style="'+gameArtStyle('GOLD_CHEST')+'"></span>')
     }
     if(u){
       if(u.card==='URSUS'||u.card==='SILPERIA')b.classList.add('bossCell');
       if(u.card==='SILPERIA')b.classList.add('silperiaCell');
+      if(state?.stage===10&&u.card==='BLACK_SLIME')b.classList.add('blackSlimeCell');
+      if(state?.stage===10&&u.side==='RED')b.classList.add('banditCell');
       b.insertAdjacentHTML('beforeend',unitText(u));
       if(u.id===selectedUnit)b.classList.add('sel');
       if(healingTargeting&&u.side===side&&u.hp>0&&u.hp<unitMaxHp(u))b.classList.add('healCandidate')
@@ -1231,7 +1534,7 @@ function render(){
         if(state.summons[side]>=maxSummons(side))return msg('소환 가능 수를 모두 사용했어.');
         if(side==='BLUE'&&state.gold.BLUE<d.cost)return msg('골드가 부족해.');
         selectedCard=id;selectedUnit=null;healingTargeting=false;
-        msg(d.name+' 선택 · 자기 진영 첫 줄 빈칸을 눌러');
+        msg(d.name+(state.stage===10?' 선택 · 지도 안의 비어 있는 칸을 눌러':' 선택 · 자기 진영 첫 줄 빈칸을 눌러'));
         render()
       };
       hand.appendChild(b)
@@ -1319,8 +1622,23 @@ function cellTap(r,c,u){
     return
   }
 
+  if(state?.stage===10){
+    if(!isInside(r,c))return msg('이동할 수 없는 지형이야.');
+    if(stageTenObjectAt(r,c)==='SHOP'){
+      stageTenShopOpen=true;
+      msg('상점 · 75골드로 아군 전체 체력·공격력 +10% · 최대 3번');
+      render();
+      return
+    }
+    if(stageTenObjectAt(r,c)==='QUEST'){
+      if(!selectedUnit)return msg('의뢰인과 대화할 아군을 먼저 선택해.');
+      act({type:'talkQuest',unit:selectedUnit});
+      return
+    }
+  }
   if(selectedCard){
-    if(r!==homeRow(side)||u)return msg('자기 진영 첫 줄의 빈칸을 눌러.');
+    if((state.stage!==10&&r!==homeRow(side))||!isInside(r,c)||u||chestAt(r,c)||stageTenObjectAt(r,c))
+      return msg(state.stage===10?'지도 안의 비어 있는 칸을 눌러.':'자기 진영 첫 줄의 빈칸을 눌러.');
     const id=selectedCard;
     selectedCard='';
     act({type:'summon',card:id,r,c});
@@ -1356,13 +1674,13 @@ function aiTurn(){
   for(let c=1;c<=boardCols();c++)if(!at(1,c))free.push(c);
   const options=affordableCards('RED');
 
-  if(![5,6,7,8,9].includes(state.stage)&&!state.summonUsed&&free.length&&options.length){
+  if(![5,6,7,8,9,10].includes(state.stage)&&!state.summonUsed&&free.length&&options.length){
     const id=options[Math.floor(Math.random()*options.length)];
     processAction('RED',{type:'summon',card:id,r:1,c:free[Math.floor(Math.random()*free.length)]})
   }
 
   for(const u of [...state.units.filter(x=>x.side==='RED')]){
-    if(u.frozenNow)continue;
+    if(u.frozenNow||(state.stage===10&&((u.card==='BANDIT'||u.card==='BANDIT_LEADER')&&!u.provoked||u.card==='CORRUPTED_SLIME')))continue;
 
     const d=card('RED',u.card);
     const targets=state.units.filter(x=>x.side==='BLUE').sort((a,b)=>attackDist(u,a)-attackDist(u,b));
@@ -1371,16 +1689,16 @@ function aiTurn(){
     if(inRange){
       processAction('RED',{type:'attack',unit:u.id,target:inRange.id})
     }else if(targets[0]&&!u.moved){
-      const t=targets[0],cavalry=(state.stage===6||state.stage===8||state.stage===9)&&u.card==='MOUNTED_ORC';
-      const hyena=state.stage===9&&u.card==='HYENA'&&moveDist(u,t)>2;
+      const t=targets[0],cavalry=(state.stage===6||state.stage===8||state.stage===9||state.stage===10)&&u.card==='MOUNTED_ORC';
+      const hyena=(state.stage===9||state.stage===10)&&u.card==='HYENA'&&moveDist(u,t)>2;
       const moves=[];
       for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1]]){
         const near={r:u.r+dr,c:u.c+dc};
-        if(!isInside(near.r,near.c)||at(near.r,near.c)||chestAt(near.r,near.c))continue;
+        if(!isInside(near.r,near.c)||at(near.r,near.c)||chestAt(near.r,near.c)||stageTenObjectAt(near.r,near.c))continue;
         moves.push(near);
         if(cavalry||hyena){
           const far={r:u.r+2*dr,c:u.c+2*dc};
-          if(isInside(far.r,far.c)&&!at(far.r,far.c)&&!chestAt(far.r,far.c))moves.push(far)
+          if(isInside(far.r,far.c)&&!at(far.r,far.c)&&!chestAt(far.r,far.c)&&!stageTenObjectAt(far.r,far.c))moves.push(far)
         }
       }
       // 1칸 이동만으로 다음 공격 사거리에 들어오면 2칸으로 넘어가지 않는다.
@@ -1474,6 +1792,11 @@ $('#bossMusicToggle').onclick=()=>{
     'https://www.youtube-nocookie.com')
 };
 $('#endingRestart').onclick=()=>$('#restartBtn').click();
+$('#endingNext').onclick=()=>{
+  if(state?.stage===9&&state.winner==='BLUE')startStage(10)
+};
+$('#stageTenBuy').onclick=()=>act({type:'shopUpgrade'});
+$('#stageTenClose').onclick=()=>{stageTenShopOpen=false;render()};
 $('#resetDiamonds').onclick=resetDiamonds;
 // 진행 중에도 1스테이지 재시작 가능. 다이아 지갑은 기존 저장 키를 유지한다.
 $('#restartBtn').onclick=()=>{
@@ -1604,8 +1927,23 @@ function startStage(next){
   state.enemyTurns=0;
   state.lastWaveRound=0;
   state.specialTiles=[];
-  state.chests=next===5?createStageFiveChests():[];
+  state.chests=next===5?createStageFiveChests():next===10?STAGE_TEN_CHESTS.map(p=>({...p})):[];
   state.mapOrientation=next===5||next===9?'wide':'';
+  state.shop10Used=0;
+  state.quest10=next===10?{accepted:false,bossDefeated:false,claimed:false}:null;
+  stageTenShopOpen=false;
+  if(next===10){
+    // 도적의 출현 위치는 원본 지도 그대로 고정. 턴 증원은 기존 규칙을 유지한다.
+    state.stageTenLayoutVersion=1;
+    for(const marker of STAGE_TEN_BANDITS){
+      state.units.push({
+        id:crypto.randomUUID(),side:'RED',card:marker.card,hp:enemyStat(marker.card,'hp'),
+        r:marker.r,c:marker.c,moved:false,attacked:false,freeze:0,attackLock:0,
+        frozenNow:false,attackLockedNow:false,hammerTarget:'',provoked:false,rewardOverride:0
+      });
+      state.summons.RED++
+    }
+  }
   state.specialTiles=next===6?createStageSixJungle():state.specialTiles;
   state.mapSize=next===6?10:next===8?8:0;
   if(next!==5)state.stageFiveRewarded=false;
@@ -1622,10 +1960,12 @@ function startStage(next){
   else if(next===7)msg('7스테이지 시작 · 10×10 · 4턴 돌격 오크/곰 · 7턴 우르수스');
    else if(next===8)msg('8스테이지 시작 · 8×8 맵 · 2/5/7/10턴 적 증원(3/4/4/5마리)');
   else if(next===9)msg('9스테이지 시작 · 5스테이지와 같은 5×10 맵 · 3턴 하이에나 3마리 · 7턴 기마병 오크 2마리/곰 1마리 · 10턴 유적 수호자 · 15턴 실페리아');
+  else if(next===10)msg('10스테이지 시작 · 중립 도적 7명과 두목 · 5/9/16/23/30턴 몬스터 증원 · 의뢰인을 도와줘!');
   state.version++;
   saveProgress();
   render();
-  if(next===6||next===7||next===8||next===9)board.parentElement.scrollTop=board.parentElement.scrollHeight
+  if(next===6||next===7||next===8||next===9)board.parentElement.scrollTop=board.parentElement.scrollHeight;
+  if(next===10)board.parentElement.scrollTop=0
 }
 $('#nextStage').onclick=()=>{
   if(!state||state.phase!=='REST'||side!=='BLUE')return;

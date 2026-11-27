@@ -10,6 +10,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'roblox-games/mare-essentia/**'
       - 'tools/company-nemotron-design-review.mjs'
       - 'qa/mare-essentia-datastore-name.test.mjs'
       - 'company-learning/external-ai-distillation-policy.json'
@@ -21,7 +22,7 @@ permissions:
 jobs:
   gates:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: Install Luau

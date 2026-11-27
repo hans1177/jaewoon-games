@@ -975,15 +975,26 @@ function VoyageScene.play(info)
 	-- 조명 저장 후 바다 분위기로 바꾼다
 	local saved = {
 		clock = Lighting.ClockTime, fogEnd = Lighting.FogEnd, fogStart = Lighting.FogStart, fogColor = Lighting.FogColor,
-		ambient = Lighting.Ambient, camType = camera.CameraType, camFov = camera.FieldOfView,
+		ambient = Lighting.Ambient, shadowSoftness = Lighting.ShadowSoftness,
+		camType = camera.CameraType, camFov = camera.FieldOfView,
 	}
-	local atmosphere = Instance.new("Atmosphere")
-	atmosphere.Name = "VoyageAtmosphere"
+	-- [수평선 대기원근] 항구의 기존 Atmosphere가 남아 있으면 이를 재사용해 다중 대기 충돌을 막는다.
+	-- 항해 후 기존 밀도·색·해무·그림자 계조를 정확히 돌려준다.
+	local originalAtmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
+	local atmosphere = originalAtmosphere or Instance.new("Atmosphere")
+	local savedAtmosphere = if originalAtmosphere then {
+		color = atmosphere.Color, decay = atmosphere.Decay, density = atmosphere.Density,
+		offset = atmosphere.Offset, haze = atmosphere.Haze, glare = atmosphere.Glare,
+	} else nil
+	if not originalAtmosphere then atmosphere.Name = "VoyageAtmosphere" end
 	atmosphere.Density = 0.25
 	atmosphere.Offset = 0.2
 	atmosphere.Color = Color3.fromRGB(190, 210, 230)
-	atmosphere.Decay = Color3.fromRGB(240, 200, 160)
-	atmosphere.Parent = Lighting
+	atmosphere.Decay = Color3.fromRGB(106, 148, 185)
+	atmosphere.Haze = 0.65
+	atmosphere.Glare = 0.12
+	if not originalAtmosphere then atmosphere.Parent = Lighting end
+	Lighting.ShadowSoftness = 0.30
 	-- 색감·빛번짐을 살려 바다를 덜 밋밋하게
 	local grade = Instance.new("ColorCorrectionEffect")
 	grade.Saturation = 0.18
@@ -991,7 +1002,9 @@ function VoyageScene.play(info)
 	grade.TintColor = Color3.fromRGB(255, 248, 238)
 	grade.Parent = Lighting
 	local bloom = Instance.new("BloomEffect")
-	bloom.Intensity = 0.35
+	-- [모바일 수평선] 수면 반짝임은 원본 채광만 유지하고 과한 후처리를 없앤다.
+	bloom.Enabled = not UserInputService.TouchEnabled
+	bloom.Intensity = if UserInputService.TouchEnabled then 0 else 0.35
 	bloom.Size = 28
 	bloom.Threshold = 1.1
 	bloom.Parent = Lighting
@@ -1013,6 +1026,19 @@ function VoyageScene.play(info)
 
 	-- 물결치는 진짜 물(지형 물)을 배 주변에만 깐다. 실패하면 위의 판이 바다를 맡는다.
 	local terrain = workspace.Terrain
+	-- [실제 3D 구름] 기존 엔진 Clouds를 재사용하므로 공/판 구름을 만들지 않는다.
+	-- 기상 변동은 아래 기존 항해 프레임에서만 저빈도로 반영한다.
+	local originalSkyClouds = terrain:FindFirstChildOfClass("Clouds")
+	local skyClouds = originalSkyClouds or Instance.new("Clouds")
+	local savedSkyClouds = if originalSkyClouds then {
+		cover = skyClouds.Cover, density = skyClouds.Density, color = skyClouds.Color,
+	} else nil
+	if not originalSkyClouds then skyClouds.Name = "VoyageSkyClouds" end
+	skyClouds.Cover = 0.24
+	skyClouds.Density = 0.34
+	skyClouds.Color = Color3.fromRGB(227, 237, 247)
+	if not originalSkyClouds then skyClouds.Parent = terrain end
+	local nextSkyWeatherAt = 0
 	local savedWater = { c = terrain.WaterColor, t = terrain.WaterTransparency, r = terrain.WaterReflectance, ws = terrain.WaterWaveSize, wsp = terrain.WaterWaveSpeed }
 	-- 지형 물은 검은 타원 얼룩이 생겨 쓰지 않는다. 판의 윗면을 수면(0)에 맞춘다.
 	local waterOk = false
@@ -1233,7 +1259,7 @@ function VoyageScene.play(info)
 	-- 사건 소품: 지나가는 상선, 암초, 섬, 유령선 등 (승인된 모델만)
 	local props = {}
 	local fish = {}
-	local function addProp(kind, asset, size, side, along, extraYaw, y)
+	local function addProp(kind, asset, size, side, along, extraYaw, y, band)
 		if not info.place then
 			return nil
 		end
@@ -1244,6 +1270,25 @@ function VoyageScene.play(info)
 		local bcf, bsize = m:GetBoundingBox()
 		local off = (bcf.Position.Y - bsize.Y / 2) - m:GetPivot().Position.Y
 		local rec = { m = m, side = side, along = along, yaw = extraYaw or 0, y = (y or 0) - off }
+		-- [항해 섬 실물] 기존 CC0 지형만 원근층을 부여한다. 외관 텍스처와 실제 이벤트 판정은 유지.
+		if band then
+			m:SetAttribute("VoyageSceneryBand", band)
+			if band == "far" then
+				for _, piece in m:GetDescendants() do
+					if piece:IsA("BasePart") then
+						piece.CastShadow = false
+						if not piece:FindFirstChildOfClass("SurfaceAppearance")
+							and (not piece:IsA("MeshPart") or piece.TextureID == "") then
+							local hasTexture = false
+							for _, mesh in piece:GetChildren() do
+								if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then hasTexture = true; break end
+							end
+							if not hasTexture then piece.Color = piece.Color:Lerp(Color3.fromRGB(133, 169, 190), 0.21) end
+						end
+					end
+				end
+			end
+		end
 		table.insert(props, rec)
 		return rec
 	end
@@ -1338,12 +1383,14 @@ function VoyageScene.play(info)
 			who.follow = raft
 		end
 	elseif ev.kind == "island" then
-		addProp("Terrain", "cliff-rock", 70, 150, 0.12, 0, -3)
-		addProp("Terrain", "campfire-stones", 5, 128, 0.12, 0, 0.5)
-		addProp("Terrain", "log-stack", 6, 124, 0.12, 0.5, 0.5)
-		addProp("Terrain", "canoe", 9, 118, 0.12, 1.2, 0)
+		-- [원경 절벽→중경 야자→근경 해안] 승인된 기존 8개 모델·섬 사건을 그대로 쓴다.
+		-- 섬 전체가 항해 중 서로 미끄러지지 않도록 같은 along 값을 공유한다.
+		addProp("Terrain", "cliff-rock", 90, 171, 0.12, 0, -3, "far")
+		addProp("Terrain", "campfire-stones", 5, 128, 0.12, 0, 0.5, "near")
+		addProp("Terrain", "log-stack", 6, 124, 0.12, 0.5, 0.5, "near")
+		addProp("Terrain", "canoe", 9, 118, 0.12, 1.2, 0, "near")
 		for i = 1, 4 do
-			addProp("Naval", "palm-detailed-straight", 16, 135 + i * 7, 0.12 + i * 0.006, i, -1)
+			addProp("Naval", "palm-detailed-straight", 16, 132 + i * 8, 0.12, i, -1, "mid")
 		end
 	elseif ev.kind == "ghost" then
 		addProp("Naval", "ship-ghost", 18, -80, 0.35, math.pi, 0)
@@ -1421,8 +1468,10 @@ function VoyageScene.play(info)
 	if weather.kind then
 		local snow, hail = weather.kind == "snow", weather.kind == "hail"
 		precipAnchor = part(folder, Vector3.new(96, 0.25, 96), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		precipAnchor.Name = "VoyagePrecipitationSource"
 		precipAnchor.Transparency = 1
 		precip = Instance.new("ParticleEmitter")
+		precip.Name = "VoyagePrecipitation"
 		precip.Texture = FOAM
 		precip.Rate = 0
 		precip.EmissionDirection = Enum.NormalId.Bottom
@@ -1883,7 +1932,8 @@ function VoyageScene.play(info)
 				local point = surface + fwd * shipLen * 0.40 + rgt * jet.side * shipLen * 0.115
 				local sprayDirection = fwd * 0.26 + rgt * jet.side * 0.78 + Vector3.new(0, 0.58, 0)
 				jet.anchor.CFrame = CFrame.lookAt(point, point + sprayDirection)
-				jet.emitter.Rate = math.floor(flow * (15 + 10 * roughness))
+				local jetRate = math.floor(flow * (15 + 10 * roughness))
+				if jet.emitter.Rate ~= jetRate then jet.emitter.Rate = jetRate end
 				local force = 8 + 11 * flow + 7 * roughness
 				jet.emitter.Speed = NumberRange.new(force * 0.57, force)
 				if breakWave then
@@ -1892,11 +1942,13 @@ function VoyageScene.play(info)
 			end
 			local stern = surface - fwd * shipLen * 0.41
 			sternPart.CFrame = CFrame.lookAt(stern, stern - fwd + Vector3.new(0, 0.14, 0))
-			sternEm.Rate = math.floor(flow * 16)
+			local sternRate = math.floor(flow * 16)
+			if sternEm.Rate ~= sternRate then sternEm.Rate = sternRate end
 			for _, wake in trailParts do
 				local point = stern + rgt * wake.side * shipLen * 0.14
 				wake.anchor.CFrame = CFrame.new(point) * CFrame.Angles(0, yaw, 0)
-				wake.trail.Enabled = flow > 0.12
+				local trailEnabled = flow > 0.12
+				if wake.trail.Enabled ~= trailEnabled then wake.trail.Enabled = trailEnabled end
 			end
 			fillChunksAround(pos, 1)
 		end
@@ -1916,7 +1968,8 @@ function VoyageScene.play(info)
 		end
 		for _, g in gulls do
 			local visible = k < 0.3
-			g.model.Parent = if visible then folder else nil
+			local gullParent = if visible then folder else nil
+			if g.model.Parent ~= gullParent then g.model.Parent = gullParent end
 			if visible then
 				local a = t * g.speed + g.phase
 				local gp = pos + Vector3.new(math.cos(a) * g.radius, g.height + math.sin(t + g.phase) * 2, math.sin(a) * g.radius)
@@ -1962,20 +2015,30 @@ function VoyageScene.play(info)
 		atmosphere.Color = SEA_WEATHER.clear.fog:Lerp(weather.fog, weatherLevel)
 		atmosphere.Density = 0.25 + weatherLevel * (if mist then 0.34 else 0.16)
 		atmosphere.Haze = (if weather == SEA_WEATHER.haze then 3.6 else 1.4) * weatherLevel
+		-- [깊이별 색감/움직이는 구름] 실물 하늘과 먼 해무를 맞추되 0.2~0.35초마다만 갱신한다.
+		if t >= nextSkyWeatherAt then
+			nextSkyWeatherAt = t + (if mobile then 0.35 else 0.20)
+			atmosphere.Decay = Color3.fromRGB(106, 148, 185):Lerp(weather.fog, weatherLevel * 0.52)
+			skyClouds.Cover = math.clamp(0.24 + weatherLevel * (if weather.thunder then 0.53 else 0.35), 0.15, 0.79)
+			skyClouds.Density = 0.34 + weatherLevel * 0.34
+			skyClouds.Color = Color3.fromRGB(227, 237, 247):Lerp(weather.fog, weatherLevel * 0.78)
+		end
 		sea.Color = season.sea:Lerp(weather.sea, weatherLevel)
 		rays.Intensity = season.rays * (1 - weatherLevel * 0.82)
-		bloom.Intensity = (0.24 + season.rays * 0.9) * (1 - weatherLevel * 0.55)
+		bloom.Intensity = if mobile then 0 else (0.24 + season.rays * 0.9) * (1 - weatherLevel * 0.55)
 		grade.TintColor = season.tint:Lerp(weather.fog:Lerp(Color3.new(1, 1, 1), 0.72), weatherLevel)
 		grade.Saturation = 0.16 - weatherLevel * 0.32
 		if precip then
 			local high = if weather.kind == "snow" then 24 else 45
 			local cloud = Vector3.new(pos.X, high, pos.Z)
 			precipAnchor.CFrame = CFrame.new(cloud - right * 17)
-			precip.Rate = math.floor(weather.rate * weatherLevel * (if mobile then 0.60 else 1))
+			local precipRate = math.floor(weather.rate * weatherLevel * (if mobile then 0.60 else 1))
+			if precip.Rate ~= precipRate then precip.Rate = precipRate end
 		end
 		if hailBurst then
 			hailAnchor.CFrame = CFrame.new(pos.X, waterline + 0.16, pos.Z) * CFrame.Angles(0, yaw, 0)
-			hailBurst.Rate = math.floor(weatherLevel * (if mobile then 12 else 22))
+			local hailRate = math.floor(weatherLevel * (if mobile then 12 else 22))
+			if hailBurst.Rate ~= hailRate then hailBurst.Rate = hailRate end
 		end
 		if weather.thunder and weatherLevel > 0.42 and t > lightning then
 			lightning = t + rng:NextNumber(2.0, 4.2)
@@ -2169,7 +2232,15 @@ function VoyageScene.play(info)
 	Lighting.FogStart = saved.fogStart
 	Lighting.FogColor = saved.fogColor
 	Lighting.Ambient = saved.ambient
-	atmosphere:Destroy()
+	Lighting.ShadowSoftness = saved.shadowSoftness
+	if savedAtmosphere and atmosphere.Parent then
+		atmosphere.Color, atmosphere.Decay = savedAtmosphere.color, savedAtmosphere.decay
+		atmosphere.Density, atmosphere.Offset = savedAtmosphere.density, savedAtmosphere.offset
+		atmosphere.Haze, atmosphere.Glare = savedAtmosphere.haze, savedAtmosphere.glare
+	elseif not originalAtmosphere then atmosphere:Destroy() end
+	if savedSkyClouds and skyClouds.Parent then
+		skyClouds.Cover, skyClouds.Density, skyClouds.Color = savedSkyClouds.cover, savedSkyClouds.density, savedSkyClouds.color
+	elseif not originalSkyClouds then skyClouds:Destroy() end
 	grade:Destroy()
 	bloom:Destroy()
 	rays:Destroy()
@@ -2185,6 +2256,11 @@ function VoyageScene.play(info)
 	end)
 	for _, cn in helmConns do
 		cn:Disconnect()
+	end
+	table.clear(helmConns)
+	-- [항해 정리] 숨겨진 갈매기는 폴더 밖에 있으므로 명시적으로 제거한다.
+	for _, g in gulls do
+		if not g.model.Parent then g.model:Destroy() end
 	end
 	folder:Destroy()
 	gui:Destroy()

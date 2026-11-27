@@ -268,21 +268,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # 중앙 4개 문서의 무결성과 실제 헌법·아키텍처 정책 권한을 분리 검증한다.
+          # 현재 공통 검증기의 전체 검증 결과와 실제 문서 지문을 대조한다. 실행·배포 권한은 기존 후속 검사에서만 확정한다.
           node tools/company-shared-context.mjs --output=/tmp/roblox-foundation-worker-context.json
           node tools/company-constitution-enforcer.mjs --phase=roblox-runtime-foundation
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import {createHash} from 'node:crypto';
           import {compileOwnerCanonicalConstitution,compileCentralArchitectureProjection} from './tools/company-shared-context.mjs';
           const integrity=JSON.parse(fs.readFileSync('/tmp/roblox-foundation-worker-context.json','utf8'));
-          if(integrity.pass!==true||integrity.scope!=='RETAINED_FOUR_DOCUMENT_INTEGRITY_ONLY'
-              ||integrity.policyAuthorityVerified!==false||integrity.sourceWriteAuthorized!==false
-              ||integrity.releaseAuthorized!==false)throw new Error('ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID');
-          const policy=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const documents=[
+            ['policy','policySha256','company-learning/platform-release-roadmap.json'],
+            ['logMap','logMapSha256','company-learning/company-log-map.json'],
+            ['architecture','architectureSha256','company-learning/company-architecture-map.json'],
+            ['securityPolicy','securityPolicySha256','company-learning/security-immune-system.json']
+          ];
+          const policy=JSON.parse(fs.readFileSync(documents[0][2],'utf8'));
+          const launchers=policy.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows;
+          if(integrity.pass!==true||integrity.version!==2||integrity.documentIsCode!==true
+              ||integrity.roadmapSynchronized!==true||integrity.verificationMode==='PINNED_HASH_REUSE'
+              ||integrity.completionAuthority!=='DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES'
+              ||integrity.policyVersion!==policy.version||!Array.isArray(launchers)||launchers.length===0
+              ||integrity.workerLaunchersValidated!==launchers.length
+              ||policy.finalDevelopmentLock?.status!=='LOCKED'||policy.finalDevelopmentLock?.sequenceLock?.status!=='LOCKED'
+              ||!documents.every(([key,hash,file])=>integrity.files?.[key]===file
+                &&integrity.hashes?.[hash]===createHash('sha256').update(fs.readFileSync(file)).digest('hex')))
+            throw new Error('ROBLOX_FOUNDATION_RETAINED_DOCUMENT_INTEGRITY_INVALID');
           const constitution=compileOwnerCanonicalConstitution(policy);
           const architecture=compileCentralArchitectureProjection(policy);
           if(constitution.valid!==true)throw new Error('ROBLOX_FOUNDATION_CANONICAL_CONSTITUTION_INVALID:'+constitution.errors.join('|'));
           if(architecture.valid!==true)throw new Error('ROBLOX_FOUNDATION_CANONICAL_ARCHITECTURE_INVALID:'+architecture.errors.join('|'));
+          if(integrity.constitution?.fingerprint!==constitution.fingerprint
+              ||integrity.architectureProjection?.valid!==true
+              ||integrity.architectureProjection?.fingerprint!==architecture.fingerprint)
+            throw new Error('ROBLOX_FOUNDATION_COMPILED_CONTEXT_MISMATCH');
           console.log('ROBLOX_FOUNDATION_CANONICAL_CONSTITUTION=VERIFIED:'+constitution.fingerprint);
           console.log('ROBLOX_FOUNDATION_ARCHITECTURE_PROJECTION=VERIFIED:'+architecture.fingerprint);
           NODE

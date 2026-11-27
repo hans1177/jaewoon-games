@@ -2,6 +2,8 @@
 
 Read the latest main branch `AGENTS.md` and `DIRECT_DEV.md` before making changes to any of the owner's games.
 
+**mare-essentia:** before touching `roblox-games/mare-essentia`, read `roblox-games/mare-essentia/docs/READ_FIRST.md` and every brief it lists for your task, and follow them exactly.
+
 ## Owner-mandatory asset rule
 
 - Never build visual characters, buildings, creatures, trees, weapons or props out of Roblox `Part`, `Ball`, `Cylinder`, `WedgePart`, simple spheres/boxes, or near-equivalent primitives.

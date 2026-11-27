@@ -20,9 +20,34 @@
 - **실행 규칙:** 게임 생성기·공용 모듈 선택기·디자인 프롬프트·실제 Luau 책임 코드·게시 워크플로 모두 이 규칙을 우선한다. 최신 사용자가 명확하게 예외를 허용한 **특정 요소** 외에는 금지 상태를 유지한다.
 - **공유 범위:** 이 지침은 GitHub 공용 main에서 읽는 에이전트에게 전달되는 작업 규칙이다. 별도 채팅의 GPT가 저장소를 읽지 않았다면 자동으로 숙지했다고 주장하지 않는다.
 
-## 지식카드 그림 제작 (mare-essentia)
+## 카드배틀·지식카드 원화 작업 필독 (mare-essentia)
 
-카드 그림(이미지)을 만들기 전에 `roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md`를 읽고 화풍·프롬프트·올리는 방법을 따른다. 읽지 못했으면 만들지 말고 알린다. (3D 모델 금지 규칙과 별개로, 2D 카드 그림은 이 문서의 절차를 따른다.)
+**이 저장소에서 `mare-essentia` 카드배틀 신규 원화 제작·변경·승인·Roblox 자산등록·후속 “계속” 작업을 수행하는 모든 GPT/Claude/코딩 에이전트는 작업 전에 다음 문서를 모두 필수로 읽고, 최신 `main`과 대조해야 한다.** 중앙정책 4종 선로드가 먼저이며 충돌 시 중앙정책이 우선한다.
+
+1. `roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md` — 대륙 전투카드·지식카드·지도자 화풍과 규격.
+2. `roblox-games/mare-essentia/docs/CARD_BATTLE_HANDOFF.md` — **2026-11-22 오너 지시, 동적인 회화 원화 품질, 이전 실제 등록·미등록 이력(항상 최신 main 재조회), 검수·승인·GitHub/Roblox 기존 등록 경로, 실패 사례, 후속 우선순위.**
+3. `roblox-games/mare-essentia/docs/ASSET_MANAGEMENT.md` — **256색(팔레트·감색) 원화·UI 자산 등록 절대 금지**, 등록 경로·규격·관리 체크리스트.
+
+대륙 전투카드는 **사진·도감풍 정지 장면이 아니라 역동적인 세로 7:10 컬러 회화 원화**다. PNG 없는 승인·이미지 생성 대시보드의 가짜 번호·검증되지 않은 Studio/게시 결과는 등록 증거로 인정하지 않는다. 새로운 워크플로·유료 API 없이 기존 canonical 등록기를 사용하고, 게임 규칙·저장 구조를 보존한다. 문서를 읽지 못한 작업자는 읽었다고 주장하거나 등록 완료를 보고하지 않는다. (2D 원화 절차이며 3D 모델 금지 규칙을 우회하는 예외가 아니다.)
+
+## 비주얼·마을·전투·배·주민 작업 필독 (mare-essentia)
+
+**모든 외부 AI·바이브코딩 도구 포함: 먼저 `roblox-games/mare-essentia/docs/READ_FIRST.md`(전체 지시서 목록·HUD 효과 규칙)를 읽는다. 거기 적힌 지시서는 모두 필독이다. 원화·UI 자산은 256색 등록 절대 금지(`docs/ASSET_MANAGEMENT.md`).**
+
+**`mare-essentia`의 마을·건물·항구 배치, 해전·지상전 배경, 배, 주민(NPC) 외형·모션, 카드배틀, 아이콘·HUD, 원화를 만들거나 바꾸는 모든 GPT/Claude/코딩 에이전트는 작업 전에 아래를 반드시 읽는다.** 읽지 않았으면 읽었다고 주장하지 않는다. 중앙정책·위 전역 금지 규칙이 우선한다.
+
+1. `roblox-games/mare-essentia/docs/RULES.md` — 에셋 출처·원본 가공 허용·오너 제작 원화·코드 한도(Game.client 최상위 local 금지)
+2. `roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md` + `docs/ports/<항구>.md` — 항구 테마·왕궁·발전도별 건물·건축 시뮬·구획·주민 동선·날씨
+3. `roblox-games/mare-essentia/docs/battle_backdrops/README.md` + 해당 파일 — 해역·지상전·퀘스트별 배경
+4. `roblox-games/mare-essentia/docs/ships/README.md` + `grades.md` + `<배>.md` — 배 디테일·질감·등급 기능
+5. `roblox-games/mare-essentia/docs/residents/README.md` + `jobs.md` + `<문화권>.md` — 주민 헤어·복장·악세·재질·모션
+6. `roblox-games/mare-essentia/docs/card_battle/README.md` + `screens.md`·`effects.md`·`card_text.md`·`factions.md` — 카드배틀 시스템·분위기·진행·메뉴·이펙트·카드 설명
+7. 카드 원화는 위 "카드배틀·지식카드 원화 작업 필독" 절을 따른다.
+8. HUD·아이콘·버튼 효과는 `roblox-games/mare-essentia/docs/READ_FIRST.md` 3절(청동 원화 시트만, 반짝이 금지, 맥동만, 해상·지상 동일)
+9. `roblox-games/mare-essentia/docs/discoveries/README.md` + `MISSING.md` — 백과 실물(식물·동물·광물·유물·유적)의 지상 탐험 외형·대표 모양·부족 모델
+10. `roblox-games/mare-essentia/docs/discoveries/ANIMAL_RIG_MOTION.md` — 동물 표준 뼈대·애니메이션 이름·리액션 규칙·몬스터 재사용(변형 층)
+
+작업 후 `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함)와 Studio 촬영 확인 전에는 완료로 보고하지 않는다.
 
 ## 한방패치
 

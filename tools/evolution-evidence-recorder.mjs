@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { CORE_DEPARTMENT_ROLES } from './department-learning-memory.mjs';
+import { CORE_DEPARTMENT_ROLES, LEGACY_DEPARTMENT_ROLES } from './department-learning-memory.mjs';
 
 const TYPES=new Set(['MOTION','GRAPHICS','VIBE2','BUDGET','QA','GAMEPLAY']);
 const OUTCOMES=new Set(['SUCCESS','FAILURE']);
@@ -19,7 +19,11 @@ export function extractDepartmentLearningFromEvidenceRefs(evidenceRefs=[]){
       const cycle=source?.departmentCycle;
       if(source?.departmentCycleGate!=='PASS'||!cycle||!Array.isArray(cycle.results))continue;
       const byRole=new Map(cycle.results.map(row=>[clean(row?.role),row]));
-      if(!CORE_DEPARTMENT_ROLES.every(role=>byRole.get(role)?.workState==='DONE'))continue;
+      // [부서 검증] 실제 오디오 부서를 우선하고, 과거 밸런스 5역할 PASS 증거는 그대로 읽는다.
+      const roles=CORE_DEPARTMENT_ROLES.every(role=>byRole.get(role)?.workState==='DONE')
+        ?CORE_DEPARTMENT_ROLES
+        :LEGACY_DEPARTMENT_ROLES.every(role=>byRole.get(role)?.workState==='DONE')?LEGACY_DEPARTMENT_ROLES:null;
+      if(!roles)continue;
       return {
         version:1,
         gate:'PASS',
@@ -29,7 +33,7 @@ export function extractDepartmentLearningFromEvidenceRefs(evidenceRefs=[]){
         sourcePath:clean(source.sourcePath||cycle.sourcePath)||null,
         workLane:clean(cycle.workLane).toUpperCase()||'FULL',
         finalDecision:clean(cycle.finalDecision).toUpperCase()||null,
-        results:CORE_DEPARTMENT_ROLES.map(role=>{
+        results:roles.map(role=>{
           const row=byRole.get(role);
           return {
             role,

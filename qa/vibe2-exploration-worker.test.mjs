@@ -37,6 +37,62 @@ function workOrder(){return{
   workPackage:{id:'demo-wp',sharedContext:{diagnosticEvidence:['diagnostic:PLAYER_MOVE']}}
 };}
 
+// [로블록스 소스 누락] 캐시·안내문이 불완전한 정적 검사를 안전 판정으로 취급하지 않는다.
+test('canonical Vibe2 Roblox handoff warns when Vibe59 responsible source is unobserved',()=>{
+  const report=explorationGuidance({
+    reuseKey:'roblox-coverage-contract',
+    responsibleFiles:['server/Large.server.luau'],
+    impactFiles:['server/Large.server.luau'],
+    robloxCoding:{
+      files:[],warnings:[],diagnostics:[],
+      scanCoverage:{
+        requiredResponsibleFiles:1,observedResponsibleFiles:0,responsibleComplete:false,
+        unscanned:[{path:'server/Large.server.luau',reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:true}]
+      },
+      qualityDirector:{priorityFindings:[],remoteLinks:[],functionLinks:[]}
+    }
+  });
+  assert.match(report,/Vibe5\.9 Roblox 책임 소스 검증=0\/1/);
+  assert.match(report,/불완전 · 위험 없음 판정 금지/);
+  assert.match(report,/LUAU_SOURCE_LIMIT_EXCEEDED/);
+  assert.match(report,/실제 Studio 실행 또는 보안 검증 통과의 증거가 아니다/);
+});
+
+// [바이브2 캐시 정합성] 새 검사 버전이 없는 구형 로블록스 인계 자료는 다시 분석한다.
+test('Vibe2 Roblox exploration refuses obsolete Vibe59 source-integrity cache',()=>{
+  const cwd=tempRoot(),root='roblox-games/source-integrity';
+  write(path.join(cwd,root,'server/Combat.server.luau'),
+    'local function inspect(player) return player end\ninspect(player)\n');
+  const order={
+    run:true,taskId:'roblox-integrity-check',gameId:'source-integrity',
+    target:'roblox',goal:'combat source integrity analysis',
+    source:{root,responsibleFiles:[root+'/server/Combat.server.luau'],ignoredPaths:[]},
+    workPackage:{id:'roblox-integrity',sharedContext:{diagnosticEvidence:[]}}
+  };
+  const prior=process.env.VIBE2_EXPLORATION_FILE;
+  delete process.env.VIBE2_EXPLORATION_FILE;
+  try{
+    const initial=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(initial.robloxCoding.scanCoverage.version,2);
+    assert.equal(initial.robloxCoding.scanCoverage.responsibleComplete,true);
+    const artifact=path.join(cwd,'.vibe2/source-integrity.json');
+    write(artifact,JSON.stringify(initial));
+    process.env.VIBE2_EXPLORATION_FILE=artifact;
+    assert.equal(exploreVibe2WorkOrder({cwd,order}).reused,true);
+    write(artifact,JSON.stringify({
+      ...initial,robloxCoding:{...initial.robloxCoding,
+        scanCoverage:{...initial.robloxCoding.scanCoverage,version:1}}
+    }));
+    const refreshed=exploreVibe2WorkOrder({cwd,order});
+    assert.equal(refreshed.reused,false);
+    assert.equal(refreshed.robloxCoding.scanCoverage.version,2);
+    assert.equal(refreshed.sourceWrite,false);
+  }finally{
+    if(prior===undefined)delete process.env.VIBE2_EXPLORATION_FILE;
+    else process.env.VIBE2_EXPLORATION_FILE=prior;
+  }
+});
+
 test('canonical exploration guidance carries Roblox quality director without granting edit scope',()=>{
   const report=explorationGuidance({
     reuseKey:'roblox-director-contract',
@@ -233,6 +289,15 @@ test('Vibe4 local model has no network fallback, requires approval and loopback 
     assert.equal(posted.stream,false);
     assert.equal(posted.options.num_predict,256);
     assert.equal(posted.options.num_ctx,4096);
+    assert.equal(posted.images,undefined);
+    await assert.rejects(requestVibe4LoopbackModel({model:'vision:local',prompt:'inspect',port,ownerApproved:true,images:['bad']}),/VIBE4_LOCAL_IMAGE_INVALID/);
+    assert.equal(called,1);
+    const png=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),Buffer.alloc(128)]).toString('base64');
+    await requestVibe4LoopbackModel({model:'vision:local',prompt:'inspect',port,ownerApproved:true,images:[png]});
+    const visual=JSON.parse(requestBody);
+    assert.deepEqual(visual.images,[png]);
+    assert.equal(visual.format,'json');
+    assert.equal(called,2);
   }finally{
     await new Promise(resolve=>server.close(resolve));
   }

@@ -1,6 +1,6 @@
 {
-  "version": 33,
-  "updatedAt": "2026-11-18",
+  "version": 34,
+  "updatedAt": "2026-11-22",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -3154,6 +3154,85 @@
       "webPublishedSourceTreeSha": ""
     },
     {
+      "id": "animal-auto-battle",
+      "name": "동물 자동대전",
+      "description": "동물 조합과 자동 전투로 8승을 노리는 모바일 전략 게임",
+      "genre": [
+        "전략",
+        "자동전투",
+        "동물"
+      ],
+      "image": "assets/pwa-icon-512.png",
+      "webPath": "web-games/animal-auto-battle",
+      "hasWebArchive": true,
+      "homepageWebPlayable": false,
+      "homepageOfficialCard": false,
+      "homepageTestCandidate": false,
+      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_GAME_BUILD",
+      "homepageCategory": "development-confirmed",
+      "ownerDirectWebUpload": true,
+      "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+      "ownerWebEntryFile": "web-games/animal-auto-battle/index.html",
+      "productionTarget": "WEB",
+      "selectedPlatform": "WEB",
+      "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 16,
+        "authority": "OWNER_DIRECT_GAME_BUILD",
+        "identity": {
+          "gameId": "animal-auto-battle",
+          "name": "동물 자동대전",
+          "description": "동물 조합과 자동 전투로 8승을 노리는 모바일 전략 게임",
+          "genres": [
+            "전략",
+            "자동전투",
+            "동물"
+          ],
+          "image": "assets/pwa-icon-512.png",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_DIRECT_GAME_BUILD",
+          "ownerExistingGame": false
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "OWNER_DIRECT_GAME_BUILD",
+          "target": "WEB",
+          "selectedPlatform": "WEB",
+          "stage": "웹 개발 중 · 게시 후 검증 대기"
+        },
+        "sources": {
+          "web": {
+            "path": "web-games/animal-auto-battle",
+            "archive": true,
+            "playable": false,
+            "state": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          }
+        },
+        "publication": {
+          "web": {
+            "route": "web-games/animal-auto-battle/"
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "stage": "웹 개발 중 · 게시 후 검증 대기",
+          "runtime": {
+            "authority": "company-runtime"
+          }
+        }
+      },
+      "catalogOrder": 16,
+      "web3dRedevelopmentRequired": true
+    },
+    {
       "id": "cat-step",
       "name": "캣 스텝",
       "description": "사용자 직접 업로드 웹게임",
@@ -3209,7 +3288,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cat-step",
@@ -3352,7 +3431,7 @@
           }
         }
       },
-      "catalogOrder": 16,
+      "catalogOrder": 17,
       "homepageMedia": {
         "gameId": "cat-step",
         "titleEn": "CAT STEP",
@@ -3456,7 +3535,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "core-clash-4v4",
@@ -3599,7 +3678,7 @@
           }
         }
       },
-      "catalogOrder": 17,
+      "catalogOrder": 18,
       "homepageMedia": {
         "gameId": "core-clash-4v4",
         "titleEn": "CORE CLASH",
@@ -3671,7 +3750,7 @@
       "ownerExistingGame": false,
       "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 18,
+      "catalogOrder": 19,
       "homepageStage": "웹 게임 개발 중 · 런타임 검증 대기",
       "homepageRecentWork": "심해 잠수, 보물 4개 회수, 산소·체력, 거대 생물 회피, 음파·모바일 조작",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
@@ -3701,7 +3780,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "deep-diver",
@@ -3842,7 +3921,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "defense",
@@ -3985,7 +4064,7 @@
           }
         }
       },
-      "catalogOrder": 19,
+      "catalogOrder": 20,
       "homepageMedia": {
         "gameId": "defense",
         "titleEn": "FOREST DEFENSE",
@@ -4090,7 +4169,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "dice-battle-board",
@@ -4233,7 +4312,7 @@
           }
         }
       },
-      "catalogOrder": 20,
+      "catalogOrder": 21,
       "homepageMedia": {
         "gameId": "dice-battle-board",
         "titleEn": "DICE BATTLE",
@@ -4338,7 +4417,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "exorcist-office",
@@ -4481,7 +4560,7 @@
           }
         }
       },
-      "catalogOrder": 21,
+      "catalogOrder": 22,
       "homepageMedia": {
         "gameId": "exorcist-office",
         "titleEn": "EXORCIST OFFICE",
@@ -4584,7 +4663,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 22,
+        "catalogOrder": 23,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fantasy-survival",
@@ -4727,7 +4806,7 @@
           }
         }
       },
-      "catalogOrder": 22,
+      "catalogOrder": 23,
       "productionTarget": "ROBLOX_UNITY",
       "homepageStage": "개발확정 · Roblox + Unity 앱 동시개발",
       "concurrentTargetPlatforms": [
@@ -4840,7 +4919,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 23,
+        "catalogOrder": 24,
         "authority": "company-runtime",
         "identity": {
           "gameId": "fifty-days",
@@ -4981,7 +5060,7 @@
           }
         }
       },
-      "catalogOrder": 23,
+      "catalogOrder": 24,
       "homepageMedia": {
         "gameId": "fifty-days",
         "titleEn": "FIFTY DAYS",
@@ -5077,7 +5156,7 @@
             "route": "web-games/forest-survival/"
           }
         },
-        "catalogOrder": 24,
+        "catalogOrder": 25,
         "homepage": {
           "featured": false,
           "category": "development-confirmed",
@@ -5086,7 +5165,7 @@
           }
         }
       },
-      "catalogOrder": 24
+      "catalogOrder": 25
     },
     {
       "id": "gem-survivor",
@@ -5144,7 +5223,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 25,
+        "catalogOrder": 26,
         "authority": "company-runtime",
         "identity": {
           "gameId": "gem-survivor",
@@ -5287,7 +5366,7 @@
           }
         }
       },
-      "catalogOrder": 25,
+      "catalogOrder": 26,
       "homepageMedia": {
         "gameId": "gem-survivor",
         "titleEn": "GEM SURVIVOR",
@@ -5392,7 +5471,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 26,
+        "catalogOrder": 27,
         "authority": "company-runtime",
         "identity": {
           "gameId": "kingshot-ad",
@@ -5535,7 +5614,7 @@
           }
         }
       },
-      "catalogOrder": 26,
+      "catalogOrder": 27,
       "homepageMedia": {
         "gameId": "kingshot-ad",
         "titleEn": "KINGSHOT",
@@ -5637,7 +5716,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 27,
+        "catalogOrder": 28,
         "authority": "company-runtime",
         "identity": {
           "gameId": "mini-empire",
@@ -5752,7 +5831,7 @@
           }
         }
       },
-      "catalogOrder": 27,
+      "catalogOrder": 28,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/mini-empire/index.html",
@@ -5831,7 +5910,7 @@
       "ownerWebEntryFile": "web-games/moon-ruins/index.html",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 28,
+        "catalogOrder": 29,
         "authority": "company-runtime",
         "identity": {
           "gameId": "moon-ruins",
@@ -5944,7 +6023,7 @@
           }
         }
       },
-      "catalogOrder": 28,
+      "catalogOrder": 29,
       "webPublishedRoute": "web-games/moon-ruins/",
       "webPublishedSourceTreeSha": "3c9df920247cf1c63815df0f09de12cc790b92ca",
       "concurrentTargetPlatforms": [
@@ -5993,7 +6072,7 @@
       "homepageRecentWork": "Kenney CC0 3D 범선, 8개 항구 교역, A* 항로, 함포전, 운송 계약, 저장 기능 구현 · 런타임 및 배포 검증 대기",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "selectedPlatform": "WEB",
-      "catalogOrder": 29,
+      "catalogOrder": 30,
       "updatedAt": "2026-10-20T19:38:00+09:00",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -6025,7 +6104,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 29,
+        "catalogOrder": 30,
         "authority": "company-runtime",
         "identity": {
           "gameId": "ocean-voyage",
@@ -6215,7 +6294,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 30,
+        "catalogOrder": 31,
         "authority": "company-runtime",
         "identity": {
           "gameId": "party-rpg",
@@ -6358,7 +6437,7 @@
           }
         }
       },
-      "catalogOrder": 30,
+      "catalogOrder": 31,
       "homepageMedia": {
         "gameId": "party-rpg",
         "titleEn": "PARTY RPG",
@@ -6463,7 +6542,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 31,
+        "catalogOrder": 32,
         "authority": "company-runtime",
         "identity": {
           "gameId": "realistic-builder",
@@ -6606,7 +6685,7 @@
           }
         }
       },
-      "catalogOrder": 31,
+      "catalogOrder": 32,
       "homepageMedia": {
         "gameId": "realistic-builder",
         "titleEn": "REALISTIC BUILDER",
@@ -6708,7 +6787,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 32,
+        "catalogOrder": 33,
         "authority": "company-runtime",
         "identity": {
           "gameId": "restaurant-tycoon",
@@ -6823,7 +6902,7 @@
           }
         }
       },
-      "catalogOrder": 32,
+      "catalogOrder": 33,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "ownerWebEntryFile": "web-games/restaurant-tycoon/index.html",
@@ -6903,7 +6982,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 33,
+        "catalogOrder": 34,
         "authority": "company-runtime",
         "identity": {
           "gameId": "star-frontier",
@@ -7044,7 +7123,7 @@
           }
         }
       },
-      "catalogOrder": 33,
+      "catalogOrder": 34,
       "homepageMedia": {
         "gameId": "star-frontier",
         "titleEn": "STAR FRONTIER",
@@ -7149,7 +7228,7 @@
       "selectedPlatform": "WEB",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 34,
+        "catalogOrder": 35,
         "authority": "company-runtime",
         "identity": {
           "gameId": "tower-choice-rpg",
@@ -7292,7 +7371,7 @@
           }
         }
       },
-      "catalogOrder": 34,
+      "catalogOrder": 35,
       "homepageMedia": {
         "gameId": "tower-choice-rpg",
         "titleEn": "TEN FLOOR TOWER",
@@ -7368,7 +7447,7 @@
       "homepageStage": "웹 개발 중 · 게시 후 검증 대기",
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 35,
+        "catalogOrder": 36,
         "authority": "OWNER_DIRECT_GAME_BUILD",
         "identity": {
           "gameId": "turn-rpg",
@@ -7417,7 +7496,7 @@
           }
         }
       },
-      "catalogOrder": 35
+      "catalogOrder": 36
     },
     {
       "id": "zombie-survival",
@@ -7472,7 +7551,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 36,
+        "catalogOrder": 37,
         "authority": "company-runtime",
         "identity": {
           "gameId": "zombie-survival",
@@ -7615,7 +7694,7 @@
           }
         }
       },
-      "catalogOrder": 36,
+      "catalogOrder": 37,
       "selectedPlatform": "WEB",
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
@@ -7723,7 +7802,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 37,
+        "catalogOrder": 38,
         "authority": "company-runtime",
         "identity": {
           "gameId": "bug-defense",
@@ -7836,7 +7915,7 @@
           }
         }
       },
-      "catalogOrder": 37,
+      "catalogOrder": 38,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -7915,7 +7994,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 38,
+        "catalogOrder": 39,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -8056,7 +8135,7 @@
           }
         }
       },
-      "catalogOrder": 38,
+      "catalogOrder": 39,
       "homepageDisplayMode": "",
       "ownerDirectWebUpload": true,
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
@@ -8161,7 +8240,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 39,
+        "catalogOrder": 40,
         "authority": "company-runtime",
         "identity": {
           "gameId": "chess-battle",
@@ -8300,7 +8379,7 @@
           }
         }
       },
-      "catalogOrder": 39,
+      "catalogOrder": 40,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8413,7 +8492,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 40,
+        "catalogOrder": 41,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -8524,7 +8603,7 @@
           }
         }
       },
-      "catalogOrder": 40,
+      "catalogOrder": 41,
       "ownerWebSourceState": "RESTORED_LEGACY_PENDING_RUNTIME_QA",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -8595,7 +8674,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 41,
+        "catalogOrder": 42,
         "authority": "company-runtime",
         "identity": {
           "gameId": "island-village",
@@ -8708,7 +8787,7 @@
           }
         }
       },
-      "catalogOrder": 41,
+      "catalogOrder": 42,
       "selectedPlatform": "ROBLOX",
       "ownerWebSourceState": "UNITY_WEB_VERIFICATION_REQUIRED",
       "targetPlatform": "ROBLOX",
@@ -8788,7 +8867,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 42,
+        "catalogOrder": 43,
         "authority": "company-runtime",
         "identity": {
           "gameId": "monster-adventure",
@@ -8929,7 +9008,7 @@
           }
         }
       },
-      "catalogOrder": 42,
+      "catalogOrder": 43,
       "selectedPlatform": "UNITY",
       "concurrentTargetPlatforms": [
         "ROBLOX",
@@ -9040,7 +9119,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 43,
+        "catalogOrder": 44,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival",
@@ -9151,7 +9230,7 @@
           }
         }
       },
-      "catalogOrder": 43,
+      "catalogOrder": 44,
       "concurrentTargetPlatforms": [
         "ROBLOX",
         "UNITY"
@@ -9226,7 +9305,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 44,
+        "catalogOrder": 45,
         "authority": "company-runtime",
         "identity": {
           "gameId": "territory-war",
@@ -9365,7 +9444,7 @@
           }
         }
       },
-      "catalogOrder": 44,
+      "catalogOrder": 45,
       "selectedPlatform": "WEB",
       "ownerWebSourceState": "WEB_SOURCE_DEVELOPMENT_PENDING_QA",
       "targetPlatform": "ROBLOX",
@@ -9437,9 +9516,9 @@
     "UNITY"
   ],
   "runtimeCounts": {
-    "canonicalGames": 44,
+    "canonicalGames": 45,
     "homepageInfo": 41,
-    "normalizedGames": 44,
+    "normalizedGames": 45,
     "ownerWebAdded": 0,
     "ownerWebUpdated": 0,
     "ownerWebDisabled": 0
@@ -9447,7 +9526,7 @@
   "catalogSchemaVersion": 2,
   "normalization": {
     "version": 2,
-    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "sourceOfTruth": null,
     "canonicalRecordPath": "games[].canonical",
     "legacyFlatFields": "COMPATIBILITY_MIRROR",
     "canonicalFirst": true,

@@ -1,21 +1,111 @@
 [
  {
   "type": "wait",
-  "ms": 35000
+  "ms": 28000
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+  "code": "workspace:SetAttribute('QAAutoIntro', true) return 'QAAutoIntro on'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui') workspace:SetAttribute('IntroQASeen',0) workspace:SetAttribute('IntroQAFailures','') workspace:SetAttribute('IntroQASpeakers','') pg.ChildAdded:Connect(function(g) if g.Name~='IntroDialog' then return end task.delay(0.25,function() if not g.Parent then return end local w=g:FindFirstChild('IntroWindow',true) local n=w and w:FindFirstChild('IntroSpeakerName',true) local r=w and w:FindFirstChild('IntroSpeakerRole',true) local b=w and w:FindFirstChild('IntroBody',true) local vp=workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1280,720) local ts=if vp.X<520 then 20 else 24 local ns=if vp.X<520 then 22 else 26 local ok=w and n and r and b and w.AnchorPoint==Vector2.new(.5,.5) and w.Position==UDim2.fromScale(.5,.5) and b.TextSize==ts and n.TextSize==ns and r.TextSize==18 if not ok then workspace:SetAttribute('IntroQAFailures',(workspace:GetAttribute('IntroQAFailures') or '')..'|'..(n and n.Text or 'unknown')) end workspace:SetAttribute('IntroQASeen',(workspace:GetAttribute('IntroQASeen') or 0)+1) workspace:SetAttribute('IntroQASpeakers',(workspace:GetAttribute('IntroQASpeakers') or '')..'|'..(n and n.Text or '?')) end) end) return 'INTRO_CENTER_QA_MONITOR_READY'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작 화면 실제 경로] 통합된 표지의 국가 선택 버튼을 확인한다.\nlocal PG=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal RS=game:GetService('ReplicatedStorage')\nlocal ready=false\nlocal loading=false\nfor _=1,100 do\n  local title=PG:FindFirstChild('TitleBackdrop')\n  local panel=title and title:FindFirstChild('TitlePanel')\n  local root=PG:FindFirstChild('MareEssentiaGui')\n  loading=root and root:FindFirstChild('StartLoading')~=nil\n  if title and title.Enabled and panel and panel.Visible and not loading then\n    for _,button in ipairs(panel:GetDescendants()) do\n      if button:IsA('TextButton') and button.Visible and button.AbsoluteSize.X>8 and button.AbsoluteSize.Y>8 then\n        for _,caption in ipairs(button:GetDescendants()) do\n          if caption:IsA('TextLabel') and caption.Text=='프랑스' then ready=true break end\n        end\n      end\n      if ready then break end\n    end\n  end\n  if ready then break end\n  task.wait(0.5)\nend\nif ready then return 'MARE_TITLE_READY:TitleBackdrop:프랑스' end\nlocal ui=PG:FindFirstChild('MareEssentiaGui')\nreturn 'MARE_TITLE_NOT_READY_AFTER_50S;LOADING='..tostring(loading)..';CORE='..tostring(RS:GetAttribute('MareCoreStartStage'))..';REMOTE='..tostring(RS:FindFirstChild('GameAction')~=nil)..';CLIENT='..tostring(ui and ui:GetAttribute('StartupStage'))..';ASSETS='..tostring(RS:GetAttribute('MareAssetsReady'))..';PORT='..tostring(RS:GetAttribute('MarePortSceneStage'))..';SCENE='..tostring(ui and ui:GetAttribute('PortSceneLoadState'))",
+  "timeoutMs": 85000
  },
  {
   "type": "wait",
-  "ms": 4000
+  "ms": 400
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "title01",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"프랑스\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best or bs<=0 then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 2000
  },
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "workspace:SetAttribute('DevCall','Deck') return 'DEV Deck'"
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"상인 집안\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "title02",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"상인 집안\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 2000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"출항하기\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end return 'SCROLLED '..label(best)"
+ },
+ {
+  "type": "wait",
+  "ms": 400
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "title03",
+  "code": "local P=game:GetService('Players').LocalPlayer.PlayerGui local done=workspace:GetAttribute('QADone') or '' local pref={\"출항하기\"} local skip={\"삭제\",\"초기화\",\"나가기\",\"종료\",\"구매 확정\",\"결제\",\"Robux\",\"로벅스\"} local vp=workspace.CurrentCamera.ViewportSize local function shown(d) local x=d while x and x~=P do if x:IsA('GuiObject') and not x.Visible then return false end if x:IsA('LayerCollector') and not x.Enabled then return false end x=x.Parent end return x==P end local function label(d) if d:IsA('TextButton') and d.Text~='' then return (d.Text:gsub('\\n',' ')) end for _,c in ipairs(d:GetDescendants()) do if c:IsA('TextLabel') and c.Text~='' then return c.Text end end return d.Name end local function keyOf(d) local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local oy=sf and 0 or math.floor(d.AbsolutePosition.Y/20) return label(d)..'@'..(sf and sf.Name or '')..math.floor(d.AbsolutePosition.X/20)..','..(sf and (d.LayoutOrder or 0) or oy) end local best,bs=nil,-1 for _,d in ipairs(P:GetDescendants()) do if (d:IsA('TextButton') or d:IsA('ImageButton')) and d.AbsoluteSize.X>8 and d.AbsoluteSize.Y>8 and shown(d) then local sf=d:FindFirstAncestorWhichIsA('ScrollingFrame') local inview=d.AbsolutePosition.X>=0 and d.AbsolutePosition.X<vp.X and d.AbsolutePosition.Y>=0 and d.AbsolutePosition.Y<vp.Y if inview or sf then local l=label(d) local key=keyOf(d) local bad=false for _,s in ipairs(skip) do if string.find(l,s,1,true) then bad=true end end if not bad and not string.find(done,key,1,true) then local sc=0 for i,p in ipairs(pref) do if string.find(l,p,1,true) then sc=100-i end end if sc>bs then bs=sc best=d end end end end end if not best then return 'NONE' end local sf=best:FindFirstAncestorWhichIsA('ScrollingFrame') if sf then local off=best.AbsolutePosition.Y-sf.AbsolutePosition.Y+sf.CanvasPosition.Y-(sf.AbsoluteSize.Y-best.AbsoluteSize.Y)/2 sf.CanvasPosition=Vector2.new(0,math.max(0,off)) end local l=label(best) workspace:SetAttribute('QADone',done..'|'..keyOf(best)) return string.format('%d,%d CLICK=%s',math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),l)"
+ },
+ {
+  "type": "wait",
+  "ms": 1700
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "wait",
+  "ms": 1800
+ },
+ {
+  "type": "wait",
+  "ms": 3700
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local step,a='?',nil for i=1,14 do task.wait(1.5) a=r:InvokeServer('State',{}) step=(a and a.view and a.view.captain and a.view.captain.step) or '?' if step=='done' then break end end if step=='done' then return 'INTRO_OK' end local note='INTRO_STUCK step='..tostring(step) note=note..' reply='..tostring(workspace:GetAttribute('IntroQACompanionReply'))..' stale='..tostring(workspace:GetAttribute('IntroQAStaleClose'))..' trace='..tostring(workspace:GetAttribute('IntroQATrace'))..' companions='..tostring(a and a.view and a.view.player and #(a.view.companions or {})) if step=='name' then local x=r:InvokeServer('IntroName',{name='QA선장'}) note=note..' name='..tostring(x and x.ok) task.wait(0.3) step='companion' end if step=='companion' then local x=r:InvokeServer('IntroCompanion',{}) note=note..' comp='..tostring(x and x.ok) task.wait(0.3) step='portrait' end if step=='portrait' then local x=r:InvokeServer('IntroPortrait',{portrait='hero:england'}) note=note..' portrait='..tostring(x and x.ok) end task.wait(0.5) workspace:SetAttribute('DevCall','State') return note"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local n=workspace:GetAttribute('IntroQASeen') or 0 local errors=workspace:GetAttribute('IntroQAFailures') or '' local speakers=workspace:GetAttribute('IntroQASpeakers') or '' assert(n>=3,'INTRO_STAGE_COUNT_MISSING '..n..' '..speakers) assert(errors=='','INTRO_DIALOG_LAYOUT_MISMATCH '..errors..' '..speakers) assert(string.find(speakers,'길드 서기',1,true) and string.find(speakers,'떠돌이 화가',1,true),'INTRO_STAGE_SEQUENCE_MISSING '..speakers) return 'INTRO_CENTER_SIZE_UNIFIED_PASS stages='..n..' '..speakers"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "-- [시작 진행] 화면 전환만으로 성공 처리하지 않고 게임 상태를 확인한다.\nlocal r=game:GetService('ReplicatedStorage'):WaitForChild('GameAction')\nlocal state=r:InvokeServer('State',{})\nassert(state and state.ok and state.view and state.view.player and state.view.player.portId,'INTRO_STATE_PORT_MISSING')\nassert(state.view.captain and state.view.captain.step=='done','INTRO_STATE_NOT_COMPLETE')\nlocal pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nlocal deck=pg:FindFirstChild('DeckWindow')\nassert(not (deck and deck.Enabled),'INTRO_UNEXPECTED_DECK_WINDOW')\nreturn 'INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')\nfor k=1,6 do\n workspace:SetAttribute('DevCall','Deck')\n for j=1,10 do if pg:FindFirstChild('DeckWindow') then return 'DEV Deck try='..k end task.wait(0.3) end\n workspace:SetAttribute('DevCall','State') task.wait(1)\nend\nreturn 'DEV Deck not_open'"
  },
  {
   "type": "wait",
@@ -47,6 +137,48 @@
  {
   "type": "capture",
   "name": "cb1"
+ },
+ {
+  "type": "wait",
+  "ms": 2000
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "card_hand_select",
+  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal g=assert(pg:FindFirstChild(\"BoardingGui\"),\"CARD_BOARD_NOT_OPEN\")\n-- [실제 손패 터치] 화면에 보이는 첫 손패 카드를 실제 마우스로 누른다.\nfor i=1,30 do if g:GetAttribute(\"CardTurn\")==\"me\" then break end task.wait(0.3) end\nassert(g:GetAttribute(\"CardTurn\")==\"me\",\"CARD_NOT_MY_TURN:\"..tostring(g:GetAttribute(\"CardTurn\")))\nlocal tray=assert(g:FindFirstChild(\"NavalCardHandTray\",true),\"CARD_HAND_TRAY_MISSING\")\nlocal best\nfor _,d in g:GetDescendants() do\n if d:IsA(\"TextButton\") and d:GetAttribute(\"HandIdx\") and d.Visible and d.AbsoluteSize.X>20 then\n  local sf=d:FindFirstAncestorWhichIsA(\"ScrollingFrame\")\n  local inView=not sf or (d.AbsolutePosition.X>=sf.AbsolutePosition.X and d.AbsolutePosition.X+d.AbsoluteSize.X<=sf.AbsolutePosition.X+sf.AbsoluteSize.X)\n  if inView and (not best or d.AbsolutePosition.X<best.AbsolutePosition.X) then best=d end\n end\nend\nassert(best,\"CARD_HAND_NO_VISIBLE_CARD\")\nworkspace:SetAttribute(\"QACardBoardBefore\",g:GetAttribute(\"CardBoardMe\"))\nworkspace:SetAttribute(\"QACardHandBefore\",g:GetAttribute(\"CardHandMe\"))\nworkspace:SetAttribute(\"QACardPickIdx\",best:GetAttribute(\"HandIdx\"))\nreturn string.format(\"%d,%d CLICK=hand_card_%s\",math.floor(best.AbsolutePosition.X+best.AbsoluteSize.X/2),math.floor(best.AbsolutePosition.Y+best.AbsoluteSize.Y/2),tostring(best:GetAttribute(\"HandIdx\")))"
+ },
+ {
+  "type": "wait",
+  "ms": 1000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal g=assert(pg:FindFirstChild(\"BoardingGui\"),\"CARD_BOARD_NOT_OPEN\")\n-- [선택·확대 확인] 실제 클릭 뒤 선택 카드가 표시되고 아직 사용되지 않아야 한다.\nlocal sel\nfor _,d in g:GetDescendants() do if d:IsA(\"TextButton\") and d:GetAttribute(\"ArtFocused\")==true then sel=d end end\nassert(sel,\"CARD_SELECT_NOT_APPLIED\")\nassert(g:GetAttribute(\"CardBoardMe\")==workspace:GetAttribute(\"QACardBoardBefore\"),\"CARD_PLAYED_ON_FIRST_TAP\")\nreturn \"CARD_SELECT_PASS idx=\"..tostring(sel:GetAttribute(\"HandIdx\"))"
+ },
+ {
+  "type": "capture",
+  "name": "cb_select"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "card_hand_use",
+  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal g=assert(pg:FindFirstChild(\"BoardingGui\"),\"CARD_BOARD_NOT_OPEN\")\n-- [실제 사용] 선택된 같은 카드를 다시 눌러 기존 사용 흐름으로 낸다.\nlocal sel\nfor _,d in g:GetDescendants() do if d:IsA(\"TextButton\") and d:GetAttribute(\"ArtFocused\")==true and d.Visible then sel=d end end\nassert(sel,\"CARD_SELECTED_MISSING_BEFORE_USE\")\nreturn string.format(\"%d,%d CLICK=hand_card_use\",math.floor(sel.AbsolutePosition.X+sel.AbsoluteSize.X/2),math.floor(sel.AbsolutePosition.Y+sel.AbsoluteSize.Y/2))"
+ },
+ {
+  "type": "wait",
+  "ms": 2000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal g=assert(pg:FindFirstChild(\"BoardingGui\"),\"CARD_BOARD_NOT_OPEN\")\n-- [배치 결과] 내 전장 카드 수가 늘고 손패가 줄어야 실제 사용으로 인정한다(스파이 카드는 상대 전장).\nlocal before=workspace:GetAttribute(\"QACardBoardBefore\") local hb=workspace:GetAttribute(\"QACardHandBefore\")\nfor i=1,20 do if g:GetAttribute(\"CardHandMe\")~=hb then break end task.wait(0.25) end\nlocal hand=g:GetAttribute(\"CardHandMe\") local board=g:GetAttribute(\"CardBoardMe\")\nassert((hand~=nil and hand~=hb) or (board~=nil and board~=before),\"CARD_USE_NO_STATE_CHANGE:hand=\"..tostring(hb)..\"->\"..tostring(hand)..\" board=\"..tostring(before)..\"->\"..tostring(board))\n-- [화면 겹침] 손패 받침대와 행동 버튼이 화면 밖으로 잘리지 않는지 실측한다.\nlocal vp=workspace.CurrentCamera.ViewportSize\nlocal tray=g:FindFirstChild(\"NavalCardHandTray\",true)\nlocal cut=0\nfor _,d in g:GetDescendants() do\n if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 and not d:FindFirstAncestorWhichIsA(\"ScrollingFrame\") then\n  local p,s=d.AbsolutePosition,d.AbsoluteSize\n  if p.X<-1 or p.Y<-1 or p.X+s.X>vp.X+1 or p.Y+s.Y>vp.Y+1 then cut+=1 end\n end\nend\n-- [터치 크기·겹침 실측] 화면에 보이는 주 버튼의 최소 높이와 손패 받침대·버튼 겹침을 기록한다.\nlocal minH,overlap=999,0\nlocal btns={}\nfor _,d in g:GetDescendants() do\n if d:IsA(\"GuiButton\") and d.Visible and d.AbsoluteSize.X>0 and d.Parent==g and not d:GetAttribute(\"HandIdx\") then\n  local vis=true local x=d while x and x~=g do if x:IsA(\"GuiObject\") and not x.Visible then vis=false end x=x.Parent end\n  if vis then table.insert(btns,d) minH=math.min(minH,d.AbsoluteSize.Y) end\n end\nend\nlocal function hit(a,b) local p1,s1,p2,s2=a.AbsolutePosition,a.AbsoluteSize,b.AbsolutePosition,b.AbsoluteSize return p1.X<p2.X+s2.X-1 and p2.X<p1.X+s1.X-1 and p1.Y<p2.Y+s2.Y-1 and p2.Y<p1.Y+s1.Y-1 end\nif tray then for _,b in btns do if hit(b,tray) then overlap+=1 end end end\nreturn string.format(\"CARD_USE_PASS hand=%d->%d board=%d->%d turn=%s vp=%dx%d cutButtons=%d tray=%dx%d mainButtons=%d minButtonH=%d trayOverlap=%d\",hb,hand,before,board,tostring(g:GetAttribute(\"CardTurn\")),vp.X,vp.Y,cut,tray and tray.AbsoluteSize.X or -1,tray and tray.AbsoluteSize.Y or -1,#btns,minH,overlap)"
+ },
+ {
+  "type": "capture",
+  "name": "cb_after_play"
  },
  {
   "type": "wait",

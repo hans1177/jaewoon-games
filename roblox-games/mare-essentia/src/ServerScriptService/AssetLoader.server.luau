@@ -9,11 +9,15 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local library = ReplicatedStorage:WaitForChild("MareAssets")
+-- [초기/전체 분리] 준비 플래그는 입장용, Settled는 모든 등록 요청의 종료용이다.
+-- 전체 성공 여부는 기존 실패 기록과 Studio 감사만 판정한다.
+ReplicatedStorage:SetAttribute("MareAssetsSettled", false)
 local ok, ids = pcall(function()
 	return require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("AssetIds"))
 end)
 if not ok or type(ids) ~= "table" then
 	warn("[MareEssentia] 자산 등록번호를 불러올 수 없음")
+	ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
 	ReplicatedStorage:SetAttribute("MareAssetsReady", true)
 	return
 end
@@ -90,6 +94,13 @@ local SHIP_V5_MATERIALS = {
 	lightgold = Enum.Material.Metal, silver = Enum.Material.Metal,
 	window = Enum.Material.Glass,
 }
+-- [게임 스크립트 권한] SurfaceAppearance.ColorMap은 플러그인 권한에서만 읽힌다. 읽기 실패 시 원본 PBR로 보고 보존한다.
+local function surfaceHasColorMap(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function() return (sa :: any).ColorMap ~= "" end)
+	return (not ok) or mapped == true
+end
+
 local function restoreShipV5Materials(model, assetName)
 	-- [72척 원본·경량판만] 기존 선박·교역품·항구·인물·건물 재질은 건드리지 않는다.
 	if not (assetName:match("%-v5$") or assetName:match("%-v5%-mobile$")) then return 0, 0 end
@@ -105,7 +116,7 @@ local function restoreShipV5Materials(model, assetName)
 			if color then
 				piece.Color = color
 				local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = piece.TextureID ~= "" or (surface and surface.ColorMap ~= "")
+				local textured = piece.TextureID ~= "" or (surface and surfaceHasColorMap(surface))
 				-- [질감 보존] 승인된 PBR ColorMap은 제거하거나 새로 덮지 않는다.
 				-- 맵 없는 모델은 목재·천·금속의 기본 재질로 구분해 회색 평면처럼 보이지 않게 한다.
 				if not textured then
@@ -134,6 +145,15 @@ local order = { Town = 1, Naval = 2, Cargo = 3, Interior = 4, Terrain = 5, Castl
 -- [항구·탐험 초반 조경] 먼저 등록된 승인 메시만 기존 로딩 큐의 맨 앞에서 수입한다.
 -- 별도 작업 큐나 임시 모델을 만들지 않고, 기존 우선 선박 두 종 다음에 배치한다.
 local earlyScenery = { ["Terrain/Grass_Small"] = true, ["Terrain/Bush_Small"] = true, ["Terrain/Rock_2"] = true }
+-- [첫 장면] 프롤로그의 실제 범선 후보와 공용 항구 기본 외형만 초기 대기에 포함한다.
+-- 지역별 건물·선박·교역품은 기존 전체 큐에서 계속 로드하며 완료 후 항구를 갱신한다.
+local startupModels = {
+	["Naval/ship-large"] = true, ["Naval/ship-medium"] = true, ["Naval/boat-sail-a"] = true,
+	["Town/house"] = true, ["Town/house_chimney"] = true, ["Town/house_door"] = true,
+	["Town/cobblestones"] = true, ["Town/bench_A"] = true, ["Town/bench_B"] = true,
+	["Naval/dock-side"] = true, ["Naval/dock-corner"] = true, ["Naval/structure-platform-dock-small"] = true,
+	["Cargo/box-open"] = true, ["Cargo/bag"] = true, ["Cargo/barrel"] = true,
+}
 -- [R15 실물 복식] 현재 주민·동료 프로필이 실제 사용하는 People 메시만 기존 로더에서 앞당긴다.
 -- 장면 진입 후 지연 로드 재장착도 유지하며, 새 큐·모델·다운로드 경로를 만들지 않는다.
 local earlyMobParts = {
@@ -163,6 +183,29 @@ local earlyMobParts = {
 	["People/acc_ribbon_bow"] = true,
 	["People/acc_feather_hat"] = true,
 	["People/acc_guild_badge"] = true,
+	-- [직업용 소지품 선입고] 35개 직업의 22종 등록된 원본 도구를 기존 큐의 People 복식과 함께 적재한다.
+	["Cargo/corn"] = true,
+	["Relics/rope-bundle-b"] = true,
+	["Relics/rope-bundle-a"] = true,
+	["Cargo/bag"] = true,
+	["Cargo/bucket"] = true,
+	["Relics/drafting-compass"] = true,
+	["Relics/handplane"] = true,
+	["Relics/hammer"] = true,
+	["Cargo/linen"] = true,
+	["Cargo/bread"] = true,
+	["Relics/saw"] = true,
+	["Relics/chisel"] = true,
+	["Cargo/fish"] = true,
+	["Relics/compass-base"] = true,
+	["Relics/weapon-spear"] = true,
+	["Relics/weapon-sword"] = true,
+	["Relics/journal-open"] = true,
+	["Relics/key"] = true,
+	["Relics/journal-closed"] = true,
+	["Relics/magnifying-glass"] = true,
+	["Relics/map-rolled"] = true,
+	["Cargo/plate"] = true,
 	-- [직접 제작 유럽풍 의상] 로블록스 등록된 3D 재단복만 기존 People 큐에서 로드.
 	["People/outfit_vest"] = true,
 	["People/outfit_coat"] = true,
@@ -174,17 +217,28 @@ local earlyMobParts = {
 	["People/outfit_boot"] = true,
 	["People/outfit_stole"] = true,
 }
+-- [R15 장착 실사] 실제 InsertService 로드 결과로 복식/액세서리 준비 상태를 분리한다.
+-- 등록번호의 존재와 실제 3D 모델 장착 가능 상태를 혼동하지 않는다.
+local r15GarmentExpected, r15GarmentLoaded, r15AccessoryExpected, r15AccessoryLoaded = 0, 0, 0, 0
+-- [외부 무료 실물 검증] 등록 번호가 없는 CC0 원본은 준비 완료로 보고하지 않는다.
+local externalExpected, externalLoaded = 0, 0
+ReplicatedStorage:SetAttribute("MareR15WearablesState", "LOADING")
+ReplicatedStorage:SetAttribute("MareR15ExternalState", "NOT_REGISTERED")
 local queue = {}
 for key, assetId in ids do
 	local kind, name = string.match(key, "^(%w+)/(.+)$")
 	-- UI 이미지(메뉴·교역품·초상화·도감/이벤트 원화)는 모델이 아니므로 InsertService에서 제외한다.
 	if kind and name and kind ~= "Menu" and kind ~= "Goods" and kind ~= "Portraits" and kind ~= "CardArt" and kind ~= "Materials" and type(assetId) == "number" and assetId > 0 then
-		table.insert(queue, { kind = kind, name = name, id = assetId, key = key })
+		table.insert(queue, { kind = kind, name = name, id = assetId, key = key, startup = startupModels[key] == true or earlyScenery[key] == true })
+		if kind == "People" and string.sub(name, 1, 7) == "outfit_" then r15GarmentExpected += 1 end
+		if kind == "People" and string.sub(name, 1, 4) == "acc_" then r15AccessoryExpected += 1 end
+		if kind == "People" and string.sub(name, 1, 4) == "cc0_" then externalExpected += 1 end
 	end
 end
 -- 시작 프롤로그에서 사용하는 승인된 실물 범선을 먼저 로드한다.
--- 항구 필수 모델을 제외하거나 기존 큐·동시성 구조를 변경하지 않는다.
+-- 최초 대기 대상과 실제 수입 순서를 일치시킨다. 기존 전체 큐·동시성은 유지한다.
 table.sort(queue, function(a, b)
+	if a.startup ~= b.startup then return a.startup end
 	local ap = if a.key == "Naval/ship-large" then -1 elseif a.key == "Naval/ship-medium" then 0 elseif earlyScenery[a.key] then 0.5
 		elseif a.kind == "Relics" and string.match(a.name, "^weapon%-") then 0.75
 		elseif earlyMobParts[a.key] then 0.8 else order[a.kind] or 99
@@ -197,9 +251,81 @@ end)
 
 local cursor = 1
 local pending, loaded, failed = #queue, 0, 0
+
+-- [현재 항구 우선] 기존 서버 전용 세션 속성으로 아직 요청하지 않은 모델의 순서만 조정한다.
+-- 플레이어 여러 명의 항구를 함께 반영하며, 시작 필수 모델과 이미 실행 중인 요청은 건드리지 않는다.
+local portPriorityConnection
+local core = script.Parent:FindFirstChild("Core")
+if core and #queue > 0 then
+	local shared = ReplicatedStorage:FindFirstChild("Shared")
+	local portOk, portData, regions = pcall(function()
+		return require(shared.Ports), require(shared.Regions)
+	end)
+	if portOk then
+		local portTiers = {}
+		for portId, port in portData.Ports do
+			portTiers[portId] = regions.tierOf(portId, port.lat, port.lon)
+		end
+		-- 실제 항해 장면에서 사용하는 등록 소품만 공용 해상 우선 대상으로 삼는다.
+		local seaModels = {
+			["Naval/ship-medium"] = true, ["Naval/ship-large"] = true, ["Naval/boat-sail-a"] = true,
+			["Naval/buoy"] = true, ["Naval/boat-row-small"] = true, ["Naval/palm-detailed-straight"] = true,
+			["Naval/ship-ghost"] = true, ["Naval/flag-high"] = true, ["Town/rock-wide"] = true,
+			["Terrain/cliff-rock"] = true, ["Terrain/campfire-stones"] = true,
+			["Terrain/log-stack"] = true, ["Terrain/canoe"] = true,
+			["People/Worker_Male"] = true, ["Cargo/fish-large"] = true,
+		}
+		for index, item in queue do
+			item.originalOrder = index
+			if item.kind == "Town" then
+				-- 긴 항구 식별자(예: cape_town)와 원본 파일의 하이픈을 모두 지원한다.
+				local prefix = item.name
+				while prefix and not portTiers[prefix] do
+					prefix = string.match(prefix, "^(.+)[_-][^_-]+$")
+				end
+				item.portId = prefix
+			end
+		end
+		local function reorderPending()
+			if cursor > #queue then return end
+			local activePorts, activeTiers = {}, {}
+			for key, portId in core:GetAttributes() do
+				if string.sub(key, 1, 14) == "MareAssetPort_" and type(portId) == "string" and portTiers[portId] then
+					activePorts[portId] = true
+					activeTiers[portTiers[portId]] = true
+				end
+			end
+			local active = next(activePorts) ~= nil
+			local tail = {}
+			for index = cursor, #queue do
+				local item = queue[index]
+				item.priority = if item.startup then 0
+					elseif not active then 1
+					elseif item.portId and activePorts[item.portId] then 1
+					elseif seaModels[item.key] then 2
+					elseif item.portId and activeTiers[portTiers[item.portId]] then 3
+					elseif not item.portId then 4
+					else 5 + portTiers[item.portId]
+				table.insert(tail, item)
+			end
+			table.sort(tail, function(a, b)
+				if a.priority ~= b.priority then return a.priority < b.priority end
+				return a.originalOrder < b.originalOrder
+			end)
+			for offset, item in tail do queue[cursor + offset - 1] = item end
+		end
+		portPriorityConnection = core.AttributeChanged:Connect(function(key)
+			if string.sub(key, 1, 14) == "MareAssetPort_" then reorderPending() end
+		end)
+		reorderPending()
+	else
+		warn("[MareEssentia] 항구 우선순위 자료 확인 실패, 기존 모델 순서 유지")
+	end
+end
 local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 0, 0, 0
 -- [스튜디오 실물 재질 점검] 등록 원본 9종을 한 번만 집계한다. 게임 저장/선적/재질은 건드리지 않는다.
 local outfitModels, outfitParts, outfitWhite, outfitMapped, outfitMaterialized = 0, 0, 0, 0, 0
+local outfitColorMaps, outfitNormalMaps, outfitRoughnessMaps, outfitMetalnessMaps = 0, 0, 0, 0
 local outfitMissing = {}
 for _, item in queue do
 	if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
@@ -209,24 +335,42 @@ end
 -- [Studio QA] 등록 모델 전체의 실제 로딩 성공·실패를 카운트하며 라이브 저장/동작은 건드리지 않는다.
 local studioAudit = RunService:IsStudio()
 local failedKeys = {}
+-- [3D 품질 자동 검사] 로딩된 승인 모델의 실측 공간 크기만 Studio에서 감사한다.
+-- 원본 메시/UV/PBR, AssetId, 게임 진행 데이터, 실서버 성능은 변경하지 않는다.
+local geometryChecked, geometryInvalid = 0, 0
+local geometryIssues = {}
 if studioAudit then
+	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "RUNNING")
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "RUNNING")
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", "")
 	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "RUNNING")
 end
 local priorityPending = 0
 for _, asset in queue do
-	if (order[asset.kind] or 99) <= 3 or earlyScenery[asset.key] then priorityPending += 1 end
+	if asset.startup then priorityPending += 1 end
 end
 
+if #queue == 0 then ReplicatedStorage:SetAttribute("MareAssetsSettled", true) end
 if studioAudit and #queue == 0 then
 	ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = 0, loaded = 0, failed = 0, errors = { "NO_REGISTERED_MODELS" }}))
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "FAIL")
+	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "FAIL")
 	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "FAIL")
 end
+-- [초기 로딩] 첫 장면 요청이 진행 중이면 후순위 요청은 입장 대기 범위(5초)까지만 양보한다.
+-- 지연된 초기 모델이 전체 큐를 막지 않으며 Studio 전체 검증·동시 작업자 수는 유지한다.
+local loadStarted = os.clock()
+local initialPriorityDeadline = loadStarted + 5
+local startupTotal = priorityPending
 for _ = 1, 12 do
 	task.spawn(function()
 		while cursor <= #queue do
+			-- [우선순위 유지] 대기 중에는 항목을 예약하지 않아 현재 항구 변경이 큐에 반영된다.
+			while priorityPending > 0 and cursor <= #queue and not queue[cursor].startup
+				and os.clock() < initialPriorityDeadline do
+				task.wait(0.1)
+			end
+			if cursor > #queue then break end
 			local item = queue[cursor]
 			cursor += 1
 			local good, container = pcall(InsertService.LoadAsset, InsertService, item.id)
@@ -234,6 +378,19 @@ for _ = 1, 12 do
 				local model = container:FindFirstChildWhichIsA("Model") or container
 				local group = library:FindFirstChild(item.kind)
 				if model:IsA("Model") and model:FindFirstChildWhichIsA("BasePart", true) and group then
+					-- [기존 원본 품질 검사] 등록된 모델의 실제 3축 크기만 스튜디오에서 확인.
+					-- 메시를 합성하거나 텍스처/스케일을 임의 수정하지 않는다.
+					if studioAudit then
+						geometryChecked += 1
+						local boundsOk, _, bounds = pcall(model.GetBoundingBox, model)
+						local valid = boundsOk and bounds
+							and bounds.X > 0.0001 and bounds.Y > 0.0001 and bounds.Z > 0.0001
+							and bounds.X < math.huge and bounds.Y < math.huge and bounds.Z < math.huge
+						if not valid then
+							geometryInvalid += 1
+							if #geometryIssues < 24 then table.insert(geometryIssues, item.key) end
+						end
+					end
 					-- [항구 우물] Studio 실측에서 콘텐츠 표현이 없는 5개 TextureID만 제거한다.
 					-- CC0 원본 모델의 메시·스케일·구조는 보존하며, 라이브러리 복제 전에 재질을 복구한다.
 					if item.key == "Town/village-well" then
@@ -291,8 +448,18 @@ for _ = 1, 12 do
 									outfitMaterialized += 1
 								end
 								local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
-								if piece.TextureID ~= "" or (surface and surface.ColorMap ~= "") then
+								if piece.TextureID ~= "" or (surface and surfaceHasColorMap(surface)) then
 									outfitMapped += 1
+								end
+								-- [실물 재질 4종] 색만 입힌 플라스틱이 아닌 원본 256px 텍스처 여부를 확인한다.
+								if surface then
+									if surfaceHasColorMap(surface) then outfitColorMaps += 1 end
+									-- 맵 속성은 플러그인 권한에서만 읽힐 수 있어 실패해도 집계만 건너뛴다.
+									pcall(function()
+										if surface.NormalMap ~= "" then outfitNormalMaps += 1 end
+										if surface.RoughnessMap ~= "" then outfitRoughnessMaps += 1 end
+										if surface.MetalnessMap ~= "" then outfitMetalnessMaps += 1 end
+									end)
 								end
 							end
 						end
@@ -315,6 +482,9 @@ for _ = 1, 12 do
 					end
 					model.Name = item.name
 					model.Parent = group
+					if item.kind == "People" and string.sub(item.name, 1, 7) == "outfit_" then r15GarmentLoaded += 1 end
+					if item.kind == "People" and string.sub(item.name, 1, 4) == "acc_" then r15AccessoryLoaded += 1 end
+					if item.kind == "People" and string.sub(item.name, 1, 4) == "cc0_" then externalLoaded += 1 end
 					if model ~= container then container:Destroy() end
 					loaded += 1
 				else
@@ -329,7 +499,32 @@ for _ = 1, 12 do
 				warn("[MareEssentia] 모델 불러오기 실패", item.key, item.id, container)
 			end
 			pending -= 1
-			if (order[item.kind] or 99) <= 3 or earlyScenery[item.key] then priorityPending -= 1 end
+			if item.startup then priorityPending -= 1 end
+			if item.kind == "People" and (string.sub(item.name, 1, 7) == "outfit_"
+				or string.sub(item.name, 1, 4) == "acc_") then
+				ReplicatedStorage:SetAttribute("MareR15GarmentsLoaded", r15GarmentLoaded)
+				ReplicatedStorage:SetAttribute("MareR15AccessoriesLoaded", r15AccessoryLoaded)
+			end
+			if pending == 0 then
+				ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
+				print(string.format("[MareEssentia] 모델 전체 로드 %d/%d개, 실패 %d개, 경과 %.2f초", loaded, #queue, failed, os.clock() - loadStarted))
+				if portPriorityConnection then portPriorityConnection:Disconnect(); portPriorityConnection = nil end
+				local wearablesReady = r15GarmentExpected > 0 and r15AccessoryExpected > 0
+					and r15GarmentLoaded == r15GarmentExpected and r15AccessoryLoaded == r15AccessoryExpected
+				ReplicatedStorage:SetAttribute("MareR15WearablesState",
+					if wearablesReady then "READY" elseif r15GarmentLoaded + r15AccessoryLoaded > 0 then "PARTIAL" else "FAILED")
+				ReplicatedStorage:SetAttribute("MareR15WearablesExpected", r15GarmentExpected + r15AccessoryExpected)
+				ReplicatedStorage:SetAttribute("MareR15ExternalExpected", externalExpected)
+				ReplicatedStorage:SetAttribute("MareR15ExternalLoaded", externalLoaded)
+				ReplicatedStorage:SetAttribute("MareR15ExternalState",
+					if externalExpected == 0 then "NOT_REGISTERED"
+					elseif externalExpected < 25 then "PARTIAL_REGISTERED"
+					elseif externalLoaded == externalExpected then "READY"
+					elseif externalLoaded > 0 then "PARTIAL_LOAD" else "LOAD_FAILED")
+				print(string.format("[MareEssentia] R15 의상 로딩 %d/%d 액세서리 %d/%d 외부CC0 %d/%d",
+					r15GarmentLoaded, r15GarmentExpected, r15AccessoryLoaded, r15AccessoryExpected,
+					externalLoaded, externalExpected))
+			end
 			if studioAudit and pending == 0 then
 				-- [원본 복식 수입 상태] 재질·텍스처 맵이 실제로 살아 있는지 검증한다.
 				-- 9종이 모두 로드돼도 색상이 흰색으로 유실됐다면 성공으로 보고하지 않는다.
@@ -343,10 +538,14 @@ for _ = 1, 12 do
 				ReplicatedStorage:SetAttribute("MareOutfitMaterialAudit", HttpService:JSONEncode({
 					expected = 9, loaded = outfitModels, meshParts = outfitParts,
 					whiteParts = outfitWhite, mappedParts = outfitMapped,
+					colorMaps = outfitColorMaps, normalMaps = outfitNormalMaps,
+					roughnessMaps = outfitRoughnessMaps, metalnessMaps = outfitMetalnessMaps,
 					nativeMaterialParts = outfitMaterialized, missing = outfitMissing,
 				}))
 				ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState",
-					if outfitModels == 9 and outfitParts >= 9 and outfitWhite == 0 then "PASS" else "FAIL")
+					if outfitModels == 9 and outfitParts >= 9 and outfitWhite == 0
+						and outfitColorMaps >= 9 and outfitNormalMaps >= 9 and outfitRoughnessMaps >= 9
+						and outfitMetalnessMaps >= 1 then "PASS" else "FAIL")
 				-- [스튜디오 독립 진단] 미복원 메시가 남았는지 확인할 수 있도록 집계만 기록한다.
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAudit", HttpService:JSONEncode({
 					expected = shipColorExpected, models = shipColorModels,
@@ -354,6 +553,11 @@ for _ = 1, 12 do
 				}))
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAuditState",
 					if shipColorExpected == 72 and shipColorModels == 72 and shipColorParts > 0 and shipUnknownParts == 0 then "PASS" else "FAIL")
+				ReplicatedStorage:SetAttribute("MareModelGeometryAudit", HttpService:JSONEncode({
+					checked = geometryChecked, invalid = geometryInvalid, affected = geometryIssues,
+				}))
+				ReplicatedStorage:SetAttribute("MareModelGeometryAuditState",
+					if geometryInvalid == 0 and geometryChecked == #queue then "PASS" else "FAIL")
 				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
 			end
@@ -361,13 +565,13 @@ for _ = 1, 12 do
 	end)
 end
 
-local deadline = os.clock() + 30
+local deadline = loadStarted + 30
 while priorityPending > 0 and os.clock() < deadline do
 	task.wait(0.25)
 end
 if priorityPending > 0 then
 	warn("[MareEssentia] 우선 모델 불러오기 제한시간 도달", priorityPending)
 end
-print(string.format("[MareEssentia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개", loaded, failed, pending))
+print(string.format("[MareEssentia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개, 필수 요청 종료 %d/%d, 경과 %.2f초", loaded, failed, pending, startupTotal - priorityPending, startupTotal, os.clock() - loadStarted))
 ReplicatedStorage:SetAttribute("MareAssetsReady", true)
 

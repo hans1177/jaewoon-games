@@ -1741,3 +1741,628 @@ Kenney Pirate Kit CC0-1.0 원본을 기존 저장소 Git 바이너리에서 **�
 | `materials/` | Beige Wall 001: Color/NormalGL/Roughness 1K | Dimitrios Savva·Rico Cilliers / CC0 | https://polyhaven.com/a/beige_wall_001 |
 | `materials/` | Weathered Brown Planks: Color/NormalGL/Roughness 1K | Dimitrios Savva·Rico Cilliers / CC0 | https://polyhaven.com/a/weathered_brown_planks |
 | `materials/` | PavingStones150: Color/NormalGL/Roughness 1K | ambientCG / CC0 | https://ambientcg.com/view?id=PavingStones150 |
+
+
+## 2026-11-19 ChatGPT 워크 교역품 원화 66종 (프로젝트 자체 원화)
+
+- 원본: 2026-11-18 저녁~11-19 초반 ChatGPT Library Work에서 소유자 지시로 생성한 교역품 PNG. 소유자 직접 게임 사용 승인.
+- Git 소스: `assets/goods/<id>.png`, 각각 512×512 RGBA, 완전 투명 알파를 포함. 정식 로블록스 `Image` 자산으로만 등록.
+- 권리: `PROJECT_ORIGINAL_ART`; 외부 사진/브랜드/유료 에셋 미사용. 승인 해시는 `assets/APPROVED_IMAGES.json`과 동일.
+- 대상: 기존 항구 교역 원품 30종과 기존 생산/지역 브랜드 교역품 36종. 기존 상품 ID/가격/저장 구조는 변경하지 않는다.
+- 보류: 주류 묘사 16종 및 기존 상품 ID가 없는 보석 개별 시안 5종. 실물 표시/게임 배포는 로블록스 권한·QA 뒤 확인.
+
+| 교역품 이미지 | SHA-256 |
+|---|---|
+| `b_amsterdam_aged_cheese.png` | `0dbb3a7e7327bb45a422c0c96c4c1d15c6e8cbee60dfd2abcd2236f0bef39851` |
+| `b_batavia_tea_cure.png` | `b41d2965ed19ff385b0f1fc7c65b1ba692e35044b26978646b11d4f6ff6bbaee` |
+| `b_busan_ginseng_medicine.png` | `01f194519a7483772a1bf80f90d6c698810605d007f0c9959ca6e74ae443b787` |
+| `b_calicut_cloth_cotton.png` | `c6db201151f7c4004408e68f01a86fecb4fa894d8040357448d51020d0202d0d` |
+| `b_goa_spice_blend.png` | `82d2656ca1143f3f8da604735ef2425d94151ff663f0556e5cbe4ac76935ae31` |
+| `b_london_cloth_wool.png` | `ae3e553296e0a63e9f72dae49e93b655354fa6c2e5b0cc238c226006b94e2250` |
+| `b_nagasaki_smelt_copper.png` | `489a1facf0f6a9bf500b0c6b3652e15b4f7bd96c07eb1c5d2a8286b0d12f0640` |
+| `b_seville_leather.png` | `94628a4a61be5cfb8b634549eaa0ba826ad75090db066e6cb4e5db3aaa7645a8` |
+| `b_venice_fine_glass.png` | `89c6ef9f71579c988ec5c8963787ef8e5a53da636b1ba3a0a3ef2ae1fcb942a9` |
+| `brazilwood.png` | `6b524348e3c7d8d38214b4c8620f608be229fd21e98dc6ab3ffc775c7cfa3bc4` |
+| `cheese.png` | `129a421df2e52a1e426796ef3dcad2861c3e7fc1165b61a423f954615d952461` |
+| `cloth.png` | `ea9ee94411127db9d4a9dfde2d9759dbab17162e331abc55898bac16c3365b27` |
+| `coffee.png` | `3566e3477dd0b7daafae9e858b36f7de54922fb5d6bb0a06d82a9a8f08f45c9a` |
+| `copper.png` | `3266d6bba4dba36bf930436629117b33617c8a7dcf71033647e5c11034eb3990` |
+| `cotton.png` | `5f8fef6c9750dbb28594ae59adced41f0169cba2fbd3ff8a1ef12c4bf7c52f63` |
+| `ebony.png` | `778157f7cbf3c0d4cea56c387abc6b1c63e5817ee67c2c7b62b169010c994511` |
+| `fish.png` | `ae55b8de4d49f9113d666a7ea3d2d4b5e3774fd927062e936d7a91e050ab75e5` |
+| `fur.png` | `2772d6bf6493b2a669f980194e99de7825a53e51a313e58f24f8bf3a7a595d7c` |
+| `gems.png` | `30d43e13297a44ad06017a6610511cc795c2566b37fb2eb1e69b945e14da9d80` |
+| `ginseng.png` | `7bd23d480fb9529148d2f0a5221c4157ba06f71d931fddaef957e8fb9261a2f0` |
+| `glass.png` | `d748cfba8cebd4d662d132b1a8a852989042eab4f212a3bc0dd353e7c45f72fc` |
+| `indigo.png` | `62787d2a2afd7eb2dcf90be3fb889e08cc6db1e7646fe1e5404a8712b4a96cf6` |
+| `ivory.png` | `a183f17fdd6db6ebeab23daae24ea869978272537a71f891cbc558d334351fc3` |
+| `jade.png` | `0842cee328c76f2337bffdf589739cff36d9a76bbcaeb48ff7ced152b94dd9d3` |
+| `kauri.png` | `ab24b419bcdd0114632d0905d05206c830e421c243302c7646c7ee7d195a7af6` |
+| `leather.png` | `343ff51528c73c5015b166c2f21c551ea28224c3a4c6027186b0aa6d6f21780b` |
+| `logwood.png` | `6bc38492e744eb45f1280a1e727a06d816be573eb63b891cb0df461095788881` |
+| `mahogany.png` | `6ded7fba64f5fdc508a5a616951a78534ac328cb675d717bcca1a081eb5a9b1f` |
+| `maize.png` | `0ab6631904adb763f68ea84f5b0741c80477dd944c9d19387b0d01024bdb04a4` |
+| `marble.png` | `67d8b5a73a30568ec1b766becd96909fdabde558021ddbad4c54ab33c26ed564` |
+| `p_aged_cheese.png` | `101f3271ea6994c0b45f9a00083ee08f51daade093cb0757395fdd2cd5b280b1` |
+| `p_amber_craft.png` | `4524a2c665ef6e8b7b7474ba8d744f1be637a55ce36b9faf0be0cba12b290d40` |
+| `p_cloth_cotton.png` | `f9a34cf8dcc1136d16e1d60fdd30f3960a3d028dff0a4c4a0c66b4a2fc2634b6` |
+| `p_cloth_wool.png` | `34ef63c892a3c2c99015e940388aac5fe2d7fee5b4f1b16e78dc143816ffe21f` |
+| `p_dye.png` | `9e9b2e3a2f0bee7d8d6749cf23ddabd72c17ff4ac0057f1ad97b10907eb00d6e` |
+| `p_fertilizer.png` | `798ef7fb10a3d3903810e70d5c117bdf50716e4ff78e4a75eb5040babb60763c` |
+| `p_fine_glass.png` | `a3922653e65b1f0f3501851c2555033bbd740a68f29ecbd91e969dca1b5afbec` |
+| `p_fine_wood.png` | `132a3e8d99b7460e513cd0ccb8ee7adb956bd372b4ac775073556c1c4a94dc9b` |
+| `p_fish_cure.png` | `540b6f2152b6ffb9a2b85741800f3baafab640165635e1b69cc98bb9fb76586e` |
+| `p_fur_goods.png` | `0508117ffb41a63c0208e0df1c5d6134df8cc9eb74034905324b44a272db2752` |
+| `p_ginseng_medicine.png` | `becd74567fabe169993f7cf68a15a407a12324d3887e73e86f29455dc5453e46` |
+| `p_glass.png` | `b95ffbedc9a56202585d283196964edab1b145784a0072f48182061068075d48` |
+| `p_gunpowder.png` | `797eee46e624a2ec5240143e759f0015b6c3d3e8f16e546b99c8252ae8050020` |
+| `p_ivory_carving.png` | `c5d21e625da5ac815601b0afc4c4589a9c0281d6a16e932e9b90b5d8c68b9729` |
+| `p_jewelry.png` | `072a352354b384effba5c5a75405ff75ddc8e9dcc4bf3ca0d3f2f5dd90299090` |
+| `p_leather.png` | `ef704aa844f891614535e0c89f2f7452b4ad14d0a353240e1fc1fadb4729b3d0` |
+| `p_marble_carving.png` | `ded569cbfaf836eed1fc26afb5d9012a8a73ae44a7de8d2331f0b3cfdbb9b7c3` |
+| `p_olive.png` | `208ae6738561e48619545839ac852879397c0645e94b55f2c13ce137152f787e` |
+| `p_perfume.png` | `57c7ee24b400e3f54223fda2e8a5c775bf669eaf9babd1cf432dd27c2b35f4ba` |
+| `p_resin.png` | `c32037f48024d127ba470e9c5b26a1b3f3fc08d12365dbaf10f0e975bdc6d8b1` |
+| `p_silver_coin.png` | `2605f74f08d06b5672eace74cbe53c6acfbd1fcde4bacd348ec5457bcf76112d` |
+| `p_smelt_copper.png` | `e92eaee9e9a6a05b6d78468a568225d85cf338231d05003bb0842a312351e79f` |
+| `p_smelt_iron.png` | `fc18da7ad50f0e2b0d5b5d565a7c2cda889bda9d58da22a0e3f8c6d74e97bbe9` |
+| `p_spice_blend.png` | `d16de6568668a457959e97ac712b00835f6dbd876df30fef7943f089fe7f7610` |
+| `p_tea_cure.png` | `5bd1f5e1a32935e9b94b2e2dadef11aef98099a1c25ca32b15b50a71aa0fd61d` |
+| `p_timber_plank.png` | `0cb3f0e26e5a08600d29087366428c43ae58e15a756fcb16677727ddc3915fe2` |
+| `p_whale_oil.png` | `83a8e4fd0ca503ec07d103cf14543039c4f67aaf13cf27b062a1aff94cb365cd` |
+| `palm_oil.png` | `9b46820f462df7d4c6b972b103f6cb9804f48671d581b803cfed5ed95c56acb6` |
+| `pearl_shell.png` | `7255f3d25b99ab423e6c69024c8916233167f138c0e574f1cec24ace589c2f1b` |
+| `rice.png` | `af0025b8829db2b72e4ddd6534be0b4b4f86bea358b144b1f1fc9e8ac69192b4` |
+| `sandalwood.png` | `8ddda83748370e13b1a70041ad0ace5c0eda09ab5f5819f04af92cb7b7cfd88e` |
+| `sandalwood_hi.png` | `58a2748494bbaae85673481eabe7e79bce65f7fbd07555063c34ffd16c4cb6ba` |
+| `silver.png` | `6d504fb815e5863ad8c9734cf0c087c5f4c8343024ef71dbd3ca454d9bc4c31d` |
+| `spice.png` | `559de65e3cc3436a851483911c463a60fc8ccf5e3c6b4a5f0499a44813f4e9ba` |
+| `timber.png` | `0765c93f26388e40421a8158fd1c84e59bebd224b78e5ceb6df22d311fca49b7` |
+| `wool.png` | `e32e2c7afb61fe3f0fda4a76c6309e68ed8072dd190571b5d9f81ee31f70b446` |
+
+
+## 2026-11-19 카드배틀 UI 원화 18종
+
+- 출처: 사용자가 오늘 ChatGPT 라이브러리에 제작·보관한 전투 UI 원본(6지역 프레임·고전 버튼·점수판·아이콘·양피지·승무패 장식).
+- 작업: 기존 사용자 원화에서 프레임/버튼/점수판/아이콘을 개별 투명 PNG로 분리 및 화면 크기 최적화. 신규 제작이나 외부 구매 없음. 각 해시는 `assets/APPROVED_IMAGES.json`, 등록 파일은 `assets/cardart/ui_*.png`.
+- 적용: 기존 `NavalBattle.luau`, `DeckBuilder.luau`, `CardGallery.luau` 화면만 개선. 보상·전투 판정·덱 저장·기존 자산은 보존.
+- 로블록스 실제 게시 및 모바일 런타임 표시 검증은 별개로 실시.
+
+## 중립 카드 손오공 원화
+
+- `CardArt/lo_51`: 프로젝트용 ChatGPT 생성 원화 「절벽에 강림한 손오공(1)」. 피·혈흔, 글자, 카드 테두리 없이 단일 장면임을 시각 확인. `PROJECT_ORIGINAL_ART`.
+- 원본 PNG SHA-256: `b496d91ffb0710fd45b06ac006e152ddfde72d4aacf857e8e32a0bc7f0457820`. 등록용 1200×900 JPEG SHA-256: `e37e8ff856eba052618d448e26c773b21a01cdc5219b25364bea7db07121fae3`.
+
+## 2026-11-19 전투 카드 원화
+
+- 프로젝트용 ChatGPT 생성 원화. 카드 틀이나 글자가 없는 단일 장면을 시각 검수. `PROJECT_ORIGINAL_ART`.
+- `CardArt/eu_36` 잔 다르크. 원본 PNG SHA-256 `1fc95a470493f802a982368b2924e40790a2dbe21281512f65c6be1df10be109`. 등록용 900×1200 JPEG SHA-256 `ee389a479d9e2f9b91a09cb1c71e5a5bf3bdf5332781e91d398e9716f15661ac`.
+- `CardArt/ea_43` 도쿠가와 이에야스. 원본 PNG SHA-256 `ed37666de7221183d08d381b50ee8093e9fef06d25cac4fe18acf0d16cd72f72`. 등록용 900×1200 JPEG SHA-256 `9f3a6e9f0654c131ed059749296e886f0ec9fc36d1c07599eadc49b5765ed017`.
+- `CardArt/lo_52` 저팔계. 원본 PNG SHA-256 `43210e17f8b5f72dcff9febee8e5139aa88bab41654227ca745d88cb3cf0f47b`. 등록용 1200×900 JPEG SHA-256 `d6bfa871bd7f818fd6d8e5701198d46c1dc4f1de3b529237d6ba70e1e27ad94b`.
+- `CardArt/lo_60` 삼장법사. 손오공·저팔계 카드 원화를 시각 참고한 프로젝트용 ChatGPT 생성 원화, `PROJECT_ORIGINAL_ART`. 원본 PNG SHA-256 `3d957d2ce59d984f744974d7e2d3f4d986890628f4b42d1c01ec39283dd6cafd`. 등록용 1200×900 JPEG SHA-256 `07e64a2eda276542fc5c27ffcea1617f3d146ec77a9ead36fa612e0bc26c625e`.
+
+## 해상 작전실
+
+- `ui_ops_chart.png`: 프로젝트용 생성 원화 「촛불빛 제독 책상과 해도」. 화면 글자와 조작 요소를 분리한다.
+- `ui_ops_formation.png`, `ui_ops_vault.png`, `ui_ops_depart.png`: 프로젝트용 생성 원화 「황금 테두리 해군 패널 3종」에서 각각 분리한 투명 그림.
+- 이용 조건: `PROJECT_ORIGINAL_ART`. 배포용 그림의 해시는 `APPROVED_IMAGES.json`에 기록한다.
+
+- `ui_fleet_table.png`: 자체 생성 해상 함대 편성 배경. 청록색 천과 비스듬한 나무 책상, 왼쪽에서 들어오는 햇빛을 표현했다. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `e54ca21780477b2d4ce935e13ad1c232a41a266837b83b8cab300a8a9fcccc25`.
+
+- `ui_departure_practice.png`, `ui_departure_duel.png`: 프로젝트용 출항 준비 시안에서 제작한 연습 항구와 대결 함대 원화. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `7fd63f8267e99ee86962ee9d9c9b2cfd117362bb5790b073e84bb0efaed6d094`.
+
+- `ui_battle_dawn.png`: 카드 전투판용 자체 제작 새벽 바다 원화. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `a22b1bf46bfe1de17219b0343f97272b48091b80c03ba80db9c511cf083699ef`.
+
+- `ui_card_vault_album.png`: 카드 보관소용 자체 제작 가죽 장부 배경. `PROJECT_ORIGINAL_ART`. 원본 SHA-256: `0416e6eb9723472c742a1be1661c338d2d2d514ea601cf6203b22ffb3b8a38b7`.
+
+## 2026-11-22 지상전 구릉·숲 보강 원본 (추가 3개)
+
+기존 무료 Kenney Nature Kit 2.1(CC0-1.0)에서 기존 내부 폴더에 없는 GLB 세 개를 별도로 확보했다.
+원본 공급: https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit (Kenney Nature Kit GLB 자체 포함 메시).
+공식 원작·라이선스: https://kenney.nl/assets/nature-kit (CC0 1.0).
+원본 Git blob SHA-1과 내부로 복사한 바이너리 blob SHA-1이 동일함을 검증했다.
+
+| 기존 내부 경로 | 원본 Git blob SHA-1 | 목적 |
+|---|---|---|
+| `assets/terrain/tree-detailed.glb` | `fb9d3a9b6d3b5dac19a6dbfd5c617ae07bab74b6` | 숲 지역 수관·나무 다양화 |
+| `assets/terrain/tree-pinedefaultb.glb` | `c0d4020f3ea4453801daca882314ee02cd155f3d` | 북방 소나무 군락 |
+| `assets/terrain/rock-largea.glb` | `3df13f56ceaa9da68e02a55e60a6961a33499d42` | 경사·암석 장식 |
+
+원본은 수정하지 않았다. `FieldScene.luau`는 등록된 기존 나무·바위로 우선 렌더링하고,
+위 3종은 기존 Open Cloud 등록기가 실물 모델 ID와 사용 권한을 발급한 뒤에만 선택한다.
+**내부 Git 확보와 Roblox 업로드/Studio 표시/정식 게시 완료는 별개다.**
+
+## 2026-11-22 추가 확보: 지상전·해상전 실물 입체감 8종
+
+- 공식 팩: Kenney Nature Kit, CC0 1.0 — https://kenney.nl/assets/nature-kit
+- 고정 원본 Git 저장소: https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit
+- 기존 `assets/terrain/`에 원본 바이너리로 보관. 공개 원본과 내부 Git blob SHA-1 전수 일치(8/8). 원본을 바꾸지 않았고 임시 파츠·새 폴더·유료 에셋 없음.
+- 참고 게임: Valheim의 지형별 고저차·생물군계 단차와 Sea of Thieves의 해안 윤곽·포말 깊이감 (게임 파일·시각물 복제 아님).
+
+| 원본 파일 (`assets/terrain/`) | Git blob SHA-1 | 활용 |
+|---|---|---|
+| `cliff-large-rock.glb` | `0961d9bfdd7b952d152b8280f7d8d81b95828362` | 원거리 절벽 |
+| `cliff-blockslope-rock.glb` | `3536237912d55b87a3ccd009ad2aa7b6b4311b96` | 자연 경사면 |
+| `cliff-top-rock.glb` | `11b06ca857b860dc94696daff39685405616a88d` | 절벽 상단 단차 |
+| `plant-bushdetailed.glb` | `77b9ff8e77d4b0d7a39918c5edb52629a0ea01db` | 숲 하층 관목 |
+| `grass-large.glb` | `546a089b2a0e8f6d42ed948bad396e5169ef7c14` | 풀 군락 |
+| `rock-tallc.glb` | `8f3c255ad7fab4bde714b71e90cf67733a58aa37` | 높은 바위 |
+| `tree-pinetalla-detailed.glb` | `04b215870fabdfb428636dad8514224ab64489bf` | 북방 고목 |
+| `ground-pathrocks.glb` | `6a66adf9652b80eb19de76aa6b991d438123dff0` | 암석 산길 |
+
+게임 코드 `FieldScene.luau`는 구릉 윤곽 및 수목·암석·관목 모델의 지면 접지에 사용하고,
+`NavalBattle.luau`는 실물 해안 절벽·바다 포말 연출에 사용한다.
+Roblox 등록 번호와 Universe 사용 권한은 기존 `owner-mare-essentia-assets.yml`/정식 등록기가 별도로 확인한다.
+**GitHub 원본 확보와 Roblox 원본 업로드, Studio 실제 보임 및 최종 게임 게시 증거는 각각 독립 검증 대상이다.**
+
+## 2026-11-22 입체감 3차 자연 원본 10종
+
+- 공식 원작·권리: [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), **CC0 1.0**.
+- 원본 Git 경로: [Hidencod/tge-assets Nature Kit](https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit).
+- 아래 원본은 `assets/terrain/` 내부에 GLB 바이너리 그대로 확보했다. 외부 원본 Git blob SHA-1과 내부 복사본 해시 10/10 일치.
+- 참고 방식: 원신의 전경·중경·원경 구도, 씨 오브 시브즈의 파도 포말·선박 항적·해안 실루엣. 타 게임 에셋 복사 없음.
+
+| `assets/terrain/` 파일 | 원본 Git SHA-1 | 활용 |
+|---|---|---|
+| `tree-detailed-fall.glb` | `1d39f5584e2ae459c2b812b1cb7f91349dc46de0` | 가을 수관 |
+| `tree-oak-dark.glb` | `84a0b4364de35b0c2056aea0d8a1de1b3300e167` | 그늘 숲 |
+| `tree-pinetallb-detailed.glb` | `31a663c2bc895b34564ee1bae8699d46cca93231` | 북방 소나무 실루엣 |
+| `plant-bushlarge.glb` | `6ca5d5cb789507ee647c969b7bd8e6d2c4526b8b` | 전경 수풀 |
+| `rock-talli.glb` | `a8e2a0670e2bd60fdb548cd6684df42af1c8f5b7` | 바위 기둥 |
+| `cliff-cornerlarge-rock.glb` | `49300019c18ffdfabd181b674a1c297dc6278c24` | 바다 돌출 해안 |
+| `ground-riverrocks.glb` | `fd64e00165a23742a17de9b59832f88fefbd8b1b` | 시냇물 암반 |
+| `cliff-waterfall-stone.glb` | `09c790a07b93c09cab0dd34a4e928cc042c79867` | 폭포 절벽 |
+| `tree-palmdetailedtall.glb` | `4b8a5138d0cad20ae512c914caa9854df3954b5a` | 열대 야자수 |
+| `cliff-blockdiagonal-rock.glb` | `d5573d35456d0d1a545004a9297aa8664c5992e6` | 대각 협곡 경사 |
+
+Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산 ID·체험 사용 권한 검증 후에만 게임에서 사용한다.
+원본 확보와 게임 게시·실제 Studio 화면·모바일 성능 검증은 각각 별개다.
+
+## 2026-11-22 입체감 4차 실물 하천·해안·수관 원본 8종
+
+- 공식 제작/사용 허가: **Kenney Nature Kit — CC0 1.0**, https://kenney.nl/assets/nature-kit
+- 외부 원본: https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit
+- 기존 `assets/terrain/` 폴더에 원본 GLB를 수정하지 않고 저장. 외부/내부 Git 바이너리 blob SHA-1 **8/8 일치**.
+- 연출 참고: 개활지-그늘-수면 순의 공간 원근 배치와 선명한 연안 지형 실루엣. 타 게임 에셋 자체는 복제하지 않음.
+
+| `assets/terrain/` 원본 | SHA-1 | 용도 |
+|---|---|---|
+| `cliff-large-stone.glb` | `e93d0635a9bc566f5a13843f9ef1f9df09c5437c` | 빙하·고지대 밝은 암벽 |
+| `cliff-cornerlarge-stone.glb` | `5f73fd650e8c63d9f943a0846c8f805156e8eca3` | 해안 절벽 코너 |
+| `ground-riverbendbank.glb` | `3493554fdeeec1c8409478d7e61c0e0338a31556` | 강이 굽이치는 가장자리 |
+| `ground-riverside.glb` | `7fb71bbd881c3a1b5c5c540a4c139ef2963877f7` | 습지/호수 물가 |
+| `plant-bushsmall.glb` | `de5e7840512f0ca9d465eab5bc7c078bf1d613b0` | 근경 수풀 |
+| `grass-leafslarge.glb` | `662b40110f7f45ae508632dce3e8f69e45bd27a9` | 풀잎 군락 |
+| `tree-oak-fall.glb` | `b14f0de44be30815bfeb91026f41869160cc22ce` | 가을 참나무 |
+| `tree-palmbend.glb` | `f1ce81e92c48c980fca2de9f0605702e415efb30` | 구부러진 열대 야자 |
+
+실제 Roblox 모델 사용은 기존 정식 등록 워크플로가 ID와 Universe 권한을 승인한 다음에만 한다.
+
+## 2026-11-22 입체 지형 4차 CC0 자연 모델 8종
+
+- 원본: [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), CC0 1.0, 유료 또는 출처 불명 없음.
+- 검증 원본: [Hidencod Nature Kit](https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit).
+- 기존 `assets/terrain/`에 GLB 원본 바이너리 보존. 원본 Git blob SHA-1 / 내부 해시 **8/8 일치**.
+- 구현 구도: 근경 풀→중경 나무→원경 능선, 굽은 해안 안쪽 암석과 강기슭. 특정 게임의 모델·이미지 복제 없음.
+
+| 원본 파일 | 원본 Git blob SHA-1 | 용도 |
+|---|---|---|
+| `terrain/tree-plateau.glb` | `f71ffc832f57211786833401e5e5a980f3b9188e` | 고지 숲 수관 |
+| `terrain/tree-pinetallc-detailed.glb` | `db0568ca14d97917aa0c0fccc17f8feddb0e21e4` | 능선 침엽수 |
+| `terrain/plant-flattall.glb` | `892506b42f756ce42a0c0d7dbdadd8c29c07ecc0` | 전경 풀 |
+| `terrain/cliff-cornerinnerlarge-rock.glb` | `eb7e85430f5a74a1405bfaea14ed1da062a65046` | 해안 안쪽 굴곡 |
+| `terrain/cliff-cornertop-rock.glb` | `2d6be6c8feb0c42d697d48d888fd0c45e996865f` | 절벽 위턱 |
+| `terrain/ground-riverbendbank.glb` | `3493554fdeeec1c8409478d7e61c0e0338a31556` | 강 굽이 둑 |
+| `terrain/rock-largec.glb` | `2cdf83e8a9e681a0b1c6aef4d9933d772d3ebc65` | 해안 큰 암석 |
+| `terrain/tree-palmbend.glb` | `f1ce81e92c48c980fca2de9f0605702e415efb30` | 열대 해안 야자수 |
+
+로블록스 실제 Model 업로드/Universe 권한 부여/AssetIds 정합성은 기존 등록 워크플로에서 독립 확인하고, 그 이후 기존 필드·해상전 함수가 해당 자산만 사용한다.
+
+## 2026-11-22 5차 입체 자연 원본 8종
+
+- 공식 원작: [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), CC0 1.0, 상업 이용·변경 허용.
+- 원본 보관처: [Hidencod/tge-assets Nature Kit](https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit).
+- 아래 GLB는 내부 `assets/terrain/`에 바이트 그대로 복사. 공개 원본 Git blob SHA-1과 내부 Git blob **8/8 일치**. 유료/저작권 불명 모델 없음.
+- 발헤임의 생물군계 고저차와 씨 오브 시브즈의 암석 섬 윤곽을 구도 참고만 했고, 게임 파일/그림을 복제하지 않았음.
+
+| 원본 파일 (`assets/terrain/`) | 원본 SHA-1 | 의도 |
+|---|---|---|
+| `tree-tall.glb` | `183c2bd2b4f8fdaaceb94523bcb233132307287f` | 높은 전경 나무 |
+| `tree-thin.glb` | `3e959e80ae2a1cf518036005713bf6067cdfc2bb` | 가느다란 먼 수목 |
+| `plant-bushlargetriangle.glb` | `624f5c46e9edd7a7c413ffe621250968be250393` | 사선 수풀 |
+| `cliff-diagonal-rock.glb` | `5c02a7c3c6682dce820f68188958a66d6c9295f1` | 사선 절벽 |
+| `cliff-cornerinnertop-rock.glb` | `5a39c65292bcf803a53053069b282a13a49a43de` | 협곡 높은 꺾임 |
+| `rock-talld.glb` | `1051df6526955c0e9185c3e666fc952ad9d97a9c` | 날카로운 바위 기둥 |
+| `ground-pathbend.glb` | `f1f3da1463157dbb3c73ae82e1e386d9fe42e6e9` | 휘어지는 돌길 |
+| `tree-tall-fall.glb` | `3851f9d49b5ff496ded56cddef6f23351b6fbc02` | 가을 키 큰 나무 |
+
+모델 사용은 기존 로블록스 등록기의 실제 AssetIds·체험 권한 승인을 받아야 하며 미승인 모델은 대체 도형으로 채우지 않는다.
+| `terrain/` | kenney_mushroom_red.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_rock_largeB.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_tree_fat.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_grass_leafs.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_ground_pathCorner.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_ground_riverCorner.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_log_stackLarge.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_mushroom_redGroup.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_mushroom_tanGroup.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_path_stoneCircle.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_plant_bushTriangle.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_rock_largeD.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_rock_smallFlatA.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_rock_tallE.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_stone_largeB.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_stone_smallFlatA.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_stump_old.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_stump_roundDetailed.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_tree_defaultDark.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_tree_palmShort.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+| `terrain/` | kenney_tree_pinetallD_detailed.glb | Kenney · CC0-1.0 | https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip |
+
+
+## 2026-11-23 지상·해상 배경 3층 원근 CC0 원본 19종
+
+- **실물 원본:** Kenney Nature Kit, 공식 출처 https://kenney.nl/assets/nature-kit (CC0-1.0; 무료 상업 이용 가능).
+- **동일 바이너리 확보:** https://github.com/Hidencod/tge-assets/tree/main/packs/nature-kit (자체 텍스처 포함 GLB). 원본 Git blob SHA와 저장소 Git blob SHA가 19종 전부 일치하고 GLB 서명·크기도 검증했다.
+- 기존 `assets/terrain/`와 기존 자산 등록기만 사용하며, 미등록 모델은 기존 화면에 강제 적용하지 않는다. 용도는 지상 절벽·언덕·강·흙길·계절 숲, 해상 절벽·섬·원근층이다.
+- **정확한 상태: SOURCE_DOWNLOADED_HASH_VERIFIED.** 외부 파일 확보는 Roblox Model 생성, Universe 사용권한, 실제 게임 표시, 게임 게시 또는 모바일 검증 완료를 뜻하지 않는다. 기존 `owner-mare-essentia-assets.yml` → `mare-essentia-upload-assets.mjs`로 자산 ID/게임 권한 확인 후 기존 `AssetIds.luau`에 올라온 자산만 사용한다.
+
+| 보관 파일 | 바이트 | 원본/보관 Git SHA |
+|---|---:|---|
+| `terrain/cliff-blockcave-rock.glb` | 5432 | `d6e8c3fc146c406f1af16cf35d35cf665bbab1e3` |
+| `terrain/cliff-blockhalf-rock.glb` | 2788 | `d62eb0d35fc942b12e504be856e07219be7a81dd` |
+| `terrain/cliff-blockslopewalls-rock.glb` | 8900 | `6a2c4c16486c387ad41f7d655527972b55428f2e` |
+| `terrain/cliff-cave-stone.glb` | 5484 | `0325f4557bec25dbca12da66ba737de0aedd2488` |
+| `terrain/cliff-cornerinnertop-stone.glb` | 7612 | `53c7922ab0b85b5f57393d6a53c8661c182c2568` |
+| `terrain/cliff-stepscorner-rock.glb` | 17544 | `2ad3ed8ea2858e2adec6b970cf19479bbfef66f5` |
+| `terrain/cliff-topdiagonal-rock.glb` | 6220 | `2c647bce59d89de5d68ad7373afd7533f2bb37ea` |
+| `terrain/cliff-waterfalltop-stone.glb` | 7508 | `14f125fc81bb45eb7038d0a5c2769ac1947cf2e4` |
+| `terrain/platform-grass.glb` | 12568 | `3c81d0f7307bb4061c35c76a7dc0325608668d2a` |
+| `terrain/platform-stone.glb` | 13632 | `be429454801c6e6d72ed1c0d35226606004f1c78` |
+| `terrain/ground-pathcorner.glb` | 3532 | `2f9cb73793a2d3ecfd2fe2d98bd037074d28580a` |
+| `terrain/ground-pathcross.glb` | 6404 | `8e85f01f30c3f51b32ccc82441360fa623c62725` |
+| `terrain/ground-rivertile.glb` | 9120 | `9dcdf254511884d7f2a5b0587663a0fe9fda225b` |
+| `terrain/ground-rivercorner.glb` | 4844 | `2ce831b8730c0818f1d915afdb61371d9e5ef768` |
+| `terrain/plant-bushtriangle.glb` | 3956 | `ffe8aaa74a968d990a4111be9fbcd4588f570af5` |
+| `terrain/grass-leafs.glb` | 4608 | `1b7754f269370a04750fdb1f61beba6d0a9f0741` |
+| `terrain/tree-plateau-fall.glb` | 16296 | `e5f7b4eeca1d86157d89f07da63b167bb447b39c` |
+| `terrain/tree-detailed-dark.glb` | 31416 | `f078aeeeb9fb3f36501a54d768db3675456bfb60` |
+| `terrain/tree-pinetalld-detailed.glb` | 12548 | `58e4fc02f3232c880e3255f485b42c3f5a64b220` |
+
+
+## 2026-11-23 중세 마을 무료 3D 집·건축물·생활 배경 21종
+
+- **공식 제작자:** Quaternius, Medieval Village Pack, https://quaternius.com/packs/medievalvillage.html
+- **라이선스:** CC0-1.0, 개인·상업 이용 무료. https://github.com/trebeljahr/quaternius-showcase/blob/main/LICENSES.md
+- **원본 경로:** https://github.com/trebeljahr/quaternius-showcase/tree/main/public/glb/medieval_village_pack
+- **원본 무변형 검증:** 각 GLB의 원본 Git blob SHA-1과 저장소 복사 Git blob SHA-1 일치, GLB 서명·길이 일치. 기존 에셋을 덮어쓰지 않고 `town/` 및 `terrain/`에 21종 추가.
+- **적용 구분:** 현재 단계는 원본 무료 3D 파일 저장·해시 검증이다. 실제 Roblox 자산 업로드·Universe 사용 권한·게임 배경 배치·게시·모바일 시각 QA는 각기 별도 검증한다. 기존 canonical 등록기만 사용한다.
+
+| 저장 파일 (`assets/` 아래) | 원본 파일 (`medieval_village_pack/`) | 크기(B) | 원본=보관 Git blob SHA-1 |
+|---|---|---:|---|
+| `town/village-house-1.glb` | `House_1.glb` | 410268 | `b2733641f276a98615436b998d8f0d1c5e68a441` |
+| `town/village-house-2.glb` | `House_2.glb` | 509876 | `daaa54f0be323aa63a3d1b54843a2327130c3e8c` |
+| `town/village-house-3.glb` | `House_3.glb` | 258580 | `8beb250ade5125a93f9ce2e3a3c6bb3abfe3efec` |
+| `town/village-house-4.glb` | `House_4.glb` | 205028 | `74e71b5fd358ef9933e298b4ae6f89d86963505b` |
+| `town/village-inn.glb` | `Inn.glb` | 468600 | `773f9184c4c80f20ec37de300b3f7e4106754e83` |
+| `town/village-blacksmith.glb` | `Blacksmith.glb` | 670832 | `83917c55b132d8e51e6c2b969911e14c857956a8` |
+| `town/village-mill.glb` | `Mill.glb` | 575508 | `bf421e0d3493f6192971a90b25e91969f27c14de` |
+| `town/village-sawmill.glb` | `Sawmill.glb` | 309568 | `61bb00a510792562bcad524ab874f8dcd6542b86` |
+| `town/village-stable.glb` | `Stable.glb` | 444596 | `0a5d8cf36222f8a579bb44c9402a8f8df1b50da6` |
+| `town/village-bell-tower.glb` | `Bell_Tower.glb` | 728440 | `8b3941789f75e5a8e9a960f57b921fe1f7935950` |
+| `town/village-gazebo.glb` | `Gazebo.glb` | 51956 | `7d96b269fe1ece33607361c9691ef2453ea56c13` |
+| `town/village-well-cc0.glb` | `Well.glb` | 110340 | `80996c09cdb0680e5f62b62535cdb8bbebba700b` |
+| `town/village-market-stand-1.glb` | `MarketStand_1.glb` | 84992 | `3894530a8476c5411cb685278eafcaedd90e1249` |
+| `town/village-market-stand-2.glb` | `MarketStand_2.glb` | 63640 | `049e04ad14ee535ce134a3e41bccf6e20da79cfa` |
+| `terrain/village-path-square.glb` | `Path_Square.glb` | 19928 | `71c67d8443cf992069310ba7a50b055bbb2f6d82` |
+| `terrain/village-path-straight.glb` | `Path_Straight.glb` | 38356 | `1fb0e9e5048b770536a7c572fcd7524731acfdd0` |
+| `terrain/village-fence.glb` | `Fence.glb` | 12348 | `562e389e169379e55e8a8419646a98a4a2b5af0c` |
+| `terrain/village-hay.glb` | `Hay.glb` | 27464 | `f6b0f88222c411fc8369254eb25ca884d4e8090f` |
+| `terrain/village-cart.glb` | `Cart.glb` | 108660 | `b69da9a51ecdcdeb8494f178644734459c06555f` |
+| `terrain/village-bonfire.glb` | `Bonfire.glb` | 30592 | `b936e46d0a1b43a16d548fc80bf538e02211320a` |
+| `terrain/village-stairs.glb` | `Stairs.glb` | 13712 | `67ec6739a5f048e1986d01eafa3e2030b2e53535` |
+
+## 2026-11-23 카리브 3항구 실물 3D 주택 원본 추가
+
+- 제작자: Quaternius, 공식 CC0 Pirate Kit https://quaternius.com/packs/piratekit.html
+- 바이너리 출처: https://github.com/Papyszoo/CC0-Public-Domain-Models/tree/main/packs/quaternius-piratekit/models
+- 역할: 하바나·킹스턴·나소 16~18세기 카리브 해안 도시 목조 주택. 각기 다른 실물 모델이다. 특정 실존 건축물의 정확한 복제라는 의미는 아니다.
+- 기존 PortScene.house()의 원본 주택 슬롯 및 기존 자산 등록기로 연결한다. 게임 규칙/저장 구조는 유지한다.
+
+| 항구 | 기존 원본 파일 | 크기(B) | 삼각형 | Git blob SHA-1 | SHA-256 |
+|---|---|---:|---:|---|---|
+| havana | environment_house1.glb | 684264 | 11878 | d43a55f1fdba7c194c881d2412855c7117f07323 | 2942a1e9f7c504b132dc509a207051ae18b68bd05de160266f53f7ce4f2a10d4 |
+| kingston | environment_house2.glb | 269184 | 4958 | 2c2e57a7bb30d54ecd886e2aa84a81fc8c2d628c | 1280f4c93646828425dcb4ad63b1b30f1b1bf3488a5c8d5590f9ceab63f2df92 |
+| nassau | environment_house3.glb | 597872 | 9172 | d7ac5fca3fc23292e6dcb6067ebee93fb995ce6c | b4afef964cf0f7d8e4c6ec41cd7a90d14951ddd789a7352db5b1eb1c498fe3b4 |
+
+- 현재 확인된 단계: SOURCE_DOWNLOADED_HASH_VERIFIED. Roblox 자산 번호/Universe 권한/실제 모바일 표시/게시 결과는 아직 미검증.
+| `town/` | london_bld_carpenter.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_chapel.glb | CreativeTrio; Kenney · CC0-1.0 | https://poly.pizza/m/GHzPfvoyzX |
+| `town/` | london_bld_house_row.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_market_stalls.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_mill.glb | Quaternius; Kenney · CC0-1.0 | https://github.com/trebeljahr/quaternius-showcase/blob/main/public/glb/medieval_village_pack/House_4.glb |
+| `town/` | london_bld_smithy.glb | Quaternius; Kenney (where indicated) · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_watchtower.glb | Quaternius · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+| `town/` | london_bld_well.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_artisan.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_worker.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_street_lamp.glb | Kenney · CC0-1.0 | https://opengameart.org/content/medieval-town-base-3d-assets |
+| `town/` | london_tavern_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_trade_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_landmark_base.glb | Quaternius; Kenney · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+| `town/` | london_landmark_full.glb | Quaternius; Kenney · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+| `town/` | london_bld_hut.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_dock_shed.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_bld_fort_wall.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/castle-kit |
+| `town/` | london_bld_lighthouse.glb | Quaternius; Kenney · CC0-1.0 | https://opengameart.org/content/lowpoly-medieval-buildings |
+| `town/` | london_house_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_merchant.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_mansion.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_house_villa.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_temple.glb | CreativeTrio; Quaternius · CC0-1.0 | https://poly.pizza/m/GHzPfvoyzX |
+
+
+## 2026-11-24 런던 시설 원본 가공 추가 2종
+
+승인 CC0 원본 메시·UV·재질 보존. 로블록스 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_tavern_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_battle_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+## 2026-11-24 런던 항만·조선소 원본 가공 3종
+
+승인된 CC0 원본 메시·UV·재질 보존. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_harbor_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_harbor_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_yard_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_battle_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_harbor_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_harbor_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_tavern_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_yard_1.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+| `inbox/Town/` | london_trade_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_trade_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 조선소·전투 본부 가공 2종
+
+승인 CC0 원본 메시·UV·재질 보존. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_yard_2.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `inbox/Town/` | london_battle_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_battle_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_yard_2.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+## 2026-11-24 런던 항만청·전투 본부 3단계 가공
+
+승인 CC0 원본 메시·UV·재질 보존. 동일 메시 재사용으로 파일 중복 감소. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_battle_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `inbox/Town/` | london_harbor_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_battle_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_harbor_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 밧줄 공장·외곽 주거 가공
+
+승인 CC0 원본 메시·UV·재질 보존. 동일 메시 공유. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bld_ropewalk.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `inbox/Town/` | london_bld_suburb.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 조선소 3단계 원본 가공
+
+승인된 Kenney CC0 원본 6종의 메시·UV·재질 보존 및 반복 메시 공유. 중앙 수리 선대·양측 부두·창고·도르래 작업대 구성. 정식 등록 및 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_yard_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+
+
+## 2026-11-24 런던 학자의 서재 1·2단계 원본 가공
+
+승인된 CC0 원본 주택·정자·책장·책상·책의 메시·UV·재질 보존 및 반복 메시 공유. 정식 등록과 Studio 실물 검증 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_scholar_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_scholar_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 곡물 창고·대형 창고 원본 가공
+
+승인 CC0 원본 주택·석주·계단·화물상자·목조 하역대·도르래·수레의 메시·UV·재질 보존. 반복 메시 공유. Studio 외관·역할 확인 및 정식 등록 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bld_granary.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_bld_warehouse.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 학당·대형 주점 원본 가공
+
+승인 CC0 원본 건물·종탑·정자·울타리·통의 메시·UV·재질 보존. 반복 메시 공유. Studio 외관·역할 확인 및 정식 등록 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bld_school.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_tavern_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 세관·은행 1단계 원본 가공
+
+승인 CC0 원본 건물·정자·거래대·화물상자·보물상자의 메시·UV·재질 보존. 반복 메시 공유. Studio 외관·역할 확인 및 정식 등록 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bld_customs.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_bank_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+
+
+## 2026-11-24 런던 은행 2·3단계 원본 가공
+
+승인 CC0 원본 주택·정자·석벽·철문·보물상자·거래대의 메시·UV·재질 보존. 반복 메시 공유. Studio 외관·역할 확인 및 정식 등록 대기.
+
+| 폴더 | 모델 | 제작자 · 라이선스 | 원본 |
+|---|---|---|---|
+| `inbox/Town/` | london_bank_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `inbox/Town/` | london_bank_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bank_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bank_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bank_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_arsenal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_bld_customs.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_granary.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_hospital.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_library.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_ropewalk.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `town/` | london_bld_school.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_suburb.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_theater.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_town_hall.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_warehouse.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_scholar_1.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_scholar_2.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_tavern_3.glb | Quaternius; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_yard_3.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/pirate-kit |
+| `animals/` | discovery_seagull.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/seagull.glb |
+| `animals/` | discovery_bald_eagle.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/bird/variations/eagle.glb |
+| `terrain/` | veg_alpine_conifer.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_alpine_cushion.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_alpine_grass.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_autumn_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_bamboo_tall.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_coastal_grass.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_cold_scrub.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_conifer_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_desert_cactus_patch.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_dry_canopy.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_dry_scrub.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_carrot.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_maize.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_pumpkin.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_farm_wheat.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_forest_edge.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_garden_hedge.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_meadow_tufts.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_northern_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_orchard_apple.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_palm_grove.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_rock_crevice_plants.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_rock_moss_mat.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_tropical_understory.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wall_hanging_moss.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wetland_grass.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wildflower_purple.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_wildflower_yellow.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `terrain/` | veg_woodland_understory.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | greenhouse-source.glb | Frakassets (Pixor) · CC0-1.0 | https://pixor.art/library/files/greenhouse/pixor-library-greenhouse.glb |
+| `town/` | clock-tower-source.glb | Frakassets (Pixor) · CC0-1.0 | https://pixor.art/library/files/clock-tower/pixor-library-clock-tower.glb |
+| `town/` | scarecrow-source.glb | Frakassets (Pixor) · CC0-1.0 | https://pixor.art/library/files/scarecrow/pixor-library-scarecrow.glb |
+| `town/` | bread-oven-source.glb | Frakassets (Pixor) · CC0-1.0 | https://pixor.art/library/files/oven-bread/pixor-library-oven-bread.glb |
+| `town/` | stage-curtain-source.glb | Polygonal Mind (ToxSam GLB conversion) · CC0-1.0 | https://raw.githubusercontent.com/ToxSam/cc0-models-Polygonal-Mind/56db2d4088512531a070d0bf3eb9d284d077528d/projects/avatar-show/Stage_Curtain_Invite.glb |
+| `animals/` | discovery_panda.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/fox/variations/panda.glb |
+| `animals/` | discovery_whale.glb | Scott Petrovic (Mesh2Motion) · CC0-1.0 | https://raw.githubusercontent.com/Mesh2Motion/mesh2motion-app/017169ae6f7574d8fa75d893c38c2776386ca40b/static/assets/shark/variations/whale.glb |
+| `town/` | london_bld_bakery.glb | Kenney; Frakassets (Pixor); Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `terrain/` | veg_berry_bush_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_berry_bush_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_autumn.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_bare.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_green.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_birch_snow.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_coconut_palm_3.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_coconut_palm_4.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_fern.glb | Quaternius · CC0-1.0 | https://poly.pizza/m/jqcanvH7D6 |
+| `terrain/` | veg_flowering_cactus.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_mossy_stump.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_3.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_nature_plant_4.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_river_willow_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_river_willow_2.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_water_lily.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `town/` | london_bld_botanic.glb | Kenney; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | london_bld_exchange.glb | Kenney; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_garden.glb | Kenney; Quaternius; Frakassets (Pixor) · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | london_bld_infirmary.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_guild_2.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_guild_1.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_guild_3.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_bld_guild_row.glb | Kenney and approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `terrain/` | veg_bare_willow_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_beet_mature.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_flowering_cactus_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_lettuce_mature.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_meadow_flowers.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_orange_tree.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_rice_mature.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatecrops.html |
+| `terrain/` | veg_short_grass.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_snow_bush_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `terrain/` | veg_snow_pine_1.glb | Quaternius · CC0-1.0 | https://quaternius.com/packs/ultimatenature.html |
+| `town/` | observatory-dome-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/dome/dome.glb |
+| `town/` | london_trade_3.glb | Approved CC0 source authors · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | opera-curtain-double-source.glb | Quaternius · CC0-1.0 | https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Double.glb |
+| `town/` | opera-curtain-single-source.glb | Quaternius · CC0-1.0 | https://raw.githubusercontent.com/trebeljahr/quaternius-showcase/0128ca510d653bb04d6d1e4885bd8890b5050b4f/public/glb/house_interior_pack/Curtains_Single.glb |
+| `town/` | london_bld_opera.glb | Kenney; Quaternius · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_stall_coal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_stall_tin.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_stall_wool.glb | Kenney; Kay Lousberg · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london_workshop_coal.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/nature-kit |
+| `town/` | london_bld_tannery.glb | Quaternius; Kay Lousberg; Kenney · CC0-1.0 | https://quaternius.com/packs/medievalvillage.html |
+| `town/` | london_bld_university.glb | Kenney · CC0-1.0 | https://kenney.nl/assets/fantasy-town-kit |
+| `town/` | london-brick-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/brick/brick.glb |
+| `town/` | london-building-scaffolding-source.glb | Kay Lousberg · CC0-1.0 | https://kaylousberg.itch.io/kaykit-medieval-hexagon |
+| `town/` | london-rope-twist-02-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/rope_twist_02/rope_twist_02.glb |
+| `town/` | london-scroll-01-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/scroll_01/scroll_01.glb |
+| `town/` | london-wheelbarrow-source.glb | Kay Lousberg · CC0-1.0 | https://kaylousberg.itch.io/kaykit-medieval-hexagon |
+| `town/` | london-wood-stake-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_stake/wood_stake.glb |
+| `town/` | london-wooden-ladder-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_ladder/wooden_ladder.glb |
+| `town/` | london-firewood-01-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/firewood_01/firewood_01.glb |
+| `town/` | london-wood-barrel-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wood_barrel/wood_barrel.glb |
+| `town/` | london-clothes-peg-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/clothes_peg/clothes_peg.glb |
+| `town/` | london-noticeboard-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/noticeboard/noticeboard.glb |
+| `town/` | london-shovel-01-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/shovel_01/shovel_01.glb |
+| `town/` | london-chicken-coop-source.glb | Quaternius; GLB redistribution by Papyszoo · CC0-1.0 | https://raw.githubusercontent.com/Papyszoo/CC0-Public-Domain-Models/77343cac874f06b73d16ad0063339df7c9ca254c/packs/quaternius-farm-buildings/models/chicken_coop/chicken_coop.glb |
+| `town/` | london-awning-02-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://thebasemesh.com |
+| `town/` | london-column-leg-bench-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/column_leg_bench/column_leg_bench.glb |
+| `town/` | london-pick-axe-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/pick_axe/pick_axe.glb |
+| `town/` | london-saw-horse-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/saw_horse/saw_horse.glb |
+| `town/` | london-wooden-mallet-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_mallet/wooden_mallet.glb |
+| `town/` | london-wooden-produce-crate-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_produce_crate/wooden_produce_crate.glb |
+| `town/` | london-curved-stone-bench-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/curved_stone_bench/curved_stone_bench.glb |
+| `town/` | london-finger-post-sign-01-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/finger_post_sign_01/finger_post_sign_01.glb |
+| `town/` | london-flower-pot-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/flower_pot/flower_pot.glb |
+| `town/` | london-rustic-wood-hand-basket-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/rustic_wood_hand_basket/rustic_wood_hand_basket.glb |
+| `town/` | london-statue-base-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/statue_base/statue_base.glb |
+| `town/` | london-architrave-heritage-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/architrave_heritage/architrave_heritage.glb |
+| `town/` | london-awning-01-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/awning_01/awning_01.glb |
+| `town/` | london-brick-hammer-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/brick_hammer/brick_hammer.glb |
+| `town/` | london-brick-trowel-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/brick_trowel/brick_trowel.glb |
+| `town/` | london-cartwheel-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/cartwheel/cartwheel.glb |
+| `town/` | london-chisel-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/chisel/chisel.glb |
+| `town/` | london-english-bond-brick-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/english_bond_brick/english_bond_brick.glb |
+| `town/` | london-iron-flambeaux-01-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/iron_flambeaux_01/iron_flambeaux_01.glb |
+| `town/` | london-stone-archway-01-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/stone_archway_01/stone_archway_01.glb |
+| `town/` | london-stone-archway-02-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/stone_archway_02/stone_archway_02.glb |
+| `town/` | london-wall-open-scaffold-source.glb | Kay Lousberg · CC0-1.0 | https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0/b0ca9bd96a8072ab36a3a5464f00ed1e06a16d07/addons/kaykit_dungeon_remastered/Assets/gltf/wall_open_scaffold.gltf.glb |
+| `town/` | london-water-drip-source.glb | The Base Mesh (Tim Steer); M3-org glTF conversion · CC0-1.0 | https://raw.githubusercontent.com/M3-org/base-meshes/2b944200d24c8a7caf698257a3047619d3ab9268/models/water_drip/water_drip.glb |
+| `town/` | london-wooden-gate-01-source.glb | Tim Steer / The Base Mesh; glTF conversion M3-org · CC0-1.0 | https://github.com/M3-org/base-meshes/blob/2b944200d24c8a7caf698257a3047619d3ab9268/models/wooden_gate_01/wooden_gate_01.glb |

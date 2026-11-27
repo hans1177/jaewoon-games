@@ -92,7 +92,8 @@ export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime, 
   const runtimeState = upper(runtime);
   if (source === 'authorized-source') return independent === AUTHORIZED_SOURCE_QA_MARKER && browser === 'NOT_APPLICABLE' && runtimeState === 'STATIC_VERIFIED';
   if (runtimeState !== 'PASS') return false;
-  if (type === 'qa' && independent === EXTERNAL_BLACK_BOX_QA_MARKER && browser === 'NOT_APPLICABLE') return true;
+  // [외부 블랙박스 실증] 출처와 QA 증거가 함께 일치할 때만 브라우저 예외를 허용한다.
+  if (type === 'qa' && source === 'external-black-box' && independent === EXTERNAL_BLACK_BOX_QA_MARKER && browser === 'NOT_APPLICABLE') return true;
   if (independent !== 'PASS') return false;
   if (!isPlatformTask(type) && browser !== 'PASS') return false;
   return true;

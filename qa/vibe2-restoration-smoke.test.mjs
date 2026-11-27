@@ -37,8 +37,12 @@ test('real Vibe policy compiles owner rules and worker topology, not an always-f
 test('current directive, restored detailed companions, and policy QA can be read together',()=>{
   const ctx=validateSharedWorkerContext({root:ROOT});
   assert.equal(ctx.pass,true);
-  assert.equal(ctx.canonicalRoadmapPresent,true);
-  assert.equal(ctx.documentFormats.directive,'FULL_MACHINE_DIRECTIVE');
+  assert.equal(ctx.policyVersion,JSON.parse(fs.readFileSync(policyPath,'utf8')).version);
+  assert.equal(ctx.files.policy,'company-learning/platform-release-roadmap.json');
+  assert.equal(ctx.architectureProjection.valid,true);
+  assert.equal(Object.keys(ctx.hashes).length,4);
+  const directive=JSON.parse(fs.readFileSync(path.join(ROOT,'company-directive.json'),'utf8'));
+  assert.equal(directive.policyDocument,ctx.files.policy);
   const result=enforceConstitution({root:ROOT,phase:'vibe-restoration-smoke'});
   assert.equal(result.pass,true,result.errors.join(','));
 });

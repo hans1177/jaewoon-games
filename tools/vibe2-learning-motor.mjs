@@ -362,7 +362,8 @@ function normalizeRegressionHotspots(input={}){
       gameId:clean(row.gameId)||null,target:lower(row.target)||null,kind:clean(row.kind)||null,name:clean(row.name)||null,
       verifiedRegressionFailures:Math.max(0,Number(row.verifiedRegressionFailures)||0),
       verifiedPasses:Math.max(0,Number(row.verifiedPasses)||0),
-      lastFailureEvidence:clean(row.lastFailureEvidence)||null,lastPassEvidence:clean(row.lastPassEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
+      lastFailureEvidence:clean(row.lastFailureEvidence)||null,lastPassEvidence:clean(row.lastPassEvidence)||null,
+      lastVerifiedOutcome:['PASS','REGRESSION_FAIL'].includes(upper(row.lastVerifiedOutcome))?upper(row.lastVerifiedOutcome):null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
     };
   }
   return{version:1,seenEventIds:uniq(source.seenEventIds||[]),entries};
@@ -424,10 +425,13 @@ function knowledgeLifecycle(row={}){
   const negative=fails+regressions*1.5+domainMismatches*.5;
   const total=positive+negative,failRate=total?negative/total:0;
   if(regressions>=4&&failRate>=0.65)return'RETIRED';
-  if(fails>=4&&negative>=6&&failRate>=0.7)return'RETIRED';
+  // 검증 실패가 4회 이상이고 실패 비율이 높다면 부가 감점이 없어도 폐기한다.
+  if(fails>=4&&failRate>=0.7)return'RETIRED';
   if(negative>=2&&failRate>0.5)return'DEMOTED';
-  if(positive>=6&&games>=2&&failRate<=0.35)return'PREFERRED';
-  if(positive>=2)return'VERIFIED';
+  // 여러 게임의 실제 검증 성공 없이 부가 점수만으로 최상위 지식에 승격하지 않는다.
+  if(apps>=6&&positive>=6&&games>=2&&regressions===0&&failRate<=0.35)return'PREFERRED';
+  // 성공 횟수만으로 실패율이 높은 지식을 검증 완료로 승격하지 않는다.
+  if(positive>=2&&apps>=2&&failRate<=0.5)return'VERIFIED';
   return'CANDIDATE';
 }
 function normalizeKnowledgeAttribution(input={}){
@@ -445,7 +449,8 @@ function normalizeKnowledgeAttribution(input={}){
       primaryDomainMismatches:Math.max(0,Number(row.primaryDomainMismatches)||0),
       games:{...(row.games||{})},
       targets:{...(row.targets||{})},
-      state:clean(row.state)||knowledgeLifecycle(row),
+      // 저장된 상태 문자열보다 검증된 성공·실패 카운터를 우선해 수명주기를 재계산한다.
+      state:knowledgeLifecycle(row),
       lastEvidence:clean(row.lastEvidence)||null,
       lastFailureEvidence:clean(row.lastFailureEvidence)||null,
       lastUpdatedAt:clean(row.lastUpdatedAt)||null
@@ -466,15 +471,22 @@ function knowledgeEffectAdjustment(master={},source='',id=''){
   const key=upper(source)+':'+clean(id),row=master?.knowledgeAttribution?.entries?.[key];
   if(!row)return 0;
   const firstPasses=Math.max(0,Number(row.firstPasses)||0),clears=Math.max(0,Number(row.failureSignatureClears)||0);
-  const regressions=Math.max(0,Number(row.regressionFailures)||0),matches=Math.max(0,Number(row.primaryDomainMatches)||0),mismatches=Math.max(0,Number(row.primaryDomainMismatches)||0);
-  return Math.max(-12,Math.min(12,firstPasses*1.5+clears*2+matches*.5-regressions*3-mismatches));
+  const regressions=Math.max(0,Number(row.regressionFailures)||0),failures=Math.max(0,Number(row.verifiedFailures)||0),matches=Math.max(0,Number(row.primaryDomainMatches)||0),mismatches=Math.max(0,Number(row.primaryDomainMismatches)||0);
+  // 검증 실패도 검색 우선순위에 즉시 반영하고, 회귀 실패는 더 강하게 감점한다.
+  return Math.max(-12,Math.min(12,firstPasses*1.5+clears*2+matches*.5-failures*1.5-regressions*3-mismatches));
 }
 function knowledgeRefsFromEvidence(evidence=[]){
   const marker=(evidence||[]).map(clean).filter(x=>x.startsWith('learning-knowledge-ids:')).at(-1);
   if(!marker)return[];
   try{
     const rows=JSON.parse(decodeURIComponent(marker.slice('learning-knowledge-ids:'.length)));
-    return Array.isArray(rows)?uniq(rows.map(clean).filter(Boolean)):[];
+    return Array.isArray(rows)?uniq(rows.map(clean).filter(ref=>{
+      const at=ref.indexOf(':');
+      return at>0&&at<ref.length-1&&ref.length<=512&&/^[A-Za-z][A-Za-z0-9_-]*$/.test(ref.slice(0,at));
+    }).map(ref=>{
+      const at=ref.indexOf(':');
+      return upper(ref.slice(0,at))+':'+clean(ref.slice(at+1));
+    })).sort():[];
   }catch{return[];}
 }
 export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
@@ -484,14 +496,20 @@ export function applyVerifiedKnowledgeOutcomes(stateInput={},queueInput={}){
     const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
     const outcome=codingVerificationOutcome(task);
     if(!outcome)continue;
-    const refs=knowledgeRefsFromEvidence(evidence);if(!refs.length)continue;
+    const refs=uniq(knowledgeRefsFromEvidence(evidence)).sort();if(!refs.length)continue;
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
-    const run=evidence.find(x=>x.startsWith('actions-run:'))||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
-    const eventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
-    if(seen.has(eventId))continue;
+    // 여러 실행 증거가 합쳐진 경우 가장 최근 실행을 기준으로 학습 결과를 식별한다.
+    const run=evidence.filter(x=>x.startsWith('actions-run:')).at(-1)||evidence.filter(x=>x.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const legacyEventId='knowledge_'+hash([clean(task.id),run,outcome,refs.join(',')].join('|'));
+    const hasExactCandidate=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value));
+    const eventId=hasExactCandidate?'knowledge_'+hash([codingOutcomeIdentity(task,'KNOWLEDGE'),outcome,refs.join(',')].join('|')):legacyEventId;
+    if(seen.has(eventId)||seen.has(legacyEventId))continue;
     for(const ref of refs){
-      const at=ref.indexOf(':');const source=at>0?upper(ref.slice(0,at)):'UNKNOWN',id=at>0?ref.slice(at+1):ref;
-      if(!id)continue;
+      const at=ref.indexOf(':');
+      // 출처가 없는 지식 ID는 검증된 학습 기록으로 승격하지 않는다.
+      if(at<=0||at===ref.length-1)continue;
+      const source=upper(ref.slice(0,at)),id=clean(ref.slice(at+1));
+      if(!/^[A-Z][A-Z0-9_-]*$/.test(source)||!id)continue;
       const key=source+':'+id,row=memory.entries[key]||{source,verifiedApplications:0,verifiedFailures:0,firstPasses:0,failureSignatureClears:0,regressionFailures:0,primaryDomainMatches:0,primaryDomainMismatches:0,games:{},targets:{},state:'CANDIDATE',lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
       const firstPass=outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES';
       const signatureClear=outcome==='PASS'&&Boolean(lastEvidenceMarker(evidence,'coding-failure-fingerprint:'));
@@ -701,7 +719,11 @@ function verifiedCodingStrategyFailures(evidence=[]){
 }
 function codingOutcomeIdentity(task={},strategy=''){
   const evidence=(task.evidence||[]).map(clean);
-  const candidate=evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+  // [후보 식별] CI 재시도 번호보다 실제 코드 후보 SHA를 우선한다.
+  // 동일 소스를 새 Actions 실행에서 검증해도 독립 개선 횟수로 중복 계산하지 않는다.
+  const candidate=evidence.filter(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value)).at(-1)
+    ||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)
+    ||clean(task.id);
   return 'coding_'+hash([clean(task.id),clean(strategy),candidate].join('|'));
 }
 function strategyLifecycle(row={}){
@@ -729,8 +751,13 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
     const target=lower(task.target)||'unknown';
     const taskContextMode=clean(lastEvidenceMarker(evidence,'coding-context-mode:'));
     for(const failure of verifiedCodingStrategyFailures(evidence)){
-      const negativeId='coding_negative_'+hash([clean(task.id),failure.variant,failure.strategy,failure.failureFingerprint,failure.failureClass,failure.runEvidence||''].join('|'));
-      if(seenNegative.has(negativeId))continue;
+      const legacyNegativeId='coding_negative_'+hash([clean(task.id),failure.variant,failure.strategy,failure.failureFingerprint,failure.failureClass,failure.runEvidence||''].join('|'));
+      // [실패 학습 중복 방지] 같은 코드 후보의 동일 결함은 재시도마다 실패 횟수를 올리지 않는다.
+      // 다른 소스 SHA 또는 다른 실패 클래스는 독립적인 실패 증거로 보존한다.
+      const hasExactCandidate=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value));
+      const negativeId=hasExactCandidate?'coding_negative_'+hash([codingOutcomeIdentity(task,'NEGATIVE'),
+        failure.variant,failure.strategy,failure.failureFingerprint,failure.failureClass].join('|')):legacyNegativeId;
+      if(seenNegative.has(negativeId)||seenNegative.has(legacyNegativeId))continue;
       const row=memory.strategies[failure.strategy]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,verifiedFailures:0,games:{},targets:{},contextModes:{},failureFingerprints:{},state:'CANDIDATE',lastEvidence:null,lastFailureEvidence:null,lastUpdatedAt:null};
       row.verifiedFailures=Math.max(0,Number(row.verifiedFailures)||0)+1;
       row.contextModes=row.contextModes||{};
@@ -760,7 +787,8 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
       seenNegative.add(negativeId);
       negativeAdded+=1;
     }
-    if(!evidence.includes('role-result:regression:PASS')||!evidence.includes('role-result:review:PASS')||!evidence.includes('candidate-identity:PASS'))continue;
+    // [실제 개선 학습] 재검증 실패가 함께 기록된 후보는 성공 전략으로 축적하지 않는다.
+    if(codingVerificationOutcome(task)!=='PASS')continue;
     const strategy=lastEvidenceMarker(evidence,'coding-strategy:');
     if(!strategy)continue;
     const id=codingOutcomeIdentity(task,strategy);
@@ -820,14 +848,37 @@ function codingVerificationOutcome(task={}){
   const evidence=(task.evidence||[]).map(clean).filter(Boolean);
   const pass=evidence.includes('role-result:regression:PASS')&&evidence.includes('role-result:review:PASS')&&evidence.includes('candidate-identity:PASS');
   const regressionFail=evidence.some(value=>value==='failure-cause:fan-in-regression-failed'||value.startsWith('failure-cause:fan-in-regression-failed:'));
-  if(pass)return'PASS';
+  // [실패 우선] 소스 후보의 오래된 PASS와 최신 fan-in 실패가 함께 있어도 긍정 학습 금지.
   if(regressionFail)return'REGRESSION_FAIL';
-  return null;
+  if(!pass)return null;
+  // [공통 학습 판정] 코드 전략·지식 귀속·위험 분석 전부 네이티브 실행 증거 없이는
+  // 성공 후보로 등록할 수 없다. 실패 결과는 이 검증과 무관하게 계속 학습한다.
+  const nativeDomains=nativeDomainsForEngine(task?.target||task?.engine);
+  if(nativeDomains){
+    const target=lower(task?.target||task?.engine),domains=inferDomains(clean(task.goal),target);
+    const assetDomain=domains.includes('ASSET_PRODUCTION')?'ASSET_PRODUCTION'
+      :domains.includes('ASSET_ADAPTATION')?'ASSET_ADAPTATION':null;
+    const requiredDomain=assetDomain||[...nativeDomains][0];
+    if(!nativePositiveMasteryAllowed({
+      engine:target,evidence,
+      cloudRuntimeVerified:task?.cloudRuntimeVerified===true,
+      cloudAssetRuntimeBindingPassed:task?.cloudAssetRuntimeBindingPassed===true,
+      engineQaVerified:task?.engineQaVerified===true,
+      nativeRuntimeVerified:task?.nativeRuntimeVerified===true,
+      runtimeVerified:task?.runtimeVerified===true
+    },requiredDomain))return null;
+  }
+  return'PASS';
 }
 function hotspotRisk(row={}){
   const failures=Math.max(0,Number(row.verifiedRegressionFailures)||0),passes=Math.max(0,Number(row.verifiedPasses)||0);
+  // 성공 기록이 많더라도 최근 검증된 회귀 실패 자체는 복구 검토 대상에서 제외하지 않는다.
   const score=Math.max(0,failures*3-passes);
-  return{score,level:failures>=3&&score>=6?'HIGH':failures>=1&&score>=2?'MEDIUM':'LOW'};
+  // 최신 검증 성공이 있으면 과거 실패 누적만으로 미복구 상태라고 단정하지 않는다.
+  const level=row.lastVerifiedOutcome==='PASS'?(failures>=2&&score>=2?'MEDIUM':'LOW')
+    :row.lastVerifiedOutcome==='REGRESSION_FAIL'?(failures>=3?'HIGH':'MEDIUM')
+    :failures>=3&&score>=6?'HIGH':failures>=1?'MEDIUM':'LOW';
+  return{score,level};
 }
 export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
   const state=createMasteryState(stateInput);
@@ -841,29 +892,37 @@ export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
     if(!outcome)continue;
     const confidence=upper(lastEvidenceMarker(evidence,'coding-responsibility-confidence:'))||'LOW';
     const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
-    const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
-    const eventId='coding_cal_'+hash([clean(task.id),run,outcome,confidence].join('|'));
-    if(!seen.has(eventId)){
+    const run=evidence.filter(value=>value.startsWith('actions-run:')).at(-1)||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const legacyEventId='coding_cal_'+hash([clean(task.id),run,outcome,confidence].join('|'));
+    const candidateIdentity=codingOutcomeIdentity(task,'CALIBRATION');
+    const hasExactCandidate=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value));
+    const eventId=hasExactCandidate?'coding_cal_'+hash([candidateIdentity,outcome,confidence].join('|')):legacyEventId;
+    if(!seen.has(eventId)&&!seen.has(legacyEventId)){
       const contextKeys=['target:'+target,'game:'+gameId];
       for(const key of contextKeys){
         const row=calibration.contexts[key]||{verifiedSamples:0,highConfidenceSamples:0,highConfidenceFailures:0,firstCandidatePasses:0,semanticHardGatePasses:0,lastEvidence:null,lastUpdatedAt:null};
         row.verifiedSamples+=1;
-        if(confidence==='HIGH'){row.highConfidenceSamples+=1;if(outcome==='REGRESSION_FAIL')row.highConfidenceFailures+=1;}
+        if(confidence==='HIGH'){row.highConfidenceSamples+=1;if(outcome!=='PASS')row.highConfidenceFailures+=1;}
         if(outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES')row.firstCandidatePasses+=1;
         if(outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-semantic-diff-mode:')==='HARD_ENFORCE'&&lastEvidenceMarker(evidence,'coding-semantic-diff-pass:')==='YES')row.semanticHardGatePasses+=1;
         row.lastEvidence=eventId;row.lastUpdatedAt=new Date().toISOString();calibration.contexts[key]=row;
       }
       seen.add(eventId);added+=1;
     }
-    const primaryTargets=decodeEvidenceArray(evidence,'coding-primary-targets:');
-    const primarySystems=decodeEvidenceArray(evidence,'coding-primary-systems:');
-    const hotspotEventId='coding_hotspot_'+hash([clean(task.id),run,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
-    if(!hotspotSeen.has(hotspotEventId)){
+    // 동일 책임 대상의 순서 차이는 별도 회귀 이벤트로 계산하지 않는다.
+    const primaryTargets=uniq(decodeEvidenceArray(evidence,'coding-primary-targets:')).sort();
+    const primarySystems=uniq(decodeEvidenceArray(evidence,'coding-primary-systems:')).sort();
+    const legacyHotspotEventId='coding_hotspot_'+hash([clean(task.id),run,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
+    const hotspotEventId=hasExactCandidate?'coding_hotspot_'+hash([candidateIdentity,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|')):legacyHotspotEventId;
+    if(!hotspotSeen.has(hotspotEventId)&&!hotspotSeen.has(legacyHotspotEventId)){
       const refs=[...primaryTargets.map(name=>({kind:'SYMBOL',name})),...primarySystems.map(name=>({kind:'SYSTEM',name}))];
       for(const ref of refs){
         const key=[gameId,ref.kind,clean(ref.name)].join('|');
-        const row=hotspots.entries[key]||{gameId,target,kind:ref.kind,name:clean(ref.name),verifiedRegressionFailures:0,verifiedPasses:0,lastFailureEvidence:null,lastPassEvidence:null,lastUpdatedAt:null};
-        if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.lastFailureEvidence=hotspotEventId;}else{row.verifiedPasses+=1;row.lastPassEvidence=hotspotEventId;}
+        const row=hotspots.entries[key]||{gameId,target,kind:ref.kind,name:clean(ref.name),verifiedRegressionFailures:0,verifiedPasses:0,lastFailureEvidence:null,lastPassEvidence:null,lastVerifiedOutcome:null,lastUpdatedAt:null};
+        if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.lastFailureEvidence=hotspotEventId;}
+        else if(outcome==='PASS'){row.verifiedPasses+=1;row.lastPassEvidence=hotspotEventId;}
+        else continue;
+        row.lastVerifiedOutcome=outcome;
         row.lastUpdatedAt=new Date().toISOString();hotspots.entries[key]=row;
       }
       hotspotSeen.add(hotspotEventId);hotspotEventsAdded+=1;
@@ -885,10 +944,22 @@ export function responsibilityCalibrationForTask({task={},stateInput={}}={}){
 }
 export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
   const state=createMasteryState(stateInput),gameId=clean(task.gameId)||'unknown';
-  const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId).map(row=>({...row,risk:hotspotRisk(row)}));
-  entries.sort((a,b)=>b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0));
-  const top=entries.slice(0,8);
-  const riskLevel=top.some(row=>row.risk.level==='HIGH')?'HIGH':top.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
+  // 다른 엔진에서 발생한 회귀 오류를 현재 작업의 위험으로 오인하지 않는다.
+  const target=lower(task.target);
+  const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId&&(!target||!lower(row.target)||lower(row.target)===target)).map(row=>({...row,risk:hotspotRisk(row)}));
+  // 작업의 실제 책임 파일과 겹치는 회귀 위험을 먼저 보여주되, 다른 위험도 삭제하지 않는다.
+  // 담당 파일 입력이 배열이 아니어도 위험 분석이 중단되지 않도록 정규화한다.
+  const responsible=new Set((Array.isArray(task.responsibleFiles)?task.responsibleFiles:[]).map(value=>lower(value).replace(/\\/g,'/')).filter(Boolean));
+  entries.sort((a,b)=>{
+    const aMatch=responsible.has(lower(a.name).replace(/\\/g,'/'))?1:0;
+    const bMatch=responsible.has(lower(b.name).replace(/\\/g,'/'))?1:0;
+    // 높은 회귀 위험은 담당 파일 우선순위 때문에 화면 밖으로 밀려나지 않아야 한다.
+    const priority={HIGH:2,MEDIUM:1,LOW:0};
+    return priority[b.risk.level]-priority[a.risk.level]||bMatch-aMatch||b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0);
+  });
+  // 실제 위험이 없는 항목이 상위 8개를 차지해 복구 지침을 흐리지 않도록 한다.
+  const top=entries.filter(row=>row.risk.level!=='LOW').slice(0,8);
+  const riskLevel=entries.some(row=>row.risk.level==='HIGH')?'HIGH':entries.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
   return{riskLevel,entries:top,requiresFocusedDependentQa:riskLevel!=='LOW',preferVerifiedStrategy:riskLevel!=='LOW',increaseCandidateDiversity:riskLevel==='HIGH',writableScopeExpansionAllowed:false,authorityExpanded:false};
 }
 export function codingRiskGuidance({calibration={},hotspot={}}={}){
@@ -896,7 +967,11 @@ export function codingRiskGuidance({calibration={},hotspot={}}={}){
   if(clean(calibration?.recommendation)==='DOWNGRADE_HIGH_TO_MEDIUM')rows.push('[RESPONSIBILITY CONFIDENCE CALIBRATION] Prior verified HIGH-confidence work regressed often enough that raw HIGH must be treated as MEDIUM; perform extra read-only exploration before writing.');
   if(clean(hotspot?.riskLevel)&&clean(hotspot.riskLevel)!=='LOW'){
     rows.push('[REGRESSION HOTSPOT MEMORY] risk='+clean(hotspot.riskLevel));
-    for(const row of hotspot.entries||[])rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0));
+    for(const row of hotspot.entries||[]){
+      rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0)+' latestVerifiedOutcome='+(row.lastVerifiedOutcome||'UNKNOWN'));
+      if(row.risk?.level==='HIGH')rows.push('Recovery guidance for '+row.kind+':'+row.name+': '+(row.lastVerifiedOutcome==='PASS'?'A verified pass followed the recorded failure; retain historical risk and run focused dependent QA before promotion.':'Inspect verified regression evidence '+(clean(row.lastFailureEvidence)||'(evidence unavailable)')+', compare known-good implementation, and run focused dependent QA before retrying. Do not repeat an unverified fix.')+' '+(row.lastPassEvidence?'Verified pass evidence: '+clean(row.lastPassEvidence)+'.':'No verified recovery pass recorded.'));
+      else if(row.risk?.level==='MEDIUM')rows.push('Recovery guidance for '+row.kind+':'+row.name+': '+(row.lastVerifiedOutcome==='PASS'?'A later verified pass exists; recheck affected dependencies before lowering historical risk.':'Inspect the unresolved regression evidence and verify the suspected change before promotion.'));
+    }
     rows.push('Hotspot memory requires focused dependent QA and a proven strategy when available. It MUST NOT expand writable scope or bypass QA.');
   }
   return rows.join('\n');
@@ -921,9 +996,11 @@ export function applyVerifiedArchitectureDriftOutcomes(stateInput={},queueInput=
     const outcome=codingVerificationOutcome(task);
     if(!drift||!outcome||!drift.signals.length)continue;
     const gameId=clean(task.gameId)||'unknown';
-    const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
-    const eventId='architecture_drift_'+hash([clean(task.id),run,outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
-    if(seen.has(eventId))continue;
+    const run=evidence.filter(value=>value.startsWith('actions-run:')).at(-1)||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const legacyEventId='architecture_drift_'+hash([clean(task.id),run,outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
+    const eventId=evidence.some(value=>/^candidate-sha:[a-f0-9]{40}$/i.test(value))
+      ?'architecture_drift_'+hash([codingOutcomeIdentity(task,'ARCHITECTURE'),outcome,drift.riskLevel,drift.signals.join(',')].join('|')):legacyEventId;
+    if(seen.has(eventId)||seen.has(legacyEventId))continue;
     for(const signal of drift.signals){
       const row=memory.signals[signal]||{observations:0,verifiedRegressionFailures:0,verifiedPasses:0,games:{},failureGames:{},passGames:{},state:'CANDIDATE',lastEvidence:null,lastUpdatedAt:null};
       row.observations+=1;

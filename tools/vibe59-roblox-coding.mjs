@@ -22,6 +22,8 @@ export const VIBE59_ROBLOX_OFFLINE_RULES=Object.freeze(RULE_TABLE.map(
 ));
 // [루아우 분석] 문자열·긴 문자열·주석을 선형으로 구분한다.
 // 규칙이 실제 인자로 검사하는 문자열만 보존하고, 그 외 텍스트는 공백 처리한다.
+// [읽기 전용 한도] 실제 대형 Roblox 장면까지 검사하되 편집·합성 제한은 별도 유지한다.
+const MAX_READONLY_LUAU_CHARS=1000000;
 const OFFLINE_LITERAL_ARGUMENTS=new Set([
   'HumanoidRootPart','DataStoreService','Part','Tool',
   'Coins','Gold','Money','Currency','Inventory','build','place'
@@ -78,9 +80,14 @@ function stripVibe59LuauComments(source){
 
 export function diagnoseVibe59RobloxOffline({path='',source=''}={}){
   const side=classifyVibe59RobloxScript(path);
-  if(typeof source!=='string'||source.length>260000||!/\.(?:lua|luau)$/i.test(String(path)))
+  if(typeof source!=='string'||source.length>MAX_READONLY_LUAU_CHARS||!/\.(?:lua|luau)$/i.test(String(path)))
     throw Error('VIBE59_ROBLOX_DIAGNOSTIC_SOURCE');
-  const code=stripVibe59LuauComments(source),diagnostics=[];
+  return diagnoseVibe59ActiveLuau(path,side,stripVibe59LuauComments(source));
+}
+
+// 단일 정적 진단 책임: 전체 흐름 검사에서는 이미 정제된 원본을 재사용한다.
+function diagnoseVibe59ActiveLuau(path,side,code){
+  const diagnostics=[];
   // [성능] 규칙 50종이 같은 원문 앞부분을 반복 탐색하지 않도록 행 시작 위치를 한 번만 구축한다.
   const lineStarts=[0];
   for(let i=0;i<code.length;i++)if(code.charCodeAt(i)===10)lineStarts.push(i+1);
@@ -114,22 +121,203 @@ export function planVibe59RobloxOfflineRepairs({files=[],responsiblePaths=[]}={}
       review:row.repair,exactFind:row.exactAnchor||null,
       exactAnchorUnique:row.exactAnchorUnique===true,
       ownerApprovalRequired:true,sourceChange:false}))
-    .slice(0,120),modelUsed:false,sourceWrite:false,runtimeVerified:false,
+    .slice(0,120),scanCoverage:inspection.scanCoverage,
+    // [원인 수리 인계] 기존 검증된 학습모터·원본 책임함수 경로에서만 재사용한다.
+    causalTargets:inspection.qualityDirector.repairTargets,
+    actionChains:inspection.actionChains,
+    performanceFindings:inspection.qualityDirector.performanceFindings,
+    verifiedPatternReuseOwner:'EXISTING_VIBE2_LEARNING_MOTOR_ONLY',
+    modelUsed:false,sourceWrite:false,runtimeVerified:false,
     authority:'responsible-file-review-plan-only'});
 }
 
 export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
   if(!Array.isArray(files)||files.length>48)throw Error('VIBE59_ROBLOX_SCAN_LIMIT');
-  const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[];
+  const owners=new Set(responsiblePaths),result=[],warnings=[],diagnostics=[],unscanned=[];
+  const handlerScopesByPath=new Map();
+  const observedPaths=new Set();
   for(const file of files.slice(0,48)){
-    const path=String(file?.path||''),source=String(file?.source||'');
-    if(!/\.(?:luau|lua)$/i.test(path)||source.length>260000)continue;
-    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],found=[],
+    const path=String(file?.path||''),source=file?.source;
+    // [소스 무결성] 중복 경로를 독립 검사 파일로 계산하지 않는다.
+    // 충돌한 원본을 판별할 수 없으므로 책임 파일의 검사는 불완전으로 유지한다.
+    if(observedPaths.has(path)){
+      unscanned.push({path,reason:'LUAU_DUPLICATE_SOURCE_PATH',responsible:owners.has(path)});
+      continue;
+    }
+    observedPaths.add(path);
+    if(!/\.(?:luau|lua)$/i.test(path)){
+      if(owners.has(path))unscanned.push({path,reason:'RESPONSIBLE_SOURCE_NOT_LUAU',responsible:true});
+      continue;
+    }
+    // [검사 범위] 읽기에 실패한 소스나 빈 소스는 정상 분석 완료가 아니다.
+    if(typeof source!=='string'||!source.trim()){
+      unscanned.push({path,reason:'LUAU_SOURCE_UNAVAILABLE_OR_EMPTY',responsible:owners.has(path)});
+      continue;
+    }
+    // 검사 상한·읽기 전용 정책은 유지하고 누락된 파일을 명시적으로 보고한다.
+    if(source.length>MAX_READONLY_LUAU_CHARS){
+      unscanned.push({path,reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:owners.has(path)});
+      continue;
+    }
+    const side=classifyVibe59RobloxScript(path),events=[],calls=[],stateEffects=[],handlerScopes=[],found=new Map(),
       functionDefinitions=[],functionCalls=[];
     // [루아우 정적 흐름] 긴 주석·인용 문자열·인라인 주석 속 가짜 호출은
     // 실제 Remote/저장 접근으로 오인하지 않는다. 원본 줄 위치는 유지한다.
     const activeSource=stripVibe59LuauComments(source);
-    for(const [i,line] of activeSource.split(/\r?\n/).slice(0,4000).entries()){
+    // [로블록스 원격 이벤트] 문자열·주석을 제거한 전체 소스에서 줄바꿈 호출까지 추적한다.
+    // 함수 의존성 스캔과 독립이며 4천 줄 이후의 권한 오류를 누락하지 않는다.
+    const lineStarts=[0];
+    for(let i=0;i<activeSource.length;i++)if(activeSource.charCodeAt(i)===10)lineStarts.push(i+1);
+    const sourceLineAt=index=>{
+      let low=0,high=lineStarts.length;
+      while(low<high){
+        const mid=(low+high)>>>1;
+        if(lineStarts[mid]<=index)low=mid+1;else high=mid;
+      }
+      return low;
+    };
+    for(const match of activeSource.matchAll(/\b([A-Za-z_]\w*)\s*\.\s*(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::\s*Connect\s*\(|=)/g)){
+      if(events.length>=24)break;
+      const line=sourceLineAt(match.index);
+      // [네트워크 인과관계] 동일 서버 파일의 무관한 저장·응답 함수는
+      // 해당 Remote 핸들러가 실행한 작업으로 단정하지 않는다.
+      const handlerHeader=/^\s*function\s*\([^)]*\)/.exec(
+        activeSource.slice(match.index+match[0].length,match.index+match[0].length+256));
+      let handlerScopeComplete=false,handlerStateMethods=[],handlerResponseMethods=[],handlerEndLine=null;
+      if(side==='SERVER'&&handlerHeader&&match[2].startsWith('OnServer')){
+        const start=match.index+match[0].length+handlerHeader[0].length;
+        const tail=activeSource.slice(start,start+4096);
+        const blocks=['function'];
+        let pendingLoopHeaders=0,close=-1,invalid=false;
+        for(const token of tail.matchAll(/\b(?:function|if|for|while|repeat|do|end|until)\b/g)){
+          const word=token[0];
+          if(word==='function'||word==='if'||word==='repeat')blocks.push(word);
+          else if(word==='for'||word==='while'){blocks.push(word);pendingLoopHeaders++;}
+          else if(word==='do'){
+            if(pendingLoopHeaders>0)pendingLoopHeaders--;
+            else blocks.push('do');
+          }else if(word==='until'){
+            if(blocks.at(-1)!=='repeat'){invalid=true;break;}
+            blocks.pop();
+          }else if(word==='end'){
+            if(!blocks.length||blocks.at(-1)==='repeat'){invalid=true;break;}
+            blocks.pop();
+            if(!blocks.length){close=token.index;break;}
+          }
+        }
+        const suffix=activeSource.slice(start+close+3,start+close+24);
+        if(!invalid&&close>=0&&
+          (match[2]==='OnServerEvent'?/^\s*\)/.test(suffix):true)){
+          handlerScopeComplete=true;
+          handlerEndLine=sourceLineAt(start+close);
+          const body=tail.slice(0,close);
+          handlerStateMethods=[...new Set(
+            [...body.matchAll(/:\s*(GetAsync|SetAsync|UpdateAsync|SetAttribute)\s*\(/g)]
+              .map(item=>item[1]))].slice(0,8);
+          handlerResponseMethods=[...new Set(
+            [...body.matchAll(/:\s*(FireClient|FireAllClients|InvokeClient)\s*\(/g)]
+              .map(item=>item[1]))].slice(0,8);
+        }
+      }
+      // [기존 출력 호환] 공개 events 구조는 유지하고 핸들러 분석은 내부 자료로만 추적한다.
+      events.push({remote:match[1],signal:match[2],line});
+      handlerScopes.push({remote:match[1],signal:match[2],line,
+        handlerScopeComplete,handlerEndLine,
+        handlerStateMethods,handlerResponseMethods});
+      if(side==='CLIENT'&&match[2].startsWith('OnServer'))if(!found.has('SERVER_HANDLER_IN_CLIENT'))found.set('SERVER_HANDLER_IN_CLIENT',{code:'SERVER_HANDLER_IN_CLIENT',line});
+      if(side==='SERVER'&&match[2].startsWith('OnClient'))if(!found.has('CLIENT_HANDLER_IN_SERVER'))found.set('CLIENT_HANDLER_IN_SERVER',{code:'CLIENT_HANDLER_IN_SERVER',line});
+    }
+    for(const match of activeSource.matchAll(/\b([A-Za-z_]\w*)\s*:\s*(FireServer|FireClient|FireAllClients|InvokeServer|InvokeClient)\s*\(/g)){
+      if(calls.length>=24)break;
+      const line=sourceLineAt(match.index);
+      calls.push({remote:match[1],method:match[2],line});
+      if(side==='CLIENT'&&/^(FireClient|FireAllClients|InvokeClient)$/.test(match[2]))
+        if(!found.has('SERVER_REMOTE_CALL_IN_CLIENT'))found.set('SERVER_REMOTE_CALL_IN_CLIENT',{code:'SERVER_REMOTE_CALL_IN_CLIENT',line});
+      if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
+        if(!found.has('CLIENT_REMOTE_CALL_IN_SERVER'))found.set('CLIENT_REMOTE_CALL_IN_SERVER',{code:'CLIENT_REMOTE_CALL_IN_SERVER',line});
+    }
+    // [저장·서버 권한] 읽기 전용 한도 안에서 전체 소스를 검사한다.
+    // 여러 줄로 분리된 접근과 4천 줄 이후의 접근도 실제 원본 줄에 연결한다.
+    for(const match of activeSource.matchAll(/:\s*(GetDataStore|UpdateAsync|SetAsync|GetAsync|SetAttribute)\s*\(/g)){
+      const line=sourceLineAt(match.index);
+      if(stateEffects.length<24)stateEffects.push({method:match[1],line});
+      if(side==='CLIENT'&&match[1]==='GetDataStore')
+        if(!found.has('CLIENT_DATASTORE_ACCESS'))found.set('CLIENT_DATASTORE_ACCESS',{code:'CLIENT_DATASTORE_ACCESS',line});
+    }
+    if(side==='CLIENT'){
+      for(const match of activeSource.matchAll(/\bGetService\s*\(\s*['"]DataStoreService['"]\s*\)/g)){
+        if(!found.has('CLIENT_DATASTORE_SERVICE'))
+          found.set('CLIENT_DATASTORE_SERVICE',{code:'CLIENT_DATASTORE_SERVICE',line:sourceLineAt(match.index)});
+      }
+    }
+    // [프레임 성능] 기존 Luau 정적검사 안에서 실제 프레임 콜백의 종료 범위를 추적한다.
+    // 첫 end)로 자르면 중첩된 함수·if 뒤의 호출을 누락하므로 블록 스택으로 짝을 맞춘다.
+    // 복잡하거나 불완전한 범위는 안전 판정 대신 검토 생략한다. 실제 런타임 PASS가 아니다.
+    let checkedFrameCallbacks=0;
+    for(const callback of activeSource.matchAll(/\b(?:Heartbeat|RenderStepped|Stepped|PreRender|PreSimulation|PostSimulation)\s*:\s*Connect\s*\(\s*function\s*\([^)]*\)/g)){
+      if(++checkedFrameCallbacks>24)break;
+      const start=callback.index+callback[0].length;
+      const frameSource=activeSource.slice(start,start+4096);
+      const blocks=['function'];
+      let pendingLoopHeaders=0,close=-1,invalid=false;
+      for(const token of frameSource.matchAll(/\b(?:function|if|for|while|repeat|do|end|until)\b/g)){
+        const word=token[0];
+        if(word==='function'||word==='if'||word==='repeat')blocks.push(word);
+        else if(word==='for'||word==='while'){
+          blocks.push(word);
+          pendingLoopHeaders++;
+        }else if(word==='do'){
+          if(pendingLoopHeaders>0)pendingLoopHeaders--;
+          else blocks.push('do');
+        }else if(word==='until'){
+          if(blocks.at(-1)!=='repeat'){invalid=true;break;}
+          blocks.pop();
+        }else if(word==='end'){
+          if(!blocks.length||blocks.at(-1)==='repeat'){invalid=true;break;}
+          blocks.pop();
+          if(!blocks.length){close=token.index;break;}
+        }
+      }
+      if(invalid||close<0||!/^\s*\)/.test(activeSource.slice(start+close+3,start+close+24)))continue;
+      const body=frameSource.slice(0,close);
+      // [클라이언트 네트워크] 요청·발행 권한을 변경하지 않고 매 프레임 호출만 경고한다.
+      const remote=side==='CLIENT'
+        ?/\b[A-Za-z_]\w*\s*:\s*(?:FireServer|InvokeServer)\s*\(/.exec(body):null;
+      if(remote&&!found.has('FRAME_REMOTE_REQUEST'))
+        found.set('FRAME_REMOTE_REQUEST',{code:'FRAME_REMOTE_REQUEST',line:sourceLineAt(start+remote.index)});
+      // [서버 네트워크] FireClient/FireAllClients/InvokeClient 과다 호출 역시 감지한다.
+      const broadcast=side==='SERVER'
+        ?/\b[A-Za-z_]\w*\s*:\s*(?:FireClient|FireAllClients|InvokeClient)\s*\(/.exec(body):null;
+      if(broadcast&&!found.has('FRAME_SERVER_BROADCAST'))
+        found.set('FRAME_SERVER_BROADCAST',{code:'FRAME_SERVER_BROADCAST',line:sourceLineAt(start+broadcast.index)});
+      // [연결 누수] 프레임 콜백 안에서 매번 새 연결을 구독하는 패턴.
+      const connection=/\b[A-Za-z_]\w*(?:\s*\.\s*[A-Za-z_]\w*)?\s*:\s*Connect\s*\(/.exec(body);
+      if(connection&&!found.has('FRAME_CONNECTION_ACCUMULATION'))
+        found.set('FRAME_CONNECTION_ACCUMULATION',{
+          code:'FRAME_CONNECTION_ACCUMULATION',line:sourceLineAt(start+connection.index)});
+      // [프레임 메모리] 계속 생성되는 인스턴스는 GC·렌더링 부하 검토 대상으로 연결한다.
+      const allocation=/\bInstance\s*\.\s*new\s*\(/.exec(body);
+      if(allocation&&!found.has('FRAME_INSTANCE_ALLOCATION'))
+        found.set('FRAME_INSTANCE_ALLOCATION',{
+          code:'FRAME_INSTANCE_ALLOCATION',line:sourceLineAt(start+allocation.index)});
+      // [프레임 경로 탐색] 경로 생성/재계산은 실행당 비용이 커서 호출 위치를 남긴다.
+      const pathfinding=/\b[A-Za-z_]\w*\s*:\s*(?:CreatePath|ComputeAsync)\s*\(/.exec(body);
+      if(pathfinding&&!found.has('FRAME_PATHFINDING_WORK'))
+        found.set('FRAME_PATHFINDING_WORK',{
+          code:'FRAME_PATHFINDING_WORK',line:sourceLineAt(start+pathfinding.index)});
+      // [프레임 저장] 서버 루프에서의 저장 호출을 발견해도 저장 로직은 직접 변경하지 않는다.
+      const datastore=side==='SERVER'
+        ?/\b[A-Za-z_]\w*\s*:\s*(?:SetAsync|UpdateAsync)\s*\(/.exec(body):null;
+      if(datastore&&!found.has('FRAME_DATASTORE_WRITE'))
+        found.set('FRAME_DATASTORE_WRITE',{
+          code:'FRAME_DATASTORE_WRITE',line:sourceLineAt(start+datastore.index)});
+      if(found.has('FRAME_REMOTE_REQUEST')&&found.has('FRAME_SERVER_BROADCAST')
+        &&found.has('FRAME_CONNECTION_ACCUMULATION'))break;
+    }
+    // [전체 함수 영향] 읽기 전용 상한 안에서 4천 줄 이후 의존성도 확인한다.
+    // 저장되는 함수 선언·호출 수의 기존 48/64개 제한과 읽기 전용 성격은 유지한다.
+    for(const [i,line] of activeSource.split(/\r?\n/).entries()){
+      if(functionDefinitions.length>=48&&functionCalls.length>=64)break;
       if(!line.trim())continue;
       // [함수 의존관계] 기존 Luau 주석·문자열 제거 결과만 사용한다.
       // 동일 파일 심볼의 선언과 호출은 정적 후보이며 실제 실행·스코프 확정이 아니다.
@@ -137,33 +325,14 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
         if(functionDefinitions.length<48)functionDefinitions.push({
           name:declaration[1]||declaration[2],line:i+1});
       }
+      if(functionCalls.length>=64)continue;
       for(const invocation of line.matchAll(/(?<![\w.:])([A-Za-z_]\w*)\s*\(/g)){
         if(functionCalls.length>=64)break;
         if(invocation[1]==='function'||/\bfunction\s+$/.test(line.slice(0,invocation.index)))continue;
         functionCalls.push({name:invocation[1],line:i+1});
       }
-      for(const match of line.matchAll(/\b([A-Za-z_]\w*)\.(OnServerEvent|OnClientEvent|OnServerInvoke|OnClientInvoke)\s*(?::Connect\s*\(|=)/g)){
-        if(events.length>=24)break;
-        events.push({remote:match[1],signal:match[2],line:i+1});
-        if(side==='CLIENT'&&match[2].startsWith('OnServer'))found.push({code:'SERVER_HANDLER_IN_CLIENT',line:i+1});
-        if(side==='SERVER'&&match[2].startsWith('OnClient'))found.push({code:'CLIENT_HANDLER_IN_SERVER',line:i+1});
-      }
-      for(const match of line.matchAll(/\b([A-Za-z_]\w*):\s*(FireServer|FireClient|FireAllClients|InvokeServer|InvokeClient)\s*\(/g)){
-        if(calls.length>=24)break;
-        calls.push({remote:match[1],method:match[2],line:i+1});
-        if(side==='CLIENT'&&/^(FireClient|FireAllClients|InvokeClient)$/.test(match[2]))
-          found.push({code:'SERVER_REMOTE_CALL_IN_CLIENT',line:i+1});
-        if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
-          found.push({code:'CLIENT_REMOTE_CALL_IN_SERVER',line:i+1});
-      }
-      for(const match of line.matchAll(/:\s*(GetDataStore|UpdateAsync|SetAsync|GetAsync|SetAttribute)\s*\(/g)){
-        if(stateEffects.length<24)stateEffects.push({method:match[1],line:i+1});
-        if(side==='CLIENT'&&match[1]==='GetDataStore')found.push({code:'CLIENT_DATASTORE_ACCESS',line:i+1});
-      }
-      if(side==='CLIENT'&&/GetService\s*\(\s*['"]DataStoreService['"]\s*\)/.test(line))
-        found.push({code:'CLIENT_DATASTORE_SERVICE',line:i+1});
     }
-    const offline=diagnoseVibe59RobloxOffline({path,source});
+    const offline=diagnoseVibe59ActiveLuau(path,side,activeSource);
     // 정확한 원본 한 줄이 유일할 때만 편집 앵커 후보로 노출한다.
     // 중복·긴 줄·미확인 위치는 앵커를 생성하지 않고 읽기 전용 검토로 남긴다.
     const originalLines=source.split('\n');
@@ -174,10 +343,27 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       return {...x,responsible:owners.has(path),
         exactAnchor:uniqueAnchor?original:null,exactAnchorUnique:uniqueAnchor};
     }));
+    // [권한 경고] 반복 호출은 유형별 첫 위치만 보고해 뒤에 있는 저장 오류를 가리지 않는다.
+    const fileWarnings=[...found.values()].slice(0,16);
+    handlerScopesByPath.set(path,handlerScopes);
     result.push({path,side,responsible:owners.has(path),events,calls,stateEffects,
-      functionDefinitions,functionCalls,warnings:found.slice(0,16)});
-    warnings.push(...found.slice(0,16).map(x=>({path,...x})));
+      functionDefinitions,functionCalls,warnings:fileWarnings});
+    warnings.push(...fileWarnings.map(x=>({path,...x})));
   }
+  for(const path of owners){
+    if(!result.some(row=>row.path===path)&&!unscanned.some(row=>row.path===path))
+      unscanned.push({path,reason:'RESPONSIBLE_SOURCE_NOT_OBSERVED',responsible:true});
+  }
+  const observedResponsible=result.filter(row=>row.responsible).length;
+  const scanCoverage=Object.freeze({
+    version:2,
+    requiredResponsibleFiles:owners.size,
+    observedResponsibleFiles:observedResponsible,
+    responsibleComplete:owners.size>0&&observedResponsible===owners.size
+      &&unscanned.every(row=>!row.responsible),
+    unscanned:unscanned.slice(0,48),
+    sourceWrite:false,runtimeVerified:false
+  });
   // 실제 Remote 인스턴스 ID가 없는 정적 정보이므로 같은 변수명은 연결 '후보'일 뿐이다.
   const expectedSignal={FireServer:'OnServerEvent',InvokeServer:'OnServerInvoke',
     FireClient:'OnClientEvent',FireAllClients:'OnClientEvent',InvokeClient:'OnClientInvoke'};
@@ -202,7 +388,40 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       status:definitions.length===1?'POTENTIAL_SAME_FILE_FUNCTION':'AMBIGUOUS_SAME_FILE_FUNCTION',
       runtimeVerified:false}];
   })).slice(0,160);
-  const priority=code=>/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
+  // [기능 연결 추적] 원격 송신 → 잠재 수신 → 상태 변경 → 응답 송신을 소스 관찰로만 연결한다.
+  // 변수명 일치만으로 동일 Remote 인스턴스나 실제 이벤트 인과관계를 증명하지 않는다.
+  // [원격 호출 권한] 클라이언트 발신만 유효한 행동 연결 후보로 취급한다.
+  // 서버의 잘못된 FireServer/InvokeServer 호출은 기존 권한 경고로만 남긴다.
+  const actionChains=remoteLinks.filter(link=>['FireServer','InvokeServer'].includes(link.method)
+    &&result.some(row=>row.path===link.path&&row.side==='CLIENT'))
+    .map(link=>{
+      const candidateOwners=link.possibleReceivers.map(path=>result.find(row=>row.path===path)).filter(Boolean);
+      return Object.freeze({
+        clientPath:link.path,clientLine:link.line,remote:link.remote,
+        serverCandidates:Object.freeze(candidateOwners.map(row=>{
+          const handlers=(handlerScopesByPath.get(row.path)||[]).filter(event=>event.remote===link.remote
+            &&event.signal===link.expectedSignal);
+          const scoped=handlers.filter(event=>event.handlerScopeComplete);
+          // [중복 핸들러] 같은 Remote 이름으로 여러 핸들러가 있으면
+          // 파일 내 메서드를 한 행동 결과로 합치지 않고 원인 범위 미확정으로 남긴다.
+          const uniqueScope=handlers.length===1&&scoped.length===1;
+          return Object.freeze({
+            path:row.path,
+            handlerLines:Object.freeze(handlers.map(event=>event.line)),
+            sameHandlerScopeVerified:uniqueScope,
+            stateMethods:Object.freeze(uniqueScope?[...scoped[0].handlerStateMethods]:[]),
+            responseMethods:Object.freeze(uniqueScope?[...scoped[0].handlerResponseMethods]:[]),
+            methodScope:handlers.length>1?'AMBIGUOUS_HANDLER_SCOPE'
+              :uniqueScope?'MATCHED_HANDLER_STATIC_SCOPE':'UNVERIFIED_HANDLER_SCOPE',
+            serverAuthorityConfirmed:false
+          });
+        })),
+        status:link.status,causalProof:'UNVERIFIED_STATIC_CANDIDATE',
+        actualGameplayVerified:false,saveRoundTripVerified:false
+      });
+    }).slice(0,40);
+  const priority=code=>/^FRAME_/.test(code)?3
+    :/CLIENT|REMOTE|DATASTORE|SAVE/i.test(code)?3
     :/COMBAT|DAMAGE|BUILD|INVENTORY|BESTIARY/i.test(code)?2:1;
   const priorityFindings=[
     ...diagnostics.filter(row=>row.responsible).map(row=>({
@@ -216,18 +435,38 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       exactFind:null,exactAnchorUnique:false
     }))
   ].sort((a,b)=>b.priority-a.priority||a.path.localeCompare(b.path)||a.line-b.line).slice(0,16);
+  // [수정 책임 추적] 중복 함수 이름은 단정하지 않고, 원본 한 줄이 유일할 때만 편집 후보를 기록한다.
+  const repairTargets=priorityFindings.map(finding=>{
+    const owner=result.find(row=>row.path===finding.path);
+    const before=(owner?.functionDefinitions||[]).filter(row=>row.line<=finding.line);
+    const nearest=before.at(-1),sameName=nearest
+      ?owner.functionDefinitions.filter(row=>row.name===nearest.name):[];
+    return Object.freeze({
+      path:finding.path,line:finding.line,code:finding.code,
+      symbolCandidate:sameName.length===1?nearest.name:null,
+      symbolConfidence:'LEXICAL_CANDIDATE_ONLY',
+      sourceAnchorUnique:finding.exactAnchorUnique===true,
+      exactFind:finding.exactFind,
+      priority:finding.priority,repairAdvice:finding.review,
+      sourceWrite:false,regressionRequired:true,actualPlayRequired:true
+    });
+  });
+  const performanceFindings=Object.freeze(priorityFindings.filter(row=>row.code.startsWith('FRAME_')));
   const qualityDirector=Object.freeze({
     mode:'SOURCE_GROUNDED_STATIC_ADVISORY',sourceWrite:false,runtimeVerified:false,
     qualityScore:null,gameplayPass:false,completeRepositoryGraph:false,
-    observedFiles:result.length,observedResponsibleFiles:result.filter(row=>row.responsible).length,
-    priorityFindings,remoteLinks,functionLinks,
+    observedFiles:result.length,observedResponsibleFiles:observedResponsible,
+    responsibleSourceCoverageComplete:scanCoverage.responsibleComplete,
+    unscannedResponsiblePaths:scanCoverage.unscanned.filter(row=>row.responsible).map(row=>row.path),
+    priorityFindings,repairTargets,performanceFindings,actionChains,remoteLinks,functionLinks,
     missingReceiverMeansConfirmedDefect:false,
     unobservedClientVisualAndMobileQuality:'UNKNOWN_REQUIRES_REAL_PLAY',
     existingSaveBalanceAndAuthorityMustBePreserved:true
   });
   return Object.freeze({authority:'roblox-luau-static-analysis',runtimeVerified:false,
     sourceWrite:false,completeRepositoryGraph:false,files:result,warnings:warnings.slice(0,32),
-    diagnostics:diagnostics.slice(0,200),remoteLinks,functionLinks,qualityDirector,
+    diagnostics:diagnostics.slice(0,200),remoteLinks,functionLinks,actionChains,qualityDirector,
+    scanCoverage,
     offlineRuleCount:VIBE59_ROBLOX_OFFLINE_RULES.length,modelUsed:false});
 }
 function expression(node,depth=0){
@@ -417,11 +656,20 @@ export function synthesizeVibe59RobloxServerAction({machine={},binding={},source
   const handler=identifier(machine.handlerName,'handler'),stateField=identifier(machine.stateVariable,'stateField');
   if([remote,statesTable,authorize,stateField].includes(handler)
     ||[remote,statesTable,authorize].includes(stateField))throw Error('VIBE59_ROBLOX_HANDLER_COLLISION');
-  const unchanged=String(source).replace(String(replaceAnchor),'');
-  if(!declared(unchanged,remote,'variable')||!declared(unchanged,statesTable,'variable')
-    ||!declared(unchanged,authorize,'function'))
+  // [정확한 함수 수정] 누락·중복된 편집 위치는 후보 생성 전에 차단한다.
+  if(typeof source!=='string'||source.length>260000||typeof replaceAnchor!=='string'
+    ||!replaceAnchor||replaceAnchor.length>1024||source.split(replaceAnchor).length!==2)
+    throw Error('VIBE59_ROBLOX_ANCHOR_REQUIRED');
+  // [실제 책임 함수] 주석·문자열의 가짜 선언은 권한 증거가 아니다.
+  // 생성 위치보다 늦게 선언된 local 바인딩 역시 해당 루아우 범위에서 접근할 수 없다.
+  const anchorStart=source.indexOf(replaceAnchor);
+  const preceding=stripVibe59LuauComments(source.slice(0,anchorStart));
+  const executable=stripVibe59LuauComments(source.slice(0,anchorStart)+
+    source.slice(anchorStart+replaceAnchor.length));
+  if(!declared(preceding,remote,'variable')||!declared(preceding,statesTable,'variable')
+    ||!declared(preceding,authorize,'function'))
     throw Error('VIBE59_ROBLOX_EXISTING_BINDING_REQUIRED');
-  if(new RegExp('\\b'+remote+'\\.OnServerEvent\\s*:\\s*Connect\\s*\\(').test(unchanged))
+  if(new RegExp('\\b'+remote+'\\s*\\.\\s*OnServerEvent\\s*:\\s*Connect\\s*\\(').test(executable))
     throw Error('VIBE59_ROBLOX_DUPLICATE_REMOTE_HANDLER');
   const {states,events,transitions}=machine;
   if(!Array.isArray(states)||states.length<2||states.length>20

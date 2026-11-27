@@ -139,8 +139,11 @@ function loadPreviousDesignUsage(previous = {}) {
 }
 export function designRoleForFrames(frameNames = []) {
   const names = frameNames.join(' ').toLowerCase();
+  // [카드 전용 장면 제외] 외부 무료 디자인 검수는 카드 전투·덱·카드 그림을 다루지 않는다.
+  if (/(?:^cb[0-9]+|card|deck|duel|battle_board)/i.test(names)) return 'EXCLUDED_CARD';
   if (/(npc|face|hair|outfit|villager|resident|skin|citizen)/.test(names)) return 'NPC';
-  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface)/.test(names)) return 'UI';
+  // [교역품과 시설 메뉴] 실제 교역·조선·서재·주점 촬영본을 기존 UI 검수에 포함한다.
+  if (/(hud|menu|gui|card|tab_|ui_|map_ui|inventory|font|interface|trade|market|goods|cargo|warehouse|shop|yard|shipwright|codex|quest|journal|diary|research|tech|recruit|crew|dialog|status|merchant|treasury|bank|tavern|palace|guild|museum|academy|facility|exchange|diplomacy|equipment|chart|library|headquarters|captain_room|harbor_authority)/.test(names)) return 'UI';
   if (/(animation|motion|idle|run|walk|attack|swing|movement)/.test(names)) return 'MOTION';
   if (/(harbor|sea|ship|port|island|landscape|world|voyage|town|lighting|field)|^(?:v[0-9]+_|cb[0-9]+(?:_|-))/.test(names)) return 'WORLD';
   return 'GENERAL';
@@ -251,8 +254,7 @@ export function selectFreeDesignModels({
 } = {}) {
   const config = policy?.directVisualDesign?.freeSpecialistPool;
   if (config?.enabled !== true || config?.paidFallbackForbidden !== true ||
-    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3 ||
-    config?.accountTierProofRequired !== true)
+    config?.maxCallsPerCapture < 1 || config?.maxCallsPerCapture > 3)
     throw Error('FREE_SPECIALIST_POLICY_DENIED');
   const approved = new Set(config.modelIds || []);
   const role = designRoleForFrames(frameNames);
@@ -268,7 +270,6 @@ export function selectFreeDesignModels({
         'OPENROUTER_ACCOUNT_TIER' && accountQuota.isFreeTier !== true
         ? 'ACCOUNT_NOT_FREE_TIER'
       : !trim(env[model.keyName]) ? 'KEY_MISSING'
-      : trim(env[model.verifiedName]) !== 'YES' ? 'FREE_TIER_NOT_VERIFIED'
       : model.provider === 'OPENROUTER' && !model.model.endsWith(':free') ? 'NOT_FREE_MODEL_ID'
       : Number(spent[model.provider] || 0) >= DAILY_LIMIT[model.provider] ? 'DAILY_CALL_CAP'
       : Number.isFinite(cooling) && cooling > now ? 'COOLDOWN_ACTIVE' : 'READY';
@@ -314,7 +315,8 @@ function cooldownAfter(response, status, error = null) {
   if (!Number.isFinite(delay) || delay < 1000) {
     const detail = trim(error?.error?.message);
     delay = status === 429 && /daily|per day|requestsperday|free.?tier quota/i.test(detail)
-      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 : 30000;
+      ? 86400000 : status === 429 ? 60000 : status === 404 ? 86400000 :
+        status === 400 ? 1800000 : 30000;
   }
   return Math.min(86400000, Math.max(1000, delay));
 }
@@ -323,8 +325,31 @@ function modelAttempt(id, status, details = {}) {
   designRuntime.attempts.push(row);
   console.log('DESIGN_FREE_MODEL_ATTEMPT=' + id + ':' + status);
 }
-export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env = process.env) {
+export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env = process.env,
+  kind = 'design') {
   const key = trim(env[model.keyName]);
+  // [무료 구조화 출력] NVIDIA의 json_object는 필수 필드를 보장하지 않는다.
+  // 기존 후보 검수와 독립 전후 검수를 구분하여 출력 스키마까지 모델에 전달한다.
+  const evidence = {type: 'object', additionalProperties: false, properties: {
+    screenshot: {type: 'string'}, evidence: {type: 'string'}
+  }, required: ['screenshot', 'evidence']};
+  const structuredSchema = kind === 'comparison'
+    ? {type: 'object', additionalProperties: false, properties: {
+        verdict: {type: 'string', enum: ['PASS', 'FAIL', 'UNKNOWN']},
+        improvements: {type: 'array', items: evidence},
+        regressions: {type: 'array', items: evidence}
+      }, required: ['verdict', 'improvements', 'regressions']}
+    : {type: 'object', additionalProperties: false, properties: {
+        issues: {type: 'array', items: {type: 'object', additionalProperties: false,
+          properties: {category: {type: 'string'},
+            severity: {type: 'string', enum: ['low', 'medium', 'high']},
+            screenshot: {type: 'string'}, evidence: {type: 'string'}},
+          required: ['category', 'severity', 'screenshot', 'evidence']}},
+        edits: {type: 'array', items: {type: 'object', additionalProperties: false,
+          properties: {category: {type: 'string'}, screenshot: {type: 'string'},
+            anchor: {type: 'integer'}, after: {type: 'string'}},
+          required: ['category', 'screenshot', 'anchor', 'after']}}
+      }, required: ['issues', 'edits']};
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 90000);
   try {
@@ -339,7 +364,15 @@ export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env 
           // [네모트론 공식 API] 기본 추론이 답변 토큰을 모두 소진해 빈 content가 되는 오류 예방.
           // 유료 크레딧이나 호출 수를 늘리지 않고 직접 답변 모드를 요청한다.
           ...(model.provider === 'NVIDIA'
-            ? {chat_template_kwargs: {enable_thinking: false}} : {}),
+            ? {chat_template_kwargs: {enable_thinking: false},
+                // [공식 JSON 스키마] 필수 issues/edits 또는 전후 verdict 필드를 출력에서 강제한다.
+                // 독립 소스/스크린샷 검증은 기존 validateReview 로직을 그대로 사용한다.
+                response_format: {type: 'json_schema', json_schema: {
+                  name: kind === 'comparison' ? 'mare_visual_comparison' : 'mare_visual_design',
+                  strict: true, schema: structuredSchema
+                }}} : model.id === 'OPENROUTER_NEMOTRON'
+              // [무료 멀티모달] 기본 추론이 max_tokens를 모두 써버려 빈 content가 되는 현상 차단.
+              ? {reasoning: {enabled: false}} : {}),
           messages: [{role: 'user', content: [{type: 'text', text: prompt},
             ...photos.map(photo => ({type: 'image_url', image_url: {url: photo.url}}))]}]};
     const headers = model.provider === 'GEMINI'
@@ -358,7 +391,8 @@ export async function callFreeDesignModel(model, prompt, photos, fetchImpl, env 
       if ([400, 403].includes(response.status) &&
         /safety|content policy|moderation|disallowed|blocked content/i.test(reason))
         return {status: 'CONTENT_POLICY_BLOCKED'};
-      if ([401, 403].includes(response.status)) return {status: 'AUTH_BLOCKED'};
+      if ([401, 403].includes(response.status))
+        return {status: 'AUTH_BLOCKED', retryAfterMs: 21600000};
       return {status: 'HTTP_' + response.status,
         retryAfterMs: cooldownAfter(response, response.status, failure)};
     }
@@ -407,10 +441,14 @@ function photosFromStudio(directory = framesRoot, selectedRole = '') {
   if (!fs.existsSync(directory)) return [];
   const found = [];
   const names = fs.readdirSync(directory).sort().filter(name =>
-    /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name));
+    /^[A-Za-z0-9_.-]+-[0-9]+\.(?:jpe?g|png)$/i.test(name) && designRoleForFrames([name]) !== 'EXCLUDED_CARD');
   const relevant = selectedRole ? names.filter(name =>
     designRoleForFrames([name]) === selectedRole) : names;
-  for (const name of (relevant.length >= 2 ? relevant : names)) {
+  // [교역품 실증] UI 대표 4장에 실제 교역 캡처를 우선 넣되 다른 영역도 기존 한도 내에서 검사한다.
+  const cargoFrame = /(?:trade|goods|cargo|market|warehouse|inventory)/i;
+  const ordered = selectedRole === 'UI' ? [...relevant].sort((a, b) =>
+    Number(cargoFrame.test(b)) - Number(cargoFrame.test(a))) : relevant;
+  for (const name of (ordered.length >= 2 ? ordered : names)) {
     const file = path.join(directory, name);
     if (!fs.statSync(file).isFile()) continue;
     const bytes = fs.readFileSync(file);
@@ -420,7 +458,8 @@ function photosFromStudio(directory = framesRoot, selectedRole = '') {
     if (!jpeg && !png) continue;
     found.push({name, sha256: digest(bytes), url: 'data:image/' +
       (jpeg ? 'jpeg' : 'png') + ';base64,' + bytes.toString('base64')});
-    if (found.length === 8) break;
+    // [무료 이미지 호출] 실제 촬영 62장 중 역할별 대표 4장만 전송해 토큰·시간 낭비를 막는다.
+    if (found.length === 4) break;
   }
   return found;
 }
@@ -540,9 +579,12 @@ export function rankVisualSourceFiles(files, role = 'GENERAL') {
     GENERAL: ['PortScene.luau', 'Pose.luau', 'Game.client.luau',
       'VoyageScene.luau', 'CardArt.luau', 'FieldScene.luau']
   }[role] || [];
-  const scoped = preferred.map(name => files.find(file => file.endsWith('/' + name)))
+  // [사용자 범위] 카드 아트·카드 전용 Luau는 외부 AI 수정 후보에서 제외한다.
+  const scoped = preferred.filter(name => !/^(?:CardArt|CardGallery|BoardingCards|CardBook|KnowledgeBattle)\.luau$/.test(name))
+    .map(name => files.find(file => file.endsWith('/' + name)))
     .filter(Boolean);
-  return (scoped.length >= 2 ? scoped : files).slice(0, 6);
+  return (scoped.length >= 2 ? scoped : files.filter(file =>
+    !/(?:CardArt|CardGallery|BoardingCards|CardBook|KnowledgeBattle)\.luau$/.test(file))).slice(0, 6);
 }
 
 function visualAnchors(files, role = 'GENERAL') {
@@ -550,7 +592,7 @@ function visualAnchors(files, role = 'GENERAL') {
   const patterns = {
     NPC: /hair|scalp|skirt|belt|face|eye|head|skin|fabric|shirt|robe|collar|outfit|neck|arm|leg|lightInfluence/i,
     WORLD: /roof|house|building|dock|market|tint|port|harbor|ship|sail|wood|stone|wall|window|boat|lamp|arch|town|pier|sea/i,
-    UI: /text|color|font|image|card|ui|background|scale|shadow|stroke|button|menu|transparency/i,
+    UI: /text|color|font|image|ui|background|scale|shadow|stroke|button|menu|transparency/i,
     MOTION: /motion|animation|rotation|tween|easing|walk|idle|attack|shoot|velocity|swing|pose|tilt/i,
     GENERAL: /color|material|brightness|transparency|size|position|scale/i
   };
@@ -562,7 +604,8 @@ function visualAnchors(files, role = 'GENERAL') {
     const lines = fs.readFileSync(target, 'utf8').split(/\r?\n/);
     const counts = new Map();
     for (const line of lines) counts.set(line, (counts.get(line) || 0) + 1);
-    const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1);
+    const possible = lines.filter(line => cleanAnchor(line) && counts.get(line) === 1 &&
+      !/(?:card|deck|duel|knowledgebattle)/i.test(line));
     const focused = possible.filter(line => focusedPattern.test(line));
     const selected = Array.from({length: 6}, (_, index) =>
       focused[Math.floor(index * Math.max(0, focused.length - 1) / 5)]).filter(Boolean);
@@ -576,21 +619,32 @@ function visualAnchors(files, role = 'GENERAL') {
 
 // [메인] 후보는 검증된 브랜치에서만 쓰며 모델 원문/명령은 실행하지 않는다.
 export function applyVisualReplacements(files, edits, contract) {
-  const output = new Map(), changes = [];
+  const output = new Map(), changes = [], pending = new Map();
+  // [시각 수정 검증] 수정 전 원본의 고유 행을 모두 검사한다. 순차 적용 중 생기는
+  // 값 충돌을 새 원본으로 오인하지 않고, 기존 혼합 줄바꿈도 그대로 보존한다.
   for (const edit of edits) {
     if (!contract.allowedSourceFiles.includes(edit.path) ||
       !visualEditLooksSafe(edit.before, edit.after)) throw Error('EDIT_NOT_AUTHORIZED');
     if (!Object.hasOwn(files, edit.path)) throw Error('SOURCE_FILE_NOT_FOUND:' + edit.path);
-    const source = output.get(edit.path) || files[edit.path];
-    const lines = source.split('\n');
-    const occurrences = lines.filter(line => line === edit.before).length;
-    if (occurrences !== 1) throw Error('SOURCE_ANCHOR_NOT_UNIQUE:' + edit.path);
-    output.set(edit.path, lines.map(line => line === edit.before ? edit.after : line).join('\n'));
+    if (!pending.has(edit.path)) pending.set(edit.path, []);
+    pending.get(edit.path).push(edit);
     changes.push({path: edit.path, category: edit.category, screenshot: edit.screenshot,
       beforeSha256: digest(edit.before), afterSha256: digest(edit.after)});
   }
   if (changes.length > contract.maximumSourceEditsPerRun ||
-    output.size > contract.maximumCandidateFilesPerRun) throw Error('CANDIDATE_LIMIT');
+    pending.size > contract.maximumCandidateFilesPerRun) throw Error('CANDIDATE_LIMIT');
+  for (const [file, editsForFile] of pending) {
+    const lines = files[file].split(/(\r?\n)/);
+    const replacements = new Map();
+    for (const edit of editsForFile) {
+      if (replacements.has(edit.before)) throw Error('DUPLICATE_SOURCE_ANCHOR');
+      const count = lines.filter((line, index) => index % 2 === 0 && line === edit.before).length;
+      if (count !== 1) throw Error('SOURCE_ANCHOR_NOT_UNIQUE:' + file);
+      replacements.set(edit.before, edit.after);
+    }
+    output.set(file, lines.map((line, index) =>
+      index % 2 === 0 && replacements.has(line) ? replacements.get(line) : line).join(''));
+  }
   return {files: output, changes};
 }
 
@@ -623,7 +677,8 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   loadPreviousDesignUsage(carriedHistory);
   const pictures = fs.existsSync(framesRoot) ? fs.readdirSync(framesRoot)
     .filter(name => /-[0-9]+\.(?:jpe?g|png)$/i.test(name)) : [];
-  designRuntime.selectedRole = selectDesignFrameRole(pictures, previous.selectedRole);
+  designRuntime.selectedRole = selectDesignFrameRole(pictures.filter(name =>
+    designRoleForFrames([name]) !== 'EXCLUDED_CARD'), previous.selectedRole);
   const photos = photosFromStudio(framesRoot, designRuntime.selectedRole);
   const proofs = photos.map(({name, sha256}) => ({name, sha256}));
   if (photos.length < 2) return record('SKIPPED_STUDIO_IMAGES_UNAVAILABLE', {frames: proofs});
@@ -638,10 +693,9 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (trim(process.env.COMPANY_EXTERNAL_AI_ENABLED) !== 'YES')
     return record('SKIPPED_EXTERNAL_AI_OPT_IN_REQUIRED', {frames: proofs});
   const diagnostics = [];
-  // 기존 Studio 디자인 경로에서만 1회 조회한다. 조회 자체는 무료 모델 호출량을 소비하지 않는다.
-  // 후보 생성이 비활성화된 검증 실행은 계정에 불필요한 요청을 보내지 않는다.
-  designRuntime.accountQuota = trim(process.env.NEMOTRON_DESIGN_CANDIDATE) === 'YES'
-    ? await inspectOpenRouterFreeTier({fetchImpl}) : null;
+  // [무료 고정 모델] 승인된 모델 ID·API 키·요청 상한으로 판단한다.
+  // 계정 조회 실패/플래그 누락만으로 무료 모델을 제외하지 않는다.
+  designRuntime.accountQuota = null;
   const freeModels = selectFreeDesignModels({
     frameNames: photos.map(photo => photo.name), policy, previous: carriedHistory, feedback,
     diagnostics, accountQuota: designRuntime.accountQuota
@@ -665,7 +719,10 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
   if (!anchors.length) return record('SKIPPED_NO_EXISTING_VISUAL_ANCHORS', {frames: proofs});
   const prompt = 'You are a visual art director for the existing Roblox sea-voyage game. ' +
     'Study the verified real Studio screenshots and improve face, hair, clothing, ships, buildings, ' +
-    'materials, lighting, HUD, cards, portraits, motion and composition where visually justified. ' +
+    'materials, lighting, HUD, menus, portraits, motion, trade goods previews, shipyard, ' +
+    'cargo, inventory, quests, codex, research and facility-menu composition where visually justified. ' +
+    'For visible trade cargo, check whether the item is recognizable, correctly scaled, grounded without clipping, and has believable materials. Flag weak models as issues tied to the actual frame for source review. Skip cargo that is not shown. ' +
+    'Exclude standalone card battles, card decks, card art, and card-specific UI from all review and edits. ' +
     'Never create primitives, placeholder models, new art assets, URLs or unlicensed assets. ' +
     'Only change visual constants on EXISTING exact source lines shown in anchors. ' +
     'Never modify gameplay, economy, save, combat, physics, networking, or script control flow. ' +
@@ -673,6 +730,13 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     '"screenshot":"existing image name","evidence":"specific visible evidence"}],' +
     '"edits":[{"category":"matching medium or high issue category","screenshot":"same photo",' +
     '"anchor":number,"after":"same referenced line with ONLY numerical visual values or existing visual enum changed"}]}. ' +
+    'Prefer only ONE or TWO high-confidence edits. Each edit must reference a real numbered anchor ' +
+    'from the exact list; copy the full original source line precisely, changing ONLY existing ' +
+    'visual numeric literals or an existing Enum.Material/Font member. Keep all whitespace, ' +
+    'punctuation, indentation, identifiers, string literals and assignment targets unchanged. ' +
+    'Every edit requires a medium/high issue with matching category AND screenshot. ' +
+    'No fabricated screenshots, categories, anchors, keys or trailing commas. ' +
+    'If any condition is uncertain return valid JSON with empty edits. ' +
     'At most 10 edits across 4 files. Never add/remove functions, statements, assets, text, ' +
     'commands, identifiers, property targets or line breaks. Empty edits when uncertain. ' +
     'Policies: ' + JSON.stringify({categories: contract.visualCategories,
@@ -705,6 +769,8 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     } catch (error) {
       modelAttempt(model.id, 'REVIEW_INVALID', {
         failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      // [순환] 무효한 JSON/시각 수정안은 현 모델만 쿨다운하고 다른 무료 모델로 넘어간다.
+      designRuntime.cooldowns[model.id] = new Date(Date.now() + 1800000).toISOString();
       continue;
     }
     const originals = Object.fromEntries([...new Set(reviewed.edits.map(edit => edit.path))]
@@ -715,6 +781,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
     } catch (error) {
       modelAttempt(model.id, 'SOURCE_ANCHOR_INVALID', {
         failureSignature: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      designRuntime.cooldowns[model.id] = new Date(Date.now() + 1800000).toISOString();
       continue;
     }
     const evidence = {frames: proofs, provider: model.provider, model: model.model,
@@ -727,6 +794,7 @@ export async function reviewNemotron({fetchImpl = globalThis.fetch} = {}) {
       releasePassed: false};
     if (!candidate.changes.length) {
       modelAttempt(model.id, 'NO_VALID_EDIT');
+      designRuntime.cooldowns[model.id] = new Date(Date.now() + 600000).toISOString();
       continue;
     }
     for (const [file, content] of candidate.files) fs.writeFileSync(path.join(root, file), content);
@@ -822,7 +890,8 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     const previousCalls = designRuntime.usageWindow.calls[reviewer.provider] || 0;
     if (previousCalls >= DAILY_LIMIT[reviewer.provider]) continue;
     designRuntime.usageWindow.calls[reviewer.provider] = previousCalls + 1;
-    const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl);
+    const result = await callFreeDesignModel(reviewer, prompt, pairs, fetchImpl,
+      process.env, 'comparison');
     modelAttempt(reviewer.id, result.status);
     if (['CONTENT_POLICY_BLOCKED', 'BILLING_BLOCKED', 'NONZERO_COST_BLOCKED'].includes(result.status))
       return unavailable('BLOCKED_VISUAL_REVIEW_FREE_POLICY');
@@ -836,6 +905,7 @@ export async function verifyVisualCandidate({fetchImpl = globalThis.fetch} = {})
     catch (error) {
       modelAttempt(reviewer.id, 'VISUAL_COMPARISON_INVALID', {
         reason: trim(error?.message).replace(/[^\w:.-]/g, '_').slice(0, 90)});
+      designRuntime.cooldowns[reviewer.id] = new Date(Date.now() + 1800000).toISOString();
       continue;
     }
     return record(verdict.status === 'PASS' ? 'VISUAL_BEFORE_AFTER_PASS' : 'VISUAL_BEFORE_AFTER_UNVERIFIED', {

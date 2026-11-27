@@ -7,17 +7,16 @@ on:
   push:
     branches: [main]
     paths:
-      # [배포 자동 검증] 전용 게시 워크플로 변경도 기존 체험으로 한 번 배포해 검증한다.
+      # [오너 선배포] 대항해시대의 기존 소스·에셋·설정 및 무료 AI 제작 변경은
+      # 정확한 main을 기존 전용 체험에 먼저 게시하고, 게시 뒤 기존 검증을 실행한다.
+      # 비공개/공개 상태를 임의 변경하지 않는다.
       - '.github/workflows/owner-mare-essentia-direct-publish.yml'
-      - 'roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau'
-      - 'roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau'
-      - 'roblox-games/mare-essentia/src/**'
-      - 'roblox-games/mare-essentia/assets-registered.json'
-  # 자산 등록은 GitHub Actions의 GITHUB_TOKEN 커밋으로 push 이벤트를 재발생시키지 않으므로,
-  # 등록 워크플로 성공 완료 뒤 현재 main의 최신 AssetIds로 게시를 이어간다.
-  workflow_run:
-    workflows: ["Owner Mare Essentia Register Assets"]
-    types: [completed]
+      - 'roblox-games/mare-essentia/**'
+      - 'tools/company-nemotron-design-review.mjs'
+      - 'tools/vibe2-gemini-free-rotation.mjs'
+      - 'company-learning/external-ai-distillation-policy.json'
+  # 등록 완료 알림과 직접 호출의 중복을 금지한다. 등록기는 검증된 장부 변경 후
+  # 아래 기존 수동 실행 경로를 한 번 호출한다(GITHUB_TOKEN 커밋은 push 재발생 없음).
   workflow_dispatch:
     inputs:
       universe_id:
@@ -49,7 +48,6 @@ env:
 
 jobs:
   publish:
-    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'schedule') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

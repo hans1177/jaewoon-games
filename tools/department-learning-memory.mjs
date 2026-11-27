@@ -1,10 +1,13 @@
+// 파일명: tools/department-learning-memory.mjs
 // 역할: 독립 QA를 통과한 자율개발 5개 부서 결과만 department-experience.json의 구조화 학습 메모리에 누적하고 다음 플로어에서 역할별로 재사용한다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {GEMINI_FREE_MODELS,VERIFIED_FREE_FALLBACK_MODELS} from './vibe2-gemini-free-rotation.mjs';
 
-export const CORE_DEPARTMENT_ROLES=Object.freeze(['planning','development','graphics','qa','balance']);
+// [현재 부서] 계획/그래픽/개발/QA/오디오. 과거 밸런스 자료는 삭제하지 않고 읽기 호환한다.
+export const CORE_DEPARTMENT_ROLES=Object.freeze(['planning','graphics','development','qa','audio']);
+export const LEGACY_DEPARTMENT_ROLES=Object.freeze(['planning','development','graphics','qa','balance']);
 const DECISIONS=new Set(['PROCEED','ADJUST','BLOCK']);
 const OUTCOMES=new Set(['SUCCESS','FAILURE']);
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -30,8 +33,10 @@ export function normalizeVerifiedDepartmentLearning(evidence={}){
   const finalDecision=clean(learning.finalDecision).toUpperCase();
   const recordedAt=clean(evidence.verifiedAt)||new Date().toISOString();
   const byRole=new Map(learning.results.map(row=>[clean(row?.role),row]));
+  // [학습 보존] 오디오가 있는 최신 5개 부서는 신규 기준, 이전 기록은 기존 5개 부서 기준을 유지한다.
+  const roles=byRole.has('audio')?CORE_DEPARTMENT_ROLES:LEGACY_DEPARTMENT_ROLES;
   const rows=[];
-  for(const role of CORE_DEPARTMENT_ROLES){
+  for(const role of roles){
     const result=byRole.get(role);
     if(!result||result.skippedFast===true)continue;
     const decision=clean(result.decision).toUpperCase();
@@ -108,19 +113,32 @@ export function ingestVerifiedDepartmentEvidenceDirectory(ledger,dir='company-le
 
 export function selectVerifiedDepartmentLearning(ledger={},context={},max=4){
   const role=clean(context.role);
-  if(!CORE_DEPARTMENT_ROLES.includes(role))return [];
+  if(!CORE_DEPARTMENT_ROLES.includes(role)&&role!=='balance')return [];
   const gameId=clean(context.gameId),gameSlug=clean(context.gameSlug),sourcePath=clean(context.sourcePath),workLane=clean(context.workLane).toUpperCase();
+  // [부서 경험 검색] 현재 작업 목표가 구체적이면 검증된 타게임 사례도 동일 주제일 때만 인용한다.
+  // 범용 동사와 과정 이름으로 우연히 일치한 과거 결론이 모델 선택과 작업 제약을 오염시키지 않도록 한다.
+  const genericWords=new Set(['이번','현재','진행','작업','수정','개선','검토','확인','요청','기능','게임','코드','검증','추가','처리','적용','필요','문제','해결','고도화','실행','개발','완료','test','task','fix','game','code','change','update','check','review']);
+  const taskTerms=new Set((clean(context.goal).toLowerCase().match(/[\p{L}\p{N}]{2,}/gu)||[]).filter(word=>!genericWords.has(word)));
   const rows=(Array.isArray(ledger?.verifiedLearning)?ledger.verifiedLearning:[])
-    .filter(row=>row?.verified===true&&clean(row?.independentQa).toUpperCase()==='PASS'&&clean(row?.role)===role)
+    .filter(row=>row?.verified===true&&clean(row?.independentQa).toUpperCase()==='PASS'&&clean(row?.role)===role&&clean(row?.sourceRevision))
     .map(row=>{
+      const sameSource=Boolean(sourcePath&&clean(row.sourcePath)===sourcePath);
+      const sameGame=Boolean((gameId&&clean(row.gameId)===gameId)||(gameSlug&&clean(row.gameSlug)===gameSlug));
+      const learnedText=[row.summary,row.nextAction,...(Array.isArray(row.checks)?row.checks:[]),...(Array.isArray(row.risks)?row.risks:[])].map(clean).join(' ').toLowerCase();
+      const learnedTerms=new Set(learnedText.match(/[\p{L}\p{N}]{2,}/gu)||[]);
+      const taskMatches=[...taskTerms].filter(word=>learnedTerms.has(word)).length;
+      // [목표 관련성] '개선/수정' 같은 일반 문구만으로 무관한 타게임 학습이 섞이지 않도록 한다.
+      if(clean(context.goal)&&!sameSource&&!sameGame&&(taskTerms.size===0||taskMatches===0))return null;
       let relevance=0;
-      if(sourcePath&&clean(row.sourcePath)===sourcePath)relevance+=8;
+      if(sameSource)relevance+=8;
       if(gameId&&clean(row.gameId)===gameId)relevance+=5;
       if(gameSlug&&clean(row.gameSlug)===gameSlug)relevance+=5;
       if(workLane&&clean(row.workLane).toUpperCase()===workLane)relevance+=2;
+      relevance+=Math.min(3,taskMatches)*4;
       if(clean(row.outcome).toUpperCase()==='FAILURE')relevance+=1;
       return {row,relevance};
     })
+    .filter(Boolean)
     .sort((a,b)=>b.relevance-a.relevance||String(b.row.verifiedAt||b.row.recordedAt||'').localeCompare(String(a.row.verifiedAt||a.row.recordedAt||'')))
     .slice(0,Math.max(0,finite(max,4)))
     .map(({row,relevance})=>({
@@ -163,6 +181,7 @@ function main(){
   console.log(JSON.stringify({...result,ledger:ledgerPath,verifiedLearning:ledger.verifiedLearning?.length??0,xpMutation:false},null,2));
 }
 
-if(import.meta.url===pathToFileURL(process.argv[1]).href){
+// 직접 실행할 때만 학습 자료를 저장한다. 동적 import/평가 코드에는 argv[1]이 없을 수 있다.
+if(typeof process.argv[1]==='string' && import.meta.url===pathToFileURL(process.argv[1]).href){
   try{main();}catch(error){console.error(error?.stack||error);process.exitCode=1;}
 }

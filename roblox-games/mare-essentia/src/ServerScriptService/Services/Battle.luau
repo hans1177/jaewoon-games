@@ -15,6 +15,19 @@ return function(D, S)
 			waves = { { lvOffset = -1, name = "선단 선두 호위함" }, { lvOffset = 0, name = "선단 후미 호위함" }, { lvOffset = 1, name = "무장 보급선" }, { lvOffset = 3, name = "선단 기함" } } },
 		{ id = "fleet_decisive", name = "함대 결전", summary = "적 주력 함대와의 결전. 5연전, 선체가 버텨야 해요", minLevel = 10, coins = 5200, fame = 60, xp = 1600, cooldown = 12,
 			waves = { { lvOffset = 0, name = "전위 함대" }, { lvOffset = 1, name = "좌익 함대" }, { lvOffset = 1, name = "우익 함대" }, { lvOffset = 2, name = "근위 전열함" }, { lvOffset = 4, name = "적 총사령선" } } },
+		-- [해역별 함대전] 해당 해역의 항구에서만 받을 수 있다. 적 이름·파도 구성이 해역마다 다르다.
+		{ id = "war_europe", region = "europe", name = "지중해 해상 봉쇄전", summary = "지중해 항로를 막은 사략 함대를 차례로 격파하라", minLevel = 2, coins = 700, fame = 10, xp = 250, cooldown = 6,
+			waves = { { lvOffset = -1, name = "바르바리 사략선" }, { lvOffset = 0, name = "갈레아스 호위함" }, { lvOffset = 1, name = "지중해 사략 기함" } } },
+		{ id = "war_w_africa", region = "w_africa", name = "서아프리카 노예선단 차단", summary = "해안을 오가는 무장 선단을 막아서라", minLevel = 4, coins = 1300, fame = 16, xp = 450, cooldown = 7,
+			waves = { { lvOffset = 0, name = "해안 무장선" }, { lvOffset = 1, name = "카라벨 호위함" }, { lvOffset = 2, name = "선단 기함" } } },
+		{ id = "war_new_world", region = "new_world", name = "카리브 보물선단 습격", summary = "카리브해에서 은 보물선단을 호위하는 함대를 돌파하라 (4연전)", minLevel = 7, coins = 2600, fame = 28, xp = 800, cooldown = 8,
+			waves = { { lvOffset = -1, name = "카리브 해적선" }, { lvOffset = 0, name = "갈레온 호위함" }, { lvOffset = 1, name = "무장 보물선" }, { lvOffset = 3, name = "보물선단 기함" } } },
+		{ id = "war_indian", region = "indian", name = "인도양 향신료 항로 수호", summary = "인도양 향신료 항로를 노리는 적 함대를 격퇴하라 (4연전)", minLevel = 10, coins = 3800, fame = 40, xp = 1100, cooldown = 9,
+			waves = { { lvOffset = 0, name = "몬순 해적선" }, { lvOffset = 1, name = "무장 다우선" }, { lvOffset = 2, name = "요새 호위함" }, { lvOffset = 3, name = "항로 수비 기함" } } },
+		{ id = "war_far_east", region = "far_east", name = "동남아 해협 수비전", summary = "해협을 장악한 해적 연합과의 5연전", minLevel = 14, coins = 5600, fame = 60, xp = 1700, cooldown = 10,
+			waves = { { lvOffset = 0, name = "해협 해적선" }, { lvOffset = 1, name = "무장 정크선" }, { lvOffset = 1, name = "연합 호위함" }, { lvOffset = 2, name = "해적 연합 전열함" }, { lvOffset = 4, name = "해협 총두목선" } } },
+		{ id = "war_pacific", region = "pacific", name = "태평양 원정 함대전", summary = "먼바다에서 적 원정 함대를 맞아 싸우는 5연전", minLevel = 18, coins = 8500, fame = 90, xp = 2600, cooldown = 12,
+			waves = { { lvOffset = 1, name = "원정 정찰함" }, { lvOffset = 2, name = "원정 호위함" }, { lvOffset = 2, name = "원정 보급 전열함" }, { lvOffset = 3, name = "원정 기함" }, { lvOffset = 5, name = "원정 총사령선" } } },
 	}
 	local WAR_BY_ID = {}
 	for _, w in WARS do
@@ -231,6 +244,8 @@ return function(D, S)
 						state.coins += def.coins
 						state.fame += def.fame
 						S.State.gainXp(state, "battle", def.xp, msgs)
+						-- [해역별·이야기 함대전 기록] 해역 키와 함대전 id 키를 함께 올린다. 해상·이야기 퀘스트가 읽는다.
+						D.Quests.Kit.recordWar(state, def)
 						warCooldown[state] = warCooldown[state] or {}
 						warCooldown[state][def.id] = state.day
 						state.war = nil
@@ -328,6 +343,22 @@ return function(D, S)
 		if state.ship.hull < S.State.shipDef(state).hull * 0.6 then
 			return "선체를 수리한 뒤 나서세요 (60% 이상 필요)"
 		end
+		if def.questOnly and not state.quests.active[def.questOnly] then
+			return "이야기를 진행해야 열리는 작전이에요"
+		end
+		if def.region then
+			local port = D.Ports.Ports[state.portId]
+			local here = port and D.Regions.of(port)
+			if not here or here.id ~= def.region then
+				local want = "그 해역"
+				for _, r in D.Regions.List do
+					if r.id == def.region then
+						want = r.name
+					end
+				end
+				return "이 의뢰는 " .. want .. "의 항구에서만 받을 수 있어요"
+			end
+		end
 		return nil
 	end
 
@@ -373,7 +404,10 @@ return function(D, S)
 	local function warView(state)
 		local list = {}
 		for _, w in WARS do
-			table.insert(list, { id = w.id, name = w.name, summary = w.summary, waves = #w.waves, coins = w.coins, fame = w.fame, minLevel = w.minLevel, blocked = warBlock(state, w) })
+			if w.questOnly and not state.quests.active[w.questOnly] then
+				continue -- 이야기 전용 함대전은 해당 이야기 진행 중에만 보인다
+			end
+			table.insert(list, { id = w.id, name = w.name, summary = w.summary, waves = #w.waves, coins = w.coins, fame = w.fame, minLevel = w.minLevel, region = w.region, blocked = warBlock(state, w) })
 		end
 		local war = state.war
 		local def = war and WAR_BY_ID[war.id]

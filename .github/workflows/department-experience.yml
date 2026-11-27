@@ -34,7 +34,12 @@ jobs:
         env:
           SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
-        run: node tools/award-department-experience.mjs "$SOURCE_SHA" "$SOURCE_RUN_ID"
+        run: |
+          set -euo pipefail
+          # [원본 증거] 얕은 최신 main에 없는 QA 검증 커밋과 부모만 가져온다.
+          git fetch --no-tags --depth=2 origin "$SOURCE_SHA"
+          git cat-file -e "${SOURCE_SHA}^{commit}"
+          node tools/award-department-experience.mjs "$SOURCE_SHA" "$SOURCE_RUN_ID"
 
       - name: Propose XP state through PR when changed
         env:

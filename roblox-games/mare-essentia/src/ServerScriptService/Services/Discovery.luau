@@ -103,15 +103,29 @@ return function(D, S)
 
 
 	-- 카드 발견 처리. 새로 발견했으면 true.
-	local function grantCard(state, cardId, msgs)
+	local function grantCard(state, cardId, msgs, origin)
 		local card = D.Cards.ById[cardId]
 		if not card or state.discovered[cardId] then
 			return false
 		end
 		state.discovered[cardId] = true
-		if D.WonderScenes.Scenes[cardId] then
-			state.pendingScene = cardId -- 원더 연출 (저장하지 않는 임시 값)
+		-- [개인 탐험 백과] 서버가 판정한 최초 획득 경위만 저장한다.
+		-- 기존 획득 수량·보상·드롭 확률은 변경하지 않는다.
+		state.cardOrigins = state.cardOrigins or {}
+		if not state.cardOrigins[cardId] then
+			local method = type(origin) == "table" and origin.method or methodOf(card)
+			state.cardOrigins[cardId] = {
+				portId = state.portId,
+				day = state.day,
+				method = method,
+				scholarId = type(origin) == "table" and origin.scholarId or nil,
+				questId = type(origin) == "table" and origin.questId or nil,
+				siteId = type(origin) == "table" and origin.siteId or nil,
+				eventId = type(origin) == "table" and origin.eventId or nil,
+			}
 		end
+		-- [최초 카드] 카드 습득은 클라이언트의 비차단 카드 출현 연출만 쓴다.
+		-- 다른 항해·유적 원더 장면은 기존 전용 경로에 남겨 둔다.
 		local coins = math.floor(card.reward.coins * S.Perk.coinMult(state, card.field))
 		state.coins += coins
 		state.fame += card.reward.fame
@@ -142,7 +156,7 @@ return function(D, S)
 		local gained = 0
 		for _, id in visitCards[portId] or {} do
 			if not state.discovered[id] and not cardBlockReason(state, D.Cards.ById[id]) then
-				if grantCard(state, id, msgs) then gained += 1 end
+				if grantCard(state, id, msgs, { method = "visit" }) then gained += 1 end
 			end
 		end
 		return gained
@@ -251,7 +265,7 @@ return function(D, S)
 		local field = D.Cards.ById[cardId].field
 		local chance = math.min(0.95, 0.55 + D.Careers.discoverBonus(lv) + S.Perk.discoverBonus(state, field))
 		if ctx.rng() < chance then
-			grantCard(state, cardId, msgs)
+			grantCard(state, cardId, msgs, { method = "explore", siteId = site.id })
 		else
 			table.insert(msgs, "이번에는 아무것도 찾지 못했다")
 			S.State.gainXp(state, "adventure", 5, msgs)
@@ -276,7 +290,7 @@ return function(D, S)
 		local blocked = cardBlockReason(state, selected)
 		if blocked then return false, blocked end
 		local msgs = { selected.name .. " 연구를 완료했다." }
-		if not grantCard(state, selected.id, msgs) then
+		if not grantCard(state, selected.id, msgs, { method = "research" }) then
 			return false, "이미 등록된 지식이에요"
 		end
 		return true, table.concat(msgs, "\n")
@@ -307,7 +321,7 @@ return function(D, S)
 		end
 		state.scholarsMet[scholar.id] = true
 		local msgs = { string.format("%s: \"%s\"", scholar.name, scholar.line) }
-		grantCard(state, scholar.cardId, msgs)
+		grantCard(state, scholar.cardId, msgs, { method = "learn", scholarId = scholar.id })
 		return true, table.concat(msgs, "\n")
 	end
 

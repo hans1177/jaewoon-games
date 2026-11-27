@@ -87,13 +87,71 @@ export const KINDS = {
   weapons: { base: 4, cooldown: 4 * 60, area: '무기별 전투·모션 점검', group: 'weapons' }
 };
 
+// ---- Studio 단계 단언 실패 → 실제 책임 함수 ---------------------------------------------------
+// 예: "step230:...AssistantCommand:57: MOTION_FOOTPLANT_STATIC:0.0591"
+// 검사 스크립트의 해당 단계 코드에서 단언 직전에 호출한 게임 모듈 함수(Pose.makeR15Action 등)를 찾아
+// 실제 src 파일과 함수 줄을 묶는다. 게임 코드 오류인지 검사 측정 오류인지는 단언 코드와 함께 넘겨 판단하게 한다.
+const STEP_CATEGORY = [
+  [/^(MOTION|R15|ANIM|GAIT|POSE)_/, 'animation', 'error'],
+  [/^NPC_/, 'npc', 'error'],
+  [/^(UI|CLICK|BUTTON|MENU|HUD)_/, 'ui', 'ui'],
+  [/^(ASSET|MEDIA|IMAGE|SOUND|MODEL)_/, 'asset', 'asset_link'],
+  [/^(STUDIO|MCP|ROBLOX_STUDIO)_/, 'runtime', 'infra']
+];
+export function studioStepFailure(errorText, root = process.cwd(), script = M + 'mare-qa-click.json') {
+  const m = String(errorText || '').match(/^step(\d+):.*AssistantCommand:\d+:\s*([A-Z][A-Z0-9_]{3,80})(?::([^\s]{0,60}))?/);
+  if (!m) return null;
+  const step = Number(m[1]), marker = m[2];
+  const [, category, kind] = STEP_CATEGORY.find(([re]) => re.test(marker)) || [null, 'game', 'error'];
+  const out = { step, marker, value: m[3] || '', category, kind, script, qaAssert: '', sourceFile: '', sourceLine: 0, sourceFunction: '' };
+  let code = '';
+  try { code = String(JSON.parse(fs.readFileSync(path.join(root, script), 'utf8'))[step]?.code || ''); } catch { return out; }
+  const lines = code.split('\n');
+  const at = lines.findIndex(l => l.includes('"' + marker) || l.includes("'" + marker));
+  if (at < 0) return out;
+  out.qaAssert = lines[at].trim().slice(0, 300);
+  // require(...WaitForChild("Pose")) 로 받은 지역 변수 → 모듈 이름
+  const modules = {};
+  for (const r of code.matchAll(/local\s+([A-Za-z_]\w*)\s*=\s*require\([^\n]*WaitForChild\(["']([A-Za-z_]\w*)["']\)\s*\)/g)) modules[r[1]] = r[2];
+  let call = null;
+  for (let i = at; i >= 0 && !call; i--) {
+    const calls = [...lines[i].matchAll(/\b([A-Za-z_]\w*)\.([A-Za-z_]\w*)\s*\(/g)].filter(c => modules[c[1]]);
+    if (calls.length) call = calls[calls.length - 1];
+  }
+  if (!call) return out;
+  const mod = modules[call[1]], fn = call[2];
+  const game = script.split('/')[1];
+  const find = dir => {
+    let hit = '';
+    try {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (hit) break;
+        const f = path.join(dir, e.name);
+        if (e.isDirectory()) hit = find(f);
+        else if (e.name === mod + '.luau') hit = f;
+      }
+    } catch {}
+    return hit;
+  };
+  const file = find(path.join(root, 'roblox-games', game, 'src'));
+  if (!file) return out;
+  const src = fs.readFileSync(file, 'utf8').split('\n');
+  const line = src.findIndex(l => new RegExp('^\\s*function\\s+' + mod + '[.:]' + fn + '\\s*\\(').test(l));
+  out.sourceFile = path.relative(root, file).replace(/\\/g, '/');
+  out.sourceLine = line >= 0 ? line + 1 : 1;
+  out.sourceFunction = mod + '.' + fn;
+  return out;
+}
+
 // ---- 신호 읽기: Studio report.json 의 HEALTH_* 줄을 구조로 바꾼다 -----------------------------
-export function parseReport(report) {
+export function parseReport(report, root = process.cwd()) {
   const s = { ok: false, err: 0, errFirst: '', assetFail: 0, assetTotal: 0, failedIds: [], mobs: null, mobHp: null, parts: null, cardIssues: [], cardErr: 0, ui: {}, light: null, aborted: false, captured: 0, studioErrors: [] };
   if (!report || typeof report !== 'object') return s;
   s.aborted = !!report.summary?.abortedEarly;
   s.captured = Number(report.summary?.capturedFrames || 0);
   s.studioErrors = (report.errors || []).map(e => String(e).slice(0, 200)).slice(0, 5);
+  // [단계 단언] 잘리기 전 원문으로 실패 단계·마커·책임 함수를 찾는다.
+  s.stepFailure = studioStepFailure(String((report.errors || [])[0] || ''), root);
   // [실물 Studio] HEALTH_* 로그가 없는 241단계 점검도 콘솔 오류를 작업으로 인식한다.
   const capturedConsole = Array.isArray(report.consoleCapture?.errors)
     ? report.consoleCapture.errors.filter(e => e?.type === 'studio-console-error' && String(e.signature || '').trim())
@@ -132,9 +190,21 @@ export function parseReport(report) {
 const FALLBACK_GROUP = { background: ['background'], combat: ['combat'], ui: ['ui'] };
 export function findingsFrom(game, s) {
   const f = [];
-  if (s.aborted || (!s.ok && s.captured === 0 && s.studioErrors.length))
+  // [단계 단언 중단] 단언 실패로 멈춘 회차는 Studio 연결 불가가 아니라 책임 함수 작업이다.
+  const sf = s.stepFailure;
+  const stepAssert = !!(sf && sf.sourceFile && (sf.kind === 'error' || sf.kind === 'ui'));
+  if (!stepAssert && (s.aborted || (!s.ok && s.captured === 0 && s.studioErrors.length)))
     f.push({ id: 'studio-unreachable', kind: 'infra', task: 'health', text: 'Studio 점검이 중간에 멈춤: ' + (s.studioErrors[0] || '원인 불명') });
   if (s.err > 0) f.push({ id: 'console-errors', kind: 'error', task: 'health', text: `콘솔 오류 ${s.err}건. 첫 오류: ${s.errFirst}` });
+  // [단계 단언 → 책임 함수] 코드로 고칠 수 있는 분류(모션·NPC·UI·게임)만 두뇌 작업으로 보낸다.
+  // 자산·Studio 실행 문제는 기존대로 infra/asset 지시서로 남긴다(코드 변경으로 해결하지 않음).
+  if (stepAssert) {
+    f.push({ id: 'studio-step-' + sf.marker.toLowerCase().replace(/_/g, '-'), kind: sf.kind, task: 'health',
+      sourceFile: sf.sourceFile, sourceLine: sf.sourceLine, category: sf.category,
+      text: `Studio 검사 ${sf.step}단계 실패 ${sf.marker}${sf.value ? ':' + sf.value : ''} (${sf.category}). ` +
+        `검사 단언: ${sf.qaAssert}. 단언 직전 호출한 게임 함수: ${sf.sourceFunction} (${sf.sourceFile}:${sf.sourceLine}). ` +
+        '게임 함수의 실제 동작이 틀린 경우에만 고친다. 검사 측정 시점·위상 문제로 보이면 수정하지 않는다(cannot fix).' });
+  } else
   // [0건 방지] 외부 AI로 수리할 수 없는 Studio 실행 실패도 기존 점검 복구 지시서로 보존한다.
   if (!s.ok && !s.aborted && s.studioErrors.length && s.captured > 0)
     f.push({ id: 'studio-qa-incomplete', kind: 'infra', task: 'health',
@@ -236,7 +306,7 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     const found = findingsFrom(game, s);
     // 새 지시서 등록(같은 지문은 한 번만, 해결되면 사라짐)
     const now_ids = new Set(found.map(x => x.fingerprint));
-    for (const x of found) if (!out.orders[x.fingerprint]) out.orders[x.fingerprint] = { ...x, firstAt: now, lastAt: now, seen: 1 }; else { out.orders[x.fingerprint].lastAt = now; out.orders[x.fingerprint].seen++; out.orders[x.fingerprint].text = x.text; }
+    for (const x of found) if (!out.orders[x.fingerprint]) out.orders[x.fingerprint] = { ...x, firstAt: now, lastAt: now, seen: 1 }; else { out.orders[x.fingerprint].lastAt = now; out.orders[x.fingerprint].seen++; out.orders[x.fingerprint].text = x.text; if (x.sourceFile) { out.orders[x.fingerprint].sourceFile = x.sourceFile; out.orders[x.fingerprint].sourceLine = x.sourceLine; } }
     // [성공 학습] 실패·중단·사진 없는 결과는 이전 오류를 해결한 근거가 아니다.
     const report = reports[game] || {};
     const summary = report.summary || {};
@@ -305,7 +375,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`선택: ${p.game} / ${p.area}`);
     if (run) {
       const r = spawnSync('gh', dispatchPlan(p), { encoding: 'utf8' });
-      if (r.status === 0) ledger = markDispatched(ledger, p, decisionAt, heads[p.game] || ''); else console.log('dispatch 실패:', (r.stderr || '').slice(0, 200));
+      if (r.status === 0) {
+        ledger = markDispatched(ledger, p, decisionAt, heads[p.game] || '');
+        console.log('AUTOPILOT_STUDIO_DISPATCH=PASS game=' + p.game + ' script=' + GAMES[p.game].scripts[p.kind]);
+      } else {
+        console.error('AUTOPILOT_STUDIO_DISPATCH=FAIL status=' + r.status + ' error=' + (r.stderr || r.error?.message || 'unknown').slice(0, 400));
+        process.exitCode = 1;
+      }
     }
   }
   // [상태] 같은 원장에 마지막 판단 시각을 보존한다. 게임 세이브 및 기존 키는 변경하지 않는다.

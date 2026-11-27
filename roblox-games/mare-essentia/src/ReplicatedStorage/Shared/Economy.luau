@@ -15,8 +15,10 @@
 local Data = require(script.Parent.Ports)
 local Chains = require(script.Parent.ProductionChains)
 local Regions = require(script.Parent.Regions)
+local Nations = require(script.Parent.Nations)
 
 local E = {}
+E.Nations = Nations -- 서버가 국가 요약을 부를 때 쓴다
 
 E.START_YEAR_HINT = 1650
 E.TECH_FIELDS = { "agri", "craft", "commerce", "sea", "medicine", "gov" }
@@ -535,6 +537,8 @@ function E.newWorld(opts)
 	for _, h in ipairs(E.History) do
 		if h.year <= w.startYear and w.startYear < h.year + h.years then E.addShock(w, E.shockFromHistory(h, (h.year + h.years - w.startYear) * 365)); w.fired[h.id] = true end
 	end
+	-- [국가 시뮬] 국가별 지도자·정치 체제. 자체 해시 난수만 쓰고 이 단계에서는 경제 수치에 영향을 주지 않는다.
+	w.nations = Nations.init(w)
 	return w
 end
 
@@ -800,6 +804,8 @@ function E.step(w)
 			end
 		end
 	end
+	-- 30일마다 국가 지도자·정치·외교를 갱신한다 (판단과 기록만, 경제 수치 불변)
+	Nations.step(w)
 end
 
 -- 마을 하루치 문명·제도: 세금·투자·안정도·기술·부문별 GDP·봉기
@@ -919,6 +925,7 @@ function E.snapshot(w)
 	local snap = {
 		schema = E.WORLD_SCHEMA, seed = w.seed, day = w.day, startYear = w.startYear,
 		cycle = w.cycle, shocks = w.shocks, fired = w.fired, towns = {},
+		nations = Nations.snapshot(w.nations),
 	}
 	for _, id in ipairs(w.order) do
 		local t = w.towns[id]
@@ -958,6 +965,11 @@ function E.restoreWorld(snap)
 	if type(snap.fired) == "table" then
 		for _, h in ipairs(E.History) do if snap.fired[h.id] == true then w.fired[h.id] = true end end
 	end
+	-- 국가 시뮬 복원 (이전 스냅샷에는 없으므로 새로 시작한 상태로 이어간다)
+	if type(snap.nations) == "table" then
+		Nations.restore(w, snap.nations)
+	end
+	if w.nations then w.nations.day = w.day end
 	if type(snap.shocks) == "table" then
 		w.shocks = {}
 		for i, shock in ipairs(snap.shocks) do

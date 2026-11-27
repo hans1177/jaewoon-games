@@ -724,6 +724,7 @@ test('central contract requires same thumbnail source for Roblox and homepage',(
   assert.equal(contract.canonicalImageAuthority.duplicateIndependentRobloxAndHomepageArtForbidden,true);
   assert.equal(contract.robloxOpenCloud.verifiedUniverseOnly,true);
   assert.equal(contract.robloxOpenCloud.failClosedWhenScopeMissing,true);
-  assert.equal(architecture.release,'UNVERIFIED_OR_MISSING_POLICY_MUST_NOT_PASS');
+  assert.equal(architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate.failClosed,true);
+  assert.equal(architecture.releaseExposureLifecycle.robloxExternalPublicReleaseHardGate.explicitExternalPublicationEvidenceRequiredForPublicRelease,true);
   assert.equal(security.defaultTrust,'DENY_OR_QUARANTINE_UNTIL_VERIFIED');
 });

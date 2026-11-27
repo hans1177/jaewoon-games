@@ -81,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        role: [planning, development, qa, graphics, balance]
+        role: [planning, graphics, development, qa, audio]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -117,7 +117,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for role in planning development qa graphics balance; do test -s ".company-revote-output/$role.json"; done
+          for role in planning graphics development qa audio; do test -s ".company-revote-output/$role.json"; done
           echo 'DEPARTMENT_REVOTES=5/5'
       - name: Director final revote
         env:
@@ -157,7 +157,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for role in planning development qa graphics balance director; do test -s ".company-revote-output/$role.json"; done
+          for role in planning graphics development qa audio director; do test -s ".company-revote-output/$role.json"; done
           dest="company-revotes/$GAME_ID/$REQUEST_ID"
           mkdir -p "$dest"
           cp .company-revote-output/*.json "$dest/"

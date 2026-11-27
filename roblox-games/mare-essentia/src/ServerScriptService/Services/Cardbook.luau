@@ -26,11 +26,20 @@ return function(D, S)
 	-- [지식카드 보상] 일반 지식 카드는 전투 카드 획득과 함께 도감 등록한다.
 	-- 선행 학자 보고가 필요한 문헌·비교 연구는 전투 카드 보상만 유지하고
 	-- 기존 StudyKnowledgeCard에서 직접 연구한 경우에만 도감에 등록한다.
-	local function markDiscovered(state, id)
+	local function markDiscovered(state, id, source, questId)
 		local d = id and (D.BoardingCards.Units[id] or D.BoardingCards.Specials[id])
 		local knowledge = id and D.Cards.ById[id]
 		if d and d.knowledge and state.discovered and not (knowledge and knowledge.research and knowledge.research.reported) then
-			state.discovered[id] = true
+			if not state.discovered[id] then
+				state.discovered[id] = true
+				-- [개인 백과] 카드게임 경로는 기존 발견 서비스의 보상을 다시 지급하지 않는다.
+				state.cardOrigins = state.cardOrigins or {}
+				state.cardOrigins[id] = {
+					portId = state.portId, day = state.day,
+					method = if source == "quest" and questId then "quest" else "card",
+					questId = if source == "quest" then questId else nil,
+				}
+			end
 		end
 	end
 
@@ -96,11 +105,11 @@ return function(D, S)
 	end
 
 	-- 새 카드 보상. 안내 문구를 msgs 에 붙인다.
-	function C.reward(state, source, msgs, rng, field)
+	function C.reward(state, source, msgs, rng, field, questId)
 		local book = C.get(state)
 		local r = rng or (state.rng) or math.random
 		local id, text = CB.drop(book, source, r, field)
-		markDiscovered(state, id)
+		markDiscovered(state, id, source, questId)
 		if msgs then table.insert(msgs, text) end
 		return text
 	end
@@ -129,7 +138,7 @@ return function(D, S)
 		if not i then return false, "잘못된 요청" end
 		local book = C.get(state)
 		local ok, msg = CB.choose(book, math.floor(i))
-		if ok then markDiscovered(state, book.lastGranted) end
+		if ok then markDiscovered(state, book.lastGranted, "card") end
 		return ok, msg
 	end
 
@@ -137,7 +146,7 @@ return function(D, S)
 	local PRACTICE_SEED = 51 -- 기본 덱으로 이길 수 있는 것을 확인한 시드
 	function C.practiceBook(state)
 		local faction = D.BoardingCards.factionOf(state.nationId)
-		return { ids = CB.deckIds(CB.new(faction), faction), tier = {}, bonus = {}, faction = faction }
+		return { ids = CB.deckIds(CB.new(faction), faction), tier = {}, bonus = {}, faction = faction, practice = true }
 	end
 
 	function handlers.CardPractice(state, p)
@@ -156,7 +165,9 @@ return function(D, S)
 	-- 주점 카드 대결: 내 덱 vs 상대 덱. 시드는 서버가 정하고, 승패는 행동 기록을 서버가 다시 돌려 확인한다.
 	-- 하루 3승까지 카드 보상, 그 뒤엔 코인 조금.
 	local DUEL_CARD_WINS = 3
-	function handlers.CardDuelStart(state, _p, ctx)
+	function handlers.CardDuelStart(state, p, ctx)
+		-- [이야기 카드 대결] duel_leader 퀘스트를 지정하면 그 지도자 덱이 상대가 된다.
+		C.get(state).duelFoe = D.Quests.Kit.duelFoe(D, state, type(p) == "table" and p.questId or nil)
 		local book = C.get(state)
 		book.duelSeed = math.floor(((ctx and ctx.rng) or math.random)() * 1000000) + 1
 		return true, ""
@@ -169,10 +180,15 @@ return function(D, S)
 		if not seed or type(actions) ~= "table" or #actions > 200 then return false, "진행 중인 카드 대결이 없어요" end
 		book.duelSeed = nil
 		local B = D.BoardingCards
-		local r = B.replay("boarding", seed, { deckCards = S.Battle.deckCache[state], faction = S.Battle.deckFaction[state], book = C.deckSpec(state) }, {}, actions)
+		local foe = book.duelFoe
+		book.duelFoe = nil
+		local r = B.replay("boarding", seed, { deckCards = S.Battle.deckCache[state], faction = S.Battle.deckFaction[state], book = C.deckSpec(state) }, foe and { faction = foe.faction, leader = foe.leader } or {}, actions)
 		if not r then return false, "카드 기록이 규칙에 맞지 않아요" end
 		if r.winner ~= "me" then
 			return false, if r.winner == "foe" then "졌어요. 덱을 고쳐서 다시 도전!" else "비겼어요"
+		end
+		if foe then
+			D.Quests.Kit.recordDuelWin(state, foe.leader)
 		end
 		local day = math.floor(os.time() / 86400)
 		if book.duelDay ~= day then

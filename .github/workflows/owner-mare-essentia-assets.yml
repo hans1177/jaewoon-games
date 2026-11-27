@@ -1,8 +1,8 @@
 # 파일명: .github/workflows/owner-mare-essentia-assets.yml
 # Mare Essentia: CC0 모델과 CC BY 3.0 메뉴 그림을 기존 Open Cloud 등록 통로로 등록한다.
-# main 자산 변경 또는 수동 실행 시 동작하며 게임 게시 기본값은 꺼져 있다.
+# main 자산 변경·정기·수동 등록. 정기 실행은 검증된 등록 변경이 실제 main에 반영될 때만 기존 게시기로 연결한다.
 name: Owner Mare Essentia Register Assets
-run-name: Owner Mare Essentia assets · ${{ github.sha }}
+run-name: Owner Mare Essentia assets · ${{ github.sha }}${{ (inputs.scheduled_recovery == true || github.event_name == 'repository_dispatch' || github.event_name == 'workflow_run') && ' · periodic' || '' }}
 
 on:
   push:
@@ -12,12 +12,24 @@ on:
       - 'roblox-games/mare-essentia/assets/**'
       - 'roblox-games/mare-essentia/assets-wanted.seed.json'
       - 'tools/devloop/assets_wanted.py'
+      - 'tools/vibe_mesh_audit.py'
+      - 'tools/devloop/register_asset.py'
       - 'qa/company-roblox-dedicated-experience.test.mjs'
       - 'tools/mare-essentia-upload-assets.mjs'
+      - 'tools/mare-essentia-character-finish.mjs'
       - 'tools/mare-essentia-ship-v5.py'
-  # [자체 연습] 기존 무료 자산 등록 절차에서 하루 한 번 누락된 3D 원본만 재검사한다.
+  # [드롭박스 이벤트] 인증된 외부 수신기가 전송하는 알림만 기존 등록기로 연결한다.
+  # 알림의 파일명·URL·승인값은 신뢰하지 않고 main의 검수 대기열과 원본 해시만 사용한다.
+  repository_dispatch:
+    types: [mare-dropbox-upload]
+  # 후보 검사 완료 시 기존 병합 책임을 재실행한다. 다른 PR 및 포크는 제외한다.
+  workflow_run:
+    workflows: ['All Games Development Sync', 'Vibe QA', 'Devloop Gates (Mare Essentia)']
+    types: [completed]
+    branches: ['mare-dropbox-card-*']
+  # [동물 원본] 5분마다 동물·항구·해전·지상전 원본을 기존 절차에서 찾는다.
   schedule:
-    - cron: '20 19 * * *'
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch:
     inputs:
       universe_id:
@@ -35,6 +47,21 @@ on:
         type: boolean
         required: false
         default: false
+      upgrade_cargo_quality:
+        description: '검증된 3D 교역품 8종을 기존 원본 등록 경로로 재생성'
+        type: boolean
+        required: false
+        default: false
+      animal_preview:
+        description: '기존 무료 동물 원본 렌더링 검사 즉시 실행 (승인 아님)'
+        type: boolean
+        required: false
+        default: false
+      scheduled_recovery:
+        description: '기존 무료 연습 체인의 정기 누락 복구 (정기 모델 검사와 동일)'
+        type: boolean
+        required: false
+        default: false
       publish_after_register:
         description: '자산 등록 확인 후 게시까지 할지 (기본: 게시 안 함)'
         type: boolean
@@ -44,6 +71,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 # [정체 복구] 평소에는 중단 없이 순차 등록한다. 저장소 체크아웃이 멈춘 경우만
 # 명시된 복구 커밋에서 기존 실행을 종료하고 최신 메인의 동일 정식 등록기로 재개한다.
@@ -53,8 +81,12 @@ concurrency:
 
 jobs:
   register:
+    if: ${{ (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_repository.full_name == github.repository && startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-card-'))) && (inputs.scheduled_recovery != true || (inputs.studio_regrant != true && inputs.register_v5 != true && inputs.upgrade_cargo_quality != true && inputs.publish_after_register != true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    env:
+      MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}
+      MARE_ANIMAL_PREVIEW: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true || (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-animal-preview]')) || (github.event_name == 'workflow_dispatch' && inputs.animal_preview == true && inputs.studio_regrant != true) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,6 +105,454 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+
+      # [드롭박스 원화 인입] 검수 완료된 원본만 기존 승인표와 함께 후보 브랜치에 보관한다.
+      # 활성 승인·main·기존 Roblox 번호는 직접 바꾸지 않는다. 기존 PR 검사를 통과해야 등록한다.
+      - name: Stage reviewed Dropbox original in existing card transfer lane
+        id: dropbox_stage
+        if: ${{ inputs.studio_regrant != true }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 후보가 없으면 외부 인증 및 네트워크 접근을 하지 않는다.
+          python3 - <<'PYDROPBOX'
+          import base64, hashlib, json, os, pathlib, re, struct, subprocess
+          import urllib.request, urllib.parse, urllib.error
+          root = pathlib.Path('roblox-games/mare-essentia')
+          manifest = root/'assets/APPROVED_IMAGES.json'
+          doc = json.loads(manifest.read_text(encoding='utf-8'))
+          pending = doc.get('dropboxPending', {})
+          if not pending:
+              print('CARD_DROPBOX_NO_REVIEWED_CANDIDATE')
+              raise SystemExit(0)
+          if not isinstance(pending, dict):
+              raise SystemExit('CARD_DROPBOX_PENDING_INVALID')
+          # 중앙 검증기는 기존 책임 파일을 그대로 실행한다.
+          safe_env = {k:v for k,v in os.environ.items() if not k.startswith('DROPBOX_')}
+          subprocess.run(['node','tools/company-shared-context.mjs'], env=safe_env, check=True)
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          opener = urllib.request.build_opener(NoRedirect())
+          def request(url, headers, data, limit):
+              try:
+                  with opener.open(urllib.request.Request(url, data=data, headers=headers, method='POST'), timeout=45) as response:
+                      result = response.read(limit+1)
+                  if len(result)>limit:
+                      raise SystemExit('CARD_DROPBOX_RESPONSE_LIMIT')
+                  return result
+              except urllib.error.HTTPError as exc:
+                  raise SystemExit('CARD_DROPBOX_HTTP_'+str(exc.code)) from None
+              except (urllib.error.URLError, TimeoutError):
+                  raise SystemExit('CARD_DROPBOX_NETWORK_ERROR') from None
+          def gh(endpoint, payload):
+              result = subprocess.run(['gh','api','--method','POST','repos/'+os.environ['GITHUB_REPOSITORY']+'/'+endpoint,'--input','-','--jq','.sha // .object.sha // empty'],input=json.dumps(payload),text=True,capture_output=True,env=safe_env)
+              if result.returncode:
+                  raise SystemExit('CARD_DROPBOX_GIT_OBJECT_WRITE_FAILED:'+endpoint)
+              return result.stdout.strip()
+          registry = json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          checks = ['subjectMatch','historicalContext','houseStyle','singleFinishedScene','noPartsOrSprites','robloxSafety','commercialRights']
+          for card, candidate in sorted(pending.items()):
+              match = re.fullmatch(r'CardArt/((?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])|ui_[a-z0-9_]+)',card)
+              if not match:
+                  raise SystemExit('CARD_DROPBOX_ID_INVALID')
+              name = match.group(1)
+              ui = name.startswith('ui_')
+              relative = 'assets/cardart/'+name+'.png' if ui else 'assets/cardart/src/'+name+'-original.png'
+              review = candidate['review']
+              digest = review['sourceSha256']
+              previous = registry.get(card,{})
+              if not re.fullmatch(r'[a-f0-9]{64}',digest) or review.get('sourceFile')!=relative or review.get('sourceType')!='IMAGE_GENERATION_MODEL' or review.get('reviewer')!='VIBE_AGENT_VISUAL_REVIEW' or review.get('license')!='PROJECT_ORIGINAL_ART' or not re.fullmatch(r'\d{4}-\d{2}-\d{2}',review.get('reviewedAt','')) or not all(review.get(k) is True for k in checks):
+                  raise SystemExit('CARD_DROPBOX_REVIEW_INVALID:'+card)
+              if doc['approved'].get(card)==digest:
+                  print('CARD_DROPBOX_ALREADY_APPROVED',card)
+                  continue
+              if previous.get('sourceSha256')!=review.get('replacesSha256') or doc['approved'].get(card)!=review.get('replacesSha256') or str(previous.get('assetId'))!=str(review.get('replacesAssetId')) or previous.get('assetType')!='Image' or previous.get('usePermissionGranted') is not True:
+                  raise SystemExit('CARD_DROPBOX_REPLACEMENT_STALE:'+card)
+              target = root/'assets/cardart'/ (name+'.png')
+              old_raw = target.read_bytes()
+              if hashlib.sha256(old_raw).hexdigest()!=review['replacesSha256']:
+                  raise SystemExit('CARD_DROPBOX_REGISTERED_BYTES_CHANGED:'+card)
+              # 화면 원화는 실제 등록 중인 256색 PNG의 교체만 허용한다.
+              if ui and (previous.get('source')!=str(target) or old_raw[:8]!=b'\x89PNG\r\n\x1a\n' or len(old_raw)<26 or old_raw[12:16]!=b'IHDR' or old_raw[25]!=3):
+                  raise SystemExit('CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:'+card)
+              branch = 'mare-dropbox-card-'+name+'-'+digest[:12]
+              remote = subprocess.run(['git','ls-remote','--exit-code','--heads','origin','refs/heads/'+branch],capture_output=True,env=safe_env)
+              if remote.returncode == 0:
+                  print('CARD_DROPBOX_CANDIDATE_EXISTS',card,branch)
+                  with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('branch='+branch+'\n')
+                  break
+              if remote.returncode != 2:
+                  raise SystemExit('CARD_DROPBOX_REF_CHECK_FAILED')
+              keys = [os.environ.get(k,'') for k in ('DROPBOX_APP_KEY','DROPBOX_APP_SECRET','DROPBOX_REFRESH_TOKEN')]
+              if not all(keys):
+                  raise SystemExit('CARD_DROPBOX_AUTH_NOT_CONFIGURED')
+              basic = base64.b64encode((keys[0]+':'+keys[1]).encode()).decode()
+              grant = urllib.parse.urlencode({'grant_type':'refresh_token','refresh_token':keys[2]}).encode()
+              token = json.loads(request('https://api.dropboxapi.com/oauth2/token',{'Authorization':'Basic '+basic,'Content-Type':'application/x-www-form-urlencoded'},grant,65536)).get('access_token')
+              if not token:
+                  raise SystemExit('CARD_DROPBOX_ACCESS_TOKEN_MISSING')
+              arg = json.dumps({'path':'/Vibe2Transfer/'+name+'-original.png'})
+              raw = request('https://content.dropboxapi.com/2/files/download',{'Authorization':'Bearer '+token,'Dropbox-API-Arg':arg},None,20*1024*1024)
+              if len(raw)!=candidate['bytes'] or len(raw)<50000 or hashlib.sha256(raw).hexdigest()!=digest:
+                  raise SystemExit('CARD_DROPBOX_ORIGINAL_HASH_OR_SIZE_MISMATCH:'+card)
+              if raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6):
+                  raise SystemExit('CARD_DROPBOX_RGB_PNG_REQUIRED:'+card)
+              width,height=struct.unpack('>II',raw[16:24])
+              if (width,height)!=(candidate['width'],candidate['height']) or width>4096 or height>4096:
+                  raise SystemExit('CARD_DROPBOX_DIMENSIONS_INVALID:'+card)
+              if ui:
+                  if min(width,height)<128:
+                      raise SystemExit('CARD_DROPBOX_UI_DIMENSIONS_INVALID:'+card)
+              elif width<1049 or height<1499 or abs(width*10-height*7)>height*0.05:
+                  raise SystemExit('CARD_DROPBOX_DIMENSIONS_INVALID:'+card)
+              # SHA로 고정된 실물과 승인 변경만 같은 후보 커밋에 저장한다.
+              blob = gh('git/blobs',{'content':base64.b64encode(raw).decode(),'encoding':'base64'})
+              if blob!=hashlib.sha1(('blob '+str(len(raw))+'\0').encode()+raw).hexdigest():
+                  raise SystemExit('CARD_DROPBOX_GIT_BLOB_MISMATCH')
+              doc['approved'][card]=digest
+              if not ui:
+                  doc['modelOriginals'][card]=review
+              del doc['dropboxPending'][card]
+              if not doc['dropboxPending']:
+                  del doc['dropboxPending']
+              base = subprocess.check_output(['git','rev-parse','HEAD'],text=True,env=safe_env).strip()
+              tree = subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True,env=safe_env).strip()
+              candidate_tree=gh('git/trees',{'base_tree':tree,'tree':[
+                  {'path':str(root/relative),'mode':'100644','type':'blob','sha':blob},
+                  {'path':str(manifest),'mode':'100644','type':'blob','content':json.dumps(doc,ensure_ascii=False,indent=2)+'\n'}]})
+              commit=gh('git/commits',{'message':'Mare Essentia: verified Dropbox original '+name,'tree':candidate_tree,'parents':[base]})
+              ref=gh('git/refs',{'ref':'refs/heads/'+branch,'sha':commit})
+              if ref!=commit:
+                  raise SystemExit('CARD_DROPBOX_REF_MISMATCH')
+              print('CARD_DROPBOX_CANDIDATE_READY',card,branch,commit,digest)
+              with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('branch='+branch+'\n')
+              break
+          PYDROPBOX
+
+
+      # [원본 후보 승인] 기존 GitHub PR/검사 통로를 사용한다. Dropbox 인증 변수는 전달하지 않는다.
+      - name: Open reviewed Dropbox candidate PR and merge only after checks
+        if: ${{ steps.dropbox_stage.outputs.branch != '' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CARD_BRANCH: ${{ steps.dropbox_stage.outputs.branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CARD_BRANCH" =~ ^mare-dropbox-card-((eu|ea|me|nw|af|sa)_[0-9]{2}|ui_[a-z0-9_]+)-[a-f0-9]{12}$ ]]
+          card="$(printf '%s' "$CARD_BRANCH" | cut -d- -f4)"
+          pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --base main --head "$CARD_BRANCH" --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr" ]]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$CARD_BRANCH" --title "Mare Essentia: verified Dropbox original $card" --body "Reviewed original and approval, existing registration retained until successful replacement."
+            pr="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --base main --head "$CARD_BRANCH" --json number --jq '.[0].number // empty')"
+          fi
+          [[ "$pr" =~ ^[0-9]+$ ]]
+          head="$(gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq .headRefOid)"
+          [[ "$head" =~ ^[a-f0-9]{40}$ ]]
+          export CARD_PR="$pr" CARD_HEAD="$head" CARD_NAME="$card"
+          python3 - <<'PYPR'
+          import base64,hashlib,json,os,subprocess
+          repo=os.environ['GITHUB_REPOSITORY']
+          def api(path):
+              return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          pr=api('repos/'+repo+'/pulls/'+os.environ['CARD_PR'])
+          head=os.environ['CARD_HEAD']
+          if pr['head']['sha']!=head or pr['base']['ref']!='main' or pr['head']['repo']['full_name']!=repo:
+              raise SystemExit('CARD_DROPBOX_PR_REF_INVALID')
+          files=api('repos/'+repo+'/pulls/'+os.environ['CARD_PR']+'/files?per_page=100')
+          root='roblox-games/mare-essentia/assets/'
+          card='CardArt/'+os.environ['CARD_NAME']
+          manifest=root+'APPROVED_IMAGES.json'
+          name=os.environ['CARD_NAME']
+          ui=name.startswith('ui_')
+          original=root+'cardart/'+name+'.png' if ui else root+'cardart/src/'+name+'-original.png'
+          if pr['changed_files']!=2 or {f['filename'] for f in files}!={manifest,original}:
+              raise SystemExit('CARD_DROPBOX_PR_FILES_INVALID')
+          def contents(path,ref):
+              row=api('repos/'+repo+'/contents/'+path+'?ref='+ref)
+              blob=api('repos/'+repo+'/git/blobs/'+row['sha'])
+              return base64.b64decode(blob['content'])
+          current=json.loads(contents(manifest,'main'))
+          candidate=current.get('dropboxPending',{}).get(card)
+          if not candidate:
+              raise SystemExit('CARD_DROPBOX_PENDING_REVIEW_CHANGED')
+          review=candidate['review']
+          if ui:
+              old=json.loads(contents('roblox-games/mare-essentia/assets-registered.json','main'))['assets'].get(card,{})
+              old_raw=contents(original,'main')
+              if old.get('source')!=original or old.get('assetType')!='Image' or old.get('usePermissionGranted') is not True or old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or current['approved'].get(card)!=review.get('replacesSha256') or hashlib.sha256(old_raw).hexdigest()!=review.get('replacesSha256') or len(old_raw)<26 or old_raw[:8]!=b'\x89PNG\r\n\x1a\n' or old_raw[25]!=3:
+                  raise SystemExit('CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:'+card)
+          current['approved'][card]=review['sourceSha256']
+          if not ui:
+              current['modelOriginals'][card]=review
+          del current['dropboxPending'][card]
+          if not current['dropboxPending']:
+              del current['dropboxPending']
+          if json.loads(contents(manifest,head))!=current:
+              raise SystemExit('CARD_DROPBOX_PR_APPROVAL_DRIFT')
+          raw=contents(original,head)
+          if len(raw)!=candidate['bytes'] or hashlib.sha256(raw).hexdigest()!=review['sourceSha256']:
+              raise SystemExit('CARD_DROPBOX_PR_ORIGINAL_MISMATCH')
+          if ui and (len(raw)<33 or raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6) or int.from_bytes(raw[16:20],'big')!=candidate['width'] or int.from_bytes(raw[20:24],'big')!=candidate['height'] or min(candidate['width'],candidate['height'])<128 or max(candidate['width'],candidate['height'])>4096):
+              raise SystemExit('CARD_DROPBOX_UI_PR_PNG_INVALID:'+card)
+          # 기본 GITHUB_TOKEN이 생성한 PR은 pull_request 검사를 자동 시작하지 않을 수 있다.
+          # 기존 3개 검사를 정확한 후보 SHA에서 실행하며 필수 PR 보호 검사는 아래에서 그대로 확인한다.
+          branch=os.environ['CARD_BRANCH']
+          if pr['head']['ref']!=branch or api('repos/'+repo+'/git/ref/heads/'+branch)['object']['sha']!=head:
+              raise SystemExit('CARD_DROPBOX_PR_HEAD_CHANGED')
+          runs=api('repos/'+repo+'/actions/runs?head_sha='+head+'&per_page=100')['workflow_runs']
+          latest={}
+          for row in sorted(runs,key=lambda x:x['id'],reverse=True):
+              if row.get('head_sha')!=head or row.get('head_repository',{}).get('full_name')!=repo or row.get('head_branch')!=branch or row.get('event') not in ('pull_request','workflow_dispatch'):
+                  continue
+              latest.setdefault(row['name'],row)
+          workflows={
+              'All Games Development Sync':('game-development-sync.yml',['-f','game_id=mare-essentia']),
+              'Vibe QA':('vibe-qa.yml',[]),
+              'Devloop Gates (Mare Essentia)':('devloop-gates.yml',[]),
+          }
+          missing=[name for name in workflows if name not in latest]
+          if missing:
+              # 후보 검사 정의가 현재 main과 같은 경우에만 실행한다. 변경된 정의의 실행은 금지한다.
+              for name in missing:
+                  filename,args=workflows[name]
+                  workflow='.github/workflows/'+filename
+                  if contents(workflow,head)!=contents(workflow,'main'):
+                      raise SystemExit('CARD_DROPBOX_QA_DEFINITION_DRIFT:'+filename)
+              for name in missing:
+                  filename,args=workflows[name]
+                  if api('repos/'+repo+'/git/ref/heads/'+branch)['object']['sha']!=head:
+                      raise SystemExit('CARD_DROPBOX_PR_HEAD_CHANGED')
+                  subprocess.run(['gh','workflow','run',filename,'--repo',repo,'--ref',branch,*args],check=True)
+                  print('CARD_DROPBOX_QA_REQUESTED',name,head)
+              raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING')
+          # 병합 후에만 실행되는 두 작업의 정상 skipped만 제외한다. 필수 검사 및 다른 실패는 차단한다.
+          post_merge_only={'Roblox Changed Source Runtime Sync':'.github/workflows/company-roblox-source-drift-sync.yml', 'Vibe2 Merged PR Provenance':'.github/workflows/vibe2-merged-pr-provenance.yml'}
+          for name,run in latest.items():
+              if run['status']=='completed' and run['conclusion']=='success':
+                  continue
+              if name in post_merge_only and run['status']=='completed' and run['conclusion']=='skipped' and run.get('event')=='pull_request' and run.get('path')==post_merge_only[name]:
+                  continue
+              raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING_OR_FAILED:'+name)
+          # 수동 실행 검사도 정확한 head SHA의 실제 GitHub Actions check-run으로 확인한다.
+          required_jobs={
+              'All Games Development Sync':'discover-and-verify',
+              'Vibe QA':'qa',
+              'Devloop Gates (Mare Essentia)':'gates',
+          }
+          checks=api('repos/'+repo+'/commits/'+head+'/check-runs?filter=latest&per_page=100')
+          rows=checks['check_runs']
+          if checks['total_count']!=len(rows):
+              raise SystemExit('CARD_DROPBOX_CHECK_RUNS_INCOMPLETE')
+          for name,job in required_jobs.items():
+              run=latest[name]
+              prefix='https://github.com/'+repo+'/actions/runs/'+str(run['id'])+'/job/'
+              matching=[row for row in rows if row.get('name')==job
+                        and row.get('head_sha')==head and row.get('app',{}).get('slug')=='github-actions'
+                        and str(row.get('details_url','')).startswith(prefix)]
+              if not matching or any(row.get('status')!='completed' or row.get('conclusion')!='success' for row in matching):
+                  raise SystemExit('CARD_DROPBOX_REQUIRED_CHECK_RUN_NOT_VERIFIED:'+name)
+          if any(row.get('status')!='completed' or row.get('conclusion') not in ('success','skipped','neutral') for row in rows):
+              raise SystemExit('CARD_DROPBOX_CHECK_RUN_PENDING_OR_FAILED')
+          print('CARD_DROPBOX_PR_CHECKS_VERIFIED',head)
+          PYPR
+          # --required 필터는 필수 컨텍스트가 없는 PR에서 실제 수동 검사까지 숨길 수 있다.
+          # 위 SHA·실행·job 검증이 성공한 경우에만 정확히 이 메시지를 구분한다.
+          # 그 밖의 실패/대기/API 오류는 차단하고 GitHub 자체 병합 보호는 그대로 적용한다.
+          if ! required_checks="$(gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required 2>&1)"; then
+            printf '%s\n' "$required_checks"
+            if [[ "$required_checks" != "no checks reported on the '$CARD_BRANCH' branch" && "$required_checks" != "no required checks reported on the '$CARD_BRANCH' branch" ]]; then
+              exit 1
+            fi
+            echo "CARD_DROPBOX_REQUIRED_FILTER_EMPTY_EXACT_CHECK_RUNS_VERIFIED=$head"
+          else
+            printf '%s\n' "$required_checks"
+          fi
+          gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"
+          echo "CARD_DROPBOX_PR_MERGED=$pr"
+          # 봇 병합은 push를 일으키지 않을 수 있으므로 최신 main에서 기존 등록기를 재개한다.
+          gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true
+
+      - name: Check reviewed animal originals and rotate missing source search
+        id: animal_practice
+        if: ${{ env.MARE_MODELS_ONLY == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tools/mare-essentia-upload-assets.mjs --animal-source-preflight
+
+      # [원화 등록 복구] 메인에 승인된 실물 원화가 등록표보다 새로우면 정기 실행도 기존 전체 등록기를 사용한다.
+      - name: Select existing full registration for pending approved card originals
+        id: card_recovery
+        if: ${{ inputs.studio_regrant != true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYRECOVERY'
+          import hashlib,json,os,pathlib,re
+          root=pathlib.Path('roblox-games/mare-essentia')
+          doc=json.loads((root/'assets/APPROVED_IMAGES.json').read_text(encoding='utf-8'))
+          registry=json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          # 승인된 화면 PNG도 이전 번호를 보존한 채 동일 등록기로 재시도한다.
+          for card,digest in doc.get('approved',{}).items():
+              if not re.fullmatch(r'CardArt/ui_[a-z0-9_]+',card):
+                  continue
+              old=registry.get(card,{})
+              if not old.get('sourceSha256') or old.get('sourceSha256')==digest or old.get('assetType')!='Image' or old.get('usePermissionGranted') is not True:
+                  continue
+              source=root/'assets/cardart'/(card.split('/')[1]+'.png')
+              if old.get('source')!=str(source) or not source.is_file() or source.stat().st_size>20*1024*1024:
+                  continue
+              raw=source.read_bytes()
+              if len(raw)<33 or raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6) or hashlib.sha256(raw).hexdigest()!=digest:
+                  continue
+              with open(os.environ['GITHUB_ENV'],'a') as out: out.write('MARE_MODELS_ONLY=false\n')
+              with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('pending=true\n')
+              print('CARD_UI_APPROVED_REGISTRATION_RECOVERY',card,digest)
+              break
+          for card,review in doc.get('modelOriginals',{}).items():
+              if not re.fullmatch(r'CardArt/(?:eu|ea|me|nw|af|sa)_[0-9]{2}',card):
+                  continue
+              old=registry.get(card,{})
+              digest=review.get('sourceSha256')
+              if not digest or doc['approved'].get(card)!=digest or old.get('sourceSha256')==digest:
+                  continue
+              if old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or old.get('usePermissionGranted') is not True:
+                  continue
+              name=card.split('/')[1]
+              rel=review.get('sourceFile')
+              if rel not in ('assets/cardart/src/'+name+'-original.png','assets/cardart/src/'+name+'-1400x2000.png'):
+                  continue
+              source=root/rel
+              if not source.is_file() or source.stat().st_size>20*1024*1024:
+                  continue
+              raw=source.read_bytes()
+              if len(raw)<50000 or raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6) or hashlib.sha256(raw).hexdigest()!=digest:
+                  continue
+              with open(os.environ['GITHUB_ENV'],'a') as out: out.write('MARE_MODELS_ONLY=false\n')
+              with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('pending=true\n')
+              print('CARD_APPROVED_REGISTRATION_RECOVERY',card,digest)
+              break
+          PYRECOVERY
+
+      # [풀컬러 원본 인입] 큰 PNG 전송 실패 시 동일 원본의 Base64 분할 파일을 정식 등록 직전에 복원한다.
+      # 로블록스 등록기·이미지 승인 절차는 변경하지 않는다. 원본 SHA 불일치 시 실패한다.
+      - name: Restore full-color originals from verified transfer parts
+        if: ${{ env.MARE_MODELS_ONLY != 'true' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          root='roblox-games/mare-essentia/assets/cardart/src'
+          for id in eu_01 eu_02 eu_03 eu_21 eu_22 eu_23 af_19 af_20; do
+            stage="$root/.transfer/$id"
+            [[ -d "$stage" ]] || continue
+            mapfile -t parts < <(find "$stage" -maxdepth 1 -type f -name 'part*.b64' | sort)
+            if [[ ${#parts[@]} -eq 0 || ! -f "$stage/sha256" ]]; then
+              echo "::error::CARD_TRANSFER_INCOMPLETE:$id"; exit 1
+            fi
+            expected="$(awk '{print $1}' "$stage/sha256")"
+            approved="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("approved",{}).get("CardArt/"+sys.argv[2],""))' "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json" "$id")"
+            if [[ "$expected" != "$approved" ]]; then
+              echo "CARD_TRANSFER_STALE_APPROVAL_SKIPPED $id $expected $approved"
+              continue
+            fi
+            tmp="$(mktemp)"
+            cat "${parts[@]}" | base64 --decode > "$tmp"
+            actual="$(sha256sum "$tmp" | awk '{print $1}')"
+            if [[ "$actual" != "$expected" ]]; then
+              echo "::error::CARD_TRANSFER_SHA_MISMATCH:$id"; exit 1
+            fi
+            python3 - "$tmp" "$id" <<'PYCARD'
+          import pathlib,struct,sys
+          p=pathlib.Path(sys.argv[1]); b=p.read_bytes(); card=sys.argv[2]
+          if b[:8]!=b'\x89PNG\r\n\x1a\n' or b[12:16]!=b'IHDR' or b[24]!=8 or b[25] not in (2,6):
+              raise SystemExit('CARD_TRANSFER_RGB_PNG_REQUIRED:'+card)
+          w,h=struct.unpack('>II',b[16:24])
+          if w<768 or h<768 or w>4096 or h>4096:
+              raise SystemExit('CARD_TRANSFER_PNG_DIMENSIONS_INVALID:'+card)
+          print('CARD_TRANSFER_VERIFIED',card,w,h,len(b))
+          PYCARD
+            dest="$root/$id-original.png"
+            cp "$tmp" "$dest"
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/contents/$dest?ref=main" --jq .sha 2>/dev/null || true)"
+            if [[ "$current" == "$(git hash-object "$tmp")" ]]; then
+              rm -f "$tmp"
+              echo "CARD_ORIGINAL_ALREADY_VERIFIED $id $actual"
+              continue
+            fi
+            payload="$(mktemp)"
+            python3 - "$dest" "$current" "$payload" <<'PYPAYLOAD'
+          import base64,json,pathlib,sys
+          source,sha,out=sys.argv[1:]
+          body={'message':'Mare Essentia: restore verified full-color original '+pathlib.Path(source).name,
+                'branch':'main','content':base64.b64encode(pathlib.Path(source).read_bytes()).decode('ascii')}
+          if sha: body['sha']=sha
+          pathlib.Path(out).write_text(json.dumps(body),encoding='utf-8')
+          PYPAYLOAD
+            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/$dest" --input "$payload" --silent
+            rm -f "$tmp" "$payload"
+            echo "CARD_ORIGINAL_MAIN_RESTORED $id $actual"
+          done
+
+      # [원화 품질 확인] PNG 색상 종류(헤더 25번째 바이트)를 실제로 검증하고 삭제 대상을 기록한다.
+      - name: Audit 256-color indexed card artwork without altering registered assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          root = pathlib.Path('roblox-games/mare-essentia/assets')
+          registered = json.loads((root.parent / 'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          # 현재 등록 SHA와 일치하는 파일만 실제 등록본 후보로 구분한다.
+          # 보관 원본/대기 파일은 삭제하지 않으며 기존 색상 차단 검사는 별도로 유지한다.
+          registered_by_sha = {}
+          for key, row in registered.items():
+              digest = row.get('sourceSha256')
+              if digest and row.get('assetType') == 'Image':
+                  registered_by_sha.setdefault(digest, []).append(key)
+          count = registered_files = other_files = 0
+          registered_keys = set()
+          for folder in ('cardart', 'portraits', 'inbox', 'inbox-hold', 'icons', 'materials', 'menu', 'goods'):
+              base = root / folder
+              if not base.exists():
+                  continue
+              for path in sorted(base.rglob('*')):
+                  if not path.is_file() or path.suffix.lower() != '.png':
+                      continue
+                  with path.open('rb') as f:
+                      header = f.read(26)
+                      if header[:8] != b'\x89PNG\r\n\x1a\n' or len(header) < 26:
+                          print('ART_PNG_INVALID ' + str(path), flush=True)
+                          continue
+                      if header[25] != 3:
+                          continue
+                      f.seek(0)
+                      keys = sorted(registered_by_sha.get(hashlib.file_digest(f, 'sha256').hexdigest(), []))
+                  count += 1
+                  print('ART_PALETTE256_FOUND ' + str(path), flush=True)
+                  if keys:
+                      registered_files += 1
+                      registered_keys.update(keys)
+                      print('ART_PALETTE256_REGISTERED_SHA_MATCH ' + str(path) + ' ' + ','.join(keys), flush=True)
+                  else:
+                      other_files += 1
+                      print('ART_PALETTE256_OTHER_SOURCE ' + str(path), flush=True)
+          print('ART_PALETTE256_TOTAL=' + str(count), flush=True)
+          print('ART_PALETTE256_REGISTERED_FILES=' + str(registered_files), flush=True)
+          print('ART_PALETTE256_REGISTERED_KEYS=' + str(len(registered_keys)), flush=True)
+          print('ART_PALETTE256_OTHER_FILES=' + str(other_files), flush=True)
+          print('ART_PALETTE256_SCOPE=PNG_INDEXED_HEADER_ONLY_NOT_FULL_COLOR_OR_RUNTIME_AUDIT', flush=True)
+          PY
 
       - name: Practice and verify approved trade goods using existing asset ledger
         id: trade_goods
@@ -139,10 +619,32 @@ jobs:
               subprocess.run([sys.executable, source, *ids[start:start + 6]], check=True)
           PY
 
+      # [교역품 3D 개선] 동일한 원본 등록 작업에서만 8종을 재생성한다. 등록 실패 시 기존 로블록스 번호 유지.
+      - name: Rebuild reviewed cargo 3D geometry on the existing registration path
+        id: cargo_quality
+        if: ${{ (github.event_name == 'push' && contains(github.event.head_commit.message, '[mare-cargo-quality-upgrade]')) || (github.event_name == 'workflow_dispatch' && inputs.upgrade_cargo_quality == true) }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node roblox-games/mare-essentia/tools/make_cargo.mjs --check
+          node roblox-games/mare-essentia/tools/make_cargo.mjs --registered-upgrade
+
+      # [런던 원본] 기존 inbox 등록기가 검사 후 승격하므로 동일 시험 검사를 반복하지 않는다.
+      - name: Validate and stage London source models through canonical asset register
+        id: london_source
+        if: ${{ env.MARE_MODELS_ONLY != 'true' && inputs.studio_regrant != true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Town --prefix=london_ --allow-partial
+          if compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; then
+            python3 tools/devloop/register_asset.py roblox-games/mare-essentia --kind=Terrain --prefix=veg_
+          fi
+
       - name: Upload licensed models and menu icons to Roblox and write AssetIds
         id: asset_registration
-        # 정기 연습은 무료 정적 진단만 수행한다. 신규/변경 승인 자산 업로드는 기존 push·수동 경로.
-        if: ${{ github.event_name != 'schedule' }}
+        # 검수 원본이 존재하는 정기 실행만 기존 정식 업로드 경로를 사용한다.
+        if: ${{ env.MARE_MODELS_ONLY != 'true' || steps.animal_practice.outputs.pending == 'true' }}
         env:
           MARE_UNIVERSE_ID: ${{ inputs.universe_id }}
           # 새 소유 계정(Anyanguy1980) 키만 사용한다. 제재 계정 쿠키는 넘기지 않는다.
@@ -163,6 +665,43 @@ jobs:
             node tools/mare-essentia-upload-assets.mjs "--studio-regrant=$RUNNER_TEMP/mare-studio-report.json"
           else
             node tools/mare-essentia-upload-assets.mjs
+          fi
+          # [지상전 신규 CC0 실물 3종] 로블록스 번호·실제 Universe 사용권·원본 해시 확인 후에만 GitHub에 승격한다.
+          if [[ "$STUDIO_REGRANT" != "true" ]]; then
+            python3 - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('roblox-games/mare-essentia')
+          registry=json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
+          ziphash='fa7974a0d342bfe63c38664ba9f8ec1a4aab8ea25f099bdc56870e33588c4d9d'
+          confirmed=set()
+          for name in (
+              'kenney_rock_largeB', 'kenney_tree_fat', 'kenney_mushroom_red',
+              'kenney_mushroom_redGroup', 'kenney_stump_old', 'kenney_stone_smallFlatA',
+              'kenney_rock_largeD', 'kenney_rock_tallE', 'kenney_rock_smallFlatA',
+              'kenney_stone_largeB', 'kenney_path_stoneCircle', 'kenney_tree_defaultDark',
+              'kenney_tree_pinetallD_detailed', 'kenney_tree_palmShort',
+              'kenney_mushroom_tanGroup', 'kenney_stump_roundDetailed',
+              'kenney_plant_bushTriangle', 'kenney_grass_leafs',
+              'kenney_log_stackLarge', 'kenney_ground_riverCorner',
+              'kenney_ground_pathCorner',
+          ):
+              original=root/'assets'/'terrain'/(name+'.glb')
+              proof=json.loads(pathlib.Path(str(original)+'.license.json').read_text(encoding='utf-8'))
+              row=registry.get('Terrain/'+name) or {}
+              sha=hashlib.sha256(original.read_bytes()).hexdigest()
+              if (proof.get('sourceSha256')!=sha or proof.get('archiveSha256')!=ziphash
+                  or proof.get('license')!='CC0-1.0' or proof.get('author')!='Kenney'
+                  or proof.get('sourcePage')!='https://kenney.nl/assets/nature-kit'
+                  or row.get('sourceSha256')!=sha or row.get('license')!='CC0-1.0'
+                  or row.get('assetType')!='Model' or row.get('usePermissionGranted') is not True
+                  or not str(row.get('assetId','')).isdigit() or int(row.get('assetId',0))<1):
+                  raise SystemExit('MARE_NATURE_ID_RIGHTS_OR_ORIGINAL_INVALID:'+name)
+              confirmed.add(str(row['assetId']))
+              print('MARE_NATURE_ROBLOX_REGISTERED',name,row['assetId'],sha)
+          if len(confirmed)!=21: raise SystemExit('MARE_NATURE_DUPLICATE_ASSET_ID')
+          print('MARE_NATURE_REGISTERED_RIGHTS_VERIFIED=21')
+          print('MARE_NATURE_STUDIO_3D_VISUAL_QA=UNVERIFIED')
+          PY
           fi
           # [36척 V5 등록 확정] 72개가 전부 실제 자산번호와 Universe 사용 권한을 받아야 성공이다.
           if [[ "${{ steps.ship_v5.outcome }}" == "success" ]]; then
@@ -197,19 +736,64 @@ jobs:
 
       - name: Verify external CC0 nau and three coastal merchant hulls with Roblox granted assets
         id: nau_check
-        if: ${{ steps.asset_registration.outcome == 'success' && github.event_name != 'schedule' }}
+        if: ${{ steps.asset_registration.outcome == 'success' }}
         shell: bash
         run: |
           set -euo pipefail
           node --test --test-name-pattern='Mare external CC0 (nau|coastal) original hull and Roblox registration integrity' qa/company-roblox-dedicated-experience.test.mjs
 
-      - name: Refresh asset practice ledger after Roblox registration
-        if: always()
+      # [동물 원본 시각 증거] 기존 무료 Blender 검사기를 같은 등록 흐름에서 사용한다.
+      - name: Prepare free Blender source preview
+        if: ${{ always() && env.MARE_ANIMAL_PREVIEW == 'true' }}
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods
-          if [[ "${{ github.event_name }}" != "schedule" ]]; then
+          # 배포판 Blender의 내장 파이썬은 별도 pip 환경이 아니라 시스템 NumPy를 사용한다.
+          if ! command -v blender >/dev/null || ! dpkg-query -W -f='${db:Status-Status}' python3-numpy 2>/dev/null | grep -qx installed; then
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
+            sudo apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          fi
+          blender --version | head -n 1
+          # 외부 원본이 아닌 고정 삼각형으로 실제 가져오기와 격리 환경의 모듈 로딩을 검사한다.
+          probe="$(mktemp -d)"
+          trap 'rm -rf "$probe"' EXIT
+          python3 - "$probe/probe.gltf" <<'PY'
+          import base64, json, struct, sys
+          data = struct.pack("<9f", 0, 0, 0, 1, 0, 0, 0, 1, 0)
+          model = {"asset": {"version": "2.0"}, "scene": 0, "scenes": [{"nodes": [0]}],
+                   "nodes": [{"mesh": 0}], "meshes": [{"primitives": [{"attributes": {"POSITION": 0}}]}],
+                   "buffers": [{"byteLength": len(data), "uri": "data:application/octet-stream;base64," + base64.b64encode(data).decode("ascii")}],
+                   "bufferViews": [{"buffer": 0, "byteLength": len(data), "target": 34962}],
+                   "accessors": [{"bufferView": 0, "componentType": 5126, "count": 3, "type": "VEC3",
+                                  "min": [0, 0, 0], "max": [1, 1, 0]}]}
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump(model, handle)
+          PY
+          env -i PATH="$PATH" HOME="$probe" TMPDIR="$probe" LANG=C.UTF-8 LIBGL_ALWAYS_SOFTWARE=1 blender \
+            --background --factory-startup --disable-autoexec --python-exit-code 1 \
+            --python-expr 'import bpy, numpy, os; bpy.ops.wm.read_factory_settings(use_empty=True); assert "FINISHED" in bpy.ops.import_scene.gltf(filepath=os.path.join(os.environ["HOME"], "probe.gltf")); assert any(o.type == "MESH" for o in bpy.data.objects); print("MARE_BLENDER_GLTF_PREFLIGHT=PASS")'
+
+      - name: Refresh asset practice ledger after Roblox registration
+        id: asset_ledger
+        if: always()
+        env:
+          VIBE2_VISION_MODEL: ${{ vars.VIBE2_VISION_MODEL }}
+          VIBE2_LOCAL_AI_OWNER_APPROVED: ${{ vars.VIBE2_LOCAL_AI_OWNER_APPROVED }}
+          VIBE2_GEMINI_FREE_TIER_VERIFIED: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED }}
+          GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          preview_args=()
+          if [[ "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
+            preview_args+=("--animal-preview-dir=$RUNNER_TEMP/mare-animal-source-preview")
+          fi
+          python3 tools/devloop/assets_wanted.py roblox-games/mare-essentia --verify-goods "${preview_args[@]}"
+          if [[ "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
+            node tools/mare-essentia-upload-assets.mjs --animal-source-visual-review="$RUNNER_TEMP/mare-animal-source-preview"
+          fi
+          if [[ "$MARE_MODELS_ONLY" != "true" ]]; then
             python3 - <<'PY'
           import json
           report = json.load(open("roblox-games/mare-essentia/assets-wanted.json", encoding="utf-8"))
@@ -231,50 +815,283 @@ jobs:
           PY
           fi
 
+      - name: Keep bounded animal source review frames
+        if: ${{ always() && env.MARE_ANIMAL_PREVIEW == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: mare-animal-source-preview
+          path: |
+            ${{ runner.temp }}/mare-animal-source-preview/**/*.png
+            ${{ runner.temp }}/mare-animal-source-preview/**/quality.glb
+          if-no-files-found: ignore
+          retention-days: 3
+
       - name: Commit registered asset IDs (API, main이 움직여도 안전)
+        id: registered_commit
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
+          MARE_SHIP_V5_OUTCOME: ${{ steps.ship_v5.outcome }}
+          MARE_ASSET_OUTCOME: ${{ steps.asset_registration.outcome }}
+          MARE_NAU_CHECK_OUTCOME: ${{ steps.nau_check.outcome }}
+          MARE_LONDON_SOURCE_OUTCOME: ${{ steps.london_source.outcome }}
+          MARE_CARGO_QUALITY_OUTCOME: ${{ steps.cargo_quality.outcome }}
+          MARE_ASSET_LEDGER_OUTCOME: ${{ steps.asset_ledger.outcome }}
         run: |
           set -euo pipefail
           # 검수된 생성 모델 원화만 기존 등록기에서 승격했다면 같은 정식 카드 폴더로 GitHub에 자동 전송한다.
           # 등록·권한 확인 실패 시 바이너리를 main에 반영하지 않는다.
-          if [[ "${{ steps.ship_v5.outcome }}" == "failure" ]]; then
+          if [[ "${MARE_SHIP_V5_OUTCOME}" == "failure" ]]; then
             echo "::error::MARE_V5_ORIGINAL_MODEL_GENERATION_FAILED"
             exit 1
           fi
-          if [[ "${{ steps.ship_v5.outcome }}" == "success" && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+          if [[ "${MARE_SHIP_V5_OUTCOME}" == "success" && "${MARE_ASSET_OUTCOME}" != "success" ]]; then
             echo "::error::MARE_V5_72_MODEL_REGISTRATION_INCOMPLETE"
             exit 1
           fi
-          if [[ "${{ steps.nau_check.outcome }}" == "failure" ]]; then
+          if [[ "${MARE_NAU_CHECK_OUTCOME}" == "failure" ]]; then
             echo "::error::MARE_EXTERNAL_CC0_HULL_OR_REGISTRATION_QA_FAILED"
             exit 1
           fi
-          for f in roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-pistol.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb roblox-games/mare-essentia/assets/relics/weapon-flintlock-musket.glb.license.json roblox-games/mare-essentia/assets/naval/fishing-net.glb roblox-games/mare-essentia/assets/naval/fishing-net.glb.license.json roblox-games/mare-essentia/assets/naval/net-floats.glb roblox-games/mare-essentia/assets/naval/net-floats.glb.license.json roblox-games/mare-essentia/assets/naval/galleon-heritage.glb roblox-games/mare-essentia/assets/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png roblox-games/mare-essentia/assets/naval/*-v5*.glb*; do
-            if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${{ steps.asset_registration.outcome }}" != "success" || "${{ steps.nau_check.outcome }}" != "success" ) ]]; then
+          # [런던 원본 승격] 신규 파일은 실제 등록번호·사용권이 확인된 것만 기존 API 반영 목록에 추가한다.
+          asset_root=roblox-games/mare-essentia/assets
+          london_files=()
+          verified_london="$RUNNER_TEMP/mare-london-verified"
+          pending_london="$RUNNER_TEMP/mare-london-pending"
+          : > "$verified_london"
+          : > "$pending_london"
+          verified_vegetation="$RUNNER_TEMP/mare-vegetation-verified"
+          pending_vegetation="$RUNNER_TEMP/mare-vegetation-pending"
+          : > "$verified_vegetation"
+          : > "$pending_vegetation"
+          if [[ "${MARE_LONDON_SOURCE_OUTCOME}" == "success" ]]; then
+            MARE_ASSET_REGISTRATION_OUTCOME="${MARE_ASSET_OUTCOME}" python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('roblox-games/mare-essentia')
+          registry = json.loads((root/'assets-registered.json').read_text())['assets']
+          verified_vegetation = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-vegetation-verified'
+          pending_vegetation = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-vegetation-pending'
+          verified_london = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-london-verified'
+          pending_london = pathlib.Path(os.environ['RUNNER_TEMP'])/'mare-london-pending'
+          verified_sources = []
+          for kind, prefix in (('Town', 'london_'), ('Town', 'observatory-dome-source'), ('Town', 'opera-curtain-'), ('Town', 'london-rope-twist-02-source'), ('Town', 'london-wooden-ladder-source'), ('Town', 'london-wood-stake-source'), ('Town', 'london-brick-source'), ('Town', 'london-scroll-01-source'), ('Town', 'london-wheelbarrow-source'), ('Town', 'london-building-scaffolding-source'), ('Town', 'london-firewood-01-source'), ('Town', 'london-wood-barrel-source'), ('Town', 'london-clothes-peg-source'), ('Town', 'london-noticeboard-source'), ('Town', 'london-shovel-01-source'), ('Town', 'london-chicken-coop-source'), ('Town', 'london-awning-02-source'), ('Town', 'london-column-leg-bench-source'), ('Town', 'london-pick-axe-source'), ('Town', 'london-saw-horse-source'), ('Town', 'london-wooden-mallet-source'), ('Town', 'london-wooden-produce-crate-source'), ('Town', 'london-curved-stone-bench-source'), ('Town', 'london-finger-post-sign-01-source'), ('Town', 'london-flower-pot-source'), ('Town', 'london-rustic-wood-hand-basket-source'), ('Town', 'london-statue-base-source'), ('Town', 'london-architrave-heritage-source'), ('Town', 'london-awning-01-source'), ('Town', 'london-brick-hammer-source'), ('Town', 'london-brick-trowel-source'), ('Town', 'london-cartwheel-source'), ('Town', 'london-chisel-source'), ('Town', 'london-english-bond-brick-source'), ('Town', 'london-iron-flambeaux-01-source'), ('Town', 'london-stone-archway-01-source'), ('Town', 'london-stone-archway-02-source'), ('Town', 'london-wall-open-scaffold-source'), ('Town', 'london-water-drip-source'), ('Town', 'london-wooden-gate-01-source'), ('Terrain', 'veg_')):
+            for path in sorted((root/'assets'/kind.lower()).glob(prefix+'*.glb')):
+              inbox = root/'assets/inbox'/kind/path.name
+              if inbox.exists() or subprocess.run(['git','ls-files','--error-unmatch',str(inbox)],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
+                  continue
+              row = registry.get(kind+'/'+path.stem, {})
+              proof = json.loads(path.with_suffix('.glb.license.json').read_text())
+              verified = (row.get('assetType') == 'Model' and row.get('usePermissionGranted') is True and str(row.get('assetId','')).isdigit() and int(row['assetId']) > 0 and row.get('source') == str(path) and hashlib.sha256(path.read_bytes()).hexdigest() == proof['sha256'])
+              if kind == 'Terrain':
+                  if not verified or row.get('sourceSha256') != proof['sha256']:
+                      # 확인된 사용권·번호·해시가 없으면 inbox 원본을 삭제하거나 승격하지 않는다.
+                      print('MARE_VEGETATION_REGISTRATION_PENDING',path.stem)
+                      with pending_vegetation.open('a') as pending: pending.write(str(path)+'\n')
+                      continue
+                  with verified_vegetation.open('a') as confirmed: confirmed.write(str(path)+'\n')
+                  verified_sources.append(f"| `terrain/` | {path.name} | {proof['author']} · {proof['license']} | {proof['source']} |")
+              elif prefix == 'london_':
+                  if not verified or row.get('sourceSha256') != proof['sha256']:
+                      print('MARE_LONDON_REGISTRATION_PENDING',path.stem)
+                      with pending_london.open('a') as pending: pending.write(str(path)+'\n')
+                      continue
+                  with verified_london.open('a') as confirmed: confirmed.write(str(path)+'\n')
+                  verified_sources.append(f"| `town/` | {path.name} | {proof['author']} · {proof['license']} | {proof['source']} |")
+              elif not verified:
+                  raise SystemExit('MARE_LONDON_REGISTRATION_PENDING:'+path.stem)
+              print('MARE_LONDON_REGISTERED_SOURCE_VERIFIED',path.stem,row['assetId'])
+          if verified_sources:
+              sources = root/'assets/SOURCES.md'
+              # 다른 자산 등록 실패 시 기존 장부에 번호·사용권·해시 확인분만 반영한다.
+              content = sources.read_text(encoding='utf-8') if os.environ['MARE_ASSET_REGISTRATION_OUTCOME'] == 'success' else subprocess.check_output(['git','show','HEAD:'+str(sources)],text=True)
+              for line in verified_sources:
+                  if line not in content.splitlines(): content = content.rstrip()+'\n'+line+'\n'
+              sources.write_text(content,encoding='utf-8')
+          PY
+            while IFS= read -r src; do
+              case "$src" in
+                */assets/inbox/Town/london_*.glb)
+                  dest="roblox-games/mare-essentia/assets/town/${src##*/}"
+                  grep -Fxq "$dest" "$verified_london" || continue
+                  ;;
+                */assets/inbox/Town/*)
+                  [[ "$src" == */assets/inbox/Town/@(observatory-dome-source|opera-curtain-*-source|london-@(rope-twist-02|wooden-ladder|wood-stake|brick|scroll-01|wheelbarrow|building-scaffolding|firewood-01|wood-barrel|clothes-peg|noticeboard|shovel-01|chicken-coop|awning-02|column-leg-bench|pick-axe|saw-horse|wooden-mallet|wooden-produce-crate|curved-stone-bench|finger-post-sign-01|flower-pot|rustic-wood-hand-basket|statue-base|architrave-heritage|awning-01|brick-hammer|brick-trowel|cartwheel|chisel|english-bond-brick|iron-flambeaux-01|stone-archway-01|stone-archway-02|wall-open-scaffold|water-drip|wooden-gate-01)-source).glb ]] || continue
+                  dest="roblox-games/mare-essentia/assets/town/${src##*/}"
+                  ;;
+                */assets/inbox/Terrain/veg_*.glb)
+                  dest="roblox-games/mare-essentia/assets/terrain/${src##*/}"
+                  grep -Fxq "$dest" "$verified_vegetation" || continue
+                  ;;
+                *) continue ;;
+              esac
+              [[ -f "$dest" && -f "$dest.license.json" ]] || exit 1
+              london_files+=("$dest" "$dest.license.json")
+            done < <(git diff --name-only --diff-filter=D)
+          fi
+          # 누락 복구 원본은 보관 폴더에만 저장한다. 메인에 이미 존재하는 승인 증빙과
+          # 실제 원본 해시를 다시 대조하고, 등록 파일/승인 목록은 변경하지 않는다.
+          restored_animals=()
+          if [[ "${MARE_ASSET_LEDGER_OUTCOME}" == "success" && "$MARE_ANIMAL_PREVIEW" == "true" ]]; then
+            restored_list="$(mktemp)"
+            python3 - "$restored_list" <<'PYRESTORED'
+          import hashlib, json, pathlib, re, subprocess, sys
+          root=pathlib.Path('roblox-games/mare-essentia')
+          report=json.loads((root/'assets-wanted.json').read_text())['animalSourcePractice']
+          restored=report.get('restoredOriginals',[])
+          acquired=report.get('newOriginals',[])
+          if any(not isinstance(items,list) or len(items)>3 or len(set(items))!=len(items) for items in (restored,acquired)):
+              raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
+          attempts=report.get('downloadAttempts')
+          if (set(restored)&set(acquired) or type(attempts) is not int
+              or not len(restored)+len(acquired)<=attempts<=3):
+              raise SystemExit('MARE_ANIMAL_RESTORED_LIST_INVALID')
+          with open(sys.argv[1],'w',encoding='utf-8') as out:
+              for file in restored:
+                  if not re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/Animals/[a-zA-Z0-9_-]+\.glb',file):
+                      raise SystemExit('MARE_ANIMAL_RESTORED_PATH_INVALID')
+                  path=pathlib.Path(file)
+                  proof_path=file+'.license.json'
+                  proof=json.loads(subprocess.check_output(['git','show','HEAD:'+proof_path]))
+                  data=path.read_bytes()
+                  digest=hashlib.sha256(data).hexdigest()
+                  if (path.is_symlink() or proof.get('license')!='CC0-1.0'
+                      or proof.get('commercialUseAllowed') is not True
+                      or proof.get('bytes')!=len(data) or not 0<len(data)<=5_000_000
+                      or proof.get('sourceSha256')!=digest or proof.get('originalSha256')!=digest
+                      or proof.get('pinnedBlobSha')!=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()):
+                      raise SystemExit('MARE_ANIMAL_RESTORED_PROOF_INVALID')
+                  out.write(file+'\n')
+              for file in acquired:
+                  match=re.fullmatch(r'roblox-games/mare-essentia/assets/inbox-hold/(Animals|Town|Naval|Terrain|People|Outfits|Monsters|Rig|Motion)/gobkit-free-([a-z0-9_-]+)\.glb',file)
+                  if not match:
+                      raise SystemExit('MARE_ANIMAL_PUBLISHER_PATH_INVALID')
+                  path=pathlib.Path(file)
+                  proof_path=pathlib.Path(file+'.license.json')
+                  if path.is_symlink() or proof_path.is_symlink():
+                      raise SystemExit('MARE_ANIMAL_PUBLISHER_PATH_INVALID')
+                  proof=json.loads(proof_path.read_text(encoding='utf8'))
+                  data=path.read_bytes()
+                  digest=hashlib.sha256(data).hexdigest()
+                  kind, asset = match.groups()
+                  pack = r'(?:animal[A-Za-z0-9]*|birds[A-Za-z0-9]*)' if kind == 'Animals' else r'[A-Za-z0-9_-]+'
+                  if (path.parent.is_symlink()
+                      or (kind != 'Animals' and proof.get('candidateTargetIds') != [kind+'/'+asset])
+                      or (kind in ('Rig','Motion') and not (type(proof.get('jointCount')) is int and proof['jointCount'] > 0))
+                      or (kind == 'Motion' and not (type(proof.get('animationCount')) is int and proof['animationCount'] > 0))
+                      or proof.get('sourceAcquisition')!='PUBLISHER_FREE_CATALOG_HELD_ONLY'
+                      or proof.get('sourcePage')!='https://gobkit.com/api/free'
+                      or not re.fullmatch(r'https://gobkit\.com/freebies/'+pack+r'/[A-Za-z0-9_-]+\.glb',proof.get('source',''))
+                      or proof.get('publisherEntry',{}).get('url')!=proof.get('source')
+                      or proof.get('publisherEntry',{}).get('license')!='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
+                      or proof.get('license')!='CC0-1.0' or proof.get('commercialUseAllowed') is not True
+                      or proof.get('externalRevisionPinned') is not False
+                      or proof.get('sourceVisualContentReview') is not None
+                      or proof.get('registration')!='PENDING_SOURCE_AND_VISUAL_REVIEW'
+                      or any(proof.get(key) is not False for key in ('speciesVerified','visualQualityApproved','actualRobloxRuntimeVerified','originalModelHandcraftedVerified'))
+                      or proof.get('bytes')!=len(data) or not 0<len(data)<=5_000_000
+                      or proof.get('sourceSha256')!=digest or proof.get('originalSha256')!=digest
+                      or proof.get('downloadedBlobSha')!=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()):
+                      raise SystemExit('MARE_ANIMAL_PUBLISHER_PROOF_INVALID')
+                  out.write(file+'\n'+str(proof_path)+'\n')
+          PYRESTORED
+            mapfile -t restored_animals < "$restored_list"
+            rm -f "$restored_list"
+          fi
+          for f in "${restored_animals[@]}" "${london_files[@]}" roblox-games/mare-essentia/assets-registered.json roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau roblox-games/mare-essentia/assets-wanted.json roblox-games/mare-essentia/assets/relics/weapon-mace.glb roblox-games/mare-essentia/assets/relics/weapon-mace.glb.license.json roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb roblox-games/mare-essentia/assets/relics/weapon-crossbow.glb.license.json "$asset_root"/relics/weapon-flintlock-pistol.glb "$asset_root"/relics/weapon-flintlock-pistol.glb.license.json "$asset_root"/relics/weapon-flintlock-musket.glb "$asset_root"/relics/weapon-flintlock-musket.glb.license.json "$asset_root"/naval/fishing-net.glb "$asset_root"/naval/fishing-net.glb.license.json "$asset_root"/naval/net-floats.glb "$asset_root"/naval/net-floats.glb.license.json "$asset_root"/naval/galleon-heritage.glb "$asset_root"/naval/galleon-heritage.glb.license.json roblox-games/mare-essentia/assets/naval/nau-source.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb roblox-games/mare-essentia/assets/naval/nau-custom.glb.license.json roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb.license.json roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/rowboat-source.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb roblox-games/mare-essentia/assets/naval/jahazi-custom.glb.license.json roblox-games/mare-essentia/assets/naval/kotia-custom.glb roblox-games/mare-essentia/assets/naval/kotia-custom.glb.license.json roblox-games/mare-essentia/assets/naval/mtepe-custom.glb roblox-games/mare-essentia/assets/naval/mtepe-custom.glb.license.json roblox-games/mare-essentia/assets/cardart/*.png "$asset_root"/terrain/kenney_*.glb* "$asset_root"/SOURCES.md "$asset_root"/naval/*-v5*.glb* "$asset_root"/cargo/{amber,ambergris,camphor,coal,guano,gum_arabic,jade,nitrate}.glb* roblox-games/mare-essentia/assets/people/{outfit_*,hair_*,acc_*}.glb* "$asset_root"/animals/discovery_*.glb* "$asset_root"/animals/{goat,camel,turkey}.glb* "$asset_root"/town/{greenhouse-source,clock-tower-source,scarecrow-source,bread-oven-source,stage-curtain-source}.glb*; do
+            if [[ ( "$f" == roblox-games/mare-essentia/assets/naval/nau-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/nau-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/atlantic_brigantine-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/zanzibar_jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/rowboat-source.glb || "$f" == roblox-games/mare-essentia/assets/naval/jahazi-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/kotia-custom.glb* || "$f" == roblox-games/mare-essentia/assets/naval/mtepe-custom.glb* ) && ( "${MARE_ASSET_OUTCOME}" != "success" || "${MARE_NAU_CHECK_OUTCOME}" != "success" ) ]]; then
               echo "SKIP_UNVERIFIED_EXTERNAL_CC0_HULL $f"
               continue
             fi
-            if [[ ( "$f" == roblox-games/mare-essentia/assets/relics/weapon-*.glb* || "$f" == roblox-games/mare-essentia/assets/naval/fishing-net.glb* || "$f" == roblox-games/mare-essentia/assets/naval/net-floats.glb* || "$f" == roblox-games/mare-essentia/assets/naval/galleon-heritage.glb* ) && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+            if [[ ( "$f" == "$asset_root"/relics/weapon-*.glb* || "$f" == "$asset_root"/naval/fishing-net.glb* || "$f" == "$asset_root"/naval/net-floats.glb* || "$f" == "$asset_root"/naval/galleon-heritage.glb* ) && "${MARE_ASSET_OUTCOME}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_WEAPON_MODEL $f"
               continue
             fi
-            if [[ "$f" == roblox-games/mare-essentia/assets/cardart/*.png && "${{ steps.asset_registration.outcome }}" != "success" ]]; then
+            if [[ "$f" == "$asset_root"/cargo/*.glb* && ( "${MARE_CARGO_QUALITY_OUTCOME}" != "success" || "${MARE_ASSET_OUTCOME}" != "success" ) ]]; then
+              echo "SKIP_UNREGISTERED_CARGO_QUALITY $f"
+              continue
+            fi
+            # [26종 PBR 정본] 실제 Roblox 등록과 Universe 사용 권한이 확인된 원본만 같은 등록기에서 승격한다.
+            if [[ "$f" == "$asset_root"/people/* && "${MARE_ASSET_OUTCOME}" != "success" ]]; then
+              echo "SKIP_UNREGISTERED_CHARACTER_PBR $f"
+              continue
+            fi
+            if [[ "$f" == roblox-games/mare-essentia/assets/cardart/*.png && "${MARE_ASSET_OUTCOME}" != "success" ]]; then
               echo "SKIP_UNVERIFIED_MODEL_ORIGINAL $f"
               continue
             fi
+            # [지상전 3D 실물] 등록·권한 확정 전에는 외부 GLB·권리 증빙·SOURCES 장부를 반영하지 않는다.
+            if [[ "${MARE_ASSET_OUTCOME}" != "success" ]]; then
+              if [[ "$f" == "$asset_root"/terrain/kenney_*.glb* || ( "$f" == "$asset_root"/SOURCES.md && ! -s "$verified_vegetation" && ! -s "$verified_london" ) ]]; then
+                echo "SKIP_UNVERIFIED_KENNEY_NATURE $f"
+                continue
+              fi
+            fi
             # [V5 원본 파일 승격] 등록번호와 Universe 사용 권한을 검증하기 전에는 GitHub 원본도 승격하지 않는다.
-            if [[ "$f" == roblox-games/mare-essentia/assets/naval/*-v5*.glb* && ( "${{ steps.ship_v5.outcome }}" != "success" || "${{ steps.asset_registration.outcome }}" != "success" ) ]]; then
+            if [[ "$f" == "$asset_root"/naval/*-v5*.glb* && ( "${MARE_SHIP_V5_OUTCOME}" != "success" || "${MARE_ASSET_OUTCOME}" != "success" ) ]]; then
               echo "SKIP_UNREGISTERED_V5 $f"
               continue
             fi
+            # [건축 원본] 완성 건물과 분리해 실제 원본 해시·번호·사용권이 모두 맞는 경우만 저장한다.
+            if [[ "$f" == "$asset_root"/town/@(greenhouse-source|clock-tower-source|scarecrow-source|bread-oven-source|stage-curtain-source|observatory-dome-source|opera-curtain-*-source|london-@(rope-twist-02|wooden-ladder|wood-stake|brick|scroll-01|wheelbarrow|building-scaffolding|firewood-01|wood-barrel|clothes-peg|noticeboard|shovel-01|chicken-coop|awning-02|column-leg-bench|pick-axe|saw-horse|wooden-mallet|wooden-produce-crate|curved-stone-bench|finger-post-sign-01|flower-pot|rustic-wood-hand-basket|statue-base|architrave-heritage|awning-01|brick-hammer|brick-trowel|cartwheel|chisel|english-bond-brick|iron-flambeaux-01|stone-archway-01|stone-archway-02|wall-open-scaffold|water-drip|wooden-gate-01)-source).glb* ]]; then
+              if [ ! -e "$f" ]; then continue; fi
+              if [[ "${MARE_ASSET_OUTCOME}" != "success" ]]; then
+                echo "SKIP_UNVERIFIED_TOWN_ORIGINAL $f"
+                continue
+              fi
+              python3 - "$f" <<'PYTOWN'
+          import hashlib,json,pathlib,sys
+          root=pathlib.Path('roblox-games/mare-essentia')
+          path=pathlib.Path(sys.argv[1].removesuffix('.license.json'))
+          proof=json.loads(path.with_suffix('.glb.license.json').read_text())
+          row=json.loads((root/'assets-registered.json').read_text())['assets'].get('Town/'+path.stem,{})
+          data=path.read_bytes()
+          digest=hashlib.sha256(data).hexdigest()
+          blob=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()
+          if not ((not proof.get('pinnedBlobSha') or proof['pinnedBlobSha']==blob) and proof['sourceSha256']==proof['originalSha256']==proof['sha256']==digest==row.get('sourceSha256')
+                  and proof['bytes']==len(data) and proof['license']=='CC0-1.0' and row.get('license')=='CC0-1.0'
+                  and row.get('source')==str(path) and row.get('assetType')=='Model'
+                  and row.get('usePermissionGranted') is True and str(row.get('assetId','')).isdigit()
+                  and int(row['assetId'])>0):
+              raise SystemExit('MARE_TOWN_ORIGINAL_REGISTRATION_UNVERIFIED:'+path.stem)
+          print('MARE_TOWN_ORIGINAL_REGISTERED',path.stem,digest,row['assetId'])
+          PYTOWN
+            fi
+            # [발견물] 실제 원본과 로블록스 번호·Universe 사용권을 모두 대조한다.
+            if [[ "$f" == "$asset_root"/animals/@(discovery_*|goat|camel|turkey).glb* ]]; then
+              if [[ ! -e "$f" ]]; then continue; fi
+              if [[ "${MARE_ASSET_OUTCOME}" != "success" ]]; then
+                echo "SKIP_UNVERIFIED_DISCOVERY_MODEL $f"
+                continue
+              fi
+              python3 - "$f" <<'PYBIRD'
+          import hashlib,json,pathlib,sys
+          root=pathlib.Path('roblox-games/mare-essentia')
+          path=pathlib.Path(sys.argv[1].removesuffix('.license.json'))
+          if not path.exists(): sys.exit(0)
+          proof=json.loads(path.with_suffix('.glb.license.json').read_text())
+          row=json.loads((root/'assets-registered.json').read_text())['assets'].get('Animals/'+path.stem,{})
+          data=path.read_bytes()
+          digest=hashlib.sha256(data).hexdigest()
+          blob=hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()
+          if not (proof['sourceSha256']==digest==row.get('sourceSha256') and proof['pinnedBlobSha']==blob
+                  and proof['license']=='CC0-1.0' and row.get('source')==str(path)
+                  and row.get('assetType')=='Model' and row.get('usePermissionGranted') is True
+                  and str(row.get('assetId','')).isdigit() and int(row['assetId'])>0):
+              raise SystemExit('MARE_DISCOVERY_ORIGINAL_REGISTRATION_UNVERIFIED:'+path.stem)
+          if path.stem not in {'discovery_seagull','discovery_bald_eagle','discovery_panda','discovery_whale'}:
+              review=proof.get('sourceVisualContentReview',{})
+              if review.get('sourceSha256')!=digest or review.get('reviewScope')!='SOURCE_REGISTRATION_ONLY' or proof.get('originalModelHandcrafted') is not True:
+                  raise SystemExit('MARE_ANIMAL_REVIEW_REQUIRED:'+path.stem)
+          print('MARE_DISCOVERY_ORIGINAL_REGISTERED',path.stem,digest,row['assetId'])
+          PYBIRD
+            fi
             if [ ! -e "$f" ]; then echo "SKIP_MISSING $f"; continue; fi
             if git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet -- "$f"; then echo "SKIP_UNCHANGED $f"; continue; fi
-            sha="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)"
-            # 대용량 이미지의 base64를 명령행 인자로 넘기면 ARG_MAX를 초과한다.
-            # 기존 GitHub Contents API로 전송하되 JSON 본문을 임시 파일로 전달한다.
+            # [등록 장부 저장] 체크아웃 원본을 기준으로 재시도하며 동시 수정은 덮어쓰지 않는다.
+            sha="$(git rev-parse --verify "HEAD:$f" 2>/dev/null || true)"
+            expected_blob="$(git hash-object "$f")"
             payload="$(mktemp)"
+            read_error="$(mktemp)"
             python3 - "$f" "$sha" "$payload" <<'PYJSON'
           import base64
           import json
@@ -291,13 +1108,91 @@ jobs:
               body["sha"] = current_sha
           pathlib.Path(output).write_text(json.dumps(body), encoding="utf-8")
           PYJSON
-            gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" --silent
-            rm -f "$payload"
+            # 최대 4회 저장, 매 시도 전 및 마지막에 원격 blob 확인. 502/응답 오류 뒤 성공한 저장은 반복하지 않는다.
+            saved_blob=""
+            for attempt in 1 2 3 4 5; do
+              if ! saved_blob="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq .sha 2>"$read_error")"; then
+                saved_blob=""
+                if [[ -n "$sha" ]] || ! grep -Fq 'HTTP 404' "$read_error"; then
+                  echo "MARE_ASSET_READ_RETRY $attempt $f" >&2
+                  if [[ "$attempt" -lt 5 ]]; then sleep "$((attempt * 3))"; fi
+                  continue
+                fi
+              elif [[ ! "$saved_blob" =~ ^[0-9a-f]{40}$ ]]; then
+                saved_blob=""
+                echo "MARE_ASSET_READ_INVALID_SHA $attempt $f" >&2
+                if [[ "$attempt" -lt 5 ]]; then sleep "$((attempt * 3))"; fi
+                continue
+              fi
+              [[ "$saved_blob" == "$expected_blob" ]] && break
+              if [[ "$saved_blob" != "$sha" ]]; then
+                rm -f "$payload" "$read_error"
+                echo "::error::MARE_ASSET_CONCURRENT_WRITE:$f" >&2
+                exit 1
+              fi
+              [[ "$attempt" -lt 5 ]] || break
+              if ! gh api -X PUT "repos/${GITHUB_REPOSITORY}/contents/${f}" --input "$payload" > /dev/null; then
+                echo "MARE_ASSET_WRITE_RESPONSE_ERROR $attempt $f" >&2
+                sleep "$((attempt * 3))"
+              fi
+            done
+            rm -f "$payload" "$read_error"
+            if [[ "$saved_blob" != "$expected_blob" ]]; then
+              echo "::error::MARE_ASSET_WRITE_NOT_VERIFIED:$f" >&2
+              exit 1
+            fi
             echo "COMMITTED $f"
           done
+          # [등록 완료 정리] 원본·라이선스·등록 ID 반영 후에만 동일 inbox 파일을 제거한다.
+          for f in "${london_files[@]}"; do
+            if [[ "$f" == */assets/terrain/veg_* ]]; then
+              src="roblox-games/mare-essentia/assets/inbox/Terrain/${f##*/}"
+            else
+              src="roblox-games/mare-essentia/assets/inbox/Town/${f##*/}"
+            fi
+            original="$(git rev-parse "HEAD:$src")"
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${src}?ref=main" --jq .sha)"
+            saved="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha)"
+            [[ "$current" == "$original" && "$saved" == "$(git hash-object "$f")" ]] || exit 1
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/contents/${src}" -f message="Mare Essentia: remove registered London inbox copy" -f sha="$current" -f branch=main --silent
+          done
+          # 정상 건축·식생은 위에서 저장했다. 미등록 원본은 보존하고 전체 완료로 표시하지 않는다.
+          if [[ "${MARE_LONDON_SOURCE_OUTCOME}" == "success" ]] && { [[ -s "$pending_london" ]] || compgen -G 'roblox-games/mare-essentia/assets/inbox/Town/london_*.glb' >/dev/null; }; then
+            echo "::error::MARE_LONDON_REGISTRATION_PARTIAL"
+            exit 1
+          fi
+          if [[ "${MARE_LONDON_SOURCE_OUTCOME}" == "success" ]] && { [[ -s "$pending_vegetation" ]] || compgen -G 'roblox-games/mare-essentia/assets/inbox/Terrain/veg_*.glb' >/dev/null; }; then
+            echo "::error::MARE_VEGETATION_REGISTRATION_PARTIAL"
+            exit 1
+          fi
 
+          # [정기 등록 후 게시] 원본 확보·렌더 장부만 바뀐 경우에는 게시하지 않는다.
+          # 등록 성공과 현재 main의 두 실제 등록 파일 일치가 모두 확인된 경우만 후속 게시를 요청한다.
+          registry=roblox-games/mare-essentia/assets-registered.json
+          ids=roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau
+          changed=false
+          if [[ "$MARE_ASSET_OUTCOME" == "success" ]] && ! git diff --quiet HEAD -- "$registry" "$ids"; then
+            for f in "$registry" "$ids"; do
+              actual="$(gh api "repos/${GITHUB_REPOSITORY}/contents/${f}?ref=main" --jq .sha)"
+              expected="$(git hash-object "$f")"
+              if [[ "$actual" != "$expected" ]]; then
+                echo "::error::MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f"
+                exit 1
+              fi
+            done
+            changed=true
+          fi
+          echo "registered_change=$changed" >> "$GITHUB_OUTPUT"
+          echo "MARE_REGISTERED_CHANGE_VERIFIED=$changed"
+
+      # [단일 게시 인계] 모든 등록 트리거는 검증된 장부 변경 또는 명시적 게시 요청에서만 기존 게시기를 호출한다.
       - name: Publish the place with the new asset IDs
-        if: ${{ inputs.publish_after_register == true && inputs.studio_regrant != true && success() }}
+        if: ${{ success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true')) }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="${{ inputs.universe_id }}"
+          MARE_PUBLISH_UNIVERSE: ${{ inputs.universe_id || '10775310508' }}
+        run: |
+          set -euo pipefail
+          gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"
+          # [증거 분리] 게시 요청은 실제 게시 성공 또는 게임 배치/Studio 통과가 아니다.
+          echo "MARE_ASSET_PUBLISH_REQUESTED=YES"

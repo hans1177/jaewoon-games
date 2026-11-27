@@ -1,0 +1,391 @@
+<!doctype html>
+<!-- 파일명: web-games/insect-survival/evolution.html -->
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#142d21">
+<title>곤충 진화 · 혼자 플레이</title>
+<style>
+/* 화면 */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#12261c;color:#f8f0d7;font-family:system-ui,"Noto Sans KR",sans-serif}
+button{font:inherit;cursor:pointer}
+#game{position:relative;width:100%;height:100dvh;overflow:hidden;touch-action:none}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(#07130c6b,transparent 30%,transparent 66%,#07130c79)}
+#hud{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;right:10px;display:flex;gap:7px;justify-content:space-between;align-items:start;pointer-events:none}
+.card{max-width:min(69vw,390px);padding:10px 12px;border:1px solid #bacd9c66;border-radius:14px;background:#0a231bdc;box-shadow:0 6px 20px #0007;backdrop-filter:blur(5px)}
+#name{font-size:15px;font-weight:950;color:#f7e6a5}#stats{font-size:12px;line-height:1.8}#guide{font-size:11px;color:#d1e5c2}
+.bar{height:9px;border-radius:9px;background:#29372b;overflow:hidden;margin:4px 0}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#77c361,#dce38c);width:0;transition:width .18s}
+#lifeBar{background:linear-gradient(90deg,#b44e44,#f6a877)}
+#evolve{pointer-events:auto;min-height:44px;padding:0 12px;border:1px solid #d8ca86;border-radius:12px;background:#536936;color:#f9ecc7;font-size:13px;font-weight:950}
+#tip{position:absolute;left:50%;top:26%;transform:translateX(-50%);min-width:185px;max-width:82vw;padding:9px 13px;background:#0b221bdc;border:1px solid #d9d29a88;border-radius:10px;text-align:center;font-size:12px;pointer-events:none;opacity:0;transition:opacity .15s}
+#tip.show{opacity:1}
+#controls{position:absolute;left:0;right:0;bottom:calc(13px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;padding:0 17px;pointer-events:none}
+#joy{width:126px;height:126px;border-radius:50%;border:2px solid #baceaa9c;background:#284332b8;display:grid;place-items:center;touch-action:none;pointer-events:auto}
+#stick{width:55px;height:55px;border-radius:50%;border:2px solid #fbf0cba8;background:#9daf87c9;box-shadow:0 4px 17px #07180d}
+#actions{display:flex;gap:9px;pointer-events:auto}
+.act{height:68px;min-width:68px;padding:8px;border:2px solid #e2d09a8c;border-radius:50%;background:#7c6140e8;color:#fff1ca;font-size:15px;font-weight:950;box-shadow:0 6px 16px #0008}
+.act:nth-child(2){background:#7c4538e8}
+#cover{position:absolute;z-index:8;top:45%;left:50%;transform:translate(-50%,-50%);width:min(85vw,330px);text-align:center;pointer-events:none}
+#cover[hidden]{display:none}
+#cover .panel{padding:13px 15px;border:1px solid #a7bd8f;border-radius:12px;background:#173629e8;box-shadow:0 8px 24px #0007}
+#loadingText{font-size:13px;color:#f0dfa0}
+#error{font-size:11px;color:#ffb7a7;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+#retry{min-height:44px;width:100%;margin-top:9px;border:1px solid #f3d7a0;border-radius:10px;background:#ddcb9b;color:#1d3223;font-weight:850;pointer-events:auto}
+#retry[hidden]{display:none}
+#tree{position:absolute;inset:0;z-index:7;display:none;place-items:center;padding:12px;background:#0b1915ea}
+#tree.open{display:grid}
+#tree .panel{width:min(94vw,570px);max-height:90dvh;overflow-y:auto;padding:18px;border:1px solid #c7be8d;border-radius:16px;background:#1c382a}
+#tree h2{margin:0 0 8px;color:#f8dfa0}
+#choices{display:grid;gap:9px;margin:14px 0}
+.option{width:100%;min-height:65px;padding:10px;display:flex;justify-content:space-between;gap:12px;text-align:left;align-items:center;background:#2c513d;color:#fbf4d7;border:1px solid #c8d09e88;border-radius:12px}
+.option:disabled{opacity:.48}
+.option small{display:block;font-size:11px;color:#d0e0c8;margin-top:4px}
+#closeTree{width:100%;min-height:45px;border:1px solid #a9c5a1;border-radius:10px;background:#1b3126;color:#fff}
+@media(max-width:480px){
+ #joy{width:106px;height:106px}#stick{width:47px;height:47px}
+ #controls{padding:0 12px}.act{height:63px;min-width:63px}
+ #name{font-size:13px}#stats{font-size:11px}.card{padding:7px 9px}
+}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head><body><main id="game">
+<div id="scene"></div><div class="shade"></div>
+<header id="hud">
+<div class="card"><div id="name">아기 거미</div><div id="stats">먹이 0 · 레벨 1</div><div class="bar"><i id="lifeBar"></i></div><div id="guide">버섯을 먹고 진화해 봐.</div></div>
+<button id="evolve">진화 나무</button>
+</header>
+<div id="tip" role="status" aria-live="polite"></div>
+<div id="controls"><div id="joy" aria-label="이동 조이스틱"><div id="stick"></div></div><div id="actions"><button id="eat" class="act">먹기</button><button id="bite" class="act">물기</button></div></div>
+<div id="tree" role="dialog" aria-label="진화 나무"><div class="panel"><h2>진화 나무</h2><p id="treeInfo"></p><div id="choices"></div><button id="closeTree">돌아가기</button></div></div>
+<div id="cover" role="status"><div class="panel"><strong id="loadingText">곤충 세계 불러오는 중…</strong><p id="error"></p><button id="retry" hidden>다시 불러오기</button></div></div>
+</main>
+<script type="module">
+// 파일명: web-games/insect-survival/evolution.html
+// 임포트: 검증된 CC0 원본 메시만 사용한다. 임시 파츠형 생물은 만들지 않는다.
+import * as THREE from 'three';
+import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
+
+// 데이터: 인간 플레이어와 멀티플레이 없이 곤충 먹이·성장·진화만 관리한다.
+const $=id=>document.getElementById(id);
+const SAVE='jaewoon_bug_evolution_solo_v1';
+const ASSET='../../assets/';
+const FORMS=Object.freeze({
+ baby:{name:'아기 거미',source:'spider',height:.55,need:0,health:65,damage:14,speed:8,next:['adult','larva'],tint:'#8b6547'},
+ adult:{name:'성체 거미',source:'spider',height:1.0,need:70,health:90,damage:22,speed:9,next:['giant'],tint:'#704e42'},
+ giant:{name:'거대 거미',source:'spider',height:1.75,need:220,health:140,damage:34,speed:9.5,next:[],tint:'#64414b'},
+ larva:{name:'애벌레',source:'crawler',height:.85,need:70,health:95,damage:15,speed:9.5,next:['biglarva'],tint:'#a6b978'},
+ biglarva:{name:'거대 애벌레',source:'crawler',height:1.6,need:220,health:150,damage:23,speed:10,next:[],tint:'#8abd82'}
+});
+const initial={form:'baby',food:0,hp:65,x:0,z:0};
+const state={...initial};
+try{
+ const saved=JSON.parse(localStorage.getItem(SAVE)||'null');
+ if(saved&&FORMS[saved.form]&&Number.isFinite(saved.food)&&saved.food>=0&&saved.food<100000000){
+  state.form=saved.form;state.food=saved.food;
+  const max=FORMS[state.form].health;
+  state.hp=Number.isFinite(saved.hp)?Math.max(1,Math.min(max,saved.hp)):max;
+  state.x=Number.isFinite(saved.x)?Math.max(-49,Math.min(49,saved.x)):0;
+  state.z=Number.isFinite(saved.z)?Math.max(-49,Math.min(49,saved.z)):0;
+ }
+}catch(error){console.warn('곤충 저장 복구 실패',error)}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify(state))}catch(error){console.warn('곤충 저장 실패',error)}}
+function notice(message){$('tip').textContent=message;$('tip').classList.add('show');clearTimeout(notice.timer);notice.timer=setTimeout(()=>$('tip').classList.remove('show'),1800)}
+function current(){return FORMS[state.form]}
+function level(){return 1+Math.floor(state.food/35)}
+function hud(){
+ $('name').textContent=current().name;
+ $('stats').textContent='먹이 '+state.food+' · 레벨 '+level();
+ $('lifeBar').style.width=(Math.max(0,state.hp)/current().health*100)+'%';
+ const choice=current().next.find(id=>state.food>=FORMS[id].need);
+ $('guide').textContent=choice?'진화 준비 완료 · 진화 나무를 눌러봐':'버섯을 먹어 성장해. · 체력 '+Math.ceil(state.hp);
+ $('evolve').style.borderColor=choice?'#f7e98a':'#d8ca86';
+}
+let worldReady=false,hero=null,heroVisual=null,renderer=null,scene=null,camera=null;
+let enemies=[],foods=[],trees=[],templates={},moving={x:0,z:0},keyState={},last=0,tickSave=0,actionCooldown=0;
+const mapRadius=49,clock=new THREE.Clock();
+const temp=new THREE.Vector3();
+const pixelRatio=Math.min(window.devicePixelRatio||1,matchMedia('(pointer:coarse)').matches?1.25:1.6);
+
+// 3D: 기존 CC0 모델은 원본을 수정하지 않고 크기·재질만 인스턴스에 적용한다.
+async function load3D(){
+ const source={
+  spider:['shared/forest/monster-53.obj','obj'],
+  crawler:['shared/forest/caterpillar.glb','glb'],
+  mushroom:['shared/forest/mushroom.fbx','fbx'],
+  tree:['shared/homely-house/tree_large.obj','obj'],
+  floor:['shared/homely-house/floor_base.obj','obj']
+ };
+ let loadedCount=0;
+ const loaded=await Promise.all(Object.entries(source).map(async ([id,[path,format]])=>{
+  const loader=format==='obj'?new OBJLoader():format==='glb'?new GLTFLoader():new FBXLoader();
+  const file=await loader.loadAsync(new URL(ASSET+path,import.meta.url).href);
+  const model=format==='glb'?file.scene:file;
+  if(new THREE.Box3().setFromObject(model).isEmpty())throw Error('비어 있는 곤충 자산: '+path);
+  $('loadingText').textContent='곤충 모델 '+(++loadedCount)+'/'+Object.keys(source).length+' 불러오는 중…';
+  return [id,model];
+ }));
+ templates=Object.fromEntries(loaded);
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color('#9ec3a2');
+ scene.fog=new THREE.Fog('#a0bd9d',34,91);
+ camera=new THREE.PerspectiveCamera(59,innerWidth/innerHeight,.07,160);
+ renderer=new THREE.WebGLRenderer({antialias:!matchMedia('(pointer:coarse)').matches,powerPreference:'default'});
+ renderer.setSize(innerWidth,innerHeight);
+ renderer.setPixelRatio(pixelRatio);
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;
+ renderer.toneMappingExposure=1.38;
+ renderer.domElement.id='insect3d';
+ $('scene').appendChild(renderer.domElement);
+ Object.assign(renderer.domElement.style,{width:'100%',height:'100%',display:'block',touchAction:'none'});
+ scene.add(new THREE.HemisphereLight('#e7f5d5','#334b2d',2.1));
+ const sun=new THREE.DirectionalLight('#fff0ba',2.8);sun.position.set(-12,28,16);scene.add(sun);
+ function model(id,height,tint){
+  const obj=templates[id].clone(true);
+  const box=new THREE.Box3().setFromObject(obj);
+  const dims=box.getSize(new THREE.Vector3());
+  const scale=height/Math.max(.001,dims.y);
+  obj.scale.multiplyScalar(scale);
+  obj.position.y=-box.min.y*scale;
+  const color=new THREE.Color(tint);
+  obj.traverse(mesh=>{
+   if(!mesh.isMesh)return;
+   const raw=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+   const mats=raw.map(mat=>{
+    const copy=mat?.clone?.()||new THREE.MeshStandardMaterial();
+    if(copy.color)copy.color.multiply(color);
+    copy.side=THREE.DoubleSide;
+    copy.roughness=1;
+    return copy;
+   });
+   mesh.material=Array.isArray(mesh.material)?mats:mats[0];
+   mesh.castShadow=false;mesh.receiveShadow=true;
+  });
+  return obj;
+ }
+ function place(id,height,tint,x,z){
+  const group=new THREE.Group();
+  group.position.set(x,0,z);
+  group.add(model(id,height,tint));
+  scene.add(group);
+  return group;
+ }
+ // CC0 실제 바닥 타일. 단순 도형으로 곤충이나 소품을 대체하지 않는다.
+ // 지면: 기존 Tiny Treats CC0 메시 그대로 사용. 강한 태양광/안개/노출에서
+ // MeshStandardMaterial의 녹색이 흰색으로 날아가지 않도록 지면만 색을 고정한다.
+ // 진짜 3D 삼각형 지형과 깊이 판정, 캐릭터 충돌 좌표는 그대로 유지한다.
+ const worldFloor=templates.floor;
+ const bounds=new THREE.Box3().setFromObject(worldFloor);
+ const span=bounds.getSize(new THREE.Vector3());
+ const groundPalette=['#54764b','#5b7f51','#608153','#57794c'];
+ const groundMaterials=groundPalette.map(color=>new THREE.MeshBasicMaterial({
+  color,side:THREE.DoubleSide,fog:false,toneMapped:false,depthTest:true,depthWrite:true
+ }));
+ for(let ix=-3;ix<=3;ix++)for(let iz=-3;iz<=3;iz++){
+  const floor=worldFloor.clone(true);
+  floor.scale.set(16/Math.max(.01,span.x),.34,16/Math.max(.01,span.z));
+  const scaled=new THREE.Box3().setFromObject(floor);
+  floor.position.set(ix*16,-scaled.max.y,iz*16);
+  const material=groundMaterials[((ix*13+iz*7)%groundMaterials.length+groundMaterials.length)%groundMaterials.length];
+  floor.traverse(mesh=>{if(mesh.isMesh){mesh.material=material;mesh.receiveShadow=true;}});
+  scene.add(floor);
+ }
+ for(let i=0;i<25;i++){
+  const angle=i*2.39996;
+  const radius=19+(i*17%29);
+  const x=Math.cos(angle)*radius,z=Math.sin(angle)*radius;
+  trees.push({x,z,mesh:place('tree',8+(i%4),i%3?'#79b97b':'#87a868',x,z)});
+ }
+ const pick=(seed)=>Math.sin(seed*12.9898)*43758.5453%1;
+ function point(index,rMin=6){
+  let x=0,z=0;
+  for(let attempt=0;attempt<25;attempt++){
+   const seed=index*37+attempt*59+1;
+   x=(Math.abs(pick(seed))*92)-46;
+   z=(Math.abs(pick(seed+13))*92)-46;
+   if(Math.hypot(x,z)<rMin)continue;
+   if(!trees.some(t=>Math.hypot(t.x-x,t.z-z)<3.2))break;
+  }
+  return {x,z};
+ }
+ for(let i=0;i<30;i++){
+  const p=point(i+3,4);
+  foods.push({x:p.x,z:p.z,active:true,respawn:0,mesh:place('mushroom',.8+(i%3)*.15,i%3===0?'#f1d59d':'#eac1a7',p.x,p.z)});
+ }
+ for(let i=0;i<6;i++){
+  const p=point(i+100,17);
+  enemies.push({x:p.x,z:p.z,spawnX:p.x,spawnZ:p.z,hp:48,alive:true,cooldown:0,respawn:0,phase:i,mesh:place('spider',1.05,'#655549',p.x,p.z)});
+ }
+ hero=new THREE.Group();scene.add(hero);
+ function applyHero(){
+  if(heroVisual)hero.remove(heroVisual);
+  const f=current();
+  heroVisual=model(f.source,f.height,f.tint);
+  hero.add(heroVisual);
+  hero.position.set(state.x,0,state.z);
+ }
+ window.bugSoloApplyHero=applyHero;
+ applyHero();
+ worldReady=true;
+ camera.position.set(state.x,16,state.z+22);
+ camera.lookAt(state.x,0,state.z);
+ // 모델 준비 즉시 1인용 플레이를 시작한다. 별도 시작 창은 없다.
+ $('cover').hidden=true;
+ notice('버섯 가까이서 먹기를 눌러 봐.');
+ window.bugEvolutionSoloProof=()=>({
+  ready:worldReady,players:1,multiplayer:false,webgl:renderer.capabilities.isWebGL2,
+  form:state.form,food:state.food,heroMeshes:heroVisual?countMeshes(heroVisual):0,
+  foodMeshes:foods.filter(f=>f.active).length,enemyMeshes:enemies.filter(e=>e.alive).length
+ });
+ function countMeshes(obj){let n=0;obj.traverse(x=>{if(x.isMesh)n++});return n}
+}
+function treeDialog(){
+ const f=current();
+ $('treeInfo').textContent='현재 '+f.name+' · 모은 먹이 '+state.food+' · 다음 진화 선택';
+ $('choices').replaceChildren();
+ if(!f.next.length){const p=document.createElement('p');p.textContent='이 계통의 마지막 성장 단계야.';$('choices').append(p)}
+ for(const id of f.next){
+  const next=FORMS[id],button=document.createElement('button');
+  button.className='option';button.disabled=state.food<next.need;
+  const left=document.createElement('span'),title=document.createElement('strong'),detail=document.createElement('small'),right=document.createElement('b');
+  title.textContent=next.name;detail.textContent='체력 '+next.health+' · 먹이 '+next.need+' 이상';right.textContent=button.disabled?'잠김':'진화';
+  left.append(title,detail);button.append(left,right);
+  button.addEventListener('click',()=>evolve(id));$('choices').append(button);
+ }
+ $('tree').classList.add('open');
+}
+function evolve(id){
+ if(!current().next.includes(id)||state.food<FORMS[id].need)return;
+ const before=current(),ratio=state.hp/before.health;
+ state.form=id;state.hp=Math.max(1,Math.round(current().health*ratio));
+ window.bugSoloApplyHero();
+ $('tree').classList.remove('open');save();hud();notice(current().name+'(으)로 진화!');
+}
+function distance(a,b){return Math.hypot(a.x-b.x,a.z-b.z)}
+function eat(){
+ if(!worldReady||!$('cover').hidden)return;
+ let found=null,best=3.5;
+ for(const food of foods)if(food.active){
+  const d=distance(state,food);if(d<best){best=d;found=food}
+ }
+ if(!found){notice('버섯에 더 가까이 다가가.');return}
+ found.active=false;found.mesh.visible=false;found.respawn=18;
+ state.food+=10;state.hp=Math.min(current().health,state.hp+5);
+ save();hud();notice('먹이 +10');
+}
+function bite(){
+ if(!worldReady||!$('cover').hidden)return;
+ if(actionCooldown>0)return;
+ actionCooldown=.58;
+ let target=null,best=4.4+(current().height*.4);
+ for(const enemy of enemies)if(enemy.alive){
+  const d=distance(state,enemy);if(d<best){best=d;target=enemy}
+ }
+ if(!target){notice('공격 범위에 거미가 없어.');return}
+ target.hp-=current().damage;
+ if(target.hp<=0){
+  target.alive=false;target.respawn=16;target.mesh.visible=false;
+  state.food+=22;state.hp=Math.min(current().health,state.hp+8);
+  save();hud();notice('사냥 성공 · 먹이 +22');
+ }else{notice('거미에게 '+current().damage+' 피해')}
+}
+function update(dt,t){
+ const dx=(keyState.ArrowRight||keyState.KeyD?1:0)-(keyState.ArrowLeft||keyState.KeyA?1:0)+moving.x;
+ const dz=(keyState.ArrowDown||keyState.KeyS?1:0)-(keyState.ArrowUp||keyState.KeyW?1:0)+moving.z;
+ const size=Math.hypot(dx,dz);
+ if(size>.06){
+  const vx=dx/Math.max(1,size)*current().speed*dt,vz=dz/Math.max(1,size)*current().speed*dt;
+  const x=THREE.MathUtils.clamp(state.x+vx,-mapRadius,mapRadius);
+  const z=THREE.MathUtils.clamp(state.z+vz,-mapRadius,mapRadius);
+  if(!trees.some(tree=>Math.hypot(tree.x-x,tree.z-state.z)<2.2))state.x=x;
+  if(!trees.some(tree=>Math.hypot(tree.x-state.x,tree.z-z)<2.2))state.z=z;
+  hero.rotation.y=Math.atan2(dx,dz);
+ }
+ hero.position.set(state.x,Math.sin(t*.013)*(size>.06?.065:.012),state.z);
+ for(const food of foods)if(!food.active){
+  food.respawn-=dt;
+  if(food.respawn<=0){food.active=true;food.mesh.visible=true}
+ }
+ for(const enemy of enemies){
+  if(!enemy.alive){
+   enemy.respawn-=dt;
+   if(enemy.respawn<=0){enemy.alive=true;enemy.hp=48;enemy.mesh.visible=true;enemy.x=enemy.spawnX;enemy.z=enemy.spawnZ}
+   continue;
+  }
+  enemy.cooldown=Math.max(0,enemy.cooldown-dt);
+  const d=distance(state,enemy),aggressive=d<9;
+  const direction=aggressive?Math.atan2(state.x-enemy.x,state.z-enemy.z):t*.00037+enemy.phase*2.4;
+  const stride=aggressive?3.9:1.05;
+  if(d>2.05||!aggressive){
+   const nextX=THREE.MathUtils.clamp(enemy.x+Math.sin(direction)*stride*dt,-mapRadius,mapRadius);
+   const nextZ=THREE.MathUtils.clamp(enemy.z+Math.cos(direction)*stride*dt,-mapRadius,mapRadius);
+   if(!trees.some(tree=>Math.hypot(tree.x-nextX,tree.z-nextZ)<2.2)){enemy.x=nextX;enemy.z=nextZ}
+  }
+  enemy.mesh.position.set(enemy.x,Math.sin(t*.006+enemy.phase)*.026,enemy.z);
+  enemy.mesh.rotation.y=direction;
+  if(aggressive&&d<2.7&&enemy.cooldown<=0){
+   enemy.cooldown=1.5;state.hp=Math.max(0,state.hp-9);
+   if(state.hp<=0){
+    state.x=0;state.z=0;state.hp=current().health;
+    notice('쓰러졌어. 둥지에서 다시 시작해.');
+    save();
+   }
+   hud();
+  }
+ }
+ actionCooldown=Math.max(0,actionCooldown-dt);
+ const target=new THREE.Vector3(state.x,16,state.z+22);
+ camera.position.lerp(target,Math.min(1,dt*4.5));
+ camera.lookAt(state.x,1,state.z);
+ tickSave+=dt;if(tickSave>=12){tickSave=0;save()}
+}
+function loop(now){
+ if(!worldReady)return;
+ const dt=Math.min(.045,(now-last)/1000||.016);last=now;
+ if($('cover').hidden&&!$('tree').classList.contains('open'))update(dt,now);
+ try{renderer.render(scene,camera)}catch(error){console.error(error);$('error').textContent='3D 실행 오류: '+error.message;$('cover').hidden=false;return}
+ requestAnimationFrame(loop);
+}
+// 입력: 단독 로컬 터치·키보드이며 서버 통신과 다른 플레이어 세션은 없다.
+function joystick(){
+ const joy=$('joy'),stick=$('stick');
+ function move(e){
+  const rect=joy.getBoundingClientRect();
+  const x=e.clientX-(rect.left+rect.width/2),z=e.clientY-(rect.top+rect.height/2);
+  const max=rect.width*.32,scale=Math.min(1,max/Math.max(1,Math.hypot(x,z)));
+  const tx=x*scale,tz=z*scale;
+  moving={x:tx/max,z:tz/max};
+  stick.style.transform='translate('+tx+'px,'+tz+'px)';
+ }
+ joy.addEventListener('pointerdown',e=>{joy.setPointerCapture(e.pointerId);move(e)});
+ joy.addEventListener('pointermove',e=>{if(joy.hasPointerCapture(e.pointerId))move(e)});
+ const reset=()=>{moving={x:0,z:0};stick.style.transform='translate(0,0)'};
+ joy.addEventListener('pointerup',reset);joy.addEventListener('pointercancel',reset);
+}
+document.addEventListener('keydown',e=>{
+ if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
+ keyState[e.code]=true;if(e.repeat)return;
+ if(e.code==='KeyE')eat();if(e.code==='Space')bite();
+ if(e.code==='KeyT')treeDialog();
+});
+document.addEventListener('keyup',e=>{keyState[e.code]=false});
+window.addEventListener('blur',()=>{keyState={};moving={x:0,z:0}});
+window.addEventListener('resize',()=>{
+ if(!renderer)return;
+ camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);
+});
+$('eat').addEventListener('click',eat);$('bite').addEventListener('click',bite);
+$('evolve').addEventListener('click',treeDialog);
+$('closeTree').addEventListener('click',()=>$('tree').classList.remove('open'));
+$('retry').addEventListener('click',()=>location.reload());
+window.addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
+joystick();hud();
+try{await load3D();last=performance.now();requestAnimationFrame(loop)}
+catch(error){console.error('곤충 원본 모델 로딩 실패',error);$('loadingText').textContent='게임을 불러오지 못했어';$('error').textContent='원본 곤충 모델: '+error.message;$('retry').hidden=false;}
+</script></body></html>

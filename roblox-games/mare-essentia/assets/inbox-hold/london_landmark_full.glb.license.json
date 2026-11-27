@@ -1,0 +1,90 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius; Kenney",
+  "source": "https://opengameart.org/content/lowpoly-medieval-buildings",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "quaternius_bridge.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/quaternius_bridge.glb",
+      "originalUrl": "https://opengameart.org/content/lowpoly-medieval-buildings",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "5fbabd362013b2d445d395be040ec9d4064afa242d8ec6990655f324418dcd68",
+      "gitBlobSha1": "e25820968d7a4265635e34259185cdc86c4e28d0",
+      "registeredAssetId": "84510049067971"
+    },
+    {
+      "name": "london_bld_market_stalls.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/london_bld_market_stalls.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "545980f22e6940242f83cd7d07c6fc1a43dc0f3673340e9fc1b3b5c7ee28150b",
+      "gitBlobSha1": "7a4eef987438cab77f608f14e9ae9eef4f56e91b",
+      "registeredAssetId": "93096102858792",
+      "derived": true
+    },
+    {
+      "name": "kenney_plate_road_01.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/kenney_plate_road_01.glb",
+      "originalUrl": "https://opengameart.org/content/medieval-town-base-3d-assets",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "43b5fd2f1fd9786dd6bf0567517389e5244caeae5f1dd439b21ad2c028d2defe",
+      "gitBlobSha1": "621c0bb8eb160fa9675181372628dff48ba917d3",
+      "registeredAssetId": "73213949017379"
+    },
+    {
+      "name": "village-house-4.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-4.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "e3f48621763c1314e1f4f2a98ed6c61b76dfa436cdde263d1014a0404c1ba935",
+      "gitBlobSha1": "74e71b5fd358ef9933e298b4ae6f89d86963505b",
+      "registeredAssetId": "125271656667445"
+    },
+    {
+      "name": "wall-pillar.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/castle/wall-pillar.glb",
+      "originalUrl": "https://kenney.nl/assets/castle-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "0fc10abae8bad91ec938da54a0d457143f4976c497facab076d0d756b783e4e0",
+      "gitBlobSha1": "d55c45873bc9159c5dd44f50afa8ac9be054ec4d",
+      "registeredAssetId": "137513693378344"
+    }
+  ],
+  "modification": "Four original stone spans and dark stone deck plates, four market stands, two sloped approaches and two enclosed timber shop exteriors. Deck plate orientation corrected so thickness extends below the walking surface. Original buffer bytes and materials preserved. Static coverage only; enclosed interiors, structural supports under approaches, actual Roblox rendering and collision not verified. Existing construction-stage asset unchanged. Added twelve source-textured stone piers in six pairs beneath the two approaches; their top bounding planes intersect the slab thickness but stay below the walkway. Corrected ramp matrices to orthogonal rotation-scale, preserving top surface. Static bounds checks only; actual contact geometry, native rendering, collision and historical finish still pending.",
+  "sha256": "ca240865c8f078ed2e67d285b03a765c2c82b56ff001f8c9cbb65d4b0539d875",
+  "bytes": 405596,
+  "triangles": 15656,
+  "sceneTriangles": 15656,
+  "sourceRevision": "274eaef36a41e7b8e18f90c1607c3695182c630d",
+  "productionVerified": false,
+  "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_HISTORICAL_FINISH_QA",
+  "validation": "SOURCE_SHA256_BINARY_PRESERVED_ORTHOGONAL_RAMP_STATIC_BOUNDS_CONTACT_AND_DECK_COVERAGE_VERIFIED",
+  "geometry": {
+    "spanCount": 4,
+    "standCount": 4,
+    "deckPlateCount": 4,
+    "deckSamples": 5523,
+    "deckHeight": 4.789540144950151,
+    "spanStep": 4.42,
+    "nativeCollisionVerified": false,
+    "approachCount": 2,
+    "approachLength": 24,
+    "approachSlope": 0.1995641727062563,
+    "shopExteriorCount": 2,
+    "approachAndDeckSamples": 1971,
+    "maximumHeightError": 8.881784197001252e-16,
+    "centralShopClearance": 1.6,
+    "approachPierCount": 12,
+    "approachPierPairs": 6,
+    "supportBoundsSamples": 108,
+    "minimumTopClearance": 0.04017433091749689,
+    "orthogonalRampTransforms": true
+  }
+}

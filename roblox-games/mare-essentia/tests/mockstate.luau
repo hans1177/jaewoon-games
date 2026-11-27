@@ -40,11 +40,12 @@ State.library = setmetatable({}, { __index = function(_, k)
 				if not kinds[kind][name] then State.missing[kind .. "/" .. name] = true return nil end
 				return model(State.proxy, kind, name)
 			end }
-			-- [이벤트 목업] Roblox Folder.ChildAdded의 연결 계약을 재현하고 실제 항구 연결 횟수를 검사한다.
-			if kind == "People" then
+			-- [이벤트 목업] 인물·장비 폴더의 ChildAdded는 Roblox Folder 공통 이벤트다.
+			-- 인물 연결 건수의 기존 회귀 지표는 다른 폴더의 연결로 증가시키지 않는다.
+			if kind == "People" or kind == "Cargo" or kind == "Relics" then
 				category.ChildAdded = { Connect = function(_, callback)
-					if type(callback) ~= "function" then error("People.ChildAdded requires a callback") end
-					State.peopleChildAddedConnections += 1
+					if type(callback) ~= "function" then error(kind .. ".ChildAdded requires a callback") end
+					if kind == "People" then State.peopleChildAddedConnections += 1 end
 					return { Disconnect = function() end }
 				end }
 			end

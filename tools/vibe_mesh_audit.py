@@ -2,7 +2,7 @@
 # 캐릭터 .blend/.glb 의 메쉬·리그 품질을 숫자로 검사한다. (Blender 또는 pip bpy 필요)
 # 사용: blender --background --python tools/vibe_mesh_audit.py -- --input hero.blend --output audit.json
 # 판정은 tools/vibe-mesh-audit.mjs 가 한다. 이 파일은 측정만 한다.
-import bpy, sys, json, argparse, math, re, struct
+import bpy, sys, json, argparse, math, re, struct, hashlib, os
 from mathutils import Vector
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
@@ -10,14 +10,23 @@ ap = argparse.ArgumentParser()
 ap.add_argument('--input', required=True)
 ap.add_argument('--output', required=True)
 ap.add_argument('--candidate-output', default=None)
+ap.add_argument('--source-preview-dir', default=None)
+ap.add_argument('--animal-quality-candidate', action='store_true')
 args = ap.parse_args(argv)
+if args.source_preview_dir:
+    print("MARE_SOURCE_PREVIEW_STAGE IMPORT", flush=True)
 
 if args.input.lower().endswith(('.glb', '.gltf')):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=args.input)
 else:
-    bpy.ops.wm.open_mainfile(filepath=args.input)
+    if args.source_preview_dir:
+        bpy.ops.wm.open_mainfile(filepath=args.input, use_scripts=False)
+    else:
+        bpy.ops.wm.open_mainfile(filepath=args.input)
 
+if args.source_preview_dir:
+    print("MARE_SOURCE_PREVIEW_STAGE MEASURE", flush=True)
 # 저장 시점의 포즈가 아니라 기본 자세(rest)에서 측정한다.
 for _a in bpy.data.objects:
     if _a.type == 'ARMATURE':
@@ -276,6 +285,205 @@ if args.candidate_output:
         'nativeRuntimeVerified': False, 'gameApplied': False,
         'productionPromotionAllowed': False,
     }
+# [원본 시각 증거] 별도 검수용 씬에서 실제 원본 메쉬의 여러 방향을 렌더한다.
+# 원본/등록 파일을 저장하거나 시각 안전·종 일치·승인 결론을 만들지 않는다.
+if args.source_preview_dir:
+    from pathlib import Path
+    source = Path(args.input).resolve()
+    out = Path(args.source_preview_dir).resolve()
+    out.mkdir(parents=True, exist_ok=True)
+    if not boxes or not meshes or not all(math.isfinite(x) for x in (*all_lo, *all_hi)):
+        raise ValueError('SOURCE_PREVIEW_NO_FINITE_MESH')
+    # 외부 라이브러리나 임의 파일 참조는 검수 화면을 만들기 전에 차단한다.
+    if bpy.data.libraries:
+        raise ValueError('SOURCE_PREVIEW_EXTERNAL_LIBRARY')
+    # 구형 원본의 화면 참고 사진과 실제 재질 텍스처를 구분한다.
+    # 외부 파일은 읽지 않고, 렌더에 연결된 이미지나 사용처가 불명확한 이미지는 계속 차단한다.
+    print("MARE_SOURCE_PREVIEW_STAGE TEXTURE", flush=True)
+    ignored_reference_images = 0
+    restored_texture_references = 0
+    image_users = bpy.data.user_map()
+    unused_references = []
+    for im in bpy.data.images:
+        if im.source != 'FILE' or im.packed_file:
+            continue
+        image_path = Path(bpy.path.abspath(im.filepath)).resolve()
+        if image_path.parent == source.parent and image_path.is_file():
+            continue
+        owners = image_users.get(im, set())
+        # ID 사용처가 없는 이미지, 편집기 화면, 렌더되지 않는 이미지 Empty만 제외한다.
+        # Texture/Material/NodeTree 등 실제 데이터 사용처는 미사용으로 추정하지 않는다.
+        reference_only = all(
+            isinstance(owner, bpy.types.Screen)
+            or (isinstance(owner, bpy.types.Object) and owner.type == 'EMPTY'
+                and owner.data == im)
+            for owner in owners
+        )
+        if not reference_only:
+            # 압축 원본과 함께 검증·추출한 같은 폴더의 정확한 파일명만 복원한다.
+            # 구형 Blender의 절대경로/Windows 경로를 외부 접근 없이 재연결한다.
+            filename = str(im.filepath).replace('\\', '/').rsplit('/', 1)[-1]
+            local = source.parent / filename
+            suffix = local.suffix.lower()
+            if (not re.fullmatch(r'[A-Za-z0-9_. -]+\.(?i:png|jpg|jpeg)', filename)
+                    or local.is_symlink() or not local.is_file()
+                    or local.resolve().parent != source.parent
+                    or not 0 < local.stat().st_size <= 5_000_000):
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            payload = local.read_bytes()
+            if not (payload.startswith(b'\x89PNG\r\n\x1a\n') if suffix == '.png'
+                    else payload.startswith(b'\xff\xd8\xff') and payload.endswith(b'\xff\xd9')):
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            # 실제 디코딩 성공까지 확인하며 원본 파일에는 저장하지 않는다.
+            im.filepath = str(local)
+            im.reload()
+            if not im.has_data or len(im.size) != 2 or min(im.size) <= 0:
+                raise ValueError('SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE')
+            restored_texture_references += 1
+            continue
+        unused_references.append(im)
+    # 원본은 저장하지 않으며 검수 프로세스 메모리에서만 참조를 제거한다.
+    for im in unused_references:
+        bpy.data.images.remove(im, do_unlink=True)
+        ignored_reference_images += 1
+    scene = bpy.data.scenes.new('SourceReviewEvidence')
+    print("MARE_SOURCE_PREVIEW_STAGE SCENE", flush=True)
+    for obj in meshes + arms:
+        scene.collection.objects.link(obj)
+    scene.render.engine = 'BLENDER_WORKBENCH'
+    scene.render.film_transparent = False
+    scene.render.resolution_x = 640
+    scene.render.resolution_y = 640
+    scene.render.resolution_percentage = 100
+    scene.render.image_settings.file_format = 'PNG'
+    scene.render.image_settings.color_mode = 'RGB'
+    scene.display.shading.light = 'STUDIO'
+    scene.display.shading.color_type = 'TEXTURE'
+    scene.display.shading.show_backface_culling = False
+    scene.display.shading.show_shadows = True
+    scene.display.shading.background_type = 'WORLD'
+    scene.world = bpy.data.worlds.new('SourceReviewWorld')
+    scene.world.color = (0.16, 0.16, 0.16)
+    cam = bpy.data.objects.new('SourceReviewCamera', bpy.data.cameras.new('SourceReviewCamera'))
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+    cam.data.type = 'ORTHO'
+    center = (all_lo + all_hi) / 2
+    size = max(all_hi[i] - all_lo[i] for i in range(3))
+    if not math.isfinite(size) or size <= 0:
+        raise ValueError('SOURCE_PREVIEW_EMPTY_BOUNDS')
+    cam.data.ortho_scale = size * 1.85
+    cam.data.clip_start = max(1e-6, size * 0.001)
+    cam.data.clip_end = max(100, size * 20)
+    frames = []
+    for name, vector in [('front', (1, -2, 1)), ('rear', (-1, 2, 1)), ('side', (2, 0, 0.5))]:
+        cam.location = center + Vector(vector).normalized() * size * 3
+        cam.rotation_euler = (center - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        png = out / (name + '.png')
+        scene.render.filepath = str(png)
+        print("MARE_SOURCE_PREVIEW_STAGE RENDER_" + name.upper(), flush=True)
+        bpy.ops.render.render(write_still=True, scene=scene.name)
+        data = png.read_bytes()
+        if len(data) < 128 or data[:8] != b'\x89PNG\r\n\x1a\n':
+            raise ValueError('SOURCE_PREVIEW_INVALID_IMAGE')
+        frames.append({'name': png.name, 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)})
+    result['sourcePreview'] = {'sourceSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+                               'frames': frames, 'renderer': 'BLENDER_WORKBENCH_TEXTURE',
+                               'ignoredReferenceImages': ignored_reference_images,
+                               'restoredTextureReferences': restored_texture_references,
+                               'visualQualityApproved': False, 'registrationApproved': False}
+
+# [동물 품질 수리] 원본 렌더 완료 후 별도 후보만 제작한다. 기존 범용 후보 차단은 유지한다.
+if args.animal_quality_candidate:
+    from pathlib import Path
+    candidate = Path(args.candidate_output or '').resolve()
+    candidate_safe = bool(args.candidate_output and args.source_preview_dir
+                          and candidate.parent == Path(args.source_preview_dir).resolve()
+                          and candidate.name == 'quality.glb'
+                          and candidate != Path(args.input).resolve()
+                          and not candidate.exists())
+    repair = {'attempted': True, 'created': False, 'originalPreserved': True,
+              'nativeRuntimeVerified': False, 'gameApplied': False,
+              'productionPromotionAllowed': False}
+    result['candidate'] = repair
+    try:
+        if not candidate_safe or not args.input.lower().endswith('.glb'):
+            raise ValueError('ANIMAL_QUALITY_INPUT_UNSUPPORTED')
+        if (not 0 < result['triangles'] < 1000 or not arms
+                or not 0 < sum(len(a.data.bones) for a in arms) <= 50
+                or not acts or sorted(source_mesh_names) != sorted(o.name for o in meshes)
+                or any(o.data.shape_keys or len(o.data.polygons) == 0 for o in meshes)):
+            raise ValueError('ANIMAL_QUALITY_SOURCE_UNSUPPORTED')
+        # 실제 곡면을 개선하는 한 단계 Catmull-Clark만 선택한다.
+        # 원본의 부품·UV·재질은 삭제하지 않으며 단순 면 개수 채우기는 사용하지 않는다.
+        predicted = result['triangles']
+        selected = []
+        for obj in sorted(meshes, key=lambda o: (-len(o.data.polygons), o.name)):
+            before = sum(max(1, len(p.vertices) - 2) for p in obj.data.polygons)
+            after = sum(2 * len(p.vertices) for p in obj.data.polygons)
+            if after > before and predicted + after - before <= 3000:
+                selected.append(obj)
+                predicted += after - before
+        if not selected or predicted < 1000:
+            raise ValueError('ANIMAL_QUALITY_BUDGET_UNREACHABLE')
+        for obj in selected:
+            bpy.context.view_layer.objects.active = obj
+            obj.select_set(True)
+            mod = obj.modifiers.new('MareAnimalSurface', 'SUBSURF')
+            mod.subdivision_type = 'CATMULL_CLARK'
+            mod.levels = mod.render_levels = 1
+            # 스킨 변형 전에 기본 메시에서 수리한다.
+            while obj.modifiers.find(mod.name) > 0:
+                if 'FINISHED' not in bpy.ops.object.modifier_move_up(modifier=mod.name):
+                    raise ValueError('ANIMAL_QUALITY_MODIFIER_ORDER')
+            if 'FINISHED' not in bpy.ops.object.modifier_apply(modifier=mod.name):
+                raise ValueError('ANIMAL_QUALITY_MODIFIER_FAILED')
+        actual = sum(sum(max(1, len(p.vertices) - 2) for p in o.data.polygons) for o in meshes)
+        if not 1000 <= actual <= 3000:
+            raise ValueError('ANIMAL_QUALITY_BUDGET_INVALID')
+        # 내보내기에서 스킨 가중치가 누락되거나 잘리는 모델은 보류한다.
+        for obj in meshes:
+            if any(m.type == 'ARMATURE' for m in obj.modifiers):
+                if not obj.vertex_groups:
+                    raise ValueError('ANIMAL_QUALITY_WEIGHT_INVALID')
+                for vertex in obj.data.vertices:
+                    weights = [g.weight for g in vertex.groups if g.weight > 1e-6]
+                    if (not 1 <= len(weights) <= 4 or abs(sum(weights) - 1.0) > 0.02):
+                        raise ValueError('ANIMAL_QUALITY_WEIGHT_INVALID')
+        # 검수 카메라·원본에 없는 보조 메시를 제외하고 실제 모델 및 상위 노드만 내보낸다.
+        export_objects = set(meshes + arms)
+        for obj in list(export_objects):
+            parent = obj.parent
+            while parent is not None:
+                export_objects.add(parent)
+                parent = parent.parent
+        if any(o.type not in ('MESH', 'ARMATURE', 'EMPTY') or
+               o.name not in bpy.context.view_layer.objects for o in export_objects):
+            raise ValueError('ANIMAL_QUALITY_EXPORT_SCOPE_INVALID')
+        for obj in bpy.context.view_layer.objects:
+            obj.select_set(obj in export_objects)
+        for arm in arms:
+            arm.data.pose_position = 'POSE'
+        bpy.context.view_layer.update()
+        if 'FINISHED' not in bpy.ops.export_scene.gltf(filepath=str(candidate), export_format='GLB',
+                use_selection=True, export_skins=True, export_animations=True, export_apply=False):
+            raise ValueError('ANIMAL_QUALITY_EXPORT_FAILED')
+        if not candidate.is_file() or not 0 < candidate.stat().st_size <= 5_000_000:
+            raise ValueError('ANIMAL_QUALITY_EXPORT_SIZE')
+        repair.update(created=True, reason='ANIMAL_QUALITY_CANDIDATE_EXPORTED',
+                      method='CATMULL_CLARK_BUDGETED_ONE_LEVEL',
+                      sourceSha256=result['sourcePreview']['sourceSha256'],
+                      sha256=hashlib.sha256(candidate.read_bytes()).hexdigest(),
+                      trianglesBefore=result['triangles'], trianglesAfter=actual,
+                      modifiedMeshes=[o.name for o in selected])
+    except (OSError, RuntimeError, ValueError, TypeError, AttributeError, KeyError) as error:
+        if candidate_safe and candidate.is_file():
+            candidate.unlink()
+        reason = str(error)
+        repair['reason'] = reason if re.fullmatch(r'ANIMAL_QUALITY_[A-Z_]+', reason) else 'ANIMAL_QUALITY_CANDIDATE_FAILED'
+
+if args.source_preview_dir:
+    print("MARE_SOURCE_PREVIEW_STAGE OUTPUT", flush=True)
 with open(args.output, 'w', encoding='utf8') as f:
     json.dump(result, f, ensure_ascii=False, indent=1)
 print('VIBE_MESH_AUDIT_MEASURED', len(rows))

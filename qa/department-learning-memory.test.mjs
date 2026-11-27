@@ -1,10 +1,22 @@
+// 파일명: qa/department-learning-memory.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import { writeEvolutionEvidence } from '../tools/evolution-evidence-recorder.mjs';
-import { ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
+import { CORE_DEPARTMENT_ROLES, ingestVerifiedDepartmentEvidence, normalizeVerifiedDepartmentLearning, selectVerifiedDepartmentLearning } from '../tools/department-learning-memory.mjs';
+import { buildVibeCoreContext } from '../tools/autonomous-department-cycle.mjs';
+
+// [학습 모듈 로딩 회귀] 바이브2 작업자가 평가 코드에서 직접 import해도 CLI 저장을 실행하지 않는다.
+test('department learning memory import from Node module eval does not require argv[1]',()=>{
+  const output=execFileSync(process.execPath,
+    ['--input-type=module','--eval',"await import('./tools/department-learning-memory.mjs')"],
+    {cwd:process.cwd(),encoding:'utf8'});
+  assert.equal(output,'');
+});
 
 const roles=['planning','development','graphics','qa','balance'];
 const resultFor=(role,extra={})=>({role,workState:'DONE',decision:'PROCEED',summary:`${role} summary`,nextAction:`${role} action`,checks:[`${role} check`],risks:[],...extra});
@@ -112,4 +124,149 @@ test('Vibe59 independently verified specialist identity survives existing learni
   assert.equal(selected[0].verified,true);
   assert.equal(selected[0].independentQa,'PASS');
   assert.equal(normalizeVerifiedDepartmentLearning({...evidence,independentQa:'FAIL'}).length,0);
+});
+
+
+// [부서 전문성] 현재 목표와 연결된 독립 검증 경험만 다른 게임에서 재사용한다.
+test('부서 경험은 현재 목표의 동일 주제를 먼저 검색하고 무관한 타게임 경험을 제외한다',()=>{
+  const shared={verified:true,independentQa:'PASS',role:'graphics',workLane:'FULL',
+    outcome:'SUCCESS',sourceRevision:'abcdef123456',verifiedAt:'2026-11-20T00:00:00Z'};
+  const ledger={verifiedLearning:[
+    {...shared,sourceEvidenceId:'unrelated',gameId:'P0100',gameSlug:'city-game',
+      sourcePath:'web-games/city-game',summary:'상점 메뉴 버튼 재배치',nextAction:'상점 목록 정렬'},
+    {...shared,sourceEvidenceId:'related',gameId:'P0200',gameSlug:'ocean-battle',
+      sourcePath:'web-games/ocean-battle',summary:'선박 포격 물보라 렌더링',nextAction:'물보라 화면 효과 검증'},
+    {...shared,sourceEvidenceId:'same',gameId:'P0001',gameSlug:'mare-essentia',
+      sourcePath:'roblox-games/mare-essentia',summary:'선박 포격 물보라 시각효과',nextAction:'모바일 선박 물보라 확인'},
+  ]};
+  const selected=selectVerifiedDepartmentLearning(ledger,{
+    role:'graphics',gameId:'P0001',gameSlug:'mare-essentia',
+    sourcePath:'roblox-games/mare-essentia',workLane:'FULL',
+    goal:'선박 포격 물보라 표현 개선',
+  },4);
+  assert.deepEqual(selected.map(row=>row.sourceEvidenceId),['same','related']);
+  assert.ok(selected[0].relevance>selected[1].relevance);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'qa',goal:'선박 포격 물보라 표현 개선'}),[]);
+  // 이전 작업자는 목표를 전달하지 않았으므로 기존 방식의 과거 경험 조회를 유지한다.
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'graphics'}).length,3);
+});
+
+
+test('현행 5개 부서는 오디오를 포함하며 기존 밸런스 기록도 보존한다',()=>{
+  assert.deepEqual(CORE_DEPARTMENT_ROLES,['planning','graphics','development','qa','audio']);
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-audio-learning-'));
+  try{
+    const candidatePath=path.join(dir,'audio-cycle.json');
+    fs.writeFileSync(candidatePath,JSON.stringify(candidateEvidence({
+      candidateId:'audio-verified-1',departmentCycle:{
+        gameId:'mare-essentia',gameSlug:'mare-essentia',sourcePath:'roblox-games/mare-essentia',
+        workLane:'FULL',finalDecision:'PROCEED',results:CORE_DEPARTMENT_ROLES.map(role=>
+          resultFor(role,{provider:'GROQ',model:'openai/gpt-oss-20b',specialistDomain:role.toUpperCase(),
+            summary:role==='audio'?'선박 포격 효과음 이벤트와 실제 런타임 동기화':'verified '+role})),
+      }
+    }),null,2));
+    const output=path.join(dir,'verified-audio.json');
+    const evidence=writeEvolutionEvidence(output,{
+      id:'vibe2-audio-verified',type:'VIBE2',patternId:'audio-binding',
+      gameId:'mare-essentia',outcome:'SUCCESS',delta:0,sourceRevision:'b'.repeat(40),
+      independentQaPass:true,evidence:[candidatePath,'independent-qa-pass'],
+    });
+    assert.deepEqual(evidence.departmentLearning.results.map(row=>row.role),CORE_DEPARTMENT_ROLES);
+    const ledger={version:1,departments:{audio:{xp:200},balance:{xp:350}},history:[]};
+    const before=JSON.stringify(ledger.departments);
+    assert.equal(ingestVerifiedDepartmentEvidence(ledger,evidence).added,5);
+    assert.equal(ingestVerifiedDepartmentEvidence(ledger,evidence).added,0);
+    assert.equal(JSON.stringify(ledger.departments),before);
+    const audio=selectVerifiedDepartmentLearning(ledger,{role:'audio',gameId:'mare-essentia',
+      goal:'선박 포격 효과음 동기화'},3);
+    assert.equal(audio.length,1);
+    assert.match(audio[0].summary,/효과음/);
+    assert.equal(audio[0].specialistDomain,'AUDIO');
+    assert.equal(audio[0].model,'openai/gpt-oss-20b');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('과거 밸런스 검증 기록은 그대로 학습·조회되지만 현재 오디오 부서를 대신하지 않는다',()=>{
+  const legacy={id:'old-balance',type:'VIBE2',gameId:'P0001',outcome:'SUCCESS',
+    verified:true,independentQa:'PASS',sourceRevision:'abc123',
+    departmentLearning:{gate:'PASS',gameId:'P0001',results:roles.map(resultFor)}};
+  const ledger={version:1,verifiedLearning:[]};
+  assert.deepEqual(normalizeVerifiedDepartmentLearning(legacy).map(row=>row.role),roles);
+  assert.equal(ingestVerifiedDepartmentEvidence(ledger,legacy).added,5);
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'balance',gameId:'P0001'}).length,1);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'audio',gameId:'P0001'}),[]);
+});
+
+
+test('모든 부서는 출처 리비전과 현재 작업 목표가 맞는 검증 경험만 재사용한다',()=>{
+  const shared={role:'development',verified:true,independentQa:'PASS',
+    sourceRevision:'abc123',outcome:'SUCCESS',workLane:'FULL',verifiedAt:'2026-11-20T00:00:00Z'};
+  const ledger={verifiedLearning:[
+    {...shared,sourceEvidenceId:'ocean',gameId:'OCEAN',sourcePath:'roblox-games/ocean',summary:'선박 전투 포격 처리',nextAction:'포격 회귀 검증'},
+    {...shared,sourceEvidenceId:'menu',gameId:'MENU',sourcePath:'web-games/menu',summary:'상점 목록 버튼 정렬',nextAction:'상점 배치'},
+    {...shared,sourceEvidenceId:'unbound',sourceRevision:'',gameId:'OCEAN',sourcePath:'roblox-games/ocean',summary:'출처 불명 포격 처리'},
+  ]};
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'작업 개선'}),[]);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',goal:'선박 포격 표현'}).map(x=>x.sourceEvidenceId),['ocean']);
+  assert.deepEqual(selectVerifiedDepartmentLearning(ledger,{role:'development',gameId:'OCEAN',goal:'작업 개선'}).map(x=>x.sourceEvidenceId),['ocean']);
+  assert.equal(selectVerifiedDepartmentLearning(ledger,{role:'development'}).length,2,'기존 목표 없는 조회는 검증 출처만 유지');
+});
+
+// [Vibe5.9 부서 역량 회귀] 경험치 자체는 바꾸지 않고 기존 품질 심화 지시를 실제 부서 검토에 전달한다.
+test('기획·그래픽·개발·QA·오디오의 검증 경험치가 기존 부서 사이클 품질 지시로 연결된다',()=>{
+  const ledger={version:1,departments:{
+    planning:{xp:400},graphics:{xp:400},development:{xp:9320},qa:{xp:3800},balance:{xp:200}
+  },verifiedLearning:[],history:[{type:'legacy-evidence'}]};
+  const original=JSON.stringify(ledger);
+  const order={run:true,gameId:'DEMO',gameSlug:'demo',sourcePath:'web-games/demo',
+    projectStage:'development',goal:'모바일 UI와 오디오 피드백 점검',
+    responsibilityFiles:['web-games/demo/app.js']};
+  const book={id:'demo-artbook',gameId:'demo',status:'COMPLETED',
+    cuts:Array.from({length:16},(_,i)=>({i})),postprocess:{complete:true},
+    lifecycle:{state:'DESIGN_BASELINE'}};
+  const core=buildVibeCoreContext({order,book,departmentExperience:ledger});
+  assert.deepEqual(Object.keys(core.departmentQualityByRole),[...CORE_DEPARTMENT_ROLES,'planning-final']);
+  assert.equal(core.departmentQualityByRole.planning.level,3);
+  assert.equal(core.departmentQualityByRole.graphics.level,3);
+  assert.equal(core.departmentQualityByRole.development.level,10);
+  assert.equal(core.departmentQualityByRole.qa.level,8);
+  assert.equal(core.departmentQualityByRole.audio.level,1,'오디오 미기록 경험치를 임의 부여하지 않는다');
+  assert.equal(core.departmentQualityByRole['planning-final'].level,3,'최종 기획은 기존 기획 경험치를 재사용한다');
+  assert.match(core.departmentQualityByRole.development.instruction,/부서 경험치 LV10/);
+  assert.match(core.departmentQualityByRole.development.instruction,/회귀 검증 깊이: adversarial/);
+  assert.match(core.departmentQualityByRole.audio.instruction,/부서 경험치 LV1/);
+  assert.ok(core.departmentQualityByRole.audio.focus.includes('모바일 호환/라이선스'));
+  assert.ok(Object.values(core.departmentQualityByRole).every(item=>item.authority==='unchanged-by-experience'));
+  assert.equal(core.departmentLearning.totalUsed,0,'미검증 학습 경험을 생성하지 않는다');
+  assert.equal(core.departmentReviewRequired,true);
+  assert.equal(core.maySelfApprove,false);
+  assert.equal(JSON.stringify(ledger),original,'기존 경험치·기록·밸런스는 불변이다');
+});
+
+
+test('department learning direct CLI retains existing XP and history with no unverified evidence',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-department-cli-'));
+  try{
+    const ledgerPath=path.join(dir,'department-experience.json');
+    const evidenceDir=path.join(dir,'evidence');
+    fs.mkdirSync(evidenceDir);
+    const original={version:1,departments:{development:{xp:9320}},history:[{type:'existing-verified'}]};
+    fs.writeFileSync(ledgerPath,JSON.stringify(original),'utf8');
+    const script=fileURLToPath(new URL('../tools/department-learning-memory.mjs',import.meta.url));
+    const output=execFileSync(process.execPath,[script,'--ledger='+ledgerPath,'--evidence-dir='+evidenceDir],{encoding:'utf8'});
+    assert.equal(JSON.parse(output).xpMutation,false);
+    const ledger=JSON.parse(fs.readFileSync(ledgerPath,'utf8'));
+    assert.deepEqual(ledger.departments,original.departments);
+    assert.deepEqual(ledger.history,original.history);
+    assert.equal(ledger.verifiedLearning,undefined,'증거가 없으면 기존 저장 구조에 새 필드를 만들지 않는다');
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('read-only pull-request learning QA does not serialize unrelated PRs or the main writer',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-dna-learning.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes("github.event_name == 'pull_request'"));
+  assert.ok(workflow.includes("format('company-dna-learning-pr-{0}', github.event.pull_request.number)"));
+  assert.ok(workflow.includes("|| 'company-dna-learning'"));
+  assert.ok(workflow.includes("if: github.event_name != 'pull_request'"));
+  assert.ok(workflow.includes('cancel-in-progress: false'));
 });

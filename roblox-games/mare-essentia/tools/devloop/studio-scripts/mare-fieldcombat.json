@@ -42,6 +42,11 @@
   "code": "local ch=game.Players.LocalPlayer.Character local h=ch:WaitForChild('HumanoidRootPart',5) local f=workspace.FieldScene local tg=nil local bd=1e9 for _,m in f:GetChildren() do local r=m:IsA('Model') and m:FindFirstChildOfClass('Humanoid') and m:FindFirstChild('HumanoidRootPart') if r and m~=ch then local d=(r.Position-h.Position).Magnitude if d<bd then bd=d tg=r end end end if tg then local m=tg.Parent h.CFrame=CFrame.lookAt(h.Position,Vector3.new(tg.Position.X,h.Position.Y,tg.Position.Z)) m:PivotTo(CFrame.new(h.Position+h.CFrame.LookVector*7)) end return 'faced '..tostring(bd)"
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"FieldScene\") local sum,cnt=0,0\nif f then for _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then cnt+=1 sum+=(m:GetAttribute(\"FieldEnemyHpRatio\") or 1) end end end\nworkspace:SetAttribute(\"QASkill_sum\",sum) workspace:SetAttribute(\"QASkill_cnt\",cnt) return string.format(\"FIELD_HP_BEFORE sum=%.2f enemies=%d\",sum,cnt)"
+ },
+ {
   "type": "capture",
   "name": "c1_approach"
  },
@@ -104,6 +109,11 @@
  {
   "type": "luau",
   "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"FieldScene\") local sum,cnt=0,0\nif f then for _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then cnt+=1 sum+=(m:GetAttribute(\"FieldEnemyHpRatio\") or 1) end end end\nlocal s0,c0=workspace:GetAttribute(\"QASkill_sum\"),workspace:GetAttribute(\"QASkill_cnt\")\nassert(s0 and c0,\"FIELD_QA_NO_BASELINE\")\nassert(c0>0,\"FIELD_QA_NO_ENEMIES\")\n-- [실제 타격] 적 체력 합이 줄었거나 적 수가 줄었어야 실제 공격 발생으로 인정한다.\nassert(sum<s0-0.001 or cnt<c0,\"FIELD_SKILL_NO_DAMAGE:hp=\"..string.format(\"%.2f->%.2f\",s0,sum)..\" enemies=\"..c0..\"->\"..cnt)\nreturn string.format(\"FIELD_SKILL_NO_DAMAGE_PASS hp=%.2f->%.2f enemies=%d->%d\",s0,sum,c0,cnt)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
   "code": "workspace:SetAttribute('DevFieldSkill','dash') return 'dash'"
  },
  {
@@ -118,6 +128,26 @@
   "type": "luau",
   "ctx": "Client",
   "code": "local pg=game.Players.LocalPlayer.PlayerGui local o={} for _,g in pg:GetDescendants() do if g:IsA('TextButton') and g.Parent.Name=='FieldGui' then table.insert(o,g.Text) end end return 'ready='..tostring(workspace:GetAttribute('FieldCombatReady'))..' err='..tostring(workspace:GetAttribute('FieldErr'))..' btns='..table.concat(o,'|')"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"FieldScene\") local sum,cnt=0,0\nif f then for _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then cnt+=1 sum+=(m:GetAttribute(\"FieldEnemyHpRatio\") or 1) end end end\nworkspace:SetAttribute(\"QAClick_sum\",sum) workspace:SetAttribute(\"QAClick_cnt\",cnt) return string.format(\"FIELD_HP_BEFORE sum=%.2f enemies=%d\",sum,cnt)"
+ },
+ {
+  "type": "click_from_luau",
+  "ctx": "Client",
+  "label": "field_attack_button",
+  "code": "local pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal b=pg:FindFirstChild(\"FieldAttack\",true) or pg:FindFirstChild(\"FieldAttackButton\",true)\nassert(b and b:IsA(\"GuiButton\") and b.Visible and b.AbsoluteSize.X>0,\"FIELD_ATTACK_BUTTON_MISSING\")\n-- 공격 버튼 근처에 적을 다시 세워 실제 클릭 결과를 확인한다(위치만 조정, 판정 불변).\nlocal ch=game.Players.LocalPlayer.Character local h=ch:WaitForChild(\"HumanoidRootPart\",5) local f=workspace.FieldScene\nfor _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then m:PivotTo(CFrame.new(h.Position+h.CFrame.LookVector*6)) break end end\nreturn string.format(\"%d,%d CLICK=field_attack_button\",math.floor(b.AbsolutePosition.X+b.AbsoluteSize.X/2),math.floor(b.AbsolutePosition.Y+b.AbsoluteSize.Y/2))"
+ },
+ {
+  "type": "wait",
+  "ms": 900
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"FieldScene\") local sum,cnt=0,0\nif f then for _,m in f:GetChildren() do if m.Name==\"FieldEnemy\" and m:IsA(\"Model\") then cnt+=1 sum+=(m:GetAttribute(\"FieldEnemyHpRatio\") or 1) end end end\nlocal s0,c0=workspace:GetAttribute(\"QAClick_sum\"),workspace:GetAttribute(\"QAClick_cnt\")\nassert(s0 and c0,\"FIELD_QA_NO_BASELINE\")\nassert(c0>0,\"FIELD_QA_NO_ENEMIES\")\n-- [실제 타격] 적 체력 합이 줄었거나 적 수가 줄었어야 실제 공격 발생으로 인정한다.\nassert(sum<s0-0.001 or cnt<c0,\"FIELD_ATTACK_CLICK_NO_DAMAGE:hp=\"..string.format(\"%.2f->%.2f\",s0,sum)..\" enemies=\"..c0..\"->\"..cnt)\nreturn string.format(\"FIELD_ATTACK_CLICK_NO_DAMAGE_PASS hp=%.2f->%.2f enemies=%d->%d\",s0,sum,c0,cnt)"
  },
  {
   "type": "luau",
@@ -145,7 +175,7 @@
  {
   "type": "luau",
   "ctx": "Client",
-  "code": "local n=0 local f=workspace:FindFirstChild('FieldScene') if f then for _,m in f:GetChildren() do if m.Name=='FieldAlly' then n+=1 end end end return 'ALLIES '..n"
+  "code": "-- [파티 전용 지상전투] 동료 출전 모델은 0명, 파티 초상은 최대 2명만 허용한다.\nlocal field=assert(workspace:FindFirstChild(\"FieldScene\"),\"FIELD_SCENE_MISSING\")\nlocal gui=assert(game.Players.LocalPlayer.PlayerGui:FindFirstChild(\"FieldGui\"),\"FIELD_GUI_MISSING\")\nlocal models=0\nfor _,m in field:GetDescendants() do\n if m:IsA(\"Model\") and m.Name==\"FieldAlly\" then models+=1 end\nend\nassert(models==0,\"FIELD_COMPANION_COMBAT_MODEL_PRESENT:\"..models)\nlocal cards=0\nfor _,c in gui:GetChildren() do\n if c.Name==\"FieldAllyStatus1\" or c.Name==\"FieldAllyStatus2\" then\n  cards+=1\n  assert(type(c:GetAttribute(\"CompanionId\"))==\"string\" and c:GetAttribute(\"CombatEnabled\")==false,\"FIELD_PARTY_CARD_INVALID:\"..c.Name)\n end\nend\nassert(cards<=2,\"FIELD_PARTY_CARD_LIMIT:\"..cards)\nreturn \"FIELD_PARTY_ONLY_PASS models=\"..models..\" cards=\"..cards"
  },
  {
   "type": "capture",

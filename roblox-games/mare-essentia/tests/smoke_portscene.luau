@@ -9,6 +9,20 @@ local Ports = require("./Ports")
 local ports = {}
 for id in Ports.Ports do table.insert(ports, id) end
 table.sort(ports)
+-- [181개 항구 전수 회귀] 항구별 경관 변경이 등록 항구·문화권 연결을 누락하면 실패한다.
+if #ports ~= 181 then error("항구 목록 181곳 불일치: " .. tostring(#ports)) end
+local PortIdentity = require("./PortIdentity")
+local landmarkPlans = 0
+for _, id in ports do
+	local identity = PortIdentity.get(id)
+	if identity then
+		landmarkPlans += 1
+		if not identity.landmark or not identity.landmark.id then
+			error("항구 상징 원본 계획 누락: " .. id)
+		end
+	end
+end
+if landmarkPlans < 15 then error("항구 상징 건물 계획 15곳 누락") end
 for _, id in ports do
 	if not Cultures.REGION[id] then error("문화권 미등록 항구: " .. id) end
 end
@@ -26,14 +40,38 @@ for region, expected in regionForms do
 	end
 end
 local fails, built = 0, 0
+local Registered = require("./AssetIds")
+local allUsed = State.used
+-- [동적 자산 참조 감사] 항구별 1~5단계 전체 요청을 별도로 수집한다.
+-- 등록 원본 부품·조건부 외형은 무조건 배치해야 한다고 가정하지 않는다.
 for _, id in ports do
+	State.used = {}
 	for lvl = 1, 5 do
 		local ok, err = pcall(function()
 			PortScene.build({ portId = id, portName = id, level = lvl, shipId = "galleon", hasShipyard = true, facilities = { "bank", "guild", "harbormaster", "market" }, storyCount = 0, companions = {} }, function() end)
 		end)
 		if ok then built += 1 else fails += 1 print(("실패: %s L%d — %s"):format(id, lvl, tostring(err))) end
 	end
+	local requested, unrequested, sourceUnrequested = {}, {}, {}
+	local underscore, hyphen = "Town/" .. id .. "_", "Town/" .. id .. "-"
+	for assetKey in Registered do
+		if assetKey:sub(1, #underscore) == underscore or assetKey:sub(1, #hyphen) == hyphen then
+			if State.used[assetKey] then table.insert(requested, assetKey)
+			elseif assetKey:sub(-7) == "-source" then table.insert(sourceUnrequested, assetKey)
+			else table.insert(unrequested, assetKey) end
+		end
+	end
+	if #requested + #unrequested + #sourceUnrequested > 0 then
+		table.sort(unrequested)
+		table.sort(sourceUnrequested)
+		print(("PORT_ASSET_REQUEST_AUDIT port=%s registered=%d requested=%d unrequested=%d sourceUnrequested=%d scope=MOCK_NOT_RUNTIME"):format(
+			id, #requested + #unrequested + #sourceUnrequested, #requested, #unrequested, #sourceUnrequested))
+		if #unrequested > 0 then print("PORT_ASSET_UNREQUESTED " .. id .. " " .. table.concat(unrequested, ";")) end
+		if #sourceUnrequested > 0 then print("PORT_ASSET_SOURCE_UNREQUESTED " .. id .. " " .. table.concat(sourceUnrequested, ";")) end
+	end
+	for assetKey in State.used do allUsed[assetKey] = true end
 end
+State.used = allUsed
 -- 점령 연도 경계 전후도 실제 장면 생성 경로로 확인한다. 스모크는 형태의 렌더링 품질을 보장하지 않는다.
 local eraBuilt = 0
 for _, entry in {
@@ -120,7 +158,19 @@ for _, must in {
 	if not State.used[must] then fails += 1 print("회귀 실패: 요청되지 않음 " .. must) end
 end
 -- [CC0 배경 회귀] AssetIds에 등록된 모델만 항구 문화권별로 요청되어야 한다.
-local Registered = require("./AssetIds")
+-- [항구별 지시서 시설] 실제 등록된 전용 모델만 해당 항구의 기존 1~5단계 빌드에서 요청한다.
+-- 등록되지 않은 원본을 테스트용 실제 자산으로 만들거나 런타임 성공으로 표시하지 않는다.
+for _, portId in ports do
+	for _, kind in { "trade", "tavern", "harbor", "bank", "guild", "scholar" } do
+		for tier = 1, 3 do
+			local assetId = "Town/" .. portId .. "_" .. kind .. "_" .. tostring(tier)
+			if Registered[assetId] and portId == "london" and not State.used[assetId] then
+				fails += 1
+				print("회귀 실패: 런던 지시서 등록 방문 시설 요청되지 않음 " .. assetId)
+			end
+		end
+	end
+end
 for _, id in { "Naval/rocks-sand-a", "Naval/rocks-sand-b", "Naval/rocks-sand-c",
 	"Naval/rocks-a", "Naval/rocks-b", "Naval/patch-sand-foliage", "Castle/ground-hills",
 	"Terrain/Grass_Small", "Terrain/Bush_Small", "Terrain/Rock_2" } do

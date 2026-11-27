@@ -65,6 +65,7 @@ on:
       - 'company-learning/security-immune-system.json'
       - 'company-learning/vibe2-learning-motor.json'
       - 'tools/vibe2-*.mjs'
+      - 'tools/department-learning-memory.mjs'
       - 'tools/company-shared-context.mjs'
       - 'tools/company-constitution-enforcer.mjs'
       - 'tools/company-build-up-directive.mjs'
@@ -1333,6 +1334,38 @@ jobs:
           }
           NODE
 
+          # Reuse the existing ASSET_DEVELOPMENT lane when queued asset priority
+          # blocks GAME_PRIMARY and delayed 24H schedule has not awakened it.
+          # Never steal asset file locks or dispatch while an asset run may be active.
+          if [ "$VIBE2_EXECUTION_LANE" = 'game-primary' ] \
+            && grep -q '=>queued-asset-reservation-priority@' /tmp/vibe2-reserve.log; then
+            if gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=queued&per_page=100" > /tmp/vibe2-asset-wake-queued.json 2>/dev/null \
+              && gh api "repos/$GITHUB_REPOSITORY/actions/runs?status=in_progress&per_page=100" > /tmp/vibe2-asset-wake-running.json 2>/dev/null; then
+              if node - <<'ASSET_WAKE_CHECK'
+          const fs=require('fs');
+          const records=['/tmp/vibe2-asset-wake-queued.json','/tmp/vibe2-asset-wake-running.json']
+            .map(file=>JSON.parse(fs.readFileSync(file,'utf8')).workflow_runs);
+          if(records.some(rows=>!Array.isArray(rows)||rows.length>=100))process.exit(1);
+          const active=records.flat().some(run=>
+            run.path==='.github/workflows/vibe2-continuous-core.yml'
+            &&String(run.display_title||'').endsWith('· asset-development'));
+          process.exit(active?1:0);
+          ASSET_WAKE_CHECK
+              then
+                if gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/vibe2-continuous-core.yml/dispatches" \
+                  -f 'ref=main' -f 'inputs[execution_lane]=asset-development' -f 'inputs[lane_max]=8' >/dev/null; then
+                  echo 'VIBE2_ASSET_PRIORITY_WAKE=DISPATCHED_EXISTING_ASSET_LANE'
+                else
+                  echo 'VIBE2_ASSET_PRIORITY_WAKE=FAILED_GITHUB_DISPATCH' >&2
+                fi
+              else
+                echo 'VIBE2_ASSET_PRIORITY_WAKE=DEDUPED_OR_UNKNOWN'
+              fi
+            else
+              echo 'VIBE2_ASSET_PRIORITY_WAKE=SKIPPED_STATUS_UNAVAILABLE'
+            fi
+          fi
+
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
@@ -1806,18 +1839,120 @@ jobs:
           echo 'VIBE2_LOCAL_AI_ENABLED=NO'
           echo 'VIBE2_WORKER_PROVIDER=GEMINI_API'
 
+      # [공용 블렌더] 기존 로블록스 공식 배포물 캐시를 동일 키/경로로 재사용한다.
+      - name: Restore pinned Blender for native DCC authoring
+        id: native-dcc-cache
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0' && runner.arch == 'X64'
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-4.5.15
+          key: native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1
+
+      # [ARM 블렌더] Ubuntu 패키지 다운로드만 캐시하고 OS 설치/검증은 원래 흐름을 사용한다.
+      - name: Restore ARM Blender package archives
+        id: native-dcc-arm-cache
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0' && runner.arch == 'ARM64'
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-arm64-apt
+          key: native-blender-arm64-ubuntu2404-apt-archives-v1
+
       - name: Prepare declared native DCC authoring runtime
-        timeout-minutes: 5
+        # [블렌더] 공식 SHA 고정 캐시 → 검증된 시스템 → 공식 다운로드 순서. ARM은 기존 무료 apt 경로.
+        timeout-minutes: 12
+        id: native-dcc
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
         shell: bash
+        env:
+          BLENDER_SHA256: 0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e
         run: |
           set -euo pipefail
-          if ! command -v blender >/dev/null 2>&1; then
-            sudo apt-get update -y
-            sudo apt-get install -y blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+          if [ "$RUNNER_ARCH" = X64 ]; then
+            # [실제 렌더 의존성] 블렌더 실행 검증만으로는 EGL 기반 미리보기 렌더가 보장되지 않는다.
+            # 공식 캐시는 유지하고, 없는 시스템 라이브러리만 무료 Ubuntu 패키지로 보충한다.
+            if ! ldconfig -p | grep -F 'libEGL.so.1' >/dev/null; then
+              sudo apt-get update -y
+              sudo apt-get install -y --no-install-recommends libegl1 libgl1-mesa-dri
+            fi
+            ldconfig -p | grep -F 'libEGL.so.1' >/dev/null || { echo 'VIBE2_NATIVE_DCC_EGL_LIBRARY_MISSING' >&2; exit 1; }
+            echo 'VIBE2_NATIVE_DCC_EGL_LIBRARY=READY'
+            runtime="$RUNNER_TEMP/vibe2-blender-4.5.15"
+            executable="$runtime/blender-4.5.15-linux-x64/blender"
+            if [ -x "$executable" ] && [ -f "$runtime/.official-sha256" ] \
+              && [ "$(cat "$runtime/.official-sha256")" = "$BLENDER_SHA256" ] \
+              && "$executable" --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()' >/dev/null 2>&1; then
+              blender_binary="$executable"
+              echo "VIBE2_NATIVE_DCC_CACHE=RESTORED_VERIFIED"
+              echo "$runtime/blender-4.5.15-linux-x64" >> "$GITHUB_PATH"
+            elif command -v blender >/dev/null 2>&1 \
+              && blender --version 2>/dev/null | grep -qF 'Blender 4.5.15' \
+              && blender --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()' >/dev/null 2>&1; then
+              blender_binary="$(command -v blender)"
+              echo 'VIBE2_NATIVE_DCC_CACHE=REUSED_SYSTEM'
+            else
+              # [캐시 누락/손상] 기존 공식 Blender 4.5.15 아카이브와 SHA를 그대로 사용.
+              rm -rf -- "$runtime"
+              mkdir -p "$runtime"
+              archive="$RUNNER_TEMP/blender-4.5.15-linux-x64.tar.xz"
+              curl --fail --location --retry 3 --connect-timeout 20 --max-time 300 \
+                --output "$archive" \
+                'https://download.blender.org/release/Blender4.5/blender-4.5.15-linux-x64.tar.xz'
+              printf '%s  %s\n' "$BLENDER_SHA256" "$archive" | sha256sum --check --status
+              tar --no-same-owner -xJf "$archive" -C "$runtime"
+              rm -f -- "$archive"
+              [ -x "$executable" ] || { echo 'VIBE2_NATIVE_DCC_BLENDER_BINARY_MISSING' >&2; exit 1; }
+              "$executable" --background --disable-autoexec --python-expr 'import bpy; assert bpy.app.version[:3] == (4, 5, 15); assert bpy.ops.export_scene.gltf.get_rna_type()'
+              printf '%s\n' "$BLENDER_SHA256" > "$runtime/.official-sha256"
+              echo 'built=true' >> "$GITHUB_OUTPUT"
+              echo "$runtime/blender-4.5.15-linux-x64" >> "$GITHUB_PATH"
+              blender_binary="$executable"
+              echo 'VIBE2_NATIVE_DCC_CACHE=VERIFIED_OFFICIAL_ARCHIVE'
+            fi
+          else
+            # [ARM] 실행파일 대신 apt 패키지 아카이브(.deb)만 복원하며 기존 OS 설치를 유지한다.
+            if ! command -v blender >/dev/null 2>&1; then
+              apt_cache="$RUNNER_TEMP/vibe2-blender-arm64-apt"
+              sudo mkdir -p "$apt_cache/partial"
+              sudo apt-get update -y
+              # [정식 설치] apt가 서명된 저장소의 후보 버전을 선택하며 캐시 파일은 재검증한다.
+              sudo apt-get -o "Dir::Cache::archives=$apt_cache" -o "APT::Keep-Downloaded-Packages=true" \
+                install -y --no-install-recommends blender python3-numpy libegl1 libgl1 libgl1-mesa-dri
+              # [캐시 소유권] 루트로 저장된 다운로드 파일을 Actions 캐시가 읽게 한다.
+              sudo chown -R "$(id -u):$(id -g)" "$apt_cache"
+              if compgen -G "$apt_cache/*.deb" >/dev/null; then
+                echo 'arm_packages_built=true' >> "$GITHUB_OUTPUT"
+                echo 'VIBE2_NATIVE_DCC_ARM_PACKAGE_CACHE=ARCHIVES_READY'
+              else
+                echo 'VIBE2_NATIVE_DCC_ARM_PACKAGE_CACHE=EMPTY_NO_SAVE'
+              fi
+            fi
+            blender --background --disable-autoexec --python-expr 'import bpy; assert bpy.ops.export_scene.gltf.get_rna_type()'
+            blender_binary="$(command -v blender)"
+            echo 'VIBE2_NATIVE_DCC_CACHE=ARM_SYSTEM_PACKAGE'
           fi
-          blender --version | head -n 1
+          "$blender_binary" --version | head -n 1
+          # [실제 미리보기 검사] X64 공식 블렌더에서 동일한 EEVEE 엔진의 초소형 프레임을 렌더해 EGL 장애를 조기에 검출한다.
+          if [ "$RUNNER_ARCH" = X64 ]; then
+            "$blender_binary" --background --disable-autoexec --python-exit-code 1 --python-expr 'import bpy; s=bpy.context.scene; s.render.engine="BLENDER_EEVEE_NEXT"; s.render.resolution_x=16; s.render.resolution_y=16; s.render.resolution_percentage=100; cam=bpy.data.objects.new("DCC_EGL_SMOKE",bpy.data.cameras.new("DCC_EGL_SMOKE")); s.collection.objects.link(cam); s.camera=cam; bpy.ops.render.render(write_still=False)'
+            echo 'VIBE2_NATIVE_DCC_EGL_PREVIEW=PASS'
+          fi
           echo 'VIBE2_NATIVE_DCC_RUNTIME=BLENDER_READY'
+
+      # [공용 캐시] 공식 해시/Blender 실행 검증 후에만 저장한다.
+      - name: Save pinned Blender cache for native DCC authoring
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0' && runner.arch == 'X64' && steps.native-dcc.outputs.built == 'true' && steps.native-dcc-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-4.5.15
+          key: native-blender-4.5.15-linux-x64-0d2b8bb2efe97e6c8eb57de6b7322f8800e1984e3125b60decca5f6771e4773e-v1
+
+      # [ARM 캐시 저장] 실제 OS 설치와 Blender 기능 검증에 성공한 패키지만 저장한다.
+      - name: Save ARM Blender package archives
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0' && runner.arch == 'ARM64' && steps.native-dcc.outputs.arm_packages_built == 'true' && steps.native-dcc-arm-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-blender-arm64-apt
+          key: native-blender-arm64-ubuntu2404-apt-archives-v1
 
       - name: Execute declared native DCC authoring verification
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.dcc_recipe_count != '0'
@@ -1845,11 +1980,21 @@ jobs:
           NODE
           test -s /tmp/vibe2-dcc-authoring-evidence.json
 
+      # [무료 AI 쿨다운 공유] 다른 실행·워커가 남긴 모델별 복구 시각을 기존 actions/cache로 복원한다.
+      - name: Restore shared free AI cooldown (run-isolated-learning-practice)
+        if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
+          key: vibe2-free-ai-cooldown-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}-run-isolated-learning-practice
+          restore-keys: vibe2-free-ai-cooldown-
       - name: Run isolated learning practice
         id: practice
         if: steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact')
         continue-on-error: true
         env:
+          VIBE2_FREE_AI_COOLDOWN_FILE: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
           SAFE_TASK: ${{ matrix.safeTask }}
           VARIANT: ${{ matrix.variant }}
           GEMINI_API_KEY: ${{ vars.VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES' && secrets.GEMINI_API_KEY || '' }}
@@ -1912,6 +2057,13 @@ jobs:
             echo 'VIBE2_PRACTICE_EPHEMERAL_WEB_ARTIFACT=NO'
           fi
 
+      - name: Save shared free AI cooldown (run-isolated-learning-practice)
+        if: always() && (steps.order.outputs.run == 'true' && (steps.order.outputs.route == 'analysis-only' || steps.order.outputs.route == 'learning-web-artifact'))
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
+          key: vibe2-free-ai-cooldown-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}-run-isolated-learning-practice-save
       - name: Upload ephemeral Web practice artifact
         if: always() && steps.order.outputs.route == 'learning-web-artifact'
         uses: actions/upload-artifact@v4
@@ -2032,11 +2184,21 @@ jobs:
           echo "VIBE2_SHARED_WORK_LOCK_REASON=${reason:-UNKNOWN}"
           echo 'VIBE2_WORK_LOCK_ACQUIRE_TIMING=POST_MODEL_PREP_READ_ONLY_EXPLORATION_PRE_SOURCE_WRITE'
 
+      # [무료 AI 쿨다운 공유] 다른 실행·워커가 남긴 모델별 복구 시각을 기존 actions/cache로 복원한다.
+      - name: Restore shared free AI cooldown (generate-isolated-candidate-from-pinned-)
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == 'true'
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
+          key: vibe2-free-ai-cooldown-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}-generate-isolated-candidate-from-pinned-
+          restore-keys: vibe2-free-ai-cooldown-
       - name: Generate isolated candidate from pinned main contract
         id: candidate
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == 'true'
         continue-on-error: true
         env:
+          VIBE2_FREE_AI_COOLDOWN_FILE: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
           TASK_ID: ${{ steps.order.outputs.task_id }}
           SAFE_TASK: ${{ matrix.safeTask }}
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
@@ -2369,6 +2531,13 @@ jobs:
           echo "VIBE2_GENERATED_ASSET_FILE_COUNT=${#generated_asset_files[@]}"
           echo "VIBE2_CHANGED_LINE_COUNT=$(( ${added_line_count:-0} + ${deleted_line_count:-0} ))"
 
+      - name: Save shared free AI cooldown (generate-isolated-candidate-from-pinned-)
+        if: always() && (steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.work_lock.outputs.acquired == 'true')
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
+          key: vibe2-free-ai-cooldown-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}-generate-isolated-candidate-from-pinned--save
       - name: Restore incremental QA content-hash cache
         if: steps.candidate.outcome == 'success'
         uses: actions/cache@v4

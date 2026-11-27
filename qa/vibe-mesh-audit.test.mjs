@@ -152,3 +152,117 @@ test('실제 Blender: 원본 GLB 대조로 임포터 보조 메쉬만 제외하�
     fs.rmSync(dir,{recursive:true,force:true});
   }
 });
+
+// [실제 원본 시각 증거] 기존 Blender QA에서 회사 원본의 압축 해제부터 3방향 렌더까지 실행한다.
+// 이미지 존재 및 해시만 검증하며 종 일치·안전·등록 승인을 주장하지 않는다.
+test('실제 Blender: 회사 보관 펭귄 원본 3방향 시각 증거를 생성하고 승인하지 않는다',
+  {skip:!process.env.VIBE2_BLENDER_BINARY&&'Blender 실행 파일 없음',timeout:240000},()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'mare-source-preview-'));
+  const archive=path.resolve('assets/external/simple-rpg/priority-v1/penguin.tar.gz');
+  const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+  const archiveSha='f3e51ff8d9c34faee5a3216105b498d3137d9435cace61767fc7a69fa8180246';
+  const memberSha='8651275a052611fad45ab8a71bfb22ef9ae1ddebff26447b37db6a4a3261bcc6';
+  const audit=path.join(dir,'audit.json'),frames=path.join(dir,'frames');
+  try{
+    assert.equal(sha(fs.readFileSync(archive)),archiveSha);
+    const extract=String.raw`
+import ast,io,os,re,struct,hashlib,json,zipfile,tarfile,sys
+from pathlib import Path
+tree=ast.parse(Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8'))
+names={'inspect_animal_archive','materialize_animal_review_member'}
+exec(compile(ast.Module(body=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in names],type_ignores=[]),'assets_wanted.py','exec'))
+data=Path(sys.argv[1]).read_bytes()
+members=inspect_animal_archive(data,'penguin.tar.gz','penguin')
+assert len(members)==1 and members[0]['sha256']==sys.argv[3]
+print(materialize_animal_review_member(data,'penguin.tar.gz','penguin',members[0],sys.argv[2]))
+`;
+    const unpack=spawnSync('python3',['-c',extract,archive,dir,memberSha],{encoding:'utf8',timeout:30000});
+    assert.equal(unpack.status,0,unpack.stderr);
+    const source=unpack.stdout.trim();
+    assert.equal(sha(fs.readFileSync(source)),memberSha);
+    const run=spawnSync(process.env.VIBE2_BLENDER_BINARY,
+      ['--background','--factory-startup','--disable-autoexec','--python-exit-code','1','--python',
+        path.resolve('tools/vibe_mesh_audit.py'),'--','--input',source,'--output',audit,'--source-preview-dir',frames],
+      {encoding:'utf8',timeout:180000,cwd:dir,env:{PATH:process.env.PATH,HOME:dir,TMPDIR:dir,LANG:'C.UTF-8',LIBGL_ALWAYS_SOFTWARE:'1'},maxBuffer:1<<20});
+    assert.equal(run.status,0,String(run.stderr)+'\n'+String(run.stdout).slice(-2000));
+    const measured=JSON.parse(fs.readFileSync(audit,'utf8'));
+    const evidence=measured.sourcePreview;
+    assert.equal(evidence.sourceSha256,memberSha);
+    assert.equal(evidence.visualQualityApproved,false);
+    assert.equal(evidence.registrationApproved,false);
+    assert.ok(measured.triangles>0);
+    assert.deepEqual(evidence.frames.map(f=>f.name),['front.png','rear.png','side.png']);
+    for(const frame of evidence.frames){
+      const png=fs.readFileSync(path.join(frames,frame.name));
+      assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+      assert.equal(png.readUInt32BE(16),640);
+      assert.equal(png.readUInt32BE(20),640);
+      assert.equal(png.length,frame.bytes);
+      assert.equal(sha(png),frame.sha256);
+    }
+    assert.ok(new Set(evidence.frames.map(f=>f.sha256)).size>1,'distinct camera views required');
+    assert.equal(sha(fs.readFileSync(source)),memberSha);
+    assert.equal(sha(fs.readFileSync(archive)),archiveSha);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('Mare asset ledger executes the existing game-local reference scanner and distinguishes scan failure from zero missing references', () => {
+  const script=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  const prefix=script.split('# 유틸: 원본의 형식')[0];
+  assert.ok(prefix.includes('registry_audit'));
+  const fixture=fs.mkdtempSync(path.join(os.tmpdir(),'mare-reference-scan-'));
+  try{
+    const scanner=path.join(fixture,'tools','devloop','asset_check.py');
+    fs.mkdirSync(path.dirname(scanner),{recursive:true});
+    fs.copyFileSync('roblox-games/mare-essentia/tools/devloop/asset_check.py',scanner);
+    fs.mkdirSync(path.join(fixture,'src'),{recursive:true});
+    fs.writeFileSync(path.join(fixture,'assets-registered.json'),JSON.stringify({assets:{'Town/house':{assetType:'Model'}}}));
+    fs.writeFileSync(path.join(fixture,'default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{MareAssets:{Town:{}}}}}));
+    const source=path.join(fixture,'src','scene.luau');
+    const run=()=>{
+      const code="__file__='tools/devloop/assets_wanted.py'\n"+prefix+
+        "\nprint(json.dumps({'audit':registry_audit,'counts':list(counts.groups()) if counts else None,'missing':missing}))";
+      const result=spawnSync('python3',['-c',code,fixture],{encoding:'utf8',timeout:30000});
+      assert.equal(result.status,0,result.stderr);
+      return JSON.parse(result.stdout.trim());
+    };
+    fs.writeFileSync(source,'importedModel(parent, "Town", "house")\n');
+    assert.equal(run().audit.state,'STATIC_SCAN_OK');
+    assert.deepEqual(run().counts,['1','1','0']);
+    fs.writeFileSync(source,'importedModel(parent, "Town", "absent")\n');
+    assert.equal(run().audit.state,'MISSING_REFERENCES');
+    assert.deepEqual(run().missing,[['scene.luau','Town/absent']]);
+    fs.writeFileSync(path.join(fixture,'assets-registered.json'),JSON.stringify({assets:{
+      'Town/house':{assetType:'Model'},'Town/roof':{assetType:'Model'},
+      'Town/bench':{assetType:'Model'},'CardArt/one':{assetType:'Image'},'CardArt/two':{assetType:'Image'}
+    }}));
+    fs.writeFileSync(path.join(fixture,'src','AssetIds.luau'),'return { ["Town/bench"] = 123 }\n');
+    fs.writeFileSync(source,'importedModel(parent, "Town", "house")\nlocal a=AssetIds["Town/roof"]\nlocal b=AssetIds["CardArt/" .. name]\n-- "Town/bench"\n');
+    const evidence=run().audit.referenceEvidence;
+    assert.equal(evidence.literalOrPlacementReferenceCount,2);
+    assert.equal(evidence.dynamicPrefixCandidateCount,2);
+    assert.equal(evidence.unresolvedReferenceCount,1);
+    assert.deepEqual(evidence.dynamicPrefixes,['CardArt/']);
+    assert.equal(evidence.groups.Town.unresolvedReferenceCount,1);
+    assert.deepEqual(evidence.unresolvedReferenceKeys,['Town/bench']);
+    const registryFile=path.join(fixture,'assets-registered.json');
+    const registry=JSON.parse(fs.readFileSync(registryFile,'utf8'));
+    for(const key of ['Castle/tower-base','Castle/tower-roof','Castle/gate','Interior/tablecloth','Interior/bookcase','Interior/chair','Interior/unused']){
+      registry.assets[key]={assetType:'Model'};
+    }
+    fs.writeFileSync(registryFile,JSON.stringify(registry));
+    fs.writeFileSync(path.join(fixture,'default.project.json'),JSON.stringify({tree:{ReplicatedStorage:{MareAssets:{Town:{},Castle:{},Interior:{}}}}}));
+    fs.writeFileSync(path.join(fixture,'src','PortScene.luau'),'stack("Castle", {"tower-base", "tower-roof"}, 10, 0, 0)\nlocal TITLE_ICONS = {\n  {"시설", "Castle", "gate"},\n}\nimportedModel(parent, "Interior", if tavern then "tablecloth" elseif school then "bookcase" else "chair", pos, 4, false)\n-- stack("Interior", {"unused"}, 5, 0, 0)\nlocal unrelated={"시설", "Interior", "unused"}\n');
+    const detail=run().audit.referenceEvidence;
+    assert.equal(detail.literalOrPlacementReferenceCount,8);
+    assert.equal(detail.dynamicPrefixCandidateCount,2);
+    assert.equal(detail.unresolvedReferenceCount,2);
+    assert.deepEqual(detail.unresolvedReferenceKeys,['Interior/unused','Town/bench']);
+    assert.equal(detail.groups.Castle.unresolvedReferenceCount,0);
+    fs.unlinkSync(scanner);
+    const failed=run();
+    assert.equal(failed.audit.state,'SCAN_ERROR');
+    assert.equal(failed.audit.nativeRuntimeVerified,false);
+    assert.equal(failed.counts,null);
+  }finally{fs.rmSync(fixture,{recursive:true,force:true});}
+});

@@ -21,6 +21,11 @@ local Ports = require(script.Parent:WaitForChild("Ports"))
 local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 -- [동물 실물 규격] 기존 항구/목장의 Animals 시각 정본만 재사용한다.
 local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
+-- [발견물 외형] 백과 실물 대표 모양 연출. 못 읽어도 기존 발견 흐름은 그대로 돈다.
+local okStage, DiscoveryStage = pcall(function()
+	return require(script.Parent:WaitForChild("DiscoveryStage", 5))
+end)
+if not okStage then DiscoveryStage = nil end
 -- 마력숲과 같은 공용 전투 이펙트(타격·치명타·회피·공격 예고). 못 읽어도 기존 입자 효과로 돌아간다.
 local okVfx, CommonVFX = pcall(function()
 	return require(script.Parent:WaitForChild("CommonVFX", 5))
@@ -39,6 +44,13 @@ end
 
 -- [아이콘 표시] 등록된 공용 아이콘·도감 원화만 사용한다. 스킬은 글자 없이 그림을 중앙 배치한다.
 -- 공격·철수 등 기존 글자 버튼의 아이콘 위치는 변경하지 않는다.
+-- [게임 스크립트 권한] SurfaceAppearance.ColorMap은 플러그인 권한에서만 읽힌다. 읽기 실패 시 원본 PBR로 보고 보존한다.
+local function surfaceHasColorMap(sa: Instance?): boolean
+	if not sa then return false end
+	local ok, mapped = pcall(function() return (sa :: any).ColorMap ~= "" end)
+	return (not ok) or mapped == true
+end
+
 local function addIcon(button: TextButton, key: string)
 	local id = (AssetIds :: any)[key]
 	if not id then return nil end
@@ -174,6 +186,51 @@ local REGION_LOOK: {[string]: any} = {
 	wafrica = { ground = RC(168, 140, 84), mat = Enum.Material.Ground, fog = RC(232, 214, 170), fogEnd = 700, clock = 13.5, treeMul = 0.8, rockMul = 1, sizeMul = 1.2, trees = { "tree_large", "tree-default-fall" }, mobs = { "해안 약탈자", "노예 상인 용병", "약탈 두목" }, props = { { "Terrain", "canoe", 3, 8 }, { "Terrain", "tropical-palm-short", 3, 11 }, { "Terrain", "Bush_Small", 4, 3 } } },
 }
 
+-- [항구 고유 지형] 등록된 지역별 자연·건축 실물을 교체해 실재 항구의 지리 특성을 나타낸다.
+-- 이름을 특정하지 않은 나머지 항구도 Ports 원본 위도·경도와 특산품으로 유형을 결정한다.
+-- 전투/보상/지도 좌표는 고치지 않고 장면 마지막 원경 모델 1종과 약한 색감만 변경한다.
+local PORT_NATURE = {
+	venice="lagoon", amsterdam="lagoon", rotterdam="lagoon", antwerp="river",
+	hamburg="river", london="river", rouen="river", bordeaux="river",
+	lisbon="cliff_coast", porto="cliff_coast", copenhagen="islands",
+	stockholm="islands", bergen="fjord", oslo="fjord", edinburgh="moor",
+	glasgow="moor", seville="farmland", naples="volcanic", athens="ruins",
+	cape_town="cliff_coast", algiers="arid_coast", alexandria="river",
+	dakar="arid_coast", zanzibar="mangrove", mombasa="mangrove", kilwa="mangrove",
+	goa="jungle_coast", calcutta="delta", shanghai="delta", canton="delta",
+	singapore="mangrove", batavia="volcanic", nagasaki="mountain_coast",
+	busan="mountain_coast", hakodate="northern_coast",
+	new_orleans="delta", new_york="river", havana="reef", san_juan="reef",
+	san_francisco="cliff_coast", rio="mountain_coast", valparaiso="cliff_coast",
+	sydney="woodland", auckland="volcanic", guam="reef", honolulu="volcanic", suva="reef",
+	hobart="mountain_coast", perth="coast", darwin="mangrove", port_moresby="jungle_coast",
+	tahiti="reef", acapulco="mountain_coast", panama="jungle_coast", guayaquil="delta",
+	callao="arid_coast", sitka="northern_coast", vancouver="fjord",
+}
+-- 문화권의 대표 랜드마크 앞에 들어가는 3번째 실물만 항구 지리와 탐험지로 교체한다.
+-- 없는 자산을 그리지 않고 기존 FieldScene.stageFeature 등록 검사 경로를 통과한다.
+local PORT_NATURE_MODELS = {
+	lagoon = { {"Terrain","ground-riverbendbank",16,0.72,-0.48}, {"Terrain","bridge-stone",15,-0.71,-0.62} },
+	river = { {"Terrain","river-stone-bank",14,0.73,-0.49}, {"Terrain","ground-riverside",17,-0.75,-0.65} },
+	fjord = { {"Terrain","cliff-large-stone",29,0.82,-0.67}, {"Terrain","cliff-cornerlarge-stone",28,-0.83,-0.74} },
+	islands = { {"Terrain","cliff-diagonal-rock",26,0.81,-0.72}, {"Terrain","tree-pinedefaulta",19,-0.76,-0.44} },
+	moor = { {"Terrain","rock-largec",15,0.73,-0.53}, {"Town","tree-crooked",20,-0.78,-0.39} },
+	farmland = { {"Terrain","crops-wheatstageb",12,0.72,-0.49}, {"Town","windmill",25,-0.81,-0.78} },
+	volcanic = { {"Terrain","cliff-blockdiagonal-rock",28,0.84,-0.65}, {"Terrain","rock-talld",16,-0.77,-0.46} },
+	ruins = { {"Terrain","ruins-pillar-decorated",20,0.78,-0.61}, {"Terrain","greek-ruins-a",22,-0.83,-0.73} },
+	cliff_coast = { {"Terrain","cliff-cornerinnertop-rock",28,0.84,-0.61}, {"Terrain","cliff-large-rock",29,-0.86,-0.69} },
+	arid_coast = { {"Terrain","mystic-sand-dune",24,0.81,-0.64}, {"Terrain","cliff-diagonal-rock",26,-0.82,-0.69} },
+	mangrove = { {"Terrain","tropical-palm-tall",22,0.76,-0.55}, {"Terrain","ground-riverbendbank",15,-0.77,-0.60} },
+	jungle_coast = { {"Terrain","east-bamboo-grove",17,0.79,-0.52}, {"Terrain","tropical-palm-tall",21,-0.75,-0.69} },
+	delta = { {"Terrain","ground-riverbendbank",17,0.79,-0.55}, {"Terrain","bridge-wood",15,-0.74,-0.58} },
+	mountain_coast = { {"Terrain","cliff-diagonal-rock",29,0.84,-0.68}, {"Terrain","tree-oak",21,-0.75,-0.54} },
+	northern_coast = { {"Terrain","north-pine-fall",21,0.75,-0.55}, {"Terrain","cliff-large-stone",29,-0.83,-0.68} },
+	reef = { {"Terrain","platform-beach",24,0.81,-0.74}, {"Terrain","coast-grass-patch",10,-0.75,-0.45} },
+	woodland = { {"Terrain","tree-plateau",22,0.78,-0.61}, {"Terrain","forest-bush-detailed",9,-0.72,-0.38} },
+	mineral = { {"Terrain","cliff-cave-rock",28,0.84,-0.73}, {"Terrain","rock-largea",16,-0.76,-0.45} },
+	forest = { {"Terrain","tree-oak",20,0.75,-0.61}, {"Terrain","forest-bush-detailed",10,-0.72,-0.37} },
+	coast = { {"Terrain","cliff-diagonal-rock",24,0.82,-0.69}, {"Terrain","river-stone-bank",12,-0.75,-0.44} },
+}
 -- [지역별 생태] 기존 21개 문화권의 지형·소품과 연결하는 적 무리 배치 구역. 전투 수치/적 수는 그대로 둔다.
 local REGION_ENCOUNTERS = {
 	iberia = "ruins", italy = "ruins", france = "forest", britain = "highland", hanse = "coast",
@@ -244,8 +301,22 @@ local FIELD_TINT = {
 	-- [지형 실물 착색] 원본 회색 PBR 메시를 지역색과 자연스럽게 맞춘다.
 	["Grass_Small"] = Color3.fromRGB(134, 188, 88), ["Bush_Small"] = Color3.fromRGB(82, 146, 72),
 	["Rock_2"] = Color3.fromRGB(153, 148, 134),
+	-- [정식 등록 시 자동 사용] 원본 PBR/텍스처가 있으면 그대로 두고 맵 없는 면만 색 보정.
+	["kenney_rock_largeB"] = Color3.fromRGB(150, 144, 130),
+	["kenney_rock_largeD"] = Color3.fromRGB(137, 129, 114),
+	["kenney_rock_tallE"] = Color3.fromRGB(143, 135, 122),
+	["kenney_rock_smallFlatA"] = Color3.fromRGB(151, 143, 128),
+	["kenney_stone_largeB"] = Color3.fromRGB(172, 175, 170),
+	["kenney_stone_smallFlatA"] = Color3.fromRGB(159, 158, 151),
+	["kenney_tree_fat"] = Color3.fromRGB(84, 139, 73),
+	["kenney_tree_defaultDark"] = Color3.fromRGB(72, 124, 68),
+	["kenney_tree_pinetallD_detailed"] = Color3.fromRGB(87, 128, 109),
+	["kenney_tree_palmShort"] = Color3.fromRGB(82, 144, 85),
+	["kenney_stump_old"] = Color3.fromRGB(121, 98, 70),
+	["kenney_stump_roundDetailed"] = Color3.fromRGB(126, 101, 71),
+	["kenney_log_stackLarge"] = Color3.fromRGB(128, 99, 69),
 }
-local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride)
+local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride, scenicBand)
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild(kind)
 	local tpl = group and group:FindFirstChild(asset)
@@ -260,11 +331,24 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 			d.Anchored = true
 			d.CanCollide = solid == true
 			d.CanTouch = false
+			-- [저폴리 자산 권한 보호] RenderFidelity는 실제 게임 클라이언트에서 쓰기 권한이 없다.
+			-- 원경은 승인된 저폴리 모델 자체를 선택하고, 등록 메시의 정밀도·PBR은 그대로 보존한다.
+			-- [무제한 경관 경량화] 전투 오브젝트 타격은 fieldObjects가 직접 판정하므로
+			-- 충돌 없는 장식은 물리 쿼리에서 제외한다. 계단·단서 등 충돌형 실물은 보존.
+			if solid ~= true then d.CanQuery = false end
+			-- [원경 메시 최적화] 먼 바위·나무는 충돌 유지 여부와 관계없이 그림자만 생략한다.
+			-- 중경 작은 실물·근경 초소형 장식도 같은 방식으로 부하를 줄인다.
+			-- 근경 대형 나무·건물 그림자와 원본 메시·텍스처는 보존한다.
+			if scenicBand == "far" or (solid ~= true
+				and ((scenicBand == "mid" and desired <= 9) or desired <= 4.5)) then
+				d.CastShadow = false
+			end
 			local tint = tintOverride or FIELD_TINT[asset]
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
+					or d.MaterialVariant ~= ""
 				for _, ch in d:GetChildren() do
 					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 				end
@@ -279,41 +363,43 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 						or partName:find("patch", 1, true) or partName:find("spot", 1, true)
 						or partName:find("stripe", 1, true) or partName:find("whisker", 1, true)
 				if textured and not detail then
-					-- [가축/야생 공통 PBR] 원본 지도는 보존하고 중복 색 곱셈을 한 채널로 줄인다.
-					if sa and sa.ColorMap ~= "" then
-						sa.Color = sa.Color:Lerp(tint, 0.16)
-					elseif not sa then
-						d.Color = d.Color:Lerp(tint, 0.16)
+					-- [원본 PBR] 등록된 색상지도와 메시 색을 변형하지 않는다.
+					if sa and surfaceHasColorMap(sa) then
+						-- 기존 색상지도와 Part.Color 모두 보존.
 					end
 				elseif not textured and not detail then
-					local light = math.max(d.Color.R, d.Color.G, d.Color.B)
-					-- [원본 PBR 재질] 색상 지도가 없어도 법선/거칠기 맵을 사용할 수 있다.
-					-- 원본 파츠 색과 PBR 색을 동시에 착색하지 않는다.
-					if sa and sa.ColorMap == "" then
-						sa.Color = sa.Color:Lerp(tint, if light > 0.55 then 0.52 else 0.30)
+					-- [유실색 복구] 회백색으로 표시된 동물의 텍스처 없는 몸통만 품종색으로 조정.
+					local low = math.min(d.Color.R, d.Color.G, d.Color.B)
+					local high = math.max(d.Color.R, d.Color.G, d.Color.B)
+					local faded = high - low <= 0.14 and high >= 0.58
+					if sa and not surfaceHasColorMap(sa) then
+						sa.Color = sa.Color:Lerp(tint, if faded then 0.7 else 0)
 					else
-						d.Color = d.Color:Lerp(tint, if light > 0.55 then 0.88 else 0.62)
+						d.Color = d.Color:Lerp(tint, if faded then 0.82 else 0)
 					end
-					-- [종별 자연 재질] 양털/단모 가죽/돼지 피부. 원본 PBR은 절대 덮지 않는다.
 					if not sa then
-						d.Material = if asset == "sheep" or asset == "llama" or asset == "chicken"
-							or asset == "cat" or asset == "dog-pug" then Enum.Material.Fabric
-							elseif asset == "cow" or asset == "horse" or asset == "donkey" then Enum.Material.Leather
-							elseif asset == "elephant" then Enum.Material.Concrete
-							else Enum.Material.SmoothPlastic
-						d.Reflectance = 0
+						d.Material = if faded and (d.Material == Enum.Material.SmoothPlastic or d.Material == Enum.Material.Plastic)
+							and (asset == "sheep" or asset == "llama") then Enum.Material.Fabric else d.Material
+						-- 원래 Leather/Concrete 재질과 색상 있는 털·피부는 강제로 덮지 않는다.
+						if d.Material == Enum.Material.Leather or d.Material == Enum.Material.Concrete then
+							d.Reflectance = math.min(d.Reflectance, 0.02)
+						end
 					end
-					-- PBR 색은 위에서 한 채널만 보정했다.
 				elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 					d.Material = Enum.Material.Fabric
 				end
 			elseif tint then
-				d.Color = tint
-				pcall(function() (d :: any).UsePartColor = true end)
+				-- [지상전 PBR 재질] 계절색은 무늬 없는 표면에만 약하게 섞는다.
+				-- 승인 메시의 ColorMap/TextureID/UV·원본 색을 강제로 덮지 않는다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-				if sa then sa.Color = tint end
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
 				for _, ch in d:GetChildren() do
-					if ch:IsA("SpecialMesh") then ch.VertexColor = Vector3.new(tint.R, tint.G, tint.B) end
+					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+				end
+				if not textured then
+					local strength = if kind == "Terrain" then 0.40 else 0.28
+					if sa then sa.Color = sa.Color:Lerp(tint, strength)
+					else d.Color = d.Color:Lerp(tint, strength) end
 				end
 			else
 				-- [흰 건물·바닥 복구] 맵 있는 승인 메시/PBR은 보존하고, 색이 빠진 흰 면만 기존 재질로 복구한다.
@@ -330,7 +416,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
 				if named then
 					local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and sa.ColorMap ~= "")
+					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
 					for _, ch in d:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 					end
@@ -373,7 +459,21 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 		if ratio ~= ratio or ratio <= 0 or ratio == math.huge then error("invalid imported model scale") end
 		m:ScaleTo(m:GetScale() * ratio)
 		local center, size = m:GetBoundingBox()
-		local b = Vector3.new(center.Position.X, center.Position.Y - size.Y / 2, center.Position.Z)
+		-- [야생 동물 접지] 수입 리그의 투명 루트 대신 보이는 메시의 발바닥을 기준으로 배치한다.
+		local visibleBottomY = math.huge
+		if kind == "Animals" then
+			for _, piece in m:GetDescendants() do
+				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					local half = piece.Size * 0.5
+					local pose = piece.CFrame
+					visibleBottomY = math.min(visibleBottomY, pose.Position.Y
+						- math.abs(pose.RightVector.Y) * half.X - math.abs(pose.UpVector.Y) * half.Y
+						- math.abs(pose.LookVector.Y) * half.Z)
+				end
+			end
+		end
+		local b = Vector3.new(center.Position.X,
+			if visibleBottomY < math.huge then visibleBottomY else center.Position.Y - size.Y / 2, center.Position.Z)
 		m:PivotTo(CFrame.new(bottom - b) * m:GetPivot())
 		if kind == "People" then
 			Pose.relaxArms(m)
@@ -442,21 +542,21 @@ local function btn(parent, text, color, size, pos, anchor)
 		grain.ZIndex = b.ZIndex + 1
 		grain.Parent = b
 	end
-	-- 스킬만 사용: 원형/직사각 버튼 모두 실제 남은 재사용 시간을 그림 위에 보여 준다.
+	-- [쿨타임] 버튼 아이콘 자체가 어두워졌다 서서히 밝아지며 준비 시 테두리만 반짝인다.
 	local shade = Instance.new("Frame")
 	shade.Name = "FieldCooldownShade"
 	shade.AnchorPoint = Vector2.new(0, 1)
 	shade.Position = UDim2.fromScale(0, 1)
-	shade.Size = UDim2.fromScale(1, 0)
-	shade.BackgroundColor3 = Color3.fromRGB(13, 22, 32)
+	shade.Size = UDim2.fromScale(1, 1)
+	shade.BackgroundColor3 = Color3.fromRGB(43, 33, 25)
 	shade.BackgroundTransparency = 0.24
 	shade.BorderSizePixel = 0
 	shade.Visible = false
 	shade.Active = false
 	shade.ZIndex = b.ZIndex + 4
 	shade.Parent = b
-	-- [스킬 재사용 시각화] 원형 메달 안에서는 마스킹과 초 단위 숫자,
-	-- 아래에서는 남은 시간 비율을 표시한다. 빠른 화면에서도 글자 크기는 고정한다.
+	-- [지상 재사용 연출] 초 숫자를 표시하지 않고 음영·아이콘·가장자리 빛으로 충전 상태를 알린다.
+    -- 기존 쿨타임 판정·모션 버튼은 그대로 사용한다.
 	local ring = Instance.new("UICorner")
 	ring.CornerRadius = UDim.new(1, 0)
 	ring.Parent = shade
@@ -486,6 +586,7 @@ local function btn(parent, text, color, size, pos, anchor)
 	timer.TextStrokeColor3 = Color3.fromRGB(11, 17, 25)
 	timer.TextStrokeTransparency = 0.24
 	timer.Visible = false
+    timer.Text = ""
 	timer.ZIndex = b.ZIndex + 5
 	timer.Parent = b
 	local pressScale = Instance.new("UIScale")
@@ -535,15 +636,74 @@ function FieldScene.start(opts)
 	-- [지역·계절 지형] 실제 달력 월에 맞춰 온대 사계절·북방 설기·열대 우건기·건조지대의 차이를 준다.
 	-- 기존 위험도·몬스터·보상과 무관한 이번 필드 한정 시각 값이며 원본 BIOMES 테이블은 변경하지 않는다.
 	local biome = table.clone(lookFor(opts.name or "", opts.portId))
+	-- [대륙·항구 식별] 기존 Ports 원본 좌표·특산품을 시각적 구역 정체성으로만 읽는다.
+	-- [Luau 지역변수 상한] 대륙 계산용 좌표와 이름은 이 블록에서 바로 해제한다.
+	local portNature, portVisualSeed = nil, 0
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		local latitude, longitude = port and port.lat or 0, port and port.lon or 0
+		local portId = opts.portId or ""
+		local continent = if port == nil then "generic"
+			elseif table.find({ "honolulu", "guam", "tahiti", "suva", "port_moresby" }, portId) then "oceania"
+			elseif portId == "port_louis" then "africa"
+			elseif portId == "panama" or portId == "portobelo" then "north_america"
+			elseif portId == "la_guaira" or portId == "cartagena_indias" then "south_america"
+			elseif longitude < -30 then (if latitude < 10 then "south_america" else "north_america")
+			elseif longitude > 100 and latitude < -9 then "oceania"
+			elseif (biome.region == "wafrica" or biome.region == "swahili" or
+				(latitude < -10 and longitude < 55)) then "africa"
+			elseif longitude >= 38 or biome.region == "korea" or biome.region == "japan"
+				or biome.region == "china" or biome.region == "malabar" or biome.region == "seasia"
+				or biome.region == "ottoman" then "asia"
+			else "europe"
+		portNature = PORT_NATURE[portId]
+		if not portNature and port then
+			portNature = if latitude > 56 then "northern_coast"
+				elseif latitude < -10 and latitude > -42 and continent == "oceania" then "woodland"
+				elseif table.find(port.produces, "timber") then "forest"
+				elseif table.find(port.produces, "iron") or table.find(port.produces, "copper")
+					or table.find(port.produces, "coal") then "mineral"
+				elseif table.find(port.produces, "rice") or table.find(port.produces, "spice") then "mangrove"
+				elseif latitude > 25 and latitude < 36 and continent == "africa" then "arid_coast"
+				elseif continent == "oceania" or (continent == "north_america" and latitude < 28) then "reef"
+				elseif continent == "asia" and latitude < 20 then "jungle_coast"
+				else "coast"
+		end
+		-- [퀘스트마다 다른 배치] 실제 siteId를 사용. 게임 RNG 및 저장·보상과 완전히 분리.
+		local visualKey = portId .. "/" .. (opts.siteId or opts.name or "")
+		for index = 1, #visualKey do
+			portVisualSeed = (portVisualSeed * 31 + string.byte(visualKey, index)) % 2147483647
+		end
+		folder:SetAttribute("FieldContinent", continent)
+		folder:SetAttribute("FieldPortId", portId)
+		folder:SetAttribute("FieldSiteId", opts.siteId or "")
+		folder:SetAttribute("FieldPortNature", portNature or "unknown")
+		folder:SetAttribute("FieldVisualSeed", portVisualSeed)
+	end
 	local month = os.date("!*t").month
+	-- [Studio 촬영] 기존 계절 계산만 검증한다. 실제 서버·클라이언트의 달력은 변경하지 않는다.
+	if RunService:IsStudio() and type(opts.studioCaptureMonth) == "number" and opts.studioCaptureMonth % 1 == 0
+		and opts.studioCaptureMonth >= 1 and opts.studioCaptureMonth <= 12 then
+		month = opts.studioCaptureMonth
+	end
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		if port and port.lat < -10 then month = (month + 5) % 12 + 1 end
+	end
 	local season = if month >= 3 and month <= 5 then "봄" elseif month >= 6 and month <= 8 then "여름"
 		elseif month >= 9 and month <= 11 then "가을" else "겨울"
 	local region = biome.region or ""
 	local northern = region == "nordic" or region == "hanse" or region == "britain" or region == "stone"
 	local tropical = region == "seasia" or region == "tropic" or region == "malabar"
 		or region == "pacific" or region == "creole"
+	-- 태평양 전역을 열대로 취급하지 않는다. 실제 조사 항구의 계절·수목만 보정한다.
+	if string.match(opts.siteId or "", "^pac_survey_%d%d$") then
+		tropical = table.find({ "darwin", "port_moresby", "suva", "tahiti", "honolulu", "guam", "acapulco", "panama", "guayaquil" }, opts.portId or "") ~= nil
+		northern = table.find({ "sitka", "vancouver" }, opts.portId or "") ~= nil
+	end
 	local arid = not tropical and (region == "desert" or region == "ottoman" or region == "med"
-		or region == "wafrica" or region == "swahili" or biome.mat == Enum.Material.Sand)
+		or region == "wafrica" or region == "swahili") -- 해변의 모래는 건조 기후의 근거가 아니다.
+	if string.match(opts.siteId or "", "^pac_survey_%d%d$") then arid = opts.portId == "callao" end
 	local climateZone = if northern then "북방" elseif tropical then "열대"
 		elseif arid then "건조" else "온대"
 	local monsoon = tropical and month >= 5 and month <= 10
@@ -581,18 +741,33 @@ function FieldScene.start(opts)
 			or string.find(questName, "빙설", 1, true) then "glacier"
 		elseif string.find(questName, "늪", 1, true) or string.find(questName, "습지", 1, true)
 			or string.find(questName, "맹그로브", 1, true) then "swamp"
-		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true) then "jungle"
-		elseif string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) then "mine"
+		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
+			or string.find(questName, "우림", 1, true) then "jungle"
+		elseif string.find(questName, "기록", 1, true) or string.find(questName, "보관소", 1, true)
+			or string.find(questName, "도서관", 1, true) or string.find(questName, "천문대", 1, true)
+			or string.find(questName, "진열실", 1, true) or string.find(questName, "약방", 1, true)
+			or string.find(questName, "학회", 1, true) or string.find(questName, "관측", 1, true)
+			or string.find(questName, "대학", 1, true) or string.find(questName, "수도원", 1, true)
+			or string.find(questName, "실험실", 1, true) or string.find(questName, "자료실", 1, true)
+			or string.find(questName, "학자와의 대화", 1, true) or string.find(questName, "병원", 1, true)
+			or string.find(questName, "식물원", 1, true) then "archive"
+		elseif string.find(questName, "광산", 1, true) or string.find(questName, "탄광", 1, true) or string.find(questName, "채석", 1, true) or string.find(questName, "폐광", 1, true) then "mine"
 		elseif string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
 			or string.find(questName, "절벽", 1, true) or string.find(questName, "고지", 1, true)
-			or string.find(questName, "산맥", 1, true) then "highland"
+			or string.find(questName, "산맥", 1, true) or string.find(questName, "봉우리", 1, true)
+			or string.find(questName, "고개", 1, true) or string.find(questName, "바위산", 1, true)
+			or string.find(questName, "후지 산", 1, true) then "highland"
 		elseif string.find(questName, "유적", 1, true) or string.find(questName, "신전", 1, true)
 			or string.find(questName, "열석", 1, true) or string.find(questName, "봉분", 1, true)
-			or string.find(questName, "석상", 1, true) then "ruins"
+			or string.find(questName, "석상", 1, true) or string.find(questName, "발굴지", 1, true)
+			or string.find(questName, "폐허", 1, true) or string.find(questName, "피라미드", 1, true)
+			or string.find(questName, "사원", 1, true) then "ruins"
 		elseif string.find(questName, "성채", 1, true) or string.find(questName, "요새", 1, true)
-			or string.find(questName, "성벽", 1, true) then "fort"
+			or string.find(questName, "성벽", 1, true) or string.find(questName, "방벽", 1, true)
+			or string.find(questName, "성 해자", 1, true) then "fort"
 		elseif string.find(questName, "농장", 1, true) or string.find(questName, "과수원", 1, true)
-			or string.find(questName, "들판", 1, true) then "farm"
+			or string.find(questName, "감자밭", 1, true) or string.find(questName, "아마 밭", 1, true)
+			or string.find(questName, "올리브 밭", 1, true) then "farm"
 		elseif string.find(questName, "호수", 1, true) or string.find(questName, "강", 1, true)
 			or string.find(questName, "습지", 1, true) then "lake"
 		elseif string.find(questName, "사막", 1, true) or string.find(questName, "모래", 1, true)
@@ -600,7 +775,12 @@ function FieldScene.start(opts)
 		elseif string.find(questName, "정글", 1, true) or string.find(questName, "밀림", 1, true)
 			or string.find(questName, "숲", 1, true) then "forest"
 		elseif string.find(questName, "해변", 1, true) or string.find(questName, "난파", 1, true)
-			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true) then "coast"
+			or string.find(questName, "항만", 1, true) or string.find(questName, "포구", 1, true)
+			or string.find(questName, "해적 소굴", 1, true) or string.find(questName, "해안", 1, true)
+			or string.find(questName, "해협", 1, true) or string.find(questName, "갯벌", 1, true)
+			or string.find(questName, "석호", 1, true) or string.find(questName, "등대", 1, true) then "coast"
+		elseif string.find(questName, "평원", 1, true) or string.find(questName, "들판", 1, true)
+			or string.find(questName, "초원", 1, true) then "plains"
 		elseif biome.kind == "forest" then "forest"
 		elseif biome.kind == "coast" then "coast"
 		elseif biome.kind == "mine" then "mine"
@@ -608,6 +788,619 @@ function FieldScene.start(opts)
 		elseif biome.encounter == "ruins" then "ruins"
 		elseif biome.encounter == "highland" then "highland"
 		else "plains"
+	-- [지점 ID] 기존 자동 학문 탐험도 기관 정원으로 연결한다. 적·보상·위험도용 바이옴은 바꾸지 않는다.
+	do
+		local discipline = string.match(opts.siteId or "", "^auto_([%a]+)_")
+		if discipline and table.find({ "chemistry", "physics", "philosophy", "medicine", "astronomy", "navigation", "language", "weather" }, discipline) then
+			questTerrain = "archive"
+		end
+	end
+	-- [지점별 실제 지형] 기존 탐험 지점 ID의 지리·용도를 이름 추정보다 우선한다.
+	do
+		local exact = {
+			london_fields = "plains",
+			salisbury_plain = "plains",
+			london_chalk = "coast",
+			bergen_cliffs = "coast",
+			gibraltar_cliff = "coast",
+			giants_causeway = "coast",
+			visby_cliffs = "coast",
+			oran_cliffs = "coast",
+			viking_harbor = "coast",
+			bergen_whale = "coast",
+			bergen_kelp_coast = "coast",
+			venice_lagoon = "coast",
+			stockholm_woods = "forest",
+			antwerp_willow_river = "lake",
+			seville_groves = "lake",
+			amsterdam_canals = "lake",
+			amsterdam_polder = "lake",
+			stockholm_mine = "mine",
+			falun_mine = "mine",
+			carrara_quarry = "mine",
+			marble_quarry = "mine",
+			london_tin = "mine",
+			plymouth_tin = "mine",
+			vesuvius_slopes = "volcanic",
+			palermo_etna = "volcanic",
+			palermo_etna2 = "volcanic",
+			edo_fuji = "highland",
+			cape_table_mountain = "highland",
+			pompeii_ruins = "ruins",
+			pont_du_gard = "ruins",
+			alexandria_library = "ruins",
+			brittany_stones = "ruins",
+			edo_castle = "fort",
+			quebec_citadel = "fort",
+			hadrian_hills = "fort",
+			antwerp_monastery_herbs = "archive",
+			amsterdam_gardens = "archive",
+			genoa_gardens = "archive",
+			hamburg_lab = "archive",
+			genoa_instruments = "archive",
+			royal_archive = "archive",
+			london_lab = "archive",
+			london_hospital = "archive",
+			copenhagen_observatory = "archive",
+			amsterdam_telescope = "archive",
+			provence_fields = "farm",
+			genoa_olive = "farm",
+			dublin_potatoes = "farm",
+			antwerp_flax_fields = "farm",
+			antwerp_flax = "farm",
+			norman_orchards = "farm",
+			porto_douro = "farm",
+			funchal_vineyards = "farm",
+			funchal_grapes = "farm",
+			saffron_fields = "farm",
+			canton_tea = "farm",
+			calicut_pepper = "farm",
+			mocha_coffee = "farm",
+			zanzibar_spice = "farm",
+			sao_tome_cocoa = "farm",
+			-- 북해·발트해 지점별 지시서: 항만, 갯벌, 피오르, 거석 유적, 학술지.
+			antwerp_cabinet = "archive",
+			antwerp_apothecary = "archive",
+			venice_arsenal = "archive",
+			edinburgh_hospital = "archive",
+			amsterdam_garden = "archive",
+			rouen_powder = "archive",
+			lisbon_apothecary = "archive",
+			hamburg_docks = "archive",
+			bergen_arctic_log = "archive",
+			london_pewter_shop = "archive",
+			london_tower_armory = "archive",
+			hamburg_hansa_hall = "archive",
+			hamburg_speicher = "archive",
+			lubeck_hansa_hall = "archive",
+			rouen_coast = "coast",
+			copenhagen_shore = "coast",
+			edinburgh_coast = "coast",
+			edinburgh_legend = "coast",
+			amsterdam_fog = "coast",
+			lisbon_legend = "coast",
+			bergen_maelstrom = "coast",
+			bergen_whale_station = "coast",
+			amsterdam_dogger = "coast",
+			rouen_mont_saint_michel = "coast",
+			copenhagen_eider_isle = "coast",
+			dunkirk_flats = "coast",
+			amsterdam_herring_quay = "coast",
+			gdansk_harbor = "coast",
+			stockholm_skerries = "coast",
+			copenhagen_sound = "coast",
+			bordeaux_quay = "coast",
+			bergen_wharf = "coast",
+			bergen_fjord = "coast",
+			gdansk_amber_beach = "coast",
+			amsterdam_flats = "coast",
+			gothenburg_eider = "coast",
+			plymouth_sound = "coast",
+			hull_whalers = "coast",
+			glasgow_clyde = "coast",
+			lubeck_baltic_coast = "coast",
+			oslo_fjord = "coast",
+			gothenburg_forest = "forest",
+			copenhagen_birch = "forest",
+			runestone_field = "ruins",
+			boyne_valley = "ruins",
+			orkney_village = "ruins",
+			orkney_brodgar = "ruins",
+			uppsala_mounds = "ruins",
+			dublin_stones = "ruins",
+			stockholm_runes = "ruins",
+			oslo_viking_ships = "ruins",
+			london_tower = "fort",
+			edinburgh_castle_rock = "fort",
+			edinburgh_highlands = "highland",
+			edinburgh_heather = "highland",
+			glasgow_highlands = "highland",
+			edinburgh_colliery = "mine",
+			hamburg_estuary = "lake",
+			gothenburg_beaver_lake = "lake",
+			rotterdam_dike = "lake",
+			dublin_cranberry = "swamp",
+			bergen_ice_edge = "glacier",
+			hamburg_hops_farm = "farm",
+			marseille_calanques = "coast",
+			gibraltar_strait = "coast",
+			gibraltar_cave = "coast",
+			la_rochelle_towers = "coast",
+			porto_ribeira = "coast",
+			cadiz_bay = "coast",
+			cadiz_treasure_fleet = "coast",
+			istanbul_bosphorus = "coast",
+			tangier_strait = "coast",
+			riga_gulf = "coast",
+			helsinki_archipelago = "coast",
+			koenigsberg_amber = "coast",
+			tangier_pillars = "coast",
+			azores_calm = "coast",
+			ragusa_coast = "coast",
+			tripoli_dig = "coast",
+			toulon_arsenal = "coast",
+			aegean_isles = "coast",
+			trieste_karst = "coast",
+			messina_strait = "coast",
+			coral_banks = "coast",
+			livorno_lab = "archive",
+			naples_coins = "archive",
+			seville_cathedral = "archive",
+			lisbon_navigators = "archive",
+			rouen_cathedral = "archive",
+			antwerp_cathedral = "archive",
+			barcelona_gothic = "archive",
+			barcelona_market = "archive",
+			algiers_kasbah = "archive",
+			palermo_cathedral = "archive",
+			istanbul_bazaar = "archive",
+			riga_old_town = "archive",
+			istanbul_hagia = "archive",
+			riga_guild_hall = "archive",
+			palma_cathedral = "archive",
+			smyrna_bazaar = "archive",
+			casablanca_medina = "archive",
+			marseille_salt = "swamp",
+			la_rochelle_salt = "swamp",
+			valencia_albufera = "swamp",
+			cagliari_salt = "swamp",
+			damietta_nile = "swamp",
+			gibraltar_rock = "highland",
+			barcelona_montjuic = "highland",
+			safi_potters = "highland",
+			tripoli_oasis = "desert",
+			algiers_oasis = "desert",
+			valletta_bastions = "fort",
+			ragusa_walls = "fort",
+			tallinn_walls = "fort",
+			visby_ruins = "fort",
+			seville_alhambra = "fort",
+			petersburg_fortress = "fort",
+			valletta_walls2 = "fort",
+			thessaloniki_walls = "fort",
+			acre_crusader = "fort",
+			malaga_alcazaba = "fort",
+			corfu_fortress = "fort",
+			tunis_carthage = "ruins",
+			athens_acropolis = "ruins",
+			alexandria_pharos = "ruins",
+			athens_parthenon = "ruins",
+			alex_pharos2 = "ruins",
+			tunis_ruins2 = "ruins",
+			syracuse_theatre = "ruins",
+			ancona_arch = "ruins",
+			split_palace = "ruins",
+			crete_knossos = "ruins",
+			rhodes_colossus = "ruins",
+			benghazi_ruins = "ruins",
+			bone_ruins = "ruins",
+			petersburg_neva = "lake",
+			azores_crater = "lake",
+			petersburg_forest = "forest",
+			las_palmas_dragon = "forest",
+			tallinn_forest = "forest",
+			corsica_maquis = "forest",
+			beirut_cedars = "forest",
+			las_palmas_volcano = "volcanic",
+			valencia_orchard = "farm",
+			helsinki_gulf = "glacier",
+			cyprus_copper = "mine",
+			cartagena_mines = "mine",
+			agadir_argan = "forest",
+			ouidah_forest = "forest",
+			colombo_cinnamon = "forest",
+			praia_cliffs = "volcanic",
+			aden_crater = "volcanic",
+			ternate_volcano = "volcanic",
+			saint_louis_river = "lake",
+			basra_canals = "lake",
+			cochin_backwaters = "lake",
+			tianjin_canal = "lake",
+			batavia_canal = "lake",
+			brunei_water = "lake",
+			goree_island = "coast",
+			dakar_cape = "coast",
+			lagos_lagoon = "coast",
+			sao_tome_coast = "coast",
+			luanda_coast = "coast",
+			helena_mid = "coast",
+			cape_good_hope = "coast",
+			mombasa_reef = "coast",
+			mogadishu_coast = "coast",
+			aden_straits = "coast",
+			jeddah_pilgrim = "coast",
+			jeddah_reef = "coast",
+			muscat_pearl = "coast",
+			bandar_hormuz = "coast",
+			calicut_vasco = "coast",
+			cochin_nets = "coast",
+			maldives_atoll = "coast",
+			madras_coast = "coast",
+			malacca_spice = "coast",
+			louis_dodo = "coast",
+			indian_chinese_ship = "coast",
+			manila_galleon = "coast",
+			amoy_harbor = "coast",
+			shanghai_estuary = "coast",
+			nagasaki_dejima = "coast",
+			nagasaki_kuroshio = "coast",
+			hakodate_bay = "coast",
+			incheon_flats = "coast",
+			singapore_strait = "coast",
+			makassar_pearl = "coast",
+			komodo_island = "coast",
+			typhoon_sea = "coast",
+			bissau_mangrove = "swamp",
+			calabar_delta = "swamp",
+			basra_marsh = "swamp",
+			calcutta_delta = "swamp",
+			freetown_peninsula = "highland",
+			goa_ghats = "highland",
+			elmina_castle = "fort",
+			cape_coast_castle = "fort",
+			mozambique_island = "fort",
+			mombasa_fort = "fort",
+			muscat_forts = "fort",
+			diu_fortress = "fort",
+			malacca_fort = "fort",
+			manila_walls = "fort",
+			osaka_castle = "fort",
+			tainan_fort = "fort",
+			elmina_goldfields = "mine",
+			mozambique_gold = "mine",
+			colombo_gems = "mine",
+			silver_mine = "mine",
+			kilwa_ruins = "ruins",
+			muscat_persepolis = "ruins",
+			madras_temple = "ruins",
+			macau_ruins = "ruins",
+			ningbo_temple = "ruins",
+			bangkok_temples = "ruins",
+			rangoon_shwedagon = "ruins",
+			java_borobudur = "ruins",
+			zanzibar_stone = "archive",
+			surat_bazaar = "archive",
+			goa_church = "archive",
+			calcutta_silk = "archive",
+			canton_factories = "archive",
+			shanghai_silk = "archive",
+			osaka_market = "archive",
+			busan_waegwan = "archive",
+			hoi_an_lanterns = "archive",
+			jade_market = "archive",
+			nagasaki_armory = "archive",
+			istanbul_arsenal = "archive",
+			mombasa_fort_records = "archive",
+			sao_tome_peak = "jungle",
+			angkor_jungle = "jungle",
+			borneo_rainforest = "jungle",
+			benguela_desert = "desert",
+			ambon_spice = "farm",
+			banda_nutmeg = "farm",
+			lagos_benin_road = "plains",
+			surat_agra = "plains",
+			beijing_road = "plains",
+			-- 북미·카리브·중남미: 실제 지형과 기록 조사 장소를 구분한다.
+			halifax_citadel = "fort",
+			louisbourg_fort = "fort",
+			stjohns_banks = "coast",
+			quebec_wilds = "forest",
+			survey_am_d = "plains",
+			boston_church = "archive",
+			boston_whalers = "coast",
+			newyork_harbor = "lake",
+			niagara_trip = "lake",
+			philadelphia_hall = "archive",
+			charleston_rice = "farm",
+			survey_am_b = "farm",
+			neworleans_delta = "swamp",
+			nassau_pirates = "coast",
+			veracruz_road = "highland",
+			survey_am_c = "mine",
+			veracruz_battlefield = "plains",
+			campeche_maya = "ruins",
+			kingston_royal = "fort",
+			hurricane_sea = "coast",
+			survey_am_a = "coast",
+			sanjuan_morro = "fort",
+			bridgetown_sugar = "farm",
+			trinidad_pitch = "lake",
+			laguaira_coast = "coast",
+			cartagena_walls = "fort",
+			portobelo_fair = "archive",
+			paramaribo_jungle = "jungle",
+			belem_amazon = "swamp",
+			recife_reef = "coast",
+			salvador_church = "archive",
+			rio_sugarloaf = "highland",
+			rio_gold = "mine",
+			montevideo_plata = "lake",
+			horn_trip = "coast",
+			buenosaires_pampas = "plains",
+			andes_route = "highland",
+			potosi_trip = "mine",
+			auto_mystery_mys_sargasso = "archive",
+			auto_lostland_el_dorado = "archive",
+			santodomingo_amber = "mine",
+			auto_mystery_mys_bermuda = "archive",
+			auto_lostland_cibola = "archive",
+			havana_fort = "fort",
+			havana_orchard = "farm",
+			-- 태평양 탐사: 항구의 실제 자연환경과 외지 유물·해도 조사 장소를 구분한다.
+			pac_survey_00 = "forest",
+			pac_survey_01 = "forest",
+			pac_survey_02 = "coast",
+			pac_survey_03 = "swamp",
+			pac_survey_04 = "forest",
+			pac_survey_05 = "jungle",
+			pac_survey_06 = "jungle",
+			pac_survey_07 = "coast",
+			pac_survey_08 = "volcanic",
+			pac_survey_09 = "coast",
+			pac_survey_10 = "archive",
+			pac_survey_11 = "archive",
+			pac_survey_12 = "archive",
+			pac_survey_13 = "coast",
+			pac_survey_14 = "archive",
+			pac_survey_15 = "coast",
+			pac_survey_16 = "coast",
+			pac_survey_17 = "coast",
+			pac_survey_18 = "coast",
+			pac_survey_19 = "coast",
+			pac_survey_20 = "coast",
+			-- 학문·유물·전설: 발견 대상과 실제 조사 장소를 대조한 개별 지형.
+			auto_relic_london_low = "archive",
+			auto_relic_amsterdam_low = "archive",
+			auto_relic_lisbon_low = "archive",
+			auto_zoology_bergen_low = "coast",
+			auto_zoology_hamburg_low = "coast",
+			auto_zoology_marseille_low = "coast",
+			auto_zoology_gdansk_low = "swamp",
+			auto_physics_genoa_low = "archive",
+			auto_physics_amsterdam_low = "archive",
+			auto_physics_venice_low = "archive",
+			auto_physics_london_mid = "archive",
+			auto_site_naples_mid = "ruins",
+			auto_site_naples_high = "ruins",
+			auto_site_lisbon_low = "fort",
+			auto_site_stockholm_mid = "fort",
+			auto_site_copenhagen_mid = "fort",
+			auto_site_bergen_low = "coast",
+			auto_site_marseille_mid = "ruins",
+			auto_site_london_low = "ruins",
+			auto_geography_london_low = "coast",
+			auto_geography_bergen_low = "coast",
+			auto_geography_stockholm_low = "coast",
+			auto_geography_genoa_low = "coast",
+			auto_geography_hamburg_low = "coast",
+			auto_geography_lisbon_low = "coast",
+			auto_astronomy_copenhagen_low = "archive",
+			auto_astronomy_gothenburg_low = "archive",
+			auto_astronomy_edinburgh_low = "archive",
+			auto_astronomy_gdansk_mid = "archive",
+			auto_astronomy_bergen_low = "archive",
+			auto_astronomy_amsterdam_low = "archive",
+			auto_astronomy_london_mid = "archive",
+			auto_mineral_edinburgh_low = "highland",
+			auto_mineral_dublin_low = "mine",
+			auto_mineral_bergen_low = "highland",
+			auto_mineral_london_low = "mine",
+			auto_mineral_genoa_mid = "mine",
+			auto_mineral_naples_low = "volcanic",
+			auto_mineral_livorno_mid = "mine",
+			auto_myth_bergen_high = "archive",
+			auto_myth_edinburgh_low = "coast",
+			auto_myth_copenhagen_mid = "coast",
+			auto_myth_genoa_mid = "coast",
+			auto_myth_naples_high = "archive",
+			auto_myth_rouen_mid = "coast",
+			auto_myth_london_mid = "coast",
+			auto_myth_dublin_high = "archive",
+			auto_mystery_mys_green_children = "plains",
+			auto_mystery_mys_stone_circle = "ruins",
+			auto_mystery_mys_roanoke = "archive",
+			auto_mystery_mys_voynich = "archive",
+			auto_mystery_mys_oak_island = "archive",
+			auto_mystery_mys_piri_reis = "archive",
+			auto_mystery_mys_gevaudan = "archive",
+			auto_mystery_mys_greenland_norse = "archive",
+			auto_mystery_mys_rongorongo = "archive",
+			auto_mystery_mys_mary_celeste = "archive",
+			auto_mystery_mys_franklin = "archive",
+			auto_mystery_mys_antikythera = "archive",
+			auto_mystery_mys_flannan = "archive",
+			auto_mystery_lost_terra_incognita = "archive",
+			auto_mystery_lost_edge_dragons = "archive",
+			auto_mystery_lost_thule = "archive",
+			auto_mystery_lost_antillia = "archive",
+			auto_lostland_hy_brasil = "archive",
+			auto_lostland_blessed_isles = "archive",
+			auto_lostland_terra_australis = "archive",
+			auto_lostland_lemuria = "archive",
+			auto_lostland_prester_john = "archive",
+			auto_lostland_hyperborea = "archive",
+			auto_lostland_astheria_shore = "coast",
+			auto_lostland_astheria_ruins = "ruins",
+			auto_lostland_astheria_heart = "archive",
+			auto_myth_gdansk_low = "coast",
+			auto_chemistry_rouen_low = "archive",
+			auto_chemistry_bordeaux_low = "archive",
+			auto_chemistry_london_low = "archive",
+			auto_chemistry_antwerp_low = "archive",
+			auto_chemistry_amsterdam_low = "archive",
+			auto_chemistry_hamburg_low = "archive",
+			auto_chemistry_venice_low = "archive",
+			auto_chemistry_marseille_low = "archive",
+			auto_chemistry_london_mid = "archive",
+			auto_chemistry_seville_mid = "archive",
+			auto_chemistry_dublin_low = "archive",
+			auto_philosophy_amsterdam_low = "archive",
+			auto_philosophy_london_mid = "archive",
+			auto_philosophy_edinburgh_low = "archive",
+			auto_philosophy_naples_low = "archive",
+			auto_philosophy_rouen_low = "archive",
+			auto_philosophy_bordeaux_low = "archive",
+			auto_philosophy_antwerp_low = "archive",
+			auto_philosophy_hamburg_mid = "archive",
+			auto_philosophy_hamburg_high = "archive",
+			auto_philosophy_edinburgh_high = "archive",
+			auto_medicine_marseille_low = "archive",
+			auto_medicine_rouen_low = "archive",
+			auto_medicine_venice_low = "archive",
+			auto_medicine_london_mid = "archive",
+			auto_medicine_antwerp_low = "archive",
+			auto_medicine_edinburgh_low = "archive",
+			auto_medicine_lisbon_low = "archive",
+			auto_medicine_amsterdam_low = "archive",
+			auto_medicine_genoa_low = "archive",
+			auto_medicine_gothenburg_low = "archive",
+			auto_navigation_genoa_low = "archive",
+			auto_navigation_venice_mid = "archive",
+			auto_navigation_lisbon_low = "archive",
+			auto_navigation_london_low = "archive",
+			auto_navigation_amsterdam_low = "archive",
+			auto_navigation_seville_low = "archive",
+			auto_navigation_edinburgh_mid = "archive",
+			auto_navigation_london_high = "archive",
+			auto_navigation_antwerp_mid = "archive",
+			auto_navigation_gothenburg_low = "archive",
+			auto_navigation_hamburg_low = "archive",
+			auto_navigation_bergen_mid = "archive",
+			auto_weather_london_low = "archive",
+			auto_weather_dublin_low = "archive",
+			auto_weather_edinburgh_low = "archive",
+			auto_weather_marseille_low = "archive",
+			auto_weather_bordeaux_low = "archive",
+			auto_weather_naples_mid = "archive",
+			auto_weather_seville_high = "archive",
+			auto_weather_lisbon_low = "archive",
+			auto_weather_hamburg_low = "archive",
+			auto_weather_gothenburg_low = "archive",
+			auto_weather_gdansk_mid = "archive",
+			auto_weather_stockholm_low = "archive",
+			auto_weather_london_high = "archive",
+			auto_architecture_rouen_low = "archive",
+			auto_architecture_antwerp_low = "archive",
+			auto_architecture_amsterdam_low = "lake",
+			auto_architecture_gdansk_low = "archive",
+			auto_architecture_antwerp_mid = "fort",
+			auto_architecture_naples_low = "archive",
+			auto_architecture_rouen_mid = "archive",
+			auto_architecture_bergen_mid = "archive",
+			auto_architecture_edinburgh_low = "fort",
+			auto_architecture_venice_low = "coast",
+			auto_architecture_hamburg_low = "lake",
+			auto_architecture_livorno_high = "archive",
+			auto_art_antwerp_low = "archive",
+			auto_art_amsterdam_low = "archive",
+			auto_art_hamburg_low = "archive",
+			auto_art_venice_mid = "archive",
+			auto_art_gdansk_low = "archive",
+			auto_art_london_low = "archive",
+			auto_art_amsterdam_mid = "archive",
+			auto_art_rouen_low = "archive",
+			auto_art_gdansk_mid = "archive",
+			auto_art_venice_high = "archive",
+			auto_goods_lisbon_low = "archive",
+			auto_goods_amsterdam_low = "archive",
+			auto_goods_seville_low = "archive",
+			auto_goods_amsterdam_mid = "archive",
+			auto_goods_venice_low = "archive",
+			auto_goods_seville_mid = "archive",
+			auto_goods_genoa_low = "archive",
+			auto_goods_bordeaux_low = "archive",
+			auto_goods_hamburg_low = "archive",
+			auto_goods_gothenburg_low = "archive",
+			auto_goods_gdansk_low = "archive",
+			auto_goods_bergen_low = "archive",
+			auto_goods_marseille_low = "archive",
+			auto_shipbuilding_amsterdam_low = "coast",
+			auto_shipbuilding_gothenburg_low = "coast",
+			auto_shipbuilding_stockholm_low = "coast",
+			auto_shipbuilding_genoa_low = "coast",
+			auto_shipbuilding_bergen_low = "coast",
+			auto_shipbuilding_antwerp_low = "coast",
+			auto_shipbuilding_rouen_low = "coast",
+			auto_shipbuilding_copenhagen_low = "coast",
+			auto_shipbuilding_london_mid = "coast",
+			auto_shipbuilding_bergen_mid = "coast",
+			auto_shipbuilding_seville_low = "coast",
+			auto_shipbuilding_venice_mid = "coast",
+			auto_shipbuilding_hamburg_high = "archive",
+			auto_language_gothenburg_low = "archive",
+			auto_language_rouen_low = "archive",
+			auto_language_hamburg_low = "archive",
+			auto_language_marseille_mid = "archive",
+			auto_language_london_low = "archive",
+			auto_language_antwerp_mid = "archive",
+			auto_language_dublin_low = "archive",
+			auto_language_bergen_low = "archive",
+			auto_language_copenhagen_low = "archive",
+			auto_language_livorno_high = "archive",
+			auto_language_dublin_mid = "archive",
+			auto_language_genoa_low = "archive",
+			auto_language_seville_low = "archive",
+			auto_language_venice_mid = "archive",
+			-- 일반 조사: 혼합 발견물은 현재 항구의 실제 환경과 조사 장소를 우선한다.
+			survey_00 = "coast",
+			survey_01 = "coast",
+			survey_02 = "coast",
+			survey_03 = "lake",
+			survey_04 = "coast",
+			survey_05 = "swamp",
+			survey_06 = "coast",
+			survey_07 = "lake",
+			survey_08 = "archive",
+			survey_09 = "coast",
+			survey_10 = "coast",
+			survey_11 = "highland",
+			survey_12 = "archive",
+			survey_13 = "jungle",
+			survey_14 = "coast",
+			survey_15 = "lake",
+			survey_16 = "coast",
+			survey_17 = "coast",
+			survey_18 = "coast",
+			survey_19 = "archive",
+			survey_20 = "coast",
+			survey_21 = "fort",
+			survey_22 = "forest",
+			survey_23 = "volcanic",
+			survey_24 = "archive",
+			survey_25 = "mine",
+			survey_26 = "archive",
+			survey_27 = "swamp",
+			survey_28 = "mine",
+			survey_29 = "ruins",
+			survey_30 = "coast",
+			survey_31 = "coast",
+			survey_32 = "coast",
+		}
+		local selected = exact[opts.siteId or ""]
+		if selected then questTerrain = selected end
+		folder:SetAttribute("FieldPacificSurvey", string.match(opts.siteId or "", "^pac_survey_%d%d$") ~= nil)
+		folder:SetAttribute("FieldSiteTerrainSource", if selected then "site-id" else "site-name")
+	end
 	-- [특수 기후의 실제 바닥 재질] 색 보정만이 아니라 눈·진흙·화산암 지형을 구분한다.
 	if questTerrain == "glacier" then
 		winterScene = true
@@ -630,12 +1423,80 @@ function FieldScene.start(opts)
 		biome.mat = Enum.Material.Grass
 		biome.ground = biome.ground:Lerp(Color3.fromRGB(49, 103, 59), 0.55)
 		biome.fog = biome.fog:Lerp(Color3.fromRGB(123, 173, 146), 0.45)
+	elseif questTerrain == "desert" then
+		-- [지형별 실제 바닥] 지역 문화권의 기본 초록색보다 모래 지형을 우선한다.
+		biome.mat = Enum.Material.Sand
+		biome.ground = Color3.fromRGB(204, 177, 122)
+	elseif questTerrain == "coast" then
+		-- [해안 지질] 북방 겨울 눈은 보존, 그 외는 절벽 암석과 모래 해변으로 구별한다.
+		if winterScene then
+			biome.mat = Enum.Material.Snow
+		elseif portNature == "fjord" or portNature == "cliff_coast" or portNature == "mountain_coast" then
+			biome.mat = Enum.Material.Slate
+			biome.ground = Color3.fromRGB(118, 122, 117)
+		else
+			biome.mat = Enum.Material.Sand
+			biome.ground = Color3.fromRGB(196, 180, 139)
+		end
+	elseif questTerrain == "highland" then
+		-- [산악 지질] 설기에는 눈을 지키고 그 외에는 풀밭 대신 바위 고원을 사용한다.
+		if not winterScene then
+			biome.mat = Enum.Material.Slate
+			biome.ground = biome.ground:Lerp(Color3.fromRGB(113, 117, 109), 0.75)
+		end
+	elseif questTerrain == "mine" then
+		biome.mat = Enum.Material.Slate
+		biome.ground = biome.ground:Lerp(Color3.fromRGB(107, 103, 98), 0.7)
+	elseif questTerrain == "archive" then
+		-- 기관의 마당과 정원: 눈 계절은 유지하고 기존 지역 흙빛을 낮은 채도의 석재와 섞는다.
+		if not winterScene then
+			biome.mat = Enum.Material.Ground
+			biome.ground = biome.ground:Lerp(Color3.fromRGB(154, 139, 111), 0.38)
+		end
+	elseif questTerrain == "ruins" or questTerrain == "fort" then
+		-- [고대 유적·요새] 기존 건물/길목은 그대로 두고 주변 흙과 석질을 드러낸다.
+		if not winterScene then
+			biome.mat = Enum.Material.Ground
+			biome.ground = biome.ground:Lerp(Color3.fromRGB(133, 124, 103), 0.7)
+		end
+	end
+	-- [항구별 토양 광량] 같은 대륙·문화권 안에서도 하구·암벽·열대·삼림의 색을 조금씩 구분한다.
+	-- 빙하·화산·늪·밀림의 퀘스트 재질과 기후는 우선하며 지면 충돌·경로는 변경하지 않는다.
+	if questTerrain ~= "glacier" and questTerrain ~= "volcanic" and questTerrain ~= "swamp" and questTerrain ~= "jungle" then
+		local portColor = if portNature == "fjord" or portNature == "cliff_coast" then Color3.fromRGB(116, 131, 121)
+			elseif portNature == "lagoon" or portNature == "delta" or portNature == "river" then Color3.fromRGB(91, 132, 111)
+			elseif portNature == "reef" then Color3.fromRGB(206, 185, 130)
+			elseif portNature == "arid_coast" then Color3.fromRGB(198, 164, 108)
+			elseif portNature == "mineral" or portNature == "volcanic" then Color3.fromRGB(120, 117, 106)
+			elseif portNature == "mangrove" or portNature == "jungle_coast" then Color3.fromRGB(69, 128, 75)
+			else nil
+		if portColor then biome.ground = biome.ground:Lerp(portColor, 0.17) end
+	end
+	-- [지점 지질] 도버 백악·카라라 대리석·팔룬 광산의 구별된 지표.
+	if opts.siteId == "london_chalk" or opts.siteId == "carrara_quarry" or opts.siteId == "marble_quarry" then
+		biome.mat = Enum.Material.Limestone
+		biome.ground = Color3.fromRGB(205, 203, 189)
+	elseif opts.siteId == "falun_mine" then
+		biome.ground = Color3.fromRGB(123, 87, 67)
+	elseif folder:GetAttribute("FieldPacificSurvey") then
+		if questTerrain == "forest" then
+			biome.mat = Enum.Material.Grass
+			biome.ground = Color3.fromRGB(88, 115, 75)
+		elseif opts.siteId == "pac_survey_13" then
+			biome.mat = Enum.Material.Sand
+			biome.ground = Color3.fromRGB(186, 162, 125)
+		end
+	end
+	-- 열린 지역의 먼 항구는 맑을 때 실제로 보이도록 한다. 광산·습지·빙설의 짙은 기후는 유지.
+	if questTerrain == "archive" or questTerrain == "plains" or questTerrain == "coast" or questTerrain == "farm" then
+		biome.fogEnd = math.max(biome.fogEnd, 820)
 	end
 	folder:SetAttribute("FieldQuestTerrainTheme", questTerrain)
 	folder:SetAttribute("FieldSeasonLabel", seasonName)
 	-- 지역(바이옴)과 위험도에 따라 맵 크기가 다르다: 위험한 곳일수록 넓다
 	local SIZE = math.floor(biome.size * (1 + math.min(opts.danger or 1, 10) * 0.03))
-	local AREA = math.min((SIZE / 200) ^ 2, 2.5)
+	-- [필드 경관] 맵 넓이에 맞춰 모델을 배치하며 임의 면적별 모델 수 상한을 두지 않는다.
+	local AREA = (SIZE / 200) ^ 2
 	-- 지역마다 하늘·안개 분위기가 다르다(끝나면 되돌린다)
 	local lightSave = {}
 	do
@@ -644,10 +1505,70 @@ function FieldScene.start(opts)
 		lightSave = {
 			FogColor = L.FogColor, FogStart = L.FogStart, FogEnd = L.FogEnd, ClockTime = L.ClockTime,
 			Brightness = L.Brightness, Ambient = L.Ambient, OutdoorAmbient = L.OutdoorAmbient,
-			ColorShiftTop = L.ColorShift_Top,
+			ColorShiftTop = L.ColorShift_Top, ShadowSoftness = L.ShadowSoftness,
 		}
+		-- [실제 대기 원근] 포트의 기존 Atmosphere가 있으면 수치를 보관해 재사용한다.
+		-- 엔진 Fog만 바꿨을 때 기존 Atmosphere에 가려 거리감이 사라지는 문제를 해결한다.
+		local oldAtmosphere = L:FindFirstChildOfClass("Atmosphere")
+		local fieldAtmosphere = oldAtmosphere or Instance.new("Atmosphere")
+		local oldAtmosphereLook = if oldAtmosphere then {
+			color = oldAtmosphere.Color, decay = oldAtmosphere.Decay,
+			density = oldAtmosphere.Density, offset = oldAtmosphere.Offset,
+			haze = oldAtmosphere.Haze, glare = oldAtmosphere.Glare,
+		} else nil
+		lightSave.FieldAtmosphere = fieldAtmosphere
+		-- 기존 항구 구름을 재사용하고 퇴장 시 정확히 복원한다. 새 날씨 갱신 루프 없음.
+		local oldClouds = workspace.Terrain:FindFirstChildOfClass("Clouds")
+		local clouds = oldClouds or Instance.new("Clouds")
+		local cloudLook = if oldClouds then { cover = oldClouds.Cover, density = oldClouds.Density, color = oldClouds.Color } else nil
+		lightSave.FieldClouds = clouds
+		clouds.Name = if oldClouds then oldClouds.Name else "MareFieldClouds"
+		clouds.Cover = if arid then 0.12 elseif tropical then 0.46 elseif northern then 0.42 else 0.25
+		clouds.Density = if arid then 0.20 else 0.42
+		clouds.Color = biome.fog:Lerp(Color3.fromRGB(240, 244, 248), 0.70)
+		if not oldClouds then clouds.Parent = workspace.Terrain end
+		folder.Destroying:Connect(function()
+			if not clouds.Parent then return end
+			if cloudLook then
+				clouds.Cover, clouds.Density, clouds.Color = cloudLook.cover, cloudLook.density, cloudLook.color
+			else clouds:Destroy() end
+		end)
+		fieldAtmosphere.Color = biome.fog:Lerp(Color3.fromRGB(215, 229, 239), 0.19)
+		fieldAtmosphere.Decay = biome.fog:Lerp(
+			if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179), 0.43)
+		-- [입체감] 짙은 연무가 근경까지 하얗게 덮어 평면처럼 보였다(Studio f0_environment).
+		-- 근경은 선명하게, 원경만 흐려지도록 밀도·연무를 낮추고 시작 거리(Offset)를 뒤로 민다.
+		fieldAtmosphere.Density = if biome.fogEnd < 480 then 0.26 elseif biome.fogEnd < 650 then 0.21 else 0.17
+		fieldAtmosphere.Offset = 0.32
+		fieldAtmosphere.Haze = if visualMobile then 0.45 else 0.65
+		fieldAtmosphere.Glare = 0.12
+		if not oldAtmosphere then
+			fieldAtmosphere.Name = "FieldDepthAtmosphere"
+			fieldAtmosphere.Parent = L
+		end
+		folder.Destroying:Connect(function()
+			L.ShadowSoftness = lightSave.ShadowSoftness
+			if oldAtmosphereLook and fieldAtmosphere.Parent then
+				fieldAtmosphere.Color, fieldAtmosphere.Decay = oldAtmosphereLook.color, oldAtmosphereLook.decay
+				fieldAtmosphere.Density, fieldAtmosphere.Offset = oldAtmosphereLook.density, oldAtmosphereLook.offset
+				fieldAtmosphere.Haze, fieldAtmosphere.Glare = oldAtmosphereLook.haze, oldAtmosphereLook.glare
+			elseif not oldAtmosphere and fieldAtmosphere.Parent then
+				fieldAtmosphere:Destroy()
+			end
+		end)
+		-- [입체감] 대비·채도를 살짝 올려 지형 굴곡과 모델 윤곽이 읽히게 한다(끝나면 제거).
+		local grade = Instance.new("ColorCorrectionEffect")
+		grade.Name = "FieldDepthGrade"
+		grade.Contrast = 0.12
+		grade.Saturation = 0.10
+		grade.Brightness = -0.01
+		grade.Parent = L
+		folder.Destroying:Connect(function()
+			grade:Destroy()
+		end)
 		pcall(function()
-			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, 40, biome.fogEnd, biome.clock
+			L.ShadowSoftness = if arid then 0.21 elseif tropical or northern then 0.39 else 0.30
+			L.FogColor, L.FogStart, L.FogEnd, L.ClockTime = biome.fog, math.min(120, biome.fogEnd * 0.35), biome.fogEnd, biome.clock
 			L.Brightness = 2.1
 			L.Ambient = biome.fog:Lerp(Color3.fromRGB(132, 139, 153), 0.65)
 			L.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(153, 160, 168), 0.55)
@@ -666,6 +1587,7 @@ function FieldScene.start(opts)
 		local p = part(folder, w[1], CFrame.new(ORIGIN + w[2]), Color3.new(1, 1, 1))
 		p.Transparency = 1
 		p.CanQuery = false
+		p.CastShadow = false -- 보이지 않는 필드 경계가 주변 나무/모래에 그림자를 만들지 않는다.
 	end
 
 	-- [낙사 방지] 기존 바닥 아래에 충돌 안전판을 두고, 이동 감시에서 추락 시 마지막 안전 지점으로 복귀한다.
@@ -674,19 +1596,28 @@ function FieldScene.start(opts)
 		safetyFloor.Name = "FieldSafetyFloor"
 		safetyFloor.Transparency = 1
 		safetyFloor.CanQuery = false
+		safetyFloor.CastShadow = false -- 투명 충돌판은 햇빛·모래색에 영향 없음.
 	end
 
-	-- 지평선 언덕: 사방 가장자리 바깥에 복셀 지형 언덕을 쌓아 평평한 느낌을 줄인다 (끝나면 지운다)
+	-- [실제 지형 높이] 기존 Kenney CC0 나무·암석 모델을 놓는 전장 안쪽에도
+	-- 걸어 올라갈 수 있는 완만한 복셀 구릉을 만든다. 원래 중앙 이동로·스폰·전투 수치는 유지한다.
+	-- 지평선용 외곽 능선과 내부 구릉은 같은 Terrain을 사용하며 퇴장 때 모두 정리한다.
 	do
 		local terrain = workspace.Terrain
 		local mat = biome.mat
-		-- [지형 윤곽] 계곡은 높은 능선, 해안은 낮은 언덕, 설원은 빙설 능선, 늪은 낮은 둔덕.
-		-- 플레이 공간 바깥에서만 조성하며 기존 지면·전투 경로와 충돌하지 않는다.
 		if questTerrain == "volcanic" or questTerrain == "mine" then mat = Enum.Material.Slate
 		elseif questTerrain == "glacier" then mat = Enum.Material.Snow
 		elseif questTerrain == "swamp" then mat = Enum.Material.Mud
-		elseif mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud then mat = Enum.Material.Grass end
+		elseif mat ~= Enum.Material.Sand and mat ~= Enum.Material.Slate and mat ~= Enum.Material.Mud
+			and mat ~= Enum.Material.Snow and mat ~= Enum.Material.Ground then mat = Enum.Material.Grass end
 		local hills = {}
+		-- [실제 수평선] 해안 외곽만 네이티브 Terrain 물을 사용. 기존 이동 경계 안은 변경하지 않는다.
+		local waterCF, waterSize
+		if questTerrain == "coast" then
+			waterCF = CFrame.new(ORIGIN + Vector3.new(half + 96, -7, -half * 0.12))
+			waterSize = Vector3.new(176, 12, SIZE + 100)
+			terrain:FillBlock(waterCF, waterSize, Enum.Material.Water)
+		end
 		local hillRng = Random.new((opts.seed or 7) * 13 + 5)
 		local hillCount = if visualMobile then 16 else 28
 		for i = 0, hillCount - 1 do
@@ -694,23 +1625,107 @@ function FieldScene.start(opts)
 			local radius = if questTerrain == "highland" or questTerrain == "volcanic" then hillRng:NextNumber(40, 60)
 				elseif questTerrain == "mine" or questTerrain == "glacier" then hillRng:NextNumber(32, 48)
 				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(27, 41)
-				elseif questTerrain == "farm" or questTerrain == "swamp" then hillRng:NextNumber(13, 24)
+				elseif questTerrain == "farm" or questTerrain == "swamp" or questTerrain == "archive" then hillRng:NextNumber(13, 24)
 				elseif questTerrain == "coast" or questTerrain == "lake" then hillRng:NextNumber(15, 27)
 				else hillRng:NextNumber(20, 35)
 			local dist = half + radius + hillRng:NextNumber(8, 23)
 			local rise = if questTerrain == "highland" or questTerrain == "volcanic" then 0.27
 				elseif questTerrain == "mine" or questTerrain == "glacier" then 0.32
-				elseif questTerrain == "farm" or questTerrain == "swamp" then 0.64 else 0.48
+				elseif questTerrain == "farm" or questTerrain == "swamp" or questTerrain == "archive" then 0.72 else 0.48
 			local center = ORIGIN + Vector3.new(math.cos(ang) * dist, -radius * rise, math.sin(ang) * dist)
+			-- 해안의 바다 쪽 능선은 열어 수평선이 보이도록 한다. 기존 이동 경계는 유지.
+			if questTerrain ~= "coast" or math.cos(ang) < 0.55 then
+				terrain:FillBall(center, radius, mat)
+				table.insert(hills, { center, radius })
+			end
+		end
+		-- [전장 내부] 양쪽 숲·협곡에 교차 구릉. 중앙 폭과 입구는 항상 평탄하게 남긴다.
+		local insideCount = if questTerrain == "farm" or questTerrain == "ruins" or questTerrain == "archive" then (if visualMobile then 4 else 6)
+			elseif visualMobile then 7 else 11
+		for i = 1, insideCount do
+			local side = if i % 2 == 0 then -1 else 1
+			local radius = if questTerrain == "highland" or questTerrain == "volcanic" then hillRng:NextNumber(33, 44)
+				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(29, 40)
+				else hillRng:NextNumber(23, 34)
+			local x = side * (half * hillRng:NextNumber(0.41, 0.61))
+			local z = half * (-0.75 + (i - 1) / math.max(1, insideCount - 1) * 1.23)
+				+ hillRng:NextNumber(-8, 8)
+			local depth = if questTerrain == "highland" or questTerrain == "volcanic" then 0.58
+				elseif questTerrain == "forest" or questTerrain == "jungle" then 0.66 else 0.77
+			local center = ORIGIN + Vector3.new(x, -radius * depth, z)
 			terrain:FillBall(center, radius, mat)
 			table.insert(hills, { center, radius })
 		end
+		-- [다층 지형] 발헤임식 생물군계 높낮이를 참고한 낮은 옆능선.
+		-- 전투 중앙 길·진입 스폰을 비우고, 기등록 실물 절벽/수목과 표면을 연결한다.
+		local contourCount = if questTerrain == "highland" or questTerrain == "volcanic" or questTerrain == "glacier" then (if visualMobile then 4 else 7)
+			elseif questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "mine" then (if visualMobile then 3 else 5)
+			elseif questTerrain == "coast" or questTerrain == "lake" then (if visualMobile then 2 else 4)
+			else (if visualMobile then 1 else 2)
+		for index = 1, contourCount do
+			local side = if index % 2 == 0 then -1 else 1
+			local lane = math.floor((index - 1) / 2)
+			local radius = if questTerrain == "highland" or questTerrain == "glacier" then hillRng:NextNumber(36, 49)
+				elseif questTerrain == "forest" or questTerrain == "jungle" then hillRng:NextNumber(29, 39)
+				else hillRng:NextNumber(24, 35)
+			local x = side * half * hillRng:NextNumber(0.61, 0.79)
+			local z = -half * 0.69 + lane * half * 0.29 + hillRng:NextNumber(-9, 9)
+			local center = ORIGIN + Vector3.new(x, -radius * (if questTerrain == "highland" or questTerrain == "glacier" then 0.58 else 0.72), z)
+			terrain:FillBall(center, radius, mat)
+			table.insert(hills, { center, radius })
+		end
+		-- [등고선 경로] 절벽 테두리와 전장 사이의 짧은 발판을 Terrain 복셀로 만든다.
+		-- 중앙 전투 진입로는 그대로 두고 0.5~0.8 반폭 측면에서 오르내릴 수 있다.
+		local shelfCount = if questTerrain == "highland" or questTerrain == "glacier" or questTerrain == "mine" then (if visualMobile then 2 else 4)
+			elseif questTerrain == "forest" or questTerrain == "jungle" then (if visualMobile then 1 else 3)
+			else 0
+		for i = 1, shelfCount do
+			local side = if i % 2 == 0 then 1 else -1
+			local r = hillRng:NextNumber(24, 34)
+			local x = side * half * hillRng:NextNumber(0.54, 0.68)
+			local z = -half * (0.54 - math.floor((i - 1) / 2) * 0.33)
+			local center = ORIGIN + Vector3.new(x, -r * 0.78, z)
+			terrain:FillBall(center, r, mat)
+			table.insert(hills, { center, r })
+		end
+		folder:SetAttribute("FieldWalkableHillCount", insideCount)
+		folder:SetAttribute("FieldDepthRidgeCount", contourCount)
+		folder:SetAttribute("FieldElevatedTerraceCount", shelfCount)
+		-- [원경 산선] 전장 바깥 북쪽 지평선에만 낮은 복셀 봉우리를 둔다.
+		-- 스폰과 중앙 전투 길·판정에 닿지 않으며 기존 Terrain 정리 흐름으로 전부 해제한다.
+		local backdropCount = if visualMobile then 2 else 4
+		for index = 1, backdropCount do
+			local r = if questTerrain == "highland" or questTerrain == "glacier" or questTerrain == "volcanic"
+				then hillRng:NextNumber(47, 61) else hillRng:NextNumber(32, 46)
+			local x = half * (-0.86 + (index - 1) / math.max(1, backdropCount - 1) * 1.72)
+			local z = -(half + r + hillRng:NextNumber(9, 17))
+			local center = ORIGIN + Vector3.new(x, -r * (if questTerrain == "highland" or questTerrain == "glacier" then 0.48 else 0.67), z)
+			terrain:FillBall(center, r, mat)
+			table.insert(hills, { center, r })
+		end
+		folder:SetAttribute("FieldBackdropCrestCount", backdropCount)
+		-- [전투장 밖 원경] 기존 외곽 능선은 유지하고 400스터드 이상 먼 지평선에
+		-- 항구 문화권 실물의 접지용 자연 지형만 둔다. 광산은 닫힌 경관을 유지한다.
+		if questTerrain ~= "mine" then
+			local r = if visualMobile then 94 else 112
+			local center = ORIGIN + Vector3.new(0, -r * 0.86, -math.max(400, half + 150))
+			terrain:FillBall(center, r, mat)
+			table.insert(hills, { center, r })
+		end
 		folder.Destroying:Connect(function()
+			if waterCF and waterSize then terrain:FillBlock(waterCF, waterSize, Enum.Material.Air) end
 			for _, h in hills do
 				terrain:FillBall(h[1], h[2] + 2, Enum.Material.Air)
 			end
 		end)
 	end
+
+	-- [실제 접지] 생성된 복셀 언덕과 기존 지면 중 먼저 닿는 표면만 읽는다.
+	-- 나무/바위/적군을 동일 지형 표면에 배치하고 다른 장식의 충돌은 높이 측정에서 제외한다.
+	local groundRay = RaycastParams.new()
+	groundRay.FilterType = Enum.RaycastFilterType.Include
+	groundRay.FilterDescendantsInstances = { workspace.Terrain, ground }
+	groundRay.IgnoreWater = true
 
 	local spawn = ORIGIN + Vector3.new(0, 4, half - 14)
 	-- 필드 바닥 생성 직후 캐릭터와 카메라를 이동시켜, 나머지 적·조작 UI 생성과 분리한다.
@@ -783,16 +1798,100 @@ function FieldScene.start(opts)
 	do
 
 	local mirror = if (math.floor(tonumber(opts.seed) or 7) % 2 == 0) then 1 else -1
+	-- [전경 배치 난수 분리] 시야 구성 때문에 기존 rng 시퀀스가 달라져
+	-- 퀘스트 카드·적 위치·공격 패턴에 영향을 주지 않도록 승인 실물의 재배치만 별도 추첨한다.
+	local visualLayoutRng = Random.new((portVisualSeed + math.floor(tonumber(opts.seed) or 7) * 97) % 2147483647)
+	-- [지상탐험 배치 정본] 진입 시야와 중경의 3~6개 실물 군락. 중앙 통로·스폰은 유지한다.
+	-- 전체 수량은 기존 면적 계산을 따르고, 반복 행의 좌표 중복을 없애기 위해 군락마다 다른 중심을 사용한다.
+	local function sceneryPosition(index, total, groupSize, spacing, offset, biasX, biasZ)
+		local group = math.floor((index - 1) / groupSize)
+		local slot = (index - 1) % groupSize
+		local groups = math.max(1, math.ceil(total / groupSize))
+		local side = (if (group + offset) % 2 == 0 then -1 else 1) * mirror
+		local lane = math.floor(group / 2)
+		local lanes = math.max(1, math.ceil(groups / 2))
+		local nearLanes = math.max(1, math.floor(lanes * 0.16))
+		local near = lane < nearLanes
+		local progress = if near then (lane + 0.5) / nearLanes
+			else (lane - nearLanes + 0.5) / math.max(1, lanes - nearLanes)
+		local phase = (lane * 0.61803398875 + (portVisualSeed % 997) / 997 + offset * 0.173) % 1
+		local corridor = math.max(24, half * (if questTerrain == "forest" or questTerrain == "jungle" then 0.20 else 0.28))
+		local edge = half * 0.89
+		local nearEdge = math.min(edge, 64)
+		local lateral = if near then corridor + math.max(0, nearEdge - corridor) * (0.20 + phase * 0.65)
+			else half * (0.46 + 0.34 * phase)
+		local depth = if near then half - 34 - progress * math.min(57, half * 0.38)
+			else half * (0.30 - progress * 1.12)
+		-- 농지·기관은 구획 외곽에, 산악·광산은 측면 능선에, 숲은 굽은 통로 양옆에 집중한다.
+		if not near then
+			if questTerrain == "farm" or questTerrain == "archive" then lateral = math.max(lateral, half * 0.66)
+			elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "glacier" then
+				lateral = math.max(lateral, half * 0.62)
+			elseif questTerrain == "forest" or questTerrain == "jungle" then
+				lateral += math.sin(depth / math.max(half, 1) * 5) * half * 0.07
+			end
+		end
+		local angle = slot * math.pi * 2 / groupSize + phase * math.pi * 2
+		local radius = if slot == 0 then 0 else spacing * (0.85 + 0.25 * (slot % 2))
+		local x = math.clamp(lateral + math.cos(angle) * radius + biasX, corridor, edge)
+		local z = math.clamp(depth + math.sin(angle) * radius + biasZ, -half * 0.86, half - 26)
+		return ORIGIN + Vector3.new(side * x, 0, z)
+	end
 
 	-- [실물 배경 통합 배치] 나무·바위·문화권 소품·퀘스트 건축물 모두 기존 승인된 원본으로만 생성한다.
 	-- AssetLoader가 뒤늦게 등록한 모델도 같은 좌표에 한 번만 배치한다. 새 파츠 대체는 하지 않는다.
 	local pending = {}
 	local built = 0
+	-- [무제한 모델 분할 배치] 한 프레임에 수백 개를 복제하지 않고 기존 배치 흐름에서 분산한다.
+	local sceneryBatch = 0
 	local function placeFeature(entry)
 		if not folder.Parent then return nil end
 		local pos = entry.position or (ORIGIN + Vector3.new(entry[4] * half * mirror, 0, entry[5] * half))
-		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint)
+		if math.abs(pos.Y - ORIGIN.Y) < 0.5 then
+			local hit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 100, pos.Z), Vector3.new(0, -140, 0), groundRay)
+			if hit then pos = Vector3.new(pos.X, hit.Position.Y, pos.Z) end
+		end
+		-- [실거리 분류] 진입 위치 기준 120/400 스터드. 임의 인덱스로 먼 모델을 표시하지 않는다.
+		if entry.band or entry.landmark or entry.depth then
+			local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
+			entry.band = if entry.horizon or distance >= 400 then "far" elseif distance >= 120 then "mid" else "near"
+		end
+		local m = placeModel(folder, entry[1], entry[2], pos, entry[3], entry[6], entry.tint, entry.band)
 		if not m then return nil end
+		-- [Studio 근·중·원경 확인] 등록 모델이 실제 배치됐을 때만 세며, 지연 로드도 같은 수치에 포함한다.
+		if entry.band then
+			m:SetAttribute("FieldSceneryBand", entry.band)
+			-- [먼 수목과 절벽] 원본 텍스처/PBR을 보존하고 무텍스처 면만 하늘빛에 옅게 섞는다.
+			-- 근경은 명암을 유지하며 모델 개수와 전투 피격 판정은 건드리지 않는다.
+			if entry.band == "far" then
+				local faded = 0
+				for _, piece in m:GetDescendants() do
+					if piece:IsA("BasePart") and piece.Transparency < 0.95
+						and not piece:FindFirstChildOfClass("SurfaceAppearance")
+						and (not piece:IsA("MeshPart") or piece.TextureID == "") then
+						local specialMap = false
+						for _, child in piece:GetChildren() do
+							if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+						end
+						if not specialMap then
+							piece.Color = piece.Color:Lerp(biome.fog, if biome.fogEnd < 500 then 0.30 else 0.20)
+							faded += 1
+						end
+					end
+				end
+				if faded > 0 then m:SetAttribute("FieldAtmosphericFarTone", true) end
+			end
+			if entry.lowPolyVariant then
+				m:SetAttribute("FieldSceneryLowPolyVariant", true) -- [Studio 실물 계수] 자산 선택 결과만 기록한다.
+				folder:SetAttribute("FieldSceneryLowPolyPlaced", (folder:GetAttribute("FieldSceneryLowPolyPlaced") or 0) + 1)
+			end
+			local counter = if entry.band == "near" then "FieldSceneryNearPlaced"
+				elseif entry.band == "mid" then "FieldSceneryMidPlaced" else "FieldSceneryFarPlaced"
+			folder:SetAttribute(counter, (folder:GetAttribute(counter) or 0) + 1)
+		end
+		if entry.depth then
+			folder:SetAttribute("FieldDepthFeatureCount", (folder:GetAttribute("FieldDepthFeatureCount") or 0) + 1)
+		end
 		if entry.landmark then
 			m.Name = "FieldTerrainLandmark"
 			m:SetAttribute("TerrainTheme", questTerrain)
@@ -805,12 +1904,25 @@ function FieldScene.start(opts)
 			m:PivotTo(CFrame.new(pos) * CFrame.Angles(0, math.rad(entry[7]), 0) * CFrame.new(-pos) * m:GetPivot())
 		end
 		-- 모든 승인된 필드 장식은 무기로 타격 가능. 큰 랜드마크는 시각 반응만 하고 영구 파괴하지 않는다.
-		local center, extent = m:GetBoundingBox()
-		m:SetAttribute("FieldCombatObject", true)
-		m:SetAttribute("FieldObjectHits", 0)
-		table.insert(fieldObjects, { model = m, pos = center.Position,
-			radius = math.clamp(math.max(extent.X, extent.Z) * 0.24, 1.4, 7.5),
-			origin = m:GetPivot(), lastHit = -100 })
+		if entry.horizon then
+			-- 전장 밖 배경은 조사·타격 대상이 아니다. 실제 로드 성공 후에만 계수한다.
+			m:SetAttribute("FieldHorizon", true)
+			if entry.horizonNature then
+				m:SetAttribute("FieldHorizonNature", true)
+			elseif entry.briefBackdrop then
+				m:SetAttribute("FieldBriefAssetKey", entry[1] .. "/" .. entry[2])
+				folder:SetAttribute("FieldBriefBackdropPlaced", entry[2])
+			else
+				folder:SetAttribute("FieldHorizonPlaced", (folder:GetAttribute("FieldHorizonPlaced") or 0) + 1)
+			end
+		else
+			local center, extent = m:GetBoundingBox()
+			m:SetAttribute("FieldCombatObject", true)
+			m:SetAttribute("FieldObjectHits", 0)
+			table.insert(fieldObjects, { model = m, pos = center.Position,
+				radius = math.clamp(math.max(extent.X, extent.Z) * 0.24, 1.4, 7.5),
+				origin = m:GetPivot(), lastHit = -100 })
+		end
 		-- 대표 건축물은 지연 로드돼도 지명 표지판을 놓친 채 끝나지 않게 한다.
 		if entry.title and not folder:GetAttribute("FieldNamedLandmarkTitle") then
 			local adorn = m:FindFirstChildWhichIsA("BasePart", true)
@@ -840,6 +1952,12 @@ function FieldScene.start(opts)
 				bb.Parent = adorn
 			end
 		end
+		sceneryBatch += 1
+		if sceneryBatch >= 12 then
+			sceneryBatch = 0
+			-- 모델 수 하드캡은 없으며, 대량 배치의 순간 렌더링 끊김만 줄인다.
+			task.wait()
+		end
 		return m
 	end
 	local function stageFeature(entry)
@@ -849,7 +1967,70 @@ function FieldScene.start(opts)
 		return placed
 	end
 	-- 나무와 바위
-	local treeNames = biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" }
+	local treeNames = table.clone(biome.treeNames or { "tree", "tree-crooked", "tree-high", "tree_large", "tree_tiny" })
+	-- [지역 수목 실물] 신규 케니 자연 모델은 ID+체험권한 확인 후 정식 AssetIds에 생길 때만 선택한다.
+	-- 나무 개수를 늘리지 않고 기존 나무 슬롯에서 계절·지역별 수종만 추가한다.
+	do
+		local trees = if winterScene or northern then { "kenney_tree_pinetallD_detailed" }
+			elseif tropical or portNature == "mangrove" or portNature == "jungle_coast"
+				then { "kenney_tree_fat", "kenney_tree_palmShort" }
+			elseif questTerrain == "forest" or portNature == "forest"
+				then { "kenney_tree_fat", "kenney_tree_defaultDark" }
+			else { "kenney_tree_defaultDark" }
+		if not arid then
+			for _, name in trees do
+				if AssetIds["Terrain/" .. name] then table.insert(treeNames, name) end
+			end
+		end
+	end
+	-- [신규 내부 CC0 원본] Roblox Universe 등록 ID가 확인된 나무만 기존 실물 선택군에 합류한다.
+	-- 미등록 파일은 화면에 가짜 도형으로 대체하지 않고 기존 등록 나무를 유지한다.
+	if not arid and AssetIds["Terrain/tree-detailed"] then table.insert(treeNames, "tree-detailed") end
+	if northern and AssetIds["Terrain/tree-pinedefaultb"] then table.insert(treeNames, "tree-pinedefaultb") end
+	if northern and AssetIds["Terrain/tree-pinetalla-detailed"] then table.insert(treeNames, "tree-pinetalla-detailed") end
+	-- [구역별 수관] 가을 황금수관·그늘진 참나무·북방 침엽수·열대 큰 야자.
+	-- 새 실물 모델은 기존 나무 수량 안에서만 섞는다.
+	if season == "가을" and not tropical and not winterScene and AssetIds["Terrain/tree-detailed-fall"] then
+		table.insert(treeNames, "tree-detailed-fall")
+	end
+	if questTerrain == "forest" and not winterScene and AssetIds["Terrain/tree-oak-dark"] then
+		table.insert(treeNames, "tree-oak-dark")
+	end
+	if northern and AssetIds["Terrain/tree-pinetallb-detailed"] then
+		table.insert(treeNames, "tree-pinetallb-detailed")
+	end
+	if northern and AssetIds["Terrain/tree-pinetallc-detailed"] then
+		table.insert(treeNames, "tree-pinetallc-detailed")
+	end
+	if not arid and (questTerrain == "highland" or questTerrain == "forest") and AssetIds["Terrain/tree-plateau"] then
+		table.insert(treeNames, "tree-plateau")
+	end
+	-- [정식 CC0 실물] 기존 수목 배치 수를 유지하며 권한 확인된 숲·북방 원경 변종만 선택한다.
+	if (questTerrain == "forest" or questTerrain == "highland") and AssetIds["Terrain/tree-detailed-dark"] then
+		table.insert(treeNames, "tree-detailed-dark")
+	end
+	if northern and AssetIds["Terrain/tree-pinetalld-detailed"] then
+		table.insert(treeNames, "tree-pinetalld-detailed")
+	end
+	if tropical and AssetIds["Terrain/tree-palmdetailedtall"] then
+		table.insert(treeNames, "tree-palmdetailedtall")
+	end
+	-- [계절 수관 실물] 기존 나무 총량은 보존하면서 가을 참나무·해풍에 굽은 야자수를 섞는다.
+	if season == "가을" and not tropical and not winterScene and AssetIds["Terrain/tree-oak-fall"] then
+		table.insert(treeNames, "tree-oak-fall")
+	end
+	if tropical and AssetIds["Terrain/tree-palmbend"] then
+		table.insert(treeNames, "tree-palmbend")
+	end
+	-- [5차 승인 모델] 기존 수목 예산 안에서 수직 숲 실루엣·먼 수관·계절 색을 강화한다.
+	if not arid and (questTerrain == "forest" or questTerrain == "highland" or questTerrain == "jungle")
+		and AssetIds["Terrain/tree-tall"] then table.insert(treeNames, "tree-tall") end
+	if northern and questTerrain == "highland" and AssetIds["Terrain/tree-thin"] then
+		table.insert(treeNames, "tree-thin")
+	end
+	if season == "가을" and not tropical and not winterScene and AssetIds["Terrain/tree-tall-fall"] then
+		table.insert(treeNames, "tree-tall-fall")
+	end
 	-- [구획별 단순화된 식생 팔레트] 고스트 오브 쓰시마처럼 동일 화면의 나뭇잎색을 절제해 지역 정체성을 강조한다.
 	local foliageTint = if winterScene then Color3.fromRGB(150, 173, 160)
 		elseif northern and season == "가을" then Color3.fromRGB(155, 119, 66)
@@ -858,57 +2039,127 @@ function FieldScene.start(opts)
 		elseif tropical then Color3.fromRGB(81, 146, 82)
 		elseif arid then Color3.fromRGB(156, 151, 94)
 		else Color3.fromRGB(102, 153, 82)
-	-- [모바일 안정화] 메시는 화면 자원만 줄이고 탐험 보상·몬스터 수·위험도는 유지한다.
+	-- [승인 자연물] 탐험 보상·몬스터 수·위험도와 분리된 환경 배치만 계산한다.
 	local treeCount = math.floor(biome.trees * 2 * AREA)
-	local visualTreeCount = if visualMobile then math.min(treeCount, 44) else treeCount
+	-- [지형 모델 수 해제] 기기별 개수 제한 없이 현재 바이옴과 맵 면적이 정한 수목을 배치한다.
+	local visualTreeCount = treeCount
 	for index = 1, visualTreeCount do
-		local pos = ORIGIN + scatter(14)
-		-- 산길·유적은 바깥 능선으로, 숲은 양옆의 구불구불한 수목 통로로 배치한다.
+		local sample = scatter(14)
+		-- 기존 전투 RNG 소비 순서를 유지한다. 이 값은 군락의 작은 편차로만 사용한다.
+		local a, b
 		if questTerrain == "forest" then
-			local side = if index % 2 == 0 then -1 else 1
-			local z = rng:NextNumber(-half * 0.88, half * 0.61)
-			local curve = math.sin(z / math.max(half, 1) * 6) * half * 0.07
-			pos = ORIGIN + Vector3.new(side * (half * rng:NextNumber(0.27, 0.78) + curve), 0, z)
+			b = rng:NextNumber(-half * 0.88, half * 0.61)
+			a = rng:NextNumber(0.27, 0.78)
 		elseif questTerrain == "highland" or questTerrain == "mine" or questTerrain == "ruins" then
-			local side = if index % 2 == 0 then -1 else 1
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.62, 0.89), 0,
-				rng:NextNumber(-half * 0.83, half * 0.53))
+			a = rng:NextNumber(0.62, 0.89)
+			b = rng:NextNumber(-half * 0.83, half * 0.53)
 		else
-			-- 농경지·호숫가·해안·평원의 중앙 이동 동선을 비우고 외곽에 수목대를 만든다.
-			local side = if index % 2 == 0 then -1 else 1
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.52, 0.88), 0,
-				rng:NextNumber(-half * 0.81, half * 0.50))
+			a = rng:NextNumber(0.52, 0.88)
+			b = rng:NextNumber(-half * 0.81, half * 0.50)
 		end
+		local pos = sceneryPosition(index, visualTreeCount, 5, 11, 0,
+			(a - 0.55) * 7 + sample.X / half * 1.5, b / half * 3 + sample.Z / half)
 		local h = rng:NextNumber(9, 15)
 		local name = treeNames[rng:NextInteger(1, #treeNames)]
+		-- [저폴리 원경] 신규 생성물 없이 같은 식생권의 기등록 Kenney 간결 실물을 선택한다.
+		-- 근·중경의 수종 다양성·고품질 메시·지면 충돌과 총 배치 수는 그대로 둔다.
+		local lowPolyVariant = false
+		local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
+		if distance >= 400 and not arid then
+			local simpler = if winterScene or northern then "tree-pinedefaulta"
+				elseif tropical then "kenney_tree_palmShort" else "kenney_tree_defaultDark"
+			if AssetIds["Terrain/" .. simpler] then
+				name, lowPolyVariant = simpler, true
+			end
+		end
+		-- 실제 등록된 계절·수종 원본만 군락에 합류한다. 미등록 식생은 기존 수종을 보존한다.
+		do
+			local candidates = if winterScene then { "veg_birch_snow", "veg_alpine_conifer" }
+				elseif questTerrain == "highland" then { "veg_alpine_conifer", "veg_conifer_grove" }
+				elseif tropical then { "veg_coconut_palm_3", "veg_coconut_palm_4", "veg_palm_grove" }
+				elseif questTerrain == "lake" or questTerrain == "swamp" then { "veg_river_willow_1", "veg_river_willow_2" }
+				elseif region == "korea" or region == "japan" or region == "china" then { "veg_bamboo_tall", "veg_conifer_grove" }
+				elseif arid then { "veg_dry_canopy" }
+				elseif season == "가을" then { "veg_birch_autumn", "veg_autumn_grove" }
+				elseif northern then { "veg_birch_green", "veg_northern_grove", "veg_conifer_grove" }
+				else { "veg_birch_green", "veg_forest_edge" }
+			if not lowPolyVariant and index % 5 <= 2 then
+				local candidate = candidates[(index + portVisualSeed) % #candidates + 1]
+				if AssetIds["Terrain/" .. candidate] then name = candidate end
+			end
+		end
 		local kind = if AssetIds["Terrain/" .. name] then "Terrain" else "Town"
 		local entry = { kind, name, h, nil, nil, false }
+		entry.lowPolyVariant = lowPolyVariant
 		entry.position = pos
+		entry.band = if distance < 120 then "near" elseif distance < 400 then "mid" else "far"
+		entry[7] = visualLayoutRng:NextNumber(-180, 180)
 		-- 상록수는 북방 겨울에도 녹음을 유지하고, 낙엽수만 황금·적갈색 또는 서리색을 입힌다.
-		entry.tint = if name == "tree-pinedefaulta" or name == "north-pine-fall"
+		entry.tint = if name == "tree-pinedefaulta" or name == "tree-pinedefaultb" or name == "tree-pinetalla-detailed"
+			or name == "tree-pinetallb-detailed" or name == "tree-pinetallc-detailed" or name == "north-pine-fall"
 			then (if winterScene then Color3.fromRGB(85, 117, 116) else Color3.fromRGB(103, 146, 92))
+			elseif name == "tree-detailed-fall" then Color3.fromRGB(194, 123, 61)
+			elseif name == "tree-oak-dark" then Color3.fromRGB(71, 109, 77)
+			elseif name == "tree-plateau" then Color3.fromRGB(107, 143, 90)
+			elseif name == "tree-oak-fall" or name == "tree-tall-fall" then Color3.fromRGB(169, 100, 52)
+			elseif name == "tree-thin" then Color3.fromRGB(105, 136, 110)
+			elseif name == "tree-tall" then Color3.fromRGB(105, 148, 88)
+			elseif name == "tree-palmdetailedtall" or name == "tree-palmbend" then Color3.fromRGB(83, 157, 97)
 			else foliageTint
 		stageFeature(entry)
 	end
 	-- [무료 실물 지형] 기존 바위 개수를 유지하면서 등록된 Quaternius 모델을 섞는다.
 	local rockNames = { { "Town", "rock-large" }, { "Town", "rock-small" }, { "Town", "rock-wide" }, { "Terrain", "Rock_2" } }
-	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
-	local visualRockCount = if visualMobile then math.min(rockCount, 36) else rockCount
-	for index = 1, visualRockCount do
-		local pos = ORIGIN + scatter(10)
-		local side = if index % 2 == 0 then 1 else -1
-		if questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" then
-			-- 협곡 양벽·해안 암초는 외곽에 모아 벽면처럼 연결한다.
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.65, 0.90), 0,
-				rng:NextNumber(-half * 0.86, half * 0.44))
-		else
-			-- 일반 지형의 바위도 조사·전투·시작 통로와 충돌하지 않게 양쪽 가장자리에 둔다.
-			pos = ORIGIN + Vector3.new(side * half * rng:NextNumber(0.55, 0.90), 0,
-				rng:NextNumber(-half * 0.84, half * 0.48))
+	-- [퀘스트 암석 실물] 기존 바위 슬롯 수만 사용. 계곡·광산·빙하·해안에서 바위의 단면을 달리한다.
+	do
+		local rocks = if questTerrain == "glacier" or questTerrain == "ruins" then {
+			"kenney_stone_largeB", "kenney_rock_largeB" }
+			elseif questTerrain == "highland" or questTerrain == "volcanic" then {
+				"kenney_rock_tallE", "kenney_rock_largeD", "kenney_rock_largeB" }
+			elseif questTerrain == "mine" or questTerrain == "desert" then {
+				"kenney_rock_largeD", "kenney_rock_smallFlatA" }
+			elseif questTerrain == "lake" or questTerrain == "coast" or portNature == "lagoon" then {
+				"kenney_rock_smallFlatA", "kenney_stone_smallFlatA" }
+			else { "kenney_rock_largeB", "kenney_rock_smallFlatA" }
+		for _, name in rocks do
+			if AssetIds["Terrain/" .. name] then table.insert(rockNames, { "Terrain", name }) end
 		end
+	end
+	if AssetIds["Terrain/rock-largea"] then table.insert(rockNames, { "Terrain", "rock-largea" }) end
+	if (questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" or questTerrain == "glacier")
+		and AssetIds["Terrain/rock-tallc"] then table.insert(rockNames, { "Terrain", "rock-tallc" }) end
+	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "glacier" or questTerrain == "volcanic")
+		and AssetIds["Terrain/rock-talli"] then table.insert(rockNames, { "Terrain", "rock-talli" }) end
+	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "mine")
+		and AssetIds["Terrain/rock-largec"] then table.insert(rockNames, { "Terrain", "rock-largec" }) end
+	if (questTerrain == "highland" or questTerrain == "coast" or questTerrain == "mine" or questTerrain == "volcanic")
+		and AssetIds["Terrain/rock-talld"] then table.insert(rockNames, { "Terrain", "rock-talld" }) end
+	local rockCount = math.floor(biome.rocks * 1.6 * AREA)
+	local visualRockCount = rockCount
+	for index = 1, visualRockCount do
+		local sample = scatter(10)
+		local a, b
+		if questTerrain == "highland" or questTerrain == "mine" or questTerrain == "coast" then
+			a = rng:NextNumber(0.65, 0.90)
+			b = rng:NextNumber(-half * 0.86, half * 0.44)
+		else
+			a = rng:NextNumber(0.55, 0.90)
+			b = rng:NextNumber(-half * 0.84, half * 0.48)
+		end
+		local pos = sceneryPosition(index, visualRockCount, 4, 7, 1,
+			(a - 0.55) * 6 + sample.X / half, b / half * 4 + sample.Z / half)
+		local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
 		local rock = rockNames[rng:NextInteger(1, #rockNames)]
+		local lowPolyVariant = false
+		-- [저폴리 원경] 근경 암석과 실제 충돌을 유지하며 원경만 승인된 단순 바위 메시 사용.
+		if distance >= 400 and AssetIds["Terrain/kenney_rock_smallFlatA"] then
+			rock, lowPolyVariant = { "Terrain", "kenney_rock_smallFlatA" }, true
+		end
 		local entry = { rock[1], rock[2], rng:NextNumber(2.5, 6), nil, nil, true }
+		entry.lowPolyVariant = lowPolyVariant
 		entry.position = pos
+		entry.band = if distance < 120 then "near" elseif distance < 400 then "mid" else "far"
+		entry[7] = visualLayoutRng:NextNumber(-180, 180)
 		stageFeature(entry)
 	end
 
@@ -1006,11 +2257,18 @@ function FieldScene.start(opts)
 			{"Terrain","debris",16,0.68,-0.27,false,0}, {"Terrain","cliff-rock",26,-0.70,-0.18,true,20},
 			{"Terrain","campfire-stones",7,0.54,-0.56,false,0}, {"Terrain","Rock_2",11,-0.61,-0.61,true,0},
 		},
+		archive = {
+			{"Terrain","platform-stone",24,-0.57,-0.53,false,0}, {"Terrain","ground-pathstraight",18,-0.55,-0.30,false,0},
+			{"Terrain","village-fence",14,-0.73,-0.63,false,90}, {"Terrain","village-fence",14,0.73,-0.63,false,90},
+			{"Town","cart",7,-0.48,-0.32,false,15}, {"Town","bench_A",5,0.48,-0.26,false,180},
+			{"Terrain","forest-bush-detailed",7,0.58,-0.44,false,0}, {"Terrain","forest-flower-purple",4,-0.48,-0.13,false,0},
+			{"Terrain","ground-pathcorner",10,0.62,-0.36,false,90},
+		},
 		plains = {
-			{"Terrain","ground-pathstraight",24,-0.45,-0.60,false,0}, {"Terrain","mystic-stone-arch",19,0.69,-0.80,true,0},
-			{"Terrain","altar-stone",11,0.69,-0.53,true,0}, {"Terrain","campfire-stones",5,-0.62,-0.76,false,0},
+			{"Terrain","ground-pathstraight",24,-0.45,-0.60,false,0}, {"Terrain","village-fence",17,0.72,-0.70,false,90},
+			{"Terrain","forest-bush-detailed",9,0.69,-0.53,false,0}, {"Terrain","campfire-stones",5,-0.62,-0.64,false,0},
 			{"Terrain","coast-grass-patch",7,-0.64,-0.34,false,0}, {"Terrain","forest-flower-yellow",5,0.57,-0.25,false,0},
-			{"Terrain","ruins-pillar-decorated",13,0.78,-0.42,true,0},
+			{"Terrain","rock-largea",13,0.78,-0.42,true,0},
 		},
 	}
 
@@ -1019,29 +2277,558 @@ function FieldScene.start(opts)
 		coast = { 7, 8, 9 }, forest = { 4, 8, 9 }, highland = { 8, 9, 10 },
 		mine = { 7, 9, 10 }, ruins = { 5, 7, 9 }, fort = { 7, 8 },
 		desert = { 5, 6, 9 }, farm = { 2, 3, 7 }, lake = { 3, 7, 8 },
-		plains = { 4, 6, 5 }, jungle = { 5, 8, 9 }, swamp = { 3, 6, 8 },
+		plains = { 4, 6, 5 }, archive = { 5, 6, 8 }, jungle = { 5, 8, 9 }, swamp = { 3, 6, 8 },
 		glacier = { 5, 6, 8 }, volcanic = { 5, 7, 8 },
 	}
 	local featureList = landforms[questTerrain] or landforms.plains
+	-- 일반 혼합 조사에는 지역 밖 발견물의 건축물·동식물을 대표 경관으로 사칭하지 않는다.
+	if table.find({ "survey_01", "survey_08", "survey_12", "survey_13", "survey_14", "survey_15", "survey_18", "survey_19", "survey_21", "survey_24", "survey_27", "survey_29", "survey_30" }, opts.siteId or "") then
+		folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+	end
+	if folder:GetAttribute("FieldPacificSurvey") then
+		-- 유칼립투스·카우리·맹그로브·산호 및 문화권 전용 원본은 실제 등록 전까지 미확보로 기록한다.
+		folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		if questTerrain == "jungle" then
+			featureList[5][2], featureList[6][2] = "plant-bushlarge", "forest-bush-detailed"
+		elseif questTerrain == "forest" then
+			-- 외국 수종을 대표종으로 사칭하지 않고 중립 하층과 숲길을 사용한다.
+			featureList[5][2], featureList[6][2] = "tree-detailed", "tree-detailed-dark"
+			featureList[7][2], featureList[8][2] = "tree-tall", "tree-detailed"
+		end
+	end
+	-- 그리스 신전·이집트 기둥·유럽 풍차를 모든 문화권의 유적/농경지에 반복하지 않는다.
+	-- 해당 문화권 전용 원본이 없는 자리는 승인된 자연물·무명의 발굴 흔적만 배치한다.
+	do
+		local port = opts.portId and Ports.Ports[opts.portId]
+		if questTerrain == "ruins" and region ~= "italy" and region ~= "med" then
+			local neutral = { [1] = "debris", [2] = "rock-talld", [3] = "rock-largec", [4] = "cliff-rock",
+				[5] = "ground-pathrocks", [6] = "rock-largea", [7] = "debris", [8] = "rock-largec",
+				[9] = "ground-pathrocks", [10] = "rock-talld" }
+			for index, asset in neutral do
+				local entry = featureList[index]
+				if entry then
+					entry[1], entry[2] = "Terrain", asset
+					entry[3] = math.min(entry[3], if index == 4 or index == 8 then 19 else 10)
+				end
+			end
+		elseif questTerrain == "desert" and (not port or port.country ~= "egypt") then
+			for index, asset in { [3] = "cliff-rock", [4] = "rock-talld", [5] = "rock-largea" } do
+				local entry = featureList[index]
+				entry[1], entry[2], entry[3] = "Terrain", asset, math.min(entry[3], 17)
+			end
+		elseif questTerrain == "farm" and (tropical or arid or region == "japan" or region == "korea" or region == "china"
+			or table.find({ "charleston_rice", "survey_am_b", "bridgetown_sugar", "havana_orchard" }, opts.siteId or "")) then
+			featureList[1][1], featureList[1][2], featureList[1][3] = "Terrain", "village-fence", 18
+		end
+		-- [장소별 근·중경 구성] 승인 실물만 기존 슬롯에 배치한다. 조사 슬롯/충돌은 보존한다.
+		if questTerrain == "mine" then
+			featureList[8][1], featureList[8][2], featureList[8][3] = "Town", "lantern", 2.5
+			featureList[10][1], featureList[10][2], featureList[10][3] = "Cargo", "resource-stone", 6
+			if opts.siteId == "carrara_quarry" or opts.siteId == "marble_quarry" then
+				for _, index in { 1, 2, 3, 4, 5, 6 } do
+					featureList[index][2] = if index == 6 then "cliff-cornerlarge-stone" else "cliff-large-stone"
+				end
+				featureList[10][2] = "stone-bricks-stack-small"
+			end
+		elseif questTerrain == "swamp" and table.find({ "marseille_salt", "la_rochelle_salt", "cagliari_salt" }, opts.siteId or "") then
+			-- [염전] 낮은 제방과 수로, 소금 운반 도구를 같은 구획에 배치한다.
+			-- 실제 염전 원본은 아직 미등록이므로 기존 수로 원본만 사용한다.
+			featureList[1] = { "Terrain", "ground-riverstraight", 24, -0.68, -0.75, false, 0 }
+			featureList[2] = { "Terrain", "ground-riverstraight", 24, -0.60, -0.46, false, 0 }
+			featureList[3] = { "Terrain", "ground-riverbendbank", 13, -0.58, -0.28, true, 0 }
+			featureList[4] = { "Town", "cart", 6, -0.77, -0.62, true, 0 }
+			featureList[5] = { "Terrain", "river-stone-bank", 11, 0.59, -0.72, false, 0 }
+			featureList[6] = { "Cargo", "barrel", 3, 0.76, -0.43, true, 0 }
+			featureList[7] = { "Terrain", "village-fence", 14, 0.80, -0.78, true, 0 }
+			featureList[8] = { "Terrain", "ground-riverrocks", 8, -0.71, -0.12, false, 0 }
+			featureList[9] = { "Terrain", "coast-grass-patch", 4, 0.58, -0.15, false, 0 }
+			folder:SetAttribute("FieldSiteComposition", "salt-work-waterway")
+		elseif questTerrain == "swamp" and table.find({ "bissau_mangrove", "calabar_delta", "calcutta_delta", "basra_marsh", "neworleans_delta", "belem_amazon", "pac_survey_03", "survey_05", "survey_27" }, opts.siteId or "") then
+			-- [삼각주·맹그로브 수변] 물길과 둑, 낮은 식생을 분리한다. 미등록 맹그로브 뿌리나 갈대 원본을 사칭하지 않는다.
+			featureList[1] = { "Terrain", "ground-riverbend", 23, -0.68, -0.75, false, 0 }
+			featureList[2] = { "Terrain", "ground-riverstraight", 21, -0.60, -0.46, false, 70 }
+			featureList[3] = { "Terrain", "bridge-wood", 15, -0.58, -0.28, true, 90 }
+			featureList[4] = { "Terrain", "ground-riverbendbank", 15, -0.77, -0.62, false, 0 }
+			featureList[5] = { "Terrain", "plant-bushlarge", 7, 0.59, -0.72, false, 0 }
+			featureList[6] = { "Terrain", "river-stone-bank", 10, 0.76, -0.43, false, 0 }
+			featureList[7] = { "Terrain", if opts.siteId == "neworleans_delta" then "tree-oak" else "tropical-palm-tall", 17, 0.80, -0.78, true, 0 }
+			featureList[8] = { "Terrain", "canoe", 9, -0.71, -0.12, false, 0 }
+			featureList[9] = { "Terrain", "grass-leafslarge", 4, 0.58, -0.15, false, 0 }
+			folder:SetAttribute("FieldSiteComposition", "delta-waterway")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		elseif questTerrain == "coast" then
+			-- [해안 세부 구성] 갯벌·암벽·어항을 같은 부두 복제본으로 표시하지 않는다.
+			local siteId = opts.siteId or ""
+			local tidal = table.find({ "dunkirk_flats", "amsterdam_flats", "copenhagen_eider_isle", "incheon_flats", "auto_geography_hamburg_low", "auto_geography_london_low" }, siteId) ~= nil
+			local fjord = table.find({ "bergen_fjord", "oslo_fjord", "bergen_cliffs", "stockholm_skerries", "pac_survey_16", "pac_survey_17", "pac_survey_19", "auto_geography_bergen_low", "survey_02", "survey_32" }, siteId) ~= nil
+			local cliffs = fjord or table.find({ "london_chalk", "giants_causeway", "rouen_coast", "edinburgh_coast", "gothenburg_eider", "gdansk_amber_beach", "marseille_calanques", "gibraltar_cliff",
+				"gibraltar_cave", "trieste_karst", "pac_survey_15", "pac_survey_18", "survey_04", "survey_06", "survey_16" }, siteId) ~= nil
+			local wharf = table.find({ "bergen_wharf", "bergen_whale_station", "amsterdam_herring_quay", "amsterdam_fog",
+				"gdansk_harbor", "hull_whalers", "glasgow_clyde", "bordeaux_quay", "porto_ribeira",
+				"cadiz_treasure_fleet", "toulon_arsenal", "la_rochelle_towers", "jeddah_pilgrim",
+				"cochin_nets", "manila_galleon", "amoy_harbor", "nagasaki_dejima", "stjohns_banks", "boston_whalers", "auto_site_bergen_low", "auto_architecture_venice_low" }, siteId) ~= nil
+			local shipyard = string.match(siteId, "^auto_shipbuilding_") ~= nil or siteId == "survey_30"
+			local reef = table.find({ "mombasa_reef", "jeddah_reef", "maldives_atoll", "coral_banks", "recife_reef", "survey_am_a", "pac_survey_07", "pac_survey_09", "survey_14", "survey_18" }, siteId) ~= nil
+			if reef then
+				-- [산호 해안] 원본 산호가 없으므로 얕은 해안과 낮은 암반만 구성한다.
+				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, true, 0 }
+				featureList[2] = { "Terrain", "kenney_rock_smallFlatA", 5, -0.76, -0.53, true, 90 }
+				featureList[4] = { "Naval", "rocks-sand-a", 5, 0.79, -0.70, true, 0 }
+				featureList[5] = { "Naval", "rocks-sand-b", 4, 0.83, -0.34, true, 25 }
+				featureList[6] = { "Terrain", "tropical-palm-short", 10, 0.68, -0.85, false, 0 }
+				featureList[9] = { "Terrain", "ground-riverrocks", 7, -0.58, -0.42, true, 0 }
+				folder:SetAttribute("FieldSiteComposition", "shallow-reef-shore")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif table.find({ "pac_survey_02", "pac_survey_13", "pac_survey_20", "survey_01", "survey_10", "survey_20", "survey_31" }, siteId) then
+				-- 호주 서안·페루 연안: 부두와 거대 암벽 대신 모래·낮은 돌 해안.
+				featureList[1] = { "Terrain", "platform-beach", 25, -0.66, -0.74, false, 0 }
+				featureList[2] = { "Terrain", "river-stone-bank", 7, -0.76, -0.53, false, 90 }
+				featureList[3] = { "Terrain", "ground-pathrocks", 8, -0.61, -0.87, false, 22 }
+				featureList[4] = { "Terrain", "kenney_rock_smallFlatA", 5, 0.79, -0.70, false, 0 }
+				featureList[5] = { "Terrain", "kenney_stone_smallFlatA", 4, 0.83, -0.34, false, 25 }
+				featureList[6] = { "Terrain", "coast-grass-patch", 5, 0.68, -0.85, false, 0 }
+				featureList[7] = { "Naval", "rocks-sand-b", 5, 0.70, -0.58, false, 0 }
+				featureList[9] = { "Terrain", "ground-riverrocks", 7, -0.58, -0.42, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "low-sandy-shore")
+			elseif tidal then
+				featureList[1] = { "Terrain", "platform-beach", 19, -0.66, -0.74, true, 0 }
+				featureList[2] = { "Terrain", "river-stone-bank", 9, -0.76, -0.53, true, 90 }
+				featureList[4] = { "Terrain", "kenney_rock_smallFlatA", 4, 0.79, -0.70, true, 0 }
+				featureList[5] = { "Terrain", "kenney_stone_smallFlatA", 3, 0.83, -0.34, true, 25 }
+				featureList[9] = { "Terrain", "ground-riverrocks", 8, -0.58, -0.42, true, 0 }
+				folder:SetAttribute("FieldSiteComposition", "tidal-flat")
+			elseif cliffs then
+				featureList[1] = { "Terrain", "cliff-blockslope-rock", 28, -0.76, -0.74, true, 15 }
+				featureList[2] = { "Terrain", "rock-largec", 12, -0.76, -0.53, true, 90 }
+				featureList[4][2], featureList[5][2] = if siteId == "london_chalk" then "cliff-large-stone" else "cliff-large-rock",
+					if siteId == "london_chalk" then "cliff-cornerlarge-stone" else "cliff-cornerlarge-rock"
+				featureList[4][3], featureList[5][3] = if fjord then 43 else 39, if fjord then 36 else 32
+				featureList[9] = { "Terrain", "rock-largea", 7, -0.58, -0.42, true, 0 }
+				folder:SetAttribute("FieldSiteComposition", if fjord then "fjord" else "rocky-shore")
+			elseif shipyard then
+				-- 조선소는 기존 등록 부두·가공 목재·닻으로 작업 구획을 구성한다.
+				featureList[1] = { "Naval", "structure-platform-dock-small", 24, -0.66, -0.74, true, 0 }
+				featureList[4] = { "Cargo", "wood-planks-stack-small", 7, 0.79, -0.70, false, 0 }
+				featureList[5] = { "Cargo", "wood-log-stack", 7, 0.83, -0.34, false, 25 }
+				featureList[6] = { "Naval", "anchor", 5, 0.68, -0.85, false, 0 }
+				featureList[7] = { "Cargo", "resource-planks", 5, 0.70, -0.58, false, 0 }
+				featureList[10] = { "Town", "lantern", 3, -0.44, -0.71, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "shipyard-workspace")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif wharf then
+				featureList[4] = { "Naval", "structure-platform-dock-small", 19, 0.79, -0.70, true, 90 }
+				featureList[5] = { "Town", "cart", 5, 0.83, -0.34, true, 25 }
+				featureList[6] = { "Cargo", "wood-log-stack", 5, 0.68, -0.85, true, 0 }
+				featureList[7] = { "Cargo", "food-barrel-fish", 3, 0.70, -0.58, true, 0 }
+				featureList[10] = { "Town", "lantern", 3, -0.44, -0.71, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "working-wharf")
+			end
+		elseif questTerrain == "ruins" and opts.siteId == "campeche_maya" then
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		elseif questTerrain == "ruins" and (opts.siteId == "ningbo_temple" or opts.siteId == "survey_29") then
+			-- [동아시아 사찰 터] 실제 등록된 동아시아 석재 기단·계단·종을 배치한다.
+			-- 미등록 사찰 본전은 만들지 않고 조사 동선은 기존 자리에 유지한다.
+			featureList[1] = { "Town", "eastasia-base", 19, -0.71, -0.75, true, 0 }
+			featureList[2] = { "Town", "eastasia-column-base", 7, -0.57, -0.70, true, 0 }
+			featureList[3] = { "Town", "eastasia-bell", 11, 0.68, -0.72, true, 0 }
+			featureList[4] = { "Town", "eastasia-stairs", 12, 0.77, -0.56, true, 35 }
+			featureList[5] = { "Terrain", "ground-pathrocks", 8, -0.44, -0.47, true, 0 }
+			featureList[7] = { "Terrain", "east-bamboo-grove", 9, 0.68, -0.33, true, 0 }
+			featureList[9] = { "Terrain", "altar-stone", 6, -0.64, -0.46, true, 0 }
+			folder:SetAttribute("FieldSiteComposition", "east-asian-temple-court")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		elseif questTerrain == "fort" and table.find({ "halifax_citadel", "louisbourg_fort", "kingston_royal", "sanjuan_morro", "cartagena_walls", "havana_fort" }, opts.siteId or "") then
+			-- 미주 역사 요새 전용 모델이 확인될 때까지 중세 성·깃발·도개교를 표시하지 않는다.
+			featureList[1] = { "Terrain", "ground-pathstraight", 18, -0.52, -0.74, false, 0 }
+			featureList[2] = { "Terrain", "ground-pathrocks", 12, -0.79, -0.74, false, 0 }
+			featureList[3] = { "Terrain", "river-stone-bank", 10, -0.79, -0.49, false, 0 }
+			featureList[4] = { "Terrain", "platform-stone", 15, -0.73, -0.88, false, 0 }
+			featureList[5] = { "Terrain", "rock-largea", 9, 0.75, -0.71, false, 0 }
+			featureList[6] = { "Terrain", "river-stone-bank", 10, 0.67, -0.42, false, 0 }
+			featureList[7] = { "Terrain", "ground-pathrocks", 9, 0.62, -0.86, false, 0 }
+			featureList[8] = { "Town", "lantern", 3, 0.54, -0.61, false, 0 }
+			folder:SetAttribute("FieldSiteComposition", "colonial-fort-ground")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		elseif questTerrain == "fort" and (opts.siteId == "osaka_castle" or opts.siteId == "edo_castle") then
+			-- [일본 성터] 서양 성채 모델을 일본 천수각으로 표시하지 않는다.
+			-- 기등록 석재 기단과 절개면, 계단만 사용한다.
+			featureList[1] = { "Town", "eastasia-stairs", 15, -0.52, -0.74, true, 0 }
+			featureList[2] = { "Terrain", "cliff-blockslopewalls-rock", 23, -0.79, -0.74, true, 0 }
+			featureList[3] = { "Terrain", "cliff-large-stone", 20, -0.79, -0.49, true, 0 }
+			featureList[4] = { "Town", "eastasia-base", 19, -0.73, -0.88, true, 0 }
+			featureList[5] = { "Terrain", "cliff-cornerlarge-stone", 28, 0.75, -0.71, true, 0 }
+			featureList[6] = { "Terrain", "cliff-blockslopewalls-rock", 20, 0.67, -0.42, true, 0 }
+			featureList[7] = { "Terrain", "ground-pathrocks", 9, 0.62, -0.86, false, 0 }
+			featureList[8] = { "Terrain", "bridge-wood", 16, 0.54, -0.61, true, 0 }
+			folder:SetAttribute("FieldSiteComposition", "japanese-stone-fort")
+			folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+		elseif questTerrain == "ruins" and table.find({ "runestone_field", "stockholm_runes", "boyne_valley", "orkney_brodgar",
+			"uppsala_mounds", "dublin_stones", "brittany_stones", "orkney_village", "auto_mystery_mys_stone_circle" }, opts.siteId or "") then
+			-- 거석과 봉분의 일반적인 석재 윤곽만 표현한다. 실제 룬 문자·유적 원본으로 사칭하지 않는다.
+			for _, index in { 1, 2, 3, 4, 6, 8, 10 } do
+				local entry = featureList[index]
+				entry[1], entry[2], entry[3] = "Terrain", if index % 2 == 0 then "rock-tallc" else "rock-talld", if index % 2 == 0 then 8 else 11
+			end
+			featureList[5][2], featureList[7][2], featureList[9][2] = "ground-pathrocks", "rock-largea", "ground-pathrocks"
+			folder:SetAttribute("FieldSiteComposition", "megalithic-stone")
+		elseif questTerrain == "lake" and table.find({ "amsterdam_canals", "amsterdam_polder", "rotterdam_dike", "hamburg_estuary",
+			"saint_louis_river", "basra_canals", "cochin_backwaters", "tianjin_canal", "batavia_canal", "brunei_water", "newyork_harbor", "montevideo_plata", "trinidad_pitch", "auto_architecture_amsterdam_low", "auto_architecture_hamburg_low", "survey_03", "survey_07", "survey_15" }, opts.siteId or "") then
+			-- 평탄한 제방·운하의 접지 모델을 연속 배치하며 폭포·산악 실루엣을 제거한다.
+			featureList[1] = { "Terrain", "ground-riverbendbank", 18, -0.82, -0.78, true, 0 }
+			featureList[2] = { "Terrain", "ground-riverside", 17, -0.73, -0.72, false, 0 }
+			featureList[3][2], featureList[4][2] = "ground-riverbend", "ground-riverstraight"
+			featureList[9] = { "Terrain", "village-fence", 12, 0.77, -0.68, true, 0 }
+			folder:SetAttribute("FieldSiteComposition", "lowland-waterway")
+		elseif questTerrain == "archive" and (string.match(opts.siteId or "", "^auto_goods_") or table.find({ "istanbul_bazaar", "smyrna_bazaar", "barcelona_market",
+			"barcelona_gothic", "algiers_kasbah", "riga_old_town", "casablanca_medina",
+			"surat_bazaar", "osaka_market", "jade_market", "hoi_an_lanterns", "zanzibar_stone", "portobelo_fair", "survey_12", "survey_24" }, opts.siteId or "")) then
+			-- [시장과 구시가] 기관 정원 대신 석재 길과 실제 시장 가판대, 운반 상자를 배치한다.
+			featureList[1] = { "Terrain", "platform-stone", 24, -0.57, -0.53, false, 0 }
+			featureList[2] = { "Terrain", "ground-pathstraight", 18, -0.55, -0.30, false, 0 }
+			featureList[3] = { "Town", "stall-red", 8, -0.73, -0.63, false, 90 }
+			featureList[4] = { "Town", "stall-green", 8, 0.73, -0.63, false, 90 }
+			featureList[7] = { "Cargo", "barrel", 3, 0.58, -0.44, false, 0 }
+			featureList[9] = { "Town", "lantern", 3, 0.62, -0.36, false, 90 }
+			folder:SetAttribute("FieldSiteComposition", "market-street")
+		elseif questTerrain == "archive" then
+			if table.find({ "boston_church", "philadelphia_hall", "salvador_church" }, opts.siteId or "") then
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			end
+			-- 기관 정원: 석재 마당·경계·벤치·수레. 전용 건물을 사칭하지 않는다.
+			featureList[3][1], featureList[3][2] = "Town", "fence_straight_long"
+			featureList[4][1], featureList[4][2] = "Town", "fence_straight_long"
+			featureList[9][1], featureList[9][2] = "Town", "bench_B"
+			-- 학문별 기관 바깥 조사 공간: 승인된 소품만 이용하며 실제 연구기구·건물로 사칭하지 않는다.
+			local discipline = string.match(opts.siteId or "", "^auto_([%a]+)_")
+			if discipline == "chemistry" or discipline == "physics" then
+				featureList[5] = { "Town", "stall-bench", 5, -0.48, -0.32, false, 15 }
+				featureList[6] = { "Naval", "crate-bottles", 3, 0.48, -0.26, false, 180 }
+				featureList[8] = { "Town", "lantern", 2.5, -0.48, -0.13, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "study-work-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline == "medicine" then
+				featureList[5] = { "Town", "bench_A", 5, -0.48, -0.32, false, 15 }
+				featureList[7] = { "Terrain", "plant-bushsmall", 3, 0.58, -0.44, false, 0 }
+				featureList[8] = { "Terrain", "forest-flower-purple", 3, -0.48, -0.13, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "medical-garden")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline == "astronomy" then
+				featureList[3] = { "Terrain", "ground-pathrocks", 9, -0.73, -0.63, false, 90 }
+				featureList[4] = { "Terrain", "ground-pathrocks", 9, 0.73, -0.63, false, 90 }
+				featureList[5] = { "Town", "bench_A", 5, -0.48, -0.32, false, 15 }
+				folder:SetAttribute("FieldSiteComposition", "observation-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline == "art" then
+				featureList[5] = { "Town", "stall-bench", 6, -0.48, -0.32, false, 15 }
+				featureList[7] = { "Cargo", "wood-planks-stack-small", 4, 0.58, -0.44, false, 0 }
+				folder:SetAttribute("FieldSiteComposition", "artisan-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			elseif discipline then
+				folder:SetAttribute("FieldSiteComposition", "records-court")
+				folder:SetAttribute("FieldSiteSpecialOriginalMissing", true)
+			end
+		elseif questTerrain == "farm" then
+			-- 실제 작물이 없는 농경지에 밀·옥수수·당근을 임의로 표시하지 않는다.
+			local crop = if string.find(questName, "밀", 1, true) then "crops-wheatstageb"
+				elseif string.find(questName, "옥수수", 1, true) then "crops-cornstagec"
+				elseif string.find(questName, "당근", 1, true) then "crop-carrot"
+				elseif string.find(questName, "호박", 1, true) then "crop-pumpkin" else nil
+			for _, index in { 3, 4, 5, 6, 7, 8, 9 } do
+				local entry = featureList[index]
+				if crop then entry[2] = crop
+				else entry[2], entry[3] = "ground-pathrocks", 8 end
+			end
+			folder:SetAttribute("FieldCropOriginalMissing", crop == nil)
+		end
+	end
 	for index, entry in featureList do
-		if not visualMobile or index <= 9 then
-			entry.landmark = true
-			entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
+		entry.landmark = true
+		entry.survey = table.find(surveyIndices[questTerrain] or surveyIndices.plains, index) ~= nil
+		-- 지형의 대표 구조물은 중경 묶음에 두고 조사 대상은 접근 가능한 기존 전장 안쪽에 유지한다.
+		if not entry.survey then
+			local sign = if entry[4] < 0 then -1 else 1
+			entry[4] = sign * math.clamp(math.abs(entry[4]) + 0.06, 0.52, 0.90)
+			entry[5] = math.clamp(entry[5] - 0.08, -0.90, 0.15)
+		end
+		stageFeature(entry)
+	end
+	-- [전장 지형지물] 발헤임의 생물군계 구분·엘든 링의 먼 유적 윤곽·고스트 오브 쓰시마의 식생층 원리만 참고한다.
+	-- 타 게임 모델·텍스처는 복제하지 않으며 등록된 CC0 실물 지형만 사용한다.
+	-- [원근 입체감] Kenney CC0 실물 절벽 면/상단/경사와 숲 하층을 지형 높이 위에 층으로 배치한다.
+	-- 동선과 퀘스트 조사 대상은 그대로 유지하며 시각 모델 충돌은 만들지 않는다.
+	do -- [Luau 지역변수 상한] 추가 실물 깊이 배치표는 기존 구획과 지역변수 생명주기를 분리한다.
+	local depthLandforms = if folder:GetAttribute("FieldSiteComposition") == "shallow-reef-shore"
+		or folder:GetAttribute("FieldSiteComposition") == "tidal-flat"
+		or folder:GetAttribute("FieldSiteComposition") == "low-sandy-shore" then {
+		{ "platform-beach", 25, -0.87, -0.82, -18 },
+		{ "kenney_rock_smallFlatA", 5, 0.87, -0.60, 20 },
+		{ "ground-riverrocks", 9, -0.83, -0.31, 32 },
+		{ "coast-grass-patch", 4, 0.76, -0.27, -10 },
+		{ "river-stone-bank", 8, -0.57, -0.49, 40 },
+	} elseif folder:GetAttribute("FieldSiteComposition") == "lowland-waterway"
+		or folder:GetAttribute("FieldSiteComposition") == "delta-waterway"
+		or folder:GetAttribute("FieldSiteComposition") == "salt-work-waterway" then {
+		{ "ground-riverstraight", 22, -0.84, -0.71, 24 },
+		{ "ground-riverbendbank", 15, 0.77, -0.49, -12 },
+		{ "ground-rivertile", 19, 0.89, -0.83, 15 },
+		{ "river-stone-bank", 10, -0.70, -0.37, 8 },
+		{ "grass-leafslarge", 4, 0.64, -0.34, 18 },
+	} elseif questTerrain == "glacier" then {
+		{ AssetIds["Terrain/cliff-cornerinnertop-stone"] and "cliff-cornerinnertop-stone" or "cliff-large-stone", 45, -0.85, -0.66, 14 },
+		{ "cliff-cornerlarge-stone", 32, 0.82, -0.43, 28 },
+		{ "cliff-blockdiagonal-rock", 31, 0.91, -0.84, -9 },
+		{ "cliff-cornertop-rock", 33, -0.84, -0.22, -24 },
+		{ "rock-largec", 16, 0.73, -0.78, 0 },
+		{ "ground-pathrocks", 10, -0.52, -0.39, -17 },
+		{ "cliff-blockslope-rock", 24, -0.92, -0.45, 23 }
+	} elseif questTerrain == "archive" then {
+		{ "platform-stone", 20, -0.76, -0.64, 0 },
+		{ "village-fence", 19, 0.77, -0.52, 90 },
+		{ "village-fence", 19, -0.79, -0.35, 90 },
+		{ "ground-pathcorner", 12, 0.62, -0.42, 90 },
+		{ "forest-bush-detailed", 8, -0.62, -0.30, 12 },
+		{ "forest-flower-yellow", 5, 0.58, -0.25, 0 },
+	} elseif questTerrain == "volcanic" then {
+		-- [화산 전장] 신규 절벽 측벽은 등록 시에만 기존 원경 암벽 대신 사용한다.
+		{ AssetIds["Terrain/cliff-blockslopewalls-rock"] and "cliff-blockslopewalls-rock" or "cliff-large-rock", 43, -0.84, -0.70, 14 },
+		{ "cliff-blockdiagonal-rock", 33, 0.86, -0.54, -17 },
+		{ "debris", 14, -0.66, -0.35, 11 },
+		{ "cliff-cornerinnertop-rock", 31, 0.87, -0.83, 22 },
+		{ "rock-talld", 18, 0.77, -0.26, 14 },
+		{ "ground-pathrocks", 9, -0.55, -0.44, 13 },
+	} elseif questTerrain == "highland" then {
+		{ AssetIds["Terrain/cliff-topdiagonal-rock"] and "cliff-topdiagonal-rock" or "cliff-diagonal-rock", 44, -0.83, -0.65, 13 },
+		{ "cliff-blockslope-rock", 29, 0.80, -0.44, 28 },
+		{ "cliff-blockdiagonal-rock", 32, 0.92, -0.84, -11 },
+		{ "cliff-cornerinnertop-rock", 33, -0.84, -0.22, -24 },
+		{ "rock-talld", 16, 0.73, -0.78, 0 },
+		{ "ground-pathbend", 10, -0.52, -0.39, -17 },
+		{ "cliff-large-rock", 36, -0.92, -0.85, 11 },
+		{ "cliff-cornerinnerlarge-rock", 29, -0.89, -0.38, 30 }
+	} elseif questTerrain == "coast" then {
+		{ "cliff-cornerinnertop-rock", 34, 0.87, -0.60, 20 },
+		{ "platform-beach", 28, -0.87, -0.82, -18 },
+		{ "cliff-cornertop-rock", 26, -0.83, -0.31, 32 },
+		{ "cliff-diagonal-rock", 29, 0.86, -0.83, -12 },
+		{ "ground-riverside", 15, 0.76, -0.27, -10 },
+		{ "ground-riverbendbank", 13, -0.57, -0.49, 40 },
+		{ "cliff-blockdiagonal-rock", 34, 0.91, -0.88, 15 },
+		{ "cliff-cornerinnerlarge-rock", 31, -0.91, -0.37, 27 }
+	} elseif questTerrain == "lake" then {
+		{ "cliff-cornerinnertop-rock", 34, 0.87, -0.60, 20 },
+		{ "cliff-blockslope-rock", 24, 0.86, -0.77, 18 },
+		{ "cliff-cornertop-rock", 26, -0.83, -0.31, 32 },
+		{ "cliff-diagonal-rock", 29, 0.86, -0.83, -12 },
+		{ "ground-riverside", 15, 0.76, -0.27, -10 },
+		{ AssetIds["Terrain/ground-rivercorner"] and "ground-rivercorner" or "ground-riverbendbank", 13, -0.57, -0.49, 40 },
+		{ AssetIds["Terrain/ground-rivertile"] and "ground-rivertile" or "ground-riverbendbank", 15, -0.73, -0.70, -16 }
+	} elseif questTerrain == "mine" then {
+		-- [광산 3D 층] 등록 확인된 동굴암벽 원본을 기존 원경 자리에서만 사용한다.
+		{ AssetIds["Terrain/cliff-blockcave-rock"] and "cliff-blockcave-rock" or "cliff-cave-rock", 36, -0.84, -0.68, 15 },
+		{ "wood-support", 19, 0.78, -0.54, -12 },
+		{ "cliff-blockslope-rock", 28, 0.87, -0.82, 20 },
+		{ "log-stack", 8, -0.63, -0.41, 28 },
+		{ "rock-talld", 18, 0.79, -0.27, 9 },
+		{ "cliff-cornerinnerlarge-rock", 31, -0.91, -0.88, 14 },
+	} elseif questTerrain == "fort" then {
+		-- [성채 전장] 성벽 실루엣을 유지하고 아래 암반·목재 보강 구조를 따로 깐다.
+		{ "cliff-blockslope-rock", 31, -0.85, -0.68, 18 },
+		{ "wood-support", 19, 0.78, -0.47, -10 },
+		{ "cliff-blockdiagonal-rock", 30, 0.89, -0.84, 17 },
+		{ "rock-largea", 13, -0.72, -0.32, -12 },
+		{ "ground-pathrocks", 9, 0.63, -0.37, 19 },
+		{ "cliff-cornerlarge-rock", 28, -0.90, -0.81, 15 },
+	} elseif questTerrain == "ruins" then {
+		-- [유적 3D 층] 아치·부서진 기둥과 암벽을 다른 원근에 분리한다.
+		{ if region == "italy" or region == "med" then "ruins-wall-arched" else "cliff-large-stone", 28, -0.84, -0.75, 15 },
+		{ if region == "italy" or region == "med" then "ruins-pillar-decorated" else "rock-tallc", 19, 0.81, -0.56, -21 },
+		{ "cliff-cornerinnertop-rock", 29, 0.89, -0.83, 24 },
+		{ "rock-largea", 13, -0.74, -0.34, 12 },
+		{ "ground-pathrocks", 9, 0.61, -0.41, 18 },
+		{ "cliff-blockdiagonal-rock", 26, -0.91, -0.54, -12 },
+	} elseif questTerrain == "desert" then {
+		-- [사막 3D 층] 모래 언덕을 근경, 암벽을 원경으로 구분한다.
+		{ "mystic-sand-dune", 35, -0.86, -0.78, 10 },
+		{ "rock-largea", 19, 0.80, -0.47, -12 },
+		{ "cliff-blockdiagonal-rock", 31, 0.90, -0.87, 21 },
+		{ "ground-pathrocks", 9, -0.58, -0.32, 8 },
+		{ "rock-talld", 14, -0.81, -0.19, -11 },
+		{ "cliff-cornerlarge-rock", 29, -0.91, -0.57, 15 },
+	} elseif questTerrain == "farm" then {
+		-- [농경지 3D 층] 신규 흙길 굽이를 기존 자갈길 자리에서만 선택한다.
+		{ AssetIds["Terrain/ground-pathcorner"] and "ground-pathcorner" or "ground-pathstraight", 23, -0.81, -0.71, 14 },
+		{ "village-fence", 13, 0.75, -0.52, -17 },
+		{ "cliff-blockslope-rock", 24, 0.89, -0.87, 12 },
+		{ "log-stack", 8, -0.67, -0.35, 10 },
+		{ "plant-bushdetailed", 7, 0.66, -0.32, 11 },
+		{ "ground-pathrocks", 11, -0.86, -0.43, -10 },
+	} elseif questTerrain == "swamp" then {
+		-- [습지 3D 층] 원경 강수면은 등록된 실제 타일로 바꿔 층을 강조한다.
+		{ AssetIds["Terrain/ground-rivertile"] and "ground-rivertile" or "ground-riverbendbank", 21, -0.84, -0.71, 24 },
+		{ "forest-bush-detailed", 12, 0.77, -0.49, -12 },
+		{ "cliff-cornerinnertop-rock", 26, 0.89, -0.83, 15 },
+		{ "plant-bushdetailed", 8, -0.70, -0.37, 8 },
+		{ "river-stone-bank", 12, 0.64, -0.34, 18 },
+		{ "cliff-blockslope-rock", 23, -0.91, -0.45, -19 },
+	} elseif questTerrain == "jungle" then {
+		-- [밀림 전장] 원경 큰 절벽에 대나무·하층 수풀을 분리해 깊은 녹지 질감을 만든다.
+		{ "cliff-blockslope-rock", 27, -0.82, -0.66, 18 },
+		{ "east-bamboo-grove", 17, 0.77, -0.50, -12 },
+		{ "forest-bush-detailed", 12, -0.65, -0.35, 13 },
+		{ "cliff-blockdiagonal-rock", 30, 0.90, -0.83, 16 },
+		{ "ground-riverbendbank", 12, 0.73, -0.37, -20 },
+		{ "plant-bushdetailed", 9, -0.53, -0.29, 6 },
+	} elseif questTerrain == "forest" then {
+		{ "cliff-blockslope-rock", 25, -0.81, -0.53, 22 },
+		{ "cliff-cornerinnertop-rock", 24, 0.78, -0.73, -30 },
+		{ AssetIds["Terrain/plant-bushtriangle"] and "plant-bushtriangle" or "plant-bushdetailed", 7, 0.60, -0.33, 6 },
+		{ "plant-bushlargetriangle", 8, -0.52, -0.29, 6 },
+		{ "grass-large", 6, 0.51, -0.35, 0 },
+		{ "ground-pathbend", 7, -0.49, -0.56, 15 },
+		{ "cliff-blockslope-rock", 23, 0.90, -0.58, -21 },
+		{ AssetIds["Terrain/grass-leafs"] and "grass-leafs" or "grass-leafslarge", 6, -0.63, -0.22, 7 }
+	} else {
+		{ "cliff-large-rock", 27, -0.86, -0.74, 8 },
+		{ "ground-pathrocks", 7, 0.51, -0.42, 22 },
+		{ "cliff-blockslope-rock", 26, 0.89, -0.82, -12 },
+		{ "grass-large", 5, -0.57, -0.28, 0 },
+		{ "rock-tallc", 10, 0.76, -0.63, 0 },
+		{ "plant-bushdetailed", 6, -0.62, -0.29, 0 }
+	}
+	folder:SetAttribute("FieldDepthFeatureCount", 0)
+	for _, spec in depthLandforms do
+		local name = spec[1]
+		if AssetIds["Terrain/" .. name] then
+			local entry = { "Terrain", name, spec[2], nil, nil, false, spec[5] }
+			entry.position = ORIGIN + Vector3.new(spec[3] * half * mirror, 0, spec[4] * half)
+			entry.depth = true
+			entry.band = "far"
 			stageFeature(entry)
 		end
 	end
-	-- [문화권 전용 윤곽] 공통 지형 위에 같은 소품을 반복하지 않고 국가별 대표 실물 건축·식생 군집을 놓는다.
-	-- 위치는 맵 가장자리로 제한해 기존 퀘스트 목표·전투·시작 동선을 유지한다.
+	end
+	-- [가까운 시야층] 원신식 원근 구도의 원리만 참고한다. 전경의 낮은 수풀, 중경의
+	-- 강가 돌무더기, 원경의 절벽선을 서로 다른 거리에 배치한다. 중앙 전투 길을 가리지 않는다.
+	do
+		local nearBands = if folder:GetAttribute("FieldSiteComposition") == "shallow-reef-shore"
+			or folder:GetAttribute("FieldSiteComposition") == "tidal-flat"
+			or folder:GetAttribute("FieldSiteComposition") == "low-sandy-shore" then {
+			{ "coast-grass-patch", 4, -0.66, 0.18, 12 },
+			{ "kenney_rock_smallFlatA", 5, 0.72, -0.17, 8 },
+			{ "platform-beach", 19, -0.84, -0.81, -18 },
+		} elseif folder:GetAttribute("FieldSiteComposition") == "lowland-waterway"
+			or folder:GetAttribute("FieldSiteComposition") == "delta-waterway"
+			or folder:GetAttribute("FieldSiteComposition") == "salt-work-waterway" then {
+			{ "ground-riverbendbank", 12, -0.66, 0.18, 12 },
+			{ "grass-leafslarge", 4, 0.72, -0.17, 8 },
+			{ "river-stone-bank", 9, -0.74, -0.40, -16 },
+		} elseif questTerrain == "archive" then {
+			{ "forest-flower-purple", 5, -0.48, 0.28, 0 },
+			{ "ground-pathcorner", 13, 0.54, 0.03, 90 },
+			{ "plant-bushdetailed", 8, -0.58, 0.05, 10 },
+			{ "platform-stone", 19, 0.72, -0.55, 0 },
+		} elseif tropical and (questTerrain == "coast" or questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains" or questTerrain == "lake") then {
+			-- [바이옴 전경] 해안/밀림의 실물 모래 해변/대나무 군집으로 시야층을 구분한다.
+			if questTerrain == "jungle" then { "east-bamboo-grove", 19, -0.73, 0.10, 11 }
+				else { "tree-palmbend", 24, -0.66, 0.18, 12 },
+			if questTerrain == "coast" then { "platform-beach", 19, -0.84, -0.81, -18 }
+				elseif questTerrain == "jungle" then { "forest-bush-detailed", 11, 0.72, -0.17, 8 }
+				else { "grass-leafslarge", 6, -0.54, 0.16, 7 },
+			{ "plant-flattall", 7, 0.52, 0.07, 0 },
+			{ "cliff-cornerlarge-stone", 31, 0.85, -0.47, 35 },
+			{ "ground-riverbendbank", 13, -0.68, -0.54, 19 },
+		} elseif questTerrain == "volcanic" then {
+			-- [화산 전경] 용암 재질을 가짜로 그리지 않고 실제 쇄설암·절벽을 서로 다른 깊이로 배치한다.
+			{ "debris", 15, -0.82, 0.13, 15 }, { "cliff-large-rock", 32, 0.85, -0.49, -19 },
+			{ "rock-talld", 17, -0.70, -0.27, 11 }, { "cliff-blockdiagonal-rock", 29, 0.90, -0.82, 19 },
+		} elseif questTerrain == "fort" then {
+			-- [성채 전경] 멀리 선 기존 성벽 앞에 지면 돌계단과 목재 버팀목 층을 배치한다.
+			{ "cliff-blockslope-rock", 25, -0.85, 0.12, 18 }, { "wood-support", 17, 0.81, -0.28, -12 },
+			{ "rock-largea", 14, -0.68, -0.36, 11 }, { "ground-pathrocks", 9, 0.64, -0.39, -14 },
+		} elseif questTerrain == "mine" then {
+			-- [광산 전경] 기존 2개 모바일 슬롯에서 동굴 벽과 버팀목의 깊이를 먼저 보여 준다.
+			{ "cliff-cave-rock", 34, -0.86, 0.12, 14 }, { "wood-support", 17, 0.82, -0.27, -19 },
+			{ "rock-talld", 13, 0.76, -0.13, 7 }, { "cliff-blockdiagonal-rock", 28, -0.90, -0.58, 12 },
+		} elseif questTerrain == "ruins" then {
+			-- [유적 전경] 기존 조사·전투 위치 바깥에 실물 건축 파편을 한 층 더 배치한다.
+			{ if region == "italy" or region == "med" then "ruins-pillar-decorated" else "rock-tallc", 21, -0.86, 0.12, 16 }, { "rock-largea", 12, 0.78, -0.17, 7 },
+			{ if region == "italy" or region == "med" then "ruins-wall-arched" else "cliff-large-stone", 23, -0.87, -0.61, 12 }, { "ground-pathrocks", 8, 0.65, -0.38, 16 },
+		} elseif questTerrain == "desert" then {
+			-- [사막 전경] 승인 바위와 모래 언덕의 거리 차이를 노출한다.
+			{ "rock-largea", 15, -0.81, 0.13, -13 }, { "mystic-sand-dune", 27, 0.85, -0.46, 18 },
+			{ "rock-talld", 12, 0.74, -0.12, 20 }, { "ground-pathrocks", 8, -0.69, -0.39, 14 },
+		} elseif questTerrain == "farm" then {
+			-- [농경지 전경] 밀밭과 지면 길을 서로 다른 깊이에 둔다.
+			{ "village-fence", 13, -0.77, 0.12, 11 }, { "ground-pathstraight", 16, 0.78, -0.23, -12 },
+			{ "log-stack", 7, -0.67, -0.36, 14 }, { "plant-bushdetailed", 7, 0.68, -0.41, 12 },
+		} elseif questTerrain == "swamp" then {
+			-- [습지 전경] 실제 하천 둑과 식생을 구분해 평면감을 줄인다.
+			{ "ground-riverbendbank", 15, -0.84, 0.11, 19 }, { "forest-bush-detailed", 12, 0.72, -0.17, 11 },
+			{ "river-stone-bank", 13, -0.74, -0.40, -16 }, { "plant-bushdetailed", 8, 0.69, -0.35, 15 },
+		} elseif questTerrain == "forest" then {
+			-- [숲 전경] 모바일 두 슬롯에서 나무 수관과 낮은 관목이 겹치게 실루엣을 분리한다.
+			{ "plant-bushlargetriangle", 9, -0.55, 0.22, 0 },
+			{ "tree-tall", 20, 0.71, 0.06, -10 }, { "plant-bushdetailed", 8, -0.69, 0.11, 9 },
+			{ "ground-riverside", 19, -0.83, -0.37, 34 }, { "ground-riverbendbank", 12, 0.65, -0.56, -24 },
+		} elseif questTerrain == "glacier" then {
+			-- [빙하 전경] 같은 모델 수에서 회색 암석 대신 실제 밝은 석벽·침엽수층을 노출한다.
+			{ "cliff-large-stone", 39, -0.86, 0.14, 13 }, { "north-pine-fall", 20, 0.79, -0.17, -9 },
+			{ "cliff-cornerlarge-stone", 34, -0.89, -0.52, 16 }, { "rock-largec", 17, 0.77, -0.38, -12 },
+		} elseif questTerrain == "highland" then {
+			-- [협곡 전경] 폭포·계곡 지명에선 원본 폭포 암벽을 두 번째 모바일 전경으로 노출한다.
+			{ "cliff-cornerinnertop-rock", 34, -0.85, 0.18, 12 },
+			if string.find(questName, "폭포", 1, true) or string.find(questName, "계곡", 1, true)
+				then { "cliff-waterfall-stone", 31, 0.89, -0.53, -12 }
+				else { "cliff-blockdiagonal-rock", 29, 0.90, -0.80, -12 },
+			{ "rock-talld", 17, 0.77, 0.09, 0 }, { "cliff-cornerlarge-rock", 39, 0.89, -0.49, -20 },
+			{ "cliff-waterfall-stone", 31, -0.84, -0.70, 0 },
+		} elseif questTerrain == "coast" then {
+			-- [해안 전경] 모바일 두 슬롯 안에 승인된 실제 해변 모델을 넣고 진입로를 비운다.
+			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "platform-beach", 19, -0.84, -0.81, -18 },
+			{ "rock-talld", 14, 0.78, -0.15, -18 }, { "ground-riverside", 12, -0.64, -0.46, 30 },
+			{ "ground-riverbendbank", 13, 0.74, -0.61, 0 },
+		} elseif questTerrain == "lake" then {
+			-- [호숫가 전경] 모래 해변과 구별하고 바위가 있는 실제 강둑을 두 번째 슬롯에서 노출한다.
+			{ "cliff-diagonal-rock", 36, -0.87, 0.08, 12 }, { "river-stone-bank", 13, 0.74, -0.61, 0 },
+			{ "rock-talld", 14, 0.78, -0.15, -18 }, { "ground-riverside", 12, -0.64, -0.46, 30 },
+		} else {
+			{ "plant-bushlarge", 7, -0.57, 0.22, 0 }, { "rock-talli", 12, 0.78, -0.23, 0 },
+			{ "ground-riverrocks", 9, 0.65, -0.53, 24 },
+		}
+		local placedBandCount = 0
+		for index, spec in nearBands do
+			if AssetIds["Terrain/" .. spec[1]] then
+				local entry = { "Terrain", spec[1], spec[2], nil, nil, false, spec[5] }
+				-- [실물 근경] 모바일에도 표시되는 첫 두 승인 실물을 실제 전투 시야 안으로 당긴다.
+				-- 크기·종류·기존 2개 제한은 바꾸지 않고 중앙 이동로는 비운다.
+				local depthX = spec[3] * half * mirror
+				local depthZ = spec[4] * half
+				if index <= 2 then
+					-- 해안 바위/산악 대형 모델도 중앙 길 안으로 들어오지 않게 한다.
+					depthX = (if depthX < 0 then -1 else 1) * half * (if index == 1 then 0.42 else 0.60)
+					depthZ = half * (if index == 1 then 0.52 else -0.05)
+				end
+				entry.position = ORIGIN + Vector3.new(depthX, 0, depthZ)
+				entry.depth = true
+				entry.band = if index == 1 then "near" elseif index == 2 then "mid" else "far"
+				stageFeature(entry)
+				placedBandCount += 1
+			end
+		end
+		folder:SetAttribute("FieldNearDepthBandCount", placedBandCount)
+	end
+	-- [문화권 전용 윤곽] 승인된 문화권 대표 건축물 전체를 거리별로 배치한다.
+	-- 중앙 전투·시작 동선과 간격을 두고 지역 상징물을 배치한다.
 	local regionalSilhouettes = {
 		iberia = { {"Terrain","ruins-wall-arched",23,-0.73,-0.59}, {"Terrain","column",15,-0.62,-0.42}, {"Terrain","tree-oak",17,0.71,-0.59} },
-		italy = { {"Terrain","greek-ruins-a",28,0.72,-0.75}, {"Terrain","greek-column",20,-0.62,-0.61}, {"Terrain","greek-statue",14,0.63,-0.39} },
-		france = { {"Town","windmill",30,0.73,-0.79}, {"Terrain","bridge-stone",19,-0.63,-0.47}, {"Terrain","forest-flower-purple",6,-0.65,-0.20} },
-		britain = { {"Castle","wall-narrow-gate",27,-0.72,-0.76}, {"Terrain","haunted-iron-gate",16,0.71,-0.60}, {"Terrain","haunted-pine-crooked",20,-0.67,-0.36} },
-		hanse = { {"Town","windmill",31,0.77,-0.76}, {"Naval","structure-platform-dock",24,-0.69,-0.72}, {"Terrain","north-pine-fall",19,-0.73,-0.34} },
+		italy = { {"Town","bell-tower",27,0.84,-0.87}, {"Terrain","greek-ruins-a",28,0.72,-0.75}, {"Terrain","greek-column",20,-0.62,-0.61}, {"Terrain","greek-statue",14,0.63,-0.39}, {"Town","house",19,-0.88,-0.53} },
+		france = { {"Town","house",20,0.85,-0.82}, {"Town","windmill",30,0.73,-0.79}, {"Terrain","bridge-stone",19,-0.63,-0.47}, {"Terrain","forest-flower-purple",6,-0.65,-0.20}, {"Town","village-well",8,-0.79,-0.34} },
+		britain = { {"Town","quaternius_watchtower",27,0.84,-0.83}, {"Castle","wall-narrow-gate",27,-0.72,-0.76}, {"Terrain","haunted-pine-crooked",20,-0.67,-0.36}, {"Terrain","haunted-iron-gate",16,0.71,-0.60}, {"Town","kenney_wood_arch_01",15,-0.85,-0.50} },
+		hanse = { {"Town","watermill",26,0.85,-0.83}, {"Town","windmill",31,0.77,-0.76}, {"Naval","structure-platform-dock",24,-0.69,-0.72}, {"Terrain","north-pine-fall",19,-0.73,-0.34}, {"Town","house",19,-0.86,-0.52} },
 		nordic = { {"Terrain","cliff-rock",39,-0.78,-0.77}, {"Terrain","gate-rock",22,0.73,-0.64}, {"Terrain","north-pine-fall",20,-0.66,-0.24}, {"Terrain","campfire-logs",6,0.57,-0.30} },
-		brick = { {"Town","windmill",31,0.73,-0.81}, {"Terrain","ground-riverbend",25,-0.64,-0.61}, {"Town","house",19,-0.71,-0.32} },
-		stone = { {"Castle","tower-hexagon-base",28,-0.73,-0.73}, {"Terrain","bridge-stone",18,0.63,-0.48}, {"Terrain","north-pine-fall",20,-0.65,-0.28} },
-		med = { {"Terrain","greek-amphitheater",34,-0.76,-0.79}, {"Terrain","greek-column",18,0.71,-0.58}, {"Terrain","coast-grass-patch",8,0.62,-0.28} },
+		brick = { {"Town","quaternius_wall_bricks",24,0.87,-0.83}, {"Town","windmill",31,0.73,-0.81}, {"Town","house",19,-0.71,-0.32}, {"Terrain","ground-riverbend",25,-0.64,-0.61}, {"Town","village-well",8,-0.82,-0.47} },
+		stone = { {"Town","quaternius_small_tower",25,0.87,-0.82}, {"Castle","tower-hexagon-base",28,-0.73,-0.73}, {"Terrain","bridge-stone",18,0.63,-0.48}, {"Terrain","north-pine-fall",20,-0.65,-0.28}, {"Town","house",18,-0.84,-0.54} },
+		med = { {"Town","kenney_grey_arch_01",20,-0.87,-0.83}, {"Terrain","greek-amphitheater",34,-0.76,-0.79}, {"Terrain","greek-column",18,0.71,-0.58}, {"Terrain","coast-grass-patch",8,0.62,-0.28}, {"Town","house",20,0.84,-0.53} },
 		ottoman = { {"Town","temple-stone",36,0.74,-0.78}, {"Terrain","tent-detailedopen",15,-0.66,-0.56}, {"Terrain","egypt-column",17,0.70,-0.32} },
 		desert = { {"Terrain","mystic-sand-dune",34,-0.79,-0.81}, {"Terrain","egypt-temple-arch-a",28,0.73,-0.73}, {"Terrain","egypt-obelisk",25,0.69,-0.40} },
 		swahili = { {"Terrain","tent-detailedopen",17,0.68,-0.68}, {"Terrain","canoe",13,-0.72,-0.70}, {"Terrain","tropical-palm-tall",21,-0.66,-0.30} },
@@ -1051,19 +2838,126 @@ function FieldScene.start(opts)
 		china = { {"Town","temple-tower",40,0.75,-0.82}, {"Terrain","bridge-stone",21,-0.64,-0.56}, {"Terrain","cliff-rock",32,-0.80,-0.83}, {"Terrain","east-bamboo-grove",15,0.66,-0.30} },
 		seasia = { {"Terrain","cliff-waterfall-rock",38,-0.79,-0.81}, {"Terrain","tropical-palm-tall",24,0.76,-0.68}, {"Terrain","east-bamboo-grove",18,-0.66,-0.29} },
 		tropic = { {"Terrain","tropical-palm-tall",24,-0.73,-0.75}, {"Naval","boat-fishing-small",15,0.70,-0.73}, {"Terrain","canoe",12,0.66,-0.39} },
-		colonial = { {"Town","windmill",34,0.75,-0.82}, {"Terrain","crops-cornstagec",15,-0.70,-0.59}, {"Town","house",21,-0.66,-0.32} },
+		colonial = { {"Town","house",22,0.85,-0.83}, {"Town","windmill",34,0.75,-0.82}, {"Terrain","crops-cornstagec",15,-0.70,-0.59}, {"Town","house",21,-0.66,-0.32}, {"Town","village-well",7,-0.83,-0.45} },
 		creole = { {"Terrain","crop-melon",12,-0.71,-0.69}, {"Terrain","tropical-palm-short",17,0.71,-0.59}, {"Terrain","canoe",13,0.63,-0.31} },
 		pacific = { {"Naval","structure-platform-dock",29,-0.71,-0.76}, {"Terrain","canoe",14,0.72,-0.68}, {"Terrain","tropical-palm-tall",24,0.69,-0.29} },
 		wafrica = { {"Terrain","tent-detailedopen",18,-0.72,-0.68}, {"Terrain","tropical-palm-tall",23,0.71,-0.75}, {"Terrain","canoe",14,0.66,-0.39} },
 	}
 	local regionalFeatures = regionalSilhouettes[region]
+	if folder:GetAttribute("FieldPacificSurvey") then
+		-- 문화권의 서양 성·풍차·이국 신전 대신 항구별 자연물 정본만 사용한다.
+		regionalFeatures = PORT_NATURE_MODELS[portNature or ""]
+	end
 	if regionalFeatures then
 		for index, feature in regionalFeatures do
-			if not visualMobile or index <= 3 then
-				local entry = { feature[1], feature[2], feature[3], nil, nil, false }
-				entry.position = ORIGIN + Vector3.new(feature[4] * half * mirror, 0, feature[5] * half)
-				entry.landmark = true
-				stageFeature(entry)
+			-- [대륙 → 항구 → 탐험지] 승인된 전체 지역 모델 사용. 세 번째 모델은 항구/유적 지형으로 선택.
+			local selected = feature
+			local variants = PORT_NATURE_MODELS[portNature or ""]
+			if index == 3 and variants then
+				local candidate = variants[portVisualSeed % #variants + 1]
+				if AssetIds[candidate[1] .. "/" .. candidate[2]] then selected = candidate end
+			end
+			local entry = { selected[1], selected[2], selected[3], nil, nil, false }
+			-- [근·중·원경] 항구 고유 자연물은 진입 근경, 대표 건축물은 중경·원경으로 계단식 배치.
+			local stagger = (portVisualSeed % 9 - 4) * 0.008
+			local bandX = if index == 3 then 0.40 elseif index == 2 then 0.51
+				else 0.59 + math.max(0, index - 3) * 0.07
+			local bandZ = if index == 3 then 0.43 elseif index == 2 then 0.10
+				else -0.20 - math.max(0, index - 3) * 0.17
+			entry.position = ORIGIN + Vector3.new(
+				(if selected[4] > 0 then 1 else -1) * half * (bandX + stagger) * mirror,
+				0, half * (bandZ + stagger * 0.6))
+			entry.band = if index == 3 then "near" elseif index <= 2 then "mid" else "far"
+			entry.landmark = true
+			stageFeature(entry)
+		end
+	end
+	-- [항구별 실제 원경] 마을의 181개 항구 경관 정본을 그대로 사용한다.
+	-- 전용 역사 원본이 등록되지 않았으면 원본으로 사칭하지 않는다. 기존 승인 경관만 표시.
+	if questTerrain ~= "mine" then
+		local signature = opts.portScenery
+		-- 모듈 직접 호출(Studio 등)도 동일한 마을 표만 참조한다. 게임 진입 경로의 전달값 우선.
+		if not signature and opts.portId then
+			local ok, portScene = pcall(function() return require(script.Parent:WaitForChild("PortScene")) end)
+			if ok and portScene.Signatures then signature = portScene.Signatures[opts.portId] end
+		end
+		local original = (opts.portId or "") .. "_landmark_full"
+		local horizonZ = -math.max(400, half + 150) -- 실제 400스터드 밖의 항구 실루엣
+		-- [탐험 지시서 원본] 기존 원경 배치/지연 로드 경로로 정확한 지점 모델을 연결한다.
+		-- 닫힌 광산·전투 통로·조사 대상·복셀 지형은 바꾸지 않는다. 실제 배치는 별도 증거로 기록한다.
+		do
+			local siteId = opts.siteId
+			if type(siteId) == "string" and string.match(siteId, "^[a-z0-9_]+$") then
+				local asset = "field_" .. siteId
+				if AssetIds["Terrain/" .. asset] then
+					local entry = { "Terrain", asset, if visualMobile then 60 else 85, nil, nil, false }
+					entry.position = ORIGIN + Vector3.new(half * 0.65, 0, horizonZ)
+					entry.band, entry.horizon, entry.briefBackdrop = "far", true, true
+					stageFeature(entry)
+				end
+			end
+		end
+		local groups, groupCount = {}, 0
+		folder:SetAttribute("FieldHorizonPlaced", 0)
+		folder:SetAttribute("FieldPortLandmarkOriginalMissing", not AssetIds["Town/" .. original])
+		if AssetIds["Town/" .. original] then
+			local entry = { "Town", original, 40, nil, nil, false }
+			entry.position = ORIGIN + Vector3.new(0, 0, horizonZ)
+			entry.band, entry.horizon = "far", true
+			stageFeature(entry)
+			folder:SetAttribute("FieldHorizonSource", "registered-port-original")
+		elseif type(signature) == "table" and not folder:GetAttribute("FieldPacificSurvey") then
+			folder:SetAttribute("FieldHorizonSource", "existing-port-signature")
+			for _, e in signature do
+				-- 선박과 적재물은 언덕 위에 올리지 않는다. 원본의 탑/지붕 층은 같은 그룹으로 유지한다.
+				if not e.waterfront and e.kind ~= "Cargo" and not string.find(e.asset, "boat-", 1, true)
+					and not string.find(e.asset, "dock", 1, true) and AssetIds[e.kind .. "/" .. e.asset] then
+					local key = tostring(e.dx) .. ":" .. tostring(e.dz)
+					if groups[key] == nil and groupCount < (if visualMobile then 3 else 6) then
+						local x = e.dx * 1.15
+						local z = horizonZ + e.dz * 0.9
+						local groundHit = workspace:Raycast(ORIGIN + Vector3.new(x, 100, z), Vector3.new(0, -140, 0), groundRay)
+						if groundHit then
+							groups[key] = Vector3.new(ORIGIN.X + x, groundHit.Position.Y, ORIGIN.Z + z)
+							groupCount += 1
+						end
+					end
+					if groups[key] then
+						local entry = { e.kind, e.asset, e.size * 1.15, nil, nil, false }
+						entry.position = groups[key] + Vector3.new(0, e.y * 1.15, 0)
+						entry.band, entry.horizon, entry.tint = "far", true, e.tint
+						stageFeature(entry)
+					end
+				end
+			end
+			folder:SetAttribute("FieldHorizonPlannedGroups", groupCount)
+			if groupCount == 0 then folder:SetAttribute("FieldHorizonSource", "port-signature-no-land-model") end
+		else
+			folder:SetAttribute("FieldHorizonSource", "port-signature-unavailable")
+		end
+		-- [실제 원경 자연층] 좁은 전장에서도 400스터드 밖의 등록된 간결 실물을 산선에 놓는다.
+		-- 항구 실루엣의 성공 수치와 분리하고, 충돌·조사·전투 대상에는 포함하지 않는다.
+		do
+			local asset = if questTerrain == "coast" or questTerrain == "desert" or questTerrain == "volcanic"
+				or questTerrain == "glacier" or arid then "kenney_rock_smallFlatA"
+				elseif winterScene or northern then "tree-pinedefaulta"
+				elseif tropical then "kenney_tree_palmShort" else "kenney_tree_defaultDark"
+			if AssetIds["Terrain/" .. asset] then
+				for _, side in { -1, 1 } do
+					for index = 1, (if visualMobile then 2 else 3) do
+						local x = side * (28 + index * 9)
+						local z = horizonZ + 12 + index * 4
+						local hit = workspace:Raycast(ORIGIN + Vector3.new(x, 100, z), Vector3.new(0, -140, 0), groundRay)
+						if hit then
+							local entry = { "Terrain", asset, 10 + index * 2, nil, nil, false }
+							entry.position = hit.Position
+							entry.band, entry.horizon, entry.horizonNature = "far", true, true
+							entry.lowPolyVariant = true
+							entry[7] = side * index * 29
+							stageFeature(entry)
+						end
+					end
+				end
 			end
 		end
 	end
@@ -1072,14 +2966,34 @@ function FieldScene.start(opts)
 	-- 문화권 소품(기둥·천막·카누 등): 등록된 모델만 놓고, 없으면 건너뛴다
 	for groupIndex, pr in (biome.props or {}) do
 		-- [문화권 군집] 나무·기둥·천막·카누를 길 한가운데 흩뿌리지 않고 각 문화권의 외곽 마을/해안대로 묶는다.
-		-- [모바일] 기존 종류당 4개 제한과 규모는 유지한다.
-		for index = 1, math.min(if visualMobile then 4 else 8, math.max(1, math.floor(pr[3] * math.min(AREA, 1.25)))) do
-			local side = if (groupIndex + index) % 2 == 0 then -1 else 1
-			local x = side * half * rng:NextNumber(0.54, 0.85)
-			local z = rng:NextNumber(-half * 0.78, half * 0.40)
+		-- [수량 고정 제한 해제] 문화권 소품은 바이옴 수량과 맵 면적에 비례해 확장한다.
+		for index = 1, math.max(1, math.floor(pr[3] * math.sqrt(AREA))) do
+			local cluster = math.floor((index - 1) / 5)
+			local slot = (index - 1) % 5
+			local side = if (groupIndex + cluster) % 2 == 0 then -1 else 1
+			local jitterX = rng:NextNumber(0.54, 0.85)
+			local jitterZ = rng:NextNumber(-half * 0.78, half * 0.40)
+			local spacing = math.max(5, pr[4] * 0.55)
+			local x = side * math.clamp(half * (0.58 + (cluster % 2) * 0.13) + (slot % 2) * spacing + jitterX, half * 0.54, half * 0.9)
+			local z = math.clamp(half * (0.24 - ((cluster + groupIndex) % 4) * 0.30)
+				+ math.floor(slot / 2) * spacing + jitterZ * 0.035, -half * 0.86, half * 0.50)
 			local entry = { pr[1], pr[2], pr[4], nil, nil, pr[1] == "Terrain" and pr[2] == "cliff-rock" }
 			entry.position = ORIGIN + Vector3.new(x, 0, z)
-			stageFeature(entry)
+			entry.band = "mid"
+			-- 문화권 소품의 무조건 반복을 제거한다. 난수 소비는 기존대로 유지.
+			local asset = pr[2]
+			local nautical = asset == "canoe" or asset == "river-stone-bank"
+			local monument = asset:find("column", 1, true) or asset:find("ruins", 1, true) or asset:find("obelisk", 1, true)
+			local haunted = asset:find("haunted-", 1, true) ~= nil
+			if not asset:find("crop", 1, true)
+				and (not folder:GetAttribute("FieldPacificSurvey") or (pr[1] == "Terrain" and (asset == "coast-grass-patch" or asset == "river-stone-bank" or (tropical and asset:find("palm", 1, true)))))
+				and (not nautical or questTerrain == "coast" or questTerrain == "lake" or questTerrain == "swamp")
+				and (not monument or questTerrain == "ruins")
+				and (not haunted or questTerrain == "ruins")
+				and (asset ~= "windmill" or questTerrain == "farm" or questTerrain == "plains")
+				and (not asset:find("cactus", 1, true) or questTerrain == "desert") then
+				stageFeature(entry)
+			end
 		end
 	end
 
@@ -1087,6 +3001,7 @@ function FieldScene.start(opts)
 	-- [지역 원근·계절 디테일] 큰 랜드마크 앞에 잎·풀·자갈·화단 군집을 층으로 배치해 평면감을 줄인다.
 	-- 지역마다 실제 승인된 기존 Terrain 모델만 사용한다. 새 물체 합성이나 지형 장벽은 만들지 않는다.
 	local detailAssets = if questTerrain == "jungle" then { "forest-bush-detailed", "east-bamboo-grove", "tropical-palm-short" }
+		elseif questTerrain == "archive" then { "forest-flower-purple", "forest-flower-yellow", "plant-bushdetailed", "ground-pathrocks" }
 		elseif questTerrain == "swamp" then { "forest-bush-detailed", "river-stone-bank", "ground-riverbend" }
 		elseif questTerrain == "glacier" then { "north-pine-fall", "Rock_2", "river-stone-bank" }
 		elseif questTerrain == "volcanic" then { "debris", "Rock_2", "cliff-rock" }
@@ -1094,40 +3009,159 @@ function FieldScene.start(opts)
 		elseif questTerrain == "mine" then { "debris", "Rock_2", "log-stack" }
 		elseif questTerrain == "ruins" or questTerrain == "fort" then { "forest-bush-detailed", "river-stone-bank", "forest-flower-purple" }
 		elseif questTerrain == "highland" then { "river-stone-bank", "Rock_2", "north-pine-fall" }
-		elseif questTerrain == "farm" then { "crops-wheatstageb", "forest-flower-yellow", "Grass_Small" }
+		elseif questTerrain == "farm" then { "ground-pathrocks", "Grass_Small", "plant-bushsmall" }
 		elseif questTerrain == "lake" then { "river-stone-bank", "forest-bush-detailed", "forest-flower-purple" }
 		elseif questTerrain == "desert" then { "arid-cactus-short", "coast-grass-patch", "Grass_Small" }
 		elseif questTerrain == "forest" then { "forest-bush-detailed", "forest-flower-purple", "Grass_Small" }
 		else { "Grass_Small", "forest-flower-yellow", "river-stone-bank" }
-	if tropical and questTerrain ~= "swamp" and questTerrain ~= "volcanic" then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
+	if tropical and (questTerrain == "forest" or questTerrain == "jungle" or questTerrain == "plains") then detailAssets = { "forest-bush-detailed", "Grass_Small", "east-bamboo-grove" }
 	elseif winterScene then detailAssets = { "north-pine-fall", "river-stone-bank", "Rock_2" }
 	elseif season == "가을" and (questTerrain == "forest" or questTerrain == "plains") then
 		detailAssets = { "forest-bush-detailed", "forest-flower-yellow", "coast-grass-patch" }
 	end
-	local detailCount = if visualMobile then 10 else 24
+	-- [하층 식생] 기존 모바일/PC 상세 소품 총량은 늘리지 않고 CC0 풀·관목·돌길만 교체 후보로 섞는다.
+	if not winterScene and not arid then
+		if AssetIds["Terrain/plant-bushdetailed"] then table.insert(detailAssets, "plant-bushdetailed") end
+		if AssetIds["Terrain/grass-large"] then table.insert(detailAssets, "grass-large") end
+	end
+	if questTerrain ~= "glacier" and questTerrain ~= "swamp" and AssetIds["Terrain/ground-pathrocks"] then
+		table.insert(detailAssets, "ground-pathrocks")
+	end
+	if not arid and not winterScene and AssetIds["Terrain/plant-bushlarge"] then
+		table.insert(detailAssets, "plant-bushlarge")
+	end
+	if (questTerrain == "lake" or questTerrain == "coast" or questTerrain == "jungle" or questTerrain == "swamp")
+		and AssetIds["Terrain/ground-riverrocks"] then
+		table.insert(detailAssets, "ground-riverrocks")
+	end
+	-- [근접 하천·바람풀] 등록된 자연물만 상세식생 선택군에 추가한다.
+	if not winterScene and not arid then
+		if AssetIds["Terrain/plant-bushsmall"] then table.insert(detailAssets, "plant-bushsmall") end
+		if AssetIds["Terrain/grass-leafslarge"] then table.insert(detailAssets, "grass-leafslarge") end
+		if AssetIds["Terrain/plant-flattall"] then table.insert(detailAssets, "plant-flattall") end
+	end
+	if questTerrain == "lake" or questTerrain == "coast" or questTerrain == "swamp" then
+		if AssetIds["Terrain/ground-riverbendbank"] then table.insert(detailAssets, "ground-riverbendbank") end
+		if AssetIds["Terrain/ground-riverside"] then table.insert(detailAssets, "ground-riverside") end
+	end
+	-- [대륙·항구·퀘스트 3중 식생 필터] 지역 실물과 지형 특성을 반영한다.
+	-- 신규 모델이 자산번호를 아직 받지 못했으면 건너뛰며 기존 원본은 그대로 남는다.
+	do
+		local natureDetail = if questTerrain == "forest" then {
+			"kenney_mushroom_red", "kenney_mushroom_redGroup", "kenney_mushroom_tanGroup",
+			"kenney_stump_roundDetailed", "kenney_plant_bushTriangle", "kenney_grass_leafs" }
+			elseif questTerrain == "jungle" then {
+				"kenney_mushroom_redGroup", "kenney_stump_old", "kenney_grass_leafs", "kenney_plant_bushTriangle" }
+			elseif questTerrain == "swamp" then {
+				"kenney_stump_old", "kenney_mushroom_tanGroup", "kenney_ground_riverCorner", "kenney_stone_smallFlatA" }
+			elseif questTerrain == "coast" or questTerrain == "lake" then {
+				"kenney_rock_smallFlatA", "kenney_stone_smallFlatA", "kenney_ground_riverCorner" }
+			elseif questTerrain == "highland" or questTerrain == "glacier" then {
+				"kenney_stone_largeB", "kenney_rock_smallFlatA", "kenney_path_stoneCircle" }
+			elseif questTerrain == "mine" or questTerrain == "volcanic" then {
+				"kenney_rock_largeD", "kenney_rock_smallFlatA", "kenney_stone_smallFlatA" }
+			elseif questTerrain == "ruins" or questTerrain == "fort" then {
+				"kenney_stone_largeB", "kenney_path_stoneCircle", "kenney_stone_smallFlatA" }
+			elseif questTerrain == "farm" then {
+				"kenney_ground_pathCorner", "kenney_log_stackLarge", "kenney_stump_old" }
+			elseif questTerrain == "desert" then {
+				"kenney_rock_largeD", "kenney_rock_smallFlatA" }
+			else { "kenney_rock_smallFlatA", "kenney_grass_leafs" }
+		if portNature == "mangrove" or portNature == "lagoon" or portNature == "delta" then
+			table.insert(natureDetail, "kenney_ground_riverCorner")
+		elseif portNature == "fjord" or portNature == "cliff_coast" then
+			table.insert(natureDetail, "kenney_stone_largeB")
+		elseif portNature == "forest" or portNature == "woodland" then
+			table.insert(natureDetail, "kenney_stump_roundDetailed")
+		end
+		-- 기존 꽃·풀·자갈을 제거하지 않고 등록된 모델을 앞쪽 선택군에 끼워 모바일에도 보이게 한다.
+		for index = #natureDetail, 1, -1 do
+			local name = natureDetail[index]
+			if AssetIds["Terrain/" .. name] and not table.find(detailAssets, name) then
+				table.insert(detailAssets, math.min(#detailAssets + 1, 3), name)
+			end
+		end
+	end
+	-- [자연층 자유 배치] 기존 승인 식생은 맵 넓이에 따라 배치하고 모바일/PC 고정 10/24개 제한을 없앤다.
+	local detailCount = math.max(24, math.floor(24 * math.sqrt(AREA)))
 	for index = 1, detailCount do
-		local band = math.floor((index - 1) / 4)
-		local side = if index % 2 == 0 then -1 else 1
-		local px = side * half * (0.51 + rng:NextNumber(0, 0.11))
-		local pz = -half * 0.71 + band * half * 0.17 + rng:NextNumber(-7, 7)
+		-- [근·중경 하층] 6개 단위 군락으로 풀·돌·관목의 위치를 분리한다.
+		local lateralJitter = rng:NextNumber(0, 0.13)
+		local depthJitter = rng:NextNumber(-7, 7)
+		local pos = sceneryPosition(index, detailCount, 6, 4.8, 2,
+			(lateralJitter - 0.065) * 14, depthJitter * 0.4)
+		local distance = (Vector3.new(pos.X, spawn.Y, pos.Z) - spawn).Magnitude
 		local asset = detailAssets[((index - 1) % #detailAssets) + 1]
 		local entry = { "Terrain", asset, if asset == "north-pine-fall" then 8.5
 			elseif asset == "east-bamboo-grove" then 7 elseif asset == "log-stack" then 4.5
+			elseif asset == "ground-pathrocks" or asset == "ground-riverrocks" then 8
+			elseif asset == "plant-flattall" then 5.7
+			elseif asset == "ground-riverbendbank" or asset == "ground-riverside" then 9
+			elseif asset == "grass-large" or asset == "grass-leafslarge" then 4.2
+			elseif asset == "plant-bushlarge" then 6.8 elseif asset == "plant-bushsmall" then 4.7
+			elseif asset == "kenney_mushroom_red" then 1.4
+			elseif asset == "kenney_mushroom_redGroup" or asset == "kenney_mushroom_tanGroup" then 2.6
+			elseif asset == "kenney_stump_old" or asset == "kenney_stump_roundDetailed" then 3.6
+			elseif asset == "kenney_stone_smallFlatA" or asset == "kenney_rock_smallFlatA" then 2.3
+			elseif asset == "kenney_stone_largeB" or asset == "kenney_rock_largeD" then 6.5
+			elseif asset == "kenney_path_stoneCircle" or asset == "kenney_ground_pathCorner" then 7.5
+			elseif asset == "kenney_ground_riverCorner" then 8
+			elseif asset == "kenney_log_stackLarge" then 4.8
+			elseif asset == "kenney_plant_bushTriangle" or asset == "kenney_grass_leafs" then 4.4
 			else rng:NextNumber(2.2, 5.2), nil, nil, false }
-		entry.position = ORIGIN + Vector3.new(px, 0, math.clamp(pz, -half * 0.83, half * 0.27))
+		-- 지형별 정확한 식생 후보만 등록 확인 후 기존 하층 슬롯에 연결한다.
+		do
+			local candidates = if winterScene then { {"veg_cold_scrub", 3}, {"veg_rock_moss_mat", 3} }
+				elseif questTerrain == "highland" then { {"veg_alpine_cushion", 2}, {"veg_alpine_grass", 3}, {"veg_rock_crevice_plants", 3} }
+				elseif questTerrain == "desert" or arid then { {"veg_desert_cactus_patch", 4}, {"veg_dry_scrub", 3}, {"veg_flowering_cactus", 3} }
+				elseif questTerrain == "swamp" or questTerrain == "lake" then { {"veg_wetland_grass", 4}, {"veg_water_lily", 2} }
+				elseif questTerrain == "coast" then { {"veg_coastal_grass", 4}, {"veg_rock_crevice_plants", 2} }
+				elseif questTerrain == "archive" then { {"veg_garden_hedge", 5}, {"veg_wildflower_purple", 2}, {"veg_wildflower_yellow", 2} }
+				elseif questTerrain == "ruins" or questTerrain == "fort" then { {"veg_wall_hanging_moss", 3}, {"veg_rock_moss_mat", 3} }
+				elseif tropical then { {"veg_tropical_understory", 4}, {"veg_fern", 3} }
+				elseif questTerrain == "forest" then { {"veg_woodland_understory", 4}, {"veg_fern", 3}, {"veg_mossy_stump", 4}, {"veg_berry_bush_1", 3}, {"veg_berry_bush_2", 3} }
+				else { {"veg_meadow_tufts", 4}, {"veg_wildflower_yellow", 2}, {"veg_wildflower_purple", 2} }
+			local choice = candidates[(index + portVisualSeed) % #candidates + 1]
+			-- 수생식물·벽걸이 이끼는 실제 수면·벽면의 접지 검증 전까지 육지 슬롯에 올리지 않는다.
+			if index % 2 == 0 and choice[1] ~= "veg_water_lily" and choice[1] ~= "veg_wall_hanging_moss"
+				and AssetIds["Terrain/" .. choice[1]] then entry[2], entry[3] = choice[1], choice[2] end
+		end
+		entry.position = pos
+		entry.band = if distance < 120 then "near" elseif distance < 400 then "mid" else "far"
+		entry[7] = visualLayoutRng:NextNumber(-180, 180)
 		stageFeature(entry)
 	end
 
 	-- 생산지·탐험 지역에 신규 CC0 자연 자산을 배치한다.
 	-- 실제 모델이 등록되지 않았으면 배치를 생략하고 임시 원형/상자 대체물을 만들지 않는다.
-	if string.find(opts.name or "", "농장", 1, true) or string.find(opts.name or "", "과수원", 1, true)
-		or string.find(opts.name or "", "들판", 1, true) then
-		local farmModels = { "crop-carrot", "crop-melon", "crop-turnip", "crops-cornstagec", "crops-wheatstagea" }
-		for index, crop in farmModels do
-			local entry = { "Terrain", crop, 3.8, nil, nil, false }
-			entry.position = ORIGIN + Vector3.new(-half * 0.48 + (index - 1) % 3 * 7, 0,
-				-half * 0.30 + math.floor((index - 1) / 3) * 9)
-			stageFeature(entry)
+	if questTerrain == "farm" then
+		local orchard = string.find(questName, "과수원", 1, true) ~= nil
+		local farmModels = if opts.siteId == "havana_orchard" then {} -- 카리브 과수원 전용 원본 미확보
+			elseif orchard then { "veg_orchard_apple" }
+			elseif string.find(questName, "밀", 1, true) then { "crops-wheatstagea", "crops-wheatstageb", "veg_farm_wheat" }
+			elseif string.find(questName, "옥수수", 1, true) then { "crops-cornstagec", "veg_farm_maize" }
+			elseif string.find(questName, "당근", 1, true) then { "crop-carrot", "veg_farm_carrot" }
+			elseif string.find(questName, "호박", 1, true) then { "crop-pumpkin", "veg_farm_pumpkin" }
+			elseif string.find(questName, "올리브", 1, true) or string.find(questName, "감자", 1, true)
+				or string.find(questName, "아마", 1, true) then {}
+			else {}
+		local available = {}
+		for _, crop in farmModels do
+			if AssetIds["Terrain/" .. crop] then table.insert(available, crop) end
+		end
+		if #available > 0 then
+			-- 밭과 과수원은 중경의 한쪽 구획으로 모으고 진입·조사 중심축은 비운다.
+			for row = 0, 2 do
+				for column = 0, 4 do
+					local crop = available[(row + column) % #available + 1]
+					local entry = { "Terrain", crop, if orchard then 10 else 3.8, nil, nil, false }
+					local spacing = if orchard then 11 else 5
+					entry.position = ORIGIN + Vector3.new(-mirror * (half * 0.53 + row * spacing), 0,
+						-half * 0.36 + column * spacing)
+					entry.band = "mid"
+					stageFeature(entry)
+				end
+			end
 		end
 	end
 	if string.find(opts.name or "", "숲", 1, true) or string.find(opts.name or "", "고지", 1, true) then
@@ -1196,13 +3230,11 @@ function FieldScene.start(opts)
 				-- 지명별 대표 건물은 맵 안쪽 목적지에 배치해 시작/전투 통로를 비운다.
 				local c = ORIGIN + Vector3.new(0, 0, -half * 0.61)
 				for index, e in lm[2] do
-					if not visualMobile or index <= 22 then
-						local entry = { e[1], e[2], e[3], nil, nil, e[6] == true }
-						-- [성탑 층높이] 층/지붕이 바닥에 겹치는 흰 평면 깨짐 방지.
-						entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])
-						if index == 1 then entry.title = nm end
-						stageFeature(entry)
-					end
+					local entry = { e[1], e[2], e[3], nil, nil, e[6] == true }
+					-- [성탑 층높이] 기존 수직 오프셋·전투 통로 유지.
+					entry.position = c + Vector3.new(e[4], e[8] or 0, e[5])
+					if index == 1 then entry.title = nm end
+					stageFeature(entry)
 				end
 				break
 			end
@@ -1262,9 +3294,8 @@ function FieldScene.start(opts)
 	-- 상태
 	local pl = AC.newPlayer(100)
 	local BASE_DMG = 10
-	-- [휴식 회복] 자동 회복은 이번 지상 탐험의 체력에만 적용한다. 동료는 실제 영입·소환된 치료 직업만 인정한다.
+	-- [지상전투 단독] 동료는 파티 UI에만 남으며 전투/전투 중 회복에는 관여하지 않는다.
 	local lastCombatAt = os.clock()
-	local activeHealers = {}
 	local passiveRegenHudAt, passiveRegenFxAt = 0, -100
 	-- [정예 둔화·보스 독] 탐험 한 판에만 존재하는 비저장 상태. 중복 효과와 지속 피해 폭증을 방지한다.
 	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
@@ -1296,6 +3327,15 @@ function FieldScene.start(opts)
 			local ok, err = pcall(function() c:Disconnect() end)
 			if not ok then warn("[MareEssentia] 비정상 탐험 정리 오류", err) end
 		end
+		-- [종료 메모리 정리] 미처치 적의 관절 제어기도 폐기하고 종료된 장면 참조를 해제한다.
+		table.clear(conns)
+		for _, enemy in enemies do
+			if enemy.fm then
+				FM.destroy(enemy.fm)
+				enemy.fm = nil
+			end
+		end
+		table.clear(enemies)
 		workspace:SetAttribute("FieldCombatReady", nil)
 		workspace:SetAttribute("FieldTouchPad", nil)
 		workspace:SetAttribute("FieldCameraMode", nil)
@@ -1318,6 +3358,14 @@ function FieldScene.start(opts)
 		UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
 	cameraBtn.Name = "FieldCameraMode"
 	cameraBtn.TextSize = 14
+	-- [시야 버튼] 전투 아이콘용 장식을 걷어 텍스트 대비를 확보한다.
+	cameraBtn.TextYAlignment = Enum.TextYAlignment.Center
+	cameraBtn.TextStrokeTransparency = 1
+	cameraBtn:FindFirstChildOfClass("UIStroke").ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	local cameraGradient = cameraBtn:FindFirstChildOfClass("UIGradient")
+	if cameraGradient then cameraGradient:Destroy() end
+	local cameraGrain = cameraBtn:FindFirstChild("FieldLeatherTexture")
+	if cameraGrain then cameraGrain:Destroy() end
 	cameraBtn.Activated:Connect(function()
 		if finished then return end
 		local nextIndex = cameraIndex % #cameraModes + 1
@@ -1444,7 +3492,7 @@ function FieldScene.start(opts)
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
 	note.Name = "FieldInteractionNote"
 	note.AnchorPoint = if compactTouch then Vector2.zero else Vector2.new(0.5, 0)
-	note.Position = if compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
+	note.Position = if compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
 	note.Size = UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 	note.BackgroundColor3 = Color3.fromRGB(19, 29, 40)
 	note.TextStrokeTransparency = 0.16
@@ -1475,18 +3523,18 @@ function FieldScene.start(opts)
 		local narrowLandscape = visualMobile and not compactTouch and screen.X < 740 and screen.X > screen.Y
 		-- 폭 740 미만 가로형에서는 긴 안내가 퀘스트·날씨와 같은 영역을 사용하므로 잠깐 숨긴다.
 		-- 새 전투 알림이 덮어쓰더라도 마지막 메시지의 종료 시점에 원래 정보열을 복원한다.
-		local questHud = if narrowLandscape then gui:FindFirstChild("FieldQuestHint") else nil
-		local weatherHud = if narrowLandscape then gui:FindFirstChild("FieldWeatherClock") else nil
+		local questHud = if visualMobile and not compactTouch then gui:FindFirstChild("FieldQuestHint") else nil
+		local weatherHud = if visualMobile and not compactTouch then gui:FindFirstChild("FieldWeatherClock") else nil
 		if questHud then questHud.Visible = not expanded end
 		if weatherHud then weatherHud.Visible = not expanded end
 		note.AnchorPoint = if compactTouch or (expanded and visualMobile) then Vector2.zero else Vector2.new(0.5, 0)
 		note.Position = if expanded then
 			(if compactTouch then UDim2.fromOffset(12, 398)
-				elseif narrowLandscape then UDim2.fromOffset(184, screen.Y - 108)
-				elseif visualMobile then UDim2.fromOffset(184, 202)
+				elseif narrowLandscape then UDim2.fromOffset(226, screen.Y - 108)
+				elseif visualMobile then UDim2.fromOffset(226, 210)
 				else UDim2.new(0.5, 0, 0, 190))
-			elseif compactTouch then UDim2.fromOffset(12, 158) else UDim2.new(0.5, 0, 0, 46)
-		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 244 else 256, 64)
+			elseif compactTouch then UDim2.fromOffset(12, 260) else UDim2.new(0.5, 0, 0, 46)
+		note.Size = if expanded then UDim2.fromOffset(if compactTouch then 206 elseif narrowLandscape then math.min(244, screen.X - 404) elseif visualMobile then 244 else 256, 64)
 			else UDim2.fromOffset(if compactTouch then 206 else 320, 22)
 		note.TextWrapped = expanded
 		note.TextYAlignment = Enum.TextYAlignment.Center
@@ -1603,6 +3651,15 @@ function FieldScene.start(opts)
 			local ok, err = pcall(function() c:Disconnect() end)
 			if not ok then warn("[MareEssentia] 필드 연결 정리 오류", err) end
 		end
+		-- [종료 메모리 정리] 미처치 적의 관절 제어기도 폐기하고 종료된 장면 참조를 해제한다.
+		table.clear(conns)
+		for _, enemy in enemies do
+			if enemy.fm then
+				FM.destroy(enemy.fm)
+				enemy.fm = nil
+			end
+		end
+		table.clear(enemies)
 		gui:Destroy()
 		folder:Destroy()
 		-- [현장 음향 복구] 항구·전투 화면에 탐험 풍향/폭풍 루프가 남지 않도록 원래 음향 관리자로 반환한다.
@@ -1716,12 +3773,8 @@ function FieldScene.start(opts)
 
 	local questHint = label(gui, "", 13, Color3.fromRGB(254, 229, 162))
 	questHint.Name = "FieldQuestHint"
-	-- [모바일 퀘스트] 가로 화면에서는 이동 조이스틱 및 동료 HUD와 분리한다.
-	questHint.Position = if compactTouch then UDim2.fromOffset(12, 186)
-		elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 256)
-		elseif visualMobile then UDim2.fromOffset(12, 158) else UDim2.fromOffset(12, 173)
+	-- [퀘스트 HUD] 주인공과 동료의 왼쪽 상태열을 비워 둔다.
+	questHint.Position = if compactTouch then UDim2.fromOffset(12, 286) else UDim2.fromOffset(226, 210)
 	questHint.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 212 else 230, 42)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
@@ -1736,7 +3789,8 @@ function FieldScene.start(opts)
 		local special = i == 1 and targetCard ~= nil
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon, Enum.PartType.Ball)
 		-- [발견 표시] 조사 판정 크기는 유지하고 네모난 발광 상자만 구형으로 바꾼다.
-		anchor.Transparency = if special then 1 else 0.35
+		-- [발견물 외형] 금빛 공 표식(기본 도형) 대신 보이지 않는 기준점만 두고, 실물·소품 모델로 보여 준다.
+		anchor.Transparency = 1
 		anchor.CanCollide = false
 		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
@@ -1744,39 +3798,7 @@ function FieldScene.start(opts)
 			anchor:SetAttribute("ObservationCardId", targetCard.id)
 			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
 			-- 없는 종을 다른 동물 메시로 위장하지 않고 종 이름과 승인된 도감 원화를 보여 준다.
-			local animalModels = {
-				zoo_elephant = { "elephant", PortBuildings.AnimalVisual.elephant.size },
-				zoo_indian_elephant = { "elephant", PortBuildings.AnimalVisual.elephant.size },
-				am_llama = { "llama", PortBuildings.AnimalVisual.llama.size },
-			}
-			local animal = if isWildlife then animalModels[targetCard.id] else nil
-			if animal and AssetIds["Animals/" .. animal[1]] then
-				local coats = PortBuildings.AnimalVisual[animal[1]].coats
-				local placed = placeModel(folder, "Animals", animal[1], pos, animal[2], false, Color3.fromRGB(table.unpack(coats[1])))
-				if placed then
-					placed.Name = "FieldWildlife"
-					placed:SetAttribute("ObservedSpecies", targetCard.id)
-				else
-					-- [지연 로드] 기존 AssetLoader로 로드가 끝난 동일 종의 승인 모델만 배치한다.
-					local assets = ReplicatedStorage:FindFirstChild("MareAssets")
-					local group = assets and assets:FindFirstChild("Animals")
-					if group then
-						table.insert(conns, group.ChildAdded:Connect(function(asset)
-							if asset.Name ~= animal[1] or finished or not anchor.Parent then return end
-							task.defer(function()
-								if finished or not anchor.Parent then return end
-								local coats = PortBuildings.AnimalVisual[animal[1]].coats
-								local readyModel = placeModel(folder, "Animals", animal[1], pos, animal[2], false, Color3.fromRGB(table.unpack(coats[1])))
-								if readyModel then
-									readyModel.Name = "FieldWildlife"
-									readyModel:SetAttribute("ObservedSpecies", targetCard.id)
-								end
-							end)
-						end))
-					end
-				end
-			end
-			-- [원본 도감] 등록된 카드 원화만 노출한다. 없는 카드에는 확인 불가능한 동물 이미지를 만들지 않는다.
+			-- [발견물 외형] 실물 모델 배치는 아래 DiscoveryStage(매핑표)가 맡는다.
 			local board = Instance.new("BillboardGui")
 			board.Name = "FieldObservation"
 			board.Adornee = anchor
@@ -1801,7 +3823,12 @@ function FieldScene.start(opts)
 			tag.Size = UDim2.fromOffset(154, 28)
 			tag.TextWrapped = true
 		else
-			placeModel(folder, "Naval", "chest", pos, 3.2, false)
+			-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
+			local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
+			local pick = props[(i - 1) % #props + 1]
+			if not placeModel(folder, pick[1], pick[2], pos, pick[3], false) then
+				placeModel(folder, "Naval", "chest", pos, 3.2, false)
+			end
 		end
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 214, 120)
@@ -1817,6 +3844,11 @@ function FieldScene.start(opts)
 		pp.RequiresLineOfSight = false
 		pp.Enabled = not (special and rareTrace)
 		pp.Parent = anchor
+		-- [발견물 외형] 대표 모양 실물·실루엣·조건·동물 반응·조사 방법
+		local stage = if special and DiscoveryStage then DiscoveryStage.setup({
+			folder = folder, pos = pos, anchor = anchor, prompt = pp, card = targetCard,
+			placeModel = placeModel, say = say, season = season, isFinished = function() return finished end,
+		}) else nil
 		if special and rareTrace then
 			-- [희귀 조사 퀘스트] 같은 탐험 안에서 단서 2개를 찾아야 본 관찰이 열린다.
 			-- 이 단계는 기존 발견물 수·소모 일수·보상 확률·저장 키를 바꾸지 않는다.
@@ -1826,8 +3858,13 @@ function FieldScene.start(opts)
 				local clue = part(folder, Vector3.new(2.2, 0.35, 2.2), CFrame.new(cluePos + Vector3.new(0, 0.25, 0)),
 					Color3.fromRGB(164, 138, 79), Enum.Material.Slate)
 				clue.Name = "FieldEvidence" .. clueIndex
-				clue.Shape = Enum.PartType.Ball -- [희귀 흔적] 원본 크기를 유지한 둥근 납작돌
+				clue.Transparency = 1 -- [발견물 외형] 기본 도형 대신 등록 돌 모델을 흔적으로 보여 준다
 				clue.CanCollide = false
+				local clueModel = placeModel(folder, "Terrain", "kenney_stone_smallFlatA", cluePos, 2.4, false)
+				if clueModel then
+					clueModel.Name = "FieldEvidenceStone" .. clueIndex
+					clue.Destroying:Connect(function() if clueModel.Parent then clueModel:Destroy() end end)
+				end
 				local cluePrompt = Instance.new("ProximityPrompt")
 				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
 				cluePrompt.ObjectText = targetCard.name
@@ -1856,6 +3893,7 @@ function FieldScene.start(opts)
 			if special then
 				observedCardId = targetCard.id
 				questHint.Text = "현장 기록 완료: " .. targetCard.name
+				if stage then pcall(stage.onObserved) end
 			end
 			found += 1
 			anchor:Destroy()
@@ -2063,6 +4101,8 @@ function FieldScene.start(opts)
 			else "pirate"
 		local mobHat = if mobProfile == "pirate" or mobProfile == "pirate_female" then "tricorn" else nil
 		-- [생성 중단 보호] 공식 R15 로딩이 지연되는 동안 철수해도 콜백 오류가 전파되지 않는다.
+		local mobFloor = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 100, pos.Z), Vector3.new(0, -140, 0), groundRay)
+		if mobFloor then pos = Vector3.new(pos.X, mobFloor.Position.Y, pos.Z) end
 		local created, model = pcall(Pose.createR15, folder, pos, 0, style[3], rng, if styleN == 1 then def[2] else style[2], stature,
 			{ bodyType = bodyType, motionStyle = motionStyle, trousers = trousers, persona = styleN, profession = ac.kind, year = opts.year, hat = mobHat })
 		if not created and not finished then
@@ -2086,6 +4126,7 @@ function FieldScene.start(opts)
 		end
 		local root = model:FindFirstChild("HumanoidRootPart")
 		if not root then model:Destroy(); continue end
+		local mobGroundOffset = root.Position.Y - pos.Y
 		local bb = Instance.new("BillboardGui")
 		bb.Adornee = root
 		bb.Size = UDim2.fromOffset(158, 34)
@@ -2125,7 +4166,7 @@ function FieldScene.start(opts)
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
-		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
+		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
 	end
@@ -2146,17 +4187,28 @@ function FieldScene.start(opts)
 			elseif season == "봄" then { "맑음", "흐림", "비", "옅은 안개", "비" }
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		-- [Studio 기후 촬영] 해당 지형에서 실제 허용되는 기상만 선택한다. 실제 플레이의 난수·시간·보상은 유지.
+		if RunService:IsStudio() then
+			if type(opts.studioCaptureWeather) == "table" then
+				for _, wanted in opts.studioCaptureWeather do
+					if table.find(weatherOptions, wanted) then
+						weather = wanted
+						break
+					end
+				end
+			end
+			if type(opts.studioCaptureHour) == "number" and opts.studioCaptureHour >= 0 and opts.studioCaptureHour < 24 then
+				biome.clock = opts.studioCaptureHour
+			end
+		end
+		folder:SetAttribute("FieldWeather", weather) -- [발견물 조건] 비 온 뒤에만 보이는 실물
 		local clockStart = os.clock()
 		local weatherNext = clockStart + climateRng:NextNumber(55, 90)
 		local flashUntil, flashNext = 0, clockStart + 16
 		local timeLabel = label(gui, "", 13, Color3.fromRGB(231, 239, 244))
 		timeLabel.Name = "FieldWeatherClock"
-		-- [기후 HUD] 모바일 가로에서 왼쪽 이동패드를 덮지 않게 오른쪽 정보열로 이동.
-		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 232)
-			elseif visualMobile and not compactTouch and workspace.CurrentCamera
-			and workspace.CurrentCamera.ViewportSize.X < 720
-			and workspace.CurrentCamera.ViewportSize.X > workspace.CurrentCamera.ViewportSize.Y then UDim2.fromOffset(184, 304)
-			elseif visualMobile then UDim2.fromOffset(184, 270) else UDim2.fromOffset(12, 216)
+		-- [기후 HUD] 퀘스트 바로 아래에 배치한다.
+		timeLabel.Position = if compactTouch then UDim2.fromOffset(12, 332) else UDim2.fromOffset(226, 256)
 		timeLabel.Size = UDim2.fromOffset(if compactTouch then 206 elseif visualMobile then 252 else 300, 26)
 		timeLabel.TextSize = 12
 		timeLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -2233,6 +4285,7 @@ function FieldScene.start(opts)
 				local old = weather
 				weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
 				if weather == old then weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)] end
+				folder:SetAttribute("FieldWeather", weather)
 				weatherNext = now + climateRng:NextNumber(65, 115)
 				folder:SetAttribute("FieldWeather", weather)
 				if weather ~= old then say("탐험 날씨 변화: " .. weather) end
@@ -2284,12 +4337,35 @@ function FieldScene.start(opts)
 					if cue then sfx(cue, vol, pitch) end
 				end
 			end
-			local damp = if weather == "옅은 안개" then 0.48 elseif weather == "소나기" then 0.71
+			local damp = if weather == "옅은 안개" then 0.62 elseif weather == "소나기" then 0.71
 				elseif weather == "눈" or weather == "비" then 0.80 else 1
 			lighting.ClockTime = clock
 			lighting.Brightness = (0.52 + 1.58 * sun) * (if weather == "소나기" then 0.78 else 1)
 			lighting.FogEnd = math.max(105, biome.fogEnd * damp)
+			lighting.FogStart = math.min(120, lighting.FogEnd * 0.35)
+			if lightSave.FieldClouds and lightSave.FieldClouds.Parent then
+				local cover = if weather == "소나기" then 0.84 elseif weather == "비" or weather == "눈" then 0.72
+					elseif weather == "흐림" then 0.60 elseif weather == "옅은 안개" then 0.44
+					elseif arid then 0.10 elseif tropical then 0.32 elseif northern then 0.28 else 0.18
+				lightSave.FieldClouds.Cover = cover
+				lightSave.FieldClouds.Density = if weather == "소나기" then 0.78 elseif weather == "비" or weather == "눈" then 0.62 else 0.36
+				lightSave.FieldClouds.Color = biome.fog:Lerp(Color3.fromRGB(235, 241, 248), if sun < 0.3 then 0.35 else 0.76)
+			end
 			lighting.FogColor = biome.fog:Lerp(Color3.fromRGB(60, 78, 111), (1 - sun) * 0.55)
+			-- [기존 날씨 틱 통합] 새 갱신 루프 없이 새벽·밤·비·해무의 대기 밀도만 조정한다.
+			local depthAtmosphere = lightSave.FieldAtmosphere
+			if depthAtmosphere and depthAtmosphere.Parent then
+				depthAtmosphere.Color = lighting.FogColor:Lerp(Color3.fromRGB(216, 229, 240), 0.14)
+				depthAtmosphere.Decay = lighting.FogColor:Lerp(
+					if arid then Color3.fromRGB(184, 159, 132) else Color3.fromRGB(103, 143, 179),
+					if sun < 0.2 then 0.39 else 0.28)
+				-- [입체감] 날씨 틱이 시작 값(밀도·연무)을 덮어써 근경까지 하얗게 됐다(Studio 재촬영).
+				-- 맑은 날은 근경 선명, 안개·소나기는 분위기만 남도록 상한을 낮춘다.
+				depthAtmosphere.Density = math.clamp(0.17 + (600 - lighting.FogEnd) / 2200, 0.14, 0.30)
+				depthAtmosphere.Offset = 0.32
+				depthAtmosphere.Haze = if weather == "옅은 안개" then 1.6 elseif weather == "소나기" then 1.2
+					else (if visualMobile then 0.45 else 0.65)
+			end
 			lighting.Ambient = biome.fog:Lerp(Color3.fromRGB(83, 103, 132), if sun < 0.5 then 0.77 else 0.54)
 			lighting.OutdoorAmbient = biome.fog:Lerp(Color3.fromRGB(112, 127, 151), if sun < 0.5 then 0.69 else 0.45)
 			if weather == "소나기" and now >= flashNext then
@@ -2300,14 +4376,14 @@ function FieldScene.start(opts)
 				elseif sun < 0.20 then Color3.fromRGB(131, 145, 180)
 				elseif phase == "새벽" or phase == "황혼" then Color3.fromRGB(255, 182, 131)
 				else lightSave.ColorShiftTop
-			precip.Rate = if weather == "눈" then (if visualMobile then 17 else 31)
+			precip.Rate = if weather == "눈" then (if visualMobile then 15.5 else 31)
 				elseif weather == "비" or weather == "소나기" then (if visualMobile then 45 else 90) else 0
 			if weather == "소나기" then precip.Rate *= 1.45 end
 			-- 바람은 지역 특성과 기상에 따라 방향·강도가 달라지되 이동/전투 판정에는 영향이 없다.
 			local gust = math.sin(now * 0.15 + month) * 2.0
 			local windStrength = if weather == "소나기" then 2.2 elseif weather == "눈" then 1.7 else 1
 			drift.Acceleration = Vector3.new((5.5 + gust) * windStrength, if driftType == "낙엽" then -3.0 else 0.8, 1.9 * windStrength)
-			drift.Rate = (if visualMobile then 3 else 8) * (if weather == "소나기" then 0.45 else 1)
+			drift.Rate = (if visualMobile then 4 else 8) * (if weather == "소나기" then 0.45 else 1)
 				* (if driftType == "화산재" or driftType == "모래바람" then 1.5
 					elseif driftType == "수면 안개" and phase == "밤" then 1.35 else 1)
 			timeLabel.Text = string.format("%s %s %02d:%02d · %s", seasonName, phase, math.floor(clock), math.floor((clock % 1) * 60), weather)
@@ -2327,6 +4403,17 @@ function FieldScene.start(opts)
 			elephant = "코끼리", llama = "라마" }
 		-- [항구·탐험 일치] 말 성체, 소, 양, 돼지 등 실물 비율을 목장과 똑같이 적용한다.
 		local sizes = PortBuildings.AnimalVisual
+		-- [종별 시각 보행] 목장과 같은 보폭을 사용하되 몸무게·발 수에 맞는 발 디딤과 머리/꼬리 움직임을 분리한다.
+		-- stride(스터드), speed(스터드/초), swing(라디안), head, tail, fourBeat.
+		local gait = {
+			horse = {4.3, 2.8, 0.30, 0.07, 0.15, true}, cow = {3.8, 1.7, 0.21, 0.055, 0.12, true},
+			donkey = {3.2, 2.2, 0.25, 0.07, 0.14, true}, llama = {3.4, 2.0, 0.24, 0.045, 0.11, true},
+			sheep = {2.6, 1.7, 0.24, 0.09, 0.09, true}, pig = {2.5, 1.6, 0.22, 0.09, 0.13, true},
+			elephant = {4.8, 1.5, 0.15, 0.035, 0.09, true},
+			["dog-pug"] = {2.2, 2.5, 0.33, 0.065, 0.30, false},
+			cat = {1.9, 1.8, 0.28, 0.045, 0.18, false},
+			chicken = {1.0, 0.95, 0.35, 0.14, 0.055, false},
+		}
 		local region = biome.region or ""
 		local candidates = if region == "nordic" or region == "britain" then { "sheep", "horse", "cow", "dog-pug" }
 			elseif region == "desert" or region == "ottoman" then { "donkey", "cat", "sheep" }
@@ -2355,6 +4442,11 @@ function FieldScene.start(opts)
 			local pos = ORIGIN + scatter(65)
 			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 			if root0 and (root0.Position - pos).Magnitude < 32 then return end
+			-- [실물 접지] 최초 생성부터 언덕·지면의 실제 높이를 따른다.
+			local floorHit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 110, pos.Z),
+				Vector3.new(0, -170, 0), groundRay)
+			if not floorHit or floorHit.Normal.Y <= 0.65 then return end
+			pos = Vector3.new(pos.X, floorHit.Position.Y, pos.Z)
 			local visual = sizes[species]
 			local coatIndex = 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39)) % #visual.coats
 			local model = placeModel(folder, "Animals", species, pos, visual.size, false, Color3.fromRGB(table.unpack(visual.coats[coatIndex])))
@@ -2380,15 +4472,144 @@ function FieldScene.start(opts)
 					say("동물 발견: " .. (names[species] or species) .. " · 현장 관찰 완료")
 				end)
 			end
-			table.insert(animals, { model = model, center = model:GetPivot(), bornAt = os.clock(),
-				phase = wildlifeRng:NextNumber(0, 7), direction = wildlifeRng:NextNumber(-math.pi, math.pi) })
+			-- [원본 모델 보존] 수입 Pivot의 Up/Look 축은 실제 메시의 머리·발 방향과 다를 수 있다.
+			-- 원본 자세를 CFrame.lookAt으로 덮지 않고, 월드 Y축 회전만 적용한다.
+			local origin = model:GetPivot()
+			local box, extent = model:GetBoundingBox()
+			local headSum, tailSum, footSum = Vector3.zero, Vector3.zero, Vector3.zero
+			local heads, tails, feet = 0, 0, 0
+			for _, node in model:GetDescendants() do
+				local p = if node:IsA("Bone") then node.WorldPosition
+					elseif node:IsA("BasePart") and node.Transparency < 0.98 then node.Position else nil
+				if p then
+					local name = node.Name:lower()
+					if name:find("head", 1, true) or name:find("beak", 1, true) or name:find("muzzle", 1, true) then
+						headSum += p; heads += 1
+					elseif name:find("tail", 1, true) then
+						tailSum += p; tails += 1
+					elseif name:find("foot", 1, true) or name:find("hoof", 1, true) or name:find("paw", 1, true) or name:find("toe", 1, true) then
+						footSum += p; feet += 1
+					end
+				end
+			end
+			local front = if heads > 0 then headSum / heads else nil
+			local back = if tails > 0 then tailSum / tails else box.Position
+			local axis = if front then (front - back) * Vector3.new(1, 0, 1) else Vector3.zero
+			local facingKnown = axis.Magnitude > math.max(0.08, visual.size * 0.035)
+			local forward = if facingKnown then axis.Unit else Vector3.new(0, 0, -1)
+			-- 발이 몸 중앙보다 위에 있다는 실측 증거가 있을 때만 뒤집힌 원본을 바로 세운다.
+			if facingKnown and feet >= 2 and (footSum / feet).Y > box.Position.Y + extent.Y * 0.12 then
+				model:PivotTo(CFrame.new(box.Position) * CFrame.fromAxisAngle(forward, math.pi)
+					* CFrame.new(-box.Position) * origin)
+				origin = model:GetPivot()
+			end
+			local yaw = wildlifeRng:NextNumber(-math.pi, math.pi)
+			local spin = CFrame.Angles(0, yaw, 0)
+			model:PivotTo(CFrame.new(box.Position) * spin * CFrame.new(-box.Position) * origin)
+			forward = spin:VectorToWorldSpace(forward)
+			local lowestY = math.huge
+			local visiblePieces = {}
+			for _, piece in model:GetDescendants() do
+				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					table.insert(visiblePieces, piece)
+					local half, cf = piece.Size * 0.5, piece.CFrame
+					lowestY = math.min(lowestY, cf.Position.Y - math.abs(cf.RightVector.Y) * half.X
+						- math.abs(cf.UpVector.Y) * half.Y - math.abs(cf.LookVector.Y) * half.Z)
+				end
+			end
+			if lowestY < math.huge then
+				model:PivotTo(CFrame.new(0, pos.Y - lowestY, 0) * model:GetPivot())
+			end
+			local basePivot = model:GetPivot()
+			local right = forward:Cross(Vector3.yAxis)
+			local profile = gait[species]
+			model:SetAttribute("FieldAnimalFacing", if facingKnown then "ANATOMICAL_FORWARD" else "UNVERIFIED_STATIC")
+			local _, ext = model:GetBoundingBox()
+			local bodySize = math.max(ext.X, ext.Y, ext.Z)
+			-- [실물 리그] Bone·Motor6D·분리 사지를 중복 없이 수집한다.
+			-- 고정된 수입 모델은 Part1을 움직이고, 가동 관절은 원래 Transform으로만 구동한다.
+			local bones, parts, legCount = {}, {}, 0
+			local occupiedParts, drivenParts, legGroups = {}, {}, {}
+			for _, node in model:GetDescendants() do
+				if node:IsA("Motor6D") and node.Part1 then
+					occupiedParts[node.Part1] = true
+				elseif node:IsA("AnimationConstraint") then
+					local target = node.Attachment1 and node.Attachment1.Parent
+					if target and target:IsA("BasePart") then occupiedParts[target] = true end
+				end
+			end
+			for _, node in model:GetDescendants() do
+				local targetPart = if node:IsA("Motor6D") then node.Part1
+					elseif node:IsA("AnimationConstraint") then node.Attachment1 and node.Attachment1.Parent else nil
+				local name = node.Name:lower()
+				if targetPart then name ..= " " .. targetPart.Name:lower() end
+				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
+					or name:find("paw", 1, true) or name:find("foot", 1, true)
+					or name:find("knee", 1, true)
+				local head = name:find("head", 1, true) or name:find("neck", 1, true)
+				local tail = name:find("tail", 1, true)
+				local kind = if leg then "leg" elseif head then "head" elseif tail then "tail" else nil
+				if kind then
+					local jointFrame = if node:IsA("Bone") then node.WorldCFrame
+						elseif node:IsA("Motor6D") and node.Part0 then node.Part0.CFrame * node.C0
+						elseif node:IsA("AnimationConstraint") and node.Attachment0 then node.Attachment0.WorldCFrame
+						elseif targetPart and targetPart:IsA("BasePart") then targetPart.CFrame
+						elseif node:IsA("BasePart") then node.CFrame else basePivot
+					local bodyCenter = model:GetBoundingBox().Position
+					local rel = jointFrame.Position - bodyCenter
+					local left = rel:Dot(right) < 0
+					local rear = species ~= "chicken" and rel:Dot(forward) < 0
+					local phase = if profile[6] then
+						(if rear then (if left then math.pi * 1.5 else math.pi * 0.5) else (if left then 0 else math.pi))
+						else (if rear then (if left then math.pi else 0) else (if left then 0 else math.pi))
+					local localRight = jointFrame:VectorToObjectSpace(right)
+					local localUp = jointFrame:VectorToObjectSpace(Vector3.yAxis)
+					local lower = name:find("lower", 1, true) or name:find("foot", 1, true) or name:find("toe", 1, true)
+					local accepted = false
+					if node:IsA("Bone") and #bones < 14 then
+						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower })
+						accepted = true
+					elseif targetPart and targetPart:IsA("BasePart") then
+						if targetPart.Anchored and not drivenParts[targetPart] and #parts < 12
+							and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) < bodySize * 0.77 then
+							table.insert(parts, { part = targetPart, base = basePivot:ToObjectSpace(targetPart.CFrame),
+								kind = kind, phase = phase, axis = targetPart.CFrame:VectorToObjectSpace(right), up = targetPart.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
+							drivenParts[targetPart] = true
+							accepted = true
+						elseif not targetPart.Anchored and #bones < 14 then
+							table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower })
+							accepted = true
+						end
+					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
+						and #parts < 12 and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodySize * 0.77 then
+						table.insert(parts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
+							kind = kind, phase = phase, axis = node.CFrame:VectorToObjectSpace(right), up = node.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, hinge = math.min(node.Size.Y * 0.34, 0.65) })
+						drivenParts[node] = true
+						accepted = true
+					end
+					if accepted and kind == "leg" then
+						-- [발별 판정] 무릎과 정강이를 서로 다른 다리로 세지 않는다.
+						local group = (if rear then "rear" else "front") .. (if left then "_left" else "_right")
+						if not legGroups[group] then legGroups[group] = true; legCount += 1 end
+					end
+				end
+			end
+			local canWalk = facingKnown and legCount >= (if species == "chicken" then 2 else 3)
+			model:SetAttribute("FieldAnimalMotionRig", if canWalk then "WALK_RIG"
+				elseif #bones + #parts > 0 then "IDLE_RIG" else "STATIC_UNRIGGED")
+			table.insert(animals, { model = model, center = basePivot, bornAt = os.clock(),
+				phase = wildlifeRng:NextNumber(0, 7), bones = bones, parts = parts, canWalk = canWalk,
+				forward = forward, profile = profile, visiblePieces = visiblePieces,
+				heading = 0, travel = 0, step = 0, stepWeight = 0, homeFloor = pos.Y, groundOffset = 0 })
 		end
 		-- 자연동물은 최대 4마리만 두고 화면 밖에 있을 때 짧은 산책·풀 뜯기를 반복한다.
 		local tick = 0
-		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
 			if finished or not folder.Parent then return end
 			tick += math.min(dt, 0.2)
-			if tick < 0.24 then return end
+			-- [실물 관절 보행] 0.24초마다 순간이동하던 동물 위치를 근거리에서 부드럽게 갱신한다.
+			if tick < (if visualMobile then 0.06 else 0.045) then return end
+			local elapsed = tick
 			tick = 0
 			local now = os.clock()
 			local root0 = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -2399,12 +4620,61 @@ function FieldScene.start(opts)
 					table.remove(animals, i)
 				elseif not root0 or (root0.Position - a.center.Position).Magnitude < 160 then
 					local time = now - a.bornAt
-					local stroll = 5.5 * math.sin(time * 0.33 + a.phase)
-					local drift = 2.3 * math.sin(time * 0.21 + a.phase)
-					local offset = Vector3.new(math.cos(a.direction) * stroll, 0, math.sin(a.direction) * stroll + drift)
-					local yaw = math.sin(time * 0.28 + a.phase) * 0.36
-					local crouch = -0.09 * math.max(0, math.sin(time * 1.25 + a.phase))
-					a.model:PivotTo(a.center * CFrame.new(offset + Vector3.new(0, crouch, 0)) * CFrame.Angles(0, yaw, 0))
+					local cycle = time * 0.33 + a.phase
+					local target = if a.canWalk then 5.5 * math.sin(cycle) else 0
+					-- [전진 보행] 실제 남은 이동량을 기준으로 먼저 몸을 돌린 뒤 움직인다.
+					local delta = target - a.travel
+					local want = if delta < -0.025 then math.pi elseif delta > 0.025 then 0 else a.heading
+					local turn = math.atan2(math.sin(want - a.heading), math.cos(want - a.heading))
+					a.heading += math.clamp(turn, -2.8 * elapsed, 2.8 * elapsed)
+					local remainingTurn = math.atan2(math.sin(want - a.heading), math.cos(want - a.heading))
+					local stepDistance = if a.canWalk and math.abs(remainingTurn) < 0.12
+						then math.clamp(delta, -a.profile[2] * elapsed, a.profile[2] * elapsed) else 0
+					local proposed = a.travel + stepDistance
+					local p = a.center.Position + a.forward * proposed
+					-- 이동할 발밑을 먼저 검사한다. 절벽·구멍·급경사에는 들어가지 않는다.
+					local hit = workspace:Raycast(Vector3.new(p.X, ORIGIN.Y + 110, p.Z),
+						Vector3.new(0, -170, 0), groundRay)
+					if hit and hit.Normal.Y > 0.65 and math.abs(hit.Position.Y - a.homeFloor - a.groundOffset) <= math.max(0.7, math.abs(stepDistance) * 1.5) then
+						a.travel = proposed
+						a.groundOffset = hit.Position.Y - a.homeFloor
+					else
+						stepDistance = 0
+					end
+					local walked = math.abs(stepDistance)
+					local moving = walked > 0.001
+					if moving then a.step += walked * (2 * math.pi / a.profile[1]) end
+					a.stepWeight += ((if moving then 1 else 0) - a.stepWeight) * (1 - math.exp(-12 * elapsed))
+					local position = a.center.Position + a.forward * a.travel + Vector3.new(0, a.groundOffset, 0)
+					-- 원본의 회전(수입 리그의 Up축 포함)은 보존하고 월드 Y축만 돌린다.
+					local pivot = CFrame.new(position) * CFrame.Angles(0, a.heading, 0) * a.center.Rotation
+					a.model:PivotTo(pivot)
+					for _, limb in a.bones do
+						local pitch = if limb.kind == "leg" then math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * (if limb.lower then -0.38 else 1)
+							elseif limb.kind == "head" then (if moving then math.sin(a.step * 2) * a.profile[4] else math.sin(time * 1.4) * a.profile[4]) else 0
+						local wag = if limb.kind == "tail" then math.sin(time * 2.2) * a.profile[5] else 0
+						limb.joint.Transform = limb.base * CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag)
+					end
+					for _, limb in a.parts do
+						local pitch = if limb.kind == "leg" then math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * (if limb.lower then -0.38 else 1)
+							elseif limb.kind == "head" then (if moving then math.sin(a.step * 2) * a.profile[4] else math.sin(time * 1.4) * a.profile[4]) else 0
+						local wag = if limb.kind == "tail" then math.sin(time * 2.2) * a.profile[5] else 0
+						local hinge = limb.up * limb.hinge
+						limb.part.CFrame = pivot * limb.base * CFrame.new(hinge)
+							* CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag) * CFrame.new(-hinge)
+					end
+					-- 분리된 실제 사지의 움직임 뒤에도 가장 낮은 가시 메시를 지면에 유지한다.
+					local low = math.huge
+					for _, piece in a.visiblePieces do
+						if piece.Parent then
+							local half, cf = piece.Size * 0.5, piece.CFrame
+							low = math.min(low, cf.Position.Y - math.abs(cf.RightVector.Y) * half.X
+								- math.abs(cf.UpVector.Y) * half.Y - math.abs(cf.LookVector.Y) * half.Z)
+						end
+					end
+					if low < math.huge then
+						a.model:PivotTo(a.model:GetPivot() + Vector3.new(0, a.homeFloor + a.groundOffset - low, 0))
+					end
 				end
 			end
 			local phase = folder:GetAttribute("FieldTimePhase") or "낮"
@@ -2424,7 +4694,8 @@ function FieldScene.start(opts)
 			elseif visualMobile then 106 else 120, 130
 		local map = Instance.new("Frame")
 		map.AnchorPoint = Vector2.new(0, 0)
-		map.Position = if compactTouch then UDim2.fromOffset(226, 90) else UDim2.fromOffset(236, 74)
+		map.Name = "FieldMiniMap"
+		map.Position = UDim2.fromOffset(226, 74)
 		map.Size = UDim2.fromOffset(MM, MM)
 		map.BackgroundColor3 = Color3.fromRGB(16, 24, 30)
 		map.BackgroundTransparency = 0.35
@@ -2466,6 +4737,49 @@ function FieldScene.start(opts)
 		mec.CornerRadius = UDim.new(1, 0)
 		mec.Parent = me
 		me.Parent = map
+		-- [탐험 동료 대화] 영입된 실제 동료의 기존 개인사와 현장 좌표/전투를 엮어 중앙에 한마디씩 보여 준다.
+		-- 게임 보상·호감도·드랍 판정은 건드리지 않는다. 한 번에 한 대사만 비차단으로 표시한다.
+		local companionRows: { any } = {} -- [지상전투 단독] 동료는 지상전투에 나오지 않으므로 대화도 없다.
+		local talkHistory = require(script.Parent:WaitForChild("CompanionTalk")).Talk
+		local talkRng = Random.new(math.floor(os.clock() * 1000) % 2147483647)
+		local dialogueFrame, speakerLabel, speechLabel = nil, nil, nil
+		local nextTalkAt, lastSpeech, dialogueSerial = os.clock() + 3.5, "", 0
+		if #companionRows > 0 then
+			dialogueFrame = Instance.new("Frame")
+			dialogueFrame.Name = "FieldCompanionDialogue"
+			dialogueFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+			dialogueFrame.Position = UDim2.fromScale(0.5, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 350 then 0.68 else 0.57)
+			dialogueFrame.Size = UDim2.new(if compactTouch then 0.62 else 0.45, 0, 0, if compactTouch then 76 else 70)
+			dialogueFrame.BackgroundColor3 = Color3.fromRGB(29, 35, 47)
+			dialogueFrame.BackgroundTransparency = 0.13
+			dialogueFrame.BorderSizePixel = 0
+			dialogueFrame.Active = false
+			dialogueFrame.ZIndex = 10
+			dialogueFrame.Visible = false
+			dialogueFrame.Parent = gui
+			local rounded = Instance.new("UICorner")
+			rounded.CornerRadius = UDim.new(0, 10)
+			rounded.Parent = dialogueFrame
+			local border = Instance.new("UIStroke")
+			border.Color = Color3.fromRGB(222, 184, 112)
+			border.Thickness = 1.7
+			border.Parent = dialogueFrame
+			speakerLabel = label(dialogueFrame, "", 15, Color3.fromRGB(255, 220, 143))
+			speakerLabel.Name = "FieldCompanionSpeaker"
+			speakerLabel.Position = UDim2.fromOffset(12, 5)
+			speakerLabel.Size = UDim2.new(1, -24, 0, 21)
+			speakerLabel.TextXAlignment = Enum.TextXAlignment.Left
+			speakerLabel.TextTruncate = Enum.TextTruncate.AtEnd
+			speakerLabel.ZIndex = 11
+			speechLabel = label(dialogueFrame, "", if compactTouch then 13 else 15, Color3.fromRGB(252, 245, 223))
+			speechLabel.Name = "FieldCompanionLine"
+			speechLabel.Position = UDim2.fromOffset(12, 27)
+			speechLabel.Size = UDim2.new(1, -24, 1, -31)
+			speechLabel.TextXAlignment = Enum.TextXAlignment.Left
+			speechLabel.TextYAlignment = Enum.TextYAlignment.Top
+			speechLabel.TextWrapped = true
+			speechLabel.ZIndex = 11
+		end
 		local acc = 0
 		table.insert(conns, RunService.Heartbeat:Connect(function(dt)
 			acc += dt
@@ -2478,6 +4792,78 @@ function FieldScene.start(opts)
 				return
 			end
 			local p0 = hrp0.Position
+			if dialogueFrame and os.clock() >= nextTalkAt then
+				local speaker = companionRows[talkRng:NextInteger(1, #companionRows)]
+				local speakerId = if type(speaker) == "table" then tostring(speaker.id or "") else ""
+				local speakerName = if type(speaker) == "table" then tostring(speaker.name or "동료") else tostring(speaker)
+				local nearEnemy = false
+				for _, hostile in enemies do
+					if hostile.root and hostile.root.Parent and not hostile.ac.dead
+						and (hostile.root.Position - p0).Magnitude < 35 then
+						nearEnemy = true
+						break
+					end
+				end
+				local nearbyDiscovery, nearestDistance = nil, math.huge
+				for _, point in folder:GetChildren() do
+					if point:IsA("BasePart") and string.sub(point.Name, 1, 9) == "Discovery" then
+						local distance = (point.Position - p0).Magnitude
+						if distance < nearestDistance then
+							nearbyDiscovery, nearestDistance = point, distance
+						end
+					end
+				end
+				local kind = talkRng:NextInteger(1, 6)
+				local speech, category
+				if nearEnemy and kind <= 3 then
+					local battleLines = {
+						"정면에서 무리하지 마세요. 적의 공격 뒤가 빈틈이에요!",
+						"적이 가까워요. 회피하고 빈틈을 노려요.",
+						"지금은 흩어지지 말고 서로의 뒤를 봐요.",
+						"주변을 살펴요. 다른 적이 끼어들 수 있어요.",
+					}
+					speech, category = battleLines[talkRng:NextInteger(1, #battleLines)], "전투 조언"
+				elseif nearbyDiscovery and kind <= 4 then
+					local offset = nearbyDiscovery.Position - p0
+					local direction = if math.abs(offset.X) >= math.abs(offset.Z)
+						then (if offset.X >= 0 then "동쪽" else "서쪽")
+						else (if offset.Z >= 0 then "남쪽" else "북쪽")
+					local rangeText = if nearestDistance < 25 then "바로 근처" elseif nearestDistance < 70 then "조금 앞" else "멀리"
+					speech = string.format("%s %s에 발견물의 흔적이 있어요. 지도를 확인해요.", direction, rangeText)
+					category = "발견물 힌트"
+				else
+					local lines = talkHistory[speakerId] and talkHistory[speakerId][1]
+					if lines and #lines > 0 and kind >= 3 then
+						speech, category = lines[talkRng:NextInteger(1, #lines)], "개인 이야기"
+					else
+							local feelings = {
+							"이곳의 공기는 항구와 전혀 다르네요. 조금 설레요.",
+							"오늘은 낯선 풍경을 오래 기억하고 싶어요.",
+							"멀리 떠나온 가족들이 문득 생각나요.",
+							"함께 걸으니 조금은 마음이 놓여요.",
+							"무사히 돌아가면 따뜻한 식사가 그립겠어요.",
+						}
+							speech, category = feelings[talkRng:NextInteger(1, #feelings)], "동료의 마음"
+					end
+				end
+				if speech == lastSpeech then
+					speech = if nearbyDiscovery then "발견물이 남아 있어요. 금빛 지점을 따라가 봐요."
+						else "함께 탐험하니 새로운 이야기가 쌓이네요."
+				end
+				lastSpeech = speech
+				dialogueSerial += 1
+				local serial = dialogueSerial
+				speakerLabel.Text = speakerName .. " · " .. category
+				speechLabel.Text = speech
+				dialogueFrame:SetAttribute("FieldDialogueKind", category)
+				dialogueFrame.Visible = true
+				nextTalkAt = os.clock() + talkRng:NextNumber(12, 18)
+				task.delay(5.8, function()
+					if dialogueFrame and dialogueFrame.Parent and dialogueSerial == serial then
+						dialogueFrame.Visible = false
+					end
+				end)
+			end
 			local used = 0
 			local function place(worldPos: Vector3, color: Color3, size: number, clampEdge: boolean): boolean
 				local off = Vector2.new(worldPos.X - p0.X, worldPos.Z - p0.Z) / RADIUS
@@ -4774,6 +7160,8 @@ function FieldScene.start(opts)
 		e.hitVariant = (e.hitVariant or 0) % 3 + 1
 		e.model:SetAttribute("FieldHitVariant", e.hitVariant)
 		e.bar.Size = UDim2.fromScale(math.max(e.ac.hp, 0) / e.maxHp, 1)
+		-- [검증용 읽기 전용] Studio 지상전 검사가 실제 타격 결과를 확인한다. 피해 계산·판정 불변.
+		e.model:SetAttribute("FieldEnemyHpRatio", math.max(e.ac.hp, 0) / e.maxHp)
 		local away = (e.root.Position - hrpPos) * Vector3.new(1, 0, 1)
 		if not died and stagger and knock >= 4 and not e.boss and not shieldBlocked
 			and evadeAt - (e.lastFallAt or -100) >= 3.5 then
@@ -6215,7 +8603,12 @@ function FieldScene.start(opts)
 			for _, obj in fieldObjects do
 				if visualObjectHits >= maxVisualHits or (rangedShot and shots >= 1) then break end
 				if not obj.model.Parent or not obj.model:GetAttribute("FieldCombatObject") then continue end
-				local toward = (obj.pos - hrp.Position) * Vector3.new(1, 0, 1)
+				-- [다수 모델 최적화] 실제 공격 사정거리 바깥은 제곱거리만 비교해
+				-- 먼 나무·암석의 벡터/각도 계산을 건너뛴다. 공격범위·타격판정·보상은 그대로다.
+				local dx, dz = obj.pos.X - hrp.Position.X, obj.pos.Z - hrp.Position.Z
+				local maxReach = rangeR * STUD + 3 + obj.radius
+				if dx * dx + dz * dz > maxReach * maxReach then continue end
+				local toward = Vector3.new(dx, 0, dz)
 				local nearDist = math.max(0, toward.Magnitude - obj.radius)
 				local angle = 0
 				if toward.Magnitude > 0.01 then
@@ -6606,9 +8999,9 @@ function FieldScene.start(opts)
 		local pulseRim = attackPulse and attackPulse:FindFirstChild("FieldAttackPulseRim")
 		if attackPulse and pulseRim then
 			pulseRim.Transparency = 0.06
-			attackPulse.Size = UDim2.fromScale(0.70, 0.70)
+			attackPulse.Size = UDim2.fromScale(0.62, 0.62)
 			TweenService:Create(attackPulse, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-				{ Size = UDim2.fromScale(0.97, 0.97) }):Play()
+				{ Size = UDim2.fromScale(0.86, 0.86) }):Play()
 			TweenService:Create(pulseRim, TweenInfo.new(0.16, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
 				{ Transparency = 1 }):Play()
 		end
@@ -6696,9 +9089,10 @@ function FieldScene.start(opts)
 				elseif visualMobile then 80 else 82),
 			if compactTouch then UDim2.new(1, -68, 1, -315)
 				elseif visualMobile then UDim2.new(1,
-					if workspace.CurrentCamera.ViewportSize.X < 780 then -90 else -175,
+					-175,
 					1, if workspace.CurrentCamera.ViewportSize.Y < 330 then -181 else -225)
-				else UDim2.new(1, attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
+				else UDim2.new(1, if workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y < 440
+					then -175 else attackBtn.Position.X.Offset - 12, 1, attackBtn.Position.Y.Offset - 182),
 			Vector2.new(0.5, 0.5))
 		wbtn.Name = "FieldWeapon"
 		wbtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
@@ -6709,6 +9103,49 @@ function FieldScene.start(opts)
 			addIcon(wbtn, "Menu/field_weapon")
 			wbtn.Text = ""
 		end
+		-- [무기교체 회전 광륜] 기존 교체 버튼 위에 재사용형 UI 링과 섬광만 얹는다. 신규 버튼/3D 입자는 없다.
+		wbtn.ClipsDescendants = false
+		local swapHalo = Instance.new("Frame")
+		swapHalo.Name = "FieldWeaponSwapHalo"
+		swapHalo.AnchorPoint = Vector2.new(0.5, 0.5)
+		swapHalo.Position = UDim2.fromScale(0.5, 0.5)
+		swapHalo.Size = UDim2.fromScale(0.9, 0.9)
+		swapHalo.BackgroundTransparency = 1
+		swapHalo.Active = false
+		swapHalo.ZIndex = wbtn.ZIndex + 8
+		swapHalo.Parent = wbtn
+		Instance.new("UICorner", swapHalo).CornerRadius = UDim.new(1, 0)
+		local swapStroke = Instance.new("UIStroke")
+		swapStroke.Color = Color3.fromRGB(255, 233, 163)
+		swapStroke.Thickness = if visualMobile then 2.3 else 3.1
+		swapStroke.Transparency = 1
+		swapStroke.Parent = swapHalo
+		local swapBeam = Instance.new("UIGradient")
+		swapBeam.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 244, 211)),
+			ColorSequenceKeypoint.new(0.5, Color3.fromRGB(142, 226, 255)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 222, 140)),
+		})
+		swapBeam.Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 1),
+			NumberSequenceKeypoint.new(0.38, 0.85),
+			NumberSequenceKeypoint.new(0.52, 0),
+			NumberSequenceKeypoint.new(0.66, 0.85),
+			NumberSequenceKeypoint.new(1, 1),
+		})
+		swapBeam.Parent = swapStroke
+		local swapFlash = Instance.new("Frame")
+		swapFlash.Name = "FieldWeaponSwapFlash"
+		swapFlash.AnchorPoint = Vector2.new(0.5, 0.5)
+		swapFlash.Position = UDim2.fromScale(0.5, 0.5)
+		swapFlash.Size = UDim2.fromScale(0.78, 0.78)
+		swapFlash.BackgroundColor3 = Color3.fromRGB(246, 250, 255)
+		swapFlash.BackgroundTransparency = 1
+		swapFlash.BorderSizePixel = 0
+		swapFlash.Active = false
+		swapFlash.ZIndex = wbtn.ZIndex + 9
+		swapFlash.Parent = wbtn
+		Instance.new("UICorner", swapFlash).CornerRadius = UDim.new(1, 0)
 		wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
 		wbtn:SetAttribute("WeaponChoiceCount", 2)
 		wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
@@ -6725,6 +9162,28 @@ function FieldScene.start(opts)
 			swingKind, swingCombo, slashIdx = nil, nil, 0
 			swingBridge.rootFrom, swingBridge.rootLast = nil, nil
 			wpn, reserveWeapon = reserveWeapon, wpn
+			-- [교체 성공 피드백] 회전 광륜 1개 + 짧은 섬광 1개만 재사용한다. 모바일 신규 파티클 방출 0개.
+			-- [해상·지상 통일] 링은 아이콘 안쪽(0.80→0.94)에서만 돌고, 흰 원 섬광 대신 아이콘이 톡 커졌다 돌아온다.
+			swapHalo.Size = UDim2.fromScale(0.80, 0.80)
+			swapStroke.Transparency = 0.05
+			swapBeam.Rotation = 0
+			swapFlash.BackgroundTransparency = 1
+			do
+				local pop = wbtn:FindFirstChild("FieldButtonIcon")
+				pop = pop and (pop:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", pop))
+				if pop then
+					pop.Scale = 1.14
+					TweenService:Create(pop, TweenInfo.new(0.32, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				end
+			end
+			TweenService:Create(swapHalo, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromScale(0.94, 0.94) }):Play()
+			TweenService:Create(swapBeam, TweenInfo.new(0.44, Enum.EasingStyle.Linear),
+				{ Rotation = 360 }):Play()
+			TweenService:Create(swapStroke, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Transparency = 1 }):Play()
+			TweenService:Create(swapFlash, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ BackgroundTransparency = 1 }):Play()
 			wbtn:SetAttribute("SkillFullName", wpn.name .. " ↔ " .. reserveWeapon.name)
 			if wbtn:GetAttribute("IconArtKey") ~= "Menu/field_weapon" then wbtn.Text = "교체" end
 			wbtn:SetAttribute("WeaponPrimaryId", wpn.id)
@@ -7027,8 +9486,8 @@ function FieldScene.start(opts)
 			debuffLabel.Text = debuff
 			debuffLabel.TextColor3 = if poisoned then Color3.fromRGB(144, 232, 144) else Color3.fromRGB(151, 210, 249)
 		end
-		-- [비전투 극소량 체력 회복] 8초간 전투 행동이 없고 40스터드 이내 적이 없을 때만 작동한다.
-		-- 자연 초당 0.12, 실제 치료 동료가 28스터드 안에 있으면 동료당 +0.18(최대 2명).
+		-- [주인공 자연 회복] 기존 자연 회복량 0.12는 유지하고, 동료 파티는 필드 피해·회복에 관여하지 않는다.
+		-- 전투 행동 8초 이상 없음 + 반경 40스터드 내 적 없음 조건을 그대로 적용한다.
 		if now - lastCombatAt >= 8 and pl.hp > 0 and pl.hp < pl.maxHp then
 			local ch = player.Character
 			local root = ch and ch:FindFirstChild("HumanoidRootPart")
@@ -7042,13 +9501,7 @@ function FieldScene.start(opts)
 				end
 			end
 			if not danger then
-				local healers = 0
-				for _, a in activeHealers do
-					if a.root and a.root.Parent and (a.root.Position - root.Position).Magnitude <= 28 then
-						healers += 1
-					end
-				end
-				pl.hp = math.min(pl.maxHp, pl.hp + (0.12 + math.min(healers, 2) * 0.18) * math.min(dt, 0.1))
+				pl.hp = math.min(pl.maxHp, pl.hp + 0.12 * math.min(dt, 0.1))
 				if now >= passiveRegenHudAt then
 					passiveRegenHudAt = now + 0.5
 					refresh()
@@ -7057,23 +9510,27 @@ function FieldScene.start(opts)
 					passiveRegenFxAt = now
 					pulseAt("HEAL_PULSE", root.CFrame * CFrame.new(0, -2.1, 0), Color3.fromRGB(104, 207, 151),
 						Color3.fromRGB(215, 250, 227), 3.8, if visualMobile then 2 else 4)
-					sfx("sfx_card_magic", 0.16, if healers > 0 then 1.15 else 1.32)
+					sfx("sfx_card_magic", 0.16, 1.32)
 				end
 			end
 		end
-		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
-		staminaNumber.Text = string.format("기력 %d", math.floor(pl.stamina + 0.5))
+		local staminaSize = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
+		if staminaFill.Size ~= staminaSize then staminaFill.Size = staminaSize end
+		local staminaText = string.format("기력 %d", math.floor(pl.stamina + 0.5))
+		if staminaNumber.Text ~= staminaText then staminaNumber.Text = staminaText end
 		if magicFill then
 			magicValue = math.min(100, magicValue + math.min(dt, 0.1) * 5)
-			magicFill.Size = UDim2.fromScale(magicValue / 100, 1)
-			magicAmount.Text = string.format("마력 %d", math.floor(magicValue + 0.5))
+			local magicSize = UDim2.fromScale(magicValue / 100, 1)
+			if magicFill.Size ~= magicSize then magicFill.Size = magicSize end
+			local magicText = string.format("마력 %d", math.floor(magicValue + 0.5))
+			if magicAmount.Text ~= magicText then magicAmount.Text = magicText end
 		end
+		local style = Weapons.actionDesign(wpn)
 		for key, sb in combatBtns do
 			if key == "heavy" or key == "sweep" then
-				local style = Weapons.actionDesign(wpn)
 				local detailed = if key == "heavy" then style.heavyName else style.sweepName
 				sb.label = if key == "heavy" then style.heavy else style.sweep
-				sb.btn:SetAttribute("SkillFullName", detailed)
+				if sb.btn:GetAttribute("SkillFullName") ~= detailed then sb.btn:SetAttribute("SkillFullName", detailed) end
 				-- 무기 교체 시 기존 아이콘 이미지도 바로 해당 무기 계열로 전환한다.
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove"
 					elseif wpn.ranged then "Menu/cc0_crossbow"
@@ -7090,17 +9547,25 @@ function FieldScene.start(opts)
 			end
 			local left = (pl.cd[key] or 0) - now
 			local shade = sb.btn:FindFirstChild("FieldCooldownShade")
-			local timer = sb.btn:FindFirstChild("FieldCooldownTime")
 			local duration = if string.sub(key, 1, 4) == "card" then 8 else (AC.Moves[key] and AC.Moves[key].cooldown) or 4
-			if shade and timer then
-				shade.Visible = left > 0
-				timer.Visible = false -- [아이콘 전용] 재사용 숫자 대신 기존 진행 막대만 표시한다.
-				shade.Size = UDim2.fromScale(1, math.clamp(left / math.max(duration, 0.1), 0, 1))
+			if shade then
+				local fraction = math.clamp(left / math.max(duration, 0.1), 0, 1)
+				-- [해상·지상 통일] 원화 아이콘이 있으면 원 음영 대신 아이콘 자체만 어두워진다(음영이 아이콘보다 넓어 보이던 문제).
+				local icon = sb.btn:FindFirstChild("FieldButtonIcon")
+				local shadeVisible = left > 0 and icon == nil
+				if shade.Visible ~= shadeVisible then shade.Visible = shadeVisible end
+				local shadeSize = UDim2.fromScale(1, 1)
+				if shade.Size ~= shadeSize then shade.Size = shadeSize end
+				local shadeAlpha = 0.24 + (1 - fraction) * 0.68
+				if shade.BackgroundTransparency ~= shadeAlpha then shade.BackgroundTransparency = shadeAlpha end
+				local timer = sb.btn:FindFirstChild("FieldCooldownTime")
+				if timer and timer.Visible then timer.Visible = false end
 				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
-				local fill = track and track:FindFirstChild("FieldCooldownProgress")
-				if track and fill then
-					track.Visible = left > 0
-					fill.Size = UDim2.fromScale(1 - math.clamp(left / math.max(duration, 0.1), 0, 1), 1)
+				if track and track.Visible then track.Visible = false end
+				if icon and icon:IsA("ImageLabel") then
+					icon.ImageTransparency = if left > 0 then fraction * 0.42 else 0
+                    icon.ImageColor3 = if left > 0 then Color3.fromRGB(208, 190, 160):Lerp(Color3.fromRGB(97, 88, 83), fraction)
+                        else Color3.fromRGB(255, 251, 224)
 				end
 				if left > 0 then
 					sb.wasCooling = true
@@ -7108,14 +9573,73 @@ function FieldScene.start(opts)
 					sb.wasCooling = false
 					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
 					if stroke then
-						stroke.Color = Color3.fromRGB(100, 248, 178)
-						stroke.Thickness = 3
-						TweenService:Create(stroke, TweenInfo.new(0.45), { Color = Color3.fromRGB(224, 184, 105), Thickness = 2 }):Play()
+						stroke.Color = Color3.fromRGB(255, 247, 164)
+                        stroke.Thickness = 5
+                        TweenService:Create(stroke, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                            Color = if key == "dodge" then Color3.fromRGB(114, 244, 228) else Color3.fromRGB(224, 184, 105),
+                            Thickness = if key == "dodge" then 3.2 else 2,
+                        }):Play()
+                    end
+                    -- [재사용 준비 회전광] 기존 버튼의 쿨타임 종료 순간에만 링 1개 생성·재사용한다.
+                    -- 모바일에서는 작은 2D 선 하나만 움직이며 신규 ParticleEmitter와 매 프레임 생성은 없다.
+                    local readyHalo = sb.btn:FindFirstChild("FieldReadyHalo")
+                    if not readyHalo then
+                        sb.btn.ClipsDescendants = false
+                        readyHalo = Instance.new("Frame")
+                        readyHalo.Name = "FieldReadyHalo"
+                        readyHalo.AnchorPoint = Vector2.new(0.5, 0.5)
+                        readyHalo.Position = UDim2.fromScale(0.5, 0.5)
+                        readyHalo.Size = UDim2.fromScale(0.92, 0.92)
+                        readyHalo.BackgroundTransparency = 1
+                        readyHalo.Active = false
+                        readyHalo.ZIndex = sb.btn.ZIndex + 8
+                        readyHalo.Parent = sb.btn
+                        Instance.new("UICorner", readyHalo).CornerRadius = UDim.new(1, 0)
+                        local lightRim = Instance.new("UIStroke")
+                        lightRim.Color = Color3.fromRGB(255, 245, 177)
+                        lightRim.Thickness = if visualMobile then 2 else 2.8
+                        lightRim.Transparency = 1
+                        lightRim.Parent = readyHalo
+                        local sweep = Instance.new("UIGradient")
+                        sweep.Transparency = NumberSequence.new({
+                            NumberSequenceKeypoint.new(0, 1),
+                            NumberSequenceKeypoint.new(0.35, 0.92),
+                            NumberSequenceKeypoint.new(0.5, 0),
+                            NumberSequenceKeypoint.new(0.65, 0.92),
+                            NumberSequenceKeypoint.new(1, 1),
+                        })
+                        sweep.Parent = lightRim
+                    end
+                    local lightRim = readyHalo:FindFirstChildOfClass("UIStroke")
+                    local sweep = lightRim and lightRim:FindFirstChildOfClass("UIGradient")
+                    if lightRim and sweep then
+                        readyHalo.Size = UDim2.fromScale(0.80, 0.80) -- [해상·지상 통일] 아이콘 안쪽에서만
+                        lightRim.Transparency = 0.03
+                        sweep.Rotation = 0
+                        TweenService:Create(readyHalo, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            { Size = UDim2.fromScale(0.94, 0.94) }):Play()
+                        TweenService:Create(sweep, TweenInfo.new(0.47, Enum.EasingStyle.Linear),
+                            { Rotation = 360 }):Play()
+                        TweenService:Create(lightRim, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                            { Transparency = 1 }):Play()
+                    end
+                    -- [지상 준비 완료] 엄지 위치에서 한 번 크게 숨쉬듯 확대 후 복귀한다.
+                    local readyScale = sb.btn:FindFirstChildOfClass("UIScale")
+                    if readyScale then
+                        readyScale.Scale = 1.12
+                        TweenService:Create(readyScale, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+                    end
+                    local readyIcon = sb.btn:FindFirstChild("FieldButtonIcon")
+                    if readyIcon and readyIcon:IsA("ImageLabel") then
+                        readyIcon.ImageColor3 = Color3.fromRGB(255, 245, 180)
+                        TweenService:Create(readyIcon, TweenInfo.new(0.48), {
+                            ImageColor3 = Color3.fromRGB(255, 251, 224),
+                        }):Play()
 					end
 				end
 			end
-			sb.btn.BackgroundTransparency = if left > 0 then 0.14 else 0
-			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
+			local remaining = math.max(0, left)
+			if sb.btn:GetAttribute("CooldownRemaining") ~= remaining then sb.btn:SetAttribute("CooldownRemaining", remaining) end
 		end
 	end))
 	-- [모바일 오입력 방지] 탐험 화면 탭은 공격으로 처리하지 않고 공격 버튼만 받는다.
@@ -7163,9 +9687,9 @@ function FieldScene.start(opts)
 		local dtc = math.min(dt, 0.1)
 		-- [매트릭스 회피] 성공한 순간만 짧게 적 세계시간을 늦춘다. 주인공·동료·재화·쿨타임은 정상 진행.
 		local enemyDt = dtc * (if now < (pl.matrixSlowUntil or 0) then 0.24 else 1)
-		local acList = {}
-		for _, o in enemies do table.insert(acList, o.ac) end
-		local attackers = AC.attackersCount(acList)
+		-- [전투 프레임] 적 상태는 기존 ActionCombat 집계 함수가 원본 배열에서 직접 확인한다.
+		-- 매 프레임 임시 31개 엔트리 배열을 만들지 않으며 공격 순서/판정은 동일하다.
+		local attackers = AC.attackersCount(enemies)
 		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.
 		-- 기존 동시 공격 상한·실제 예고시간·개인 공격 간격은 그대로 둔다.
 		local nextCounter = nil
@@ -7186,6 +9710,30 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			-- [모바일 원거리 그림자] 일반 적의 실제 원본 그림자만 거리별로 관리한다.
+			-- 100/80스터드 히스테리시스로 경계 반복 갱신 방지. 근접·정예·두목·공격 모션은 보존.
+			if visualMobile and not e.elite and not e.ac.dead then
+				local quiet = (e.ac.state == "idle" or e.ac.state == "chase")
+					and now >= (e.hurtAt or -100) + 0.3 and now >= (e.riseUntil or 0)
+					and now >= (e.guardUntil or 0) and now >= (e.parryUntil or 0)
+					and now >= (e.dodgeUntil or 0) and now >= (e.kbUntil or 0)
+				if e.shadowParts then
+					if not quiet or flat.Magnitude <= 80 then
+						for _, part in e.shadowParts do
+							if part:IsDescendantOf(e.model) then part.CastShadow = true end
+						end
+						e.shadowParts = nil
+					end
+				elseif quiet and flat.Magnitude > 100 then
+					e.shadowParts = {}
+					for _, part in e.model:GetDescendants() do
+						if part:IsA("BasePart") and part.CastShadow then
+							table.insert(e.shadowParts, part)
+							part.CastShadow = false
+						end
+					end
+				end
+			end
 			-- 멀리서 자고 있는 적은 계산을 쉰다(적이 100명이어도 가볍게)
 			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
 				continue
@@ -7622,7 +10170,9 @@ function FieldScene.start(opts)
 				local band = math.clamp((flat.Magnitude - ring) / 6, -0.85, 0.75)
 				local tangent = flat.Unit:Cross(Vector3.yAxis) * e.circleDir
 				desired = (tangent * 0.44 + flat.Unit * band) * e.ac.def.speed * 0.70
-				e.model:SetAttribute("FieldTacticalIntent", "guard-circle")
+				if e.model:GetAttribute("FieldTacticalIntent") ~= "guard-circle" then
+					e.model:SetAttribute("FieldTacticalIntent", "guard-circle")
+				end
 			elseif e.ac.def.keepAway and e.ac.state == "chase" and not frozen
 				and e.tacticGoal and (e.tacticIntent == "retreat" or wish == 0) then
 				-- 궁수/총병은 조준 전 후방 재배치·수평 견제. 공격 예고/발사 시에는 기존 정지 규칙이 우선.
@@ -7665,9 +10215,27 @@ function FieldScene.start(opts)
 				local rot = pv.Rotation
 				if facing then
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
-					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
+					if targetRot ~= rot then
+						rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
+					end
 				end
-				e.model:PivotTo(CFrame.new(pv.Position + delta) * rot)
+				-- [경사 접지] 적군도 실제 구릉 표면을 따른다. 높이 검사는 모바일에서 저빈도 갱신.
+				local nextPos = pv.Position + delta
+				if now >= (e.nextGroundAt or 0) then
+					e.nextGroundAt = now + (if visualMobile then 0.18 else 0.12)
+					local hit = workspace:Raycast(Vector3.new(nextPos.X, ORIGIN.Y + 100, nextPos.Z), Vector3.new(0, -140, 0), groundRay)
+					if hit and hit.Normal.Y > 0.45 then e.groundY = hit.Position.Y + (e.groundOffset or 0) end
+				end
+				if e.groundY then
+					nextPos = Vector3.new(nextPos.X,
+						math.clamp(e.groundY, nextPos.Y - 25 * enemyDt, nextPos.Y + 25 * enemyDt), nextPos.Z)
+				end
+				-- [적 모델 이동 최적화] 완전히 동일한 위치·회전이면 전체 리그의 변환 재설정을 생략한다.
+				-- 실제 미세 이동, 방향 전환, 접지 보정, 공격·넉백은 기존대로 반영한다.
+				local nextPivot = CFrame.new(nextPos) * rot
+				if nextPivot ~= pv then
+					e.model:PivotTo(nextPivot)
+				end
 			end
 			local traveled = (e.root.Position - beforeMove).Magnitude
 			if traveled > 0.02 then
@@ -7681,6 +10249,24 @@ function FieldScene.start(opts)
 			local hurtProgress = (now - e.hurtAt) / 0.3
 			local attackProgress = (now - e.swingAt) / 0.5
 			if e.fm then
+				-- [원거리 관절 경량화] 전술·이동·피해·공격권은 위의 기존 매 프레임 루프 그대로 유지한다.
+				-- 화면에서 먼 일반 적의 R15 관절 샘플링만 저빈도로 갱신해 모바일 CPU 부하를 낮춘다.
+				-- 공격 준비/타격/회복, 피격, 방어, 다운·기상, 두목은 매 프레임 즉시 반영한다.
+				local constrainedVisual = visualMobile or dt > 1 / 35
+				local farVisual = not e.boss and flat.Magnitude > (if constrainedVisual then 48 else 90)
+					and (e.ac.state == "idle" or e.ac.state == "chase")
+					and now >= (e.hurtAt or -100) + 0.3
+					and now >= (e.knockUntil or 0) and now >= (e.riseUntil or 0)
+					and now >= (e.guardUntil or 0) and now >= (e.parryUntil or 0)
+					and now >= (e.dodgeUntil or 0)
+				-- [프레임 예산] 먼 대기/추적의 관절 합성만 제한한다. 상태 전환은 즉시 반영.
+				local visualChanged = e.lastVisualCombatState ~= e.ac.state
+				e.visualElapsed = math.min(0.15, (e.visualElapsed or 0) + enemyDt)
+				if not farVisual or visualChanged or now >= (e.nextVisualTickAt or 0) then
+					e.lastVisualCombatState = e.ac.state
+					e.nextVisualTickAt = if farVisual then now + (if constrainedVisual then 0.24 else 0.09) else 0
+					local visualDt = if farVisual and not visualChanged then e.visualElapsed else enemyDt
+					e.visualElapsed = 0
 				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
 				if now < (e.knockUntil or 0) then
@@ -7776,12 +10362,13 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, enemyDt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
+				FM.actor(e.fm, st, ph, visualDt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
 					(kindId == "archer" or e.throwAsset ~= nil) and wish < 0, nil,
 					if e.throwAsset then nil else (e.weapon and e.weapon.motion),
 					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
 					math.clamp(e.root.CFrame.RightVector:Dot(e.moveVel) / math.max(e.ac.def.speed, 1), -1, 1),
 					e.attackStep)
+				end
 			elseif hurtProgress >= 0 and hurtProgress < 1 then
 				Pose.makeR15Action(e.model, "hurt", hurtProgress, now - e.spawnT)
 			elseif attackProgress >= 0 and attackProgress < 1 then
@@ -7792,419 +10379,71 @@ function FieldScene.start(opts)
 		end
 	end))
 
-	-- 동료(최대 2명): 주인공 곁을 따라다니다 가까운 적에게 달려가 알아서 싸운다. 맞지는 않는 지원군.
+	-- [비전투 파티] 서버가 영입 완료로 보낸 명단만 표시한다. 지상전투에 동료 모델·무기·공격·지원 스킬은 생성하지 않는다.
+	-- 기존 파티 ID와 초상 시트를 그대로 사용하고, 실제 피해·승패·보상·저장에는 개입하지 않는다.
 	do
-		local function hashName(str: string): number
-			local h = 7
-			for _, cp in utf8.codes(str) do h = (h * 31 + cp) % 100003 end
-			return h
+		local party = if type(opts.allies) == "table" then opts.allies else {}
+		local seen = {}
+		local count = 0
+		for _, member in party do
+			if count >= 2 then break end
+			if type(member) == "table" and type(member.id) == "string" and type(member.name) == "string"
+				and member.id ~= "" and not seen[member.id] then
+				seen[member.id] = true
+				count += 1
+				-- [지역변수 예산] 파티 UI 객체는 한 테이블에서 관리하고 전투 함수 200레지스터 상한을 보호한다.
+				local ui = {}
+				local status = Instance.new("Frame")
+				status.Name = "FieldAllyStatus" .. count
+				status:SetAttribute("CompanionId", member.id)
+				status:SetAttribute("CombatEnabled", false)
+				status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
+					heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (count - 1) * (if visualMobile then 48 else 56))
+				status.Size = UDim2.fromOffset(heroPanel.Size.X.Offset, if visualMobile then 44 else 52)
+				status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
+				status.BackgroundTransparency = 0.12
+				status.BorderSizePixel = 0
+				status.Parent = gui
+				ui.rounded = Instance.new("UICorner")
+				ui.rounded.CornerRadius = UDim.new(0, 9)
+				ui.rounded.Parent = status
+				ui.outline = Instance.new("UIStroke")
+				ui.outline.Color = if count == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
+				ui.outline.Thickness = 1.1
+				ui.outline.Parent = status
+				ui.face = Instance.new("ImageLabel")
+				ui.face.Name = "FieldAllyPortrait"
+				ui.face.Size = UDim2.fromOffset(if visualMobile then 29 else 39, if visualMobile then 35 else 43)
+				ui.face.Position = UDim2.fromOffset(6, 5)
+				ui.face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
+				ui.face.BorderSizePixel = 0
+				ui.face.ScaleType = Enum.ScaleType.Crop
+				ui.portrait = opts.allyPortraits and opts.allyPortraits[member.id]
+				if ui.portrait and ui.portrait.id then
+					ui.face.Image = "rbxassetid://" .. tostring(ui.portrait.id)
+					ui.face.ImageRectOffset = ui.portrait.offset or Vector2.zero
+					ui.face.ImageRectSize = ui.portrait.size or Vector2.zero
+				end
+				ui.face.Parent = status
+				ui.faceRounded = Instance.new("UICorner")
+				ui.faceRounded.CornerRadius = UDim.new(0, 7)
+				ui.faceRounded.Parent = ui.face
+				ui.nameText = label(status, member.name, if visualMobile then 12 else 13)
+				ui.nameText.Name = "FieldAllyName"
+				ui.nameText.Position = UDim2.fromOffset(if visualMobile then 43 else 51, 4)
+				ui.nameText.Size = UDim2.fromOffset(if visualMobile then 151 else 143, 18)
+				ui.nameText.TextXAlignment = Enum.TextXAlignment.Left
+				ui.nameText.TextTruncate = Enum.TextTruncate.AtEnd
+				ui.role = if type(member.role) == "string" and member.role ~= "" then member.role else "동료"
+				ui.statusText = label(status, ui.role .. " · 파티원", if visualMobile then 10 else 11, Color3.fromRGB(168, 210, 190))
+				ui.statusText.Name = "FieldAllyPartyRole"
+				ui.statusText.Position = UDim2.fromOffset(if visualMobile then 43 else 51, if visualMobile then 23 else 27)
+				ui.statusText.Size = UDim2.fromOffset(if visualMobile then 151 else 143, 18)
+				ui.statusText.TextXAlignment = Enum.TextXAlignment.Left
+				ui.statusText.TextTruncate = Enum.TextTruncate.AtEnd
+			end
 		end
-		-- [동료 명세 준비] 기존 영입·직업·국적 판정은 그대로 두고 루아우 200개 지역변수 한도를 피하도록 이 책임만 분리.
-		local function prepareAllyDefs()
-			local allyDefs = {}
-			local allyNames = opts.allies or {}
-			if #allyNames == 0 and RunService:IsStudio() and workspace:GetAttribute("DevAllies") then
-				allyNames = { { name = "동료 포수", role = "포수" }, { name = "동료 항해사", role = "항해사" } } -- 실제 서버에서는 없는 동료를 만들지 않는다.
-			end
-			-- [동료 식별] 같은 영입 ID 중복은 한 번만 소환한다. 최대 2명, 직업별 기존 스킬·무기는 유지.
-			local ROLE_BY_JOB = { ["성직자"] = "Mage", ["수녀"] = "Mage", ["승려"] = "Mage", ["비구니"] = "Mage", ["순례자"] = "Mage", ["필사자"] = "Mage", ["포수"] = "Barbarian", ["항해사"] = "Rogue" }
-			local ROLES = { "Knight", "Rogue", "Barbarian", "Mage" }
-			local seenAllies = {}
-			for _, nm in allyNames do
-				if #allyDefs < 2 then
-					local name = if type(nm) == "table" then tostring(nm.name) else tostring(nm)
-					local job = if type(nm) == "table" then nm.role else nil
-					local id = if type(nm) == "table" and nm.id then tostring(nm.id) else name .. "|" .. tostring(job)
-					if not seenAllies[id] then
-						seenAllies[id] = true
-						local slot = #allyDefs + 1
-						local h = hashName(name)
-						-- [동료 무기] 기존 영입 ID로 출신·경력을 조회한다. 저장값/영입 순서는 변경하지 않는다.
-						local history = Specialties.CompanionById[id]
-						local birthplace = history and history.homePort and Ports.Ports[history.homePort]
-						local nation = (history and history.nation) or (birthplace and birthplace.country)
-						local vocation = job or (history and history.scholarId ~= "" and "학자") or "무인"
-						local category = JobSkills.categoryOf(vocation)
-						local life = history and history.summary or vocation
-						local weapon = Weapons.allyWeapon(category, { job = vocation, nation = nation, background = life, year = opts.year })
-						local role = (job and ROLE_BY_JOB[job]) or ROLES[(h + slot) % #ROLES + 1]
-						-- [동료 외형] 출신 지역을 확인할 수 있는 동료에게는 기존 복식 팔레트를 우선한다.
-						local regionalCoats = {
-							france = Color3.fromRGB(64, 95, 136), england = Color3.fromRGB(86, 110, 104),
-							portugal = Color3.fromRGB(118, 91, 120), spain = Color3.fromRGB(153, 90, 69),
-							ottoman = Color3.fromRGB(80, 111, 107), japan = Color3.fromRGB(112, 88, 127),
-							netherlands = Color3.fromRGB(130, 94, 65), swahili = Color3.fromRGB(137, 108, 73),
-							malabar = Color3.fromRGB(79, 119, 88),
-						}
-						local coat = regionalCoats[nation] or Color3.fromHSV(((h % 360) / 360 + (slot - 1) * 0.32) % 1, 0.45, 0.67)
-						-- 기존 영입 메타데이터를 읽되, 성별 추정/저장값 변경 없이 외형에만 전달한다.
-						local knownFemale = id == "c_merian" or id == "t_nun" or id == "t_bhikkhuni"
-							or id == "t_mate" or id == "t_surgeon"
-						local female = if type(nm) == "table" and type(nm.female) == "boolean" then nm.female
-							elseif type(nm) == "table" and (nm.gender == "female" or nm.gender == "male") then nm.gender == "female"
-							else knownFemale
-						table.insert(allyDefs, { id = id, name = name, role = role, coat = coat, job = vocation, female = female,
-							skills = JobSkills.allySkills(vocation), weapon = weapon, nation = nation })
-					end
-				end
-			end
-			return allyDefs
-		end
-		local allyDefs = prepareAllyDefs()
-		local allies: { any } = {}
-		local spawned = {} -- 영입 슬롯별 생성 성공만 기록. 실패 슬롯만 재시도한다.
-		local nextSpawnRetryAt = 0
-		local spawning = false -- R15 모델 생성이 비동기로 끝날 때까지 같은 슬롯 중복 소환 차단.
-		-- [탐험 동료 지면] 기존 지형·전투물의 실제 충돌면만 확인하고, 캐릭터 신체는 무시한다.
-		local allyGroundRay = RaycastParams.new()
-		allyGroundRay.FilterType = Enum.RaycastFilterType.Exclude
-		allyGroundRay.RespectCanCollide = true
-		-- [실제 관절 재생 시점] Animator 평가가 끝난 물리 직전 단계에 갱신해 팔다리가 고정된 인형처럼 남지 않게 한다.
-		table.insert(conns, RunService.PreSimulation:Connect(function(dt)
-			if finished or #allyDefs == 0 then
-				return
-			end
-			local ch = player.Character
-			local root0 = ch and ch:FindFirstChild("HumanoidRootPart")
-			if not root0 then
-				return
-			end
-			allyGroundRay.FilterDescendantsInstances = { ch }
-			local now = os.clock()
-			if #allies < #allyDefs and not spawning and now >= nextSpawnRetryAt then
-				spawning = true
-				nextSpawnRetryAt = now + 5 -- 외부 R15 생성 실패 때 매 프레임 중복 요청하지 않는다.
-				for i, ad in allyDefs do
-					if not spawned[i] then
-					-- [동료 접지] Pose.createR15의 인자는 몸통 위치가 아닌 발바닥 좌표다.
-					-- 주인공 루트 높이(약 3스터드)를 더하던 기존 계산이 동료 공중부양의 원인이다.
-					local footX = root0.Position.X + i * 5 - 8
-					local pos0 = Vector3.new(footX, ORIGIN.Y + 0.015, root0.Position.Z - 4)
-					-- [동료 고유 R15] 영입 이름·직업에 따른 체형·움직임을 안정적으로 재생한다.
-					local persona = hashName(ad.name) % 3 + 1
-					local bodyType = if ad.role == "Barbarian" then "heavy" elseif ad.role == "Rogue" then "slim" else "athletic"
-					local motionStyle = if ad.weapon and ad.weapon.ranged then "scholar" elseif ad.role == "Barbarian" then "heavy" else "disciplined"
-					local outfit = { bodyType = bodyType, motionStyle = motionStyle, persona = persona, profession = ad.job, year = opts.year,
-						companion = true, gender = if ad.female then "female" else "male", culture = ad.nation } -- 실제 양발 밑면을 바닥에 맞추는 동료 전용 생성 옵션.
-					-- 시대가 맞지 않는 조립형 장식은 추가하지 않는다.
-					if type(opts.year) == "number" and opts.year >= 1500 then
-						outfit.hair = if ad.female then (if persona == 2 then "bun" else "long") else "short"
-						outfit.hairColor = if persona == 1 then Color3.fromRGB(46, 34, 28) else Color3.fromRGB(88, 68, 50)
-					end
-					-- [동료 체격] 주인공의 실제 R15 머리~발 높이에 맞춘다. 성별 추정으로 크기를 임의 변경하지 않는다.
-					local heroHead = ch:FindFirstChild("Head")
-					local heroFoot = ch:FindFirstChild("LeftFoot") or ch:FindFirstChild("RightFoot")
-					local heroHeight = if heroHead and heroFoot
-						then math.clamp((heroHead.Position.Y + heroHead.Size.Y * 0.5) - (heroFoot.Position.Y - heroFoot.Size.Y * 0.5), 5.3, 7.2)
-						else 5.8
-					local created, m = pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)
-					if not created and not finished then
-						warn("[MareEssentia] 동료 리그 생성 오류", m)
-						m = nil
-					end
-					if finished or not folder.Parent then
-						if created and m and typeof(m) == "Instance" then m:Destroy() end
-						return
-					end
-					local r = m and m:FindFirstChild("HumanoidRootPart")
-					if m and r then
-						spawned[i] = true
-						m.Name = "FieldAlly"
-						m:SetAttribute("CompanionId", ad.id)
-						m:SetAttribute("CompanionName", ad.name)
-						m:SetAttribute("EquippedWeaponId", ad.weapon.id)
-						m:SetAttribute("EquippedWeaponName", ad.weapon.name)
-						m:SetAttribute("CompanionOriginNation", ad.nation or "")
-						equipFieldWeapon(m, ad.weapon)
-						m:SetAttribute("MotionRole", if ad.weapon and ad.weapon.ranged then "ally-ranged" else "ally-melee") -- 기존 직업별 모션 구분 유지
-						-- [탐험 HUD] 동료 이름을 근거리에서 작게 표시한다. 색상과 거리 제한은 유지한다.
-						local bbA = Instance.new("BillboardGui")
-						bbA.Name = "AllyRoleTag"
-						bbA.Adornee = r
-						bbA.Size = UDim2.fromOffset(120, 18)
-						bbA.StudsOffset = Vector3.new(0, 3.7, 0)
-						bbA.AlwaysOnTop = false
-						bbA.LightInfluence = 0
-						bbA.MaxDistance = 24
-						bbA.Parent = r
-						local tg = label(bbA, ad.name, 12, if i == 1 then Color3.fromRGB(125, 224, 255) else Color3.fromRGB(245, 207, 110))
-						tg.TextTruncate = Enum.TextTruncate.AtEnd
-						tg.Size = UDim2.new(1, 0, 1, 0)
-						-- [기존 영입 동료 초상과 지원 상태] 무적 지원군은 생명력이 소모되지 않으므로
-						-- 고정 체력 표시를 두고 실제 공격·스킬 사용량에 따른 전투 에너지만 시각적으로 갱신한다.
-						local status = Instance.new("Frame")
-						status.Name = "FieldAllyStatus" .. i
-						-- [파티 HUD] 가로형은 미니맵 옆의 상단 상태열, 세로형은 퀘스트 아래.
-						-- 600~719 너비에서는 좌측 미니맵·우측 무기교체 사이의 실제 가용폭만 사용한다.
-						local screen = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-						local narrowParty = screen.X >= 600 and screen.X < 720 and screen.X > screen.Y
-						local partyWidth = if narrowParty then math.clamp(screen.X - 500, 100, 170) else 202
-						status.Position = if screen.X >= 600 and screen.X > screen.Y then
-							UDim2.fromOffset(356, 74 + (i - 1) * (if screen.Y < 350 then 46 else 56))
-							else UDim2.fromOffset(12, 282 + (i - 1) * 56)
-						status.Size = UDim2.fromOffset(partyWidth, if screen.Y < 350 and screen.X > screen.Y then 44 else 52)
-						status.Visible = (screen.X >= 600 and screen.X > screen.Y) or screen.Y >= 540
-						status.BackgroundColor3 = Color3.fromRGB(24, 33, 49)
-						status.BackgroundTransparency = 0.12
-						status.BorderSizePixel = 0
-						status.Parent = gui
-						local round = Instance.new("UICorner")
-						round.CornerRadius = UDim.new(0, 9)
-						round.Parent = status
-						local frame = Instance.new("UIStroke")
-						frame.Color = if i == 1 then Color3.fromRGB(105, 200, 223) else Color3.fromRGB(222, 181, 103)
-						frame.Thickness = 1.1
-						frame.Parent = status
-						local face = Instance.new("ImageLabel")
-						face.Name = "FieldAllyPortrait"
-						face.Size = UDim2.fromOffset(if narrowParty then 29 else 39, if narrowParty then 35 else 43)
-						face.Position = UDim2.fromOffset(if narrowParty then 4 else 6, 5)
-						face.BackgroundColor3 = Color3.fromRGB(56, 70, 82)
-						face.BorderSizePixel = 0
-						face.ScaleType = Enum.ScaleType.Crop
-						local portrait = opts.allyPortraits and opts.allyPortraits[ad.id]
-						if portrait and portrait.id then
-							face.Image = "rbxassetid://" .. tostring(portrait.id)
-							face.ImageRectOffset = portrait.offset or Vector2.zero
-							face.ImageRectSize = portrait.size or Vector2.zero
-						end
-						face.Parent = status
-						local faceRound = Instance.new("UICorner")
-						faceRound.CornerRadius = UDim.new(0, 7)
-						faceRound.Parent = face
-						local nameText = label(status, ad.name, 13)
-						nameText.Name = "FieldAllyName"
-						nameText.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 3)
-						nameText.Size = UDim2.fromOffset(if narrowParty then math.max(60, partyWidth - 42) else 143, 18)
-						nameText.TextSize = if narrowParty then 11 else 13
-						nameText.TextXAlignment = Enum.TextXAlignment.Left
-						nameText.TextTruncate = Enum.TextTruncate.AtEnd
-						local hpLine = Instance.new("Frame")
-						hpLine.Name = "FieldAllyHealth"
-						hpLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 6)
-						hpLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 24)
-						hpLine.BackgroundColor3 = Color3.fromRGB(82, 181, 117)
-						hpLine.BorderSizePixel = 0
-						hpLine.Parent = status
-						local manaAlly = JobSkills.categoryOf(ad.job) == "clergy"
-						local energyLine = Instance.new("Frame")
-						energyLine.Name = if manaAlly then "FieldAllyMana" else "FieldAllyStamina"
-						energyLine.Size = UDim2.fromOffset(if narrowParty then math.max(55, partyWidth - 43) else 140, 7)
-						energyLine.Position = UDim2.fromOffset(if narrowParty then 37 else 51, 36)
-						energyLine.BackgroundColor3 = Color3.fromRGB(42, 52, 68)
-						energyLine.BorderSizePixel = 0
-						energyLine.Parent = status
-						local energyFill = Instance.new("Frame")
-						energyFill.Name = "FieldAllyEnergyFill"
-						energyFill.Size = UDim2.fromScale(1, 1)
-						energyFill.BackgroundColor3 = if manaAlly then Color3.fromRGB(110, 151, 247) else Color3.fromRGB(232, 191, 89)
-						energyFill.BorderSizePixel = 0
-						energyFill.Parent = energyLine
-						local energyCaption = label(status, if manaAlly then "마력" else "기력", 10, Color3.fromRGB(239, 233, 215))
-						energyCaption.Name = "FieldAllyEnergyCaption"
-						energyCaption.TextXAlignment = Enum.TextXAlignment.Right
-						energyCaption.Position = UDim2.fromOffset(153, 34)
-						energyCaption.Size = UDim2.fromOffset(38, 12)
-						energyCaption.Visible = not narrowParty -- 좁은 파티 상태열에서는 진행선만 사용
-						energyCaption.ZIndex = 6
-						local ally = { model = m, root = r, slot = i, swingAt = -10, nextAt = 0, t0 = now,
-							footOffset = m:GetPivot().Position.Y - pos0.Y,
-							leftFoot = m:FindFirstChild("LeftFoot"), rightFoot = m:FindFirstChild("RightFoot"),
-							fm = if FM then FM.new(m, false) else nil, name = ad.name, skills = ad.skills,
-							weapon = ad.weapon or Weapons.get("sword"), skillCd = {}, nextSkill = now + 4 + i * 2,
-							gait = (i - 1) * 0.45, energy = 100, energyFill = energyFill,
-							healer = table.find(ad.skills, "heal") ~= nil }
-						table.insert(allies, ally)
-						if ally.healer then table.insert(activeHealers, ally) end
-						table.insert(conns, { Disconnect = function()
-							m:Destroy()
-						end })
-					elseif m then
-						m:Destroy() -- 불완전한 동료는 남기지 않고 같은 슬롯으로 다시 생성한다.
-					end
-					end
-				end
-				spawning = false
-			end
-			for _, a in allies do
-				-- [동료 안정 추적] 한 프레임마다 목표를 바꾸면 몹 사이를 지그재그로 뛰므로 기존 대상을 유지한다.
-				-- 주인공과 멀어지면 대형 복귀를 먼저 하고, 더 가까운 적이 확실할 때만 목표를 바꾼다.
-				local tgt, td = a.focus, 40 * STUD
-				if tgt then
-					local d = (tgt.root.Position - a.root.Position).Magnitude
-					if tgt.ac.dead or not tgt.root.Parent or d > 40 * STUD or (root0.Position - a.root.Position).Magnitude > 30 then
-						tgt = nil
-					else
-						td = d
-					end
-				end
-				if (root0.Position - a.root.Position).Magnitude <= 30 then
-					for _, e in enemies do
-						local d0 = (e.root.Position - a.root.Position).Magnitude
-						if d0 < td * (if tgt then 0.65 else 1) then
-							tgt, td = e, d0
-						end
-					end
-				end
-				a.focus = tgt
-				-- [동료 대형] 주인공을 따라 방향을 바꿔도 좌우 후방에 서도록 로컬 좌표를 사용한다.
-				local goal = if tgt then tgt.root.Position else (root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)).Position
-				local aw = a.weapon
-				local stop = if tgt then (if aw.ranged then 16 else 5.5) else 3
-				local to = Vector3.new(goal.X - a.root.Position.X, 0, goal.Z - a.root.Position.Z)
-				local moving = to.Magnitude > stop
-				-- [동료 관성 보행] 이동 최고속도는 유지하고 목표에 가까워질수록 다리 디딤과 실제 이동을 함께 감속한다.
-				local maxSpeed = if tgt then 16 else 20
-				local remaining = math.max(0, to.Magnitude - stop)
-				local desiredSpeed = if moving then math.min(maxSpeed, math.max(2, remaining * 3.5)) else 0
-				local wantedVel = if moving then to.Unit * desiredSpeed else Vector3.zero
-				local previousVel = a.moveVel or Vector3.zero
-				local accel = if desiredSpeed > previousVel.Magnitude then 6.5 else 9
-				a.moveVel = previousVel:Lerp(wantedVel, 1 - math.exp(-accel * math.clamp(dt, 0, 0.1)))
-				local walked = 0
-				if moving and a.moveVel.Magnitude > 0.05 then
-					walked = math.min(remaining, a.moveVel.Magnitude * math.clamp(dt, 0, 0.1))
-					a.model:PivotTo(a.model:GetPivot() + a.moveVel.Unit * walked)
-					a.gait = (a.gait or 0) + walked / 5.2
-				end
-				-- [발 접지] 이동 후 동료의 발바닥이 서야 할 충돌면 높이를 읽어 모델 전체를 천천히 붙인다.
-				-- 지면에 없는 공중 장식·벽은 무시하고, 계단·완만한 지형만 최대 1.6스터드 보정한다.
-				local floorHit = workspace:Raycast(a.root.Position + Vector3.new(0, 4, 0),
-					Vector3.new(0, -14, 0), allyGroundRay)
-				if floorHit and floorHit.Normal.Y > 0.7 then
-					local pivot = a.model:GetPivot()
-					local wantedY = floorHit.Position.Y + a.footOffset + 0.015
-					local gap = wantedY - pivot.Position.Y
-					if math.abs(gap) < 1.6 then
-						-- [실제 신발 접지] 한쪽 발이 스윙 중 떠 있어도 낮은 쪽 축발은 땅에 남게 미세 보정한다.
-						-- 타격 시 발이 순간 이동하지 않도록 발바닥 보정량은 0.14스터드까지만 허용한다.
-						local soleCorrection = 0
-						if a.leftFoot and a.rightFoot and a.leftFoot.Parent and a.rightFoot.Parent then
-							local lowestSole = math.min(a.leftFoot.Position.Y - a.leftFoot.Size.Y * 0.5,
-								a.rightFoot.Position.Y - a.rightFoot.Size.Y * 0.5)
-							soleCorrection = math.clamp(floorHit.Position.Y + 0.015 - lowestSole, -0.14, 0.14)
-						end
-						local correction = gap * (1 - math.exp(-13 * math.clamp(dt, 0, 0.1)))
-							+ soleCorrection * (1 - math.exp(-7 * math.clamp(dt, 0, 0.1))) * 0.55
-						if math.abs(correction) > 0.002 then
-							a.model:PivotTo(pivot + Vector3.new(0, math.clamp(correction, -0.22, 0.22), 0))
-						end
-					end
-				end
-				local gaitMoving = walked > 0.01
-				-- [시선·발 방향 분리] 적을 공격할 때는 적을 보고, 복귀하면 주인공과 같은 방향을 보며 회전은 지연시킨다.
-				local face = if tgt then tgt.root.Position - a.root.Position
-					elseif moving and a.moveVel.Magnitude > 0.05 then a.moveVel else root0.CFrame.LookVector
-				face = Vector3.new(face.X, 0, face.Z)
-				if face.Magnitude > 0.01 then
-					local pv = a.model:GetPivot()
-					local front = CFrame.lookAt(pv.Position, pv.Position + face.Unit)
-					a.model:PivotTo(CFrame.new(pv.Position) * pv.Rotation:Lerp(front.Rotation,
-						1 - math.exp(-(if moving then 5.5 else 8) * math.clamp(dt, 0, 0.1))))
-				end
-				if tgt and not moving and now >= a.nextAt then
-					a.nextAt = now + 1.3 / aw.speed
-					a.swingAt = now
-					-- [동료 기본 공격] 별도 연타 누적·마무리 콤보는 사용하지 않는다.
-					-- 기존 동료 공격 주기·피해·실물 무기 동작은 유지한다.
-					a.energy = math.max(0, a.energy - 10)
-					strikeEnemy(tgt, 0.6 * aw.power, a.root.Position, if aw.family == "axe" then 2 else 1.0,
-						aw.family == "axe", true, false, nil, aw)
-					if aw.ranged then
-						-- 동료 사격: 총알·화살 궤적
-						local a0 = a.root.Position + Vector3.new(0, 0.5, 0)
-						local b0 = tgt.root.Position
-						local arrow = aw.family == "bow" or aw.motion == "CROSSBOW"
-						-- [동료 사격] 화살·볼트·총알의 색상과 발사소리를 실제 동료 장비로 구분한다.
-						arrowTrail(a0, b0, nil, nil, aw.motion)
-						if aw.motion == "CROSSBOW" then
-							sfx("sfx_card_volley", 0.28, 1.46)
-						elseif aw.family == "bow" then
-							sfx("sfx_rope_release", 0.32, if aw.motion == "LONGBOW" then 1.12 else 1.38)
-						elseif aw.motion == "RIFLE" then
-							sfx("sfx_cannon", 0.29, 1.87)
-						else
-							sfx("sfx_card_fire", 0.30, 1.52)
-						end
-						if CommonVFX then
-							pcall(CommonVFX.Create, "IMPACT_FLASH", {
-								parent = workspace, cframe = CFrame.new(b0), color = if arrow then Color3.fromRGB(210, 187, 129) else Color3.fromRGB(255, 226, 162),
-								endSize = 2.2, count = 4, duration = 0.18, hideRing = true,
-							})
-						end
-					end
-				end
-				-- 직업 스킬(최대 2개): 상황이 맞을 때 자동으로 쓴다 (치료=체력 낮을 때, 보호막=없을 때, 사격·강타·저격=적이 가까울 때, 사기=적 2명 이상)
-				if now >= a.nextSkill and (#enemies > 0 or (a.healer and pl.hp < pl.maxHp * 0.65)) then
-					for _, sid in a.skills do
-						local def = JobSkills.Skills[sid]
-						if def and (a.skillCd[sid] or 0) <= now then
-							local nearE = 0
-							for _, e in enemies do
-								if (e.root.Position - a.root.Position).Magnitude <= 30 * STUD then nearE += 1 end
-							end
-							local ok = false
-							if sid == "heal" then ok = pl.hp < pl.maxHp * 0.65
-							elseif sid == "armor" then ok = not pl.ward and nearE > 0
-							elseif sid == "rally" then ok = nearE >= 2 and now > (pl.buffUntil or 0)
-							elseif sid == "luck" then ok = pl.stamina < 40
-							else ok = nearE > 0 end
-							if ok then
-								a.skillCd[sid] = now + def.cooldown
-								a.nextSkill = now + 3
-								a.swingAt = now
-								a.energy = math.max(0, a.energy - 20)
-								-- 지원기 발동 시 공격 대신 지원 자세를 보여 준다. 효과와 쿨타임은 기존 로직 유지.
-								if sid == "heal" or sid == "armor" or sid == "rally" or sid == "luck" then
-									a.castAt, a.castSkill = now, sid
-								end
-								castEffect(sid, a.name .. " · " .. def.name, a.model, a.root)
-								break
-							end
-						end
-					end
-				end
-				-- [동료 자원 HUD] 전투 판정과 별개로 화면에 최근 행동량을 표시한다.
-				a.energy = math.min(100, a.energy + math.min(dt, 0.1) * 13)
-				if a.energyFill and a.energyFill.Parent then
-					a.energyFill.Size = UDim2.fromScale(a.energy / 100, 1)
-				end
-				local ap = (now - a.swingAt) / 0.5
-				if a.fm and a.fm.nj > 0 then
-					if a.castAt and now - a.castAt < 0.7 then
-						FM.actor(a.fm, "INTERACT", (now - a.castAt) / 0.7, dt, nil, 1.3, nil, false, a.castSkill)
-					elseif ap >= 0 and ap < 1 then
-						-- [동료 무기 공격 통합] 원본 1~3타의 재생 속도는 유지하면서 전신·축발·반동을 함께 적용한다.
-						-- 맨손도 공용 연타를 사용하며 기존 피해 발생 시각과 공격 주기는 그대로다.
-						FM.actor(a.fm, "ATTACK", 0.25 + math.clamp(ap, 0, 1) * 0.35,
-							dt, nil, 1.3, nil, false, nil, a.weapon.motion)
-					elseif ap >= 1 and ap < 1.7 then
-						-- [동료 무기 회수] 실제 공격 후 0.35초 자세를 정돈한다(기존 공격 판정·주기는 동일).
-						FM.actor(a.fm, "RECOVERY", math.clamp((ap - 1) / 0.7, 0, 1), dt, nil, 1.25, nil, false, nil, a.weapon.motion)
-					elseif tgt and not moving and a.nextAt > now and a.nextAt - now < 0.22 then
-						-- [타격 예고] 다음 공격 직전의 짧은 무기 준비. 대미지 발생 시각은 변경하지 않는다.
-						FM.actor(a.fm, "ANTICIPATION", 1 - (a.nextAt - now) / 0.22, dt, nil, 1.18, nil, false, nil, a.weapon.motion)
-					elseif gaitMoving then
-						-- [옆걸음] 적을 바라보며 이동하는 동료는 좌우 발과 골반이 진행 방향을 따라가도록 한다.
-						local sideStep = math.clamp(a.root.CFrame.RightVector:Dot(a.moveVel) / maxSpeed, -1, 1)
-						FM.actor(a.fm, "RUN", (a.gait or 0) % 1, dt, nil, 1.3, nil, false, nil, a.weapon.motion,
-							math.clamp(walked / math.max(dt, 0.008) / maxSpeed, 0.12, 1.25), sideStep)
-					else
-						FM.actor(a.fm, "IDLE", (now / 2.4 + a.slot * 0.3) % 1, dt, nil, 1.15, nil, false, nil, a.weapon.motion)
-					end
-				elseif a.castAt and now - a.castAt < 0.7 then
-					Pose.makeR15Action(a.model, if a.castSkill == "rally" or a.castSkill == "heal" then "cheer" elseif a.castSkill == "armor" then "guard" else "talk", (now - a.castAt) / 0.7, now - a.t0)
-				elseif ap >= 0 and ap < 1 then
-					Pose.makeR15Action(a.model, "attack", ap, now - a.t0)
-				else
-					Pose.makeR15Action(a.model, if gaitMoving then "run" else "idle", 0,
-						if gaitMoving then (a.gait or 0) * 2 * math.pi else now - a.t0,
-						if gaitMoving then walked / math.max(dt, 0.008) / maxSpeed else 0)
-				end
-			end
-		end))
 	end
-
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
 	-- [Luau 200레지스터 제한] 모바일 패드 초기화는 원래 기능을 그대로 별도 실행 프레임에서 처리한다.
@@ -8219,8 +10458,12 @@ function FieldScene.start(opts)
 			local pad = Instance.new("Frame")
 			pad.Name = "FieldMovePad" -- [모바일 입력] 실제 이동 조작을 검사할 수 있도록 기존 패드에 이름만 부여한다.
 			pad.AnchorPoint = Vector2.new(0, 1)
-			pad.Position = UDim2.new(0, 28, 1, -28)
-			pad.Size = UDim2.fromOffset(150, 150)
+			local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+			-- 짧은 가로 화면에서도 동료 카드 두 장 아래에 이동패드를 확보한다.
+			local padSize = if viewport.X > viewport.Y then math.clamp(viewport.Y - 272, 44, 150) else 150
+			pad.Position = UDim2.new(0, if viewport.X > viewport.Y and viewport.Y < 316 then 226 else 28,
+				1, if padSize < 150 then -12 else -28)
+			pad.Size = UDim2.fromOffset(padSize, padSize)
 			pad.BackgroundColor3 = Color3.fromRGB(20, 28, 40)
 			pad.BackgroundTransparency = 0.55
 			pad.BorderSizePixel = 0
@@ -8233,7 +10476,7 @@ function FieldScene.start(opts)
 			knob.Name = "FieldMoveKnob"
 			knob.AnchorPoint = Vector2.new(0.5, 0.5)
 			knob.Position = UDim2.fromScale(0.5, 0.5)
-			knob.Size = UDim2.fromOffset(60, 60)
+			knob.Size = UDim2.fromScale(0.4, 0.4)
 			knob.BackgroundColor3 = Color3.fromRGB(235, 220, 170)
 			knob.BackgroundTransparency = 0.2
 			knob.BorderSizePixel = 0
@@ -8272,7 +10515,7 @@ function FieldScene.start(opts)
 						end
 					end
 				end
-				knob.Position = UDim2.new(0.5, vec.X * 48, 0.5, vec.Y * 48)
+				knob.Position = UDim2.fromScale(0.5 + vec.X * 0.32, 0.5 + vec.Y * 0.32)
 			end
 			-- 화면 왼쪽 절반 아무 데나 누르면 거기가 스틱 중심이 된다(패드 바깥에서도 조작 가능). 손을 떼면 제자리로 돌아간다.
 			local homePos = pad.Position

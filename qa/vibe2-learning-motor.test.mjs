@@ -458,6 +458,96 @@ test('verified domain mastery continues above legacy level 10 and benchmark diff
   assert.match(save.id,/mastery-save-l15-g6/);
 });
 
+test('동일 후보의 회귀 실패 증거가 이전 PASS보다 우선하며 자동 진화에 성공으로 학습되지 않는다',()=>{
+  const refs=encodeURIComponent(JSON.stringify(['CODE_PATTERN:counterexample-proof']));
+  const task={id:'self-evolution-stale-pass',gameId:'self-evolution-game',
+    target:'web',goal:'전투 코드 자동 개선 검증',evidence:[
+      'candidate-identity:PASS','role-result:regression:PASS','role-result:review:PASS',
+      'failure-cause:fan-in-regression-failed',
+      'coding-strategy:RESPONSIBILITY_FIRST','coding-responsibility-confidence:HIGH',
+      'coding-candidate-first-attempt:YES','coding-primary-systems:'+encodeURIComponent(JSON.stringify(['combat'])),
+      'learning-knowledge-ids:'+refs,'actions-run:verified-regression-failure-101'
+    ]};
+  const queue={tasks:[task]};
+  const strategies=applyVerifiedCodingStrategyOutcomes({},queue);
+  assert.equal(strategies.added,0);
+  assert.equal(strategies.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST,undefined);
+  const knowledge=applyVerifiedKnowledgeOutcomes({},queue);
+  assert.equal(knowledge.positive,0);
+  assert.equal(knowledge.negative,1);
+  assert.equal(knowledge.state.knowledgeAttribution.entries['CODE_PATTERN:counterexample-proof'].verifiedFailures,1);
+  const calibration=applyVerifiedCodingCalibration({},queue);
+  assert.equal(calibration.state.codingCalibration.contexts['target:web'].highConfidenceFailures,1);
+  const deduped=applyVerifiedKnowledgeOutcomes(knowledge.state,queue);
+  assert.equal(deduped.added,0);
+});
+
+test('같은 코드 후보의 CI 재실행은 학습·전략·위험 실적으로 중복 인정하지 않는다',()=>{
+  const refs=encodeURIComponent(JSON.stringify(['CODE_PATTERN:stable-candidate-proof']));
+  const targets=encodeURIComponent(JSON.stringify(['handleCombat']));
+  const systems=encodeURIComponent(JSON.stringify(['COMBAT']));
+  const mk=(run,sha)=>({id:'same-source-candidate',gameId:'game-learning',target:'web',
+    goal:'combat code automatic improvement',
+    evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      'coding-strategy:RESPONSIBILITY_FIRST','coding-candidate-first-attempt:YES',
+      'coding-responsibility-confidence:HIGH',
+      'coding-primary-targets:'+targets,'coding-primary-systems:'+systems,
+      'architecture-drift-status:ANALYZED','architecture-drift-risk:LOW',
+      'architecture-drift-score:0','architecture-drift-signals:GOD_FUNCTION_GROWTH',
+      'learning-knowledge-ids:'+refs,
+      'candidate-sha:'+sha,'actions-run:'+run
+    ]});
+  const first=mk('qa-101','a'.repeat(40)),rerun=mk('qa-102','a'.repeat(40));
+  const changed=mk('qa-103','b'.repeat(40));
+  const tasks={tasks:[first,rerun,changed]};
+  const strategy=applyVerifiedCodingStrategyOutcomes({},tasks);
+  assert.equal(strategy.added,2);
+  assert.equal(strategy.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.verifiedApplications,2);
+  const knowledge=applyVerifiedKnowledgeOutcomes({},tasks);
+  assert.equal(knowledge.added,2);
+  assert.equal(knowledge.positive,2);
+  const calibration=applyVerifiedCodingCalibration({},tasks);
+  assert.equal(calibration.added,2);
+  assert.equal(calibration.hotspotEventsAdded,2);
+  const architecture=applyVerifiedArchitectureDriftOutcomes({},tasks);
+  assert.equal(architecture.added,2);
+  for(const [fn,state,key] of [
+    [applyVerifiedCodingStrategyOutcomes,strategy.state,'added'],
+    [applyVerifiedKnowledgeOutcomes,knowledge.state,'added'],
+    [applyVerifiedCodingCalibration,calibration.state,'added'],
+    [applyVerifiedArchitectureDriftOutcomes,architecture.state,'added']
+  ])assert.equal(fn(state,{tasks:[rerun]})[key],0);
+});
+
+test('자가 복구 과정에서 같은 코드의 동일 실패는 재시도마다 실패 점수를 부풀리지 않는다',()=>{
+  const mk=(run,sha,variant='primary')=>({
+    id:'recovery-same-source',gameId:'repair-game',target:'web',
+    evidence:['candidate-sha:'+sha,
+      'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+        version:1,verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure:false,
+        strategy:'RESPONSIBILITY_FIRST',variant,
+        failureFingerprint:'web|SAVE_ROLLBACK',failureClass:'EDIT_MATCH',
+        runEvidence:'actions-run:'+run
+      }))]
+  });
+  const tasks={tasks:[
+    mk('run-11','a'.repeat(40)),
+    mk('run-12','a'.repeat(40)),
+    mk('run-13','b'.repeat(40)),
+    mk('run-14','b'.repeat(40),'speculative-1')
+  ]};
+  const learned=applyVerifiedCodingStrategyOutcomes({},tasks);
+  assert.equal(learned.negativeAdded,3);
+  const strategy=learned.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST;
+  assert.equal(strategy.verifiedFailures,3);
+  assert.equal(strategy.failureFingerprints['web|SAVE_ROLLBACK'].verifiedFailures,3);
+  const replay=applyVerifiedCodingStrategyOutcomes(learned.state,{tasks:[
+    mk('run-21','a'.repeat(40)),mk('run-22','b'.repeat(40))
+  ]});
+  assert.equal(replay.negativeAdded,0);
+});
+
 test('verified coding strategy outcomes accumulate, dedupe, and become preferred only after repeated independent evidence',()=>{
   const mk=(id,gameId,first='YES')=>({
     id,gameId,target:'web',evidence:[
@@ -683,6 +773,38 @@ test('verified regression outcomes calibrate overconfident responsibility and bu
   const deduped=applyVerifiedCodingCalibration(learned.state,{tasks:[mk('r1','FAIL'),mk('r2','FAIL'),mk('r3','PASS')]});
   assert.equal(deduped.added,0);
   assert.equal(deduped.hotspotEventsAdded,0);
+});
+// 회귀 복구 기억: 마지막 검증 결과, 중복 처리, 타 엔진 격리를 함께 검사한다.
+test('verified regression recovery memory tracks failure and subsequent pass without erasing history',()=>{
+  const task=(id,outcome)=>({id,gameId:'recovery-game',target:'web',evidence:[
+    'coding-primary-targets:["recoverPointer"]',
+    'coding-responsibility-confidence:HIGH',
+    ...(outcome==='FAIL'?['failure-cause:fan-in-regression-failed']:['role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS']),
+    'actions-run:'+id
+  ]});
+  const failures=applyVerifiedCodingCalibration({}, {tasks:[task('failure-1','FAIL'),task('failure-2','FAIL'),task('failure-3','FAIL')]});
+  const failed=regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'web'},stateInput:failures.state});
+  assert.equal(failed.riskLevel,'HIGH');
+  assert.equal(failed.entries[0].lastVerifiedOutcome,'REGRESSION_FAIL');
+  const recovered=applyVerifiedCodingCalibration(failures.state,{tasks:[task('pass-1','PASS')]});
+  const risk=regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'web'},stateInput:recovered.state});
+  assert.equal(risk.riskLevel,'MEDIUM');
+  assert.equal(risk.entries[0].lastVerifiedOutcome,'PASS');
+  assert.equal(risk.entries[0].verifiedRegressionFailures,3);
+  assert.equal(risk.entries[0].verifiedPasses,1);
+  assert.match(codingRiskGuidance({hotspot:risk}),/verified pass exists/i);
+  // 오래된 성공 표식이 섞여도 회귀 실패를 성공으로 덮어쓰지 않는다.
+  const mixed=task('mixed-failure','FAIL');
+  mixed.evidence.push('role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS');
+  const regressed=applyVerifiedCodingCalibration(recovered.state,{tasks:[mixed]});
+  const afterRegression=regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'web'},stateInput:regressed.state});
+  assert.equal(afterRegression.riskLevel,'HIGH');
+  assert.equal(afterRegression.entries[0].lastVerifiedOutcome,'REGRESSION_FAIL');
+  assert.equal(afterRegression.entries[0].verifiedRegressionFailures,4);
+  assert.equal(afterRegression.entries[0].verifiedPasses,1);
+  const duplicate=applyVerifiedCodingCalibration(recovered.state,{tasks:[task('pass-1','PASS')]});
+  assert.equal(duplicate.hotspotEventsAdded,0);
+  assert.equal(regressionHotspotRiskForTask({task:{gameId:'recovery-game',target:'roblox'},stateInput:recovered.state}).riskLevel,'LOW');
 });
 test('verified architecture drift outcomes become reusable risk only after cross-game regression evidence',()=>{
   const fail=(id,gameId)=>({id,gameId,target:'web',evidence:[
@@ -1477,6 +1599,42 @@ test('retired distilled knowledge is excluded from retrieval',()=>{
   assert.equal(ctx.externalAiDistilled.length,0);
 });
 
+test('자가 코딩의 네이티브 성공 학습은 정확한 게임 실행 증거를 요구하고 실패 학습은 유지한다',()=>{
+  const refs='learning-knowledge-ids:'+encodeURIComponent(JSON.stringify(['CODE_PATTERN:native-self-evolution']));
+  const pass=['role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS'];
+  const record=(id,target,goal,extra=[])=>({
+    id,gameId:'native-learning-game',target,goal,
+    evidence:[...pass,refs,'actions-run:'+id,...extra]
+  });
+  const cloud=['roblox-open-cloud-runtime:PASS','roblox-open-cloud-exact-candidate:PASS'];
+  const cases=[
+    {task:record('roblox-static','roblox','Roblox Luau code'),expected:0},
+    {task:record('roblox-cloud-incomplete','roblox','Roblox Luau code',[cloud[0]]),expected:0},
+    {task:record('roblox-cloud-proven','roblox','Roblox Luau code',cloud),expected:1},
+    {task:record('roblox-asset-static','roblox','Roblox asset model',cloud),expected:0},
+    {task:record('roblox-asset-proven','roblox','Roblox asset model',
+      [...cloud,'ROBLOX_OPEN_CLOUD_ASSET_RUNTIME_BINDING_PASS']),expected:1},
+    {task:record('unity-static','unity','Unity runtime code'),expected:0},
+    {task:record('unity-native','unity','Unity runtime code',['unity-runtime-qa:PASS']),expected:1}
+  ];
+  for(const {task,expected} of cases){
+    const outcome=applyVerifiedKnowledgeOutcomes({}, {tasks:[task]});
+    assert.equal(outcome.added,expected,task.id);
+    assert.equal(outcome.positive,expected,task.id);
+    const candidate={...task,evidence:[...task.evidence,'coding-strategy:RESPONSIBILITY_FIRST',
+      'coding-candidate-first-attempt:YES']};
+    const strategy=applyVerifiedCodingStrategyOutcomes({}, {tasks:[candidate]});
+    assert.equal(strategy.added,expected,'strategy:'+task.id);
+  }
+  const regression={id:'native-runtime-regression',gameId:'native-learning-game',
+    target:'roblox',goal:'Roblox asset model',evidence:[
+      refs,'failure-cause:fan-in-regression-failed','actions-run:native-regression'
+    ]};
+  const failed=applyVerifiedKnowledgeOutcomes({}, {tasks:[regression]});
+  assert.equal(failed.negative,1);
+  assert.equal(failed.state.knowledgeAttribution.entries['CODE_PATTERN:native-self-evolution'].verifiedFailures,1);
+});
+
 test('exact knowledge attribution raises production confidence only from verified project outcomes',()=>{
   const ids=encodeURIComponent(JSON.stringify(['CODE_PATTERN:pat-1','EXTERNAL_AI_DISTILLED:ext-1']));
   const pass=(id,gameId)=>({id,gameId,target:'web',goal:'combat mobile input repair',evidence:[
@@ -1663,7 +1821,7 @@ test('repeated regression failures retire harmful knowledge and remove it from r
 test('preferred knowledge outranks otherwise similar candidate knowledge after verified effectiveness',()=>{
   let state={};
   const goodTasks=[];
-  for(let i=0;i<5;i++)goodTasks.push({
+  for(let i=0;i<6;i++)goodTasks.push({
     id:'good-'+i,gameId:i<2?'g1':'g2',target:'web',goal:'repair save restore',
     evidence:[
       'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
@@ -1674,6 +1832,9 @@ test('preferred knowledge outranks otherwise similar candidate knowledge after v
       'actions-run:'+(300+i)
     ]
   });
+  // 다섯 번의 검증만으로는 최상위 선호 지식으로 승격하지 않는다.
+  const notYetPreferred=applyVerifiedKnowledgeOutcomes({}, {tasks:goodTasks.slice(0,5)}).state;
+  assert.equal(notYetPreferred.knowledgeAttribution.entries['CODE_PATTERN:preferred-save'].state,'VERIFIED');
   state=applyVerifiedKnowledgeOutcomes(state,{tasks:goodTasks}).state;
   assert.equal(state.knowledgeAttribution.entries['CODE_PATTERN:preferred-save'].state,'PREFERRED');
   const ctx=retrieveUnifiedLearning({

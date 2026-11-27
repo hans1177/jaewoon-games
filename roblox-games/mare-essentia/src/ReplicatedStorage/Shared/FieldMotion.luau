@@ -13,6 +13,14 @@ local AVAILABLE = {
 	ThighL = true, ThighR = true, ShinL = true, ShinR = true, FootL = true, FootR = true,
 }
 
+-- [모션 계산 비용] 읽기 전용 샘플 설정과 R6 매핑은 프레임마다 재생성하지 않는다.
+local ACTOR_OPTIONS = {
+	BOSS = { bodyPlan = "BIPED", actorClass = "BOSS", availableJoints = AVAILABLE, secondary = 0.65 },
+	NPC = { bodyPlan = "BIPED", actorClass = "NPC", availableJoints = AVAILABLE, secondary = 0.65 },
+	ENEMY = { bodyPlan = "BIPED", actorClass = "ENEMY", availableJoints = AVAILABLE, secondary = 0.65 },
+}
+local R6_MAP = { ["Left Shoulder"] = "UpperArmL", ["Right Shoulder"] = "UpperArmR", ["Left Hip"] = "ThighL", ["Right Hip"] = "ThighR" }
+
 -- 리그의 실제 Motor6D 를 묶는다. followAnimator: 캐릭터처럼 Animator 가 돌고 있으면 true, 적 같은 정적 리그는 false.
 local R6_NAMES = { "RootJoint", "Neck", "Left Shoulder", "Right Shoulder", "Left Hip", "Right Hip" }
 
@@ -72,8 +80,7 @@ local function mapR6(h, canon, rootRot)
 	if J.Neck and canon.Head then
 		out.Neck = conj(J.Neck, canon.Head)
 	end
-	local pairs6 = { ["Left Shoulder"] = "UpperArmL", ["Right Shoulder"] = "UpperArmR", ["Left Hip"] = "ThighL", ["Right Hip"] = "ThighR" }
-	for jn, cn in pairs6 do
+	for jn, cn in R6_MAP do
 		if J[jn] and canon[cn] then
 			out[jn] = conj(J[jn], canon[cn])
 		end
@@ -114,16 +121,13 @@ function FM.actor(h, state: string, phase: number, dt: number, isBoss: boolean?,
 	end
 	h.lastActorState = state
 	table.clear(h.canon)
+	-- 역할은 매 샘플에서 최신 값을 읽되 동일 속성을 반복 조회하지 않는다.
+	local role = h.model:GetAttribute("MotionRole")
+	local actorClass = if isBoss then "BOSS" elseif role == "ally-ranged" or role == "ally-melee" then "NPC" else "ENEMY"
 	CM.SampleProceduralActorMotion(if state == "EVADE" then "RUN"
 		elseif state == "KNOCKDOWN" or state == "GETUP" then "HIT"
-		elseif state == "BLOCK" or state == "PARRY" then "ANTICIPATION" else state, phase, {
-		bodyPlan = "BIPED",
-		actorClass = if isBoss then "BOSS" elseif h.model:GetAttribute("MotionRole") == "ally-ranged" or h.model:GetAttribute("MotionRole") == "ally-melee" then "NPC" else "ENEMY",
-		availableJoints = AVAILABLE,
-		secondary = 0.65,
-	}, h.canon)
+		elseif state == "BLOCK" or state == "PARRY" then "ANTICIPATION" else state, phase, ACTOR_OPTIONS[actorClass], h.canon)
 	-- 전투 AI와 공격 타이밍은 건드리지 않고 직업/괴물 체형에 맞는 관절 표정만 합성한다.
-	local role = h.model:GetAttribute("MotionRole")
 	local A = CFrame.Angles
 	local id = CFrame.identity
 	local function bend(joint, x, y, z)

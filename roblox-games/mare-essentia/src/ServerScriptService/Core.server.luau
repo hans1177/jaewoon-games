@@ -60,6 +60,7 @@ local D = {
 	WonderScenes = require(Shared:WaitForChild("WonderScenes")),
 	WorldEvents = require(Shared:WaitForChild("WorldEvents")),
 	PortBuildings = require(Shared:WaitForChild("PortBuildings")),
+	TradeFun = require(Shared:WaitForChild("TradeFun")),
 	Economy = require(Shared:WaitForChild("Economy")),
 }
 
@@ -281,6 +282,8 @@ local function loadSession(player)
 	end
 	session.ready = true
 	sessions[player] = session
+	-- [자산 우선순위] 검증된 저장 항구만 서버 전용 속성으로 전달한다.
+	script:SetAttribute("MareAssetPort_" .. player.UserId, session.state and session.state.portId or nil)
 	ReplicatedStorage:SetAttribute("MareCoreStartStage", "session-ready")
 	if player.Character then task.defer(applyCaptainAppearance, player, player.Character) end
 end
@@ -381,6 +384,7 @@ local function onInvoke(player, action, payload)
 			S.Room.join(newState)
 		end
 		session.state = newState
+		script:SetAttribute("MareAssetPort_" .. player.UserId, newState.portId)
 		task.defer(applyCaptainAppearance, player, player.Character)
 		session.dirty = true
 		return reply(session.state, true, string.format("%d년, %s에서 항해를 시작합니다!%s", S.State.year(newState), D.Ports.Ports[newState.portId].name, if newState.room then " (같이 하기: 시대가 현실 시간으로 흘러요)" else ""))
@@ -431,6 +435,11 @@ local function onInvoke(player, action, payload)
 		return reply(state, false, "오류가 발생했어요")
 	end
 	if success then
+		-- [자산 우선순위] 서버가 확정한 항구 이동만 반영한다. 저장·원격 요청 계약은 그대로다.
+		local portAttribute = "MareAssetPort_" .. player.UserId
+		if script:GetAttribute(portAttribute) ~= state.portId then
+			script:SetAttribute(portAttribute, state.portId)
+		end
 		-- [숙련 입장] 임시 입장 확인은 영구 상태를 바꾸지 않아 저장하지 않는다.
 		if action ~= "FieldPracticeBegin" then
 			session.dirty = true -- 저장은 자동저장 루프가 모아서 한다 (응답을 막지 않는다)
@@ -465,6 +474,7 @@ if game:GetService("RunService"):IsStudio() then
 				local st = session.state
 				st.coins, st.fame = 1e9, math.max(st.fame or 0, 1000)
 				st.portId = "london"
+				script:SetAttribute("MareAssetPort_" .. player.UserId, st.portId)
 				st.harbor.london = 99999
 				st.reported = st.reported or {}
 				for _, id in { "phi_skepticism", "phi_atomism", "phi_utopia", "phi_rationalism", "phi_empiricism", "phy_buoyancy", "phy_lever", "phy_pendulum", "phy_barometer", "phy_refraction", "ast_polaris", "ast_orion", "chem_dye", "chem_indigo", "geo_trade_winds", "nav_compass_rose" } do
@@ -515,6 +525,7 @@ Players.PlayerRemoving:Connect(function(player)
 	end
 	saveSession(player)
 	sessions[player] = nil
+	script:SetAttribute("MareAssetPort_" .. player.UserId, nil)
 end)
 
 game:BindToClose(function()

@@ -41,7 +41,17 @@ return function(D, S)
 		-- [상선 교역 특화] 매매가격·재고·판매율 상한은 유지하고 외국 항구 관세만 최대 ±8% 상대 보정.
 		local base = math.max(0, 0.05 - (state.rep[port.country] or 0) / 100 * 0.05)
 		local trait = S.State.shipDef(state).trait or {}
-		return math.max(0, base * (1 - (trait.tariff or 0)))
+		local rate = math.max(0, base * (1 - (trait.tariff or 0)))
+		-- [국가 시뮬 연결] 항구 주인의 입장(동맹·중립·적대)과 식민지 독점에 따라 배율을 곱한다. 최대 12%.
+		local policy = S.Econ and S.Econ.tariffPolicy and S.Econ.tariffPolicy(state, state.portId)
+		if policy then rate = math.min(0.12, rate * policy.mult) end
+		return rate
+	end
+
+	-- 금수: 본국과 전쟁 중이고 관계가 크게 나쁜 나라의 항구는 정식 거래가 막힌다 (암시장은 가능).
+	local function embargoed(state)
+		local policy = S.Econ and S.Econ.tariffPolicy and S.Econ.tariffPolicy(state, state.portId)
+		return policy ~= nil and policy.closed == true
 	end
 
 	local function sellRateFor(state)
@@ -62,6 +72,9 @@ return function(D, S)
 		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
 			return false, "잘못된 요청"
+		end
+		if embargoed(state) then
+			return false, "전쟁 중인 나라의 항구라 정식 거래가 막혔어요 (암시장은 가능해요)"
 		end
 		local lim = limits(state, goodId)
 		if lim and amount > lim.supply then
@@ -167,6 +180,9 @@ return function(D, S)
 		if owned < amount then
 			return false, "가진 수량이 부족해요"
 		end
+		if embargoed(state) then
+			return false, "전쟁 중인 나라의 항구라 정식 거래가 막혔어요 (암시장은 가능해요)"
+		end
 		local lim = limits(state, goodId)
 		if lim and amount > lim.absorb then
 			return false, if lim.absorb <= 0 then "이 항구는 이 물건이 넘쳐서 더 사지 않아요. 다른 항구에 팔아 보세요" else string.format("이 항구는 지금 %d개까지만 사줘요", lim.absorb)
@@ -179,8 +195,12 @@ return function(D, S)
 			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
 			mult = T.nextStockMult(mult, 1, false)
 		end
-		local tariff = math.floor(revenue * tariffRate(state))
+		local TF = D.TradeFun
+		local tariff = math.floor(revenue * tariffRate(state) * (if TF then TF.tariffMult(state) else 1))
 		revenue -= tariff
+		-- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물 보너스
+		local fun = if TF then TF.sellBonus(state, D.Ports, D.Regions, state.portId, goodId, amount, revenue) else nil
+		if fun then revenue = math.max(0, revenue + fun.bonus) end
 		local profit = revenue - (state.basis[goodId] or 0) * amount
 		state.coins += revenue
 		S.State.removeCargo(state, goodId, amount)
@@ -188,6 +208,11 @@ return function(D, S)
 		if lim then S.Econ.give(state, state.portId, goodId, amount) end
 
 		local msgs = { string.format("%s %d개 판매 (+%d)%s", D.Ports.Goods[goodId].name, amount, revenue, if tariff > 0 then string.format(" · 관세 -%d", tariff) else "") }
+		if fun then
+			for _, line in fun.lines do table.insert(msgs, line) end
+			local up = TF.commitSell(state, fun, profit, goodId, amount)
+			if up then table.insert(msgs, up) end
+		end
 		do
 			local country = D.Ports.Ports[state.portId].country
 			local gain = math.min(3, math.floor(revenue / 150))
@@ -207,6 +232,27 @@ return function(D, S)
 			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)
 		end
 		return true, table.concat(msgs, "\n")
+	end
+
+	-- [교역 재미 7] 희귀 화물: 이 항구에 뜬 한정 화물을 통째로 산다. 지정 항구에 팔아야 이익.
+	function handlers.BuyRareLot(state, _p, _ctx)
+		local TF = D.TradeFun
+		if not TF then return false, "지금은 살 수 없어요" end
+		local lot: any = TF.rareLot(D.Ports, D.Regions, state.portId, state.day or 0)
+		if not lot then return false, "이 항구에는 지금 희귀 화물이 없어요" end
+		if TF.get(state).lots[lot.key] then return false, "이미 산 화물이에요" end
+		if lot.qty > S.State.cargoCapacity(state) - S.State.cargoUsed(state) then return false, "화물칸이 부족해요" end
+		local total: number = math.floor(tonumber(lot.unitPrice * lot.qty) or 0)
+		if total > state.coins then return false, "코인이 부족해요" end
+		state.coins -= total
+		local owned = state.cargo[lot.goodId] or 0
+		local basis = state.basis[lot.goodId] or 0
+		state.basis[lot.goodId] = (basis * owned + total) / (owned + lot.qty)
+		state.cargo[lot.goodId] = owned + lot.qty
+		TF.commitRareBuy(state, lot)
+		local names = {}
+		for _, id in lot.targets do table.insert(names, D.Ports.Ports[id].name) end
+		return true, string.format("희귀 %s %d개 구매 (-%d)\n%d일 안에 %s 중 한 곳에 팔면 %.1f배!", D.Ports.Goods[lot.goodId].name, lot.qty, total, TF.RARE_KEEP, table.concat(names, "·"), TF.RARE_SELL)
 	end
 
 	-- 암시장: 관세 없이 10% 더 받지만 들키면 압수·벌금. 우호도가 높을수록 덜 들킨다.

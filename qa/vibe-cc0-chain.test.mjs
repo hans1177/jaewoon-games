@@ -87,6 +87,82 @@ test('exact pinned CC0 bytes acquire once, then reuse source when Blender stage 
   }finally{f.cleanup();}
 });
 
+test('같은 게임의 다른 CC0 자산은 기존 단일 역할 슬롯을 덮지 않고 독립 제작한다',async()=>{
+  const f=fixture();
+  try{
+    fs.writeFileSync(f.source,binary);
+    const legacy=path.join(f.root,'assets/generated/web/demo/character');
+    fs.mkdirSync(legacy,{recursive:true});
+    fs.writeFileSync(path.join(legacy,'asset.glb'),Buffer.from('legacy-native-model'));
+    fs.writeFileSync(path.join(legacy,'evidence.json'),JSON.stringify({
+      sourceMesh:{libraryParentAssetId:'other-approved-cc0',sourceSha256:'0'.repeat(64)}
+    }));
+    await assert.rejects(request({repoRoot:f.root}),/ENOENT|missing_blender_for_test/);
+    assert.equal(fs.readFileSync(path.join(legacy,'asset.glb'),'utf8'),'legacy-native-model',
+      'another approved source must retain its existing artifact');
+    const slots=fs.readdirSync(path.join(f.root,'assets/generated/web/demo'));
+    assert.deepEqual(slots,['character']);
+    const code=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+    assert.match(code,/recipeIdentity=JSON\.stringify\(\{sourceAssetId:id,styleFamily:style,reconstruction:recipe\}\)/);
+    assert.match(code,/const slot=type\+'-'\+label\+'-'\+fingerprint/);
+    assert.match(code,/const registeredId='derived-'\+platform\+'-'\+game\+'-'\+\(legacyMatches\?type:slot\)/);
+  }finally{f.cleanup();}
+});
+
+test('기존 파생본 재사용 시 미리보기 해시와 실제 GLB 구조를 재검증한다',async()=>{
+  const digest=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+  for(const mutation of ['preview-hash','invalid-glb']){
+    const f=fixture();
+    try{
+      fs.writeFileSync(f.source,binary);
+      const dir=path.join(f.root,'assets/generated/web/demo/character');
+      fs.mkdirSync(dir,{recursive:true});
+      const preview=Buffer.from('previous-preview-bytes');
+      fs.writeFileSync(path.join(dir,'asset.glb'),binary);
+      fs.writeFileSync(path.join(dir,'master.glb'),binary);
+      fs.writeFileSync(path.join(dir,'preview.png'),preview);
+      fs.writeFileSync(path.join(dir,'evidence.json'),JSON.stringify({
+        sourceMesh:{libraryParentAssetId:'fixture-cc0-actor',sourceSha256:hash},
+        artifactHash:digest(binary),
+        previewHash:mutation==='preview-hash'?'0'.repeat(64):digest(preview),
+        pbrMeshQa:{pass:true}
+      }));
+      fs.writeFileSync(path.join(dir,'application.json'),JSON.stringify({
+        style:{sourceStyleFamily:'STYLIZED_FANTASY'},masterSha256:digest(binary)
+      }));
+      const registryBefore=fs.readFileSync(path.join(f.root,'company-asset-library.json'));
+      const modelBefore=fs.readFileSync(path.join(dir,'asset.glb'));
+      await assert.rejects(request({repoRoot:f.root}),mutation==='preview-hash'
+        ?/CC0_DERIVED_OUTPUT_STALE_KEEP_FOR_REVIEW/
+        :/CC0_DERIVED_GLB_STATIC_QA_FAILED/);
+      assert.deepEqual(fs.readFileSync(path.join(dir,'asset.glb')),modelBefore);
+      assert.deepEqual(fs.readFileSync(path.join(f.root,'company-asset-library.json')),registryBefore);
+    }finally{f.cleanup();}
+  }
+});
+
+test('잘못된 블렌더 신규 출력은 최종 제작 경로에 승격하지 않고 임시 파일을 정리한다',{
+  skip:process.platform==='win32'
+},async()=>{
+  const f=fixture();
+  try{
+    fs.writeFileSync(f.source,binary);
+    const fakeBlender=path.join(f.root,'blender-fixture.sh');
+    fs.writeFileSync(fakeBlender,'#!/bin/sh\nout=""\nwhile [ "$#" -gt 0 ]; do\n'+
+      '  if [ "$1" = "--output" ]; then shift; out="$1"; fi\n  shift\ndone\n'+
+      'mkdir -p "$out"\nprintf "invalid glb output" > "$out/asset.glb"\n');
+    fs.chmodSync(fakeBlender,0o700);
+    const before=fs.readFileSync(path.join(f.root,'company-asset-library.json'));
+    await assert.rejects(produceRegisteredCc0Asset({
+      repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',target:'web',
+      role:'character',blender:fakeBlender
+    }),/CC0_DERIVED_OUTPUT_(?:RECIPE_CHANGED|STALE)_KEEP_FOR_REVIEW/);
+    const generated=path.join(f.root,'assets/generated/web/demo');
+    assert.deepEqual(fs.readdirSync(generated),[],'invalid staged outputs must be deleted');
+    assert.deepEqual(fs.readFileSync(path.join(f.root,'company-asset-library.json')),before);
+  }finally{f.cleanup();}
+});
+
 test('wrong downloaded hash is rejected without leaving a source or stage',async()=>{
   const f=fixture({downloadUrl:'https://opengameart.org/sites/default/files/fixture.glb'});
   try{
@@ -108,6 +184,46 @@ test('Blender CC0 actor/building profiles remain source-bound and registry prese
   assert.match(sync,/productionVerified:false,verifiedCompanyReusable:false/);
 });
 
+
+test('world geometry reauthoring uses bounded original CC0 topology and prepared native handoff',async()=>{
+  const builder=fs.readFileSync(new URL('../assets/native-authoring/build-game-visual.py',import.meta.url),'utf8');
+  const planner=fs.readFileSync(new URL('../tools/vibe2-asset-production-plan.mjs',import.meta.url),'utf8');
+  assert.match(builder,/RECONSTRUCTION_WORLD_REQUIRES_STATIC_WORLD_SOURCE/);
+  assert.match(builder,/body_plan=='WORLD'/);
+  assert.match(builder,/VibeSourceEdgeFinish/);
+  assert.match(builder,/RECONSTRUCTION_BEVEL_SOURCE_TRIANGLE_BUDGET/);
+  assert.match(builder,/RECONSTRUCTION_VISUAL_CHANGE_REQUIRED/);
+  assert.match(builder,/sourceGeometryActuallyChanged/);
+  assert.match(builder,/actualGeometryTransforms/);
+  assert.match(planner,/VERIFIED_SOURCE_MESH_RECONSTRUCTION/);
+  assert.match(planner,/sourceGeometryActuallyChanged!==true/);
+  assert.match(planner,/NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED/);
+  assert.match(planner,/nativeApplication:Object\.freeze\(/);
+  const f=fixture();
+  try{
+    await assert.rejects(produceRegisteredCc0Asset({
+      repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',
+      target:'web',role:'character',
+      reconstruction:{bodyPlan:'WORLD',morph:{height:1.05},detail:'EDGE_BEVEL'},
+      fetchImpl:()=>{throw Error('should-not-download')}
+    }),/CC0_RECONSTRUCTION_RECIPE_INVALID/);
+    assert.equal(fs.existsSync(f.source),false);
+    await assert.rejects(produceRegisteredCc0Asset({
+      repoRoot:f.root,assetId:'fixture-cc0-actor',gameId:'demo',
+      target:'web',role:'character',styleFamily:'../../private',
+      fetchImpl:()=>{throw Error('should-not-download')}
+    }),/CC0_STYLE_FAMILY_INVALID/);
+  }finally{f.cleanup();}
+});
+
+test('기존 블렌더 제작기 소스는 파이썬 파서가 실제로 읽을 수 있다',()=>{
+  const source=new URL('../assets/native-authoring/build-game-visual.py',import.meta.url).pathname;
+  const check=spawnSync('python3',['-c',
+    'import ast,sys; ast.parse(open(sys.argv[1],encoding="utf-8").read())',source],{
+    encoding:'utf8',timeout:20000
+  });
+  assert.equal(check.status,0,'Blender source syntax invalid: '+String(check.stderr||''));
+});
 
 test('mare story/event audio uses verified CC0 parents and decodable game-specific derivatives',()=>{
   const root=new URL('../',import.meta.url).pathname;

@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildDataset, isVerifiedPass, TASK_TYPES } from './vibe2-weight-learning.mjs';
+import { buildDataset, datasetContentFingerprint, isVerifiedPass, TASK_TYPES } from './vibe2-weight-learning.mjs';
 
 function readRecords(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8').trim();
@@ -44,6 +44,40 @@ function hasTextSample(record) {
   return Boolean(String(sample?.instruction ?? '').trim() && String(sample?.output ?? '').trim());
 }
 
+// [학습 연결 진단] 실제 소스 리비전이 같은 증거와 학습 문답만 연결한다.
+// QA 통과나 학습 승인 여부는 기존 검증 함수만 결정한다.
+function sourceRevision(record) {
+  const value = record?.sourceCommit ?? record?.sourceRevision ?? record?.trainingSample?.sourceCommit ?? record?.provenance?.sourceCommit;
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function learningDate(record) {
+  const value = record?.createdAt ?? record?.recordedAt ?? record?.timestamp ?? record?.trainingSample?.createdAt;
+  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}/.test(value)) return '';
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : '';
+}
+
+// [증거-학습 연결] 서로 다른 저장소의 기록은 동일 후보 ID 또는 소스 리비전으로만 추적한다.
+// 추적 결과는 진단 전용이며 검증·승인·훈련 샘플을 자동 생성하지 않는다.
+export function diagnoseEvidenceLinkage(trainingEntries, evidenceEntries) {
+  const samples = trainingEntries.map((entry) => entry.record);
+  const evidence = evidenceEntries.map((entry) => entry.record);
+  const sampleIds = new Set(samples.map((row) => String(row?.candidateId ?? row?.id ?? '').trim()).filter(Boolean));
+  const revisions = new Set(samples.map(sourceRevision).filter(Boolean));
+  const linked = evidence.filter((row) => {
+    const id = String(row?.candidateId ?? row?.id ?? '').trim();
+    const revision = sourceRevision(row);
+    return (id && sampleIds.has(id)) || (revision && revisions.has(revision));
+  });
+  return {
+    evidenceRecords: evidence.length,
+    evidenceLinkedToTrainingRecord: linked.length,
+    evidenceWithoutTrainingRecord: evidence.length - linked.length,
+    evidenceWithSourceRevision: evidence.filter(sourceRevision).length,
+  };
+}
+
 function independentPass(record) {
   const qa = record?.qa && typeof record.qa === 'object' ? record.qa : {};
   return String(qa.independentQa ?? qa.independent ?? record?.independentQa ?? '').toUpperCase() === 'PASS';
@@ -66,6 +100,9 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
   } = options;
 
   const rawRecords = recordsWithSource.map((entry) => entry.record);
+  const textRevisions = new Set(rawRecords.filter(hasTextSample).map(sourceRevision).filter(Boolean));
+  const evidenceOnly = rawRecords.filter((record) => !hasTextSample(record));
+  const dated = rawRecords.map(learningDate).filter(Boolean).sort();
   const diagnostics = {
     records: rawRecords.length,
     textSamples: rawRecords.filter(hasTextSample).length,
@@ -73,6 +110,19 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
     browserQaPass: rawRecords.filter(browserPass).length,
     fullyVerifiedTextSamples: rawRecords.filter((record) => hasTextSample(record) && isVerifiedPass(record)).length,
     evidenceOnlyRecords: rawRecords.filter((record) => !hasTextSample(record)).length,
+    evidenceOnlyWithSourceRevision: evidenceOnly.filter(sourceRevision).length,
+    evidenceOnlyLinkedToTextSample: evidenceOnly.filter((record) => sourceRevision(record) && textRevisions.has(sourceRevision(record))).length,
+    evidenceOnlyUnlinkedToTextSample: evidenceOnly.filter((record) => !sourceRevision(record) || !textRevisions.has(sourceRevision(record))).length,
+    latestDatedRecord: dated.at(-1) ?? null,
+    recordsFromNovember2026: rawRecords.filter((record) => learningDate(record).startsWith('2026-11-')).length,
+    // [학습 병목] 외부 플레이 연습·불완전 검증·텍스트 없는 실행 증거는 각각 구분한다.
+    // 이 집계는 학습 자격을 새로 부여하지 않으며 기존 QA/런타임/프로젝트 기준을 유지한다.
+    practiceOnlyTextSamples: rawRecords.filter((record) => hasTextSample(record)
+      && (record?.practiceOnly === true || record?.trainingSample?.practiceOnly === true)).length,
+    textWithoutCompleteVerification: rawRecords.filter((record) => hasTextSample(record)
+      && !isVerifiedPass(record)).length,
+    evidenceOnlyIndependentQaPass: rawRecords.filter((record) => !hasTextSample(record)
+      && independentPass(record)).length,
   };
 
   const tasks = {};
@@ -84,7 +134,8 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
       minDistinctProjects,
       minDistinctTaskTypes: 1,
       maxProjectShare,
-      syntheticRatioCap,
+      // [정식 플랫폼 학습] 로컬 가중치 학습기와 동일하게 합성 비율 0을 사용한다.
+      syntheticRatioCap: ['unity', 'roblox', 'fortnite_uefn'].includes(taskType) ? 0 : syntheticRatioCap,
       taskPlanMinSamples,
       taskPlanMinProjects,
       teacherOnlyDifficult: true,
@@ -99,6 +150,8 @@ export function buildDistillationStatus(recordsWithSource, options = {}) {
       eval: dataset.stats.eval,
       holdout: dataset.stats.holdout,
       accepted: dataset.stats.accepted,
+      // 기존 분리된 검증 샘플의 실제 내용 해시: 건수만 같아도 변경 시 재훈련 요청이 달라진다.
+      datasetSha256: datasetContentFingerprint(dataset),
       skippedUnverified: dataset.stats.skippedUnverified,
       skippedIncomplete: dataset.stats.skippedIncomplete,
       skippedQuality: dataset.stats.skippedQuality,
@@ -157,7 +210,8 @@ function main() {
   const evidenceDir = args['evidence-dir'] || 'company-learning/evidence';
   const sampleDir = args['sample-dir'] || 'company-learning/training-samples';
   const out = args.out || 'company-learning/distillation-status.json';
-  const { files, recordsWithSource } = collectTrainingRecords([evidenceDir, sampleDir]);
+  // [기존 정식 학습] 증거 파일은 수집·검증 입력이며, 학습 준비 판정은 실제 학습기가 읽는 샘플과 동일해야 한다.
+  const { files, recordsWithSource } = collectTrainingRecords([sampleDir]);
   const status = buildDistillationStatus(recordsWithSource, {
     minTrainSamples: numberArg(args, 'min-train-samples', 24),
     minFreshTrainSamples: numberArg(args, 'min-fresh-train-samples', 12),
@@ -168,6 +222,9 @@ function main() {
     taskPlanMinProjects: numberArg(args, 'task-plan-min-projects', 2),
   });
   status.sourceFiles = files.map((file) => path.relative(process.cwd(), file).replaceAll('\\', '/'));
+  const evidenceCollection = collectTrainingRecords([evidenceDir]);
+  status.diagnostics.evidenceSourceFiles = evidenceCollection.files.length;
+  status.diagnostics.crossSourceLinkage = diagnoseEvidenceLinkage(recordsWithSource, evidenceCollection.recordsWithSource);
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, `${JSON.stringify(status, null, 2)}\n`);
   console.log(JSON.stringify(status));

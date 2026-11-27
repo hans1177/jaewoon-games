@@ -43,6 +43,9 @@ export function validateExternalAiCandidate(row={}){
   if(!evidence.length)reasons.push('VERIFICATION_EVIDENCE_REQUIRED');
   if(evidence.length<2)reasons.push('VERIFICATION_EVIDENCE_MINIMUM_NOT_MET');
   if(traceableEvidence.length<2)reasons.push('VERIFICATION_EVIDENCE_NOT_TRACEABLE');
+  // [학습 증거] 검사 종류만 바꾼 동일 증거의 중복 제출은 독립 검증으로 인정하지 않는다.
+  const evidenceIdentities=traceableEvidence.map(value=>value.replace(/^[^:]+:/,'').trim().toLowerCase());
+  if(new Set(evidenceIdentities).size<2)reasons.push('VERIFICATION_EVIDENCE_NOT_INDEPENDENT');
   if(!patterns.length)reasons.push('DISTILLED_PATTERN_REQUIRED');
   if(row.sourceWrite===true)reasons.push('SOURCE_WRITE_FORBIDDEN');
   if(row.productionPass===true)reasons.push('PRODUCTION_PASS_FORBIDDEN');

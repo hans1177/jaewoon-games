@@ -2266,6 +2266,9 @@ test('generic environment and prop authoring declares task-specific Blender outp
     assert.equal(recipe.script,'assets/native-authoring/build-game-visual.py');
     assert.equal(recipe.license,'project-original');
     assert.ok(recipe.outputs.every(file=>file.startsWith('assets/generated/roblox/amusement-tycoon/')));
+    // [블렌더 회귀] 실제 출력 파일을 빠뜨리면 정상 생성도 Work Lock 위반으로 판정된다.
+    assert.ok(recipe.outputs.some(file=>file.endsWith('/preview-silhouette.png')),'DCC_SILHOUETTE_OUTPUT_MUST_BE_LOCKED');
+    assert.equal(recipe.outputs.filter(file=>file.endsWith('/preview-silhouette.png')).length,1);
     assert.equal(recipe.targetPlatforms.includes('roblox'),true);
   }
 

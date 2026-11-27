@@ -1,8 +1,9 @@
 # 파일명: .github/workflows/studio-autoqa.yml
 # [메인] 게임 변경·게시 완료 뒤 기존 공식 PC Studio 검사를 대항해시대만 요청한다.
 # [배포 이벤트] 실행 이름(run-name)은 커밋별로 변하므로 변경되지 않는 워크플로 경로(path)로 판별한다.
-# 대항해시대 기존 241단계 정밀검사와 10분 순환·중복 대기 방지를 사용한다.
-# [단일 요청] 선박 관련 푸시는 전용 선박 QA 한 건만, 다른 푸시는 기존 정밀 QA 한 건만 요청한다.
+# [개발 우선] 게임 소스 변경은 영향받은 실제 장면을 Studio에서 플레이·촬영한다.
+# [전체 회귀] 게시 완료·수동 요청은 기존 정밀 QA를 유지하며 정식 배포 검증을 생략하지 않는다.
+# [10분 감시] 같은 소스에서 이미 시도한 검사는 반복 예약하지 않고 미실행 소스만 복구한다.
 # 결과 사진·리포트는 브랜치 <game>-studio-frames 에 올라가고, 클라우드 바이브가 읽고 고친다.
 name: Studio Auto QA
 on:
@@ -31,7 +32,7 @@ on:
       - 'roblox-games/mare-essentia/assets-registered.json'
       - 'roblox-games/mare-essentia/assets-wanted.json'
       - 'roblox-games/mare-essentia/assets-wanted.seed.json'
-  # [정기 순환] 매 10분 상태를 확인하되 Studio 실행·대기 중에는 중복 실행하지 않는다.
+  # [정기 감시] 매 10분 최신 소스의 실검사 여부만 확인한다. 반복 순환 대신 개발 실행기를 비워 둔다.
   # 기존 push·게시 완료·수동 실행은 그대로 유지한다.
   schedule:
     - cron: '*/10 * * * *'
@@ -110,38 +111,71 @@ jobs:
               select(.status == "queued" or .status == "pending" or .status == "requested" or .status == "waiting" or .status == "in_progress") |
               select((.display_title // "") | contains(" · " + $game + " ·"))] | length')
             if [ "$busy" -ge 1 ]; then
-              echo "STUDIO_ROTATION_SKIP=RUNNER_BUSY:$busy"
+              echo "STUDIO_WATCHDOG_SKIP=RUNNER_BUSY:$busy"
+              exit 0
+            fi
+            # [중복 실검사 제거] 현재 소스에서 이미 실행한 검사(실패 포함)는 재반복하지 않는다.
+            # 실패는 정확한 원인 수정 뒤 새 소스로 검증하고, 성공 증거는 그대로 재사용한다.
+            checked=$(printf '%s' "$runs" | jq --arg head "$head" --arg game "$game" '[.workflow_runs[] |
+              select(.head_sha == $head) |
+              select((.display_title // "") | contains(" · " + $game + " ·"))] | length')
+            if [ "$checked" -ge 1 ]; then
+              echo "STUDIO_WATCHDOG_SKIP=SOURCE_ALREADY_CHECKED:$head:$checked"
               exit 0
             fi
           elif [ "$pending" -ge 1 ]; then
             echo "studio already queued/running for $game on $head, skip duplicate"
             exit 0
           fi
-          # [다섯 분야 교대] 마을·메뉴·탐험·무기·선박을 한 번에 반복 촬영하지 않는다.
+          # [실제 게임 개발 우선] 소스 변경은 영향 장면을 기존 Studio 스크립트로 플레이·촬영한다.
+          # 서로 다른 분야가 함께 바뀌었거나 변경 내역을 읽을 수 없으면 전체 회귀로 되돌린다.
+          # [필수 품질 보존] 게시 완료·수동 검사는 기존 243단계 정밀 회귀를 그대로 사용한다.
           script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json
-          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            slot=$(( ($(date -u +%s) / 600) % 5 ))
-            case "$slot" in
-              0) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json ;;
-              1) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json ;;
-              2) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-regions.json ;;
-              3) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-weapons.json ;;
-              4) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;
-            esac
-            echo "STUDIO_ROTATION_SLOT=$slot"
-            echo "STUDIO_ROTATION_SCRIPT=$script"
-          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
-            # [선박 원본 변경] 푸시 한 번에 두 개의 Studio 검사를 만들지 않고 선박 전용 검사 한 건을 우선한다.
-            ship_paths=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '
-              [.files[].filename | select(
-                startswith("roblox-games/mare-essentia/assets/naval/") or
-                . == "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ships.luau" or
-                . == "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json"
-              )] | length' 2>/dev/null || echo 0)
-            if [ "$ship_paths" -gt 0 ]; then
-              script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json
-              echo "STUDIO_PUSH_TARGET=SHIPS"
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            changed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA" --jq '.files[].filename' 2>/dev/null || true)
+            scope=""
+            if [ -n "$changed" ]; then
+              while IFS= read -r changed_file; do
+                case "$changed_file" in
+                  # [항구 실화면 검사] 기존 전용 Studio 스크립트 변경은 해당 13개 항구를 실제 촬영한다.
+                  roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-startports.json)
+                    candidate=PORTS ;;
+                  # [같은 변경의 QA/선택기 파일] 실제 게임 영향 범위는 별도 소스 파일로 판단한다.
+                  qa/mare-essentia-datastore-name.test.mjs|.github/workflows/studio-autoqa.yml)
+                    continue ;;
+                  roblox-games/mare-essentia/assets/people/*|roblox-games/mare-essentia/src/StarterPlayer/LookApply.client.luau|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json)
+                    candidate=PEOPLE ;;
+                  roblox-games/mare-essentia/assets/naval/*|roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Ships.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json)
+                    candidate=SHIPS ;;
+                  roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json)
+                    candidate=MENUS ;;
+                  roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldMotion.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-motionlab.json)
+                    candidate=MOTION ;;
+                  roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau|roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json)
+                    candidate=FIELD ;;
+                  *) candidate=FULL ;;
+                esac
+                if [ "$candidate" = FULL ] || { [ -n "$scope" ] && [ "$scope" != "$candidate" ]; }; then
+                  scope=FULL
+                  break
+                fi
+                scope="$candidate"
+              done <<< "$changed"
             fi
+            case "$scope" in
+              PORTS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-startports.json ;;
+              PEOPLE) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json ;;
+              SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;
+              MENUS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menus.json ;;
+              MOTION) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-motionlab.json ;;
+              FIELD) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json ;;
+              *) scope=FULL ;;
+            esac
+            echo "STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope"
+          elif [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            echo "STUDIO_WATCHDOG_RECOVERY=SOURCE_NOT_YET_CHECKED:$head"
+          else
+            echo "STUDIO_RELEASE_REGRESSION=FULL"
           fi
           # [단일 Studio 검사] 각 실행 이벤트당 기존 공식 캡처 워크플로를 한 번만 호출한다.
           gh workflow run devloop-studio.yml --repo "$GITHUB_REPOSITORY" --ref main -f "game=$game" -f "script=$script"

@@ -5,12 +5,16 @@
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService") -- [해상 버튼] 교체/준비광 트윈도 기존 클라이언트 서비스만 사용한다.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- [모바일 입자 예산] 효과 밀도만 조절한다. 명중·사거리·재사용 대기시간은 변경하지 않는다.
 local MOBILE_VFX = game:GetService("UserInputService").TouchEnabled
 local AssetIds = require(script.Parent:WaitForChild("AssetIds"))
+local CardArt = require(script.Parent:WaitForChild("CardArt")).Art
 local Pose = require(script.Parent:WaitForChild("Pose"))
 local Sfx = require(script.Parent:WaitForChild("Sfx"))
+local CardTheme = require(script.Parent:WaitForChild("CardTheme"))
+local CardSymbols = require(script.Parent:WaitForChild("CardSymbols"))
 local Combat = require(script.Parent:WaitForChild("Combat"))
 
 local NavalBattle = {}
@@ -24,6 +28,8 @@ local CARD_SEA = "CardArt/event_calm_seas"
 -- 백과사전 화풍: 기존 등록 도판을 배경으로 사용하고, 역할과 맞는 승인된 모델·동작만 입힌다.
 -- 묘사 대상이 없는 경우 임의 동물/문화권 복식/무기를 생성하지 않고 해당 해역 지도 도판을 쓴다.
 -- 이 목록은 BoardingCards.luau 병종·특수 카드의 실제 id를 정확히 따라간다.
+-- [오너 지시] 카드 원화 움직임(3D 모델 복제 연출)은 끈다. 추후 제작할 움직이는 원화로 교체할 때 다시 켠다.
+local CARD_ART_MOTION = false
 local CARD_STAGE = {
 	swordsman = { art="CardArt/event_chart_north_sea", prop={"Naval","ship-pirate-small"}, motion="board", scene="소형 공격선 접현" },
 	axeman = { art="CardArt/event_chart_west_europe", prop={"Naval","ship-pirate-medium"}, motion="board", scene="중형 공격선 돌격" },
@@ -69,6 +75,11 @@ local CARD_STAGE = {
 -- [지역별 오브젝트 도판] 등록·승인된 개별 카드 그림을 우선하고, 없는 카드는 기존 도판을 보존한다.
 local function cardArtworkKey(card)
 	if type(card.id) == "string" then
+		-- [유럽 45장 원화] 규격·화풍 검수 미통과 그림은 손패·전투판·확대창에서 모두 감춘다.
+		-- 카드 자체와 능력·저장값은 유지하며, 다른 배경 이미지로 바꾸지 않는다.
+		if string.match(card.id, "^eu_%d%d$") and not CardArt[card.id] then
+			return nil
+		end
 		local individualArt = "CardArt/" .. card.id
 		if AssetIds[individualArt] then return individualArt end
 	end
@@ -85,10 +96,22 @@ local CARD_DECK = {
 	me = { ko = "중동", en = "Middle East", color = Color3.fromRGB(220, 165, 101) },
 	nw = { ko = "신대륙", en = "New World", color = Color3.fromRGB(104, 173, 216) },
 	af = { ko = "아프리카", en = "Africa", color = Color3.fromRGB(204, 128, 94) },
+	sa = { ko = "남·동남아", en = "South & Southeast Asia", color = Color3.fromRGB(109, 180, 144) },
+	lo = { ko = "전설", en = "Legends", color = Color3.fromRGB(169, 139, 208) },
 }
+
+-- [지역 카드 프레임] 원화 ID만 조회하고 카드 능력·저장 데이터는 그대로 유지.
+local REGION_FRAME = CardTheme.regionFrames
 
 -- 지도자 얼굴: 등록·업로드된 인물 초상만 연결한다 (없는 지도자는 이름 글자)
 local LEADER_FACE = { napoleon = "Portraits/person_napoleon", elizabeth = "Portraits/person_elizabeth1" }
+-- [오늘의 원화] 등록된 카드배틀 지도자 초상이 있으면 기존 초상보다 우선한다.
+local NEW_LEADER_ART = {
+	caesar = "CardArt/leader_caesar", elizabeth = "CardArt/leader_elizabeth",
+	yisunsin = "CardArt/leader_yisunsin", pachacuti = "CardArt/leader_pachacuti",
+	saladin = "CardArt/leader_saladin", suleiman = "CardArt/leader_suleiman",
+	rajaraja = "CardArt/leader_rajaraja", mansa = "CardArt/leader_mansa",
+}
 
 local PLAYER_SHIP = {
 	caravel = "ship-small", fluyt = "ship-medium",
@@ -363,6 +386,38 @@ function NavalBattle.play(opts)
 	-- [16해역 통합 연출] 위치·기상·교전 정보에 따라 배경을 고른다. 실제 전투·저장·포격 수치는 건드리지 않는다.
 	-- [모바일] 등록된 지형 메시를 우선 재사용하고, 원경·입자·수면 갱신만 경량화한다.
 	if not opts.cardOnly then
+		-- [실제 입체 수면] 기존 항해와 같은 Roblox Terrain 물 재질을 해전 좌표에 생성한다.
+		-- 물결은 엔진이 움직이므로 프레임마다 파츠를 복제하지 않는다. 기존 평면은 깊은 해저 백업으로만 남긴다.
+		local oceanTerrain = workspace.Terrain
+		local oceanSpan = if MOBILE_VFX then 1050 else 1550
+		local oceanSize = Vector3.new(oceanSpan, 6, oceanSpan)
+		local oceanFrame = CFrame.new(ORIGIN + Vector3.new(0, -2, 0))
+		local oldWater = {
+			color = oceanTerrain.WaterColor, waveSize = oceanTerrain.WaterWaveSize,
+			waveSpeed = oceanTerrain.WaterWaveSpeed, transparency = oceanTerrain.WaterTransparency,
+			reflectance = oceanTerrain.WaterReflectance,
+		}
+		local oceanReady = pcall(function()
+			oceanTerrain:FillBlock(oceanFrame, oceanSize, Enum.Material.Water)
+		end)
+		if oceanReady then
+			sea.CFrame = CFrame.new(ORIGIN + Vector3.new(0, -5.2, 0))
+			folder:SetAttribute("NavalOceanSurfaceType", "TERRAIN_WATER")
+		else
+			folder:SetAttribute("NavalOceanSurfaceType", "PLANE_FALLBACK")
+		end
+		folder.Destroying:Connect(function()
+			if oceanReady then
+				pcall(function() oceanTerrain:FillBlock(oceanFrame, oceanSize, Enum.Material.Air) end)
+			end
+			pcall(function()
+				oceanTerrain.WaterColor = oldWater.color
+				oceanTerrain.WaterWaveSize = oldWater.waveSize
+				oceanTerrain.WaterWaveSpeed = oldWater.waveSpeed
+				oceanTerrain.WaterTransparency = oldWater.transparency
+				oceanTerrain.WaterReflectance = oldWater.reflectance
+			end)
+		end)
 		local coasts = {
 			{ id="caribbean", name="카리브 해적 해역", water=Color3.fromRGB(31, 157, 170), sky=Color3.fromRGB(132, 207, 230),
 				props={{"platform-beach",175,-453,351},{"tropical-palm-tall",63,-421,327},{"cliff-rock",135,455,-372},{"tropical-palm-short",55,426,-347}} },
@@ -430,6 +485,47 @@ function NavalBattle.play(opts)
 		if mode == "fog" and sceneSeed % 3 == 0 then coastIndex = 12 end
 		if roughSeas and sceneSeed % 4 == 0 then coastIndex = 2 end
 		local coast = coasts[coastIndex]
+		-- [해역 지시서] 날씨 테마와 실제 지역 원본을 분리한다.
+		-- 지시서와 지리가 충돌한 항구는 별도 지시서 정정 전까지 기존 경관 유지.
+		local briefSea
+		do
+			local briefPorts = {
+			north_sea = "london amsterdam antwerp bergen edinburgh rotterdam plymouth hull glasgow",
+			baltic = "copenhagen gothenburg hamburg stockholm gdansk lubeck oslo riga tallinn helsinki st_petersburg koenigsberg visby",
+			channel = "rouen dublin",
+			biscay = "bordeaux la_rochelle",
+			iberian_atlantic = "lisbon porto cadiz casablanca safi agadir",
+			med_west = "seville marseille livorno barcelona valencia algiers tunis tangier palma cagliari ajaccio toulon oran malaga gibraltar cartagena bone",
+			med_east = "naples tripoli palermo valletta ragusa athens istanbul alexandria syracuse thessaloniki candia rhodes famagusta smyrna acre benghazi messina corfu beirut damietta",
+			red_sea = "mocha jeddah",
+			arabian = "aden muscat bandar_abbas basra",
+			swahili = "mozambique kilwa mombasa zanzibar mogadishu port_louis",
+			cape = "cape_town",
+			malabar = "diu surat goa calicut cochin",
+			bengal = "colombo madras calcutta rangoon",
+			malacca = "malacca bangkok singapore batavia",
+			spice_islands = "makassar ternate ambon banda",
+			south_china = "manila macau canton tainan hoi_an brunei",
+			east_china = "amoy ningbo shanghai tianjin nagasaki busan incheon",
+			japan_sea = "osaka edo hakodate",
+			caribbean = "nassau havana kingston santo_domingo san_juan bridgetown port_of_spain la_guaira cartagena_indias portobelo paramaribo panama",
+			gulf_mexico = "new_orleans veracruz campeche",
+			brazil = "belem recife salvador rio montevideo",
+			pacific_south_america = "guayaquil callao valparaiso",
+			north_atlantic_america = "halifax st_johns quebec boston new_york philadelphia charleston",
+			west_africa = "praia saint_louis dakar bissau freetown elmina ouidah lagos calabar sao_tome luanda benguela",
+			atlantic_islands = "las_palmas funchal ponta_delgada",
+			south_pacific = "sydney hobart auckland port_moresby suva tahiti",
+			north_pacific = "sitka vancouver",
+			}
+			for id, ports in briefPorts do
+				for port in string.gmatch(ports, "%S+") do
+					if port == opts.portId then briefSea = id; break end
+				end
+				if briefSea then break end
+			end
+		end
+		folder:SetAttribute("NavalBriefSea", briefSea or "")
 		-- [해역 고유 정체성] 지중해는 노을, 야간 해역은 달빛, 유령 해역은 해무를 반드시 유지한다.
 		if coast.id == "mediterranean" or coast.id == "gold_coast" then phase = "sunset"
 		elseif coast.id == "moonlight" or coast.id == "ghost" then phase = "night" end
@@ -439,6 +535,17 @@ function NavalBattle.play(opts)
 			Sfx.ambient({ "sfx_ambience_storm", "sfx_waves" }, 0.55)
 		end
 		sea.Color = coast.water:Lerp(Color3.fromRGB(17, 37, 54), 0.12)
+		-- [해역별 파고] 잔잔한 물·계절풍·폭풍을 물 표면에 직접 적용한다.
+		-- 선박 피해·속도와 포격 판정은 기존 서버/장면 계산을 그대로 사용한다.
+		if oceanReady then
+			pcall(function()
+				oceanTerrain.WaterColor = sea.Color
+				oceanTerrain.WaterTransparency = if mode == "fog" then 0.42 else 0.28
+				oceanTerrain.WaterReflectance = if phase == "night" then 0.08 else 0.15
+				oceanTerrain.WaterWaveSize = if mode == "storm" then 0.85 elseif mode == "rain" then 0.48 else 0.28
+				oceanTerrain.WaterWaveSpeed = if mode == "storm" then 17 elseif mode == "rain" then 12 else 8
+			end)
+		end
 		folder:SetAttribute("NavalEnvironment", coast.id)
 		folder:SetAttribute("NavalEnvironmentName", coast.name)
 		folder:SetAttribute("NavalEnvironmentCount", #coasts)
@@ -456,8 +563,10 @@ function NavalBattle.play(opts)
 		local savedLighting = {
 			clock = lighting.ClockTime, fogColor = lighting.FogColor,
 			fogStart = lighting.FogStart, fogEnd = lighting.FogEnd,
-			ambient = lighting.OutdoorAmbient,
+			ambient = lighting.OutdoorAmbient, shadowSoftness = lighting.ShadowSoftness,
 		}
+		-- [수평선 실루엣] 기존 태양 방향은 유지하고 물가·돛·절벽의 그림자 경계를 부드럽게 한다.
+		lighting.ShadowSoftness = if mode == "storm" or mode == "fog" then 0.48 else 0.30
 		lighting.ClockTime = if phase == "night" then 21.15 elseif phase == "sunset" then 17.45 else 11.8
 		lighting.FogColor = skyColor
 		lighting.FogStart = if mode == "fog" then 210 elseif mode == "storm" then 370 else 690
@@ -474,9 +583,11 @@ function NavalBattle.play(opts)
 		} else nil
 		if not originalAtmosphere then atmosphere.Name = "NavalOceanAtmosphere" end
 		atmosphere.Color = skyColor:Lerp(Color3.fromRGB(222, 231, 238), if phase == "night" then 0.2 else 0.35)
-		atmosphere.Decay = if phase == "sunset" then Color3.fromRGB(234, 158, 114)
+		-- [대기 원근] 가까운 선체는 선명하고 수평선 절벽만 푸른 산란광에 묻히게 한다.
+		-- 석양 지역의 주황빛과 밤의 차가운 빛은 기존 기상 팔레트를 유지한다.
+		atmosphere.Decay = if phase == "sunset" then Color3.fromRGB(216, 153, 120)
 			elseif phase == "night" then Color3.fromRGB(90, 125, 170)
-			else coast.sky
+			else coast.sky:Lerp(Color3.fromRGB(113, 154, 186), if mode == "storm" then 0.24 else 0.39)
 		atmosphere.Density = if mode == "fog" then 0.43 elseif mode == "storm" then 0.34 else 0.20
 		atmosphere.Offset = if mode == "fog" then 0.05 else 0.22
 		atmosphere.Haze = if mode == "fog" then 3.1 elseif mode == "storm" then 2.0 else 0.85
@@ -496,7 +607,9 @@ function NavalBattle.play(opts)
 		if not originalClouds then clouds.Parent = terrain end
 		local bloom = Instance.new("BloomEffect")
 		bloom.Name = "NavalSeaGlow"
-		bloom.Intensity = if MOBILE_VFX then 0.10 else 0.19
+		-- [모바일] 햇빛·파도는 엔진 수면으로 표현하고 후처리 블룸은 끈다.
+		bloom.Enabled = not MOBILE_VFX
+		bloom.Intensity = if MOBILE_VFX then 0 else 0.19
 		bloom.Size = 18
 		bloom.Threshold = 1.4
 		bloom.Parent = lighting
@@ -545,6 +658,41 @@ function NavalBattle.play(opts)
 			foam.Parent = anchor
 			table.insert(oceanNodes, anchor)
 		end
+		-- [연안 물보라] 씨 오브 시브즈의 가까운 포말/먼 해안층 원리만 참고한다.
+		-- 새 파츠나 셰이더 없이 기존 내장 입자/Attachment를 재사용하고 모바일은 2곳만 표시한다.
+		local coastFoamCount = 0
+		for i = 1, math.min(if MOBILE_VFX then 2 else 5, #coast.props) do
+			local spec = coast.props[(i * 3 - 1) % #coast.props + 1]
+			if AssetIds["Terrain/" .. spec[1]] then
+				local surf = Instance.new("Attachment")
+				surf.Name = "NavalCoastBreakers"
+				surf.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(spec[3] * 0.93, 0.52, spec[4] * 0.93))
+				surf.Parent = terrain
+				local spray = Instance.new("ParticleEmitter")
+				spray.Texture = "rbxasset://textures/particles/smoke_main.dds"
+				spray.Color = ColorSequence.new(foamColor, coast.water:Lerp(Color3.fromRGB(239, 250, 251), 0.72))
+				spray.Transparency = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 0.58),
+					NumberSequenceKeypoint.new(0.35, 0.66),
+					NumberSequenceKeypoint.new(1, 1),
+				})
+				spray.Size = NumberSequence.new({
+					NumberSequenceKeypoint.new(0, 1.6),
+					NumberSequenceKeypoint.new(0.5, if mode == "storm" then 7 else 4),
+					NumberSequenceKeypoint.new(1, 0),
+				})
+				spray.Speed = NumberRange.new(0.7, if mode == "storm" then 6 else 3)
+				spray.Lifetime = NumberRange.new(0.7, 1.6)
+				spray.SpreadAngle = Vector2.new(130, 20)
+				spray.EmissionDirection = Enum.NormalId.Top
+				spray.Rate = if MOBILE_VFX then 1.2 elseif mode == "storm" then 5 else 2.6
+				spray.Drag = 2.5
+				spray.Parent = surf
+				table.insert(oceanNodes, surf)
+				coastFoamCount += 1
+			end
+		end
+		folder:SetAttribute("NavalCoastFoamSources", coastFoamCount)
 		local weatherNodes = {}
 		if mode == "rain" or mode == "storm" or coast.id == "north_sea" or coast.id == "arctic" then
 			local snowfall = coast.id == "north_sea" or coast.id == "arctic"
@@ -590,33 +738,146 @@ function NavalBattle.play(opts)
 		end
 		-- [승인된 실물 지형] 라이선스 등록·실제 로딩이 완료된 모델만 복제한다.
 		local distantShips = {}
+		-- [해안 원근층] CC0 절벽 원본 3종만 각 해역 바깥쪽에 추가한다.
+		-- 실제 항구/물가에 존재하던 실물과 같은 수입 경로로 단 한번 로드한다.
+		-- [실물 해안선 5차] 기존 승인 자연 메시로 사선 암반과 오목한 절벽 윗턱을 교차한다.
+		-- 해역별 해안 모델 수량과 기등록 사용 권한 검사는 그대로 유지한다.
+		-- 기존 해역별 5개 모델 예산과 모바일 1개 실물 제한은 유지한다.
+		-- [CC0 신규 원경 3층] 기존 5개 실물 해안 슬롯 안에서만 문화권 지형을 교체한다.
+		-- AssetIds에 등록·사용권한이 없는 원본은 기존 절벽·지반 메시를 그대로 유지한다.
+		local depthCoast = if coast.id == "caribbean" or coast.id == "tropical" or coast.id == "gold_coast" then {
+			{ AssetIds["Terrain/cliff-topdiagonal-rock"] and "cliff-topdiagonal-rock" or "cliff-diagonal-rock", 146, -473, -393 },
+			{ "tree-palmbend", 70, -444, -353 },
+			{ "cliff-cornerinnertop-rock", 124, -471, -388 }, { "cliff-cornertop-rock", 92, 464, 401 },
+			{ AssetIds["Terrain/platform-grass"] and "platform-grass" or "rock-largec", 70, 478, 410 },
+		} elseif coast.id == "north_sea" or coast.id == "arctic" or coast.id == "cape" or coast.id == "atlantic_storm" then {
+			{ AssetIds["Terrain/cliff-cornerinnertop-stone"] and "cliff-cornerinnertop-stone" or "cliff-cornerinnertop-rock", 158, 473, -401 },
+			{ "cliff-cornerinnerlarge-rock", 125, -472, 395 },
+			{ "cliff-diagonal-rock", 137, 489, -425 },
+			{ AssetIds["Terrain/cliff-waterfalltop-stone"] and "cliff-waterfalltop-stone" or "cliff-waterfall-stone", 123, -500, 384 },
+			{ AssetIds["Terrain/cliff-cave-stone"] and "cliff-cave-stone" or "cliff-cornerlarge-rock", 102, -437, -410 },
+		} else {
+			{ "cliff-diagonal-rock", 146, -488, 375 }, { "cliff-cornerinnertop-rock", 130, 495, -413 },
+			{ AssetIds["Terrain/cliff-blockslopewalls-rock"] and "cliff-blockslopewalls-rock" or "cliff-blockslope-rock", 128, -496, 371 },
+			{ "cliff-large-stone", 136, 486, -401 },
+			{ AssetIds["Terrain/platform-stone"] and "platform-stone" or "rock-largec", 96, 438, 410 },
+		}
+		folder:SetAttribute("NavalDepthCoastCount", 0)
 		task.delay(1.0, function()
 			if not folder.Parent then return end
 			local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 			local terrain = lib and lib:FindFirstChild("Terrain")
 			if not terrain then return end
+			local shoreModels = {}
 			for index, spec in coast.props do
-				if MOBILE_VFX and index > 3 then break end
-				local template = terrain:FindFirstChild(spec[1])
-				if template and template:IsA("Model") and AssetIds["Terrain/" .. spec[1]] then
+				if not MOBILE_VFX or index <= 3 then table.insert(shoreModels, spec) end
+			end
+			local originalCoastCount = #shoreModels
+			-- [연안 물결 시차] 물결은 돌출 실물 절벽의 기슭에서만 솟고,
+			-- 모바일은 한 곳, PC는 두 곳까지만 쓴다. 장면 종료 시 기존 oceanNodes가 해제한다.
+			local shoreBreakCount = 0
+			folder:SetAttribute("NavalDepthShoreBreakCount", 0)
+			for index, spec in depthCoast do
+				if (not MOBILE_VFX or index <= 1) and AssetIds["Terrain/" .. spec[1]] then
+					table.insert(shoreModels, spec)
+				end
+			end
+			-- [승인 해역 배경] 기존 해안 배치 반복문에 정확한 원본만 전달한다.
+			-- 전투 수치와 충돌을 바꾸지 않고, 실제 복제에 성공한 층만 별도 기록한다.
+			if briefSea then
+				for _, layer in {
+					{ "near", 14, 105, -40 },
+					{ "mid", 64, -310, -95 },
+					{ "far", if MOBILE_VFX then 350 else 500, 0, if MOBILE_VFX then -475 else -620 },
+				} do
+					local asset = "sea_" .. briefSea .. "_" .. layer[1]
+					if AssetIds["Naval/" .. asset] then
+						table.insert(shoreModels, { asset, layer[2], layer[3], layer[4], "Naval", string.upper(layer[1]) })
+					end
+				end
+			end
+			for index, spec in shoreModels do
+				local kind = spec[5] or "Terrain"
+				local group = lib:FindFirstChild(kind)
+				local template = group and group:FindFirstChild(spec[1])
+				if template and template:IsA("Model") and AssetIds[kind .. "/" .. spec[1]] and template:FindFirstChildWhichIsA("BasePart", true) then
 					local model = template:Clone()
+					local briefBand = spec[6]
+					local farShore = index > originalCoastCount and not briefBand or briefBand == "FAR"
+					-- [실거리 3층] 원경은 기존 해안선보다 먼 곳에 낮게 배치한다.
+					-- 모바일에서는 물 바깥으로 크게 밀리지 않게 거리를 더 적게 늘린다.
+					local depthDistance = if farShore and not briefBand then (if MOBILE_VFX then 1.10 else 1.25) else 1
 					for _, node in model:GetDescendants() do
 						if node:IsA("BasePart") then
 							node.Anchored = true
 							node.CanCollide, node.CanTouch, node.CanQuery = false, false, false
+							-- [중·원경 해안] 먼 절벽만 그림자를 생략하고 텍스처 없는 면에 해무색을 섞는다.
+							-- SurfaceAppearance/TextureID/특수 메시 텍스처는 그대로 보존한다.
+							if farShore then
+								node.CastShadow = false
+								if not node:FindFirstChildOfClass("SurfaceAppearance")
+									and (not node:IsA("MeshPart") or node.TextureID == "") then
+									local specialMap = false
+									for _, child in node:GetChildren() do
+										if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+									end
+									if not specialMap then
+										node.Color = node.Color:Lerp(skyColor, if mode == "fog" then 0.34 else 0.22)
+									end
+								end
+							end
 						end
 					end
 					model.Name = "NavalCoast"
+					model:SetAttribute("NavalSceneryBand", briefBand or (if farShore then "FAR" else "MID"))
+					if farShore and not briefBand then model:SetAttribute("NavalDepthCliff", true) end
 					model.Parent = folder
 					local ok = pcall(function()
 						local _, dims = model:GetBoundingBox()
-						model:ScaleTo(spec[2] / math.max(dims.X, dims.Z, 0.01))
+						model:ScaleTo(model:GetScale() * spec[2] * (if farShore and not briefBand then 0.82 else 1) / math.max(dims.X, dims.Z, 0.01))
 						local box, ext = model:GetBoundingBox()
 						local bottom = box.Position - Vector3.new(0, ext.Y * 0.5, 0)
-						local target = ORIGIN + Vector3.new(spec[3], 0, spec[4])
+						local target = ORIGIN + Vector3.new(spec[3] * depthDistance, 0, spec[4] * depthDistance)
 						model:PivotTo(CFrame.new(target - bottom) * model:GetPivot())
 					end)
-					if not ok then model:Destroy() end
+					if not ok then model:Destroy()
+					elseif briefBand then
+						model:SetAttribute("NavalBriefAssetKey", kind .. "/" .. spec[1])
+						folder:SetAttribute("NavalBriefPlaced_" .. briefBand, spec[1])
+					elseif index > originalCoastCount then
+						folder:SetAttribute("NavalDepthCoastCount", (folder:GetAttribute("NavalDepthCoastCount") or 0) + 1)
+						if shoreBreakCount < (if MOBILE_VFX then 1 else 2)
+							and string.find(spec[1], "cliff", 1, true) then
+							local surf = Instance.new("Attachment")
+							surf.Name = "NavalCliffShoreWash"
+							surf.WorldCFrame = CFrame.new(ORIGIN + Vector3.new(spec[3] * depthDistance * 0.97,
+									0.48, spec[4] * depthDistance * 0.97))
+							surf.Parent = workspace.Terrain
+							local wash = Instance.new("ParticleEmitter")
+							wash.Texture = "rbxasset://textures/particles/smoke_main.dds"
+							wash.Color = ColorSequence.new(foamColor, Color3.fromRGB(229, 244, 247))
+							wash.Transparency = NumberSequence.new({
+								NumberSequenceKeypoint.new(0, 0.58),
+								NumberSequenceKeypoint.new(0.65, 0.81),
+								NumberSequenceKeypoint.new(1, 1),
+							})
+							wash.Size = NumberSequence.new({
+								NumberSequenceKeypoint.new(0, 1.2),
+								NumberSequenceKeypoint.new(0.45, if mode == "storm" then 8 else 4.5),
+								NumberSequenceKeypoint.new(1, 0),
+							})
+							wash.Speed = NumberRange.new(0.6, if mode == "storm" then 7 else 3.6)
+							wash.Lifetime = NumberRange.new(0.65, 1.4)
+							wash.SpreadAngle = Vector2.new(128, 15)
+							wash.EmissionDirection = Enum.NormalId.Top
+							wash.Rate = if MOBILE_VFX then 2 else (if mode == "storm" then 5 else 3)
+							wash.Drag = 2.6
+							wash.Parent = surf
+							table.insert(oceanNodes, surf)
+							shoreBreakCount += 1
+							folder:SetAttribute("NavalDepthShoreBreakCount", shoreBreakCount)
+						end
+					end
 				end
 			end
 			-- [원경 항해선] 실물 범선이 이미 로드된 경우에만 멀리 이동하는 해상 교통을 표현한다.
@@ -626,9 +887,13 @@ function NavalBattle.play(opts)
 					local shipName = if i == 1 then "boat-sail-a" else "ship-small"
 					local template = naval:FindFirstChild(shipName)
 					if template and template:IsA("Model") and AssetIds["Naval/" .. shipName] then
+						-- [진짜 원경 실루엣] 두 번째 배가 수면 밖 X=1115로 벗어나던 좌표를 수정한다.
+						-- 두 배 모두 물 표면 안쪽 수평선에 작게 배치해 전투 함대와 깊이를 분리한다.
 						local distant = placeShip(folder, shipName,
-							ORIGIN + Vector3.new(-365 + i * 740, 0, -485 + i * 70), 23 + i * 5, i * 0.45)
+							ORIGIN + Vector3.new(if i == 1 then -360 else 370, 0, -535 - i * 18),
+							20 + i * 3, i * 0.45)
 						distant.Name = "NavalDistantMerchant"
+						distant:SetAttribute("NavalSceneryBand", "FAR")
 						table.insert(distantShips, { model=distant, start=distant:GetPivot(), speed=i })
 					end
 				end
@@ -648,17 +913,25 @@ function NavalBattle.play(opts)
 			elapsed += tickSum
 			tickSum = 0
 			-- 기본 파도·하늘은 엔진이 움직인다. 매 프레임 사각형/구체를 갱신하지 않는다.
-			for _, merchant in distantShips do
-				if merchant.model.Parent then
-					merchant.model:PivotTo(merchant.start * CFrame.new(math.sin(elapsed * 0.055 + merchant.speed) * 50,
-						math.sin(elapsed * 1.2 + merchant.speed) * 0.27, 0))
+			if #distantShips > 0 then
+				-- [원경 항해선] 같은 시간축을 공유하고 기존 항로와 부유 모션은 유지한다.
+				local driftTime, bobTime = elapsed * 0.055, elapsed * 1.2
+				for _, merchant in distantShips do
+					if merchant.model.Parent then
+						local pivot = merchant.start * CFrame.new(math.sin(driftTime + merchant.speed) * 50,
+							math.sin(bobTime + merchant.speed) * 0.27, 0)
+						if merchant.model:GetPivot() ~= pivot then merchant.model:PivotTo(pivot) end
+					end
 				end
 			end
-			sea.Color = coast.water:Lerp(foamColor,
+			-- [날씨 갱신] 동일한 물 색과 번개 밝기는 다시 기록하지 않는다.
+			local waterColor = coast.water:Lerp(foamColor,
 				0.035 + math.sin(elapsed * (if mode == "storm" then 1.5 else 0.6)) * 0.012)
+			if sea.Color ~= waterColor then sea.Color = waterColor end
 			if mode == "storm" then
 				local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994
-				colorGrade.Brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)
+				local brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)
+				if colorGrade.Brightness ~= brightness then colorGrade.Brightness = brightness end
 			end
 		end)
 		folder.Destroying:Connect(function()
@@ -669,6 +942,7 @@ function NavalBattle.play(opts)
 			lighting.ClockTime, lighting.FogColor = savedLighting.clock, savedLighting.fogColor
 			lighting.FogStart, lighting.FogEnd = savedLighting.fogStart, savedLighting.fogEnd
 			lighting.OutdoorAmbient = savedLighting.ambient
+			lighting.ShadowSoftness = savedLighting.shadowSoftness
 			if savedAtmosphere and atmosphere.Parent then
 				atmosphere.Density, atmosphere.Offset = savedAtmosphere.density, savedAtmosphere.offset
 				atmosphere.Color, atmosphere.Decay = savedAtmosphere.color, savedAtmosphere.decay
@@ -683,6 +957,14 @@ function NavalBattle.play(opts)
 		end)
 	end
 
+	-- [후미 흰 포말] 환경별 선박 속력만 따라가는 엔진 내장 입자.
+	-- 카드 대결은 제외하며 모바일 2척/PC 6척까지, 장면 종료 시 Terrain Attachment를 정리한다.
+	local wakeAttachments, wakeCount = {}, 0
+	folder.Destroying:Connect(function()
+		for _, anchor in wakeAttachments do
+			if anchor.Parent then anchor:Destroy() end
+		end
+	end)
 	-- [36척 해전 실물] 선박 구매·저장 ID를 유지하면서 등록된 V5 모델만 우선 수입한다.
 	-- 터치 기기에서는 경량판을, 미등록 모델은 기존 원본을 그대로 사용한다.
 	local function newShip(asset, length, pos, theta, tint, shipId)
@@ -693,8 +975,40 @@ function NavalBattle.play(opts)
 		local m = placeShip(folder, asset, ORIGIN + pos, length, 0, tint)
 		local base = m:GetPivot()
 		local rot = base - base.Position
+		local wakeAnchor, wakeFoam
+		if not opts.cardOnly and wakeCount < (if MOBILE_VFX then 2 else 6) then
+			wakeAnchor = Instance.new("Attachment")
+			wakeAnchor.Name = "NavalSternFoam"
+			wakeAnchor.WorldCFrame = CFrame.new(ORIGIN + pos)
+			wakeAnchor.Parent = workspace.Terrain
+			wakeFoam = Instance.new("ParticleEmitter")
+			wakeFoam.Texture = "rbxasset://textures/particles/smoke_main.dds"
+			wakeFoam.Color = ColorSequence.new(Color3.fromRGB(214, 244, 248), Color3.fromRGB(129, 194, 207))
+			wakeFoam.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.39),
+				NumberSequenceKeypoint.new(0.55, 0.65),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			wakeFoam.Size = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 0.9),
+				NumberSequenceKeypoint.new(0.4, if MOBILE_VFX then 2.8 else 4.1),
+				NumberSequenceKeypoint.new(1, 0),
+			})
+			wakeFoam.Speed = NumberRange.new(0.8, 2.6)
+			wakeFoam.Lifetime = NumberRange.new(0.8, 1.4)
+			wakeFoam.SpreadAngle = Vector2.new(85, 18)
+			wakeFoam.EmissionDirection = Enum.NormalId.Top
+			wakeFoam.Drag = 2.4
+			wakeFoam.Enabled = false
+			wakeFoam.Rate = 0
+			wakeFoam.Parent = wakeAnchor
+			table.insert(wakeAttachments, wakeAnchor)
+			wakeCount += 1
+		end
+		folder:SetAttribute("NavalWakeSourceCount", wakeCount)
 		return { model = m, pos = pos, theta = theta, speed = 0, rot = rot, y = base.Position.Y - ORIGIN.Y,
-			length = length, fx = FX_PROFILES[shipId] or DEFAULT_FX, shipId = shipId }
+			length = length, fx = FX_PROFILES[shipId] or DEFAULT_FX, shipId = shipId,
+			wake = wakeAnchor, wakeFx = wakeFoam, wakeNext = 0 }
 	end
 	local shipDef = ShipDefs.Ships[opts.shipId or ""]
 	local myLen = if shipDef then math.clamp(26 + shipDef.hull * 0.1, 30, 52) else 40
@@ -990,39 +1304,38 @@ function NavalBattle.play(opts)
 		Sfx.play("sfx_bell", 0.25, 1.4, "sfx_click")
 		return true
 	end
-	local rangeLabel = label(gui, string.format("🎯 %s · 사거리 %d · 탄속 %.1f초", cannon.name, cannon.range, cannon.dur), 13, Color3.fromRGB(255, 226, 150))
-	rangeLabel.AnchorPoint = Vector2.new(0.5, 1)
-	rangeLabel.Position = UDim2.new(0.5, 0, 1, -12)
-	rangeLabel.Size = UDim2.fromOffset(math.min(460, math.max(180, battleViewport.X - 440)), 20)
-	rangeLabel.Visible = battleViewport.X >= 720 -- [모바일] 조타·기술·가속과 겹치는 하단 중복 포각을 숨기고 전술판에 표시.
-	rangeLabel.TextSize = if battleViewport.X < 480 then 11 else 13
-	rangeLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- [해전 전술 판넬] 실제 적과의 거리·선측 각·장전 시간으로 다음 행동을 시각화한다.
-	-- 중앙 아래쪽은 기존 장전 게이지, 위쪽은 전술 판단만 표시한다.
-	local tactic = label(gui, "① 적선에 접근 중", 15, Color3.fromRGB(255, 224, 159), true)
+	-- 항해 중 필요한 조타 안내는 아군 선단 아래에 짧게 표시한다.
+	local tactic = label(gui, "", 15, Color3.fromRGB(255, 224, 159), true)
 	tactic.Name = "BattleTacticalReadout"
-	tactic.AnchorPoint = Vector2.new(0.5, 0)
-	tactic.Position = UDim2.new(0.5, 0, 0, 119)
-	tactic.Size = UDim2.new(if battleViewport.X < 480 then 0.52 elseif battleViewport.X < 720 then 0.48 else 0.46, 0, 0, 46)
-	tactic.TextSize = if battleViewport.X < 480 then 13 else 14
-	tactic.TextTruncate = Enum.TextTruncate.AtEnd
-	tactic.TextWrapped = true
-	tactic.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
-	tactic.BackgroundTransparency = 0.18
+	tactic.AnchorPoint = Vector2.zero
+	tactic.Position = UDim2.fromOffset(16, 126)
+	-- [조타 안내] 전장 중앙을 비우고 한 줄만 사용한다.
+    tactic.Size = UDim2.fromOffset(math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168), 26)
+    tactic.TextSize = if battleViewport.X < 480 then 12 else 14
+    tactic.Font = Enum.Font.GothamBold
+    tactic.TextScaled = false
+    tactic.TextStrokeTransparency = 1
+    tactic.TextTruncate = Enum.TextTruncate.AtEnd
+    tactic.TextWrapped = true
+    tactic.BackgroundColor3 = Color3.fromRGB(21, 29, 35)
+    tactic.BackgroundTransparency = 0.04
 	tactic.BorderSizePixel = 0
-	tactic.Visible = not opts.cardOnly
+	tactic.Visible = false
 	tactic.ZIndex = 10
 	local tacticCorner = Instance.new("UICorner")
 	tacticCorner.CornerRadius = UDim.new(0, 9)
 	tacticCorner.Parent = tactic
 	local tacticStroke = Instance.new("UIStroke")
+	-- 전술판 테두리만 그려 한글 획이 두꺼워지는 현상을 막는다.
+	tacticStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	tacticStroke.Color = Color3.fromRGB(178, 153, 106)
 	tacticStroke.Thickness = 1.5
 	tacticStroke.Parent = tactic
 	local lastTacticText, lastTacticColor = "", nil
 	-- [실전 사거리 나침반] 기존 사거리 원주 조각 재사용: 좌·우 선측포 영역, 회전 탐색광, 장전·포격·명중 펄스.
 	-- 판정값은 원래 cannon.range와 각도 그대로 사용하며 장식용 기본 파츠를 추가하지 않는다.
-	local rangeRing = { segments = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
+	local rangeRing = { segments = {}, radials = {}, angles = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
 	do
 		local count = if MOBILE_VFX then 28 else 40 -- [깨끗한 탐지 원] 모바일 포각 윤곽을 다듬되 고정 파츠만 재사용
 		local segmentLength = 2 * math.pi * cannon.range / count * 0.86
@@ -1030,6 +1343,10 @@ function NavalBattle.play(opts)
 			local seg = part(folder, Vector3.new(0.72, 0.12, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
 			seg.Transparency = 0.78
 			rangeRing.segments[i] = seg
+			-- 고정 원주 방향은 생성 시 한 번만 계산한다.
+			local angle = (i - 1) * (math.pi * 2) / count
+			rangeRing.radials[i] = Vector3.new(math.cos(angle), 0, math.sin(angle))
+			rangeRing.angles[i] = angle
 		end
 		-- 기존 등록 선박 메시와 사거리 원주에 광선만 연결한다. 새 Part·선박·외부 에셋은 만들지 않는다.
 		local hullPart = me.model:FindFirstChildWhichIsA("BasePart", true)
@@ -1071,23 +1388,32 @@ function NavalBattle.play(opts)
 	sailLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
-	-- [지상 연타형 해전] 숫자를 매 프레임 늘였다 줄이는 대신 고정 픽셀 서체로 선명하게 표시한다.
-	-- 좁은 폰에서는 왼편 해역에 배치해 우측 지원 카드·하단 기술 버튼과 겹치지 않는다.
-	local comboLabel = label(gui, "", if battleViewport.X < 480 then 26 else 37, Color3.fromRGB(255, 226, 120))
-	comboLabel.Name = "NavalHitStreak"
-	comboLabel.Font = Enum.Font.Bangers
-	comboLabel.AnchorPoint = if battleViewport.X < 480 then Vector2.new(0, 0) else Vector2.new(0.5, 0)
-	comboLabel.Position = if battleViewport.X < 480 then UDim2.fromOffset(12, 179)
-		else UDim2.new(0.5, 0, 0, 202)
-	comboLabel.Size = if battleViewport.X < 480 then UDim2.fromOffset(166, 42)
-		else UDim2.fromOffset(math.min(380, battleViewport.X - 40), 48)
-	comboLabel.TextStrokeColor3 = Color3.fromRGB(11, 17, 27)
-	comboLabel.TextStrokeTransparency = 0.24
-	comboLabel.TextTransparency = 1
-	comboLabel.TextXAlignment = if battleViewport.X < 480 then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
-	comboLabel.ZIndex = 19
-	comboLabel.Visible = not opts.cardOnly
-	local navalHitStreak, navalHitAt, streakNoticeToken = 0, -100, 0
+	-- [포격 연타 안내] 중앙 전투 숫자 배너와 별개로 실제 연속 명중만 좌측에 크게 표시한다.
+	local navalHitStreak, navalHitAt, navalHitCueSerial = 0, -100, 0
+	local navalHitCue = label(gui, "", if battleViewport.X < 480 then 16 else 32, Color3.fromRGB(255, 223, 133), true)
+	navalHitCue.Name = "NavalHitStreak"
+	navalHitCue.AnchorPoint = Vector2.zero
+	navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)
+	navalHitCue.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08))) else math.min(242, math.floor(battleViewport.X * 0.32)), if battleViewport.X < 480 then 46 else 54)
+	navalHitCue.Font = Enum.Font.GothamBlack
+	navalHitCue.TextScaled = false
+	navalHitCue.TextWrapped = false
+	navalHitCue.TextXAlignment = Enum.TextXAlignment.Center
+	navalHitCue.TextStrokeColor3 = Color3.fromRGB(25, 21, 18)
+	navalHitCue.TextStrokeTransparency = 0.4
+	navalHitCue.BackgroundColor3 = Color3.fromRGB(34, 27, 21)
+	navalHitCue.BackgroundTransparency = 0.18
+	navalHitCue.BorderSizePixel = 0
+	navalHitCue.ZIndex = 29
+	navalHitCue.Visible = false
+	Instance.new("UICorner", navalHitCue).CornerRadius = UDim.new(0, 10)
+	local navalHitCueStroke = Instance.new("UIStroke")
+	navalHitCueStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	navalHitCueStroke.Color = Color3.fromRGB(241, 186, 93)
+	navalHitCueStroke.Thickness = 2
+	navalHitCueStroke.Parent = navalHitCue
+	local navalHitCueScale = Instance.new("UIScale")
+	navalHitCueScale.Parent = navalHitCue
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
@@ -1101,7 +1427,7 @@ function NavalBattle.play(opts)
 	hint.Position = UDim2.new(0.5, 0, 1, -150)
 	hint.Size = UDim2.new(0.8, 0, 0, 36)
 	hint.TextWrapped = true
-	hint.Visible = not MOBILE_VFX or opts.cardOnly -- [폰트 정돈] 긴 도움말 대신 두 줄 전술 패널을 남긴다.
+	hint.Visible = opts.cardOnly or opts.card == true -- [폰트 정돈] 긴 도움말 대신 두 줄 전술 패널을 남긴다.
 
 	local banner = label(gui, "", 44)
 	banner.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1122,16 +1448,17 @@ function NavalBattle.play(opts)
 	endingCaption.Visible = false
 
 	-- 카드 지원 표시판: 덱의 지식 카드가 해전을 자동으로 거드는 효과. 발동할 때마다 해당 줄이 번쩍이고 문구가 떠오른다.
-	local CH = { chips = {}, shown = {} }
+	local CH = { chips = {}, shown = {}, popTimers = {} }
 	do
 		local entries = opts.cardEffects or {}
 		if #entries > 0 and not opts.cardOnly then
 			-- [카드 지원 겹침 방지] 실제 효과/칩은 모두 유지하고 보이는 높이만 남은 조작 공간에 맞춘다.
 			local panel = Instance.new("ScrollingFrame")
 			panel.AnchorPoint = Vector2.new(1, 0)
-			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 720 then 173 else 122)
+			panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 173 else 122)
 			local entriesHeight = 24 + #entries * 30
-			local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 520)
+			-- [세로 폰] 104px 포 사격 버튼의 상단보다 10px 위에서 스크롤 영역을 끝낸다.
+			local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 482)
 				elseif battleViewport.X < 720 then math.max(54, battleViewport.Y - 405)
 				else math.max(54, battleViewport.Y - 330)
 			panel.Size = UDim2.fromOffset(if battleViewport.X < 480 then 166 else 190,
@@ -1175,6 +1502,7 @@ function NavalBattle.play(opts)
 	local KIND_COLOR = { melee = Color3.fromRGB(220, 120, 90), cannon = Color3.fromRGB(240, 180, 80), speed = Color3.fromRGB(110, 190, 230), pump = Color3.fromRGB(110, 200, 160), medic = Color3.fromRGB(150, 220, 130) }
 	local KIND_PHRASE = { melee = "접현 카드가 칼날을 벼린다", cannon = "포 카드가 조준을 돕는다", speed = "항해 카드가 바람을 읽는다", pump = "조선 카드가 물을 막는다", medic = "의학 카드가 부상자를 살린다" }
 	function CH.flash(kind)
+		if not gui.Parent then return end
 		local c = CH.chips[kind]
 		if not c or CH.shown[kind] and os.clock() - CH.shown[kind] < 2.5 then
 			return
@@ -1200,18 +1528,22 @@ function NavalBattle.play(opts)
 			TweenService:Create(l, TweenInfo.new(1.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				Position = l.Position - UDim2.fromOffset(0, 40), TextTransparency = 1, TextStrokeTransparency = 1,
 			}):Play()
-			task.delay(1.7, function() l:Destroy() end)
+			CH.popTimers[l] = task.delay(1.7, function()
+				CH.popTimers[l] = nil
+				if l.Parent then l:Destroy() end
+			end)
 		end
 	end
 	-- 전투가 시작되면 지원 효과를 차례로 알린다
-	task.spawn(function()
-		task.wait(1.2)
+	CH.introThread = task.delay(1.2, function()
 		for _, kind in { "speed", "cannon", "melee", "pump" } do
+			if not gui.Parent then break end
 			if CH.chips[kind] then
 				CH.flash(kind)
 				task.wait(0.7)
 			end
 		end
+		CH.introThread = nil
 	end)
 
 	local finished = false
@@ -1222,23 +1554,38 @@ function NavalBattle.play(opts)
 		controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")):GetControls()
 		controls:Disable()
 	end)
-	local function finish()
+	local function finish(replay)
 		if finished then
 			return
 		end
 		finished = true
+		-- [지원 연출 종료] 남은 예약과 화면 참조를 먼저 해제한다.
+		if CH.introThread then task.cancel(CH.introThread); CH.introThread = nil end
+		for _, timer in CH.popTimers do task.cancel(timer) end
+		table.clear(CH.popTimers)
+		table.clear(CH.chips)
+		table.clear(CH.shown)
 		if controls then
 			pcall(function()
 				controls:Enable()
 			end)
 		end
+		-- [해전 종료 메모리] 한 연결 정리 실패가 다른 자산과 UI의 정리를 막지 않는다.
 		for _, c in conns do
-			c:Disconnect()
+			local ok, err = pcall(function()
+				if type(c) == "thread" then
+					if c ~= coroutine.running() and coroutine.status(c) ~= "dead" then task.cancel(c) end
+				else
+					c:Disconnect()
+				end
+			end)
+			if not ok then warn("[MareEssentia] 해전 연결 정리 오류", err) end
 		end
+		table.clear(conns)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onDone then
-			opts.onDone(math.floor(flair))
+			opts.onDone(math.floor(flair), replay == true)
 		end
 	end
 
@@ -1250,10 +1597,11 @@ function NavalBattle.play(opts)
 		b.AnchorPoint = anchor or Vector2.new(0, 1)
 		b.Position = pos
 		b.Size = size
-		b.BackgroundColor3 = Color3.fromRGB(50, 83, 106)
+		b.BackgroundColor3 = Color3.fromRGB(38, 47, 53)
 		b.TextColor3 = Color3.fromRGB(250, 236, 200)
 		b.Font = Enum.Font.GothamBold
-		b.TextSize = 26
+		b.TextSize = 22
+		b.ClipsDescendants = true
 		b.BorderSizePixel = 0
 		b.Parent = gui
 		local c = Instance.new("UICorner")
@@ -1262,19 +1610,24 @@ function NavalBattle.play(opts)
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(214, 170, 82)
 		st.Thickness = 2
-		st.Parent = b
+        st.Parent = b
+        -- [해상 기술] 버튼에 고유 확대 상태를 두고 재사용 완료 순간만 한 번 반짝인다.
+        local readyScale = Instance.new("UIScale")
+        readyScale.Name = "NavalReadyScale"
+        readyScale.Scale = 1
+        readyScale.Parent = b
 		local assetId = iconKey and AssetIds[iconKey]
 		if assetId then
 			b.BackgroundTransparency = 1
 			b.TextTransparency = 1
-			b.ClipsDescendants = false
+			b.ClipsDescendants = true
 			b.AutoButtonColor = false
-			st.Transparency = 1
+			st.Transparency = 0.08
 			local art = Instance.new("ImageLabel")
 			art.Name = "NavalButtonArtwork"
 			art.AnchorPoint = Vector2.new(0.5, 0.5)
-			art.Position = UDim2.fromScale(0.5, 0.5)
-			art.Size = UDim2.fromScale(1, 1)
+			art.Position = UDim2.new(0.5, 0, 0.5, -7)
+			art.Size = UDim2.new(1, -16, 1, -16)
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(assetId)
 			art.ScaleType = Enum.ScaleType.Fit
@@ -1284,29 +1637,108 @@ function NavalBattle.play(opts)
 			local caption = Instance.new("TextLabel")
 			caption.Name = "NavalButtonCaption"
 			caption.AnchorPoint = Vector2.new(0.5, 1)
-			caption.Position = UDim2.new(0.5, 0, 1, -4)
-			caption.Size = UDim2.new(1, -8, 0, 17)
-			caption.BackgroundTransparency = 1
+			caption.Position = UDim2.new(0.5, 0, 1, -10)
+			caption.Size = UDim2.new(1, -24, 0, 21)
+			caption.BackgroundColor3 = Color3.fromRGB(32, 26, 22)
+			caption.BackgroundTransparency = 0.12
+			caption.BorderSizePixel = 0
 			caption.Text = text
 			caption.Font = Enum.Font.GothamBold
-			caption.TextSize = if size.X.Offset >= 90 then 13 else 12
+			caption.TextSize = if size.X.Offset >= 90 then 16 else 14
 			caption.TextColor3 = Color3.fromRGB(255, 242, 211)
 			caption.TextStrokeColor3 = Color3.fromRGB(14, 26, 44)
-			caption.TextStrokeTransparency = 0.34
+			caption.TextStrokeTransparency = 1
 			caption.TextTruncate = Enum.TextTruncate.AtEnd
-			caption.ZIndex = b.ZIndex + 2
+			caption.ZIndex = b.ZIndex + 4
+			caption.Active = false
 			caption.Parent = b
+			local captionCorner = Instance.new("UICorner")
+			captionCorner.CornerRadius = UDim.new(0, 5)
+			captionCorner.Parent = caption
+		end
+		-- [해상 기술 쿨타임] 숫자 대신 원형 아이콘 위 음영으로만 남은 비율을 표현한다.
+		local cooling = Instance.new("Frame")
+		cooling.Name = "NavalCooldownShade"
+		cooling.AnchorPoint = Vector2.new(0.5, 0.5)
+		cooling.Position = UDim2.new(0.5, 0, 0.5, -7)
+		cooling.Size = UDim2.new(1, -16, 1, -16)
+		cooling.BackgroundColor3 = Color3.fromRGB(12, 20, 32)
+		cooling.BackgroundTransparency = 0.26
+		cooling.BorderSizePixel = 0
+		cooling.ZIndex = b.ZIndex + 3
+		cooling.Visible = false
+		cooling.Active = false
+		cooling.Parent = b
+		local mask = Instance.new("UICorner")
+		mask.CornerRadius = UDim.new(1, 0)
+		mask.Parent = cooling
+		-- [지상 버튼과 동일한 광륜] 승인된 원화 버튼에만 링 1개를 상주시키고 발동 때 재사용한다.
+		-- 모바일에서는 입자 추가 생성 없이 두께/섬광만 낮춰 처리한다.
+		if iconKey then
+			b.ClipsDescendants = false
+			local halo = Instance.new("Frame")
+			halo.Name = "NavalButtonHalo"
+			halo.AnchorPoint = Vector2.new(0.5, 0.5)
+			halo.Position = UDim2.fromScale(0.5, 0.5)
+			halo.Size = UDim2.fromScale(0.9, 0.9)
+			halo.BackgroundTransparency = 1
+			halo.Active = false
+			halo.ZIndex = b.ZIndex + 8
+			halo.Parent = b
+			Instance.new("UICorner", halo).CornerRadius = UDim.new(1, 0)
+			local lightRim = Instance.new("UIStroke")
+			lightRim.Color = Color3.fromRGB(255, 245, 177)
+			lightRim.Thickness = if MOBILE_VFX then 2 else 2.8
+			lightRim.Transparency = 1
+			lightRim.Parent = halo
+			local sweep = Instance.new("UIGradient")
+			sweep.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 244, 211)),
+				ColorSequenceKeypoint.new(0.5, Color3.fromRGB(142, 226, 255)),
+				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 222, 140)),
+			})
+			sweep.Transparency = NumberSequence.new({
+				NumberSequenceKeypoint.new(0, 1),
+				NumberSequenceKeypoint.new(0.35, 0.92),
+				NumberSequenceKeypoint.new(0.5, 0),
+				NumberSequenceKeypoint.new(0.65, 0.92),
+				NumberSequenceKeypoint.new(1, 1),
+			})
+			sweep.Parent = lightRim
+			if iconKey == "Menu/naval_speed" then
+				local flash = Instance.new("Frame")
+				flash.Name = "NavalButtonFlash"
+				flash.AnchorPoint = Vector2.new(0.5, 0.5)
+				flash.Position = UDim2.fromScale(0.5, 0.5)
+				flash.Size = UDim2.fromScale(0.78, 0.78)
+				flash.BackgroundColor3 = Color3.fromRGB(246, 250, 255)
+				flash.BackgroundTransparency = 1
+				flash.BorderSizePixel = 0
+				flash.Active = false
+				flash.ZIndex = b.ZIndex + 9
+				flash.Parent = b
+				Instance.new("UICorner", flash).CornerRadius = UDim.new(1, 0)
+			end
 		end
 		return b
 	end
 	local steerDir, throttle = 0, 1
-	local speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24), UDim2.fromOffset(96, 96), Vector2.new(1, 1), "Menu/naval_speed")
+	-- [지상 무기교체 버튼 동규격] 가속은 셋 중 가장 작은 보조 버튼이다.
+	local speedBtn
+	do
+		local compact = MOBILE_VFX and (battleViewport.X < 520 or battleViewport.X <= battleViewport.Y)
+		local size = if compact then 76 elseif MOBILE_VFX and battleViewport.Y < 330 then 72
+			elseif MOBILE_VFX then 80 else 82
+		speedBtn = mkBtn("가속", UDim2.new(1, -24, 1, -24),
+			UDim2.fromOffset(size, size), Vector2.new(1, 1), "Menu/naval_speed")
+	end
 	speedBtn.TextSize = 20
 	speedBtn:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
-	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119),
+	local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119),
 		UDim2.fromOffset(if battleViewport.X < 480 then 56 else 96, if battleViewport.X < 480 then 36 else 30), Vector2.new(0, 0)) -- [좌상단] 전술판·우측 카드 지원·왼쪽 조타와 분리
 	skip.TextSize = if battleViewport.X < 480 then 11 else 14
 	skip.TextWrapped = battleViewport.X < 480
+	skip:FindFirstChildOfClass("UIStroke").ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	skip.Activated:Connect(finish)
 	local phase = "duel" -- duel → board → end (도주 중엔 fleeing)
 	-- [함선 특화 2스킬] 기존 Ships.trait에서 선박 역할을 읽는다. 모든 기함은 포 사격(Q) + 특화(E) 정확히 두 개.
@@ -1385,12 +1817,12 @@ function NavalBattle.play(opts)
 		if battleViewport.X < 480 then
 			-- [세로 폰 우측 열] 기술 2개를 가속 위로 쌓아 왼쪽 조타와 겹치지 않게 한다.
 			sk.x = -72
-			sk.y = if i == 1 then -250 else -170
+			sk.y = if i == 1 then -300 else -184
 		else
 			local n = #SKILLS
 			local ang = math.rad(if n == 1 then 135 else 120 + (i - 1) * (55 / (n - 1)))
-			sk.x = -72 + math.floor(math.cos(ang) * 104)
-			sk.y = -72 - math.floor(math.sin(ang) * 104)
+			sk.x = -72 + math.floor(math.cos(ang) * 132)
+			sk.y = -72 - math.floor(math.sin(ang) * 132)
 		end
 	end
 	local skillPop = function(_text, _color) end -- popText 가 만들어진 뒤 연결된다
@@ -1409,11 +1841,13 @@ function NavalBattle.play(opts)
 			local target = foe.pos - me.pos
 			if target.Magnitude >= cannon.range or target.Magnitude < 0.1 then
 				skillPop("사거리 밖!", Color3.fromRGB(255, 188, 112))
+				gui:SetAttribute("NavalSkillResult", "fire:range") -- [검증용 읽기 전용] 판정 불변
 				return
 			end
 			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 			if math.abs(heading:Cross(target.Unit).Y) <= 0.5 then
 				skillPop("선측을 맞춰!", Color3.fromRGB(255, 188, 112))
+				gui:SetAttribute("NavalSkillResult", "fire:angle")
 				return
 			end
 			fireOrderUntil = now + 0.5
@@ -1421,6 +1855,8 @@ function NavalBattle.play(opts)
 		end
 		skillReady[sk.id] = now + sk.cd
 		skillUntil[sk.id] = now + sk.dur
+		gui:SetAttribute("NavalSkillResult", sk.id .. ":ok")
+		gui:SetAttribute("NavalSkillsUsed", (gui:GetAttribute("NavalSkillsUsed") or 0) + 1)
 		skillPop(sk.text .. " · " .. (sk.cue or "발동") .. "!", sk.col)
 		skillFx(sk.id, sk.dur)
 		if sk.id == "rapid" or sk.id == "fire" then
@@ -1440,29 +1876,39 @@ function NavalBattle.play(opts)
 		end
 	end
 	for _, sk in SKILLS do
-		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(70, 70), Vector2.new(0.5, 0.5),
+		-- [지상 조작과 동규격] 포 사격=공격, 함선 특화=회피. 기존 위치/키 입력/사거리·쿨타임은 그대로.
+		local compact = MOBILE_VFX and (battleViewport.X < 520 or battleViewport.X <= battleViewport.Y)
+		local actionSize = if sk.id == "fire" then
+			(if compact then 104 elseif MOBILE_VFX and battleViewport.Y < 330 then 104
+				elseif MOBILE_VFX then 116 else 112)
+			else (if compact then 86 elseif MOBILE_VFX and battleViewport.Y < 330 then 88
+				elseif MOBILE_VFX then 96 else 94)
+		local b = mkBtn(sk.text, UDim2.new(1, sk.x, 1, sk.y), UDim2.fromOffset(actionSize, actionSize), Vector2.new(0.5, 0.5),
 			if sk.id == "fire" then "Menu/naval_fire" else "Menu/naval_skill")
 		b.TextSize = 14
 		b.TextWrapped = true
 		b:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
 		b.BackgroundColor3 = sk.col
 		b.Visible = not opts.cardOnly
+		b.Name = "NavalSkill_" .. sk.id -- [검증용 이름] 실제 클릭 검사가 기술 버튼을 찾는다(동작 불변).
 		b.Activated:Connect(function()
 			useSkill(sk)
 		end)
 		skillBtn[sk.id] = b
 	end
-	-- 장전 게이지: 다음 포격까지 얼마나 남았는지 (사정거리 밖이면 회색)
+	-- 좁거나 낮은 화면에서는 포 사격 버튼에 장전 상태를 붙인다.
+	local compactReload = battleViewport.X < 720 or battleViewport.Y < 420
 	local reloadBack = Instance.new("Frame")
-	reloadBack.AnchorPoint = Vector2.new(0.5, 1)
-	reloadBack.Position = UDim2.new(0.5, 0, 1, if battleViewport.X < 480 then -295 elseif battleViewport.X < 720 then -212 else -62)
-	reloadBack.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(260, battleViewport.X - 40)
-		elseif battleViewport.X < 720 then math.min(280, battleViewport.X - 48) else 300, 20)
+	reloadBack.Name = "NavalReloadGauge"
+	reloadBack.AnchorPoint = Vector2.new(0.5, if compactReload then 0 else 1)
+	reloadBack.Position = if compactReload then UDim2.new(0.5, 0, 0, 12) else UDim2.new(0.5, 0, 1, -62)
+	reloadBack.Size = if compactReload then UDim2.new(1, -42, 0, 19) else UDim2.fromOffset(300, 24)
+	reloadBack.ZIndex = if compactReload then skillBtn.fire.ZIndex + 5 else 2
 	reloadBack.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 	reloadBack.BackgroundTransparency = 0.15
 	reloadBack.BorderSizePixel = 0
-	reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720 or (battleViewport.X < 480 and battleViewport.Y >= 620) or (battleViewport.X >= 480 and battleViewport.Y >= 520))
-	reloadBack.Parent = gui
+	reloadBack.Visible = not opts.cardOnly
+	reloadBack.Parent = if compactReload then skillBtn.fire else gui
 	do
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, 8)
@@ -1473,7 +1919,10 @@ function NavalBattle.play(opts)
 		st.Parent = reloadBack
 	end
 	local reloadFill = Instance.new("Frame")
-	reloadFill.Size = UDim2.fromScale(1, 1)
+	reloadFill.AnchorPoint = Vector2.new(0, 1)
+	reloadFill.Position = UDim2.new(0, 4, 1, -2)
+	reloadFill.Size = UDim2.new(0, 0, 0, 3)
+	reloadFill.ZIndex = reloadBack.ZIndex + 1
 	reloadFill.BackgroundColor3 = Color3.fromRGB(240, 180, 80)
 	reloadFill.BorderSizePixel = 0
 	reloadFill.Parent = reloadBack
@@ -1483,8 +1932,9 @@ function NavalBattle.play(opts)
 		c.Parent = reloadFill
 	end
 	local reloadText = label(reloadBack, "포 장전", 12, Color3.fromRGB(255, 255, 255), true)
-	reloadText.Size = UDim2.fromScale(1, 1)
-	reloadText.ZIndex = 5
+	reloadText.Size = UDim2.new(1, -4, 1, -4)
+	reloadText.Position = UDim2.fromOffset(2, 0)
+	reloadText.ZIndex = reloadBack.ZIndex + 2
 	-- 적선까지 거리 표시
 	local distLabel = label(gui, "", 15, Color3.fromRGB(255, 255, 255))
 	distLabel.AnchorPoint = Vector2.new(0.5, 1)
@@ -1570,6 +2020,35 @@ function NavalBattle.play(opts)
 	end))
 	speedBtn.Activated:Connect(function()
 		throttle = if throttle >= 1 then 0.45 elseif throttle > 0.4 then 0 else 1
+		-- [해상 가속 광륜·섬광] 지상 무기교체와 동일하게 1회 회전하며 기존 객체만 재사용한다.
+		local halo = speedBtn:FindFirstChild("NavalButtonHalo")
+		local rim = halo and halo:FindFirstChildOfClass("UIStroke")
+		local beam = rim and rim:FindFirstChildOfClass("UIGradient")
+		local flash = speedBtn:FindFirstChild("NavalButtonFlash")
+		if halo and rim and beam then
+			-- [해상·지상 통일] 링은 아이콘 안쪽(0.80→0.94)에서만 돈다.
+			halo.Size = UDim2.fromScale(0.80, 0.80)
+			rim.Transparency = 0.05
+			beam.Rotation = 0
+			TweenService:Create(halo, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromScale(0.94, 0.94) }):Play()
+			TweenService:Create(beam, TweenInfo.new(0.44, Enum.EasingStyle.Linear), { Rotation = 360 }):Play()
+			TweenService:Create(rim, TweenInfo.new(0.44, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Transparency = 1 }):Play()
+		end
+		do -- [해상·지상 통일] 흰 원 섬광 대신 아이콘이 톡 커졌다 돌아온다.
+			local art = speedBtn:FindFirstChild("NavalButtonArtwork")
+			local pop = art and (art:FindFirstChildOfClass("UIScale") or Instance.new("UIScale", art))
+			if pop then
+				pop.Scale = 1.14
+				TweenService:Create(pop, TweenInfo.new(0.32, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+			end
+		end
+		if flash then
+			flash.BackgroundTransparency = 1
+			TweenService:Create(flash, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ BackgroundTransparency = 1 }):Play()
+		end
 		speedBtn.Text = if throttle >= 1 then "가속" elseif throttle > 0.4 then "순항" else "정지"
 		local caption = speedBtn:FindFirstChild("NavalButtonCaption")
 		if caption and caption:IsA("TextLabel") then caption.Text = speedBtn.Text end
@@ -1675,7 +2154,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local q = if side == "foe" then 0.8 else 1
 		local function s(name, vol, speed, fb, wait)
 			if wait then
-				task.delay(wait, function() Sfx.play(name, vol * q, speed, fb) end)
+				task.delay(wait, function()
+					if not finished and folder.Parent then Sfx.play(name, vol * q, speed, fb) end
+				end)
 			else
 				Sfx.play(name, vol * q, speed, fb)
 			end
@@ -1776,6 +2257,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local englishFactions = { europe = "Europe", east_asia = "East Asia", middle_east = "Middle East", new_world = "New World", africa = "Africa" }
 		local englishLeaders = { draw = "Command", clear = "Open Sea Route", snipe = "Snipe", napoleon = "Napoleon", caesar = "Caesar", alexander = "Alexander", charlemagne = "Charlemagne", elizabeth = "Elizabeth I", genghis = "Genghis Khan", qinshi = "Qin Shi Huang", yisunsin = "Yi Sun-sin", nobunaga = "Oda Nobunaga", pachacuti = "Pachacuti", montezuma = "Montezuma II", sittingbull = "Sitting Bull", saladin = "Saladin", suleiman = "Suleiman the Magnificent", cyrus = "Cyrus the Great", mansa = "Mansa Musa", hannibal = "Hannibal", shaka = "Shaka Zulu", rajaraja = "Rajaraja I", tranhungdao = "Tran Hung Dao", akbar = "Akbar" }
 		local function cardName(c)
+			if c.pigForm then return t("돼지", "Pig") end
 			if not english then return c.name end
 			local en = BC.CardEnglish[c.id]
 			return if en then en.name else englishNames[c.id] or c.name
@@ -1784,10 +2266,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local en = english and BC.CardEnglish[c.id]
 			return if en then en.lore else c.lore
 		end
+
 		local function rowName(row)
 			return if english then englishRows[row] or "" else BC.ROW_NAME[row] or ""
 		end
-		local function cardDescription(c)
+		local function baseCardDescription(c)
+			local translation = BC.CardEnglish[c.id]
+			local tactic = if translation and translation.text then (if english then translation.text else c.text) else nil
 			if c.cause or c.fuse then
 				local function nm(id)
 					local d = BC.Units[id] or BC.Specials[id]
@@ -1795,10 +2280,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					return if english and en then en.name else (d and d.name or id)
 				end
 				if c.cause then
-					return if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+					local chain = if english then "Chain: +2 while " .. nm(c.cause) .. " is on your field" else "연쇄: " .. nm(c.cause) .. "이(가) 내 필드에 있으면 +2"
+					return if tactic then tactic .. "\n" .. chain else chain
 				end
-				return if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+				local fuse = if english then "Fuse: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. " merge into one, +3, free play" else "합치기: " .. nm(c.fuse[1]) .. " + " .. nm(c.fuse[2]) .. "이(가) 있으면 하나로 합쳐 +3, 낸 수에 안 셈"
+				return if tactic then tactic .. "\n" .. fuse else fuse
 			end
+			if tactic then return tactic end
 			if c.refuteKind then
 				return if english then "Refute: cut the enemy's " .. c.refuteKind .. " chains" else c.text or "반증"
 			end
@@ -1816,6 +2304,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if c.ability then return englishDetails[c.ability] or "Use in its matching combat row" end
 			return if c.hero then "Hero · Unaffected by weather or Scorch" else "Use row matchups to deploy this card"
 		end
+		local function cardDescription(c)
+			local description = baseCardDescription(c)
+			local role = c.starterRole and BC.StarterText[c.starterRole]
+			if role then
+				local text = role[if english then 2 else 1]
+				if c.cause or c.fuse or c.ability then return text .. "\n" .. description end
+				return text
+			end
+			return description
+		end
 		local function mine(ok, msg, res, act, card)
 			if ok and act then table.insert(actions, act) end
 			return ok, msg, res, card, "me"
@@ -1824,9 +2322,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 		local g = Instance.new("ScreenGui")
 		g.Name = "BoardingGui"
+		local cardTimers = {}
 		g.ResetOnSpawn = false
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
+		-- [카드배틀 모바일] 전투 계산은 그대로 두고 표시 구역만 화면 폭에 맞춘다.
+		local portraitCardRatio = 7 / 10 -- [카드배틀 카드] 세로 7:10 표준
+		local boardCardWidth = math.round(battleViewport.X * 0.065)
+		local handCardWidth = math.round(battleViewport.X * 0.08)
+		local boardPowerTextSize = math.max(11, math.round(battleViewport.Y * 0.033))
+		local handPowerTextSize = math.max(12, math.round(battleViewport.Y * 0.040))
+		local compactCards = opts.cardOnly and (battleViewport.X < 720 or battleViewport.X < battleViewport.Y or battleViewport.Y < 480)
 		-- [카드 대전 실조작] 기존 종료 버튼을 카드판 최상위에 표시한다. 전투 판정과 종료 콜백은 그대로 사용한다.
 		if opts.cardOnly then
 			skip.Parent = g
@@ -1835,8 +2341,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			skip.Active = true
 			skip.Interactable = true
 			skip.AnchorPoint = Vector2.zero
-			skip.Position = UDim2.fromScale(0.02, 0.84)
-			skip.Size = UDim2.fromOffset(112, 44)
+			skip.Position = if compactCards then UDim2.new(0.98, -96, 0.012, 0) else UDim2.new(0.98, -112, 0.012, 0)
+			skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)
 			skip.ZIndex = 30
 		end
 		table.insert(conns, { Disconnect = function()
@@ -1844,10 +2350,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				g:Destroy()
 			end
 		end })
-		local paper = Color3.fromRGB(224, 205, 163)
-		local ink = Color3.fromRGB(49, 37, 27)
-		local brass = Color3.fromRGB(158, 113, 59)
-		local rowIcons = { melee = "Menu/cc0_sword", ranged = "Menu/cc0_crossbow", cannon = "Menu/cc0_fireball" }
+		local paper = if opts.cardOnly then CardTheme.parchment else Color3.fromRGB(224, 205, 163)
+		local ink = if opts.cardOnly then CardTheme.ink else Color3.fromRGB(49, 37, 27)
+		local brass = if opts.cardOnly then CardTheme.brass else Color3.fromRGB(158, 113, 59)
+		local rowIcons = {
+			melee = if opts.cardOnly and AssetIds["CardArt/ui_icon_shield"] then "CardArt/ui_icon_shield" else "Menu/cc0_sword",
+			ranged = if opts.cardOnly and AssetIds["CardArt/ui_icon_bow"] then "CardArt/ui_icon_bow" else "Menu/cc0_crossbow",
+			cannon = "Menu/cc0_fireball",
+		}
 
 		local function frameEdge(gui, color, radius)
 			local curve = Instance.new("UICorner")
@@ -1891,7 +2401,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		bg.BorderSizePixel = 0
 		bg.Parent = g
-		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = Color3.fromRGB(38, 28, 22) }):Play()
+		TweenService:Create(bg, TweenInfo.new(0.6), { BackgroundColor3 = if opts.cardOnly then CardTheme.inset else Color3.fromRGB(38, 28, 22) }):Play()
 		if cfg then
 			bg.BackgroundTransparency = if opts.cardOnly then 0 else 0.42 -- 뒤로 3D 무대(두 배 또는 술집 탁자와 선원)가 비쳐 보인다
 		end
@@ -1906,7 +2416,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		wood.Parent = bg
 		-- [전투판 배경] 오너 원화는 기존 CardArt 업로더의 SHA 승인 및 Roblox 등록 후만 표시한다.
 		-- 아직 미등록이면 기존 등록 세계 해도를 은은한 바탕으로 사용하며, 카드 규칙은 그대로 둔다.
-		local boardArtKey = if AssetIds["CardArt/battle_board"] then "CardArt/battle_board" else "CardArt/event_chart_world"
+		local regionBattleArt = {
+			europe = "CardArt/battle_europe", east_asia = "CardArt/battle_east_asia",
+			middle_east = "CardArt/battle_middle_east", new_world = "CardArt/battle_new_world",
+			africa = "CardArt/battle_africa", southeast_asia = "CardArt/battle_southeast_asia",
+		}
+		local regionArtKey = opts.cardOnly and m.faction and regionBattleArt[m.faction.me]
+		local dawnBoardKey = "CardArt/ui_battle_dawn"
+		local showDawn = opts.cardOnly and AssetIds[dawnBoardKey] ~= nil
+		local boardArtKey = if showDawn then dawnBoardKey
+			elseif regionArtKey and AssetIds[regionArtKey] then regionArtKey
+			elseif AssetIds["CardArt/battle_board"] then "CardArt/battle_board" else "CardArt/event_chart_world"
 		local boardArt = Instance.new("ImageLabel")
 		boardArt.Name = "NavalCardBattleBoard"
 		boardArt.Size = UDim2.fromScale(1, 1)
@@ -1914,7 +2434,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardArt.BorderSizePixel = 0
 		boardArt.ScaleType = Enum.ScaleType.Crop
 		boardArt.Image = if AssetIds[boardArtKey] then "rbxassetid://" .. tostring(AssetIds[boardArtKey]) else ""
-		boardArt.ImageTransparency = if opts.cardOnly then 0.9 elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
+		boardArt.ImageTransparency = if showDawn then 0 elseif opts.cardOnly then (if regionArtKey and AssetIds[regionArtKey] then 0.25 else 0.9)
+			elseif cfg then 0.64 elseif boardArtKey == "CardArt/battle_board" then 0.07 else 0.58
 		boardArt.ZIndex = 1
 		boardArt.Parent = bg
 		-- [가독성] 6개 카드 줄·손패·버튼은 이미지보다 위의 원래 UI 인스턴스를 사용한다.
@@ -1922,7 +2443,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		boardWash.Name = "BattleBoardContrast"
 		boardWash.Size = UDim2.fromScale(1, 1)
 		boardWash.BackgroundColor3 = Color3.fromRGB(15, 24, 40)
-		boardWash.BackgroundTransparency = if opts.cardOnly then 0.8 elseif cfg then 0.84 else 0.73
+		boardWash.BackgroundTransparency = if showDawn then 0.82 elseif opts.cardOnly then 0.53 elseif cfg then 0.84 else 0.73
 		boardWash.BorderSizePixel = 0
 		boardWash.ZIndex = 1
 		boardWash.Parent = bg
@@ -1941,13 +2462,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		chartMark.BackgroundTransparency = 1
 		chartMark.ScaleType = Enum.ScaleType.Fit
 		chartMark.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
-		chartMark.ImageTransparency = if boardArtKey == "CardArt/battle_board" then 1 else 0.92
+		chartMark.ImageTransparency = if string.find(boardArtKey, "CardArt/battle_", 1, true) == 1 then 1 else 0.92
 		chartMark.ImageColor3 = Color3.fromRGB(214, 170, 96)
 		chartMark.Parent = bg
 		local battleLine = Instance.new("Frame")
 		battleLine.AnchorPoint = Vector2.new(0, 0.5)
-		battleLine.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.39 else 0.42)
-		battleLine.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, 0.004)
+		battleLine.Position = if compactCards then UDim2.fromScale(0.15, 0.42) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.39 else 0.42)
+		battleLine.Size = UDim2.fromScale(if compactCards then 0.838 elseif opts.cardOnly then 0.76 else 0.78, 0.004)
 		battleLine.BackgroundColor3 = Color3.fromRGB(214, 170, 96)
 		battleLine.BorderSizePixel = 0
 		battleLine.ZIndex = 3
@@ -1966,7 +2487,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		emblem(titleBar, "Menu/codex", UDim2.fromScale(0.015, 0.5), UDim2.fromScale(0.065, 0.88))
 		local header = label(titleBar, "", 18, ink)
 		header.Position = UDim2.fromScale(0.09, 0)
-		header.Size = UDim2.fromScale(0.89, 1)
+		header.Size = if compactCards then UDim2.new(0.89, -84, 1, 0) else UDim2.fromScale(0.89, 1)
 		header.TextXAlignment = Enum.TextXAlignment.Left
 		header.TextStrokeTransparency = 1
 		header.TextScaled = true
@@ -1974,9 +2495,37 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local headerLimit = Instance.new("UITextSizeConstraint")
 		headerLimit.MaxTextSize = 18
 		headerLimit.Parent = header
+		-- 카드 대결은 점수와 라운드 상태를 각각 고정된 칸에서 읽는다.
+		local battleScore, battleRound, battleTurn
+		local displayedScore, displayedRound, scorePulse
+		if opts.cardOnly then
+			header.Visible = false
+			local summary = Instance.new("Frame")
+			summary.Name = "BattleSummary"
+			summary.AnchorPoint = if compactCards then Vector2.zero else Vector2.new(0.5, 0)
+			summary.Position = UDim2.fromScale(if compactCards then 0.08 else 0.5, 0)
+			summary.Size = if compactCards then UDim2.new(0.92, -100, 1, 0) else UDim2.fromScale(0.65, 1)
+			summary.BackgroundTransparency = 1
+			summary.Parent = titleBar
+			for i, spec in { {"BattleRound", 0.25, 14}, {"BattleScore", 0.46, 24}, {"BattleTurn", 0.29, 14} } do
+				local part = label(summary, "", spec[3], ink, true)
+				part.Name = spec[1]
+				part.Position = UDim2.fromScale(if i == 1 then 0 elseif i == 2 then 0.25 else 0.71, 0)
+				part.Size = UDim2.fromScale(spec[2], 1)
+				part.TextScaled = true
+				part.TextStrokeTransparency = 1
+				local limit = Instance.new("UITextSizeConstraint")
+				limit.MaxTextSize = spec[3]
+				limit.Parent = part
+				if i == 1 then battleRound = part elseif i == 2 then battleScore = part else battleTurn = part end
+			end
+		end
+		-- [카드 안내] 메뉴 버튼 너비와 여백을 확보해 작은 화면에서도 안내 영역을 침범하지 않는다.
+		local guidanceSize = UDim2.new(0.96, if opts.cardOnly then (if compactCards then -100 else -116) else 0, 0.05, 0)
 		local info = label(g, "", 15, Color3.fromRGB(250, 236, 200))
+		info.Name = "CardBattleGuidance"
 		info.Position = UDim2.fromScale(0.02, 0.08)
-		info.Size = UDim2.fromScale(0.96, 0.05)
+		info.Size = guidanceSize
 		info.TextXAlignment = Enum.TextXAlignment.Left
 		info.TextTruncate = Enum.TextTruncate.AtEnd
 		info.BackgroundTransparency = 0.45
@@ -1987,28 +2536,52 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local infoPad = Instance.new("UIPadding")
 		infoPad.PaddingLeft = UDim.new(0, 10)
 		infoPad.Parent = info
+		-- [라운드 결과] 승리·무승부·패배 원화는 안내 문자 위에 짧게 표시한다.
+		local roundResult = Instance.new("ImageLabel")
+		roundResult.Name = "CardBattleRoundResult"
+		roundResult.AnchorPoint = Vector2.new(0.5, 0)
+		roundResult.Position = if compactCards then UDim2.fromScale(0.5, 0.235) else UDim2.fromScale(0.5, 0.13)
+		roundResult.Size = UDim2.fromOffset(70, 70)
+		roundResult.BackgroundTransparency = 1
+		roundResult.ScaleType = Enum.ScaleType.Fit
+		roundResult.ZIndex = 27
+		roundResult.Visible = false
+		roundResult.Parent = g
+		local roundResultTick = 0
 
 		local boardFrame = Instance.new("Frame")
-		boardFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.2, if opts.cardOnly then 0.13 else 0.14)
-		boardFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.78, if opts.cardOnly then 0.52 else 0.56)
+		boardFrame.Position = if compactCards then UDim2.fromScale(0.15, 0.135) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.2, if opts.cardOnly then 0.13 else 0.14)
+		boardFrame.Size = if compactCards then UDim2.fromScale(0.838, 0.57) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.78, if opts.cardOnly then 0.52 else 0.56)
 		boardFrame.BackgroundTransparency = 1
 		boardFrame.Parent = g
 		-- 왼쪽 정보판: 양쪽 합계 원, 목숨 보석, 멈춤 표시, 날씨
 		local panel = Instance.new("Frame")
-		panel.Position = UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
-		panel.Size = UDim2.fromScale(0.17, 0.56)
-		panel.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
+		panel.Position = if compactCards then UDim2.fromScale(0.012, 0.135) else UDim2.fromScale(if opts.cardOnly then 0.79 else 0.02, 0.14)
+		panel.Size = if compactCards then UDim2.fromScale(0.13, 0.57) else UDim2.fromScale(0.17, 0.56)
+		panel.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(30, 23, 19)
 		panel.BorderSizePixel = 0
 		panel.Parent = g
 		frameEdge(panel, brass, 6)
 		local function sidePlate(y, color)
 			local plate = Instance.new("Frame")
-			plate.Position = UDim2.fromScale(0.05, y)
-			plate.Size = UDim2.fromScale(0.9, 0.4)
+			plate.Position = if compactCards then UDim2.fromScale(0.04, if y < 0.5 then 0.012 else 0.508) else UDim2.fromScale(0.05, y)
+			plate.Size = if compactCards then UDim2.fromScale(0.92, 0.48) else UDim2.fromScale(0.9, 0.4)
 			plate.BackgroundColor3 = color
 			plate.BorderSizePixel = 0
 			plate.Parent = panel
 			frameEdge(plate, brass, 5)
+			-- [실제 점수판 원화] 적은 벽돌색, 내 편은 남색 아카이브 판.
+			local scoreKey = if y < 0.5 then "CardArt/ui_score_enemy" else "CardArt/ui_score_player"
+			if opts.cardOnly and AssetIds[scoreKey] then
+				local scoreArt = Instance.new("ImageLabel")
+				scoreArt.Name = "BattleScoreArtwork"
+				scoreArt.Size = UDim2.fromScale(1, 1)
+				scoreArt.BackgroundTransparency = 1
+				scoreArt.Image = "rbxassetid://" .. tostring(AssetIds[scoreKey])
+				scoreArt.ImageTransparency = 0.22
+				scoreArt.ScaleType = Enum.ScaleType.Stretch
+				scoreArt.Parent = plate
+			end
 			local who = label(plate, "", 14, Color3.fromRGB(250, 236, 200), true)
 			who.Position = UDim2.fromScale(0.04, 0.02)
 			who.Size = UDim2.fromScale(0.92, 0.2)
@@ -2018,6 +2591,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			total.Position = UDim2.fromScale(0.5, 0.52)
 			total.Size = UDim2.fromScale(0.4, 0.42)
 			total.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
+			if opts.cardOnly then total.Name = "SideHandCount" end
 			total.BackgroundTransparency = 0
 			total.TextScaled = true
 			total.TextStrokeTransparency = 1
@@ -2026,21 +2600,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			gems.Position = UDim2.fromScale(0.04, 0.78)
 			gems.Size = UDim2.fromScale(0.92, 0.2)
 			gems.TextScaled = true
-			-- 지도자 초상(왼쪽 원)과 덱 더미(오른쪽 겹친 카드 + 남은 장수)
-			local leader = label(plate, "", 16, Color3.fromRGB(46, 33, 22), true)
-			leader.AnchorPoint = Vector2.new(0, 0.5)
-			leader.Position = UDim2.fromScale(0.03, 0.52)
-			leader.Size = UDim2.fromScale(0.27, 0.36)
-			leader.BackgroundColor3 = Color3.fromRGB(214, 176, 104)
-			leader.BackgroundTransparency = 0
-			leader.TextScaled = true
-			leader.TextStrokeTransparency = 1
-			local ar = Instance.new("UIAspectRatioConstraint")
-			ar.Parent = leader
-			local rc = Instance.new("UICorner")
-			rc.CornerRadius = UDim.new(1, 0)
-			rc.Parent = leader
-			frameEdge(leader, Color3.fromRGB(255, 226, 150), 99)
+			-- [카드 전투] 옛 원형 지도자 초상 제거, 비카드 접현전은 기존 기능 유지.
+			local leader
+			if not opts.cardOnly then
+				-- 지도자 초상(왼쪽 원)과 덱 더미(오른쪽 겹친 카드 + 남은 장수)
+				leader = label(plate, "", 16, Color3.fromRGB(46, 33, 22), true)
+				leader.AnchorPoint = Vector2.new(0, 0.5)
+				leader.Position = UDim2.fromScale(0.03, 0.52)
+				leader.Size = UDim2.fromScale(0.27, 0.36)
+				leader.BackgroundColor3 = Color3.fromRGB(214, 176, 104)
+				leader.BackgroundTransparency = 0
+				leader.TextScaled = true
+				leader.TextStrokeTransparency = 1
+				local ar = Instance.new("UIAspectRatioConstraint")
+				ar.Parent = leader
+				local rc = Instance.new("UICorner")
+				rc.CornerRadius = UDim.new(1, 0)
+				rc.Parent = leader
+				frameEdge(leader, Color3.fromRGB(255, 226, 150), 99)
+			end
 			local pile = Instance.new("Frame")
 			pile.AnchorPoint = Vector2.new(1, 0.5)
 			pile.Position = UDim2.fromScale(0.97, 0.52)
@@ -2055,29 +2633,82 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				sheet.BorderSizePixel = 0
 				sheet.Parent = pile
 				frameEdge(sheet, brass, 3)
+				-- [카드 뒷면] 오늘의 항해 나침반 원화는 실제 등록번호가 있을 때만 덮는다.
+				if opts.cardOnly and AssetIds["CardArt/battle_card_back"] then
+					local backArt = Instance.new("ImageLabel")
+					backArt.Name = "CardBackArtwork"
+					backArt.Size = UDim2.fromScale(1, 1)
+					backArt.BackgroundTransparency = 1
+					backArt.ScaleType = Enum.ScaleType.Crop
+					backArt.Image = "rbxassetid://" .. tostring(AssetIds["CardArt/battle_card_back"])
+					backArt.Parent = sheet
+					local backCorner = Instance.new("UICorner")
+					backCorner.CornerRadius = UDim.new(0, 3)
+					backCorner.Parent = backArt
+				end
 			end
 			local deckCount = label(pile, "", 14, Color3.fromRGB(250, 236, 200), true)
 			deckCount.Size = UDim2.fromScale(0.72, 0.82)
 			deckCount.TextScaled = true
 			deckCount.ZIndex = 5
-			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount }
+			-- [궨트식 정보 칸] 좁은 화면은 왼쪽 세로 칸: 이름 → 지도자·총점 → 목숨 → 덱·손패 순서로 쌓는다.
+			local score, passMark
+			if compactCards then
+				who.Size = UDim2.fromScale(0.92, 0.15)
+				score = label(plate, "0", 26, Color3.fromRGB(46, 33, 22), true)
+				score.Name = "SideScore"
+				score.AnchorPoint = Vector2.new(0.5, 0.5)
+				score.Position = UDim2.fromScale(0.74, 0.36)
+				score.Size = UDim2.fromScale(0.46, 0.34)
+				score.BackgroundColor3 = Color3.fromRGB(232, 194, 120)
+				score.BackgroundTransparency = 0
+				score.TextScaled = true
+				score.TextStrokeTransparency = 1
+				local scoreRatio = Instance.new("UIAspectRatioConstraint")
+				scoreRatio.Parent = score
+				frameEdge(score, Color3.fromRGB(255, 226, 150), 99)
+				gems.Position = UDim2.fromScale(0.04, 0.56)
+				gems.Size = UDim2.fromScale(0.92, 0.14)
+				pile.AnchorPoint = Vector2.new(0, 0)
+				pile.Position = UDim2.fromScale(0.05, 0.72)
+				pile.Size = UDim2.fromScale(0.34, 0.26)
+				total.AnchorPoint = Vector2.new(0, 0)
+				total.Position = UDim2.fromScale(0.44, 0.76)
+				total.Size = UDim2.fromScale(0.52, 0.2)
+				total.BackgroundTransparency = 0.35
+				passMark = label(plate, t("패스", "Passed"), 18, Color3.fromRGB(255, 236, 196), true)
+				passMark.Name = "SidePassed"
+				passMark.AnchorPoint = Vector2.new(0.5, 0.5)
+				passMark.Position = UDim2.fromScale(0.5, 0.42)
+				passMark.Size = UDim2.fromScale(0.96, 0.22)
+				passMark.Rotation = -8
+				passMark.BackgroundColor3 = Color3.fromRGB(120, 36, 30)
+				passMark.BackgroundTransparency = 0.08
+				passMark.TextScaled = true
+				passMark.ZIndex = 12
+				passMark.Visible = false
+				frameEdge(passMark, Color3.fromRGB(255, 210, 150), 4)
+			end
+			return { who = who, total = total, gems = gems, plate = plate, leader = leader, deck = deckCount, score = score, passed = passMark }
 		end
-		local foePlate = sidePlate(0.02, Color3.fromRGB(88, 58, 50))
-		local mePlate = sidePlate(0.58, Color3.fromRGB(58, 74, 62))
+		local foePlate = sidePlate(0.02, if opts.cardOnly then CardTheme.rival else Color3.fromRGB(88, 58, 50))
+		local mePlate = sidePlate(0.58, if opts.cardOnly then CardTheme.allied else Color3.fromRGB(58, 74, 62))
 		local weatherTag = label(panel, "", 13, Color3.fromRGB(192, 212, 239), true)
 		weatherTag.Position = UDim2.fromScale(0.04, 0.435)
 		weatherTag.Size = UDim2.fromScale(0.92, 0.13)
 		weatherTag.TextScaled = true
 		weatherTag.TextWrapped = true
+		weatherTag.Visible = not compactCards and not opts.cardOnly
 		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
-		-- 점수판(panel) 안에 두면 내 점수 칸과 겹치므로, 안내 줄(info) 자리에 잠깐 덮어 보여 준다
+		-- [조언 표시] 기존 안내 줄과 같은 구역을 교대로 사용하며 두 문구를 동시에 표시하지 않는다.
 		local adviceTag = label(g, "", 14, Color3.fromRGB(255, 233, 170), true)
-		adviceTag.Position = UDim2.fromScale(0.02, 0.08)
-		adviceTag.Size = UDim2.fromScale(0.96, 0.05)
+		adviceTag.Name = "CardBattleAdvice"
+		adviceTag.Position = info.Position
+		adviceTag.Size = guidanceSize
 		adviceTag.TextScaled = true
 		adviceTag.TextWrapped = true
 		adviceTag.BackgroundColor3 = Color3.fromRGB(40, 33, 26)
-		adviceTag.BackgroundTransparency = 0.25
+		adviceTag.BackgroundTransparency = 0
 		adviceTag.Visible = false
 		adviceTag.ZIndex = 20
 		local adviceRound, adviceCount, adviceToken = 0, 0, 0
@@ -2105,25 +2736,33 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			adviceToken += 1
 			local mine = adviceToken
 			adviceTag.Text = text
+			info.Visible = false
 			adviceTag.Visible = true
-			task.delay(seconds or 7, function()
-				if adviceToken == mine and adviceTag.Parent then adviceTag.Visible = false end
-			end)
+			cardTimers[task.delay(seconds or 7, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
+				if adviceToken == mine and adviceTag.Parent and info.Parent then
+					adviceTag.Visible = false
+					info.Visible = true
+				end
+			end)] = true
 		end
 		do
 			local sc = BC.scout(cfg and cfg.seed or 1, { boss = opts.isBoss == true })
-			task.delay(0.6, function()
+			cardTimers[task.delay(0.6, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
 				if adviceTag.Parent then
 					sayAdvice(if opts.cardOnly then string.format("정찰: 상대는 %s · %s 덱. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.weakName, BC.ROW_NAME[sc.counterRow]) else string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
 				end
-			end)
+			end)] = true
 		end
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
 		handTray.Name = "NavalCardHandTray"
-		handTray.Position = UDim2.fromScale(if opts.cardOnly then 0.21 else 0.015, if opts.cardOnly then 0.66 else 0.715)
-		handTray.Size = UDim2.fromScale(if opts.cardOnly then 0.57 else 0.75, if opts.cardOnly then 0.335 else 0.275)
-		handTray.BackgroundColor3 = Color3.fromRGB(18, 39, 58)
+		handTray.Position = if compactCards then UDim2.fromScale(0.012, 0.712) else UDim2.fromScale(if opts.cardOnly then 0.02 else 0.015, if opts.cardOnly then 0.66 else 0.715)
+		handTray.Size = if compactCards then UDim2.fromScale(0.776, 0.28) else UDim2.fromScale(if opts.cardOnly then 0.76 else 0.75, if opts.cardOnly then 0.335 else 0.275)
+		handTray.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(18, 39, 58)
 		handTray.BackgroundTransparency = if opts.cardOnly then 0.6 else 0.27
 		handTray.BorderSizePixel = 0
 		handTray.Parent = g
@@ -2138,8 +2777,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		trayGradient.Rotation = 90
 		trayGradient.Parent = handTray
 		local handFrame = Instance.new("ScrollingFrame")
-		handFrame.Position = UDim2.fromScale(if opts.cardOnly then 0.215 else 0.02, if opts.cardOnly then 0.665 else 0.72)
-		handFrame.Size = UDim2.fromScale(if opts.cardOnly then 0.56 else 0.74, if opts.cardOnly then 0.325 else 0.26)
+		handFrame.Position = if compactCards then UDim2.fromScale(0.018, 0.716) else UDim2.fromScale(if opts.cardOnly then 0.025 else 0.02, if opts.cardOnly then 0.665 else 0.72)
+		handFrame.Size = if compactCards then UDim2.fromScale(0.764, 0.272) else UDim2.fromScale(if opts.cardOnly then 0.75 else 0.74, if opts.cardOnly then 0.325 else 0.26)
 		handFrame.BackgroundTransparency = 1
 		handFrame.BorderSizePixel = 0
 		handFrame.ScrollingDirection = Enum.ScrollingDirection.X
@@ -2148,8 +2787,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		handFrame.ScrollBarThickness = 4
 		handFrame.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 73)
 		local handPadding = Instance.new("UIPadding")
-		handPadding.PaddingTop = UDim.new(0, 10)
-		handPadding.PaddingBottom = UDim.new(0, 8)
+		handPadding.PaddingTop = UDim.new(0, if compactCards then 3 else 10)
+		handPadding.PaddingBottom = UDim.new(0, if compactCards then 3 else 8)
 		handPadding.PaddingLeft = UDim.new(0, 3)
 		handPadding.Parent = handFrame
 		handFrame.Parent = g
@@ -2159,16 +2798,37 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		handLay.Padding = UDim.new(0, 5)
 		handLay.Parent = handFrame
 
+		local showLeaderCard -- [전투 중 지도자 카드] 기존 카드 확대 UI를 사용한다.
 		local function mkSide(text, y, color, assetKey, onClick)
 			local b = Instance.new("TextButton")
 			b.Text = ""
-			b.Position = UDim2.fromScale(0.78, y)
-			b.Size = UDim2.fromScale(0.2, 0.058)
+			if compactCards then
+				-- [작은 화면 터치] 버튼 줄(높이 약 23px)을 없애고 손패 오른쪽 세로 칸에 둔다.
+				-- 패스는 위, 손패 교체는 아래로 분리해 높이 약 44px 이상을 확보하고 전장·손패에 공간을 돌려준다.
+				local lower = y == 0.70 or y == 0.895
+				b.Position = UDim2.fromScale(0.8, if lower then 0.857 else 0.712)
+				b.Size = UDim2.fromScale(0.188, 0.135)
+			else
+				b.Position = UDim2.fromScale(0.78, y)
+				b.Size = UDim2.fromScale(0.2, 0.058)
+			end
 			b.BackgroundColor3 = color
 			b.BorderSizePixel = 0
 			b.Parent = g
+			-- [실제 조작 버튼] 원화는 배경만 담당하며 기존 클릭 입력을 가리지 않는다.
+			local buttonArtId = opts.cardOnly and AssetIds["CardArt/ui_button_ink"]
+			if buttonArtId then
+				local buttonArt = Instance.new("ImageLabel")
+				buttonArt.Name = "CardBattleButtonArtwork"
+				buttonArt.Size = UDim2.fromScale(1, 1)
+				buttonArt.BackgroundTransparency = 1
+				buttonArt.ScaleType = Enum.ScaleType.Stretch
+				buttonArt.Image = "rbxassetid://" .. tostring(buttonArtId)
+				buttonArt.ImageTransparency = 0.28
+				buttonArt.Parent = b
+			end
 			frameEdge(b, brass, 5)
-			emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
+			local icon = emblem(b, assetKey, UDim2.fromScale(0.05, 0.5), UDim2.fromScale(0.25, 0.78))
 			local title = label(b, text, 14, Color3.fromRGB(250, 236, 200))
 			title.Name = "Caption"
 			title.Position = UDim2.fromScale(0.34, 0)
@@ -2179,12 +2839,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			limit.MaxTextSize = 15
 			limit.Parent = title
 			b.Activated:Connect(onClick)
-			return b
+			return b, icon
 		end
 
 		local render
 		local auto = false
 		local playing = false
+		local activeFlightTween
 		local selected
 		local cardMotions = {}
 		-- 모든 카드가 공유하는 단일 프레임 갱신. 손패 10장 + 최근 전장 2장도 모바일에서 관리한다.
@@ -2194,32 +2855,299 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 		g.Destroying:Connect(function()
 			cardMotionStep:Disconnect()
+			if activeFlightTween then activeFlightTween:Cancel(); activeFlightTween = nil end
+			-- [카드배틀 종료] 아직 실행되지 않은 화면·음향 예약만 취소한다.
+			for timer in cardTimers do task.cancel(timer) end
+			table.clear(cardTimers)
+			if scorePulse then scorePulse:Cancel(); scorePulse = nil end
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
 		end)
 		local rowTargets = { me = {}, foe = {} }
 		-- 카드를 고르면 그 카드가 놓일 줄(특수 카드는 판 전체)이 금빛으로 깜빡여 어디에 놓이는지 바로 보이게 한다.
 		local dropGlow
+		local forecastGlows = {}
 		local function clearDropHint()
+			for _, glow in forecastGlows do glow:Destroy() end
+			table.clear(forecastGlows)
 			if dropGlow then
 				pcall(function() dropGlow:Destroy() end)
 				dropGlow = nil
 			end
 		end
 		local function dropHint(c)
-			clearDropHint()
-			local side = if c.ability == "spy" then "foe" else "me"
+			local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
 			local target = if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
 			if not target then return end
 			local st = Instance.new("UIStroke")
 			st.Name = "DropHint"
-			st.Color = Color3.fromRGB(255, 218, 120)
+			st.Color = if opts.cardOnly then CardTheme.gold else Color3.fromRGB(255, 218, 120)
 			st.Thickness = 3
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			st.Parent = target
 			dropGlow = st
 			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
 		end
+		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
+		local deployAbilities = {
+			spy = true, medic = true, snipe = true, relay = true, eastWind = true, orleans = true,
+			humbaba = true, egyptChariot = true, urChariot = true, mactanGuard = true, anaconda = true,
+			apache = true, bachDangLure = true, anansi = true, pigHex = true, sirenSong = true,
+			unweave = true, musketeerAid = true, monkeyStrike = true, pigGuard = true, sandCleanse = true, sanzangRelief = true,
+			witchCurse = true, witchBind = true, witchGuard = true, rats = true, quixote = true,
+			savannaLion = true, savannaElephant = true, savannaGiraffe = true, savannaZebra = true,
+			gilgamesh = true, enkidu = true, saladinCavalry = true, ishida = true, chaski = true,
+		}
+		local deployRoles = {
+			pierce = true, survey = true, evacuate = true, vanguard = true,
+			rearGuard = true, rally = true, mobilize = true,
+		}
+		local function cardTiming(c)
+			local ability, role, special = c.ability, c.starterRole, c.special
+			if role == "raid" then return t("매 내 턴", "Each turn") end
+			if ability == "charge" then return t("충전 3회", "3 charges") end
+			if ability == "lastOrder" then return t("패스할 때", "On pass") end
+			if ability == "supply" then return t("다음 라운드", "Next round") end
+			if role == "bombard" or ability == "marathon" or ability == "defect" or ability == "feigned"
+				or ability == "amazonJaguar" or special == "strait" then
+				return t("다음 내 턴", "Next turn")
+			end
+			if ability == "stakes" or ability == "counter" or ability == "hittiteChariot" or ability == "lakota"
+				or ability == "electricEel" or ability == "cyclops" or ability == "musketeerGuard" or ability == "musketeerShield"
+				or ability == "legacy" or role == "reinforce" or special == "ambush" or special == "falseOrder"
+				or special == "rallyFlag" or special == "mactanShoal" or special == "kadeshTreaty" then
+				return t("조건 발동", "Reaction")
+			end
+			if ability == "comanche" or role == "coverFire" then return t("이동할 때", "On move") end
+			if special or deployAbilities[ability] or deployRoles[role] then return t("내는 즉시", "On play") end
+			return nil
+		end
+		local function cardPlacement(c)
+			if c.special then return t("전술", "Tactic") end
+			if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then
+				return t("적군 ", "Enemy ") .. rowName(BC.lane(c))
+			end
+			return rowName(BC.lane(c))
+		end
+		local function cardBadge(c)
+			if c.hero then return t("영웅", "Hero"), Color3.fromRGB(111, 77, 35) end
+			if c.fuse then return t("합치기", "Fuse"), Color3.fromRGB(90, 58, 116) end
+			if c.cause then return t("연쇄", "Chain"), Color3.fromRGB(90, 58, 116) end
+			if c.special then return t("전술", "Tactic"), Color3.fromRGB(126, 70, 40) end
+			if BC.StorySeries[c.id] then return t("이야기", "Story"), Color3.fromRGB(46, 78, 107) end
+			if c.starterRole == "rearGuard" or c.ability == "armor" then
+				return t("엄호", "Guard"), Color3.fromRGB(78, 79, 42)
+			end
+			return nil
+		end
+		local function cardStatus(c)
+			local symbols, names = {}, {}
+			local function add(symbol, name)
+				table.insert(symbols, symbol .. (if symbol == "⏳" then " " .. tostring(c.charges or 0) .. "/3" else ""))
+				table.insert(names, symbol .. " " .. name)
+			end
+			if c.pigForm then add("🐷", t("변신", "Transformed")) end
+			if c.sealedAbility then add("🔒", t("봉인", "Sealed")) end
+			if c.anchored then add("⚓", t("이동 제한", "Pinned")) end
+			if c.bachDangRound == m.round then add("↔️", t("썰물 표식", "Ebb mark")) end
+			if c.shaken then add("🚫", t("강화 차단", "Boost blocked")) end
+			if c.pendingReturn then add("↩️", t("복귀 대기", "Return pending")) end
+			if c.cover or c.deployCover then add("🛡️", t("엄호", "Guard")) end
+			if c.reorganize then add("🔄", t("재정비", "Regrouping")) end
+			local power = c.tacticPower or 0
+			if power < 0 then add("⬇️", t("약화 ", "Weakened ") .. tostring(power)) end
+			if power > 0 then add("⬆️", t("강화 +", "Boosted +") .. tostring(power)) end
+			if c.ability == "charge" then
+				add("⏳", t("충전 ", "Charge ") .. tostring(c.charges or 0) .. "/3")
+			end
+			if #symbols == 0 then return nil, nil, nil end
+			local badge = table.concat(symbols, " ", 1, math.min(#symbols, 2))
+			if #symbols > 2 then badge ..= " +" .. tostring(#symbols - 2) end
+			return badge, table.concat(names, " · "), names[1]
+		end
+		local function effectTrace(from, to, tint, at)
+			local delta = to - from
+			local length = delta.Magnitude
+			if length < 4 then return end
+			cardTimers[task.delay(at, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
+				if not bg.Parent then return end
+				local trail = Instance.new("Frame")
+				trail.Size = UDim2.fromOffset(0, 3)
+				trail.Rotation = math.deg(math.atan2(delta.Y, delta.X))
+				-- Roblox rotates around the center; set the midpoint once and extend symmetrically.
+				local midpoint = from + delta / 2
+				trail.AnchorPoint = Vector2.new(0.5, 0.5)
+				trail.Position = UDim2.fromOffset(midpoint.X, midpoint.Y)
+				trail.BackgroundColor3 = tint
+				trail.BorderSizePixel = 0
+				trail.ZIndex = 34
+				trail.Parent = bg
+				TweenService:Create(trail, TweenInfo.new(0.16), {
+					Size = UDim2.fromOffset(length, 2), BackgroundTransparency = 1,
+				}):Play()
+				cardTimers[task.delay(0.18, function()
+					cardTimers[coroutine.running()] = nil
+					if trail.Parent then trail:Destroy() end
+				end)] = true
+			end)] = true
+		end
+		local function effectAt(position, size, caption, tint, delay, style)
+			cardTimers[task.delay(delay, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
+				if not g.Parent or not bg.Parent then return end
+				if size.X < 1 or size.Y < 1 then return end
+				local burst = Instance.new("Frame")
+				burst.AnchorPoint = Vector2.new(0.5, 0.5)
+				burst.Position = UDim2.fromOffset(position.X, position.Y)
+				burst.Size = if style == "hit" then UDim2.fromOffset(size.X * 0.72, 4)
+					elseif style == "heal" then UDim2.fromOffset(size.X * 0.76, size.Y * 0.45)
+					else UDim2.fromOffset(size.X, size.Y)
+				if style == "hit" then burst.Rotation = -23 end
+				if style == "stakes" then
+					burst.BackgroundColor3 = Color3.fromRGB(71, 161, 199)
+					for tooth = 1, 3 do
+						local stake = Instance.new("Frame")
+						stake.AnchorPoint = Vector2.new(0.5, 1)
+						stake.Position = UDim2.fromScale(tooth / 4, 0.94)
+						stake.Size = UDim2.fromScale(0.055, 0)
+						stake.BackgroundColor3 = Color3.fromRGB(251, 199, 120)
+						stake.BorderSizePixel = 0
+						stake.Rotation = -10
+						stake.ZIndex = 35
+						stake.Parent = burst
+						TweenService:Create(stake, TweenInfo.new(0.22), { Size = UDim2.fromScale(0.055, 0.6), BackgroundTransparency = 0.18 }):Play()
+					end
+				elseif style == "vanish" then
+					burst.BackgroundTransparency = 1
+				end
+				burst.BackgroundColor3 = tint
+				burst.BackgroundTransparency = 0.72
+				burst.BorderSizePixel = 0
+				burst.ZIndex = 35
+				burst.Parent = bg
+				local rim = frameEdge(burst, tint, if style == "guard" then 12 else 5)
+				if style == "vanish" then rim.Thickness = 3 end
+				rim.Thickness = if style == "guard" then 3 else 1
+				TweenService:Create(rim, TweenInfo.new(0.42), { Transparency = 1 }):Play()
+				TweenService:Create(burst, TweenInfo.new(0.42), {
+					Size = if style == "hit" then UDim2.fromOffset(size.X + 16, 2) else UDim2.fromOffset(size.X + 10, size.Y + 10), BackgroundTransparency = 1,
+				}):Play()
+				local flash = label(bg, caption, 15, tint, true)
+				local captionY = position.Y + (if style == "guard" then 12 elseif style == "hit" then -12 else 0)
+				flash.AnchorPoint = Vector2.new(0.5, 0.5)
+				flash.Position = UDim2.fromOffset(position.X, captionY)
+				flash.Size = UDim2.fromOffset(math.max(62, size.X, (utf8.len(caption) or #caption) * 10), math.max(22, math.min(32, size.Y)))
+				flash.BackgroundColor3 = Color3.fromRGB(38, 28, 22)
+				flash.BackgroundTransparency = 0.15
+				flash.ZIndex = 36
+				flash.TextStrokeTransparency = 0.7
+				frameEdge(flash, tint, 5)
+				if opts.cardOnly and (style == "hit" or style == "guard" or style == "stakes") then CardSymbols.apply(flash, caption) end
+				TweenService:Create(flash, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Position = UDim2.fromOffset(position.X, captionY - 17), BackgroundTransparency = 1, TextTransparency = 1,
+				}):Play()
+				cardTimers[task.delay(0.5, function()
+					cardTimers[coroutine.running()] = nil
+					if flash.Parent then flash:Destroy() end
+					if burst.Parent then burst:Destroy() end
+				end)] = true
+			end)] = true
+		end
+		local function cardCenter(widget)
+			if not widget or not widget.Parent or widget.AbsoluteSize.X < 1 then return nil end
+			local center = widget.AbsolutePosition + widget.AbsoluteSize / 2
+			local lane = widget.Parent
+			if center.X < lane.AbsolutePosition.X or center.X > lane.AbsolutePosition.X + lane.AbsoluteSize.X then return nil end
+			return center - bg.AbsolutePosition
+		end
+		local function playBoardEffects(before, order, card, leader)
+			local damage, aid, other = {}, {}, {}
+			local volley = {}
+			local source = card and boardCards[card]
+			local sourceCenter = cardCenter(source)
+			if sourceCenter then
+				local scale = Instance.new("UIScale")
+				scale.Scale = 0.9
+				scale.Parent = source
+				local unfold = TweenService:Create(scale, TweenInfo.new(0.20, Enum.EasingStyle.Back), { Scale = 1 })
+				unfold:Play()
+				cardTimers[task.delay(0.25, function()
+					cardTimers[coroutine.running()] = nil
+					if scale.Parent then scale:Destroy() end
+				end)] = true
+			end
+			if leader == "elizabeth" and m.armadaShots then
+				for i, shot in m.armadaShots do
+					local at = (i - 1) * 0.14
+					volley[shot.target] = at + 0.07
+					local ship, target = boardCards[shot.ship], boardCards[shot.target]
+					local source, destination = cardCenter(ship), cardCenter(target)
+					if source then
+						effectAt(source, ship.AbsoluteSize, t("포격", "Fire"), Color3.fromRGB(255, 213, 136), at)
+						if destination then effectTrace(source, destination, Color3.fromRGB(255, 188, 111), at) end
+					end
+				end
+			end
+			for _, unit in order do
+				local old, now = before[unit], previousBoard[unit]
+				local dst = if now then boardCards[unit] else nil
+				local size = if dst then dst.AbsoluteSize else old.size
+				local pos = if dst then dst.AbsolutePosition + size / 2 - bg.AbsolutePosition else old.pos
+				if dst then
+					local row = dst.Parent
+					local absolute = dst.AbsolutePosition + size / 2
+					if absolute.X < row.AbsolutePosition.X or absolute.X > row.AbsolutePosition.X + row.AbsoluteSize.X then continue end
+				end
+				local function add(list, name, tint, style)
+					table.insert(list, { pos, size, name, tint, style })
+				end
+				if now then
+					local delta = now.power - old.power
+					local blocked = now.blocked - old.blocked
+					if blocked > 0 then add(aid, (if opts.cardOnly then "🛡️ " else "") .. t("막음 ", "Block ") .. tostring(blocked), Color3.fromRGB(253, 212, 124), "guard") end
+					if delta < 0 then
+						local tag = if card and card.id == "sa_36" then t("말뚝 ", "Stakes ") elseif leader == "elizabeth" then t("포격 ", "Volley ") else ""
+						local caption = (if opts.cardOnly then "⚔️ " else "") .. tag .. "−" .. tostring(-delta)
+						local stain = if card and card.id == "sa_36" then "stakes" else "hit"
+						local tint = Color3.fromRGB(255, 143, 120)
+						if volley[unit] then effectAt(pos, size, caption, tint, volley[unit], "hit") else add(damage, caption, tint, stain) end
+					elseif delta > 0 then
+						local tag = if old.penalty < 0 and now.penalty == 0 then t("회복 ", "Heal ") else ""
+						add(aid, tag .. "+" .. tostring(delta), Color3.fromRGB(154, 233, 182), "heal")
+					end
+					if now.status and old.status ~= now.status and blocked == 0 then
+						add(other, now.status, Color3.fromRGB(200, 166, 242))
+					end
+					if now.chain and not old.chain then
+						add(other, t("연쇄 발동", "Chain active"), Color3.fromRGB(226, 186, 249))
+					end
+					if old.row ~= now.row or old.side ~= now.side then
+						if pos and old.pos and old.visible then effectTrace(old.pos, pos, Color3.fromRGB(140, 211, 242), 0.1) end
+						add(other, if unit.bachDangRound == m.round then t("유인", "Lured") else t("이동", "Moved"), Color3.fromRGB(142, 213, 244))
+					end
+				elseif old.visible then
+					add(other, t("전장 이탈", "Left field"), Color3.fromRGB(214, 191, 153))
+				end
+			end
+			local delay = 0
+			for _, list in { aid, damage, other } do
+				for _, entry in list do
+					effectAt(entry[1], entry[2], entry[3], entry[4], delay, entry[5])
+					delay = math.min(0.56, delay + (if leader == "elizabeth" then 0.13 else 0.07))
+				end
+			end
+			if card and card.id == "eu_36" then
+				local size = boardFrame.AbsoluteSize
+				local pos = boardFrame.AbsolutePosition + size / 2 - bg.AbsolutePosition
+				effectAt(pos, Vector2.new(100, 30), t("잔 다르크 · 소멸", "Joan of Arc · Vanished"), Color3.fromRGB(255, 216, 132), delay, "vanish")
+			end
+		end
+		local cardLineTurn = 0
 		local function afterAction(ok, msg, res, card, side)
+			cardLineTurn += 1
 			if ok and card and not card.special then lastPlayed[side] = card end
 			if ok and card and onPlay then onPlay(side, card) end
 			if not ok then
@@ -2233,30 +3161,117 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				Sfx.play("sfx_anchor_lower", 0.4, 1.1, "sfx_rope_pull")
 			end
 			info.Text = if english then (if msg == "멈췄다" then "Passed" else "Card played") else msg or ""
+			if opts.cardOnly and not res and card and (card.id == "lo_51" or card.id == "lo_52" or card.id == "lo_53" or card.id == "lo_60") then
+				local line = BC.CardLines[card.id]
+				local actionText = info.Text
+				local caption = "「" .. line[if english then 2 else 1] .. "」"
+				local shownOnTurn = cardLineTurn
+				info.Text = caption
+				cardTimers[task.delay(1.8, function()
+					cardTimers[coroutine.running()] = nil
+					if finished or not g.Parent then return end
+					if info.Parent and shownOnTurn == cardLineTurn and info.Text == caption then
+						info.Text = actionText
+					end
+				end)] = true
+			end
 			if res then
+				if opts.cardOnly then
+					local resultName = if res.winner == "me" then "ui_result_win" elseif res.winner == "foe" then "ui_result_loss" else "ui_result_draw"
+					local resultArtId = AssetIds["CardArt/" .. resultName]
+					if resultArtId then
+						roundResultTick += 1
+						local currentResult = roundResultTick
+						roundResult.Image = "rbxassetid://" .. tostring(resultArtId)
+						roundResult.Visible = true
+						cardTimers[task.delay(1.6, function()
+							cardTimers[coroutine.running()] = nil
+							if finished or not g.Parent then return end
+							if currentResult == roundResultTick and roundResult.Parent then roundResult.Visible = false end
+						end)] = true
+					end
+				end
 				info.Text = if english then string.format("Round %d — You %d : Pirates %d %s", res.round, res.me, res.foe,
 					if res.winner == "me" then "(Victory!)" elseif res.winner == "foe" then "(Defeat)" else "(Draw)")
 					else string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe,
 						if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
-				task.delay(0.5, function()
+				cardTimers[task.delay(0.5, function()
+					cardTimers[coroutine.running()] = nil
+					if finished or not g.Parent then return end
 					Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_naval_hull_hit", 0.6, 1, "sfx_hit")
 					Sfx.play("sfx_metal_clash", 0.5, 1)
+				end)] = true
+			end
+			local before, order = previousBoard, previousOrder
+			for unit, widget in boardCards do
+				local entry = before[unit]
+				entry.size = widget.AbsoluteSize
+				entry.pos = widget.AbsolutePosition + entry.size / 2 - bg.AbsolutePosition
+				entry.visible = cardCenter(widget) ~= nil
+			end
+			local leader = if side and not previousLeaders[side] and m.leaderUsed[side] then m.leader[side] else nil
+			render()
+			if opts.cardOnly and not res then
+				local rendered = previousBoard
+				task.defer(function()
+					if g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
 				end)
 			end
-			render()
 		end
-		local passBtn = mkSide(t("멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), "Menu/cc0_shield", function()
+		local passArmedAt = 0
+		local passBtn = mkSide(t(if opts.cardOnly then "패스" else "멈추기", "Pass"), 0.765, Color3.fromRGB(97, 55, 42), if opts.cardOnly and AssetIds["CardArt/ui_icon_hourglass"] then "CardArt/ui_icon_hourglass" else "Menu/cc0_shield", function()
 			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+				-- [패스 오조작 방지] 카드전은 2.5초 안에 한 번 더 눌러야 이번 라운드를 넘긴다.
+				if opts.cardOnly and os.clock() - passArmedAt > 2.5 then
+					passArmedAt = os.clock()
+					info.Text = t("한 번 더 누르면 이번 라운드를 패스합니다 · 패스하면 이 라운드에 카드를 더 낼 수 없습니다",
+						"Tap again to pass this round · you cannot play more cards this round")
+					return
+				end
+				passArmedAt = 0
 				Sfx.play("sfx_anchor_lower", 0.55, 1.1, "sfx_rope_pull")
 				afterAction(mine(BC.pass(m, "me")))
+			elseif opts.cardOnly then
+				info.Text = if m.turn ~= "me" then t("상대 차례에는 패스할 수 없습니다", "You cannot pass on the opponent's turn")
+					elseif auto then t("자동 진행 중입니다", "Auto play is on") else t("지금은 패스할 수 없습니다", "You cannot pass now")
 			end
 		end)
-		local leaderBtn = mkSide(t("지도자 능력", "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
-			if not playing and not auto and not finished and m.turn == "me" and not m.over then
+		local leaderBtn, leaderIcon = mkSide(t(if opts.cardOnly then "지도자 카드" else "지도자 능력", if opts.cardOnly then "Leader Card" else "Leader Ability"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+			if opts.cardOnly then
+				if not finished and showLeaderCard then showLeaderCard("me") end
+			elseif not playing and not auto and not finished and m.turn == "me" and not m.over then
+				-- 카드 대전이 아닌 접현전은 기존 단일 터치 능력 사용 방식을 보존한다.
 				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
 				afterAction(mine(BC.useLeader(m, "me")))
 			end
 		end)
+		local leaderPortrait, foePortrait
+		if opts.cardOnly then
+			local foeBtn, foeIcon = mkSide(t("상대 지도자", "Opponent Leader"), 0.83, Color3.fromRGB(89, 67, 46), "Menu/cc0_helmet", function()
+				if not finished and showLeaderCard then showLeaderCard("foe") end
+			end)
+			for _, entry in { { "me", leaderBtn, leaderIcon, mePlate.plate }, { "foe", foeBtn, foeIcon, foePlate.plate } } do
+				local side, control, icon, scorePlate = table.unpack(entry)
+				control.Name = if side == "me" then "PlayerLeader" else "OpponentLeader"
+				control.AnchorPoint = Vector2.new(0, 0.5)
+				control.Position = UDim2.fromScale(0.035, if compactCards then 0.36 else 0.52)
+				control.Size = UDim2.fromScale(if compactCards then 0.46 else 0.34, if compactCards then 0.36 else 0.65)
+				control.Parent = scorePlate
+				control.Caption.Visible = false
+				icon.Position = UDim2.fromScale(0.05, 0.5)
+				icon.Size = UDim2.fromScale(0.90, 0.96)
+				local leaderId = m.leader[side]
+				local portraitKey = NEW_LEADER_ART[leaderId]
+				local fallbackKey = LEADER_FACE[leaderId]
+				local portraitId = (portraitKey and AssetIds[portraitKey]) or AssetIds["CardArt/leader_" .. leaderId]
+					or (fallbackKey and AssetIds[fallbackKey])
+				if portraitId then
+					icon.Image = "rbxassetid://" .. tostring(portraitId)
+					icon.ScaleType = Enum.ScaleType.Fit
+				end
+				if side == "me" then leaderPortrait = icon else foePortrait = icon end
+			end
+		end
 		local mullBtn
 		mullBtn = mkSide(t("손패 교체", "Swap Card"), 0.70, Color3.fromRGB(70, 58, 38), "Menu/cc0_glove", function()
 			if playing or auto or finished or m.turn ~= "me" or m.over then return end
@@ -2276,7 +3291,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
 			render()
 		end)
-		mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), "Menu/cc0_yes", function()
+		local autoBtn = mkSide(t("자동 진행", "Auto Play"), 0.895, Color3.fromRGB(46, 72, 69), if opts.cardOnly and AssetIds["CardArt/ui_icon_victory"] then "CardArt/ui_icon_victory" else "Menu/cc0_yes", function()
 			Sfx.play("sfx_ui_confirm", 0.5, 1, "sfx_click")
 			auto = true
 		end)
@@ -2287,19 +3302,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local f = Instance.new("TextButton")
 			f.Text = ""
 			f.AutoButtonColor = false
-			f.Size = UDim2.new(0, w, 1, 0)
+			f.Size = UDim2.new(0, if opts.cardOnly then boardCardWidth else w, 1, 0)
 			f.BackgroundColor3 = if c.hero then Color3.fromRGB(121, 76, 41) else Color3.fromRGB(61, 45, 31)
 			f.BorderSizePixel = 0
 			if opts.cardOnly then
 				-- 줄 높이에 맞춰 커지는 세로 카드(퀜트 느낌)
 				local chipRatio = Instance.new("UIAspectRatioConstraint")
-				chipRatio.AspectRatio = 0.74
-				chipRatio.DominantAxis = Enum.DominantAxis.Height
+				chipRatio.AspectRatio = portraitCardRatio
+				chipRatio.AspectType = Enum.AspectType.FitWithinMaxSize
 				chipRatio.Parent = f
 			end
 			f.Parent = parent
 			-- [전투판 카드] 이미 펼친 소형 카드도 5개 지역의 덱 색상을 유지한다.
-			local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+			local regionId = if type(c.id) == "string" then BC.cardRegionPrefix(c.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
 			frameEdge(f, if c.hero then Color3.fromRGB(246, 209, 120) elseif regionDeck then regionDeck.color else brass, 4)
 			local plate = Instance.new("Frame")
@@ -2312,14 +3327,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			painting.Name = "EncyclopediaPlate"
 			painting.AnchorPoint = Vector2.new(0.5, 0.5)
 			painting.Position = UDim2.fromScale(0.5, 0.5)
-			painting.Size = UDim2.fromScale(1.12, 1.12)
+			painting.Size = UDim2.fromScale(0.92, 0.92)
 			painting.BackgroundTransparency = 1
-			painting.ScaleType = Enum.ScaleType.Crop
-			painting.ImageColor3 = Color3.fromRGB(236, 211, 165)
+			painting.ScaleType = Enum.ScaleType.Fit
+			painting.ImageColor3 = if type(c.id) == "string" and AssetIds["CardArt/" .. c.id] then Color3.new(1, 1, 1) else Color3.fromRGB(236, 211, 165)
 			local artKey = cardArtworkKey(c)
 			painting.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
 			painting.Parent = plate
-			if moving then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
+			local frameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
+			if opts.cardOnly and frameArtId then
+				local regionBorder = Instance.new("ImageLabel")
+				regionBorder.Name = "PlayedCardRegionFrame"
+				regionBorder.Size = UDim2.fromScale(1, 1)
+				regionBorder.BackgroundTransparency = 1
+				regionBorder.Image = "rbxassetid://" .. tostring(frameArtId)
+				regionBorder.ScaleType = Enum.ScaleType.Stretch
+				regionBorder.ZIndex = 4
+				regionBorder.Parent = f
+			end
+			if moving and CARD_ART_MOTION then table.insert(cardMotions, animateCardArt(plate, painting, c)) end
 			local blackWash = Instance.new("UIGradient")
 			blackWash.Rotation = 90
 			blackWash.Transparency = NumberSequence.new({
@@ -2354,6 +3380,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			stamp.BackgroundColor3 = paper
 			stamp.BackgroundTransparency = 0
 			frameEdge(stamp, brass, 4)
+			if opts.cardOnly then
+				local sizeLimit = Instance.new("UITextSizeConstraint")
+				sizeLimit.MaxTextSize = boardPowerTextSize
+				sizeLimit.Parent = stamp
+			end
+			if compactCards then
+				-- [궨트식 전장 카드] 작은 카드는 원화를 크게, 점수는 왼쪽 위 원 하나로. 이름·출신은 눌러서 확대창에서 본다.
+				plate.Size = UDim2.fromScale(1, 1)
+				tag.Visible = false
+				identity.Visible = false
+				stamp.AnchorPoint = Vector2.zero
+				stamp.Position = UDim2.fromScale(0.02, 0.02)
+				stamp.Size = UDim2.fromScale(0.5, 0.34)
+				stamp.BackgroundColor3 = if c.hero then Color3.fromRGB(246, 209, 120) else paper
+				stamp.ZIndex = 9
+				local stampCurve = stamp:FindFirstChildOfClass("UICorner")
+				if stampCurve then stampCurve.CornerRadius = UDim.new(1, 0) end
+				local stampRatio = Instance.new("UIAspectRatioConstraint")
+				stampRatio.Parent = stamp
+			end
 			return f
 		end
 		-- 선택 전에도 모든 손패 카드에서 움직이는 백과사전 삽화가 동작한다.
@@ -2541,10 +3587,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local lunge = if attack then 0.8 * impact elseif motion == "pounce" then 0.9 * impact else 0
 				-- 배경은 가볍게 패럴랙스, 캐릭터·무기·함선은 독립된 장면 안에서 실제 동작한다.
 				local pan = (if motion == "retreat" then 0.07 else 0.018) * wind
-				image.Position = UDim2.fromScale(0.5 + pan - 0.045 * lunge + 0.02 * recoil,
-					0.5 + (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact)
+				-- [기존 승인 원화] 카드 틀을 넘는 자동 확대만 제한한다. 파도·안개·광원 모션은 유지한다.
+				-- [원화 전체 표시] 카드 애니메이션의 이동을 여백 안에 제한한다. 파도·광원·실물 모션은 유지.
+				image.Position = UDim2.fromScale(
+					math.clamp(0.5 + (if opts.cardOnly then 0.012 * wind else pan - 0.045 * lunge + 0.02 * recoil), 0.486, 0.514),
+					math.clamp(0.5 + (if opts.cardOnly then 0.012 * wave else (if motion == "storm" then 0.039 else 0.019) * wave - 0.015 * impact), 0.486, 0.514))
 				image.Rotation = if motion == "storm" then 1.2 * wave elseif motion == "gallop" then 0.8 * wave else 0
-				image.Size = UDim2.fromScale(1.17 + (if focused then 0.04 else 0) + 0.025 * impact, 1.17 + (if focused then 0.04 else 0) + 0.025 * impact)
+				local artZoom = 0.91 + (if focused then 0.005 else 0) + 0.01 * impact
+				image.Size = UDim2.fromScale(artZoom, artZoom)
 				mist.Position = UDim2.fromScale(-0.25 + math.sin(elapsed * 0.55) * 0.11, 0.72 + wave * 0.038)
 				mist.BackgroundTransparency = if motion == "storm" or motion == "fog" then 0.44 + 0.15 * wave
 					elseif motion == "fire" then 0.65 - 0.2 * impact
@@ -2612,41 +3662,26 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusBounds.MinSize = Vector2.new(145, 210)
 		focusBounds.Parent = focusFrame
 		local focusRatio = Instance.new("UIAspectRatioConstraint")
-		focusRatio.AspectRatio = 0.69
+		focusRatio.AspectRatio = if opts.cardOnly then portraitCardRatio else 0.69
 		focusRatio.DominantAxis = Enum.DominantAxis.Height
 		focusRatio.Parent = focusFrame
-		focusFrame.BackgroundColor3 = Color3.fromRGB(50, 35, 25)
+		focusFrame.BackgroundColor3 = if opts.cardOnly then CardTheme.leather else Color3.fromRGB(50, 35, 25)
 		focusFrame.BackgroundTransparency = 0.02
 		focusFrame.BorderSizePixel = 0
 		focusFrame.ClipsDescendants = true
 		focusFrame.Visible = false
 		focusFrame.ZIndex = 50
-		-- 카드 대전(cardOnly): 확대 카드는 화면을 덮지 않고 왼쪽 설명 칸에 고정해 보여 준다 (퀜트식).
-		local previewHint
+		-- 카드 대전은 전투판 위에 원화와 설명을 중앙으로 띄운다.
 		if opts.cardOnly then
-			focusFrame.AnchorPoint = Vector2.new(0, 0)
-			focusFrame.Position = UDim2.fromScale(0.01, 0.135)
-			previewHint = Instance.new("TextLabel")
-			previewHint.Name = "CardPreviewHint"
-			previewHint.Position = UDim2.fromScale(0.01, 0.135)
-			previewHint.Size = UDim2.fromScale(0.19, 0.5)
-			previewHint.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
-			previewHint.BackgroundTransparency = 0.25
-			previewHint.BorderSizePixel = 0
-			previewHint.Font = Enum.Font.Gotham
-			previewHint.TextColor3 = Color3.fromRGB(226, 208, 170)
-			previewHint.TextSize = 15
-			previewHint.TextWrapped = true
-			previewHint.Text = t("카드를 누르면\n설명이 여기에 나와요.\n\n한 번 더 누르면\n카드를 내요.", "Tap a card to read it here.\n\nTap again to play it.")
-			previewHint.Parent = g
-			frameEdge(previewHint, brass, 6)
-			-- 왼쪽 아래: 최근 전황 기록 (안내 띠의 문장이 지나가 버려도 다시 읽을 수 있다)
+			focusBounds.MinSize = Vector2.zero
+			focusFrame.Position = UDim2.fromScale(boardFrame.Position.X.Scale + boardFrame.Size.X.Scale / 2, 0.5)
+			-- 넓은 전투판에서는 조작 열에서 최근 전황을 펼쳐 본다.
 			local logBox = Instance.new("TextLabel")
 			logBox.Name = "BattleLog"
-			logBox.Position = UDim2.fromScale(0.01, 0.66)
-			logBox.Size = UDim2.fromScale(0.19, 0.325)
-			logBox.BackgroundColor3 = Color3.fromRGB(30, 23, 19)
-			logBox.BackgroundTransparency = 0.25
+			logBox.Position = if compactCards then UDim2.fromScale(0.39, 0.16) else UDim2.fromScale(0.78, 0.19)
+			logBox.Size = if compactCards then UDim2.fromScale(0.59, 0.52) else UDim2.fromScale(0.20, 0.50)
+			logBox.BackgroundColor3 = CardTheme.leather
+			logBox.BackgroundTransparency = 0
 			logBox.BorderSizePixel = 0
 			logBox.Font = Enum.Font.Gotham
 			logBox.TextColor3 = Color3.fromRGB(226, 208, 170)
@@ -2654,19 +3689,84 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			logBox.TextWrapped = true
 			logBox.TextXAlignment = Enum.TextXAlignment.Left
 			logBox.TextYAlignment = Enum.TextYAlignment.Bottom
-			logBox.Text = ""
+			logBox.Text = t("아직 전황 기록이 없어요", "No battle events yet")
 			logBox.Parent = g
+			logBox.Visible = false
+			logBox.ZIndex = 32
+			local menu = Instance.new("Frame")
+			menu.Name = "BattleActions"
+			menu.AnchorPoint = Vector2.new(1, 0)
+			menu.Position = UDim2.fromScale(0.98, 0.08)
+			menu.Size = UDim2.fromOffset(if compactCards then 166 else 180, 216)
+			menu.BackgroundColor3 = CardTheme.leather
+			menu.ZIndex = 40
+			menu.Visible = false
+			menu.Parent = g
+			frameEdge(menu, brass, 6)
+			-- [메뉴 기능별 정리] 정보(전황·규칙) → 진행(자동) → 나가기 순서로 묶고, 묶음 사이에 구분선을 둔다.
+			local lines = {}
+			local logMode = "log"
+			local RULES_TEXT = t(
+				"· 3판 2선승. 판마다 점수가 높은 쪽이 이긴다.\n· 줄: 위 2줄은 상대, 아래 2줄은 나 (전열·후열).\n· 카드를 눌러 고르고, 한 번 더 누르거나 줄로 끌어 놓는다.\n· 패스하면 이번 판에 카드를 더 낼 수 없다. 둘 다 패스하면 판 종료.\n· 판마다 손패 교체: 첫 판 3장, 다음 판부터 1장씩 추가(최대 3).\n· 판이 끝나면 카드 3장을 더 뽑는다. 아끼는 것도 전략.",
+				"· Best of 3 rounds. Higher score wins each round.\n· Top 2 rows: opponent. Bottom 2 rows: you.\n· Tap a card, tap again or drag it to a row.\n· Passing ends your round. When both pass, the round ends.\n· Swaps: 3 in round 1, +1 each later round (max 3).\n· Draw 3 cards after each round. Saving cards is a strategy.")
+			local function showLog(modeName)
+				menu.Visible = false
+				if logBox.Visible and logMode == modeName then logBox.Visible = false; return end
+				logMode = modeName
+				logBox.Text = if modeName == "rules" then RULES_TEXT
+					elseif #lines > 0 then table.concat(lines, "\n\n") else t("아직 전황 기록이 없어요", "No battle events yet")
+				logBox.TextYAlignment = if modeName == "rules" then Enum.TextYAlignment.Top else Enum.TextYAlignment.Bottom
+				logBox.Visible = true
+			end
+			local logBtn = mkSide(t("전황 기록", "Battle Log"), 0.83, CardTheme.leather, "Menu/codex", function() showLog("log") end)
+			local rulesBtn = mkSide(t("규칙 보기", "Rules"), 0.83, CardTheme.leather, "Menu/cc0_book", function() showLog("rules") end)
+			rulesBtn.Name = "BattleRules"
+			local y = 5
+			for i, control in { logBtn, rulesBtn, autoBtn, skip } do
+				if i == 3 or i == 4 then
+					local divider = Instance.new("Frame")
+					divider.Name = "MenuDivider"
+					divider.Position = UDim2.fromOffset(10, y + 1)
+					divider.Size = UDim2.new(1, -20, 0, 1)
+					divider.BackgroundColor3 = brass
+					divider.BackgroundTransparency = 0.3
+					divider.BorderSizePixel = 0
+					divider.ZIndex = 41
+					divider.Parent = menu
+					y += 6
+				end
+				control.Parent = menu
+				control.AnchorPoint = Vector2.zero
+				control.Position = UDim2.fromOffset(5, y)
+				control.Size = UDim2.new(1, -10, 0, 42)
+				control.ZIndex = 41
+				for _, child in control:GetDescendants() do
+					if child:IsA("GuiObject") then child.ZIndex = 42 end
+				end
+				y += 46
+			end
+			skip.BackgroundColor3 = Color3.fromRGB(110, 44, 36)
+			local menuBtn = mkSide(t("메뉴", "Menu"), 0.895, CardTheme.leather, "Menu/codex", function()
+				if logBox.Visible then logBox.Visible = false; return end
+				menu.Visible = not menu.Visible
+			end)
+			menuBtn.Position = UDim2.new(0.98, if compactCards then -96 else -112, 0.012, 0)
+			menuBtn.Size = UDim2.fromOffset(if compactCards then 96 else 112, if compactCards then 40 else 44)
+			menuBtn.ZIndex = 39
+			for _, child in menuBtn:GetDescendants() do
+				if child:IsA("GuiObject") then child.ZIndex = 40 end
+			end
+			autoBtn.Activated:Connect(function() menu.Visible = false end)
 			local logPad = Instance.new("UIPadding")
 			logPad.PaddingLeft, logPad.PaddingRight, logPad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 6), UDim.new(0, 6)
 			logPad.Parent = logBox
 			frameEdge(logBox, brass, 6)
-			local lines = {}
 			info:GetPropertyChangedSignal("Text"):Connect(function()
 				local txt = info.Text
 				if txt == "" or txt == lines[#lines] or string.find(txt, "카드를 눌러", 1, true) or string.find(txt, "Your turn", 1, true) then return end
 				table.insert(lines, txt)
 				while #lines > 5 do table.remove(lines, 1) end
-				logBox.Text = table.concat(lines, "\n\n")
+				if logMode == "log" then logBox.Text = table.concat(lines, "\n\n") end
 			end)
 		end
 		-- [확대 카드] 어두운 배경을 터치하면 선택을 취소하고 기존 카드 대전으로 돌아간다.
@@ -2691,17 +3791,27 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusPaper = Instance.new("ImageLabel")
 		focusPaper.Size = UDim2.fromScale(1, 1)
 		focusPaper.BackgroundTransparency = 1
-		focusPaper.Image = if AssetIds["Menu/parchment_grain"] then "rbxassetid://" .. tostring(AssetIds["Menu/parchment_grain"]) else ""
-		focusPaper.ImageColor3 = Color3.fromRGB(174, 134, 83)
-		focusPaper.ImageTransparency = 0.43
+		local cardParchment = AssetIds["CardArt/ui_parchment"] or AssetIds["CardArt/battle_parchment"]
+		focusPaper.Image = if cardParchment then "rbxassetid://" .. tostring(cardParchment)
+			elseif AssetIds["Menu/parchment_grain"] then "rbxassetid://" .. tostring(AssetIds["Menu/parchment_grain"]) else ""
+		focusPaper.ImageColor3 = if cardParchment then Color3.new(1, 1, 1) else Color3.fromRGB(174, 134, 83)
+		focusPaper.ImageTransparency = if cardParchment then 0.12 else 0.43
 		focusPaper.ScaleType = Enum.ScaleType.Crop
 		focusPaper.ZIndex = 50
 		focusPaper.Parent = focusFrame
+		local focusBorder = Instance.new("ImageLabel")
+		focusBorder.Name = "EnlargedCardRegionFrame"
+		focusBorder.Size = UDim2.fromScale(1, 1)
+		focusBorder.BackgroundTransparency = 1
+		focusBorder.ScaleType = Enum.ScaleType.Stretch
+		focusBorder.ZIndex = 54
+		focusBorder.Visible = false
+		focusBorder.Parent = focusFrame
 		local focusArtwork = Instance.new("Frame")
 		focusArtwork.Name = "CodexPainting"
 		focusArtwork.Position = UDim2.fromScale(0.035, 0.095)
-		focusArtwork.Size = UDim2.fromScale(0.93, 0.64)
-		focusArtwork.BackgroundColor3 = Color3.fromRGB(77, 58, 43)
+		focusArtwork.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.60 else 0.64)
+		focusArtwork.BackgroundColor3 = if opts.cardOnly then CardTheme.inset else Color3.fromRGB(77, 58, 43)
 		focusArtwork.BorderSizePixel = 0
 		focusArtwork.ClipsDescendants = true
 		focusArtwork.ZIndex = 51
@@ -2718,9 +3828,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local focusImage = Instance.new("ImageLabel")
 		focusImage.AnchorPoint = Vector2.new(0.5, 0.5)
 		focusImage.Position = UDim2.fromScale(0.5, 0.5)
-		focusImage.Size = UDim2.fromScale(1.14, 1.14)
+		focusImage.Size = UDim2.fromScale(0.92, 0.92)
 		focusImage.BackgroundTransparency = 1
-		focusImage.ScaleType = Enum.ScaleType.Crop
+		focusImage.ScaleType = Enum.ScaleType.Fit
 		focusImage.ImageColor3 = Color3.fromRGB(239, 214, 174)
 		focusImage.ZIndex = 52
 		focusImage.Parent = focusArtwork
@@ -2731,9 +3841,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusName.Font = Enum.Font.Antique
 		focusName.ZIndex = 53
 		local focusRule = label(focusFrame, "", 14, ink, true)
-		focusRule.Position = UDim2.fromScale(0.035, 0.75)
-		focusRule.Size = UDim2.fromScale(0.93, 0.17)
-		focusRule.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
+		focusRule.Position = UDim2.fromScale(0.035, if opts.cardOnly then 0.72 else 0.75)
+		focusRule.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.20 else 0.17)
+		focusRule.BackgroundColor3 = if opts.cardOnly then CardTheme.parchment else Color3.fromRGB(233, 213, 170)
 		focusRule.BackgroundTransparency = 0.08
 		focusRule.BorderSizePixel = 0
 		focusRule.TextScaled = true
@@ -2741,12 +3851,39 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusRule.TextStrokeTransparency = 1
 		focusRule.Font = Enum.Font.Antique
 		focusRule.ZIndex = 52
-		frameEdge(focusRule, brass, 4)
+		local ruleScroll
+		if opts.cardOnly then
+			ruleScroll = Instance.new("ScrollingFrame")
+			ruleScroll.Name = "CardEffectDescription"
+			ruleScroll.Position = UDim2.fromScale(0.035, 0.72)
+			ruleScroll.Size = UDim2.fromScale(0.93, 0.13)
+			ruleScroll.BackgroundColor3 = Color3.fromRGB(233, 213, 170)
+			ruleScroll.BorderSizePixel = 0
+			ruleScroll.ZIndex = 52
+			ruleScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+			ruleScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+			ruleScroll.CanvasSize = UDim2.new()
+			ruleScroll.ScrollBarThickness = 4
+			ruleScroll.Parent = focusFrame
+			frameEdge(ruleScroll, brass, 4)
+			focusRule.Parent = ruleScroll
+			focusRule.Position = UDim2.fromOffset(6, 5)
+			focusRule.Size = UDim2.new(1, -17, 0, 0)
+			focusRule.AutomaticSize = Enum.AutomaticSize.Y
+			focusRule.BackgroundTransparency = 1
+			focusRule.TextScaled = false
+			focusRule.TextSize = 14
+			focusRule.Font = Enum.Font.Gotham
+			focusRule.TextXAlignment = Enum.TextXAlignment.Left
+			focusRule.TextYAlignment = Enum.TextYAlignment.Top
+		else
+			frameEdge(focusRule, brass, 4)
+		end
 		-- 확대 도판에서도 기존 두 번 누르기와 동일한 전투 판정을 호출한다.
 		local focusUse = Instance.new("TextButton")
 		focusUse.Name = "UseCard"
-		focusUse.Position = UDim2.fromScale(0.035, 0.926)
-		focusUse.Size = UDim2.fromScale(0.93, 0.067)
+		focusUse.Position = UDim2.fromScale(0.035, if opts.cardOnly then 0.865 else 0.926)
+		focusUse.Size = UDim2.fromScale(0.93, if opts.cardOnly then 0.11 else 0.067)
 		focusUse.Text = t("카드 사용", "Play Card")
 		focusUse.TextScaled = true
 		focusUse.Font = Enum.Font.Antique
@@ -2768,7 +3905,47 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		frameEdge(focusClose, brass, 4)
 		local selectedPlay
 		local focusMotion
+		local leaderPreviewId
+		local function selectionForecast(card)
+			local index = table.find(m.hand.me, card)
+			if not opts.cardOnly or not index then return nil end
+			local result = BC.previewPlay(m, "me", index)
+			if not result then return nil end
+			if result.blocked == "stakes" then
+				return t("예상 · 말뚝과 후열 유인 대상이 필요해. 이미 발동한 말뚝은 다시 쓸 수 없어.",
+					"Preview · Requires unused Stakes and a lured enemy in the back row.")
+			end
+			if result.random then return t("예상 · 징조가 무작위로 정해져.", "Preview · The omen is random.") end
+			if result.roundEnds then return t("예상 · 이 수로 라운드가 끝나.", "Preview · This play ends the round.") end
+			local items = {}
+			for _, target in (result.targets or {}) do
+				local widget = boardCards[target.card]
+				local tint = if target.left or (target.delta or 0) < 0 then Color3.fromRGB(245, 130, 112)
+					elseif (target.delta or 0) > 0 then Color3.fromRGB(146, 222, 175) else Color3.fromRGB(144, 208, 242)
+				if not opts.cardOnly and #forecastGlows < 8 and cardCenter(widget) then
+					local glow = Instance.new("UIStroke")
+					glow.Name = "ForecastTarget"
+					glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+					glow.Thickness = 2
+					glow.Color = tint
+					glow.Parent = widget
+					table.insert(forecastGlows, glow)
+				end
+				if #items < 3 then
+					local change = if target.left then t("이탈", "leaves")
+						elseif target.moved then rowName(target.row) else ""
+					if target.delta and target.delta ~= 0 then
+						change ..= (if change == "" then "" else " ") .. string.format("%+d", target.delta)
+					end
+					table.insert(items, cardName(target.card) .. " " .. change)
+				end
+			end
+			if #items == 0 then return nil end
+			return t("예상 · ", "Preview · ") .. table.concat(items, " / ")
+				.. (if #result.targets > #items then t(" 외 ", " +") .. tostring(#result.targets - #items) else "")
+		end
 		local function showCardCodex(card, readOnly)
+			if ruleScroll then ruleScroll.CanvasPosition = Vector2.zero end
 			if focusMotion then
 				focusMotion.stop()
 				for i = #cardMotions, 1, -1 do
@@ -2777,50 +3954,110 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				focusMotion = nil
 			end
 			if focusTween then focusTween:Cancel(); focusTween = nil end
-			if previewHint then previewHint.Visible = card == nil end
 			if not card then
+				leaderPreviewId = nil
 				focusArtwork:SetAttribute("ArtFocused", false)
 				focusFrame.Visible = false
 				focusShade.Visible = false
 				return
 			end
-			-- [배치 카드] 손패가 아닌 전장 카드는 읽기 전용 확대만 허용한다.
-			focusUse.Visible = not readOnly
-			-- [크기] 화면 가장자리 여백을 남기고 0.69 비율로 최대 620px까지 확대한다.
+			-- [지도자 카드] 원화와 능력을 카드 형태로 보여 주고, 사용은 기존 BC.useLeader 흐름을 따른다.
+			local leaderProfile = card.leaderId and BC.Leaders[card.leaderId]
+			leaderPreviewId = if leaderProfile and card.leaderSide == "me" then card.leaderId else nil
+			focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)
+				else not readOnly
+			focusUse.Text = if leaderProfile then t("지도자 능력 사용", "Use Leader Ability") else t("카드 사용", "Play Card")
+			-- [크기] 카드 대전 확대창은 새 세로 7:10 틀을 그대로 사용한다.
 			local screenSize = bg.AbsoluteSize
-			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / 0.69, 620)))
+			local ratio = if opts.cardOnly then portraitCardRatio else 0.69
+			local height = math.floor(math.max(210, math.min(screenSize.Y * 0.86, screenSize.X * 0.9 / ratio, 620)))
 			if opts.cardOnly then
-				height = math.floor(math.max(210, math.min(screenSize.Y * 0.85, screenSize.X * 0.19 / 0.69)))
+				height = math.floor(math.max(1, math.min(screenSize.Y * 0.88, screenSize.X * 0.94 / ratio, 620)))
 			end
-			focusFrame.Size = UDim2.fromOffset(math.floor(height * 0.69), height)
+			focusFrame.Size = UDim2.fromOffset(math.floor(height * ratio), height)
 			focusScale.Scale = 0.78
 			focusShade.BackgroundTransparency = 1
-			focusShade.Visible = not opts.cardOnly -- 카드 대전에서는 화면을 어둡게 덮지 않는다
+			focusShade.Visible = true
 			focusArtwork:SetAttribute("ArtFocused", true)
 			focusFrame.Visible = true
-			if not opts.cardOnly then TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = 0.3 }):Play() end
+			TweenService:Create(focusShade, TweenInfo.new(0.2), { BackgroundTransparency = if opts.cardOnly then 0.48 else 0.3 }):Play()
 			focusTween = TweenService:Create(focusScale, TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { Scale = 1 })
 			focusTween:Play()
-			local artKey = cardArtworkKey(card)
-			focusImage.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-			-- [확대 카드] 지역 덱과 선박·유물·동물·원더 분류를 판독할 수 있게 표시한다.
-			local regionId = if type(card.id) == "string" then string.match(card.id, "^(%a%a)_%d%d$") else nil
+			local artKey = if leaderProfile then (NEW_LEADER_ART[card.leaderId] and AssetIds[NEW_LEADER_ART[card.leaderId]] and NEW_LEADER_ART[card.leaderId]) or (AssetIds["CardArt/leader_" .. card.leaderId] and "CardArt/leader_" .. card.leaderId) or LEADER_FACE[card.leaderId] else cardArtworkKey(card)
+			focusImage.Image = if artKey and AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
+			focusImage.ImageColor3 = if leaderProfile or (type(card.id) == "string" and AssetIds["CardArt/" .. card.id]) then Color3.new(1, 1, 1) else Color3.fromRGB(239, 214, 174)
+			-- [등록 원화] 전투판·손패·확대창에서 정사각형과 7:10 원화를 전부 보이고 자르지 않는다.
+			focusImage.ScaleType = Enum.ScaleType.Fit
+			focusImage.Size = UDim2.fromScale(0.92, 0.92)
+			local regionId = if leaderProfile then m.faction[card.leaderSide] elseif type(card.id) == "string" then BC.cardRegionPrefix(card.id) else nil
 			local regionDeck = if regionId then CARD_DECK[regionId] else nil
+			local focusFrameArtId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
+			focusBorder.Image = if focusFrameArtId then "rbxassetid://" .. tostring(focusFrameArtId) else ""
+			focusBorder.Visible = focusFrameArtId ~= nil
 			focusEdge.Color = if regionDeck then regionDeck.color else brass
-			focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
-			local row = if card.row then rowName(card.row) else t("전술", "Tactic")
-			local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
-			local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
-			local description = cardDescription(card)
-			local lore = cardLore(card)
-			focusRule.Text = category .. row .. strength .. "\n" .. description .. (if lore then "\n" .. lore else "")
-			focusMotion = animateCardArt(focusArtwork, focusImage, card)
-			table.insert(cardMotions, focusMotion)
+			if leaderProfile then
+				focusName.Text = t("지도자 · ", "Leader · ") .. leaderProfile.name
+				focusRule.Text = (BC.cardAbilitySymbol(leaderProfile) or "◆") .. " " .. t("지도자 능력: ", "Leader Ability: ") .. (if english then leaderProfile.textEn or leaderProfile.text else leaderProfile.text)
+					.. t(" · 보급 +", " · Provision +") .. tostring(leaderProfile.provision or 0)
+					.. (if m.leaderUsed[card.leaderSide] then t("\n이번 대결에서 사용함", "\nAlready used in this match") else "")
+					.. (if not opts.cardOnly and BC.CardLines[card.leaderId] then "\n「" .. BC.CardLines[card.leaderId][if english then 2 else 1] .. "」" else "")
+			else
+				focusName.Text = if regionDeck then (if english then regionDeck.en else regionDeck.ko) .. " · " .. cardName(card) else cardName(card)
+				local row = cardPlacement(card)
+				local timing = cardTiming(card)
+				local category = if card.category then (if english then englishCategories[card.category] or card.category else card.category) .. " · " else ""
+				local strength = if card.power then t(" · 전투력 ", " · Power ") .. tostring(card.power) else ""
+				local description = cardDescription(card)
+				local forecast = if not readOnly then selectionForecast(card) else nil
+				local lore = cardLore(card)
+				local series = BC.StorySeries[card.id]
+				local kind = if card.cause or card.fuse then t("연쇄·조합", "Combo")
+					elseif card.special then t("전술", "Tactic") elseif card.hero then t("영웅", "Hero") else t("능력", "Ability")
+				local _, status = cardStatus(card)
+				local ability = BC.cardAbilitySymbol(card)
+				if opts.cardOnly then
+					local hasTiming = string.match(description, "^낼 때:") or string.match(description, "^낼 때：") or string.match(description, "^On play:")
+						or string.match(description, "^Deploy:")
+					local rule = description
+					if hasTiming then
+						rule = description:gsub("^[^:]+: ?","", 1)
+						if rule == description then rule = description:gsub("^낼 때：%s*", "", 1) end
+					end
+					local trigger = if rule ~= description then t("낼 때", "On play") elseif not hasTiming then timing else nil
+					-- [해도 탁자] 첫 줄에 발동과 효과, 다음 줄에 연계 조건과 전투 상태를 표시한다.
+					local combo
+					if card.id == "lo_51" then
+						local effect, condition = rule:match("^(.-)%.%s+(.+)$")
+						if effect then
+							rule, combo = effect, condition
+							if english then
+								rule = "Enemy melee non-hero −2"
+							end
+						end
+					end
+					focusRule.Text = (if trigger then trigger .. " · " else "") .. rule
+						.. (if combo then "\n" .. t("연계 · ", "Combo · ") .. combo else "")
+						.. "\n" .. row .. strength .. (if ability then " · " .. ability else "")
+						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
+						.. (if forecast then "\n" .. forecast else "")
+				else
+					focusRule.Text = category .. row .. strength .. (if timing then " · " .. timing else "") .. "\n" .. kind .. " · " .. description
+						.. (if series then "\n" .. t("이야기 · ", "Story · ") .. series[if english then 2 else 1] elseif lore then "\n" .. t("이야기 · ", "Story · ") .. lore else "")
+						.. (if forecast then "\n" .. forecast else "")
+						.. (if status then "\n" .. t("상태 · ", "Status · ") .. status else "")
+						.. (if BC.CardLines[card.id] then "\n「" .. BC.CardLines[card.id][if english then 2 else 1] .. "」" else "")
+				end
+				if CARD_ART_MOTION then
+					focusMotion = animateCardArt(focusArtwork, focusImage, card)
+					table.insert(cardMotions, focusMotion)
+				end
+			end
 		end
 		local function closeCardCodex()
 			clearDropHint()
 			if selected and selected.Parent then
 				selected.Rotation = 0
+				selected.SelectedCardScale.Scale = 1
 				selected.UIStroke.Color = brass
 				selected:SetAttribute("ArtFocused", false)
 			end
@@ -2829,17 +4066,50 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			showCardCodex(nil)
 		end
 		focusClose.Activated:Connect(closeCardCodex)
-		focusShade.Activated:Connect(closeCardCodex)
-		focusUse.Activated:Connect(function()
-			if selectedPlay then selectedPlay() end
+		-- [다시 눌러 사용] 확대창 배경이 화면 전체를 덮어 선택한 손패를 다시 눌러도 창만 닫히고 선택이 풀렸다
+		-- (Studio 카드배틀 44979385067: 두 번째 클릭 뒤 손패 10→10). 배경 클릭이 선택 카드 위면 기존 사용 흐름으로 낸다.
+		focusShade.Activated:Connect(function(input)
+			if selectedPlay and selected and selected.Parent and selected.Visible and input then
+				local p = Vector2.new(input.Position.X, input.Position.Y)
+				local a, size = selected.AbsolutePosition, selected.AbsoluteSize
+				local inset = game:GetService("GuiService"):GetGuiInset()
+				for _, q in { p, p - inset } do
+					if q.X >= a.X and q.X <= a.X + size.X and q.Y >= a.Y and q.Y <= a.Y + size.Y then
+						selectedPlay()
+						return
+					end
+				end
+			end
+			closeCardCodex()
 		end)
+		focusUse.Activated:Connect(function()
+			if leaderPreviewId then
+				if playing or auto or finished or m.over or m.turn ~= "me" or m.leaderUsed.me or leaderPreviewId ~= m.leader.me then return end
+				Sfx.play("sfx_card_spell", 0.7, 1, "sfx_horn")
+				afterAction(mine(BC.useLeader(m, "me")))
+			elseif selectedPlay then
+				selectedPlay()
+			end
+		end)
+		showLeaderCard = function(side)
+			closeCardCodex()
+			showCardCodex({ leaderId = m.leader[side], leaderSide = side }, true)
+		end
 		focusTap.Activated:Connect(function()
 			if selectedPlay then selectedPlay() else closeCardCodex() end
 		end)
 		render = function()
+			boardCards, previousBoard, previousOrder = {}, {}, {}
+			previousLeaders = { me = m.leaderUsed.me, foe = m.leaderUsed.foe }
 			clearDropHint()
 			selectedPlay = nil
 			showCardCodex(nil)
+			-- [실전 검증 표시] 판정과 무관한 읽기 전용 상태. Studio 검사가 실제 카드 사용 결과를 확인한다.
+			local boardMine = 0
+			for _, row in BC.ROWS do boardMine += #m.rows.me[row] end
+			g:SetAttribute("CardBoardMe", boardMine)
+			g:SetAttribute("CardHandMe", #m.hand.me)
+			g:SetAttribute("CardTurn", tostring(m.turn))
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
 			selected = nil
@@ -2854,7 +4124,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local weather = {}
 			for _, row in BC.ROWS do
 				if m.weather[row] then
-					table.insert(weather, rowName(row) .. t(" 약화", " weakened"))
+					table.insert(weather, "🌦️ " .. rowName(row) .. t(" 약화", " weakened"))
 				end
 			end
 			local foeCulture = m.faction and m.faction.foe and BC.Factions[m.faction.foe]
@@ -2862,35 +4132,94 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			foePlate.who.Text = (if english then "Pirates" else opts.enemyName or "해적")
 				.. (if foeCulture then " · " .. (if english then englishFactions[m.faction.foe] or foeCulture.name else foeCulture.name) else "")
 				.. (if m.passed.foe then t(" · 멈춤", " · Passed") elseif m.turn == "foe" and not m.over then t(" · 차례", " · Turn") else "")
+				.. (if m.plans and m.plans.foe.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
 			mePlate.who.Text = (if english then (if opts.cardOnly then "You" else "Your ship") elseif opts.cardOnly then "나" else opts.shipName or "우리 배")
 				.. (if myCulture then " · " .. (if english then englishFactions[m.faction.me] or myCulture.name else myCulture.name) else "")
 				.. (if m.passed.me then t(" · 멈춤", " · Passed") elseif m.turn == "me" and not m.over then t(" · 내 차례", " · Your turn") else "")
-			foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
-			mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
-			-- 등록된 인물 초상이 있는 지도자는 글자 대신 얼굴을 보여 준다
-			for _, pair in { { mePlate, m.leader.me }, { foePlate, m.leader.foe } } do
-				local face = LEADER_FACE[pair[2]]
-				local img = face and AssetIds[face]
-				local old = pair[1].leader:FindFirstChild("Face")
-				if old then old:Destroy() end
-				if img then
-					pair[1].leader.Text = ""
-					local f = Instance.new("ImageLabel")
-					f.Name = "Face"
-					f.Size = UDim2.fromScale(1, 1)
-					f.BackgroundTransparency = 1
-					f.ScaleType = Enum.ScaleType.Crop
-					f.Image = "rbxassetid://" .. tostring(img)
-					local fc = Instance.new("UICorner")
-					fc.CornerRadius = UDim.new(1, 0)
-					fc.Parent = f
-					f.Parent = pair[1].leader
+				.. (if m.plans and m.plans.me.falseOrder == m.round then t(" · 후열 유인", " · Rear lure") else "")
+			if opts.cardOnly and m.roundStarter then
+				for _, side in { "me", "foe" } do
+					local plate = if side == "me" then mePlate else foePlate
+					local first = side == m.roundStarter
+					plate.who.Text = (if first then t("선공", "First") else t("후공", "Second")) .. " · " .. plate.who.Text
+					if compactCards then
+						-- 좁은 왼쪽 칸: 이름은 짧게(나/상대 · 선후공). 차례는 테두리 강조와 상단 띠가 알려 준다.
+						plate.who.Text = (if side == "me" then t("나", "You") else t("상대", "Rival")) .. " · " .. (if first then t("선공", "1st") else t("후공", "2nd"))
+							.. (if m.passed[side] then t(" · 패스", " · Pass") else "")
+					end
+					plate.who.TextColor3 = if first then Color3.fromRGB(255, 223, 152) else Color3.fromRGB(202, 224, 246)
+					local outline = plate.plate:FindFirstChildOfClass("UIStroke")
+					if outline then
+						local active = m.turn == side and not m.over and not m.passed[side]
+						outline.Color = if active then Color3.fromRGB(255, 221, 132) else brass
+						outline.Thickness = if active then 2 else 1
+					end
+				end
+			end
+			-- [카드전] 점수판의 원형 지도자 표시 제거. 접현전만 기존 초상 유지.
+			if not opts.cardOnly then
+				foePlate.leader.Text = string.sub(BC.Leaders[m.leader.foe] and BC.Leaders[m.leader.foe].name or "적", 1, 3)
+				mePlate.leader.Text = string.sub(BC.Leaders[m.leader.me] and BC.Leaders[m.leader.me].name or "나", 1, 3)
+				-- 등록된 인물 초상이 있는 지도자는 글자 대신 얼굴을 보여 준다
+				for _, pair in { { mePlate, m.leader.me }, { foePlate, m.leader.foe } } do
+					local face = NEW_LEADER_ART[pair[2]]
+					local img = face and AssetIds[face]
+					if not img then
+						face = LEADER_FACE[pair[2]]
+						img = face and AssetIds[face]
+					end
+					local old = pair[1].leader:FindFirstChild("Face")
+					if old then old:Destroy() end
+					if img then
+						pair[1].leader.Text = ""
+						local f = Instance.new("ImageLabel")
+						f.Name = "Face"
+						f.Size = UDim2.fromScale(1, 1)
+						f.BackgroundTransparency = 1
+						f.ScaleType = Enum.ScaleType.Crop
+						f.Image = "rbxassetid://" .. tostring(img)
+						local fc = Instance.new("UICorner")
+						fc.CornerRadius = UDim.new(1, 0)
+						fc.Parent = f
+						f.Parent = pair[1].leader
+					end
 				end
 			end
 			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
 			mePlate.deck.Text = tostring(#(m.deck and m.deck.me or {}))
-			foePlate.total.Text = tostring(BC.total(m, "foe"))
-			mePlate.total.Text = tostring(BC.total(m, "me"))
+			local myScore, foeScore = BC.total(m, "me"), BC.total(m, "foe")
+			foePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.foe) else tostring(foeScore)
+			mePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.me) else tostring(myScore)
+			if opts.cardOnly then
+				battleRound.Text = t(tostring(m.round) .. "판", "Round " .. tostring(m.round))
+				local score = t("나 ", "You ") .. tostring(myScore) .. " : " .. tostring(foeScore) .. t(" 상대", " Rival")
+				battleScore.Text = score
+				if displayedScore and displayedRound == m.round and displayedScore ~= score then
+					if scorePulse then scorePulse:Cancel() end
+					local scoreRound = m.round
+					cardTimers[task.delay(0.34, function()
+						cardTimers[coroutine.running()] = nil
+						if finished or not g.Parent then return end
+						if not g.Parent or battleScore.Text ~= score or m.round ~= scoreRound then return end
+						if scorePulse then scorePulse:Cancel() end
+						battleScore.TextColor3 = CardTheme.confirm
+						scorePulse = TweenService:Create(battleScore, TweenInfo.new(0.45), { TextColor3 = ink })
+						scorePulse:Play()
+					end)] = true
+				end
+				displayedScore, displayedRound = score, m.round
+				battleTurn.Text = if m.over then t("종료", "Over") elseif m.turn == "me" then t("내 차례", "Your turn") else t("상대 차례", "Enemy turn")
+				battleTurn.TextColor3 = if m.over then ink elseif m.turn == "me" then Color3.fromRGB(36, 84, 59) else Color3.fromRGB(121, 54, 42)
+			end
+			for _, pair in { { mePlate, "me", myScore, foeScore }, { foePlate, "foe", foeScore, myScore } } do
+				local plate, side, own, rival = pair[1], pair[2], pair[3], pair[4]
+				if plate.score then
+					plate.score.Text = tostring(own)
+					-- 앞선 쪽 총점은 금색, 뒤진 쪽은 흐린 양피지색 (궨트 총점 표시)
+					plate.score.BackgroundColor3 = if own > rival then Color3.fromRGB(255, 206, 96) else Color3.fromRGB(196, 176, 140)
+				end
+				if plate.passed then plate.passed.Visible = m.passed[side] == true and not m.over end
+			end
 			foePlate.gems.Text = string.rep("◆", 2 - m.wins.me) .. string.rep("◇", m.wins.me)
 			mePlate.gems.Text = string.rep("◆", 2 - m.wins.foe) .. string.rep("◇", m.wins.foe)
 			mePlate.gems.TextColor3 = Color3.fromRGB(120, 220, 140)
@@ -2910,16 +4239,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				info.Text = if m.turn == "me" then t("내 차례 — 카드를 눌러 고르세요 (한 번 더 누르면 냅니다)", "Your turn — tap a card, tap again to play")
 					else t("해적이 생각 중…", "Pirates are thinking…")
 			end
-			header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
-				TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
-				if m.over then "Battle Over" elseif m.turn == "me" then "Your Turn" else "Enemy Turn")
-				else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+			if not opts.cardOnly then
+				header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
 					TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
-					if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
-			header.Text ..= if english then string.format("   ·   Wins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
-				#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
-				else string.format("   ·   승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+					if m.over then "Battle Over" elseif m.turn == "me" then "Your Turn" else "Enemy Turn")
+					else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
+						TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
+						if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
+				header.Text ..= if english then string.format("   ·   Wins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
 					#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
+					else string.format("   ·   승리 %d:%d   손패 %d:%d%s", m.wins.me, m.wins.foe,
+						#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
+			end
 			-- 줄: 위 2줄은 상대(후열·전열), 아래 2줄은 우리(전열·후열)
 			local order = { { "foe", "ranged" }, { "foe", "melee" }, { "me", "melee" }, { "me", "ranged" } }
 			for k, o in order do
@@ -2928,7 +4259,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				rf.Position = UDim2.fromScale(0, (k - 1) / 4)
 				rf.Size = UDim2.fromScale(1, 1 / 4 - 0.016)
 				-- [6열 고급 전장] 적은 진홍, 아군은 남청으로 표시한다. 전투 위치와 계산은 불변.
-				rf.BackgroundColor3 = if side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
+				rf.BackgroundColor3 = if opts.cardOnly then (if side == "me" then CardTheme.allied else CardTheme.rival)
+					elseif side == "me" then Color3.fromRGB(18, 57, 74) else Color3.fromRGB(65, 35, 54)
 				rf.BackgroundTransparency = if opts.cardOnly then 0.82 elseif cfg then 0.53 else 0.32
 				rf.BorderSizePixel = 0
 				rf.Parent = boardFrame
@@ -2944,7 +4276,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				})
 				laneGradient.Rotation = 0
 				laneGradient.Parent = rf
-				local laneStroke = frameEdge(rf, Color3.fromRGB(188, 142, 79), 4)
+				local laneStroke = frameEdge(rf, if opts.cardOnly then CardTheme.brass else Color3.fromRGB(188, 142, 79), 4)
 				laneStroke.Transparency = if opts.cardOnly then 0.6 else 0.14
 				laneStroke.Thickness = 1
 				local laneAccent = Instance.new("Frame")
@@ -2953,16 +4285,41 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				laneAccent.BackgroundColor3 = if side == "me" then Color3.fromRGB(88, 170, 212) else Color3.fromRGB(214, 115, 110)
 				laneAccent.BorderSizePixel = 0
 				laneAccent.Parent = rf
-				emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0))
+				if opts.cardOnly then
+					local route = Instance.new("Frame")
+					route.Name = "ChartRoute"
+					route.Position = UDim2.new(0, 6, 1, -2)
+					route.Size = UDim2.new(1, -12, 0, 1)
+					route.BackgroundColor3 = CardTheme.brass
+					route.BackgroundTransparency = 0.40
+					route.BorderSizePixel = 0
+					route.Parent = rf
+				end
+				if not compactCards then emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0)) end
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
 				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
-				tag.Position = UDim2.fromOffset(29, 0)
-				tag.Size = UDim2.new(0, 68, 1, 0)
+				tag.Position = if compactCards then UDim2.new(1, -40, 0, 0) else UDim2.fromOffset(29, 0)
+				tag.Size = UDim2.new(0, if compactCards then 36 else 68, 1, 0)
+				if compactCards then
+					-- 줄 이름은 오른쪽 끝에 흐리게 (궨트처럼 점수는 왼쪽, 카드는 가운데)
+					tag.Text = rowName(row)
+					tag.TextSize = 11
+					tag.TextWrapped = true
+					tag.TextTransparency = 0.35
+				end
+				if opts.cardOnly and m.weather[row] then tag.Text = "🌦️ " .. tag.Text end
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.TextColor3 = if adv and not dis then Color3.fromRGB(150, 235, 150) elseif dis and not adv then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(246, 208, 130)
-				local cards = Instance.new("Frame")
-				cards.Position = UDim2.fromOffset(104, 3)
-				cards.Size = UDim2.new(1, if opts.cardOnly then -160 else -108, 1, -6)
+				local cards = if opts.cardOnly then Instance.new("ScrollingFrame") else Instance.new("Frame")
+				cards.Position = UDim2.fromOffset(if compactCards then 44 else 104, if compactCards then 2 else 3)
+				cards.Size = UDim2.new(1, if compactCards then -88 elseif opts.cardOnly then -160 else -108, 1, if compactCards then -4 else -6)
+				if cards:IsA("ScrollingFrame") then
+					cards.BorderSizePixel = 0
+					cards.ScrollingDirection = Enum.ScrollingDirection.X
+					cards.AutomaticCanvasSize = Enum.AutomaticSize.X
+					cards.CanvasSize = UDim2.new()
+					cards.ScrollBarThickness = 3
+				end
 				cards.BackgroundTransparency = 1
 				cards.Parent = rf
 				rowTargets[side][row] = cards
@@ -2970,9 +4327,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					-- 줄 점수 원형 배지 (퀜트식)
 					local badge = Instance.new("TextLabel")
 					badge.Name = "RowScoreBadge"
-					badge.AnchorPoint = Vector2.new(1, 0.5)
-					badge.Position = UDim2.new(1, -6, 0.5, 0)
-					badge.Size = UDim2.fromOffset(44, 44)
+					badge.AnchorPoint = if compactCards then Vector2.new(0, 0.5) else Vector2.new(1, 0.5)
+					badge.Position = if compactCards then UDim2.new(0, 6, 0.5, 0) else UDim2.new(1, -6, 0.5, 0)
+					badge.Size = if compactCards then UDim2.fromOffset(34, 34) else UDim2.fromOffset(44, 44)
 					badge.BackgroundColor3 = if adv and not dis then Color3.fromRGB(60, 120, 70) elseif dis and not adv then Color3.fromRGB(130, 60, 50) else Color3.fromRGB(32, 24, 18)
 					badge.BorderSizePixel = 0
 					badge.Font = Enum.Font.GothamBlack
@@ -2994,9 +4351,40 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local lay = Instance.new("UIListLayout")
 				lay.FillDirection = Enum.FillDirection.Horizontal
 				lay.Padding = UDim.new(0, 4)
+				if opts.cardOnly then
+					-- 궨트식: 줄의 카드는 가운데부터 양옆으로 놓인다
+					lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+					lay.VerticalAlignment = Enum.VerticalAlignment.Center
+				end
 				lay.Parent = cards
 				for idx, c in m.rows[side][row] do
-					local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx), c == lastPlayed.me or c == lastPlayed.foe)
+					local power = BC.cardPower(m, side, row, idx)
+					local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)
+					if opts.cardOnly then
+						boardCards[c] = playedCard
+						local statusBadge, _, status = cardStatus(c)
+						local chain = c.cause ~= nil and BC.chainActive(m, side, c)
+						previousBoard[c] = { power = power, penalty = c.tacticPower or 0, blocked = c.blockedPower or 0, row = row, side = side, status = status, chain = chain, size = Vector2.zero, pos = Vector2.zero }
+						table.insert(previousOrder, c)
+						local badge, badgeColor = cardBadge(c)
+						local caption = statusBadge or (if chain then "🔗" else BC.cardAbilitySymbol(c) or badge)
+						if caption then
+							playedCard.PlayedCardIdentity.Visible = false
+							local mark = label(playedCard, caption, 10, Color3.fromRGB(255, 243, 221), true)
+							mark.Name = if status then "CardStatus" else "CardRole"
+							mark.Size = UDim2.fromScale(0.94, 0.17)
+							mark.Position = UDim2.fromScale(0.03, 0.47)
+							mark.BackgroundColor3 = if statusBadge then Color3.fromRGB(88, 56, 74) else badgeColor or Color3.fromRGB(63, 61, 49)
+							mark.BackgroundTransparency = 0.05
+							mark.TextScaled = true
+							mark.ZIndex = 11
+							local limit = Instance.new("UITextSizeConstraint")
+							limit.MaxTextSize = 11
+							limit.Parent = mark
+							frameEdge(mark, Color3.fromRGB(203, 173, 118), 3)
+							CardSymbols.apply(mark, caption)
+						end
+					end
 					playedCard.Activated:Connect(function()
 						if playing or finished then return end
 						closeCardCodex()
@@ -3011,13 +4399,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
-				b.Size = UDim2.new(0, 140, 1, -10)
+				b.Size = UDim2.new(0, if opts.cardOnly then handCardWidth else 140, 1, if opts.cardOnly then -(handPadding.PaddingTop.Offset + handPadding.PaddingBottom.Offset + handFrame.ScrollBarThickness) elseif compactCards then -3 else -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
-				cardRatio.AspectRatio = 0.69
+				cardRatio.AspectRatio = if opts.cardOnly then portraitCardRatio else 0.69
 				cardRatio.DominantAxis = Enum.DominantAxis.Height
+				if opts.cardOnly then cardRatio.AspectType = Enum.AspectType.FitWithinMaxSize end
 				cardRatio.Parent = b
 				b.LayoutOrder = i
-				local regionId = if type(c.id) == "string" then string.match(c.id, "^(%a%a)_%d%d$") else nil
+				local regionId = if type(c.id) == "string" then BC.cardRegionPrefix(c.id) else nil
 				local regionDeck = if regionId then CARD_DECK[regionId] else nil
 				b.BackgroundColor3 = if c.hero then Color3.fromRGB(107, 72, 40)
 					elseif c.special then Color3.fromRGB(66, 75, 76) else Color3.fromRGB(78, 58, 39)
@@ -3038,7 +4427,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				art.ClipsDescendants = true
 				art.Parent = b
 				frameEdge(art, if c.hero then Color3.fromRGB(231, 188, 104) elseif regionDeck then regionDeck.color else Color3.fromRGB(153, 115, 70), 3)
-				if regionDeck then
+				if regionDeck and not opts.cardOnly then
 					local origin = label(b, if english then regionDeck.en else regionDeck.ko, 10, Color3.fromRGB(255, 248, 222), true)
 					origin.Name = "CardDeckOrigin"
 					origin.Position = UDim2.fromScale(0.57, 0.56)
@@ -3053,12 +4442,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					elseif c.special then t("전술", "Tactic") elseif c.hero then t("영웅", "Hero")
 					elseif c.ability then (if english then englishAbilities[c.ability] or "" else ABIL[c.ability] or "")
 					else rowName(c.row)
-				local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
-				kindLabel.Position = UDim2.fromScale(0.48, 0.03)
-				kindLabel.Size = UDim2.fromScale(0.48, 0.14)
-				kindLabel.TextXAlignment = Enum.TextXAlignment.Right
-				kindLabel.TextStrokeTransparency = 1
-				kindLabel.ZIndex = 8
+				if not opts.cardOnly then
+					local kindLabel = label(b, kindText, 10, if c.hero then Color3.fromRGB(255, 226, 143) else Color3.fromRGB(238, 220, 180), true)
+					kindLabel.Position = UDim2.fromScale(0.48, 0.03)
+					kindLabel.Size = UDim2.fromScale(0.48, 0.14)
+					kindLabel.TextXAlignment = Enum.TextXAlignment.Right
+					kindLabel.TextStrokeTransparency = 1
+					kindLabel.ZIndex = 8
+				end
 				-- 정보부는 낡은 양피지 띠, 그림부는 움직이는 판화로 분리한다.
 				local parchmentBand = Instance.new("Frame")
 				parchmentBand.Name = "ParchmentCaption"
@@ -3071,22 +4462,53 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local image = Instance.new("ImageLabel")
 				image.AnchorPoint = Vector2.new(0.5, 0.5)
 				image.Position = UDim2.fromScale(0.5, 0.5)
-				image.Size = UDim2.fromScale(1.17, 1.17)
+				image.Size = UDim2.fromScale(0.92, 0.92)
 				image.BackgroundTransparency = 1
-				image.ScaleType = Enum.ScaleType.Crop
+				image.ScaleType = Enum.ScaleType.Fit
 				local artKey = cardArtworkKey(c)
 				image.Image = if AssetIds[artKey] then "rbxassetid://" .. tostring(AssetIds[artKey]) else ""
-				image.ImageColor3 = Color3.fromRGB(236, 214, 175)
+				image.ImageColor3 = if type(c.id) == "string" and AssetIds["CardArt/" .. c.id] then Color3.new(1, 1, 1) else Color3.fromRGB(236, 214, 175)
 				image.Parent = art
-				table.insert(cardMotions, animateCardArt(art, image, c))
+				local handFrameId = regionId and REGION_FRAME[regionId] and AssetIds[REGION_FRAME[regionId]]
+				if opts.cardOnly and handFrameId then
+					local handBorder = Instance.new("ImageLabel")
+					handBorder.Name = "HandCardRegionFrame"
+					handBorder.Size = UDim2.fromScale(1, 1)
+					handBorder.BackgroundTransparency = 1
+					handBorder.Image = "rbxassetid://" .. tostring(handFrameId)
+					handBorder.ScaleType = Enum.ScaleType.Stretch
+					handBorder.ZIndex = 3
+					handBorder.Parent = b
+				end
+				if CARD_ART_MOTION then table.insert(cardMotions, animateCardArt(art, image, c)) end
 				local caption = label(b, cardName(c), 13, ink, true)
 				caption.Position = UDim2.fromScale(0.25, 0.7)
 				caption.Size = UDim2.fromScale(0.71, 0.27)
 				caption.TextScaled = true
 				caption.TextStrokeTransparency = 1
 				caption.Font = Enum.Font.Antique
+				if opts.cardOnly then
+					caption.TextWrapped = true
+					local nameSize = Instance.new("UITextSizeConstraint")
+					nameSize.MaxTextSize = 14
+					nameSize.Parent = caption
+				end
 				local iconKey = if c.special then "Menu/cc0_book" elseif c.ability == "spy" then "Menu/explore" else rowIcons[c.row]
 				emblem(b, iconKey, UDim2.fromScale(0.035, 0.83), UDim2.fromScale(0.20, 0.22))
+				local ability = if opts.cardOnly then BC.cardAbilitySymbol(c) else nil
+				if ability then
+					local mark = label(b, ability, 12, Color3.fromRGB(255, 239, 204), true)
+					mark.Name = "CardAbilitySymbol"
+					mark.AnchorPoint = Vector2.new(1, 1)
+					mark.Position = UDim2.fromScale(0.97, 0.68)
+					mark.Size = UDim2.fromScale(0.58, 0.22)
+					mark.BackgroundColor3 = Color3.fromRGB(32, 24, 18)
+					mark.BackgroundTransparency = 0.15
+					mark.TextScaled = true
+					mark.ZIndex = 9
+					frameEdge(mark, brass, 3)
+					CardSymbols.apply(mark, ability)
+				end
 				local power = label(b, if c.special then "◆" else tostring(c.power or ""), 13, ink, true)
 				power.Position = UDim2.fromOffset(5, 5)
 				power.Size = UDim2.fromOffset(21, 20)
@@ -3095,36 +4517,53 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				power.TextStrokeTransparency = 1
 				power.ZIndex = 4
 				frameEdge(power, brass, 5)
+				if opts.cardOnly then
+					power.Position = UDim2.fromScale(0.05, 0.04)
+					power.Size = UDim2.fromScale(0.38, 0.26)
+					power.TextScaled = true
+					local sizeLimit = Instance.new("UITextSizeConstraint")
+					sizeLimit.MaxTextSize = handPowerTextSize
+					sizeLimit.Parent = power
+				end
 				if hints[i] then
 					local g = hints[i]
 					local tipLabel = label(b, string.format("%s%d", if g >= 0 then "+" else "", g), 13, if g > 0 then Color3.fromRGB(150, 235, 150) elseif g < 0 then Color3.fromRGB(240, 150, 130) else Color3.fromRGB(230, 220, 200), true)
 					tipLabel.AnchorPoint = Vector2.new(1, 0)
 					tipLabel.Position = UDim2.new(1, -4, 0, 5)
-					tipLabel.Size = UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
-					tipLabel.Text = (if i == bestHint then t("추천 ", "Best ") else "") .. tipLabel.Text
+					tipLabel.Size = if opts.cardOnly then UDim2.new(0.40, 0, 0, 18)
+						else UDim2.fromOffset(if i == bestHint then 40 else 28, 20)
+					tipLabel.Text = (if i == bestHint and not opts.cardOnly then t("추천 ", "Best ") else "") .. tipLabel.Text
+					tipLabel.TextScaled = opts.cardOnly == true
 					tipLabel.TextStrokeTransparency = 1
-					tipLabel.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
+					tipLabel.BackgroundColor3 = if opts.cardOnly and i == bestHint then Color3.fromRGB(46, 72, 51)
+						else Color3.fromRGB(34, 28, 22)
 					tipLabel.BackgroundTransparency = 0.2
 					tipLabel.ZIndex = 8
 				end
 				b.Parent = handFrame
 				b:SetAttribute("HandIdx", i)
+				local lift = Instance.new("UIScale")
+				lift.Name = "SelectedCardScale"
+				lift.Parent = b
 				local edge = frameEdge(b, if c.hero then Color3.fromRGB(243, 206, 118) else brass, 6)
 
 				local function playChosenCard()
 					if playing or auto or finished or m.turn ~= "me" or m.over or selected ~= b or not b.Parent then return end
 					playing = true
 					showCardCodex(nil)
-					local side = if c.ability == "spy" then "foe" else "me"
+					local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
 					local target = if c.special then boardFrame else rowTargets[side][BC.lane(c)]
 					local flight = b:Clone()
 					flight.Active = false
+					flight.SelectedCardScale.Scale = 1
 					flight.Interactable = false
 					flight.AnchorPoint = Vector2.new(0.5, 0.5)
 					flight.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
 					local start = b.AbsolutePosition + b.AbsoluteSize / 2 - bg.AbsolutePosition
+					local rowWidth = if opts.cardOnly then math.min(boardCardWidth, target.AbsoluteSize.Y * portraitCardRatio) else 62
+					local canvasOffset = if target:IsA("ScrollingFrame") then target.CanvasPosition.X else 0
 					local finishAt = target.AbsolutePosition - bg.AbsolutePosition + Vector2.new(
-						if c.special then target.AbsoluteSize.X / 2 else math.min(math.max(31, target.AbsoluteSize.X - 31), 31 + 66 * #m.rows[side][c.row]),
+						if c.special then target.AbsoluteSize.X / 2 else math.clamp(rowWidth / 2 + (rowWidth + 4) * #m.rows[side][BC.lane(c)] - canvasOffset, 0, target.AbsoluteSize.X),
 						target.AbsoluteSize.Y / 2
 					)
 					flight.Position = UDim2.fromOffset(start.X, start.Y)
@@ -3134,41 +4573,131 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					b.Visible = false
 					local flightTween = TweenService:Create(flight, TweenInfo.new(0.34, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
 						Position = UDim2.fromOffset(finishAt.X, finishAt.Y),
-						Size = UDim2.fromOffset(if c.special then 76 else 62, math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
+						Size = UDim2.fromOffset(if c.special then 76 else rowWidth, if opts.cardOnly and not c.special then rowWidth / portraitCardRatio else math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
 						Rotation = 0,
 					})
+					activeFlightTween = flightTween
 					flightTween:Play()
-					flightTween.Completed:Wait()
+					local playbackState = flightTween.Completed:Wait()
+					if activeFlightTween == flightTween then activeFlightTween = nil end
+					flightTween:Destroy()
 					playing = false
-					if finished or not g.Parent then return end
+					if playbackState ~= Enum.PlaybackState.Completed or finished or not g.Parent then return end
 					art.Parent = b
 					flight:Destroy()
 					b.Visible = true
 					afterAction(mine(BC.play(m, "me", i)))
 				end
+				-- [카드 터치] 사용할 수 없는 상태는 이유를 보여 준다. 판정은 기존 BC.play만 사용한다.
+				local function blockedReason()
+					if finished or m.over then return t("대전이 끝났습니다", "The duel is over") end
+					if m.turn ~= "me" then return t("상대 차례입니다 · 잠시 기다리세요", "Opponent's turn · please wait") end
+					if auto then return t("자동 진행 중에는 카드를 낼 수 없습니다", "Auto play is on") end
+					if playing then return t("카드를 내는 중입니다", "Playing a card") end
+					return nil
+				end
+				local function selectCard()
+					if selected and selected.Parent then
+						selected.Rotation = 0
+						selected.SelectedCardScale.Scale = 1
+						selected.UIStroke.Color = brass
+						selected:SetAttribute("ArtFocused", false)
+					end
+					b:SetAttribute("ArtFocused", true)
+					Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
+					clearDropHint()
+					showCardCodex(c)
+					dropHint(c)
+					selected = b
+					selectedPlay = playChosenCard
+					edge.Color = Color3.fromRGB(255, 215, 126)
+					if opts.cardOnly then lift.Scale = 1.04 end
+					TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = if opts.cardOnly then 0 else -4 }):Play()
+					info.Text = cardName(c) .. " · " .. cardDescription(c)
+						.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
+						.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
+				end
+				-- [드래그 클릭 억제] 예약 스레드 없이 기존 0.25초 유효시간을 유지한다.
+				local dragSuppressUntil = 0
 				b.Activated:Connect(function()
-					if playing or auto or finished or m.turn ~= "me" or m.over then return end
+					if os.clock() < dragSuppressUntil then dragSuppressUntil = 0 return end
+					local reason = blockedReason()
+					if reason then info.Text = reason return end
 					if selected ~= b then
-						if selected and selected.Parent then
-							selected.Rotation = 0
-							selected.UIStroke.Color = brass
-							selected:SetAttribute("ArtFocused", false)
-						end
-						b:SetAttribute("ArtFocused", true)
-						Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click")
-						showCardCodex(c)
-						dropHint(c)
-						selected = b
-						selectedPlay = playChosenCard
-						edge.Color = Color3.fromRGB(255, 215, 126)
-						TweenService:Create(b, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Rotation = -4 }):Play()
-						info.Text = cardName(c) .. " · " .. cardDescription(c)
-							.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
-							.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
+						selectCard()
 						return
 					end
 					playChosenCard()
 				end)
+				-- [끌어서 놓기] 위로 끌면 카드가 손가락을 따라오고, 놓일 줄이 강조된다.
+				-- 맞는 줄에 놓으면 기존 사용 흐름(playChosenCard)을 그대로 호출, 아니면 손패로 돌아간다.
+				-- 가로 끌기는 손패 스크롤로 남겨 두어 기존 넘기기와 충돌하지 않는다.
+				local dragInput, dragStart, ghost, dragConns = nil, nil, nil, {}
+				local function dropTarget()
+					local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
+					return if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
+				end
+				local function endDrag(pos)
+					for _, cn in dragConns do cn:Disconnect() end
+					table.clear(dragConns)
+					local wasDragging = ghost ~= nil
+					if ghost then ghost:Destroy() ghost = nil end
+					dragInput, dragStart = nil, nil
+					-- 카드가 제거되는 경우 연결과 복제본만 정리한다.
+					if not pos or not wasDragging or not b.Parent or finished or not g.Parent then return end
+					b.Visible = true
+					dragSuppressUntil = os.clock() + 0.25
+					local target = dropTarget()
+					local inside = false
+					if target and pos then
+						local p, size = target.AbsolutePosition, target.AbsoluteSize
+						inside = pos.X >= p.X and pos.X <= p.X + size.X and pos.Y >= p.Y and pos.Y <= p.Y + size.Y
+					end
+					local reason = blockedReason()
+					if inside and not reason then
+						if selected ~= b then selectCard() end
+						playChosenCard()
+					else
+						info.Text = reason or t("놓을 수 있는 줄이 아닙니다 · 카드는 손패로 돌아왔습니다", "Not a valid row · card returned to hand")
+					end
+				end
+				b.InputBegan:Connect(function(input)
+					if input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1 then return end
+					if dragInput or blockedReason() then return end
+					dragInput, dragStart = input, input.Position
+					table.insert(dragConns, UIS.InputChanged:Connect(function(move)
+						if not dragInput then return end
+						if finished or not g.Parent or not b.Parent then endDrag(nil); return end
+						local sameTouch = move == dragInput or (dragInput.UserInputType == Enum.UserInputType.MouseButton1
+							and move.UserInputType == Enum.UserInputType.MouseMovement)
+						if not sameTouch then return end
+						local delta = move.Position - dragStart
+						if not ghost then
+							-- 위로 18px 이상, 세로 이동이 우세할 때만 끌기로 본다.
+							if delta.Y > -18 or math.abs(delta.Y) < math.abs(delta.X) or blockedReason() then return end
+							if selected ~= b then selectCard() end
+							ghost = b:Clone()
+							ghost.Name = "DragGhost"
+							ghost.Active, ghost.Interactable = false, false
+							ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+							ghost.Size = UDim2.fromOffset(b.AbsoluteSize.X, b.AbsoluteSize.Y)
+							ghost.Rotation = 0
+							ghost.ZIndex = 25
+							ghost.Parent = bg
+							b.Visible = false
+						end
+						local at = Vector2.new(move.Position.X, move.Position.Y) - bg.AbsolutePosition
+						local position = UDim2.fromOffset(at.X, at.Y)
+						if ghost.Position ~= position then ghost.Position = position end
+					end))
+					table.insert(dragConns, UIS.InputEnded:Connect(function(done)
+						if done == dragInput or (dragInput and dragInput.UserInputType == Enum.UserInputType.MouseButton1
+							and done.UserInputType == Enum.UserInputType.MouseButton1) then
+							endDrag(Vector2.new(done.Position.X, done.Position.Y))
+						end
+					end))
+				end)
+				b.Destroying:Connect(function() endDrag(nil) end)
 			end
 			-- 부채꼴 손패: 가운데 카드는 곧게, 가장자리로 갈수록 기울인다
 			do
@@ -3187,19 +4716,42 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
+			if opts.cardOnly then
+				passBtn.Interactable = m.turn == "me" and not m.over and not m.passed.me and not auto
+			end
 			do
-				local left = if m.round == 1 and (m.played.me or 0) == 0 then (m.mulligan and m.mulligan.me or 0) else 0
+				local left = if (m.played.me or 0) == 0 then (m.mulligan and m.mulligan.me or 0) else 0
 				mullBtn.Caption.Text = if left > 0 then t(string.format("손패 교체 (%d)", left), string.format("Swap Card (%d)", left)) else t("손패 교체 (끝)", "Swap Card (done)")
 				mullBtn.BackgroundTransparency = if left > 0 then 0 else 0.6
+				if opts.cardOnly then mullBtn.Visible = left > 0 and m.turn == "me" and not m.over and not auto end
 			end
-			leaderBtn.Caption.Text = if m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
+			leaderBtn.Caption.Text = if opts.cardOnly then
+				(if m.leaderUsed.me then t("지도자 카드 (사용함)", "Leader Card (Used)")
+				else t("지도자 카드 · ", "Leader Card · ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name))
+				elseif m.leaderUsed.me then t("지도자 (사용함)", "Leader (Used)")
 				else t("지도자: ", "Leader: ") .. (if english then englishLeaders[m.leader.me] or "" else BC.Leaders[m.leader.me].name)
-			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then 0.6 else 0
+			leaderBtn.BackgroundTransparency = if m.leaderUsed.me then (if opts.cardOnly then 0.34 else 0.6) else 0
+			if leaderPortrait then
+				leaderBtn.Caption.Text = if english then englishLeaders[m.leader.me] or "Leader" else BC.Leaders[m.leader.me].name
+				leaderPortrait.ImageColor3 = if m.leaderUsed.me then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
+			end
+			if foePortrait then
+				foePortrait.ImageColor3 = if m.leaderUsed.foe then Color3.fromRGB(165, 165, 165) else Color3.new(1, 1, 1)
+			end
 		end
 		render()
 		info.Text = if english then string.format("Row advantage: Melee > Cannon > Ranged > Melee. Leader: %s",
 			englishLeaders[m.leader.me] or "Command")
 			else string.format("전열(근접)·후열(사격·포), 한 판 5장. 지도자: %s (%s)", BC.Leaders[m.leader.me].name, BC.Leaders[m.leader.me].text)
+
+		if cfg and cfg.book and cfg.book.practice then
+			local names = {}
+			for _, id in (BC.PracticeOpening[m.faction] or {}) do
+				local card = BC.Units[id] or BC.Specials[id]
+				if card then table.insert(names, cardName(card)) end
+			end
+			if #names > 0 then info.Text = t("연습전 첫 손패 조합 · ", "Practice opening combo · ") .. table.concat(names, " → ") end
+		end
 
 		task.spawn(function()
 			task.wait(1.0)
@@ -3247,8 +4799,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					else t("승부가 나지 않았다.", "The battle ended in a draw.")
 			end
 			task.wait(1.8)
+			if finished or not g.Parent then return end
 			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
 			task.wait(0.5)
+			if finished or not g.Parent then return end
 			g:Destroy()
 			boardingOn = false
 			onEnd(m, actions)
@@ -3263,16 +4817,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local k = (os.clock() - t0) / 0.9
-			if k >= 1 or finished then
+			if k >= 1 or finished or not folder.Parent or not ring.Parent then
 				conn:Disconnect()
-				ring:Destroy()
+				conns[conn] = nil
+				if ring.Parent then ring:Destroy() end
 				return
 			end
 			ring.Transparency = 0.45 + k * 0.5
 			ring.Size = Vector3.new(0.4, 26 - k * 8, 26 - k * 8)
 		end)
-		task.delay(0.9, function()
-			if finished then
+		conns[conn] = conn
+		local timer = task.delay(0.9, function()
+			conns[coroutine.running()] = nil
+			if finished or not folder.Parent then
 				return
 			end
 			local radius = if os.clock() < skillUntil.evade then 11 else 20
@@ -3283,27 +4840,32 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				dodged += 1
 				combo += 1
 				flair += 10 + combo * 2
-				streakNoticeToken += 1
-				local token = streakNoticeToken
-				comboLabel.Text = string.format("회피 %d연속!", combo)
-				comboLabel.TextColor3 = Color3.fromRGB(144, 243, 226)
-				comboLabel.TextTransparency = 0
 				Sfx.play("sfx_skill_evade", 0.35, 1.15 + math.min(combo, 8) * 0.035, "sfx_click")
-				task.delay(1.2, function()
-					if not finished and streakNoticeToken == token and comboLabel.Parent then
-						game:GetService("TweenService"):Create(comboLabel, TweenInfo.new(0.32), { TextTransparency = 1 }):Play()
-					end
-				end)
 			else
 				combo = 0
 			end
 		end)
+		conns[timer] = timer
 	end
 	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
 	-- [전투 맵 아이템] 기존 등록 3D 보급 부표/화약폭탄 모델을 재사용한다. 미등록이면 생성하지 않는다.
 	local FX = { wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
 		sink = nil, outcomeReason = nil, items = {}, itemSerial = 0, nextItemAt = os.clock() + 6,
-		mineCharges = 0 }
+		mineCharges = 0, burstTimers = {}, burstPool = {}, effectTimers = {} }
+	-- 지형에 붙인 순간 입자는 장면 폴더의 자손이 아니므로 종료 시 직접 해제한다.
+	folder.Destroying:Connect(function()
+		for anchor, timer in FX.burstTimers do
+			task.cancel(timer)
+			anchor:Destroy()
+		end
+		table.clear(FX.burstTimers)
+		for _, node in FX.burstPool do node.anchor:Destroy() end
+		table.clear(FX.burstPool)
+		for _, timer in FX.effectTimers do task.cancel(timer) end
+		table.clear(FX.effectTimers)
+		-- [종전 상태 해제] 기존 카메라 보간과 침몰 연출의 참조만 정리한다.
+		FX.cam, FX.sink = nil, nil
+	end)
 	local C_SMOKE, C_DARK, C_WATER = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245)
 	-- [해상전투 이펙트] 임의 원통·구·사각 파편과 매 프레임 크기 변경을 폐기한다.
 	-- 기존 ParticleEmitter/Attachment를 사용하며 포탄·판정·함선 모델은 건드리지 않는다.
@@ -3347,27 +4909,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	-- [4단계 수면 충돌] 기존 등록된 엔진 물 입자만 사용: 수면 충격 → 물기둥 → 낙하 물방울 → 잔여 거품.
 	-- 기존 단색 원기둥·구체 물보라를 생성하지 않는다. 위치·규모는 실제 포탄 착탄 좌표로 정한다.
-	function FX.splash(pos, profile, power)
+	function FX.splash(pos, profile, power, impactDir)
 		-- [4단계 수면 물보라] 큰 네모 연기판 대신 물방울·하얀 포말을 실제 착수점에서 확산한다.
 		-- 탄종/선체/침몰 물보라 강도는 기존 power 그대로 유지한다.
 		local style = profile or DEFAULT_FX
 		local theme = style.theme or FX_THEMES.europe
 		local strength = math.clamp(power or 1, 0.65, 3.2)
 		local surface = Vector3.new(pos.X, ORIGIN.Y + 0.35, pos.Z)
+		local drift = impactDir or Vector3.zero
 		-- 1차: 물속 충돌 직후 수면 양옆으로 튀는 미세 거품.
 		FX.burst(surface, nil, {
 			{ tex = "spark", c0 = Color3.fromRGB(241, 254, 255), c1 = theme.foam,
 				s0 = 0.75 * strength, s1 = 0.06, life = 0.44,
 				v0 = 7, v1 = 16 * strength, spread = 170, glow = 0.35,
 				n = if MOBILE_VFX then 8 else 16, a0 = 0.18,
-				acc = Vector3.new(0, -9, 0), drag = 4 },
+				acc = drift * 13 + Vector3.new(0, -9, 0), drag = 4 },
 		})
 		-- 2차: 세로 물기둥. 기존 함수는 낙하 운동만 시각화한다.
 		FX.waterColumn(surface, style, strength)
-		task.delay(0.20, function()
-			if finished then return end
+		local timer = task.delay(0.20, function()
+			conns[coroutine.running()] = nil
+			if finished or not folder.Parent then return end
 			-- 3차: 물기둥 꼭대기에서 중력으로 떨어지는 빛나는 물방울.
-			FX.burst(surface + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
+			FX.burst(surface + drift * strength + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
 				{ tex = "spark", c0 = Color3.fromRGB(240, 252, 255), c1 = theme.foam,
 					s0 = math.min(1.15, 0.58 * strength), s1 = 0.05,
 					life = 0.7 + strength * 0.1, v0 = 6, v1 = 15 * strength,
@@ -3375,16 +4939,20 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					acc = Vector3.new(0, -44, 0), drag = 0.8, a0 = 0.12 },
 			})
 		end)
-		task.delay(0.53, function()
-			if finished then return end
+		conns[timer] = timer
+		local timer = task.delay(0.53, function()
+			conns[coroutine.running()] = nil
+			if finished or not folder.Parent then return end
 			-- 4차: 내려앉은 거품이 수면 위로 퍼지고 투명하게 사라진다.
 			FX.burst(surface, nil, {
 				{ tex = "spark", c0 = Color3.fromRGB(247, 255, 255), c1 = theme.foam,
 					s0 = math.min(1.3, 0.8 * strength), s1 = 0.02, life = 0.95,
 					v0 = 3, v1 = 8 * strength, spread = 175,
-					n = if MOBILE_VFX then 6 else 12, a0 = 0.35, drag = 6 },
+					n = if MOBILE_VFX then 6 else 12, a0 = 0.35, drag = 6,
+					acc = drift * 5 },
 			})
 		end)
+		conns[timer] = timer
 	end
 	do -- 입자 연출용 지역 변수는 이 블록 안에만 둔다 (함수당 지역 변수 한도 때문)
 	local TweenService = game:GetService("TweenService")
@@ -3394,8 +4962,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		smoke = "rbxasset://textures/particles/smoke_main.dds",
 		spark = "rbxasset://textures/particles/sparkles_main.dds",
 	}
-	local function emitterOn(parent, e)
-		local pe = Instance.new("ParticleEmitter")
+	local function emitterOn(parent, e, existing)
+		local pe = existing or Instance.new("ParticleEmitter")
 		pe.Texture = TEX[e.tex] or TEX.smoke
 		pe.Color = ColorSequence.new(e.c0, e.c1 or e.c0)
 		pe.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.s0), NumberSequenceKeypoint.new(1, e.s1 or e.s0) })
@@ -3413,31 +4981,63 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		pe.LockedToPart = false
 		pe.Rate = e.rate or 0
 		pe.Enabled = (e.rate or 0) > 0
-		pe.Parent = parent
+		if pe.Parent ~= parent then pe.Parent = parent end
 		return pe
 	end
-	local function lightFlash(parent, color, bright, range, dur)
-		local l = Instance.new("PointLight")
+	local function lightFlash(parent, color, bright, range, dur, existing)
+		local l = existing or Instance.new("PointLight")
 		l.Color = color
 		l.Brightness = bright
 		l.Range = range
-		l.Parent = parent
-		TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 }):Play()
+		l.Enabled = true
+		if l.Parent ~= parent then l.Parent = parent end
+		local tween = TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 })
+		tween:Play()
+		return l, tween
 	end
 	function FX.burst(pos, dir, list, light)
-		local anchor = Instance.new("Attachment") -- 보이는 부품 없이 지형에 붙여 입자만 터뜨린다
+		if finished or not folder.Parent then return end
+		-- [순간 효과 재사용] 입자가 완전히 끝난 좌표·방출기만 재사용한다. 활성 효과를 빼앗지 않는다.
+		local node
+		for i = #FX.burstPool, 1, -1 do
+			if #FX.burstPool[i].emitters == #list then
+				node = table.remove(FX.burstPool, i)
+				break
+			end
+		end
+		if not node then
+			node = { anchor = Instance.new("Attachment"), emitters = {} }
+		end
+		local anchor = node.anchor
 		anchor.WorldCFrame = if dir then CFrame.lookAt(pos, pos + dir) else CFrame.new(pos)
 		anchor.Parent = workspace.Terrain
 		local longest = 1
-		for _, e in list do
-			local pe = emitterOn(anchor, e)
+		for i, e in list do
+			local pe = emitterOn(anchor, e, node.emitters[i])
+			node.emitters[i] = pe
 			pe:Emit(math.min(e.n or 8, if MOBILE_VFX then 12 else 26))
 			longest = math.max(longest, e.life + 0.2)
 		end
+		local lightTween
 		if light then
-			lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3)
+			node.light, lightTween = lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3, node.light)
 		end
-		task.delay(longest, function() anchor:Destroy() end)
+		FX.burstTimers[anchor] = task.delay(longest, function()
+			FX.burstTimers[anchor] = nil
+			if lightTween then lightTween:Cancel(); lightTween:Destroy() end
+			if finished or not folder.Parent or #FX.burstPool >= (if MOBILE_VFX then 8 else 16) then
+				anchor:Destroy()
+				return
+			end
+			for _, pe in node.emitters do
+				pe.Enabled = false
+				pe.Rate = 0
+				pe:Clear()
+			end
+			if node.light then node.light.Enabled = false; node.light.Brightness = 0 end
+			anchor.Parent = nil
+			table.insert(FX.burstPool, node)
+		end)
 	end
 	local ORANGE, YELLOW, RED = Color3.fromRGB(255, 150, 50), Color3.fromRGB(255, 226, 130), Color3.fromRGB(190, 52, 28)
 	local GREY, SOOT = Color3.fromRGB(150, 150, 155), Color3.fromRGB(48, 46, 46)
@@ -3659,14 +5259,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			{ tex = "spark", c0 = ringColor, c1 = light.color, s0 = 1.1, s1 = 0.18, life = 0.75, v0 = 14, v1 = 34, spread = 100, glow = 0.9, n = if MOBILE_VFX then 10 else 24, a0 = 0 },
 			{ tex = if id == "rapid" then "fire" else "smoke", c0 = light.color, c1 = ringColor, s0 = 2.6, s1 = 5.2, life = 0.65, v0 = 3, v1 = 18, spread = 90, glow = 0.7, n = if MOBILE_VFX then 5 else 12, a0 = 0.22 },
 		}, { color = ringColor, bright = if MOBILE_VFX then 2 else 4, range = 30, dur = 0.33 })
-		task.delay(dur, function()
+		FX.effectTimers[at] = task.delay(dur, function()
+			FX.effectTimers[at] = nil
+			if finished or not at.Parent or not lt.Parent then return end
 			for _, pe in ems do
 				pe.Enabled = false
 			end
 			TweenService:Create(lt, TweenInfo.new(0.5), { Brightness = 0 }):Play()
-			task.delay(2, function()
-				at:Destroy()
-				lt:Destroy()
+			FX.effectTimers[at] = task.delay(2, function()
+				FX.effectTimers[at] = nil
+				if at.Parent then at:Destroy() end
+				if lt.Parent then lt:Destroy() end
 			end)
 		end)
 	end
@@ -3674,21 +5277,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 로블록스 파티클을 선체의 기존 Part에 붙여 이동 중에도 불길이 떠다니지 않는다.
 	function FX.shipFire(sh, key, hp, now)
 		local state = FX.fireStates[key]
+		-- [화재 갱신] 생성 조건과 기존 갱신 주기를 먼저 확인한다.
+		if not state and hp >= 0.62 then return end
+		if state and now < state.next then return end
 		local profile = sh.fx or DEFAULT_FX
-		local theme = profile.theme or FX_THEMES.europe
 		local stage = math.clamp(profile.stage or 2, 1, 6)
 		if not state and hp < 0.62 then
+			local theme = profile.theme or FX_THEMES.europe
 			local root = sh.model.PrimaryPart or sh.model:FindFirstChildWhichIsA("BasePart", true)
 			if not root then return end
 			state = { next = 0, vents = {} }
 			FX.fireStates[key] = state
+			local along = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+			local rootFrame = root.CFrame
 			for i = 1, (if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3) do
-				local along = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 				local offset = if i == 1 then -0.23 elseif i == 2 then 0.2 else 0
 				local origin = ORIGIN + sh.pos + along * (sh.length * offset) + Vector3.new(0, 7, 0)
 				local vent = Instance.new("Attachment")
 				vent.Name = "NavalDamageFire"
-				vent.Position = root.CFrame:PointToObjectSpace(origin)
+				vent.Position = rootFrame:PointToObjectSpace(origin)
 				vent.Parent = root
 				local fire = emitterOn(vent, {
 					tex = "fire", c0 = theme.flash,
@@ -3714,12 +5321,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if not state or now < state.next then return end
 		state.next = now + 0.14
 		local severity = math.clamp((0.62 - hp) / 0.62, 0, 1)
+		-- [화재 공통값] 같은 함선의 모든 배출구는 동일한 계산 결과를 공유한다.
+		local sootRate = math.floor(severity * (if MOBILE_VFX then 10 else (7 + stage * 3)))
+		local fireRate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 46 else (38 + stage * 9))) else 0
+		local sootEnabled, fireEnabled = sootRate > 0, fireRate > 0
+		local brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else (1.0 + stage * 0.2)) * (0.85 + 0.15 * math.sin(now * 13)) else 0
 		for _, vent in state.vents do
-			vent.soot.Rate = math.floor(severity * (if MOBILE_VFX then 10 else (7 + stage * 3)))
-			vent.fire.Rate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 46 else (38 + stage * 9))) else 0
-			vent.soot.Enabled = vent.soot.Rate > 0
-			vent.fire.Enabled = vent.fire.Rate > 0
-			vent.glow.Brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else (1.0 + stage * 0.2)) * (0.85 + 0.15 * math.sin(now * 13)) else 0
+			if vent.soot.Rate ~= sootRate then vent.soot.Rate = sootRate end
+			if vent.fire.Rate ~= fireRate then vent.fire.Rate = fireRate end
+			if vent.soot.Enabled ~= sootEnabled then vent.soot.Enabled = sootEnabled end
+			if vent.fire.Enabled ~= fireEnabled then vent.fire.Enabled = fireEnabled end
+			if vent.glow.Brightness ~= brightness then vent.glow.Brightness = brightness end
 		end
 	end
 	-- [접현 충돌] 사다리·닻줄이 맞닿는 순간의 물보라·목재 먼지·쇳조각, 시각 효과만 재생한다.
@@ -3779,17 +5391,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	end
 	-- [해역·노선별 항적] 대양 범선은 길고 얇은 흰 줄, 노선은 양측 거품, 미지 선박은 청록빛 잔류 파문.
-	function FX.wake(sh, key, now)
+	function FX.wake(sh, key, now, waveBoost)
 		-- [항적·뱃머리 파도] 선박 이동 방향에 맞춰 선수 좌우 물보라와 V자형 포말을 생성한다.
 		-- 새로운 3D 물/기본 도형 없이 승인된 선박 모델과 기존 spark 입자만 사용한다.
 		local last = FX.wakeAt[key]
-		local profile = sh.fx or DEFAULT_FX
-		local theme = profile.theme or FX_THEMES.europe
 		local step = if MOBILE_VFX then 0.31 else 0.22
 		if last and now - last.t < step then return end
 		local moved = last and (sh.pos - last.pos).Magnitude or 0
-		FX.wakeAt[key] = { pos = sh.pos, t = now, frame = if last then (last.frame or 0) + 1 else 1 }
+		-- [항적 상태 재사용] 기존 선박별 기록을 갱신하고 샘플마다 새 표를 만들지 않는다.
+		if last then
+			last.pos, last.t, last.frame = sh.pos, now, (last.frame or 0) + 1
+		else
+			last = { pos = sh.pos, t = now, frame = 1 }
+			FX.wakeAt[key] = last
+		end
 		if moved <= 0.35 or (sh.speed or 0) <= 1.5 then return end
+		local profile = sh.fx or DEFAULT_FX
+		local theme = profile.theme or FX_THEMES.europe
 		local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		local right = Vector3.new(-heading.Z, 0, heading.X)
 		local rowing = profile.rowed == true
@@ -3798,20 +5416,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [선미] 흰 선형 포말과 조금 굵은 물방울을 겹쳐 물살이 끊기지 않도록 한다.
 		FX.burst(stern, Vector3.new(-heading.X, 0.1, -heading.Z), {
 			{ tex = "spark", c0 = Color3.fromRGB(245, 255, 255), c1 = theme.foam,
-				s0 = if rowing then 0.76 else 0.62, s1 = 0.025, life = if rowing then 0.88 else 0.72,
-				v0 = 2 * drive, v1 = 7 * drive, spreadX = if rowing then 92 else 55, spreadY = 15,
+				s0 = (if rowing then 0.76 else 0.62) * waveBoost, s1 = 0.025, life = (if rowing then 0.88 else 0.72) * waveBoost,
+				v0 = 2 * drive, v1 = 7 * drive * waveBoost, spreadX = if rowing then 92 else 55, spreadY = 15,
 				axis = "forward", n = if MOBILE_VFX then 5 else 9,
 				a0 = 0.25, drag = 4.2, acc = Vector3.new(0, -4, 0), glow = 0.13 },
 		})
 		-- [선수] 좌현·우현 물보라가 배 앞에서 갈라진다. 모바일은 반씩 번갈아 표시한다.
 		local bow = ORIGIN + sh.pos + heading * sh.length * 0.43 + Vector3.new(0, 0.33, 0)
+		local evenFrame = last.frame % 2 == 0
+		local spraySide = if evenFrame then 1 else -1
 		for side = -1, 1, 2 do
-			if not MOBILE_VFX or side == (if FX.wakeAt[key].frame % 2 == 0 then 1 else -1) then
+			if not MOBILE_VFX or side == spraySide then
 				local sprayDir = right * side * 0.72 - heading * 0.35 + Vector3.new(0, 0.7, 0)
 				FX.burst(bow + right * side * sh.length * 0.075, sprayDir, {
 					{ tex = "spark", c0 = Color3.fromRGB(248, 255, 255), c1 = theme.foam,
-						s0 = math.min(0.95, 0.57 * drive), s1 = 0.04,
-						life = 0.45, v0 = 7 * drive, v1 = 15 * drive,
+						s0 = math.min(1.5, 0.57 * drive * waveBoost), s1 = 0.04,
+						life = 0.45 * waveBoost, v0 = 7 * drive, v1 = 15 * drive * waveBoost,
 						spreadX = 28, spreadY = 38, axis = "forward",
 						n = if MOBILE_VFX then 5 else 9, a0 = 0.11,
 						acc = Vector3.new(0, -20, 0), drag = 1.9, glow = 0.25 },
@@ -3819,7 +5439,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end
 		-- [노선] 실제 노로 젓는 함선은 양쪽에서 짧은 흰 물줄기를 추가한다.
-		if rowing and not MOBILE_VFX and FX.wakeAt[key].frame % 2 == 0 then
+		if rowing and not MOBILE_VFX and evenFrame then
 			for side = -1, 1, 2 do
 				local oar = ORIGIN + sh.pos - heading * sh.length * 0.15
 					+ right * side * sh.length * 0.22 + Vector3.new(0, 0.30, 0)
@@ -3844,26 +5464,46 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 이전에는 매 프레임 TextSize를 바꿔 한글 윤곽이 뭉개지고 알림이 겹쳤다.
 	local currentAnnouncement = nil
 	local function popText(text, color)
+		-- [해전 알림] 이 함수의 트윈 서비스는 함수 안에서 가져와 미정의 변수 오류를 막는다.
+		local tweenService = game:GetService("TweenService")
 		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
-		local l = label(gui, text, if battleViewport.X < 480 then 24 else 33, color)
-		currentAnnouncement = l
-		l.Name = "NavalBattleAnnouncement"
-		l.Font = Enum.Font.Bangers
-		l.AnchorPoint = Vector2.new(0.5, 0.5)
-		l.Position = UDim2.fromScale(0.5, if battleViewport.X < 480 then 0.25 else 0.27)
-		l.Size = UDim2.fromOffset(math.min(410, battleViewport.X - 24), if battleViewport.X < 480 then 50 else 58)
-		l.TextWrapped = true
-		l.TextStrokeColor3 = Color3.fromRGB(13, 20, 29)
-		l.TextStrokeTransparency = 0.18
-		l.ZIndex = 28
-		game:GetService("TweenService"):Create(l, TweenInfo.new(1.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Position = l.Position - UDim2.fromOffset(0, 30),
-			TextTransparency = 1, TextStrokeTransparency = 1,
-		}):Play()
-		task.delay(1.28, function()
+		local l = label(gui, text, if battleViewport.X < 480 then 12 else 14, color)
+        currentAnnouncement = l
+        l.Name = "NavalBattleAnnouncement"
+        l.Font = Enum.Font.GothamBold
+        l.AnchorPoint = Vector2.zero
+        l.Position = UDim2.fromOffset(16, 158)
+        l.Size = UDim2.fromOffset(math.min(220, math.floor(battleViewport.X * 0.46)), 34)
+        l.TextScaled = false
+        l.TextWrapped = true
+        l.TextStrokeTransparency = 1
+        l.BackgroundColor3 = Color3.fromRGB(28, 25, 21)
+        l.BackgroundTransparency = 0.08
+        l.ZIndex = 28
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 8)
+        corner.Parent = l
+        local edge = Instance.new("UIStroke")
+        edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        edge.Color = Color3.fromRGB(216, 177, 104)
+        edge.Thickness = 1.5
+        edge.Parent = l
+        -- 글자·배경·테두리를 함께 지워 빈 알림 테두리가 남지 않게 한다.
+        -- [알림 정리] 기존 전투 종료 목록에 예약 작업을 등록한다.
+        local fadeTimer = task.delay(0.92, function()
+            conns[coroutine.running()] = nil
+            if finished or not l.Parent then return end
+            local fade = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+            tweenService:Create(l, fade, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
+            tweenService:Create(edge, fade, { Transparency = 1 }):Play()
+        end)
+        conns[fadeTimer] = fadeTimer
+		local removeTimer = task.delay(1.28, function()
+			conns[coroutine.running()] = nil
 			if l.Parent then l:Destroy() end
 			if currentAnnouncement == l then currentAnnouncement = nil end
 		end)
+		conns[removeTimer] = removeTimer
 	end
 	skillPop = popText
 	skillFx = function(id, dur)
@@ -3886,6 +5526,50 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local facing = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		sh.lastHitSide = if facing:Cross(incoming).Y >= 0 then 1 else -1
 		sh.damageHits = (sh.damageHits or 0) + 1
+		-- [포격 연타] 실제 명중은 적선이 카메라 밖에 있어도 집계하며, 중앙 배너 대신 좌측 큐만 갱신한다.
+		if not toPlayer and not opts.cardOnly then
+			local nowHit = os.clock()
+			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
+			navalHitAt = nowHit
+			if navalHitStreak >= 2 then
+				navalHitCueSerial += 1
+				local cueSerial = navalHitCueSerial
+				navalHitCue.Text = string.format("포격 %d연타!", navalHitStreak)
+				navalHitCue.TextColor3 = if navalHitStreak >= 10 then Color3.fromRGB(255, 125, 105)
+					elseif navalHitStreak >= 5 then Color3.fromRGB(255, 187, 91)
+					else Color3.fromRGB(255, 235, 154)
+				navalHitCue.Visible = true
+				navalHitCue.TextTransparency = 0
+				navalHitCue.TextStrokeTransparency = 0.4
+				navalHitCue.BackgroundTransparency = 0.18
+				navalHitCueStroke.Transparency = 0
+				navalHitCueScale.Scale = 1.08
+				local tweenService = game:GetService("TweenService")
+				tweenService:Create(navalHitCueScale, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				local fadeTimer = task.delay(1.8, function()
+					conns[coroutine.running()] = nil
+					if finished or navalHitCueSerial ~= cueSerial or not navalHitCue.Parent then return end
+					local fade = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+					tweenService:Create(navalHitCue, fade, { TextTransparency = 1, TextStrokeTransparency = 1, BackgroundTransparency = 1 }):Play()
+					tweenService:Create(navalHitCueStroke, fade, { Transparency = 1 }):Play()
+					local hideTimer = task.delay(0.26, function()
+						conns[coroutine.running()] = nil
+						if not finished and navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end
+					end)
+					conns[hideTimer] = hideTimer
+				end)
+				conns[fadeTimer] = fadeTimer
+			end
+			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
+				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
+					if MOBILE_VFX then 0.26 else 0.40,
+					if navalHitStreak >= 10 then 1.12 else 1.30, "sfx_bell")
+			end
+		elseif toPlayer then
+			navalHitStreak = 0
+			navalHitCueSerial += 1
+			navalHitCue.Visible = false
+		end
 		local v, on = cam:WorldToViewportPoint(ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * 12, 16, 0))
 		if not on then
 			return
@@ -3895,38 +5579,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		l.AnchorPoint = Vector2.new(0.5, 0.5)
 		l.Size = UDim2.fromOffset(120, 36)
 		l.Position = UDim2.fromOffset(v.X - inset.X, v.Y - inset.Y)
-		l.Font = Enum.Font.Bangers
+		l.Font = Enum.Font.GothamBold
 		l.TextStrokeColor3 = Color3.fromRGB(16, 22, 30)
-		l.TextStrokeTransparency = 0.25
+		l.TextStrokeTransparency = 0.82
 		l.ZIndex = 22
 		local TS = game:GetService("TweenService")
 		TS:Create(l, TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 54), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
-		task.delay(1.2, function() l:Destroy() end)
-		-- [포격 연타] 실명중 때만 집계하는 시각 피드백. 회피 콤보·피해 판정·보상에는 영향 없음.
-		if not toPlayer and not opts.cardOnly then
-			local nowHit = os.clock()
-			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
-			navalHitAt = nowHit
-			streakNoticeToken += 1
-			local token = streakNoticeToken
-			comboLabel.Text = string.format("%d연타! 포격", navalHitStreak)
-			comboLabel.TextColor3 = if navalHitStreak >= 10 then Color3.fromRGB(255, 166, 109)
-				elseif navalHitStreak >= 5 then Color3.fromRGB(255, 233, 137)
-				else Color3.fromRGB(243, 249, 255)
-			comboLabel.TextTransparency = 0
-			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
-				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
-					if MOBILE_VFX then 0.26 else 0.40,
-					if navalHitStreak >= 10 then 1.12 else 1.30, "sfx_bell")
-			end
-			task.delay(1.35, function()
-				if not finished and streakNoticeToken == token and comboLabel.Parent then
-					game:GetService("TweenService"):Create(comboLabel, TweenInfo.new(0.30), { TextTransparency = 1 }):Play()
-				end
-			end)
-		elseif toPlayer then
-			navalHitStreak = 0
-		end
+		local removeTimer = task.delay(1.2, function()
+			conns[coroutine.running()] = nil
+			if l.Parent then l:Destroy() end
+		end)
+		conns[removeTimer] = removeTimer
 	end
 	-- [맵 보급 안내] 실제 등록 부표/기뢰만 배의 선수 기준 방향·거리를 상단에 보여 준다.
 	local pickupCue = label(gui, "", if battleViewport.X < 480 then 13 else 15, Color3.fromRGB(156, 239, 247))
@@ -3948,7 +5611,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 저장·카드 전투·자동 재현에는 적용하지 않고 기존 실제 등록 모델만 복제한다.
 	function FX.itemsStep(now)
 		if not RT or not rt or rt.ended or phase ~= "duel" or finished then
-			pickupCue.Visible = false
+			if pickupCue.Visible then pickupCue.Visible = false end
 			return
 		end
 		if now >= FX.nextItemAt then
@@ -4024,9 +5687,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 		end
+		-- [보급품 표시] 같은 프레임의 회수 반경과 부유 시간은 모든 아이템에서 공유한다.
+		local pickupRadius = math.max(12, me.length * 0.25)
+		local bobTime = now * 1.9
 		for i = #FX.items, 1, -1 do
 			local item = FX.items[i]
-			local picked = item.model.Parent and (me.pos - item.pos).Magnitude <= math.max(12, me.length * 0.25)
+			local picked = item.model.Parent and (me.pos - item.pos).Magnitude <= pickupRadius
 			if picked then
 				if item.kind == "energy" then
 					-- [기력] 포격/특화 재사용시간 각각 5초 단축. 기존 cd 값·지속시간은 보존한다.
@@ -4048,7 +5714,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					FX.shockRing(ORIGIN + item.pos, Color3.fromRGB(255, 214, 142), 11, 0.42)
 				end
 			elseif item.model.Parent and now < item.expires then
-				item.model:PivotTo(item.pivot * CFrame.new(0, math.sin(now * 1.9 + item.phase) * 0.42, 0)
+				item.model:PivotTo(item.pivot * CFrame.new(0, math.sin(bobTime + item.phase) * 0.42, 0)
 					* CFrame.Angles(0, math.sin(now + item.phase) * 0.10, 0))
 			end
 			if picked or not item.model.Parent or now >= item.expires then
@@ -4067,19 +5733,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if dist < nearestDist then closest, nearestDist = entry, dist end
 				end
 			end
-			pickupCue.Visible = closest ~= nil
+			local visible = closest ~= nil
+			if pickupCue.Visible ~= visible then pickupCue.Visible = visible end
 			if closest then
 				local course = closest.pos - me.pos
 				local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 				local right = Vector3.new(-heading.Z, 0, heading.X)
-				local front = if nearestDist > 0.1 then course.Unit:Dot(heading) else 1
-				local side = if nearestDist > 0.1 then course.Unit:Dot(right) else 0
+				local courseUnit = if nearestDist > 0.1 then course.Unit else Vector3.zero
+				local front = if nearestDist > 0.1 then courseUnit:Dot(heading) else 1
+				local side = courseUnit:Dot(right)
 				local direction = if front > 0.55 then "앞" elseif front < -0.55 then "뒤"
 					elseif side >= 0 then "우현" else "좌현"
-				pickupCue.Text = string.format("%s · %s %dm", direction,
+				local text = string.format("%s · %s %dm", direction,
 					if closest.kind == "mine" then "기뢰" else "기력", math.floor(nearestDist + 0.5))
-				pickupCue.TextColor3 = if closest.kind == "mine" then Color3.fromRGB(255, 204, 137)
+				local color = if closest.kind == "mine" then Color3.fromRGB(255, 204, 137)
 					else Color3.fromRGB(146, 243, 247)
+				if pickupCue.Text ~= text then pickupCue.Text = text end
+				if pickupCue.TextColor3 ~= color then pickupCue.TextColor3 = color end
 			end
 		end
 	end
@@ -4100,10 +5770,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local k = math.clamp((os.clock() - t0) / 1.6, 0, 1)
-			if finished then
+			if finished or not folder.Parent or not pole.Parent or not sail.Parent then
 				conn:Disconnect()
-				pole:Destroy()
-				sail:Destroy()
+				conns[conn] = nil
+				if pole.Parent then pole:Destroy() end
+				if sail.Parent then sail:Destroy() end
 				return
 			end
 			local ang = k * k * 1.45
@@ -4112,19 +5783,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			sail.CFrame = CFrame.new(base) * CFrame.Angles(0, 0, ang * dirSide) * CFrame.new(0, 16 - k * 6, 0)
 			if k >= 1 then
 				conn:Disconnect()
+				conns[conn] = nil
 				local at = Vector3.new(pole.Position.X, 0, pole.Position.Z)
 				FX.splash(at)
 				Sfx.play("sfx_naval_splash", 0.7, 0.75)
 				shake = math.max(shake, 1.2)
-				task.delay(2.5, function()
-					pole:Destroy()
-					sail:Destroy()
+				FX.effectTimers[pole] = task.delay(2.5, function()
+					FX.effectTimers[pole] = nil
+					if pole.Parent then pole:Destroy() end
+					if sail.Parent then sail:Destroy() end
 				end)
 			end
 		end)
+		conns[conn] = conn
 	end
 	-- [포격 시네마] 함선 중앙이 아닌 실제 좌·우 선측 포구에서 번갈아 발사한다.
-	local function shoot(fromPos, toPos, fx, nc)
+	local function shoot(fromPos, toPos, fx, nc, hitTest, splashScale)
 		nc = nc or NC.demi
 		local from = ORIGIN + fromPos + Vector3.new(0, 7, 0)
 		local shooter = nil
@@ -4163,7 +5837,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if stage >= 4 and nearShip and not MOBILE_VFX then
 			Sfx.play("sfx_cannon", 0.26 + stage * 0.025, 0.82 - stage * 0.016)
 		end
-		FX.muzzle(from, (to - from).Unit, style, nc)
+		-- [포탄 비행] 발사 시 확정된 방향 벡터를 비행·피격 연출에서 재사용한다.
+		local flightDelta = to - from
+		FX.muzzle(from, flightDelta.Unit, style, nc)
 		-- [실제 포구 반동] 발사한 승인 선체 메시의 포격 방향만 기록한다. 속도·피해·장전은 변경하지 않는다.
 		if shooter then
 			local fireAxis = toPos - fromPos
@@ -4173,23 +5849,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			shooter.recoilForce = math.clamp(nc.ball * 0.11, 0.08, 0.26)
 		end
 		if nearShip and stage >= 2 and not MOBILE_VFX then
-			task.delay(math.min(0.22, nc.dur * 0.40), function()
+			local timer = task.delay(math.min(0.22, nc.dur * 0.40), function()
+				conns[coroutine.running()] = nil
 				if not finished then Sfx.play("sfx_sail_fabric", 0.13, 1.35 + stage * 0.025) end
 			end)
+			conns[timer] = timer
 		end
 		if stage >= 5 and not MOBILE_VFX then
-			task.delay(0.14, function()
+			local timer = task.delay(0.14, function()
+				conns[coroutine.running()] = nil
 				if not finished then Sfx.play("sfx_cannon", 0.25, 0.78) end
 			end)
+			conns[timer] = timer
 		end
 		shake = math.max(shake, if hullHit then 0.7 else 0.35)
 		kick = math.max(kick, nc.ball * 1.6)
 		if hullHit then
-			task.delay(0.9, function()
+			local timer = task.delay(0.9, function()
+				conns[coroutine.running()] = nil
 				if not finished then
 					Sfx.play("sfx_cannon_reload", 0.34, 0.95 + math.random() * 0.1)
 				end
 			end)
+			conns[timer] = timer
 		end
 		-- [발사 펄스] 우리 기함 실제 포구에서 발사된 경우 사거리 나침반이 순간적으로 밝아진다.
 		if shooter == me then
@@ -4204,18 +5886,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local dur = nc.dur
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
+			-- 장면 종료·교체 후에는 이전 포탄의 프레임 계산과 명중 효과를 중단한다.
+			if finished or not folder.Parent or not ball.Parent then
+				conn:Disconnect()
+				conns[conn] = nil
+				if ball.Parent then ball:Destroy() end
+				return
+			end
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
-			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * nc.arc, 0)
-			local velocity = (to - from) + Vector3.new(0, math.cos(u * math.pi) * nc.arc * math.pi, 0)
-			ball.CFrame = CFrame.lookAt(bpos, bpos + velocity.Unit)
+			local angle = u * math.pi
+			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(angle) * nc.arc, 0)
+			local velocity = flightDelta + Vector3.new(0, math.cos(angle) * nc.arc * math.pi, 0)
+			local frame = CFrame.lookAt(bpos, bpos + velocity.Unit)
+			if ball.CFrame ~= frame then ball.CFrame = frame end
 			if u >= 1 then
 				conn:Disconnect()
+				conns[conn] = nil
 				ball:Destroy()
 				if finished then
 					return
 				end
-				-- 착탄과 물보라를 실제 포탄 충돌 프레임에 맞춰 별도 재생한다.
-				if hullHit then
+				-- 실시간 포탄은 기존 명중 판정이 확인된 뒤에만 선체 효과를 낸다.
+				local hit = hullHit and (not hitTest or hitTest())
+				if hit then
 					Sfx.play("sfx_naval_hull_hit", 0.72 + stage * 0.026, 1.05 - stage * 0.03 + math.random() * 0.08, "sfx_hit")
 					Sfx.play("sfx_naval_wood", 0.45 + stage * 0.025, 1.12 - stage * 0.037, "sfx_creak")
 					if math.random() < 0.42 then
@@ -4228,40 +5921,59 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_naval_splash", 0.50 + nc.ball * 0.11, 1.1 - nc.ball * 0.1, "sfx_splash")
 					if nc.ball >= 1.5 then Sfx.play("sfx_splash", 0.22, 1.16 + math.random() * 0.18) end
 					if nc.ball >= 1.5 and not MOBILE_VFX then
-						task.delay(0.15, function()
-							if not finished then Sfx.play("sfx_splash", 0.22, 0.85) end
+						local timer = task.delay(0.15, function()
+							conns[coroutine.running()] = nil
+							if not finished and folder.Parent then Sfx.play("sfx_splash", 0.22, 0.85) end
 						end)
+						conns[timer] = timer
 					end
 				end
-				if hullHit then
+				if hit then
+					-- [선체 피격 무게감] 실제 적중 때만 상대 승인 선체의 표시 Pivot에 감쇠 충격을 전달한다.
+					local struck = if shooter == me then foe elseif shooter == foe then me else nil
+					if struck then
+						local broadside = Vector3.new(-math.sin(struck.theta), 0, math.cos(struck.theta))
+						struck.impactAt = os.clock()
+						struck.impactSide = if broadside:Dot(flightDelta) >= 0 then 1 else -1
+						struck.impactPower = math.clamp(nc.ball * 0.15, 0.09, 0.30)
+					end
 					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
 					FX.impact(to, nc.ball, style, nc)
 					shake = math.max(shake, 1.3)
 					kick = math.max(kick, 5 + nc.ball)
-					if to.Y <= ORIGIN.Y + 9 then
+					if not hitTest and to.Y <= ORIGIN.Y + 9 then
 						FX.splash(Vector3.new(to.X, ORIGIN.Y, to.Z), style, nc.ball * 0.78)
 					end
 				else
-					FX.splash(to, style, nc.ball)
+					local power = nc.ball * (splashScale or 1)
+					if MOBILE_VFX and splashScale and splashScale < 0.8 then
+						FX.waterColumn(Vector3.new(to.X, ORIGIN.Y + 0.35, to.Z), style, power)
+					else
+						local flight = Vector3.new(velocity.X, 0, velocity.Z)
+						FX.splash(to, style, power, if flight.Magnitude > 0 then flight.Unit else nil)
+					end
 				end
 				-- 충돌 시 거대한 광구·회색 공 대신 위의 실제 파편·입자 폭발과 물결만 사용한다.
 				-- 별도 프레임 연결을 만들지 않아 모바일 부하도 줄인다.
-				if fx then
+				if hit then
 					fx()
 				end
 			end
 		end)
+		conns[conn] = conn
 	end
 
 	local function forward(theta)
 		return Vector3.new(math.cos(theta), 0, math.sin(theta))
 	end
 	-- sink: nil 또는 { k = 0~1 침몰 진행, side = ±1 기우는 쪽 }
-	local function poseShip(sh, t, sink)
+	local function poseShip(sh, t, sink, seaMood)
 		-- 방향을 틀면 바깥쪽으로 기울고(롤), 속도가 붙으면 선수가 살짝 든다. 피해가 쌓이면 한쪽으로 기울며 가라앉는다.
 		local dTheta = (sh.theta - (sh.lastTheta or sh.theta) + math.pi) % (math.pi * 2) - math.pi
 		sh.lastTheta = sh.theta
-		sh.roll = (sh.roll or 0) + (math.clamp(dTheta * 9, -0.3, 0.3) - (sh.roll or 0)) * 0.12
+		-- [함종별 관성] 작은 배는 조타에 즉시 반응하고, 대형선은 묵직하게 따라온다.
+		local hullWeight = math.clamp((sh.length - 26) / 35, 0, 1)
+		sh.roll = (sh.roll or 0) + (math.clamp(dTheta * 9, -0.3, 0.3) - (sh.roll or 0)) * (0.15 - hullWeight * 0.07)
 		local hp = sh.hp or 1
 		local heel = (1 - hp) * 0.28 * (sh.heelSide or 1)
 		local pitch = math.clamp((sh.speed or 0) / 90, 0, 0.1) + math.sin(t * 0.9 + sh.length) * 0.03
@@ -4272,6 +5984,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local pulse = math.exp(-age * 9) * math.sin(age * 23)
 				heel += (sh.recoilSide or 1) * (sh.recoilForce or 0.1) * pulse
 				pitch += (sh.recoilForce or 0.1) * 0.32 * pulse
+			end
+		end
+		-- [명중 반동] 피해·전투 속도는 그대로 두고 맞은 선체만 잠시 밀렸다 복원된다.
+		if sh.impactAt then
+			local age = t - sh.impactAt
+			if age >= 0 and age < 0.72 then
+				local impulse = (sh.impactPower or 0.12) * math.exp(-age * (4.5 + hullWeight)) * math.sin(age * 16)
+				heel += (sh.impactSide or 1) * impulse
+				pitch -= impulse * 0.58
 			end
 		end
 		local dip, rollAdd, pitchAdd = -(1 - hp) * 1.6, 0, 0
@@ -4294,14 +6015,52 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				rollAdd, pitchAdd = sink.side * k * 1.12, -k * 0.68
 			end
 		end
-		local bob = CFrame.new(0, math.sin(t * 1.3 + sh.length) * 0.5 + dip, 0) * CFrame.Angles(-sh.roll + heel + rollAdd, 0, pitch + pitchAdd)
+		-- [다중 파도·함종별 부력] 서로 다른 파동의 위상과 선박 위치를 사용해 물결을 입체적으로 탄다.
+		-- 대형선은 작은 파도를 덜 타고, 소형선은 선수·선미가 더 크게 흔들린다. 물리 판정은 불변.
+		local swell = if seaMood == "storm" then 1.48 elseif seaMood == "rain" then 0.86 else 0.52
+		local rate = if seaMood == "storm" then 1.85 elseif seaMood == "rain" then 1.5 else 1.28
+		local swellTime = t * rate + sh.pos.X * 0.016 + sh.pos.Z * 0.013 + sh.length * 0.24
+		local crossTime = t * rate * 0.67 - sh.pos.X * 0.011 + sh.pos.Z * 0.019 + sh.length * 0.11
+		local buoyancy = 1 - hullWeight * 0.43
+		local crossCos = if seaMood == "card" then 0 else math.cos(crossTime)
+		local heave = if seaMood == "card" then math.sin(t * 1.3 + sh.length) * 0.5
+			else (math.sin(swellTime) * 0.73 + crossCos * 0.27) * swell * buoyancy
+		local seaRoll = if seaMood == "card" then 0
+			else (math.sin(swellTime * 0.64 + sh.theta) * 0.070 + crossCos * 0.038) * swell * buoyancy
+		local seaPitch = if seaMood == "card" then 0
+			else (math.cos(swellTime * 0.82) * 0.080 + math.sin(crossTime) * 0.046) * swell * buoyancy
+		local bob = CFrame.new(0, heave + dip, 0)
+			* CFrame.Angles(-sh.roll + heel + rollAdd + seaRoll, 0, pitch + pitchAdd + seaPitch)
 		sh.model:PivotTo(CFrame.new(ORIGIN + Vector3.new(sh.pos.X, sh.y, sh.pos.Z)) * CFrame.Angles(0, -sh.theta, 0) * bob * sh.rot)
+		-- [선박 항적] 이미 계산한 위치·속도만 읽고, 포격·선체 충돌·실제 항속은 바꾸지 않는다.
+		if sh.wake and sh.wake.Parent and sh.wakeFx and t >= (sh.wakeNext or 0) then
+			sh.wakeNext = t + (if MOBILE_VFX then 0.20 else 0.11)
+			local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+			local stern = ORIGIN + sh.pos - heading * sh.length * 0.40 + Vector3.new(0, 0.3, 0)
+			local wakeFrame = CFrame.lookAt(stern, stern - heading)
+			if sh.wake.WorldCFrame ~= wakeFrame then sh.wake.WorldCFrame = wakeFrame end
+			-- [항적 중복 갱신] 속도와 침몰 상태가 같으면 입자 속성을 다시 쓰지 않는다.
+			local enabled = (sh.speed or 0) > 2 and not sink
+			local rate = math.clamp((sh.speed or 0) * (if MOBILE_VFX then 0.42 else 0.75), 1.5, if MOBILE_VFX then 8 else 16)
+			if sh.wakeFx.Enabled ~= enabled then sh.wakeFx.Enabled = enabled end
+			if sh.wakeRate ~= rate then
+				sh.wakeFx.Rate = rate
+				sh.wakeRate = rate
+			end
+		end
 	end
 
 	-- 카드 대결 무대: 두 배 갑판 위에 로블록스 캐릭터 선원이 서 있고, 카드를 낼 때마다 그 줄의 병종이 움직인다
 	local crews = { me = {}, foe = {} }
 	local crewMode = { me = nil, foe = nil } -- { kind, untilT }
+	-- [선원 종료 정리] 장면 소유 모델은 폴더가 제거하고 보관 참조도 함께 비운다.
+	folder.Destroying:Connect(function()
+		table.clear(crews.me)
+		table.clear(crews.foe)
+		table.clear(crewMode)
+	end)
 	local function spawnCrew(sh, side, coat, role)
+		if finished or not folder.Parent or not sh.model.Parent then return end
 		local box, size = sh.model:GetBoundingBox()
 		local deckY = box.Position.Y - size.Y / 2 + size.Y * 0.3
 		local along = size.X >= size.Z
@@ -4317,8 +6076,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		local pivot = sh.model:GetPivot()
 		for i = 1, (if MOBILE_VFX then 2 else 4) do
+			if finished or not folder.Parent then return end
 			local seed = i * 17 + (if side == "me" then 1 else 99)
 			local ok, rig = pcall(Pose.createR15, folder, Vector3.zero, 0, coat, Random.new(seed), role, 5)
+			-- 비동기 R15 생성은 중간 취소하지 않고 종료 후 도착한 모델만 해제한다.
+			if finished or not folder.Parent then
+				if ok and rig then rig:Destroy() end
+				return
+			end
 			if ok and rig then
 				for _, d in rig:GetDescendants() do
 					if d:IsA("BasePart") then
@@ -4347,11 +6112,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local from, to = (if side == "me" then me else foe), (if side == "me" then foe else me)
 		if kind == "gun" or kind == "shoot" then
 			for k = 0, (if kind == "gun" then 2 else 0) do
-				task.delay(0.25 + k * 0.22, function()
+				local timer = task.delay(0.25 + k * 0.22, function()
+					FX.effectTimers[coroutine.running()] = nil
 					if not finished then
 						shoot(from.pos, to.pos, function() shake = 1.0 end)
 					end
 				end)
+				FX.effectTimers[timer] = timer
 			end
 		else
 			shake = 0.8
@@ -4362,14 +6129,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 백병전 피해·승패·카드 상태에 간섭하지 않으며, 중복 소환은 막는다.
 	local function updateCrews(now)
 		-- [해전 백병전] 갑판에 별도 R15 인형을 만들지 않는다. 접현 연출과 카드 전용 선원만 유지한다.
+		if #crews.me == 0 and #crews.foe == 0 then return end
+		-- [선원 좌표 재사용] 양쪽 갑판이 이번 갱신의 선체 좌표를 공유한다.
+		local mePivot, foePivot = me.model:GetPivot(), foe.model:GetPivot()
 		for side, list in crews do
-			local sh = if side == "me" then me else foe
-			local other = if side == "me" then foe else me
+			if #list == 0 then continue end
 			local mode = crewMode[side]
 			local active = mode and now < mode.untilT
+			local shipPivot = if side == "me" then mePivot else foePivot
+			local otherPosition = if side == "me" then foePivot.Position else mePivot.Position
 			for _, c in list do
-				local pos = (sh.model:GetPivot() * c.off).Position
-				local look = Vector3.new(other.model:GetPivot().Position.X, pos.Y, other.model:GetPivot().Position.Z)
+				local pos = (shipPivot * c.off).Position
+				local look = Vector3.new(otherPosition.X, pos.Y, otherPosition.Z)
 				if (look - pos).Magnitude > 1 then
 					c.rig:PivotTo(CFrame.lookAt(pos, look))
 				end
@@ -4487,11 +6258,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			rt.meHull = math.max(0, rt.meHull - amount)
 			rt.meCrew = math.max(1, rt.meCrew - amount * 0.06)
 			meHp = rt.meHull / rt.meMax
+			gui:SetAttribute("NavalMeHull", rt.meHull)
 			if meHp < 0.5 then CH.flash("pump") end
 		else
 			rt.foeHull = math.max(0, rt.foeHull - amount)
 			rt.foeCrew = math.max(1, rt.foeCrew - amount * 0.06)
 			foeHp = rt.foeHull / rt.foeMax
+			gui:SetAttribute("NavalFoeHull", rt.foeHull) -- [검증용 읽기 전용] 피해 계산 불변
 			if rt.hits % 3 == 1 then CH.flash("cannon") end
 		end
 		dmgPop(toPlayer, math.max(1, math.floor(amount + 0.5)))
@@ -4686,23 +6459,31 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						-- 대형 포격선은 포문 수에 맞춰 추가 포탄 궤적 한 발만 표현한다. 피해 판정은 마지막 포탄 1회 그대로.
 						local volley = if now < skillUntil.rapid then (if shipDef and shipDef.cannons >= 14 and not MOBILE_VFX then 4 else 3) else 2
 						for k = 0, volley - 1 do
-							task.delay(k * 0.08, function()
+							local volleyTimer = task.delay(k * 0.08, function()
+								conns[coroutine.running()] = nil
 								if finished or rt.ended then
 									return
 								end
-								shoot(me.pos, lead, if k == volley - 1 then function()
-									if rt.ended then
-										return
-									end
-									shake = 1.2
-									if (foe.pos - lead).Magnitude < 26 then
+								if k == volley - 1 then
+									shoot(me.pos, lead, function()
+										shake = 1.2
 										rt.hits += 1
 										rtDamage(false, base * acc)
-									else
-										popText("빗나감!", Color3.fromRGB(190, 200, 215))
-									end
-								end else nil, cannon)
+									end, cannon, function()
+										return not rt.ended and (foe.pos - lead).Magnitude < 26
+									end)
+								else
+									-- [포격 연출] 추가 탄은 적선 앞·뒤·바깥쪽 수면에 엇갈려 떨어진다.
+									local along = forward(foe.theta)
+									local across = Vector3.new(-along.Z, 0, along.X)
+									local side = if k % 2 == 0 then 1 else -1
+									local near = k == 0
+									local offset = along * (foe.length * (if near then 0.42 else 0.8) * side)
+										+ across * (foe.length * (if near then 0.6 else 0.95) * -side)
+									shoot(me.pos, lead + offset, nil, cannon, nil, if near then 1.15 else 0.7)
+								end
 							end)
+							conns[volleyTimer] = volleyTimer
 						end
 					end
 					if now - rt.start > 9 and hint.Text:sub(1, 3) == "배의 " then
@@ -4756,7 +6537,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						popText(if volley >= 4 then "일제 사격!!" else "일제 사격!", Color3.fromRGB(255, 200, 90))
 					end
 					for k = 0, volley - 1 do
-						task.delay(k * 0.08, function()
+						local volleyTimer = task.delay(k * 0.08, function()
+							conns[coroutine.running()] = nil
 							if not finished then
 								shoot(me.pos, foe.pos, if k == volley - 1 then function()
 									shake = 1.2
@@ -4764,6 +6546,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								end else nil, cannon)
 							end
 						end)
+						conns[volleyTimer] = volleyTimer
 					end
 				end
 				if not opts.card and not RT and d < 95 and now >= nextFoeFire and meDone < #foeQueue then
@@ -4772,7 +6555,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local e = foeQueue[math.min(#foeQueue, meDone + 1)]
 					local volley = math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)
 					for k = 0, volley - 1 do
-						task.delay(k * 0.08, function()
+						local volleyTimer = task.delay(k * 0.08, function()
+							conns[coroutine.running()] = nil
 							if not finished then
 								shoot(foe.pos, me.pos, if k == volley - 1 then function()
 									shake = 1.6
@@ -4780,6 +6564,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								end else nil)
 							end
 						end)
+						conns[volleyTimer] = volleyTimer
 					end
 				end
 				-- 두 배가 맞닿으면 바로 접현 (백병전)
@@ -4794,22 +6579,117 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							end)
 						end
 						for _, segment in rangeRing.segments do segment.Transparency = 1 end
-						rangeLabel.Visible = false
 					end
 					subtitle.Text = "사정거리 안! 카드 대결 시작!"
 					shake = 1.6
 					Sfx.play("sfx_horn")
 					Sfx.play("sfx_naval_ram", 0.5, 1.05, "sfx_creak")
-					task.delay(1.0, function()
-						if finished then return end
+					local boardingTimer = task.delay(1.0, function()
+						conns[coroutine.running()] = nil
+						if finished or not gui.Parent or not folder.Parent then return end
 						startBoarding(opts.card, function(m, acts)
 							-- 서버가 기록을 다시 돌려 확정한 승패를 따른다 (서버가 거부하면 서버의 기존 판정)
-							local okCards, res = true, nil
+							local okCards, res, rewardId = true, nil, nil
 							if opts.onCards then
-								okCards, res = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
+								okCards, res, rewardId = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
 								if not okCards then res = nil end
 							end
+							-- 서버 결과는 그대로 처리하되 종료된 장면에는 다시 접근하지 않는다.
+							if finished or not gui.Parent or not folder.Parent then return end
 							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
+							if opts.cardOnly and not finished then
+								local korean = string.sub(string.lower(player.LocaleId), 1, 2) == "ko"
+								local result = Instance.new("Frame")
+								result.Name = "CardBattleResult"
+								result.Size = UDim2.fromScale(1, 1)
+								result.BackgroundColor3 = Color3.fromRGB(12, 32, 49)
+								result.BorderSizePixel = 0
+								result.Active = true
+								result.Parent = gui
+								local sea = Instance.new("ImageLabel")
+								sea.BackgroundTransparency = 1
+								sea.Size = UDim2.fromScale(1, 1)
+								sea.ScaleType = Enum.ScaleType.Crop
+								local seaId = AssetIds["CardArt/ui_battle_dawn"]
+								sea.Image = if seaId then "rbxassetid://" .. tostring(seaId) else ""
+								sea.Parent = result
+
+								local verdict = if w == "a" then (if korean then "승리" else "Victory")
+									elseif w == "b" and m.winner ~= "draw" then (if korean then "패배" else "Defeat")
+									else (if korean then "무승부" else "Draw")
+								local title = label(result, verdict, 36)
+								title.Position = UDim2.fromScale(0.18, 0.07)
+								title.Size = UDim2.fromScale(0.64, 0.13)
+								title.TextScaled = true
+								for i, side in { "me", "foe" } do
+									local x = if i == 1 then 0.33 else 0.67
+									local leader = m.leader[side]
+									local artKey = NEW_LEADER_ART[leader]
+									local fallback = LEADER_FACE[leader]
+									local artId = (artKey and AssetIds[artKey]) or AssetIds["CardArt/leader_" .. leader]
+										or (fallback and AssetIds[fallback])
+									local portrait = Instance.new("ImageLabel")
+									portrait.AnchorPoint = Vector2.new(0.5, 0)
+									portrait.Position = UDim2.fromScale(x, 0.24)
+									portrait.Size = UDim2.fromScale(0.26, 0.42)
+									portrait.BackgroundTransparency = 1
+									portrait.ScaleType = Enum.ScaleType.Fit
+									portrait.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
+									portrait.Parent = result
+									local who = if korean then (if i == 1 then "나" else "상대")
+										else (if i == 1 then "You" else "Opponent")
+									local score = label(result, if korean then string.format("%s · %d판 승리", who, m.wins[side])
+										else string.format("%s · %d round wins", who, m.wins[side]), 18)
+									score.AnchorPoint = Vector2.new(0.5, 0)
+									score.Position = UDim2.fromScale(x, 0.68)
+									score.Size = UDim2.fromScale(0.31, 0.09)
+									score.TextScaled = true
+								end
+								local rewardCard = if type(rewardId) == "string" then BC.Units[rewardId] or BC.Specials[rewardId] else nil
+								if rewardCard and w == "a" then
+									local reveal = Instance.new("ImageButton")
+									reveal.Name = "CardRewardReveal"
+									reveal.AnchorPoint = Vector2.new(0.5, 0)
+									reveal.Position = UDim2.fromScale(0.5, 0.30)
+									reveal.Size = UDim2.fromScale(0.17, 0.31)
+									reveal.BackgroundColor3 = Color3.fromRGB(24, 48, 72)
+									reveal.BorderSizePixel = 0
+									reveal.ScaleType = Enum.ScaleType.Fit
+									local back = AssetIds["CardArt/battle_card_back"]
+									reveal.Image = if back then "rbxassetid://" .. tostring(back) else ""
+									reveal.Parent = result
+									local caption = label(result, if korean then "보상 카드 뒤집기" else "Reveal Reward Card", 14)
+									caption.AnchorPoint = Vector2.new(0.5, 0)
+									caption.Position = UDim2.fromScale(0.5, 0.62)
+									caption.Size = UDim2.fromScale(0.17, 0.15)
+									caption.TextScaled = true
+									caption.TextWrapped = true
+									reveal.Activated:Once(function()
+										local artId = AssetIds[cardArtworkKey(rewardCard)]
+										reveal.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
+										caption.Text = if korean then rewardCard.name else rewardCard.nameEn or rewardCard.name
+										Sfx.play("sfx_card_deal", 0.6, 1, "sfx_book_turn")
+									end)
+								end
+								for i, caption in { if korean then "작전실로" else "Operations Room", if korean then "다시 출항" else "Sail Again" } do
+									local replay = i == 2
+									local action = Instance.new("TextButton")
+									action.Position = UDim2.fromScale(if replay then 0.52 else 0.18, 0.82)
+									action.Size = UDim2.fromScale(0.30, 0.12)
+									action.Text = caption
+									action.TextScaled = true
+									action.Font = Enum.Font.GothamBold
+									action.TextColor3 = if replay then Color3.fromRGB(25, 36, 48) else Color3.fromRGB(250, 236, 200)
+									action.BackgroundColor3 = if replay then Color3.fromRGB(240, 221, 183) else Color3.fromRGB(17, 39, 59)
+									action.BorderSizePixel = 0
+									action.Parent = result
+									local limits = Instance.new("UITextSizeConstraint")
+									limits.MaxTextSize = 22
+									limits.Parent = action
+									action.Activated:Connect(function() finish(replay) end)
+								end
+								return
+							end
 							opts.winner = if w == "a" or w == "b" then w else nil
 							loser = if w == "a" then "foe" elseif w == "b" then "me" else nil
 							if w == "a" then
@@ -4828,6 +6708,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							crewAct(side, card)
 						end)
 					end)
+					conns[boardingTimer] = boardingTimer
 				end
 				if not opts.card and not RT and (d < 30 or (foeDone >= #meQueue and meDone >= #foeQueue)) then
 					phase = "board"
@@ -4850,11 +6731,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					shake = 1.4
 					-- 칼날 부딪히는 소리: 효과음 한 가지를 높낮이를 바꿔 겹쳐 백병전 소리로 쓴다
 					Sfx.play("sfx_hit", 0.9, 1.25 + math.random() * 0.35)
-					task.delay(0.14, function()
+					local timer = task.delay(0.14, function()
+						FX.effectTimers[coroutine.running()] = nil
 						if not finished then
 							Sfx.play("sfx_hit", 0.7, 1.55 + math.random() * 0.4)
 						end
 					end)
+					FX.effectTimers[timer] = timer
 					if melIdx % 2 == 0 then
 						Sfx.play("sfx_creak", 0.5, 1.2)
 					end
@@ -4895,9 +6778,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					banner.TextStrokeTransparency = 1
 					if opts.winner == "a" then
 						Sfx.play("sfx_fanfare", 0.74, 1.0, "sfx_quest_reward")
-						task.delay(0.28, function()
+						local timer = task.delay(0.28, function()
+							FX.effectTimers[coroutine.running()] = nil
 							if not finished then Sfx.play("sfx_horn", 0.42, 1.08) end
 						end)
+						FX.effectTimers[timer] = timer
 					elseif opts.winner == "b" then
 						Sfx.play("sfx_event_danger", 0.54, 0.87, "sfx_horn")
 						Sfx.play("sfx_creak", 0.50, 0.68)
@@ -5020,52 +6905,60 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			-- 부유하는 임의 불덩이 대신 FX.damage에서 선체 고정 화재를 갱신한다.
 		end
-		poseShip(me, now, meSink)
-		poseShip(foe, now, foeSink)
-		updateCrews(now)
-		for _, e in escorts do
-			poseShip(e, now, nil)
-		end
-		for _, al in allies do
-			poseShip(al, now, nil)
+		do
+			-- [함대 파도] 같은 프레임의 해역 날씨를 모든 함선에 공유한다.
+			local seaMood = if opts.cardOnly then "card" else (folder:GetAttribute("NavalWeatherMode") or "clear")
+			poseShip(me, now, meSink, seaMood)
+			poseShip(foe, now, foeSink, seaMood)
+			updateCrews(now)
+			for _, e in escorts do
+				poseShip(e, now, nil, seaMood)
+			end
+			for _, al in allies do
+				poseShip(al, now, nil, seaMood)
+			end
 		end
 		do
 			-- [해전 사거리 레이더] 실제 함선 위치/방위·실측 사거리로 반경이 움직인다.
 			-- 기존 원주 조각을 재활용해 좌현·우현 포격 호, 8초 회전 스캔, 장전 진행, 적선 방위와 명중 펄스를 표시한다.
-			local dd = (foe.pos - me.pos).Magnitude
-			local inRange = dd < cannon.range
 			local direction = foe.pos - me.pos
+			local dd = direction.Magnitude
+			local inRange = dd < cannon.range
 			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 			local broadside = if dd > 0.1 then math.abs(heading:Cross(direction.Unit).Y) else 0
 			local aligned = broadside > 0.5
-			local sideCross = if dd > 0.1 then heading:Cross(direction.Unit).Y else 0
-			local gunSide = if sideCross < 0 then "우현" else "좌현"
-			local aimAngle = if dd > 0.1 then math.deg(math.acos(math.clamp(heading:Dot(direction.Unit), -1, 1))) else 0
-			local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5) -- [실제 포각] 선측 정면 90°, 양옆 60° 이내가 포격 가능
 			-- [조향 가이드] 실제 명중 판정을 바꾸지 않고 가장 가까운 좌/우 선측 90° 위치만 안내한다.
 			local enemyBearing = if dd > 0.1 then math.atan2(direction.Z, direction.X) else me.theta
 			local turnLeft = (enemyBearing + math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
 			local turnRight = (enemyBearing - math.pi / 2 - me.theta + math.pi) % (math.pi * 2) - math.pi
 			local turnNeeded = if math.abs(turnRight) < math.abs(turnLeft) then turnRight else turnLeft
-			local steerCue = (if turnNeeded >= 0 then "우로 " else "좌로 ") .. tostring(math.floor(math.abs(math.deg(turnNeeded)) + 0.5)) .. "°"
-			local color = if not inRange then Color3.fromRGB(255, 205, 130) elseif aligned then Color3.fromRGB(124, 236, 161) else Color3.fromRGB(255, 178, 100)
+			local steerCue = if turnNeeded >= 0 then "우현으로 조타" else "좌현으로 조타"
 			local tau = math.pi * 2
 			local scanAngle = (now * 2.45) % tau -- [탐지광] 약 2.6초/회전, 조각 잔광은 점진적으로 감쇠
 			local cd = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local reloadProgress = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cd), 0, 1)
 			local firing = now < rangeRing.volleyUntil
+			local broadsideReady = phase == "duel" and not opts.card and not opts.cardOnly
+				and inRange and aligned and nextMeFire - now <= 0.35 and not firing
+			local enemySide = heading:Cross(direction).Y
 			local hitFoe = now < rangeRing.impactUntil
 			local hitMe = now < rangeRing.hitUntil
 			rangeRing.fade = math.clamp(rangeRing.fade + (if phase == "duel" then dt * 3.5 else -dt * 3.5), 0, 1)
-			local enemyAngle = if dd > 0.1 then math.atan2(direction.Z, direction.X) else 0
+			local enemyAngle = if dd > 0.1 then enemyBearing else 0
+			-- [해전 원주] 위치와 사거리가 그대로면 고정 원주 좌표를 다시 계산하지 않는다.
+			local ringMoved = rangeRing.lastPos ~= me.pos or rangeRing.lastRange ~= cannon.range
+			local pulse = 0.5 + 0.5 * math.sin(now * 6)
 			for i, seg in rangeRing.segments do
-				local angle = (i - 1) * tau / #rangeRing.segments
-				local radial = Vector3.new(math.cos(angle), 0, math.sin(angle))
-				local tangent = Vector3.new(-radial.Z, 0, radial.X)
-				local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
-				seg.CFrame = CFrame.lookAt(at, at + tangent)
+				local angle = rangeRing.angles[i]
+				local radial = rangeRing.radials[i]
+				if ringMoved then
+					local tangent = Vector3.new(-radial.Z, 0, radial.X)
+					local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
+					seg.CFrame = CFrame.lookAt(at, at + tangent)
+				end
 				-- 좌·우 선측: 실제 조준 기준인 교차곱 0.5 이상인 방향만 두껍고 밝게.
-				local sideArc = math.abs(heading:Cross(radial).Y) > 0.5
+				local sideY = heading:Cross(radial).Y
+				local sideArc = math.abs(sideY) > 0.5
 				local charged = ((angle - me.theta + tau) % tau) / tau <= reloadProgress
 				local trailAngle = (scanAngle - angle + tau) % tau
 				local trail = if trailAngle < 1.45 then (1 - trailAngle / 1.45) ^ 1.25 else 0 -- [잔광] 좁은 원주 잔상, 뒤쪽만 남는다
@@ -5079,7 +6972,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					alpha = math.min(alpha, 0.83 - 0.63 * trail)
 				end
 				if onEnemy then
-					local pulse = 0.5 + 0.5 * math.sin(now * 6)
 					tint = if inRange and aligned then Color3.fromRGB(114, 255, 177) else Color3.fromRGB(255, 155, 115)
 					alpha = math.min(alpha, 0.3 - pulse * 0.19)
 				end
@@ -5096,53 +6988,41 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				elseif hitMe then
 					tint, alpha = Color3.fromRGB(255, 119, 100), math.min(alpha, 0.34)
 				end
-				seg.Color = tint
-				seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
+				-- [준비 표시] 적이 있는 선측만 황동빛으로 표시하고, 발사하면 기존 섬광으로 넘긴다.
+				if broadsideReady and not hitMe and not hitFoe and now >= skillUntil.guard and now >= skillUntil.dash then
+					local readyArc = sideArc and sideY * enemySide > 0
+					tint = if readyArc then Color3.fromRGB(249, 201, 126) else Color3.fromRGB(94, 127, 138)
+					alpha = if readyArc then 0.25 else 0.9
+				end
+				if seg.Color ~= tint then seg.Color = tint end
+				local transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
+				if seg.Transparency ~= transparency then seg.Transparency = transparency end
 			end
+			rangeRing.lastPos, rangeRing.lastRange = me.pos, cannon.range
 			-- [회전 탐색광] 새 물체를 만들지 않고 기존 선박 메시·원주 Attachment 위치만 이동.
 			if rangeRing.radar then
 				local radar = rangeRing.radar
 				local center = ORIGIN + me.pos + Vector3.new(0, 0.3, 0)
 				local rim = center + Vector3.new(math.cos(scanAngle), 0, math.sin(scanAngle)) * cannon.range
-				radar.origin.Position = radar.hull.CFrame:PointToObjectSpace(center)
-				radar.edge.Position = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
-				radar.beam.Enabled = not opts.cardOnly and rangeRing.fade > 0.08 and phase == "duel"
-				radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
-					if inRange and aligned then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
+				local originPosition = radar.hull.CFrame:PointToObjectSpace(center)
+				local edgePosition = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
+				if radar.origin.Position ~= originPosition then radar.origin.Position = originPosition end
+				if radar.edge.Position ~= edgePosition then radar.edge.Position = edgePosition end
+				local enabled = not opts.cardOnly and not broadsideReady and rangeRing.fade > 0.08 and phase == "duel"
+				if radar.beam.Enabled ~= enabled then radar.beam.Enabled = enabled end
+				local ready = inRange and aligned
+				if radar.ready ~= ready then
+					radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
+						if ready then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
+					radar.ready = ready
+				end
 			end
-			rangeLabel.Text = if battleViewport.X < 480 then
-				string.format("포각 %s %d° · %s", gunSide, math.floor(aimAngle + 0.5),
-					if not inRange then "거리 밖" elseif aligned then "발사 가능" else steerCue)
-				else string.format("%s %dm/%dm · %s %d° · %s", cannon.name, math.floor(dd), cannon.range,
-					gunSide, math.floor(aimAngle + 0.5),
-					if not inRange then "거리 밖" elseif aligned then "발사 가능" else steerCue)
-			rangeLabel.TextColor3 = color
-			-- [전술 단계] 실제 사거리와 기존 시각용 장전 쿨타임만 표시한다.
-			local status, tip, tone
-			if phase == "board" then
-				status, tip, tone = "④ 접현 백병전", "선체 내구도와 승조원 피해를 확인해.", Color3.fromRGB(255, 174, 123)
-			elseif phase == "end" then
-				status, tip, tone = "전투 종료", "확정된 결과를 확인해.", Color3.fromRGB(248, 220, 163)
-			elseif now < skillUntil[SKILLS[2].id] then
-				local sk = SKILLS[2]
-				status = "특화 발동 · " .. sk.text
-				tip = string.format("%s · 남은 %.1f초", sk.cue or "전투 기술", skillUntil[sk.id] - now)
-				tone = sk.col
-			elseif not inRange then
-				status, tip, tone = "① 적선 접근", string.format("포 사거리까지 %d m · 바람과 조타를 확인해.", math.ceil(dd - cannon.range)), Color3.fromRGB(255, 205, 130)
-			elseif not aligned then
-				status, tip, tone = "② 선측 정렬 · 포각 확인",
-					string.format("%s %d° · 편차 %d° · %s", gunSide, math.floor(aimAngle + 0.5), sideDeviation, steerCue),
-					Color3.fromRGB(255, 185, 123)
-			elseif now < nextMeFire then
-				status, tip, tone = "③ 대포 재장전", string.format("남은 약 %.1f초 · 적선과의 거리 %dm", math.max(0, nextMeFire - now), math.floor(dd)), Color3.fromRGB(242, 212, 138)
-			else
-				status, tip, tone = "③ 포격 준비", string.format("적선 %dm · 사거리 %dm · 자동 포격 대기", math.floor(dd), cannon.range), Color3.fromRGB(130, 237, 172)
-			end
-			local messageText = if battleViewport.X < 480 then status .. "\n" ..
-				(if not inRange then "대포 사거리 밖" elseif not aligned then steerCue .. " 돌려"
-					elseif now < nextMeFire then string.format("장전 %.1f초", math.max(0, nextMeFire - now)) else "측면 포격 가능")
-				else status .. "\n" .. tip -- [상단 가독성] 세로 폰에서 정보가 잘리지 않게 두 줄 압축
+			-- 진입과 선측 조타만 안내한다. 재장전·포격 가능 여부는 기존 장전 막대에 표시한다.
+			local messageText = if phase == "duel" and not opts.card and not opts.cardOnly
+				then (if not inRange then "적선에 접근" elseif not aligned then steerCue else "") else ""
+			local tone = if not inRange then Color3.fromRGB(255, 205, 130) else Color3.fromRGB(255, 185, 123)
+			local visible = messageText ~= ""
+			if tactic.Visible ~= visible then tactic.Visible = visible end
 			if messageText ~= lastTacticText then
 				tactic.Text, lastTacticText = messageText, messageText
 			end
@@ -5153,48 +7033,76 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
 			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
 			local a1 = ORIGIN + foe.pos + Vector3.new(0, 6, 0)
+			-- [탄도 표시] 같은 프레임의 색상·투명도·간격을 모든 점에서 공유한다.
+			local alpha = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
+			local tint = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
+			local dotDivisor = #trajDots + 1
 			for i, dot in trajDots do
 				if aim then
-					local u = i / (#trajDots + 1)
-					dot.CFrame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
-					dot.Transparency = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
-					dot.Color = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
-				else
+					local u = i / dotDivisor
+					local frame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
+					if dot.CFrame ~= frame then dot.CFrame = frame end
+					if dot.Transparency ~= alpha then dot.Transparency = alpha end
+					if dot.Color ~= tint then dot.Color = tint end
+				elseif dot.Transparency ~= 1 then
 					dot.Transparency = 1
 				end
 			end
 		end
-		FX.wake(me, "me", now)
-		FX.wake(foe, "foe", now)
-		for i, e in escorts do
-			FX.wake(e, "e" .. i, now)
-		end
-		-- [아군 함대 포말] 기함과 동일한 물살/선수 물보라를 호출하고 모바일은 교대로 경량화한다.
-		for i, al in allies do
-			if not MOBILE_VFX or (i + math.floor(now * 3)) % 2 == 0 then
-				FX.wake(al, "a" .. i, now)
+		do
+			-- [함대 항적] 같은 프레임의 날씨와 모바일 교대 위상을 모든 함선에 공유한다.
+			local wakeMood = folder:GetAttribute("NavalWeatherMode") or "clear"
+			local waveBoost = if wakeMood == "storm" then 1.45 elseif wakeMood == "rain" then 1.18 else 1
+			FX.wake(me, "me", now, waveBoost)
+			FX.wake(foe, "foe", now, waveBoost)
+			for i, e in escorts do
+				FX.wake(e, "e" .. i, now, waveBoost)
+			end
+			-- [아군 함대 포말] 기함과 동일한 물살/선수 물보라를 호출하고 모바일은 교대로 경량화한다.
+			local wakePhase = math.floor(now * 3)
+			for i, al in allies do
+				if not MOBILE_VFX or (i + wakePhase) % 2 == 0 then
+					FX.wake(al, "a" .. i, now, waveBoost)
+				end
 			end
 		end
 		FX.damage(me, "me", now)
 		FX.damage(foe, "foe", now)
-		meFill.Size = UDim2.fromScale(meHp, 1)
-		foeFill.Size = UDim2.fromScale(foeHp, 1)
+		-- [전투 HUD] 실제 표시 값이 바뀌는 경우만 속성을 갱신한다.
+		do
+			local meSize, foeSize = UDim2.fromScale(meHp, 1), UDim2.fromScale(foeHp, 1)
+			if meFill.Size ~= meSize then meFill.Size = meSize end
+			if foeFill.Size ~= foeSize then foeFill.Size = foeSize end
+		end
 		if not opts.cardOnly then
 			local dv = (foe.pos - me.pos).Magnitude
 			local inRange = dv < cannon.range
-			distLabel.Text = string.format("적선 %d m · %s", math.floor(dv), if inRange then "사정거리 안 — 포격 중" elseif dv < cannon.range * 1.4 then "조금만 더 접근!" else "사정거리 밖")
-			distLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
+			-- [거리 표시] 실제 정수 거리와 사거리 상태가 같은 경우 속성을 다시 쓰지 않는다.
+			do
+				local distanceText = string.format("적선 %d m · %s", math.floor(dv), if inRange then "사정거리 안 — 포격 중" elseif dv < cannon.range * 1.4 then "조금만 더 접근!" else "사정거리 밖")
+				local distanceColor = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
+				if distLabel.Text ~= distanceText then distLabel.Text = distanceText end
+				if distLabel.TextColor3 ~= distanceColor then distLabel.TextColor3 = distanceColor end
+			end
 			local cdNow = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local prog = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cdNow), 0, 1)
-			reloadFill.Size = UDim2.fromScale(prog, 1)
-			reloadFill.BackgroundColor3 = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
-			reloadText.Text = if not inRange then "포 — 사거리 밖"
-				elseif prog >= 1 then "포 발사 준비!"
-				else string.format("포 장전 · %.1f초", math.max(0, nextMeFire - now))
+			do
+				local reloadSize = UDim2.new(prog, -8 * prog, 0, 3)
+				local reloadColor = if now < skillUntil.rapid then Color3.fromRGB(255, 120, 70) elseif prog >= 1 then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(240, 180, 80)
+				if reloadFill.Size ~= reloadSize then reloadFill.Size = reloadSize end
+				if reloadFill.BackgroundColor3 ~= reloadColor then reloadFill.BackgroundColor3 = reloadColor end
+			end
+			do
+				local reloadCaption = if not inRange then "사거리 밖"
+					elseif prog >= 1 then "장전 완료"
+					else "장전 중"
+				if reloadText.Text ~= reloadCaption then reloadText.Text = reloadCaption end
+			end
 			local v = cam:WorldToViewportPoint(ORIGIN + foe.pos)
 			local vp = cam.ViewportSize
 			local onScr = v.Z > 0 and v.X > 40 and v.X < vp.X - 40 and v.Y > 90 and v.Y < vp.Y - 90
-			foeArrow.Visible, foeArrowTag.Visible = not onScr, not onScr
+			if foeArrow.Visible ~= not onScr then foeArrow.Visible = not onScr end
+			if foeArrowTag.Visible ~= not onScr then foeArrowTag.Visible = not onScr end
 			if not onScr then
 				local c0 = vp / 2
 				local dir = Vector2.new(v.X, v.Y) - c0
@@ -5209,146 +7117,236 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local ky = if math.abs(dir.Y) > 1e-3 then (vp.Y / 2 - 120) / math.abs(dir.Y) else math.huge
 				local pt = c0 + dir * math.min(kx, ky)
 				local inset = game:GetService("GuiService"):GetGuiInset()
-				foeArrow.Position = UDim2.fromOffset(pt.X - inset.X, pt.Y - inset.Y)
-				foeArrow.Rotation = math.deg(math.atan2(dir.Y, dir.X))
-				foeArrowTag.Position = UDim2.fromOffset(pt.X - inset.X - dir.X * 34, pt.Y - inset.Y - dir.Y * 28)
-				foeArrowTag.Text = string.format("적선 %dm", math.floor(dv))
+				local arrowPosition = UDim2.fromOffset(pt.X - inset.X, pt.Y - inset.Y)
+				local arrowRotation = math.deg(math.atan2(dir.Y, dir.X))
+				local tagPosition = UDim2.fromOffset(pt.X - inset.X - dir.X * 34, pt.Y - inset.Y - dir.Y * 28)
+				if foeArrow.Position ~= arrowPosition then foeArrow.Position = arrowPosition end
+				if foeArrow.Rotation ~= arrowRotation then foeArrow.Rotation = arrowRotation end
+				if foeArrowTag.Position ~= tagPosition then foeArrowTag.Position = tagPosition end
+				local arrowText = string.format("적선 %dm", math.floor(dv))
+				if foeArrowTag.Text ~= arrowText then foeArrowTag.Text = arrowText end
 			end
 		end
-		if rt then
-			mePct.Text = string.format("%d / %d", math.ceil(meHp * rt.meMax), rt.meMax)
-			foePct.Text = string.format("%d / %d", math.ceil(foeHp * rt.foeMax), rt.foeMax)
-		else
-			mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
-			foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
+		do
+			local meText = if rt then string.format("%d / %d", math.ceil(meHp * rt.meMax), rt.meMax) else string.format("%d%%", math.ceil(meHp * 100))
+			local foeText = if rt then string.format("%d / %d", math.ceil(foeHp * rt.foeMax), rt.foeMax) else string.format("%d%%", math.ceil(foeHp * 100))
+			if mePct.Text ~= meText then mePct.Text = meText end
+			if foePct.Text ~= foeText then foePct.Text = foeText end
 		end
-		meFill.BackgroundColor3 = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
+		local hullColor = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
+		local allyFlash = math.clamp((rangeRing.hitUntil - now) / 0.55, 0, 1)
+		local enemyFlash = math.clamp((rangeRing.impactUntil - now) / 0.48, 0, 1)
+		do
+			local meColor = hullColor:Lerp(Color3.fromRGB(255, 155, 131), allyFlash)
+			local foeColor = Color3.fromRGB(214, 82, 76):Lerp(Color3.fromRGB(255, 218, 153), enemyFlash)
+			if meFill.BackgroundColor3 ~= meColor then meFill.BackgroundColor3 = meColor end
+			if foeFill.BackgroundColor3 ~= foeColor then foeFill.BackgroundColor3 = foeColor end
+		end
 		-- [선체 숫자 선명도] 버프 문구 때문에 폰트가 10px까지 줄던 문제를 막는다.
 		-- 선체 체력은 항상 14px로, 기존 활성 스킬 시간은 아래 3px 상태 막대로만 표현한다.
-		buffFill.Visible = false
-		mePct.TextSize = 14
-		for _, sk in SKILLS do
-			local remaining = math.max(0, skillUntil[sk.id] - now)
-			if remaining > 0 and sk.id ~= "fire" then
-				buffFill.BackgroundColor3 = sk.col
-				buffFill.Size = UDim2.new(math.clamp(remaining / sk.dur, 0, 1), 0, 0, 3)
-				buffFill.Visible = true
-				break
+		do
+			local buffVisible = false
+			if mePct.TextSize ~= 14 then mePct.TextSize = 14 end
+			for _, sk in SKILLS do
+				local remaining = math.max(0, skillUntil[sk.id] - now)
+				if remaining > 0 and sk.id ~= "fire" then
+					local buffSize = UDim2.new(math.clamp(remaining / sk.dur, 0, 1), 0, 0, 3)
+					if buffFill.BackgroundColor3 ~= sk.col then buffFill.BackgroundColor3 = sk.col end
+					if buffFill.Size ~= buffSize then buffFill.Size = buffSize end
+					buffVisible = true
+					break
+				end
 			end
+			if buffFill.Visible ~= buffVisible then buffFill.Visible = buffVisible end
 		end
 		for _, sk in SKILLS do
 			local b = skillBtn[sk.id]
 			local left = skillReady[sk.id] - now
 			local active = now < skillUntil[sk.id]
 			local ready = left <= 0
-			if active then
-				b.Text = sk.text .. "\n발동 중"
-				b.BackgroundColor3 = sk.col
-			elseif not ready then
-				b.Text = string.format("%s\n%d초", sk.text, math.ceil(left))
-				b.BackgroundColor3 = Color3.fromRGB(60, 62, 70)
-			else
-				b.Text = sk.text .. "\n준비"
-				b.BackgroundColor3 = sk.col
-			end
+			local ratio = math.clamp(left / math.max(sk.cd, 0.1), 0, 1)
 			local art = b:FindFirstChild("NavalButtonArtwork")
+			local shade = b:FindFirstChild("NavalCooldownShade")
+			if shade then
+				-- [해상·지상 통일] 원화가 있으면 원 음영 대신 아이콘만 어두워진다.
+				local visible = not ready and art == nil
+				local transparency = 0.22 + (1 - ratio) * 0.70
+				if shade.Visible ~= visible then shade.Visible = visible end
+				if shade.BackgroundTransparency ~= transparency then shade.BackgroundTransparency = transparency end
+			end
+			-- [한글 선명도] 초 숫자·그림자 제거. 아이콘은 어두운 상태에서 점점 원래 색으로 복귀한다.
+			if b.Text ~= sk.text then b.Text = sk.text end
+			local buttonColor = sk.col:Lerp(Color3.fromRGB(49, 59, 75), ratio)
+			if b.BackgroundColor3 ~= buttonColor then b.BackgroundColor3 = buttonColor end
 			if art and art:IsA("ImageLabel") then
-				art.ImageTransparency = if ready then 0 else 0.32
+				local transparency = if ready then 0 else ratio * 0.28
+				if art.ImageTransparency ~= transparency then art.ImageTransparency = transparency end
 				local caption = b:FindFirstChild("NavalButtonCaption")
 				if caption and caption:IsA("TextLabel") then
-					caption.Text = if active then "발동 중" elseif not ready then string.format("%d초", math.ceil(left)) else sk.text
+					if caption.Text ~= sk.text then caption.Text = sk.text end
+					if caption.TextStrokeTransparency ~= 1 then caption.TextStrokeTransparency = 1 end
 				end
 			end
-			b.Interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
-			b.Active = b.Interactable
-			b.AutoButtonColor = b.Interactable
+			if not ready then
+				if not b:GetAttribute("NavalWasCooling") then b:SetAttribute("NavalWasCooling", true) end
+			elseif b:GetAttribute("NavalWasCooling") then
+				b:SetAttribute("NavalWasCooling", false)
+				b:SetAttribute("NavalReadyPulseUntil", now + 0.55)
+				-- [해상 쿨타임 준비광] 지상과 동일하게 준비 완료 순간 한 바퀴 회전 후 사라진다.
+				local halo = b:FindFirstChild("NavalButtonHalo")
+				local lightRim = halo and halo:FindFirstChildOfClass("UIStroke")
+				local sweep = lightRim and lightRim:FindFirstChildOfClass("UIGradient")
+				if halo and lightRim and sweep then
+					halo.Size = UDim2.fromScale(0.80, 0.80) -- [해상·지상 통일] 아이콘 안쪽에서만
+					lightRim.Transparency = 0.03
+					sweep.Rotation = 0
+					TweenService:Create(halo, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+						{ Size = UDim2.fromScale(0.94, 0.94) }):Play()
+					TweenService:Create(sweep, TweenInfo.new(0.47, Enum.EasingStyle.Linear),
+						{ Rotation = 360 }):Play()
+					TweenService:Create(lightRim, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+						{ Transparency = 1 }):Play()
+				end
+                local readyScale = b:FindFirstChild("NavalReadyScale")
+                if readyScale and readyScale:IsA("UIScale") then
+                    readyScale.Scale = 1.12
+                    game:GetService("TweenService"):Create(readyScale, TweenInfo.new(0.42, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+                end
+			end
+			local interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card
+			if b.Interactable ~= interactable then b.Interactable = interactable end
+			if b.Active ~= interactable then b.Active = interactable end
+			if b.AutoButtonColor ~= interactable then b.AutoButtonColor = interactable end
 			local rim = b:FindFirstChildOfClass("UIStroke")
+			local pulse = if rim then math.clamp(((b:GetAttribute("NavalReadyPulseUntil") or 0) - now) / 0.55, 0, 1) else 0
+			-- [준비광] 기본색과 준비광을 합성한 최종색만 기록한다.
+			if art and art:IsA("ImageLabel") then
+				local color = Color3.fromRGB(255, 255, 255):Lerp(Color3.fromRGB(84, 96, 110), ratio)
+				if pulse > 0 then color = color:Lerp(Color3.fromRGB(255, 232, 143), pulse * 0.9) end
+				if art.ImageColor3 ~= color then art.ImageColor3 = color end
+			end
 			if rim then
-				rim.Color = if active then Color3.fromRGB(255, 234, 148) elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(92, 99, 109)
-				rim.Transparency = if art then 1 elseif active or ready then 0 else 0.35
+				local baseColor = if active then Color3.fromRGB(255, 234, 148)
+					elseif ready then Color3.fromRGB(190, 244, 198) else Color3.fromRGB(96, 108, 123)
+				local color = baseColor:Lerp(Color3.fromRGB(255, 248, 164), pulse)
+				local thickness = 2.2 + 2.6 * pulse
+				local transparency = if ready or active then 0.06 else 0.28
+				if rim.Color ~= color then rim.Color = color end
+				if rim.Thickness ~= thickness then rim.Thickness = thickness end
+				if rim.Transparency ~= transparency then rim.Transparency = transparency end
 			end
 		end
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
 		for _, mc in myCards do
 			local v = 1 - (1 - meHp) * mc.share
-			mc.c.fill.Size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
-			mc.c.fill.BackgroundColor3 = if v < 0.35 then Color3.fromRGB(214, 82, 76) else mc.c.color
-			if loser == "me" and sinkStart and mc.share == 1 then
+			local size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
+			local color = if v < 0.35 then Color3.fromRGB(214, 82, 76) else mc.c.color
+			if mc.c.fill.Size ~= size then mc.c.fill.Size = size end
+			if mc.c.fill.BackgroundColor3 ~= color then mc.c.fill.BackgroundColor3 = color end
+			if loser == "me" and sinkStart and mc.share == 1 and mc.c.frame.BackgroundTransparency ~= 0.6 then
 				mc.c.frame.BackgroundTransparency = 0.6
 			end
 		end
 		for _, fc in foeCards do
 			local v = 1 - (1 - foeHp) * fc.share
-			fc.c.fill.Size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
-			if loser == "foe" and sinkStart and fc.share == 1 then
+			local size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
+			if fc.c.fill.Size ~= size then fc.c.fill.Size = size end
+			if loser == "foe" and sinkStart and fc.share == 1 and fc.c.frame.BackgroundTransparency ~= 0.6 then
 				fc.c.frame.BackgroundTransparency = 0.6
 			end
 		end
 
-		-- [접현 시네마] 포격 중에는 2척을 넓게, 백병전 중에는 갑판 높이로 부드럽게 줌인한다.
-		-- 카드판과 침몰 연출은 종전 카메라 흐름을 유지한다. 화면 효과로만 쓰인다.
-		shake = math.max(0, shake - 0.06)
-		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
-		kick = kick * 0.86
-		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
-		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
-		cam.FieldOfView = (if MOBILE_VFX then 73 else 75) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
-		local f = forward(me.theta)
-		local sep = (foe.pos - me.pos)
-		local dist = sep.Magnitude
-		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		-- [선체 가독성] 선박 외형이 너무 작게 보이지 않게 카메라만 약간 가까이 이동한다.
-		local camPos = ORIGIN + me.pos - f * ((if MOBILE_VFX then 147 else 160) + dist * (if MOBILE_VFX then 0.46 else 0.51))
-			+ Vector3.new(0, math.min(78, 65 + dist * 0.11), 0)
-		if cardBusy then
-			local mid = (me.pos + foe.pos) / 2
-			local dir = foe.pos - me.pos
-			local perp = Vector3.new(-dir.Z, 0, dir.X)
-			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
-			focus = ORIGIN + mid + Vector3.new(0, 2, 0)
-			camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
-		elseif FX.boardZoom > 0.01 then
-			local mid = (me.pos + foe.pos) / 2
-			local dir = foe.pos - me.pos
-			local perp = Vector3.new(-dir.Z, 0, dir.X)
-			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
-			local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58) + Vector3.new(0, if MOBILE_VFX then 28 else 23, 0)
-			local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
-			camPos = camPos:Lerp(closePos, FX.boardZoom)
-			focus = focus:Lerp(closeFocus, FX.boardZoom)
+		do -- 카메라 임시 지역 변수는 이 블록에서만 유지한다.
+			-- [접현 시네마] 포격 중에는 2척을 넓게, 백병전 중에는 갑판 높이로 부드럽게 줌인한다.
+			-- 카드판과 침몰 연출은 종전 카메라 흐름을 유지한다. 화면 효과로만 쓰인다.
+			shake = math.max(0, shake - 3.6 * dt)
+			local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
+			kick *= 0.86 ^ (dt * 60)
+			local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
+			FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
+			-- [입체 해전 카메라] 비전투 카드판은 유지하고 해전만 선체 크기·거리감이 읽히는 화각으로 좁힌다.
+			local cameraFov = (if opts.cardOnly then (if MOBILE_VFX then 73 else 75) else (if MOBILE_VFX then 69 else 71)) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
+			local f = forward(me.theta)
+			local sep = (foe.pos - me.pos)
+			local dist = sep.Magnitude
+			local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
+			-- [선박 3D 실루엣] 비스듬한 측면에서 선수·돛·함포가 동시에 보이도록 좌우 시차를 준다.
+			local side = Vector3.new(-f.Z, 0, f.X)
+			local cameraDistance = (if MOBILE_VFX then 133 else 145) + dist * (if MOBILE_VFX then 0.47 else 0.49)
+			local camPos = ORIGIN + me.pos - f * cameraDistance
+				+ (if opts.cardOnly then Vector3.zero else side * math.min(25, 13 + dist * 0.055))
+				+ Vector3.new(0, math.min(72, 51 + dist * 0.09), 0)
+			if cardBusy then
+				local mid = (me.pos + foe.pos) / 2
+				local perp = Vector3.new(-sep.Z, 0, sep.X)
+				perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
+				focus = ORIGIN + mid + Vector3.new(0, 2, 0)
+				camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
+			elseif FX.boardZoom > 0.01 then
+				local mid = (me.pos + foe.pos) / 2
+				local perp = Vector3.new(-sep.Z, 0, sep.X)
+				perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
+				local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58) + Vector3.new(0, if MOBILE_VFX then 28 else 23, 0)
+				local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
+				camPos = camPos:Lerp(closePos, FX.boardZoom)
+				focus = focus:Lerp(closeFocus, FX.boardZoom)
+			end
+			if phase == "end" and not opts.cardOnly and endAt then
+				-- [종전 시네마] 초반에는 침몰 함선, 후반에는 승리한 함대를 낮은 각도로 보여 준다.
+				-- 항복·접현 승리는 침몰을 연출하지 않고 두 함선을 보여 준다.
+				local damaged = if loser == "me" then me else foe
+				local winnerShip = if opts.winner == "a" then me elseif opts.winner == "b" then foe else me
+				-- [침몰 시네마] 배가 수면 밑으로 사라질 때까지 선체를 따라 내려보고 이후 승전함으로 전환한다.
+				local sinkingTime = if FX.sink then math.clamp((now - endAt) / FX.sink.duration, 0, 1) else 0
+				local showingSinking = FX.sink and sinkingTime < 0.91
+				local focusShip = if showingSinking then damaged else winnerShip
+				local shot = ORIGIN + focusShip.pos + Vector3.new(0,
+					if showingSinking then math.max(1, 7 - sinkingTime * 5) else 9, 0)
+				local retreat = forward(focusShip.theta)
+				local desired = shot - retreat * (if showingSinking then 95 - sinkingTime * 12 else 110)
+					+ Vector3.new(35, if showingSinking then 27 - sinkingTime * 8 else 36, 22)
+				focus = focus:Lerp(shot, 0.92)
+				camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
+				cameraFov = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
+			end
+			-- [카메라 화각] 종전 시네마까지 확정한 최종 화각만 한 번 기록한다.
+			if cam.FieldOfView ~= cameraFov then cam.FieldOfView = cameraFov end
+			-- [수면 시점] 수평선은 안정적으로 유지하고 근거리 카메라에만 작은 물결 시차를 적용한다.
+			if not opts.cardOnly and not cardBusy and phase == "duel" then
+				local mood = folder:GetAttribute("NavalWeatherMode")
+				local cameraSwell = if mood == "storm" then 0.65 elseif mood == "rain" then 0.38 else 0.20
+				camPos += Vector3.new(0, math.sin(now * 1.15) * cameraSwell, 0)
+			end
+			local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
+			-- 카메라 보간 상태를 재사용해 프레임마다 새 테이블을 만들지 않는다.
+			if FX.cam then
+				FX.cam.pos = FX.cam.pos:Lerp(camPos, a)
+				FX.cam.focus = FX.cam.focus:Lerp(focus, a)
+			else
+				FX.cam = { pos = camPos, focus = focus }
+			end
+			local cameraFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)
+			if cam.CFrame ~= cameraFrame then cam.CFrame = cameraFrame end
 		end
-		if phase == "end" and not opts.cardOnly and endAt then
-			-- [종전 시네마] 초반에는 침몰 함선, 후반에는 승리한 함대를 낮은 각도로 보여 준다.
-			-- 항복·접현 승리는 침몰을 연출하지 않고 두 함선을 보여 준다.
-			local damaged = if loser == "me" then me else foe
-			local winnerShip = if opts.winner == "a" then me elseif opts.winner == "b" then foe else me
-			-- [침몰 시네마] 배가 수면 밑으로 사라질 때까지 선체를 따라 내려보고 이후 승전함으로 전환한다.
-			local sinkingTime = if FX.sink then math.clamp((now - endAt) / FX.sink.duration, 0, 1) else 0
-			local showingSinking = FX.sink and sinkingTime < 0.91
-			local focusShip = if showingSinking then damaged else winnerShip
-			local shot = ORIGIN + focusShip.pos + Vector3.new(0,
-				if showingSinking then math.max(1, 7 - sinkingTime * 5) else 9, 0)
-			local retreat = forward(focusShip.theta)
-			local desired = shot - retreat * (if showingSinking then 95 - sinkingTime * 12 else 110)
-				+ Vector3.new(35, if showingSinking then 27 - sinkingTime * 8 else 36, 22)
-			focus = focus:Lerp(shot, 0.92)
-			camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
-			cam.FieldOfView = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
-		end
-		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
-		FX.cam = if FX.cam then { pos = FX.cam.pos:Lerp(camPos, a), focus = FX.cam.focus:Lerp(focus, a) } else { pos = camPos, focus = focus }
-		cam.CFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)
 	end))
 
 	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
-	task.delay(130, function()
-		while cardBusy and not finished do -- 카드 대결 중에는 시간을 재촉하지 않는다
-			task.wait(1)
-		end
-		if not finished then
-			finish()
-		end
-	end)
+	do
+		local timeout = task.delay(130, function()
+			while cardBusy and not finished do -- 카드 대결 중에는 시간을 재촉하지 않는다
+				task.wait(1)
+			end
+			if not finished then
+				finish()
+			end
+		end)
+		-- [종료된 장면 참조 해제] 자동 종료가 스스로 finish를 호출하면 현재 스레드는 취소하지 않는다.
+		table.insert(conns, { Disconnect = function()
+			if timeout ~= coroutine.running() and coroutine.status(timeout) ~= "dead" then
+				task.cancel(timeout)
+			end
+		end })
+	end
 
 	return { finish = finish }
 end

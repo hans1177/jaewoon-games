@@ -1,7 +1,8 @@
 // 파일명: qa/vibe2-distillation-status.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDistillationStatus } from '../tools/vibe2-distillation-status.mjs';
+import { buildDistillationStatus, diagnoseEvidenceLinkage } from '../tools/vibe2-distillation-status.mjs';
+import { buildDataset, datasetContentFingerprint } from '../tools/vibe2-weight-learning.mjs';
 
 function entry(record, index) {
   return { record, sourceFile: `fixture-${index}.json`, index };
@@ -28,6 +29,41 @@ function verifiedSample({ project, index, taskType = 'bugfix' }) {
   };
 }
 
+test('같은 소스 리비전의 실행 증거와 학습 문답 연결 상태를 진단하되 자동 승인하지 않는다', () => {
+  const text = { ...verifiedSample({ project: 'P0001', index: 1, taskType: 'coding' }), createdAt: '2026-11-19T10:00:00Z' };
+  const records = [
+    entry(text, 0),
+    entry({ sourceRevision: text.sourceCommit, createdAt: '2026-11-20T10:00:00Z', independentQa: 'PASS' }, 1),
+    entry({ sourceRevision: 'unrelated-commit', createdAt: '2026-09-01T10:00:00Z', independentQa: 'PASS' }, 2),
+    entry({ independentQa: 'PASS' }, 3),
+  ];
+  const status = buildDistillationStatus(records);
+  assert.equal(status.diagnostics.evidenceOnlyRecords, 3);
+  assert.equal(status.diagnostics.evidenceOnlyWithSourceRevision, 2);
+  assert.equal(status.diagnostics.evidenceOnlyLinkedToTextSample, 1);
+  assert.equal(status.diagnostics.evidenceOnlyUnlinkedToTextSample, 2);
+  assert.equal(status.diagnostics.latestDatedRecord, '2026-11-20');
+  assert.equal(status.diagnostics.recordsFromNovember2026, 2);
+  assert.equal(status.readyTasks.length, 0);
+});
+
+test('별도 증거 폴더와 학습 자료의 후보 ID 및 소스 리비전 연결을 추적한다', () => {
+  const samples = [entry({ candidateId: 'candidate-a', sourceCommit: 'commit-a', instruction: '문제', output: '수정' }, 0)];
+  const evidence = [
+    entry({ candidateId: 'candidate-a', sourceRevision: 'other-revision' }, 0),
+    entry({ candidateId: 'other', sourceRevision: 'commit-a' }, 1),
+    entry({ candidateId: 'unmatched', sourceRevision: 'unmatched-commit', independentQa: 'PASS' }, 2),
+  ];
+  const result = diagnoseEvidenceLinkage(samples, evidence);
+  assert.deepEqual(result, {
+    evidenceRecords: 3,
+    evidenceLinkedToTrainingRecord: 2,
+    evidenceWithoutTrainingRecord: 1,
+    evidenceWithSourceRevision: 3,
+  });
+  assert.equal(buildDistillationStatus(samples).readyTasks.length, 0);
+});
+
 test('성공 근거만 있고 학습 텍스트가 없으면 학습 준비로 보지 않는다', () => {
   const records = Array.from({ length: 20 }, (_, index) => entry({
     id: `evidence-${index}`,
@@ -42,7 +78,23 @@ test('성공 근거만 있고 학습 텍스트가 없으면 학습 준비로 보
   assert.equal(status.state, 'WAITING_FOR_VERIFIED_SAMPLES');
   assert.equal(status.readyTasks.length, 0);
   assert.equal(status.diagnostics.evidenceOnlyRecords, 20);
+  assert.equal(status.diagnostics.evidenceOnlyIndependentQaPass, 20);
   assert.equal(status.diagnostics.fullyVerifiedTextSamples, 0);
+  assert.equal(status.diagnostics.practiceOnlyTextSamples, 0);
+  assert.equal(status.diagnostics.textWithoutCompleteVerification, 0);
+});
+
+test('검증된 자료와 연습 전용 자료의 수를 구분하고 연습을 학습 합격으로 계산하지 않는다', () => {
+  const candidate = verifiedSample({ project: 'P0001', index: 9, taskType: 'coding' });
+  const practice = { ...candidate, instruction: '외부 게임 관찰 연습', practiceOnly: true,
+    independentQa: 'NOT_APPLICABLE', sourceKind: 'commercial-runtime-reference' };
+  const status = buildDistillationStatus([entry(candidate, 0), entry(practice, 1)]);
+  assert.equal(status.diagnostics.records, 2);
+  assert.equal(status.diagnostics.textSamples, 2);
+  assert.equal(status.diagnostics.practiceOnlyTextSamples, 1);
+  assert.equal(status.diagnostics.fullyVerifiedTextSamples, 1);
+  assert.equal(status.diagnostics.textWithoutCompleteVerification, 1);
+  assert.equal(status.readyTasks.length, 0);
 });
 
 test('두 프로젝트의 충분한 검증 샘플이 쌓이면 해당 작업 어댑터만 준비된다', () => {
@@ -130,4 +182,79 @@ test('검증된 외부 Android black-box QA 샘플은 브라우저 QA를 위조�
   assert.equal(status.diagnostics.fullyVerifiedTextSamples, 1);
   assert.equal(status.tasks.qa.accepted, 1);
   assert.equal(status.tasks.qa.skippedUnverified, 0);
+});
+
+test('같은 수량이라도 검증된 학습 내용이 달라지면 새 가중치 학습용 지문이 생성된다',()=>{
+  const inputs=[];
+  for(const project of ['P0001','P0002']){
+    for(let index=0;index<80;index++){
+      inputs.push(entry(verifiedSample({project,index,taskType:'bugfix'}),inputs.length));
+    }
+  }
+  const first=buildDistillationStatus(inputs);
+  const replay=buildDistillationStatus([...inputs].reverse());
+  const changed=inputs.map(row=>row);
+  changed[0]={...inputs[0],record:{...inputs[0].record,output:'독립검증된 새 수정 내용'}};
+  const later=buildDistillationStatus(changed);
+  assert.equal(first.tasks.bugfix.ready,true);
+  assert.match(first.tasks.bugfix.datasetSha256,/^[a-f0-9]{64}$/);
+  assert.equal(first.tasks.bugfix.datasetSha256,replay.tasks.bugfix.datasetSha256);
+  assert.notEqual(first.tasks.bugfix.datasetSha256,later.tasks.bugfix.datasetSha256);
+  assert.equal(inputs.length,changed.length);
+  assert.equal(later.tasks.bugfix.ready,true);
+});
+
+test('동일한 검증 샘플은 Windows와 Linux 경로에서 동일한 재훈련 지문을 생성한다',()=>{
+  const record=verifiedSample({project:'P0001',index:7,taskType:'bugfix'});
+  const unix=buildDistillationStatus([{record,sourceFile:'company-learning/training-samples/verified.json',index:0}]);
+  const windows=buildDistillationStatus([{record,sourceFile:'company-learning\\training-samples\\verified.json',index:0}]);
+  assert.equal(unix.tasks.bugfix.accepted,1);
+  assert.equal(windows.tasks.bugfix.accepted,1);
+  assert.equal(windows.tasks.bugfix.datasetSha256,unix.tasks.bugfix.datasetSha256);
+  assert.match(windows.tasks.bugfix.datasetSha256,/^[a-f0-9]{64}$/);
+});
+
+test('정식 플랫폼 재훈련 준비 판정과 생성 데이터가 합성 및 외부 샘플을 동일하게 제외한다',()=>{
+  const rows=[];
+  for(const project of ['P0001','P0002']){
+    for(let index=0;index<80;index++){
+      const record=verifiedSample({project,index,taskType:'roblox'});
+      record.browserQa='NOT_APPLICABLE';
+      record.provenance={sourceKind:index%3===0?'licensed-reference':'vibe2'};
+      record.synthetic=index%2===0;
+      rows.push(entry(record,rows.length));
+    }
+  }
+  const status=buildDistillationStatus(rows);
+  const exact=buildDataset(rows,{targetTaskType:'roblox',syntheticRatioCap:0,minTrainSamples:24,
+    minFreshTrainSamples:12,minDistinctProjects:2,maxProjectShare:0.75,
+    taskPlanMinSamples:8,taskPlanMinProjects:2});
+  const permissive=buildDataset(rows,{targetTaskType:'roblox',syntheticRatioCap:0.5,minTrainSamples:24,
+    minFreshTrainSamples:12,minDistinctProjects:2,maxProjectShare:0.75,
+    taskPlanMinSamples:8,taskPlanMinProjects:2});
+  assert.equal(status.tasks.roblox.datasetSha256,datasetContentFingerprint(exact));
+  assert.notEqual(status.tasks.roblox.datasetSha256,datasetContentFingerprint(permissive));
+  assert.equal(status.tasks.roblox.accepted,exact.stats.accepted);
+  assert.ok([...exact.train,...exact.eval,...exact.holdout].every(row=>row.synthetic===false&&row.provenance.sourceKind==='vibe2'));
+  assert.equal(status.tasks.roblox.ready,true);
+  const wrongBrowser=verifiedSample({project:'P0001',index:99,taskType:'roblox'});
+  wrongBrowser.provenance={sourceKind:'vibe2'};
+  wrongBrowser.synthetic=false;
+  const rejected=buildDataset([entry(wrongBrowser,0)],{targetTaskType:'roblox',syntheticRatioCap:0});
+  assert.equal(rejected.stats.accepted,0);
+});
+
+test('정적 승인된 참고 자료만으로 정식 가중치 재훈련 준비로 판단하지 않는다',()=>{
+  const record={
+    ...verifiedSample({project:'P0003',index:1,taskType:'coding'}),
+    sourceKind:'authorized-source',independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',
+    browserQa:'NOT_APPLICABLE',verification:{runtime:'STATIC_VERIFIED'},
+  };
+  const status=buildDistillationStatus([{record,sourceFile:'verified-static.json',index:0}],{
+    minTrainSamples:1,minFreshTrainSamples:0,minDistinctProjects:1,maxProjectShare:1,
+    taskPlanMinSamples:1,taskPlanMinProjects:1,
+  });
+  assert.equal(status.tasks.coding.accepted,0);
+  assert.equal(status.tasks.coding.ready,false);
+  assert.equal(status.tasks.coding.skippedUnverified,1);
 });

@@ -5,7 +5,8 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {hasVerifiedVibe2SourceHandoff} from './company-development-roblox-source-reconcile.mjs';
 
-const ROLES=Object.freeze(['planning','graphics','development','qa','balance']);
+// [정식 5개 부서] 밸런스 검증은 기획·QA로, 음향 검증은 오디오로 배정한다.
+const ROLES=Object.freeze(['planning','graphics','development','qa','audio']);
 const SHA256=/^sha256:[0-9a-f]{64}$/i;
 const COMMIT=/^[0-9a-f]{40}$/i;
 const clean=value=>String(value??'').trim();

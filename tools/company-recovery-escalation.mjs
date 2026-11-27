@@ -212,7 +212,8 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     'STUDIO_OBSERVED_RUNTIME_WARNINGS','STUDIO_OBSERVED_SOURCE_RUNTIME_ERROR',
     'STUDIO_ASSET_AUDIT_FAILED','STUDIO_FEATURE_AUDIT_FAILED','STUDIO_FULL_AUDIT_INCOMPLETE',
     'STUDIO_SCREENSHOTS_INCOMPLETE','STUDIO_SCREENSHOT_INVALID_IMAGE',
-    'STUDIO_MCP_PLAYCLIENT_UNREACHABLE','STUDIO_CAPTURE_STEP_MISSING'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
+    'STUDIO_MCP_PLAYCLIENT_UNREACHABLE','STUDIO_CAPTURE_STEP_MISSING',
+    'STUDIO_RUNNER_DISK_EXHAUSTED'].includes(studioValue('FAILURE_SIGNATURE'))?studioValue('FAILURE_SIGNATURE'):'';
   const tasks=Array.isArray(gameQueueInput.tasks)?gameQueueInput.tasks:[];
   const failedJobs=(Array.isArray(jobsInput.jobs)?jobsInput.jobs:[]).filter(job=>clean(job?.conclusion)==='failure');
   const failedStep=failedJobs.flatMap(job=>(Array.isArray(job.steps)?job.steps:[])
@@ -297,7 +298,9 @@ export function escalateDeploymentFailure({event={},jobsInput={},gameQueueInput=
     blastRadius:sourceRepair?'game:'+gameId:'deployment-workflow:'+workflowFile,
     recoveryOwner:owner,
     goal:(studioAssetRepair?'Inspect the actual archived Studio screenshots and model/feature checklist for run '+runId+', verify the failing asset responsibility within the existing assigned game task before changing it, then rerun the identical Studio scenario. ': '')
-      +(studio&&!sourceRepair?'Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. ': '')+
+      +(studio&&!sourceRepair?(studioSignature==='STUDIO_RUNNER_DISK_EXHAUSTED'
+        ?'The verified Studio checkout failed because the authenticated runner E drive has no writable space. Reclaim only known disposable old runner artifacts; preserve runner registration, existing git checkout, current work, game code and saves. Require at least 2 GB free on E before retrying checkout. Never retry the unchanged no-space checkout or mutate game source. '
+        :'Studio runtime source is unresolved. Inspect the exact official Studio run and archived evidence first. The assigned workflow file is for diagnostic and capture-reliability repair only; do not treat unknown game source as an infrastructure defect, invent source files, or change gameplay to hide the failure. Preserve unresolved evidence for canonical Vibe game-source intake. '):'')+
       'Analyze the exact failed '+platform+' deployment stage '+stepKey+' for '+(gameId||'an unresolved game')+
       ' using the linked GitHub Actions run and failing job. Reproduce and identify the root cause, directly repair only verified responsible files, rerun the exact failed stage and relevant QA/regression, then resume the existing canonical build and deployment pipeline. Never bypass F0-F9, publication authority, security, saves, gameplay, or balance. Do not retry unchanged failing source.',
     recoveryStrategy:studioAssetRepair?'VIBE_EXISTING_STUDIO_ASSET_REPAIR_WITH_SCREENSHOT_QA_THEN_RECAPTURE'

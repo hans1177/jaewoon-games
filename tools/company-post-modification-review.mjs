@@ -1,5 +1,5 @@
 // 파일명: tools/company-post-modification-review.mjs
-// 역할: 수정 후 기획/개발/QA/그래픽/밸런스가 독립 재평가하고 총괄은 제출된 5개 결과만 종합한다.
+// 역할: 수정 후 기획/그래픽/개발/QA/오디오가 독립 재평가하며 밸런스 보호는 기획·QA에 통합한다.
 import fs from 'node:fs';
 import {requestGeminiFreePair} from './vibe2-gemini-free-rotation.mjs';
 import path from 'node:path';
@@ -9,8 +9,9 @@ import {
   getDepartmentStandard
 } from '../assets/company-department-standards.js';
 
-const ROLES=['planning','development','qa','graphics','balance'];
-const NAMES={planning:'기획·성장마케팅',development:'개발',qa:'QA',graphics:'그래픽',balance:'밸런스',director:'총괄'};
+// [정식 5부서] 이전 balance 결과는 기존 이력으로 남고 새 재평가에는 오디오가 참여한다.
+const ROLES=['planning','graphics','development','qa','audio'];
+const NAMES={planning:'기획·성장마케팅',graphics:'그래픽',development:'개발',qa:'QA',audio:'오디오',director:'총괄'};
 const clean=v=>String(v??'').trim();
 const readText=(f,max=120000)=>{try{const b=fs.readFileSync(f);return b.subarray(0,Math.min(max,b.length)).toString('utf8');}catch{return'';}};
 const readJson=(f,d=null)=>{try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{return d;}};
@@ -58,11 +59,11 @@ if(role!=='director'){
   const standard=getDepartmentStandard(role);
   const runtimeEvidence=extractRuntimeEvidence(req);
   const guides={
-    planning:'핵심 재미·게임 루프·스토리/콘티 연결과 함께, 변경이 유저 유입·리텐션·수익화·가격·스토어 발견성·홍보 타이밍에 영향을 주는지 근거로 평가한다. 연구와 피드백만 제공하며 적용을 강제하지 않는다. 적용 여부·범위·시기는 Vibe 판단으로 남긴다. 기술 수정만으로 기획 내용을 새로 만들지 않는다.',
+    planning:'핵심 재미·게임 루프·스토리/콘티 연결과 기존 난이도·보상·성장·경제 수치 보존을 확인한다. 변경이 유저 유입·리텐션·수익화·가격·스토어 발견성·홍보 타이밍에 영향을 주는지 근거로 평가한다. 연구와 피드백만 제공하며 적용을 강제하지 않는다. 적용 여부·범위·시기는 Vibe 판단으로 남긴다. 기술 수정만으로 기획 내용을 새로 만들지 않는다.',
     development:'실제 수정 파일, Unity 빌드 구조, 재현성, 의존성, 저장/데이터 호환성과 구현 위험을 평가한다. 성공한 컴파일/빌드 근거 없이는 PASS하지 않는다.',
-    qa:'코드 리뷰가 아니라 게임 테스터 관점으로 평가한다. 빌드 성공뿐 아니라 실제 실행/플레이 스모크 증거, 재현 조건, 회귀 범위, 수정 후 재검증을 확인한다. 실행 증거 없이는 PASS하지 않는다.',
+    qa:'코드 리뷰가 아니라 게임 테스터 관점으로 평가한다. 기존 밸런스·보상·드롭률·저장 구조의 회귀도 확인한다. 빌드 성공뿐 아니라 실제 실행/플레이 스모크 증거, 재현 조건, 회귀 범위, 수정 후 재검증을 확인한다. 실행 증거 없이는 PASS하지 않는다.',
     graphics:'시각 자산·가독성·화면 구성·아트북 정체성·모션/에셋 규칙에 이번 수정이 미치는 영향을 실제 수정 범위 근거로 평가한다.',
-    balance:'전투 난이도·성장·보상 수치에 이번 수정이 영향을 주는지 실제 수정 범위와 값을 기준으로 평가한다. 영향이 없으면 근거와 함께 무영향을 명시한다.'
+    audio:'수정된 음원/효과음/배경음악·재생 이벤트·음량·모바일 입력 허용/성능·라이선스를 검토한다. 사운드 변경 범위라면 실제 실행 증거 없는 PASS는 금지한다. 영향이 없으면 실제 수정 파일과 범위로 입증한다.'
   };
   const checks=standard.requiredChecks.join(' / ');
   const system=`/no_think\n너는 재운컴퍼니 ${NAMES[role]} 부서의 독립 수정후 재평가자다. ${guides[role]} 필수 점검: ${checks}. 다른 부서의 판단을 보지 않고 제공된 근거만 사용한다. evidence 각 항목은 가능하면 실제 파일명, build run id, 테스트 이름 또는 제공된 실행 증거를 포함해야 하며 막연한 칭찬은 근거로 쓰지 않는다. 결론은 PASS|REVISE|DROP 중 하나다. score는 0~100의 근거 기반 신뢰/준비 점수다. 새 사실을 만들지 않는다. JSON 객체만 반환하고 키는 decision, score, summary, evidence, blockers, recommendations다.`;
@@ -70,6 +71,8 @@ if(role!=='director'){
     request:{
       requestId,gameId,modificationCommit:req.modificationCommit||'',buildRunId:req.buildRunId||null,
       buildConclusion:req.buildConclusion||'unknown',buildStage:req.buildStage||'',buildError:req.buildError||'',scope:req.scope||'',
+      changedFiles:Array.isArray(req.changedFiles)?req.changedFiles:[],
+      audioPlaybackEvidence:Array.isArray(req.audioPlaybackEvidence)?req.audioPlaybackEvidence:[],
       runtimeEvidence
     },
     department:role,

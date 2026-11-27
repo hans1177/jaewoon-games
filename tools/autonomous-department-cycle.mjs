@@ -6,22 +6,24 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { planCompanyDevelopmentTask } from '../assets/vibe-company-orchestration-bridge.js';
 import { selectVerifiedDepartmentLearning } from './department-learning-memory.mjs';
+import { createExperienceAwareInstruction } from '../assets/department-experience.js';
 
 const MODEL=process.env.VIBE2_GEMINI_MODEL||'gemini-3.8-flash';
 const TIMEOUT_MS=Math.max(30000,Math.min(180000,Number(process.env.AUTONOMOUS_DEPARTMENT_TIMEOUT_MS||120000)));
 const MAX_PREDICT=Math.max(180,Math.min(520,Number(process.env.AUTONOMOUS_DEPARTMENT_MAX_PREDICT||320)));
-const CORE_ROLES=['planning','development','graphics','qa','balance'];
+// [현재 정식 5부서] 밸런스는 기획·QA 책임으로 보존하고 독립 부서는 오디오로 운영한다.
+const CORE_ROLES=['planning','graphics','development','qa','audio'];
 const FAST_REVIEW_ROLES=['development','qa'];
 const FINAL_ROLE='planning-final';
 const ROLES=[...CORE_ROLES,FINAL_ROLE];
-const ROLE_AGENT={planning:'planning',development:'development',graphics:'graphics',qa:'qa',balance:'balance','planning-final':'planning'};
-const ROLE_NAME={planning:'기획·성장마케팅부',development:'개발부',graphics:'그래픽부',qa:'QA부',balance:'밸런스부','planning-final':'기획·성장마케팅부 최종확인'};
+const ROLE_AGENT={planning:'planning',graphics:'graphics',development:'development',qa:'qa',audio:'audio','planning-final':'planning'};
+const ROLE_NAME={planning:'기획·성장마케팅부',graphics:'그래픽부',development:'개발부',qa:'QA부',audio:'오디오부','planning-final':'기획·성장마케팅부 최종확인'};
 const ROLE_TASK={
-  planning:'완성 아트북과 현재 작은 목표, Vibe 실행 제안을 비교하고 이번 개발 플로어의 목적과 범위를 좁힌다. 수익화·판매 아이템·가격·광고·홍보·스토어 발견성·적용 시기 영향이 있는 작업이면 플레이어 가치, 수익/성장 가설, 적용 범위, 측정 지표와 롤백 조건까지 검토하되 일반 피드백을 구현 강제로 만들지 않는다.',
+  planning:'완성 아트북과 현재 작은 목표, Vibe 실행 제안을 비교하고 이번 개발 플로어의 목적과 범위를 좁힌다. 기존 밸런스·보상·경제·난이도 수치 및 저장 규칙을 보호한다. 수익화·판매 아이템·가격·광고·홍보·스토어 발견성·적용 시기 영향이 있는 작업이면 플레이어 가치, 수익/성장 가설, 적용 범위, 측정 지표와 롤백 조건까지 검토하되 일반 피드백을 구현 강제로 만들지 않는다.',
   development:'Vibe 실행 제안을 실제 구현 가능한 최소 변경으로 독립 검토하고 기술 위험을 지적한다.',
   graphics:'이번 변경과 Vibe 제안이 화면·UI·애니메이션·에셋 정체성에 미치는 영향을 독립 검토한다. 에셋 규칙을 우회하지 않는다.',
-  qa:'이번 플로어와 Vibe 제안이 통과해야 할 재현 가능한 테스트와 실패 조건을 독립적으로 정한다.',
-  balance:'난이도·보상·전투감·성장·경제가 흔들리는지 독립 검토하고 필요한 측정 항목을 정한다.',
+  qa:'이번 플로어와 Vibe 제안이 통과해야 할 재현 가능한 테스트와 실패 조건을 독립적으로 정한다. 난이도·보상·전투감·성장·경제·저장 수치가 기존 규칙과 동일한지 검증한다.',
+  audio:'이번 변경의 효과음·배경음악·오디오 이벤트·재생 상태가 실제 입력/전투와 정확히 연결되는지 검토한다. 음소거·모바일 재생 제한·볼륨·성능·에셋 이용권을 확인하고 기존 게임 규칙과 저장 의미는 수정하지 않는다.',
   'planning-final':'다섯 부서의 독립 의견을 통합해 Vibe 제안의 오류·누락을 교정하고 원래 작은 목표를 벗어나지 않는 최종 실행 제약을 확정한다. 수익화/마케팅 관련 제안은 Vibe의 수용 여부·적용 범위·시기 판단을 보존하고 외부 유료 집행은 owner 승인 경계를 유지한다.',
 };
 const SCHEMA={type:'object',required:['decision','summary','nextAction','checks','risks'],additionalProperties:false,properties:{decision:{type:'string',enum:['PROCEED','ADJUST','BLOCK']},summary:{type:'string'},nextAction:{type:'string'},checks:{type:'array',maxItems:4,items:{type:'string'}},risks:{type:'array',maxItems:4,items:{type:'string'}}}};
@@ -55,16 +57,27 @@ export function buildVibeCoreContext({order,book,companyDna={},departmentExperie
   const target=targetFor(order),stageId=stageFor(order,book),responsibleFiles=Array.isArray(order.responsibilityFiles)?order.responsibilityFiles:[];
   const plan=planCompanyDevelopmentTask({request:clean(order.goal),target,gameId:clean(order.gameSlug||order.gameId),responsibleFiles,knownBroken:clean(order.repairMode).toUpperCase()==='RULE_PATCH',stageId,artbook:book,artbookStatus:bookStatus(book),artbookCutCount:bookCutCount(book),artbookPostprocessComplete:bookPostprocessComplete(book),artbookRef:clean(book?.id||book?.sourcePath||book?.path)});
   const learning=selectVerifiedVibeLearning(companyDna);
-  const departmentLearningByRole=Object.fromEntries(CORE_ROLES.map(role=>[role,selectVerifiedDepartmentLearning(departmentExperience,{role,gameId:order.gameId,gameSlug:order.gameSlug,sourcePath:order.sourcePath,workLane:laneFor(order)},3)]));
+  const departmentLearningByRole=Object.fromEntries(CORE_ROLES.map(role=>[role,selectVerifiedDepartmentLearning(departmentExperience,{role,gameId:order.gameId,gameSlug:order.gameSlug,sourcePath:order.sourcePath,workLane:laneFor(order),goal:order.goal},3)]));
   const departmentLearning={source:'department-experience.json',verifiedOnly:true,authority:'past-evidence-not-current-verdict',byRole:departmentLearningByRole,totalUsed:Object.values(departmentLearningByRole).reduce((sum,rows)=>sum+rows.length,0)};
-  return {version:1,engine:'VIBE2_COMPANY_CORE',source:'assets/vibe-company-orchestration-bridge.js',authority:'proposal-and-execution-contract-not-final-department-verdict',initialMaturity:'EARLY_COLLABORATIVE',target,stageId:plan?.stage?.id||stageId,routing:{mayDispatch:plan?.routing?.mayDispatch===true,mayExecute:plan?.routing?.mayExecute===true,requiresOwnerAction:plan?.routing?.requiresOwnerAction===true,completedArtbookLocked:plan?.routing?.completedArtbookLocked===true,artbookRevisionAllowed:plan?.routing?.artbookRevisionAllowed===true,conceptChangeRule:plan?.routing?.conceptChangeRule||null},qualityBar:plan?.qualityBar??null,executionQa:Array.isArray(plan?.execution?.qa)?plan.execution.qa.slice(0,16):[],learning,departmentLearning,departmentReviewRequired:true,maySelfApprove:false,verifiedLearningOnly:true};
+  // [부서별 검증 능력] 기존 XP에서 정해진 품질 지시만 실제 5개 부서/기획 최종검토에 연결한다. XP와 승인 권한은 변경하지 않는다.
+  const departmentQualityByRole=Object.fromEntries(ROLES.map(role=>{
+    const {profile,instruction}=createExperienceAwareInstruction({
+      department:ROLE_AGENT[role],baseInstruction:ROLE_TASK[role],state:departmentExperience
+    });
+    return [role,{level:profile.level,xp:profile.xp,focus:profile.focus,instruction,authority:profile.authority}];
+  }));
+  return {version:1,engine:'VIBE2_COMPANY_CORE',source:'assets/vibe-company-orchestration-bridge.js',authority:'proposal-and-execution-contract-not-final-department-verdict',initialMaturity:'EARLY_COLLABORATIVE',target,stageId:plan?.stage?.id||stageId,routing:{mayDispatch:plan?.routing?.mayDispatch===true,mayExecute:plan?.routing?.mayExecute===true,requiresOwnerAction:plan?.routing?.requiresOwnerAction===true,completedArtbookLocked:plan?.routing?.completedArtbookLocked===true,artbookRevisionAllowed:plan?.routing?.artbookRevisionAllowed===true,conceptChangeRule:plan?.routing?.conceptChangeRule||null},qualityBar:plan?.qualityBar??null,executionQa:Array.isArray(plan?.execution?.qa)?plan.execution.qa.slice(0,16):[],learning,departmentLearning,departmentQualityByRole,departmentReviewRequired:true,maySelfApprove:false,verifiedLearningOnly:true};
 }
 
 function rolePrompt({role,order,book,previous,vibeCore}){
   const agent=readText(`.github/agents/${ROLE_AGENT[role]}.agent.md`);
   const collaborationRule=role===FINAL_ROLE?'다섯 부서 독립 결과를 모두 읽고 충돌을 조정한다.':'다른 부서 결과를 기다리지 않고 자기 전문영역을 독립적으로 판단한다.';
   const verifiedDepartmentLearning=role===FINAL_ROLE?vibeCore?.departmentLearning?.byRole:(vibeCore?.departmentLearning?.byRole?.[role]??[]);
-  return `/no_think\n너는 재운컴퍼니 ${ROLE_NAME[role]}다. 아트북 완성 후 24시간 연속 개발의 한 플로어를 검토한다. Vibe는 회사 공용 제작 엔진이지만 아직 초기 단계라 단독 확정자가 아니다. Vibe 제안을 근거와 부서 전문성으로 검토하고 틀리거나 부족하면 ADJUST로 교정한다.\n\n부서 책임:\n${ROLE_TASK[role]}\n협업 방식: ${collaborationRule}\n\n현재 개발 작업:\n- 게임: ${order.gameName||order.gameId}\n- 경로: ${order.sourcePath}\n- 단계: ${order.projectStage}\n- 원래 작은 목표: ${order.goal}\n- 책임 파일: ${(order.responsibilityFiles||[]).join(', ')||'아직 미지정'}\n- 보호값: ${(order.protectedValues||[]).join(', ')||'save key / core loop'}\n\nVibe 공용 핵심 엔진 제안/실행계약:\n${compact(vibeCore,3000)}\n\n독립 QA를 통과한 과거 부서 경험(참고 근거이며 현재 판단 권한이 아님):\n${compact(verifiedDepartmentLearning,2600)}\n\n완성 아트북 근거:\n${compact(bookEvidence(book),2200)}\n\n부서 인계/독립 결과:\n${compact(previous,3000)}\n\n부서 규칙 발췌:\n${compact(agent,3200)}\n\n반드시 지켜라:\n1. Vibe 결과를 그대로 믿지 말고 현재 코드·아트북·부서 근거와 비교한다. 오류/누락은 ADJUST로 구체적으로 교정한다.\n2. Company DNA에서는 검증된 VIBE2 패턴만 재사용하고 anti-pattern은 반복하지 않는다. 검증된 과거 부서 경험도 현재 코드/아트북에 맞을 때만 참고하며 XP·레벨이나 과거 결론을 현재 권한으로 승격하지 않는다.\n3. 이번 한 플로어의 작은 변경만 다룬다. 전면 재작성 금지.\n4. 저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의 변경하지 않는다.\n5. 출시 완료나 QA PASS를 허위로 선언하지 않는다.\n6. 다른 부서의 책임을 대신 구현하지 않는다.\n7. BLOCK은 실제 안전/정체성/검증 충돌이 있을 때만 사용한다.\n8. JSON Schema 형식만 출력한다.\n9. nextAction은 개발 워커가 그대로 참고할 수 있는 한 문장의 구체적 제약이어야 한다.\n10. summary는 결론만 한 문장으로 쓰고, checks는 검증할 조건만, risks는 아직 해결되지 않은 위험만 쓴다.\n11. 같은 사실이나 의미를 summary, nextAction, checks, risks 여러 필드에 반복하거나 표현만 바꿔 재작성하지 않는다.\n12. checks와 risks는 서로 독립적인 필수 항목만 넣는다. 없으면 빈 배열, 보통 1~2개만 쓰고 실제로 다른 고위험 근거가 있을 때만 최대 4개까지 쓴다.`;
+  const departmentQuality=vibeCore?.departmentQualityByRole?.[role];
+  const departmentInstruction=typeof departmentQuality?.instruction==='string'&&departmentQuality.instruction.trim()
+    ?departmentQuality.instruction:ROLE_TASK[role];
+  const departmentFocus=Array.isArray(departmentQuality?.focus)?departmentQuality.focus.join(' / '):'';
+  return `/no_think\n너는 재운컴퍼니 ${ROLE_NAME[role]}다. 아트북 완성 후 24시간 연속 개발의 한 플로어를 검토한다. Vibe는 회사 공용 제작 엔진이지만 아직 초기 단계라 단독 확정자가 아니다. Vibe 제안을 근거와 부서 전문성으로 검토하고 틀리거나 부족하면 ADJUST로 교정한다.\n\n부서 책임:\n${departmentInstruction}\n전문화 중점: ${departmentFocus||'기존 부서 범위 유지'}\n협업 방식: ${collaborationRule}\n\n현재 개발 작업:\n- 게임: ${order.gameName||order.gameId}\n- 경로: ${order.sourcePath}\n- 단계: ${order.projectStage}\n- 원래 작은 목표: ${order.goal}\n- 책임 파일: ${(order.responsibilityFiles||[]).join(', ')||'아직 미지정'}\n- 보호값: ${(order.protectedValues||[]).join(', ')||'save key / core loop'}\n\nVibe 공용 핵심 엔진 제안/실행계약:\n${compact(vibeCore,3000)}\n\n독립 QA를 통과한 과거 부서 경험(참고 근거이며 현재 판단 권한이 아님):\n${compact(verifiedDepartmentLearning,2600)}\n\n완성 아트북 근거:\n${compact(bookEvidence(book),2200)}\n\n부서 인계/독립 결과:\n${compact(previous,3000)}\n\n부서 규칙 발췌:\n${compact(agent,3200)}\n\n반드시 지켜라:\n1. Vibe 결과를 그대로 믿지 말고 현재 코드·아트북·부서 근거와 비교한다. 오류/누락은 ADJUST로 구체적으로 교정한다.\n2. Company DNA에서는 검증된 VIBE2 패턴만 재사용하고 anti-pattern은 반복하지 않는다. 검증된 과거 부서 경험도 현재 코드/아트북에 맞을 때만 참고하며 XP·레벨이나 과거 결론을 현재 권한으로 승격하지 않는다.\n3. 이번 한 플로어의 작은 변경만 다룬다. 전면 재작성 금지.\n4. 저장 의미·핵심 루프·완성 아트북의 큰 방향을 임의 변경하지 않는다.\n5. 출시 완료나 QA PASS를 허위로 선언하지 않는다.\n6. 다른 부서의 책임을 대신 구현하지 않는다.\n7. BLOCK은 실제 안전/정체성/검증 충돌이 있을 때만 사용한다.\n8. JSON Schema 형식만 출력한다.\n9. nextAction은 개발 워커가 그대로 참고할 수 있는 한 문장의 구체적 제약이어야 한다.\n10. summary는 결론만 한 문장으로 쓰고, checks는 검증할 조건만, risks는 아직 해결되지 않은 위험만 쓴다.\n11. 같은 사실이나 의미를 summary, nextAction, checks, risks 여러 필드에 반복하거나 표현만 바꿔 재작성하지 않는다.\n12. checks와 risks는 서로 독립적인 필수 항목만 넣는다. 없으면 빈 배열, 보통 1~2개만 쓰고 실제로 다른 고위험 근거가 있을 때만 최대 4개까지 쓴다.\n13. 부서 경험치 지시는 이번 변경과 관련된 품질 판단에만 사용한다. 새로운 승인 권한, 별도 배포 단계 또는 무관한 전체 회귀를 만들지 않는다.`;
 }
 
 async function callRole(role,ctx){
@@ -166,7 +179,28 @@ function deterministicFastFinal(order,results){
   return {role:FINAL_ROLE,department:'FAST 결정론적 통합',workState:'DONE',decision:adjusted.length?'ADJUST':'PROCEED',summary:'FAST 복구는 개발부 수정 제약과 QA 재현 조건만 결합한다.',nextAction,checks:(qa?.checks||[]).slice(0,4),risks:[...(dev?.risks||[]),...(qa?.risks||[])].slice(0,4),model:'none',attempt:0,startedAt:now,completedAt:now,deterministicFast:true,integrationMode:'DETERMINISTIC_FAST_LANE'};
 }
 
-export async function finalizeDepartmentCycle({order,book,vibeCore,results}={}){
+export async function finalizeDepartmentCycle({order,book,vibeCore,results,packages=null}={}){
+  // [부서별 원본 결합] 다른 게임·후보·원본·플로어의 완료 결과를 현재 결재에 섞지 않는다.
+  if(packages!==null){
+    if(!Array.isArray(packages)||packages.length!==CORE_ROLES.length)throw new Error('DEPARTMENT_PACKAGE_COUNT_MISMATCH');
+    const candidateId=clean(process.env.AUTONOMOUS_CANDIDATE_ID||order?.candidateId);
+    const revision=clean(order?.sourceCommit||order?.sourceRevision);
+    const lane=laneFor(order);
+    for(let i=0;i<CORE_ROLES.length;i++){
+      const role=CORE_ROLES[i],item=packages[i];
+      if(item?.version!==1||item?.role!==role||item?.result?.role!==role||
+        item?.workState!=='DONE'||item?.result?.workState!=='DONE'||
+        clean(item?.gameId)!==clean(order?.gameId)||
+        clean(item?.gameSlug)!==clean(order?.gameSlug)||
+        clean(item?.candidateId)!==candidateId||
+        clean(item?.sourcePath)!==clean(order?.sourcePath)||
+        clean(item?.workLane)!==lane||
+        (revision&&clean(item?.sourceRevision)!==revision)||
+        item?.vibeCore?.engine!==vibeCore?.engine||
+        item?.vibeCore?.stageId!==vibeCore?.stageId)
+        throw new Error('DEPARTMENT_PACKAGE_PROVENANCE_MISMATCH:'+role);
+    }
+  }
   if(!Array.isArray(results)||results.length!==CORE_ROLES.length)throw new Error('5개 독립 부서 결과가 모두 필요함');
   const byRole=new Map(results.map(row=>[row.role,row]));for(const role of CORE_ROLES)if(!byRole.has(role)||byRole.get(role)?.workState!=='DONE')throw new Error(`${role} 결과 미완료`);
   const ordered=CORE_ROLES.map(role=>byRole.get(role));
@@ -189,11 +223,11 @@ async function main(){
   const {order,book,vibeCore}=loadInputs();const role=clean(process.env.AUTONOMOUS_DEPARTMENT_ROLE);const finalize=clean(process.env.AUTONOMOUS_DEPARTMENT_FINALIZE).toLowerCase()==='true';
   if(role){
     const result=await runDepartmentRole({role,order,book,vibeCore});const output=process.env.AUTONOMOUS_DEPARTMENT_OUTPUT||`.autonomous/department-results/${process.env.AUTONOMOUS_CANDIDATE_ID||order.gameId}/${role}.json`;
-    writeJson(output,{version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||null,role,workState:'DONE',vibeCore,result});console.log(JSON.stringify({gameId:order.gameId,role,workState:'DONE',decision:result.decision,skippedFast:result.skippedFast===true,output}));return;
+    writeJson(output,{version:1,gameId:order.gameId,gameSlug:order.gameSlug,candidateId:process.env.AUTONOMOUS_CANDIDATE_ID||order.candidateId||null,sourcePath:order.sourcePath,sourceRevision:clean(order.sourceCommit||order.sourceRevision)||null,workLane:laneFor(order),role,workState:'DONE',vibeCore,result});console.log(JSON.stringify({gameId:order.gameId,role,workState:'DONE',decision:result.decision,skippedFast:result.skippedFast===true,output}));return;
   }
   if(finalize){
     const dir=process.env.AUTONOMOUS_DEPARTMENT_RESULTS_DIR||'.autonomous/department-results';const packages=CORE_ROLES.map(role=>readJson(path.join(dir,`${role}.json`))).filter(Boolean);if(packages.length!==CORE_ROLES.length)throw new Error(`부서 결과 ${packages.length}/5`);
-    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result)});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed,output}));return;
+    const cycle=await finalizeDepartmentCycle({order,book,vibeCore,results:packages.map(item=>item.result),packages});const output=process.env.AUTONOMOUS_DEPARTMENT_CYCLE_OUTPUT||'/tmp/autonomous-department-cycle.json';writeJson(output,cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed,output}));return;
   }
   const artbooks=readJson('game-artbooks.json',{artbooks:[]});const companyDna=readJson('company-learning/company-dna.json',{version:1,items:[],antiPatterns:[]});const departmentExperience=readJson('department-experience.json',{version:1,verifiedLearning:[]});const cycle=await runDepartmentCycle({order,artbooks,companyDna,departmentExperience});writeJson('/tmp/autonomous-department-cycle.json',cycle);applyCycleEnv(cycle);console.log(JSON.stringify({gameId:cycle.gameId,vibeCore:cycle.vibeCore.engine,parallelDepartments:cycle.parallelDepartments,activeReviewRoles:cycle.activeReviewRoles,workLane:cycle.workLane,allDepartmentsWorked:cycle.allDepartmentsWorked,finalDecision:cycle.finalDecision,finalIntegrationMode:cycle.collaboration.finalIntegrationMode,departmentAdjustmentCount:cycle.collaboration.departmentAdjustmentCount,verifiedDepartmentLearningUsed:cycle.collaboration.verifiedDepartmentLearningUsed}));
 }

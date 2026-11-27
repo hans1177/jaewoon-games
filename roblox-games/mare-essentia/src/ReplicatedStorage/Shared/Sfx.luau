@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: Sfx.luau
 -- 음악·효과음 재생기 (클라이언트). ID는 AudioIds.luau(업로드 워크플로가 기록)에서 읽는다. ID가 없으면 조용히 건너뛴다.
 
 local SoundService = game:GetService("SoundService")
@@ -45,6 +46,7 @@ local musicOn, sfxOn = true, true
 local musicLevel, sfxLevel = 1.5, 1.5
 local currentMusic, currentName = nil, nil
 local ambient = {}
+local ambientRetries = {} -- 환경 전환 시 이전 로딩 복구 예약을 즉시 해제한다.
 local ambientKey = nil -- 같은 항구 화면을 다시 그릴 때 환경음을 중복 재생하지 않는다
 local lastPlayed = {}
 local loadingEffects = {} -- [모바일 지연 로딩] 같은 효과음 미로딩 객체는 한 개만 유지한다.
@@ -64,22 +66,29 @@ local function make(name, parent)
 	-- 각 음원당 최초 실패 한 번만 기록해 모바일 로그 폭증을 막는다.
 	group:SetAttribute("AudioLastRequested", name)
 	if not s.IsLoaded then
+		-- 로드 완료·객체 제거 시 진단 예약을 즉시 해제해 종료된 음원을 붙잡지 않는다.
+		local loadTimeout
 		s.Loaded:Once(function()
+			if loadTimeout then task.cancel(loadTimeout); loadTimeout = nil end
 			if not s.Parent then return end
 			broken[name] = nil
 			group:SetAttribute("AudioLastLoaded", name)
 		end)
-	end
-	task.delay(12, function()
-		if s.Parent and not s.IsLoaded then
-			broken[name] = os.clock() + 20
-			group:SetAttribute("AudioLastFailed", name)
-			if not warned[name] then
-				warned[name] = true
-				warn("[MareAudio] 음원 로드 실패: 권한·게시 Universe·연결 점검:", name, s.SoundId)
+		s.Destroying:Once(function()
+			if loadTimeout then task.cancel(loadTimeout); loadTimeout = nil end
+		end)
+		loadTimeout = task.delay(12, function()
+			loadTimeout = nil
+			if s.Parent and not s.IsLoaded then
+				broken[name] = os.clock() + 20
+				group:SetAttribute("AudioLastFailed", name)
+				if not warned[name] then
+					warned[name] = true
+					warn("[MareAudio] 음원 로드 실패: 권한·게시 Universe·연결 점검:", name, s.SoundId)
+				end
 			end
-		end
-	end)
+		end)
+	end
 	return s
 end
 
@@ -124,9 +133,15 @@ function Sfx.play(name, volume, speed, fallback)
 	-- [지연 로딩 복구] 이전 12초 타이머는 파일이 12초 뒤 도착하기 전에
 	-- 객체를 삭제해 첫 모바일 효과음이 영구히 들리지 않게 했다.
 	-- 최대 34초만 유지하며, 로딩 중에는 같은 효과음 한 개만 상주한다.
-	task.delay(math.max(34, s.TimeLength + 1), function()
+	local cleanupTimeout
+	cleanupTimeout = task.delay(math.max(34, s.TimeLength + 1), function()
+		cleanupTimeout = nil
 		if loadingEffects[name] == s then loadingEffects[name] = nil end
 		if s.Parent then s:Destroy() end
+	end)
+	s.Destroying:Once(function()
+		if cleanupTimeout then task.cancel(cleanupTimeout); cleanupTimeout = nil end
+		if loadingEffects[name] == s then loadingEffects[name] = nil end
 	end)
 end
 
@@ -213,10 +228,16 @@ function Sfx.music(name)
 	currentMusic = s
 	-- [배경음 자동 복구] 12초에 로딩 실패로 20초 유예된 음원을 22초에 즉시 재요청하면
 	-- 유예에 막혀 currentMusic만 사라지고 영구 무음이 된다. 유예 만료 후 같은 곡일 때만 복구한다.
-	task.delay(22, function()
+	local musicRetry
+	s.Destroying:Once(function()
+		if musicRetry then task.cancel(musicRetry); musicRetry = nil end
+	end)
+	musicRetry = task.delay(22, function()
+		musicRetry = nil
 		if currentMusic ~= s or currentName ~= name or not s.Parent or s.IsLoaded then return end
 		local retryAfter = math.max(0, (broken[name] or 0) - os.clock()) + 0.2
-		task.delay(retryAfter, function()
+		musicRetry = task.delay(retryAfter, function()
+			musicRetry = nil
 			if currentMusic == s and currentName == name and s.Parent and not s.IsLoaded then
 				currentName = nil
 				Sfx.music(name)
@@ -484,6 +505,8 @@ function Sfx.ambient(names, gain)
 		end
 		if audible then return end
 	end
+	for retry in ambientRetries do task.cancel(retry) end
+	table.clear(ambientRetries)
 	ambientKey = key
 	for _, s in ambient do
 		local tw = TweenService:Create(s, TweenInfo.new(1.2), { Volume = 0 })
@@ -508,22 +531,24 @@ function Sfx.ambient(names, gain)
 			TweenService:Create(s, TweenInfo.new(1.5), { Volume = target }):Play()
 				table.insert(ambient, s)
 			-- [환경음 자동 복구] 로딩 실패 뒤에도 같은 날씨가 이어지면 22초마다 복구를 재시도한다.
-			task.delay(22, function()
+			ambientRetries[task.delay(22, function()
+				ambientRetries[coroutine.running()] = nil
 				if ambientKey == key and s.Parent and not s.IsLoaded then
 					ambientKey = nil
 					Sfx.ambient(names, gain)
 				end
-			end)
+			end)] = true
 		end
 	end
 	-- [모든 환경음 로딩 실패] 초기 20초 유예에도 날씨가 그대로라면 다음 호출이 없어 영구 무음이 되던 문제를 복구한다.
 	if names and #names > 0 and #ambient == 0 then
-		task.delay(21, function()
+		ambientRetries[task.delay(21, function()
+			ambientRetries[coroutine.running()] = nil
 			if ambientKey == key and #ambient == 0 then
 				ambientKey = nil
 				Sfx.ambient(names, gain)
 			end
-		end)
+		end)] = true
 	end
 end
 

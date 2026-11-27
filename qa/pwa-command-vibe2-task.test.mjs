@@ -17,7 +17,7 @@ function fixture(){
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
     status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED'},
     ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['WEB']},
-    localVibeWebChat:{enabled:true,platform:'WEB'},
+    localVibeWebChat:{enabled:true,platform:'WEB',webGameAuthoringEnabled:true},
     finalDevelopmentLock:{sequenceLock:{status:'LOCKED'}}
   }));
   fs.mkdirSync(path.join(root,'unity-games','daechung-rpg'),{recursive:true});
@@ -336,4 +336,18 @@ test('홈페이지 삭제는 기존 기기 인증을 거쳐 영구삭제를 접�
   assert.doesNotMatch(client,/data-stop-request=/);
   assert.match(flow,/PWA_OWNER_GAME_PAGES_DEPLOYMENT=DISPATCHED_NOT_VERIFIED/);
   assert.match(flow,/OWNER_DELETE_GAME:/);
+});
+
+test('오너 웹 제작 중지 후 웹 PWA 게임 명령은 신규 접수 불가',()=>{
+  const f=fixture();
+  try {
+    const policyFile=path.join(f.root,'company-learning','platform-release-roadmap.json');
+    const policy=JSON.parse(fs.readFileSync(policyFile,'utf8'));
+    policy.localVibeWebChat.webGameAuthoringEnabled=false;
+    fs.writeFileSync(policyFile,JSON.stringify(policy));
+    assert.throws(()=>ingestPwaTask({
+      task:{id:UUID,game_id:'insect-survival',body:'웹 게임 제작'},
+      queue:{tasks:[]},catalog:f.catalog,status:f.status,repoRoot:f.root
+    }),/WEB_ORG_OWNER_WEB_GAME_AUTHORING_STOPPED/);
+  } finally {fs.rmSync(f.root,{recursive:true,force:true});}
 });

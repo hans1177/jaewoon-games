@@ -41,7 +41,7 @@ task.spawn(function()
 				local url = type(value) == "number" and ("rbxassetid://" .. value) or tostring(value)
 				if string.find(url, "rbxassetid://", 1, true) then
 					table.insert(ids, { key = moduleName .. "." .. tostring(key), url = url })
-					if moduleName == "AssetIds" and not (string.find(key, "Menu/", 1, true) or string.find(key, "Goods/", 1, true) or string.find(key, "Portraits/", 1, true) or string.find(key, "CardArt/", 1, true)) then
+					if moduleName == "AssetIds" and not (string.find(key, "Menu/", 1, true) or string.find(key, "Goods/", 1, true) or string.find(key, "Portraits/", 1, true) or string.find(key, "CardArt/", 1, true) or string.find(key, "Materials/", 1, true)) then
 						modelReferences += 1
 					end
 				else
@@ -56,6 +56,12 @@ task.spawn(function()
 	end
 	local bad = 0
 	-- [자산 감사] 실제 로딩 콜백·실패 자산·진행 위치를 보존한다.
+	-- [선로딩 경합 방지] 초기 입장 준비가 아닌 전체 모델 요청 종료까지 제한된 시간만 대기한다.
+	-- 기존 140초 미디어 검사와 300초 통합 검사 제한 및 실패 판정은 유지한다.
+	local modelReadyDeadline = os.clock() + 60
+	while ReplicatedStorage:GetAttribute("MareAssetsSettled") ~= true and os.clock() < modelReadyDeadline do
+		task.wait(0.25)
+	end
 	local mediaStarted = os.clock()
 	local mediaCallbacks, currentBatch, timedOutMedia = 0, 0, 0
 	local serverPreloadUnresponsive = false
@@ -65,17 +71,12 @@ task.spawn(function()
 		local kind = nil
 		if string.find(it.key, "AudioIds") then
 			kind = "Sound"
-		elseif string.find(it.key, ".Menu/", 1, true) or string.find(it.key, ".Goods/", 1, true) or string.find(it.key, ".Portraits/", 1, true) or string.find(it.key, ".CardArt/", 1, true) then
+		elseif string.find(it.key, ".Menu/", 1, true) or string.find(it.key, ".Goods/", 1, true) or string.find(it.key, ".Portraits/", 1, true) or string.find(it.key, ".CardArt/", 1, true) or string.find(it.key, ".Materials/", 1, true) then
 			kind = "ImageLabel"
 		end
 		if kind then
-			local inst = Instance.new(kind)
-			if kind == "Sound" then
-				inst.SoundId = it.url
-			else
-				inst.Image = it.url
-			end
-			table.insert(items, { inst = inst, it = it })
+			-- [서버 콘텐츠 감사] 렌더링되지 않는 임시 UI 대신 등록 콘텐츠 ID를 직접 요청한다.
+			table.insert(items, { it = it })
 		end
 	end
 	-- [진단] 로블록스 콘텐츠 서버가 응답하지 않아도 종료 결과를 남기며 성공으로 간주하지 않는다.
@@ -106,7 +107,6 @@ task.spawn(function()
 				if finished then return end
 				finished = true
 				remaining -= 1
-				row.inst:Destroy()
 				if status == "SUCCESS" then return end
 				if status == "TIMEOUT_16S" then timedOutMedia += 1 end
 				bad += 1
@@ -116,7 +116,7 @@ task.spawn(function()
 				fail("asset " .. row.it.key .. " " .. row.it.url .. " status=" .. status)
 			end
 			task.spawn(function()
-				local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, { row.inst }, function(_, status)
+				local preloaded, preloadError = pcall(ContentProvider.PreloadAsync, ContentProvider, { row.it.url }, function(_, status)
 					if finished then return end
 					mediaCallbacks += 1
 					if status ~= Enum.AssetFetchStatus.Success or fetchStatus == nil then

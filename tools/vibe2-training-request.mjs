@@ -31,12 +31,16 @@ export function buildTrainingRequest(status) {
   const signature = hash({ policy: status.policy ?? {}, tasks: status.tasks ?? {}, sourceFiles: status.sourceFiles ?? [] });
   const requestId = `distill-${signature.slice(0, 16)}`;
   const requests = readyTasks.map((taskType) => {
+    // [정식 플랫폼 학습] 상태 판정·로컬 실행과 동일하게 플랫폼 합성 샘플은 0으로 제한한다.
+    const syntheticRatioCap = ['unity', 'roblox', 'fortnite_uefn'].includes(taskType)
+      ? 0 : (status.policy?.syntheticRatioCap ?? 0.5);
     const adapterVersion = `${taskType}-${signature.slice(0, 12)}`;
     const datasetDir = `vibe2-learning/datasets/${taskType}/${requestId}`;
     const adapterDir = `vibe2-learning/adapters/${taskType}/${adapterVersion}`;
     return {
       taskType,
       adapterVersion,
+      datasetSha256: status.tasks?.[taskType]?.datasetSha256 ?? null,
       datasetDir,
       adapterDir,
       datasetCommand: [
@@ -48,7 +52,7 @@ export function buildTrainingRequest(status) {
         '--min-fresh-train-samples', String(status.policy?.minFreshTrainSamples ?? 12),
         '--min-distinct-projects', String(status.policy?.minDistinctProjects ?? 2),
         '--max-project-share', String(status.policy?.maxProjectShare ?? 0.75),
-        '--synthetic-ratio-cap', String(status.policy?.syntheticRatioCap ?? 0.5),
+        '--synthetic-ratio-cap', String(syntheticRatioCap),
       ],
       trainerCommand: [
         'python', 'tools/vibe2-train.py',

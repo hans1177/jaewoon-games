@@ -1,7 +1,7 @@
 # Mare Essentia 작업 규칙 (세션이 바뀌어도 같은 품질 유지)
 
 ## 에셋
-- 승인된 CC0 에셋만 쓴다(`assets-registered.json` / `AssetIds.luau`). AI 생성·실존 인물 이미지 금지. **2026-11-17 오너 지시로 기존 자산이 부족한 3D 원본에 한해 검증된 외부 다운로드를 허용**한다. 출처 불분명·NC·유료·인공지능 생성 모델은 사용하지 않는다.
+- 승인된 CC0 에셋만 쓴다(`assets-registered.json` / `AssetIds.luau`). AI 생성·실존 인물 이미지 금지(단, 아래 '오너 제작 원화'는 예외). **2026-11-17 오너 지시로 기존 자산이 부족한 3D 원본에 한해 검증된 외부 다운로드를 허용**한다. 출처 불분명·NC·유료·인공지능 생성 모델은 사용하지 않는다.
 - 소스가 쓰는 모든 에셋은 `tools/devloop/asset_check.py` 가 검사한다. `tests/run.sh` 에 포함돼 있어 오타·미등록은 배포 전에 걸린다.
 - 임의 도형 조립(Part 로 건물·나무 만들기)으로 모델을 때우지 않는다. 없는 에셋은 부족 목록에 기록한다.
 
@@ -10,6 +10,24 @@
 - 다운로드 전에 국가·시대·건물 실제 용도(조선 관아 ≠ 한양 왕궁, 일본 성 ≠ 사원, 군영 ≠ 궁정 본관)를 대조한다. 모델의 저작권자·원본 URL·무료 CC0 라이선스·생성 방식·Roblox 업로드 가능 여부를 확인한다. 인공지능 제작 여부가 미확인이면 후보 보류.
 - 원본을 `assets/inbox/<종류>/`에 두고 같은 이름의 `.license.json`에 원저자/원본 URL/CC0를 기록한다. SHA-256·금지 해시·중복을 점검한 후 기존 `tools/devloop/register_asset.py` → `owner-mare-essentia-assets.yml` → `AssetIds.luau` 경로만 사용한다.
 - Roblox Universe 권한·실제 메시·재질·모바일 화면 검증 전에는 `productionVerified`로 판단하거나 왕궁 외형을 교체하지 않는다. 로컬 다운로드 오류·원본 검증 실패는 **미적용**으로 표기한다. 에셋 업로드 실패가 자동 배포 우회 근거가 되지 않는다.
+
+### 원본 가공 허용 (오너 지시 2026-11-23)
+- **승인된 원본 에셋(CC0·등록 완료)을 가공해 쓰는 것은 허용**한다. 도구는 상관없다(ChatGPT 등 AI 도구 포함): 재질·색·텍스처 변경, 부품 조합, 형태 수정, 크기·단계별 변형.
+- 가공품은 `<asset_id>.license.json` 에 **원본 에셋 이름·원본 URL·라이선스와 "가공(derived)" 표시, 가공 내용**을 기록한다. 원본 해시와 가공품 해시를 함께 남긴다.
+- 원본 없이 처음부터 AI로 생성한 모델은 기존 규칙대로 보류한다(오너 별도 지시 전까지).
+
+### 오너 제작 원화 허용 (오너 지시 2026-11-23)
+- **오너가 ChatGPT 등 AI 도구로 만들어 직접 전달한 2D 원화(카드·지도자·시설·이벤트 원화, 풀컬러)는 `PROJECT_ORIGINAL_ART` 로 등록·사용을 허용**한다.
+- 라이선스 파일: `{"license": "PROJECT_ORIGINAL_ART", "author": "owner (ChatGPT 제작)", "source": "owner-delivered", "tool": "ChatGPT", "date": "YYYY-MM-DD"}`
+- 금지 그대로: 실존 인물의 얼굴 사진·사진처럼 보이는 실존 인물 묘사, 기존 작품·캐릭터·로고·브랜드 복제, 글자 워터마크.
+- 규격: 카드 원화 세로 7:10, 1400×2000 PNG 권장(`docs/CARD_SIZE_UI_GUIDE.md`). 파일 이름 = 카드 id.
+- 전달 방법: 채팅 첨부·구글 드라이브 폴더·GitHub `assets/inbox/CardArt/` 업로드 중 아무거나. 받은 쪽이 라이선스 파일 작성 → `register_asset.py` → 업로드 워크플로.
+- 3D 모델을 처음부터 AI로 만드는 것은 여전히 보류(원본 가공만 허용).
+
+## 코드 한도 (자동 검사)
+- `src/StarterPlayer/Game.client.luau` 는 **최상위 local 이 Luau 레지스터 200개 한도**에 걸려 있다. 넘으면 컴파일이 실패해 게임 화면이 아예 안 뜬다(2026-11-23 실제 발생, #14561).
+- 새 변수는 **맨 바깥에 `local` 로 만들지 말고** `do ... end` 블록 안이나 `H` 테이블(`H.이름 = ...`)에 둔다.
+- `tests/run.sh` 가 여유를 측정해 3 미만이면 실패한다. 자동 조절: `python3 tools/luau_local_budget.py fix src/StarterPlayer/Game.client.luau --target 24` (그 구간 밖에서 안 쓰는 local 을 do 블록으로 감싸고 매번 컴파일 확인).
 
 ## 통합 3D 재질 제작 표준 (복식·건축·선박·소품)
 

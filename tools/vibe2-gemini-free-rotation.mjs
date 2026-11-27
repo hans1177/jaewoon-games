@@ -1,6 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
 // 파일명: tools/vibe2-gemini-free-rotation.mjs
 // 메인: 기존 Gemini 소스·학습 공용 API 요청 안에서만 무료 공급자 대체 순환.
 // 보안: API 키 출력·유료 모델·자동 결제·로컬 모델·추가 파이프라인 금지.
+// [400 원인 분류] 문맥 초과·안전정책은 위에서 따로 처리한다. 나머지를 고칠 위치가 다른 유형으로 나눈다.
+export function classifyHttp400(detail=''){
+  const d=String(detail||'');
+  if(/model[^.]{0,40}(not found|does not exist|decommission|not available|unknown|invalid)|no endpoints found|is not a valid model/i.test(d))return'MODEL_UNAVAILABLE';
+  if(/unsupported|not supported|unknown (parameter|field|argument)|unrecognized|additional properties|property .{1,40} is not allowed|invalid[_ ]?(parameter|argument|value)/i.test(d))return'UNSUPPORTED_PARAMETER';
+  if(/json|schema|response[_ ]?format|mime/i.test(d))return'RESPONSE_FORMAT';
+  if(/role|messages?|content|empty|must (be|have)|required/i.test(d))return'INVALID_REQUEST_SHAPE';
+  return d?'OTHER':'NO_DETAIL';
+}
+
 export const GEMINI_FREE_MODELS=Object.freeze(['gemini-3.8-flash','gemini-3.5-flash-lite']);
 export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
   GROQ:'openai/gpt-oss-20b',
@@ -8,6 +20,44 @@ export const VERIFIED_FREE_FALLBACK_MODELS=Object.freeze({
 });
 const cooldownUntil=new Map();
 const groqQuotaByModel=new Map();
+// [실행 간 쿨다운 공유] 메모리 쿨다운은 새 GitHub 실행에서 사라져 한도가 끝난 모델을 다시 두드렸다.
+// VIBE2_FREE_AI_COOLDOWN_FILE(기존 actions/cache로 실행 간 복원)에 모델별 복구 시각을 남긴다.
+// 병합 규칙: 같은 모델은 더 늦은 시각만 남겨 동시 워커가 서로의 기록을 지워도 한도가 초기화되지 않는다.
+// 지난 시각은 저장할 때 정리한다. 키·요청 내용은 저장하지 않는다(모델 이름·시각·근거만).
+function cooldownFile(){return String(process.env.VIBE2_FREE_AI_COOLDOWN_FILE??'').trim();}
+function readSharedCooldowns(){
+  const file=cooldownFile();
+  if(!file)return{};
+  try{
+    const parsed=JSON.parse(fs.readFileSync(file,'utf8'));
+    return parsed&&typeof parsed==='object'&&parsed.slots&&typeof parsed.slots==='object'?parsed.slots:{};
+  }catch{return{};}
+}
+function loadSharedCooldowns(now=Date.now()){
+  for(const [slot,row] of Object.entries(readSharedCooldowns())){
+    const until=Number(row?.until);
+    if(Number.isFinite(until)&&until>now)cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,until));
+  }
+}
+function setCooldown(slot,until,basis='observed'){
+  const next=Math.max(cooldownUntil.get(slot)||0,Number(until)||0);
+  cooldownUntil.set(slot,next);
+  const file=cooldownFile();
+  if(!file)return;
+  try{
+    const now=Date.now();
+    const slots={};
+    for(const [key,row] of Object.entries(readSharedCooldowns()))
+      if(Number(row?.until)>now)slots[key]=row;
+    if(!slots[slot]||Number(slots[slot].until)<next)
+      slots[slot]={until:next,untilIso:new Date(next).toISOString(),basis,recordedAt:new Date(now).toISOString()};
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    const tmp=file+'.'+process.pid+'.tmp';
+    fs.writeFileSync(tmp,JSON.stringify({version:1,slots},null,1));
+    fs.renameSync(tmp,file);
+  }catch{/* 공유 기록 실패가 요청 자체를 막지 않는다 */}
+}
+export function sharedCooldownSnapshot(){return readSharedCooldowns();}
 let nextSlot=0;
 const clean=value=>String(value??'').trim();
 function infrastructureFailure(message,retryAt=0){
@@ -147,6 +197,7 @@ export function selectVibe59FreeExperts({
   const choices=[
     {id:'GEMINI_FLASH',provider:'GEMINI',model:geminiModels[0],available:!!clean(env.GEMINI_API_KEY)},
     {id:'GEMINI_LITE',provider:'GEMINI',model:geminiModels[1],available:!!clean(env.GEMINI_API_KEY)},
+    // [무료 자격] 키 보유 ≠ 무료 요금제 확인. 오너 결정(2026-11-22): VIBE2_GROQ_FREE_PLAN_VERIFIED=YES 일 때만 배정.
     {id:'GROQ',provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,
       available:clean(env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES'&&
         !!clean(env.GROQ_API_KEY)&&clean(env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'},
@@ -189,10 +240,12 @@ export async function requestGeminiFreePair({
   responseMimeType=null,fetchImpl=globalThis.fetch,geminiRetryAt=null,preferredRole='',
   specialistDepartment='',specialistTask='',specialistFiles=[],verifiedOutcomes=[]
 }={}){
+  // 다른 실행·워커가 남긴 모델별 복구 시각을 먼저 읽어, 쿨다운 중인 모델은 호출하지 않는다.
+  loadSharedCooldowns();
   const models=verifiedFreeGeminiModels();
   const knownRetryAt=Date.parse(clean(geminiRetryAt));
   if(Number.isFinite(knownRetryAt)&&knownRetryAt>Date.now())
-    for(const model of models)cooldownUntil.set(model,Math.max(cooldownUntil.get(model)||0,knownRetryAt));
+    for(const model of models)setCooldown(model,knownRetryAt,'official');
   const role=clean(preferredRole).toUpperCase();
   if(role&&!['TRIAGE','CODE_REPAIR','VERIFY'].includes(role))
     throw infrastructureFailure('VIBE2_FREE_AI_ROLE_INVALID');
@@ -205,6 +258,7 @@ export async function requestGeminiFreePair({
   // 기존 승인된 무료 공급자만 채택한다. 인증키 보유와 무료 요금제 증거는 구분한다.
   const externalRotation=clean(process.env.VIBE2_EXTERNAL_FREE_ROTATION)==='YES';
   const extras=externalRotation?[
+    // 무료 요금제 확인 플래그가 YES가 아니면 Groq는 호출 경로에 넣지 않는다(키만으로 호출 금지).
     ...(clean(process.env.GROQ_API_KEY)&&clean(process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED)==='YES'
       ?[{provider:'GROQ',model:VERIFIED_FREE_FALLBACK_MODELS.GROQ,key:clean(process.env.GROQ_API_KEY),
          endpoint:'https://api.groq.com/openai/v1/chat/completions'}]:[]),
@@ -276,19 +330,45 @@ export async function requestGeminiFreePair({
           groqQuota.requestsPerDayRemaining===0?Date.parse(groqQuota.requestsResetAt):0,
           groqQuota.tokensPerMinuteRemaining===0?Date.parse(groqQuota.tokensResetAt):0
         ].filter(value=>Number.isFinite(value)&&value>Date.now());
-        if(exhausted.length)cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,...exhausted));
+        if(exhausted.length)setCooldown(slot,Math.max(...exhausted),'official');
       }
       if(!response.ok){
         const status=response.status;
-        if([401,402,403].includes(status))
+        // [모델별 인증 실패] 잘못된 키 한 개 때문에 다른 무료 모델까지 중단하지 않는다.
+        // 결제 요구 및 안전/권한 차단은 기존대로 전체 요청을 중단한다.
+        if(status===401){
+          setCooldown(slot,Date.now()+21600000);
+          failures.push(slot+':HTTP_401');
+          console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_401');
+          continue;
+        }
+        if([402,403].includes(status))
           throw infrastructureFailure(provider==='GEMINI'
             ?'GEMINI_AUTH_OR_BILLING_BLOCKED_NO_LOCAL_FALLBACK:'+status
             :provider+'_AUTH_OR_BILLING_BLOCKED_NO_PAID_FALLBACK:'+status);
-        if(provider==='GEMINI'&&[404,429,500,502,503,504].includes(status)){
+        if(provider==='GEMINI'&&[400,404,429,500,502,503,504].includes(status)){
           let errorBody=null;
-          if(status===429&&typeof response.json==='function')
-            try{errorBody=await response.json();}catch{/* status is authoritative */}
-          cooldownUntil.set(slot,Date.now()+retryDelayMs(response,status,errorBody,{provider:'GEMINI'}));
+          if([400,429].includes(status)&&typeof response.json==='function')
+            try{errorBody=await response.json();}catch{/* 상태 코드가 우선 */}
+          const detail=[errorBody?.error?.status,errorBody?.error?.message]
+            .map(clean).join(' ');
+          if(status===400&&/content[-_ ]?(policy|filter)|safety|moderation|disallowed|policy[-_ ]?violation|prohibited|prompt[-_ ]?blocked/i.test(detail))
+            throw infrastructureFailure('GEMINI_CONTENT_POLICY_BLOCKED_NO_FALLBACK');
+          const contextError=status===400&&/context[_ -]?length|maximum context|too many tokens|prompt[^.]{0,80}too (?:long|large)|input[^.]{0,80}token[^.]{0,80}(?:limit|exceed)/i.test(detail);
+          if(!contextError){
+            const delay=status===400
+              ?Math.max(1800000,retryDelayMs(response,status,errorBody,{provider:'GEMINI'}))
+              :retryDelayMs(response,status,errorBody,{provider:'GEMINI'});
+            setCooldown(slot,Date.now()+delay);
+          }
+          if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
+          if(status===400&&!contextError){
+            const kind=classifyHttp400(detail);
+            // 실패 문자열 형식(slot:HTTP_400)은 큐·조직 파서가 쓰므로 그대로 두고, 원인은 로그로 남긴다.
+            failures.push(slot+':HTTP_400');
+            console.log('VIBE2_EXTERNAL_FREE_HTTP400='+slot+':'+kind+':'+detail.replace(/\s+/g,' ').slice(0,180));
+            continue;
+          }
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':HTTP_'+status);
           continue;
@@ -313,9 +393,18 @@ export async function requestGeminiFreePair({
               delay=Math.max(delay,Number.isFinite(requestReset)?requestReset-Date.now():0,
                 Number.isFinite(tokenReset)?tokenReset-Date.now():0,0);
             }
-            cooldownUntil.set(slot,Math.max(cooldownUntil.get(slot)||0,Date.now()+delay));
+            setCooldown(slot,Date.now()+delay);
           }
           if(contextError)console.log('VIBE2_EXTERNAL_FREE_REQUEST_CONTEXT_REJECTED='+slot);
+          // [400 원인 기록] 실행 44956033693: OpenRouter·Groq 400이 원인 없이 '다음 모델로'만 기록됐다.
+          // 공급자 응답의 오류 코드·유형·문구로 원인을 나눠 남겨, 요청 생성 함수를 고칠 근거로 쓴다.
+          if(status===400&&!contextError){
+            const kind=classifyHttp400(detail);
+            // 실패 문자열 형식(slot:HTTP_400)은 큐·조직 파서가 쓰므로 그대로 두고, 원인은 로그로 남긴다.
+            failures.push(slot+':HTTP_400');
+            console.log('VIBE2_EXTERNAL_FREE_HTTP400='+slot+':'+kind+':'+detail.replace(/\s+/g,' ').slice(0,180));
+            continue;
+          }
           failures.push(slot+':HTTP_'+status);
           console.log('VIBE2_EXTERNAL_FREE_ROTATE='+slot+':HTTP_'+status);
           continue;
@@ -335,7 +424,7 @@ export async function requestGeminiFreePair({
         Array.isArray(content)?content.filter(item=>typeof item?.text==='string')
           .map(item=>item.text).join(''):'';
       if(!textValue.trim()){
-        cooldownUntil.set(slot,Date.now()+15000);
+        setCooldown(slot,Date.now()+15000);
         failures.push(slot+':EMPTY_OUTPUT');
         if(provider==='GEMINI')console.log('VIBE2_GEMINI_FREE_ROTATE='+model+':EMPTY_OUTPUT');
         continue;
@@ -347,7 +436,7 @@ export async function requestGeminiFreePair({
       return {text:textValue,model,provider,...(groqQuota?{freeQuota:groqQuota}:{})};
     }catch(error){
       if(error?.name==='AbortError'||error instanceof TypeError||error instanceof SyntaxError){
-        cooldownUntil.set(slot,Date.now()+15000);
+        setCooldown(slot,Date.now()+15000);
         failures.push(slot+':TRANSPORT_OR_TIMEOUT');
         console.log((provider==='GEMINI'?'VIBE2_GEMINI_FREE_ROTATE=':
           'VIBE2_EXTERNAL_FREE_ROTATE=')+slot+':TRANSPORT_OR_TIMEOUT');

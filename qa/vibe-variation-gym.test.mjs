@@ -303,3 +303,32 @@ test('다음 연습은 읽히는 아이콘과 리그를 보존한 변형을 더 
   assert.equal(row.keep,false);
   assert.equal(row.reason,'MOTION_STATE_LOST');
 });
+
+test('ChatGPT 자체 제작 3D 원본은 실파일 해시·권리 증빙 후 기존 Blender 분해·조립 풀에 참여한다',()=>{
+  const root=tmp();fs.mkdirSync(path.join(root,'a'));
+  const file=path.join(root,'a','gpt.obj');
+  fs.writeFileSync(file,'o gpt\nv 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n');
+  const sha=crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  const base={
+    license:'PROJECT-ORIGINAL',origin:'CHATGPT_GENERATED',family:'PROP',
+    ownerRightsVerified:true,licenseVerified:true,commercialUseVerified:true,
+    derivativesAllowed:true,sourceSha256:sha,sourceFiles:['a/gpt.obj']
+  };
+  const assets=[
+    {...base,id:'gpt-owned'},
+    {...base,id:'missing-rights',ownerRightsVerified:false},
+    {...base,id:'unknown-license',license:'UNKNOWN'},
+    {...base,id:'wrong-binary',sourceSha256:'0'.repeat(64)},
+    {...base,id:'blocked',securityBlocked:true},
+    {...base,id:'derivative',parentSourceId:'gpt-owned'}
+  ];
+  const chosen=pickParents({assets},root,20,mulberry32(7));
+  assert.deepEqual(chosen.map(x=>x.id),['gpt-owned']);
+  assert.equal(chosen[0].license,'PROJECT-ORIGINAL');
+  assert.equal(chosen[0].origin,'CHATGPT_GENERATED');
+  assert.equal(chosen[0].approvedSourceSha256,sha);
+  const coverage=buildPracticeAssetCoverage({assets},root);
+  assert.equal(coverage.eligible3dAssets,1);
+  assert.equal(coverage.domains.PROP?.eligible3d||coverage.families.PROP.eligible3d,1);
+  fs.rmSync(root,{recursive:true,force:true});
+});

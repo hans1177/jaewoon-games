@@ -87,8 +87,10 @@ test('legacy owner scope is automatically retired in the actual Vibe queue',()=>
   const effective=resolveActiveOwnerPolicy(doc);
   assert.ok(effective.retiredOwnerSections.includes('ownerDeprecatedOwnerScope'));
   assert.equal(effective.effectiveDevelopmentAccess.ROBLOX,'ALWAYS_ALLOWED');
-  assert.equal(ownerDevelopmentHeld(doc,'unheld-policy-regression','roblox',{}),false);
-  assert.equal(ownerDevelopmentHeld(doc,'unheld-policy-regression','unity_android',{}),true);
+  const focused=doc.developmentLifecycleMachine.focusedDevelopmentCaretakers.ownerFocusedGameIds[0];
+  assert.equal(ownerDevelopmentHeld(doc,focused,'roblox',{}),false);
+  assert.equal(ownerDevelopmentHeld(doc,focused,'unity_android',{}),true);
+  assert.equal(ownerDevelopmentHeld(doc,'unheld-policy-regression','roblox',{}),true);
   assert.equal(doc.developmentAccess.ROBLOX,'OWNER_HOLD');
   assert.ok(auditFourPolicyDocuments({root:tmp}).retiredOwnerSections.includes('ownerDeprecatedOwnerScope'));
 }));
@@ -100,8 +102,13 @@ test('new owner hold overrides earlier permissive values in actual Vibe queue',(
     activeTargets:['WEB'],ownerHeldTargets:['ROBLOX','UNITY_WEB','UNITY_ANDROID','FORTNITE_UEFN']
   };
   fs.writeFileSync(p,JSON.stringify(doc));
-  assert.equal(ownerDevelopmentHeld(doc,'unheld-policy-regression','roblox',{}),true);
-  assert.equal(ownerDevelopmentHeld(doc,'unheld-policy-regression','web',{}),false);
+  const focused=doc.developmentLifecycleMachine.focusedDevelopmentCaretakers.ownerFocusedGameIds[0];
+  assert.equal(ownerDevelopmentHeld(doc,focused,'roblox',{}),true);
+  // Isolate the platform policy from the independent game-focus restriction.
+  const platformOnly=structuredClone(doc);
+  platformOnly.developmentLifecycleMachine.focusedDevelopmentCaretakers.enabled=false;
+  assert.equal(ownerDevelopmentHeld(platformOnly,'unheld-policy-regression','web',{}),false);
+  assert.equal(ownerDevelopmentHeld(doc,'unheld-policy-regression','web',{}),true);
   assert.equal(doc.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
 }));
 test('all four documents retain security, log and architecture fail-closed contracts',()=>fixture(tmp=>{
@@ -152,8 +159,14 @@ test('F0 live planner uses verified main policy only at production call site, no
   const scope=resolveActiveOwnerPolicy(policy);
   assert.deepEqual(scope.activeTargets.slice().sort(),['ROBLOX','WEB']);
   assert.deepEqual(scope.ownerHeldTargets.slice().sort(),['FORTNITE_UEFN','UNITY_ANDROID','UNITY_WEB']);
-  assert.equal(ownerDevelopmentHeld(policy,'policy-f0-eligible','roblox',{}),false);
-  assert.equal(ownerDevelopmentHeld(policy,'policy-f0-eligible','web',{}),false);
+  const focus=policy.developmentLifecycleMachine.focusedDevelopmentCaretakers;
+  assert.ok(focus.enabled&&focus.completionPursuit.enabled&&!focus.completionPursuit.nonFocusedDevelopmentContinues);
+  for(const id of focus.ownerFocusedGameIds){
+    const target=focus.ownerFocusedGamePlatforms[id].toLowerCase();
+    assert.equal(ownerDevelopmentHeld(policy,id,target,{}),false);
+  }
+  assert.equal(ownerDevelopmentHeld(policy,'policy-f0-eligible','roblox',{}),true);
+  assert.equal(ownerDevelopmentHeld(policy,'policy-f0-eligible','web',{}),true);
   for(const workflow of [
     '.github/workflows/vibe2-24h-runner.yml',
     '.github/workflows/vibe2-continuous-core.yml'

@@ -25,6 +25,8 @@ function resolveProject(task,{catalog={},status={},repoRoot=process.cwd(),filesy
   const policy=readJson(path.join(repoRoot,'company-learning/platform-release-roadmap.json'),null);
   const active=policy?.ownerActiveDevelopmentScope20261009;
   const webChat=policy?.localVibeWebChat;
+  // [오너 2026-11-20] 웹게임 신규 제작 중지. 기존 엔진 개선 작업은 네이티브 바이브 소유.
+  if(webChat?.webGameAuthoringEnabled!==true)throw new Error('WEB_ORG_OWNER_WEB_GAME_AUTHORING_STOPPED');
   // 기존 중앙정책의 WEB 권한만 사용한다. 로블록스/유니티 작업 권한을 웹 접수에서 상속하지 않는다.
   if(policy?.status!=='OWNER_DIRECT_LOCKED'||
      policy?.developmentAccess?.WEB!=='ALWAYS_ALLOWED'||

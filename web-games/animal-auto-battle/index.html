@@ -1,0 +1,436 @@
+<!doctype html>
+<!-- 파일명: web-games/animal-auto-battle/index.html -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101d24">
+<title>동물 자동대전 | 재운게임즈</title>
+<style>
+/* 화면: 모바일 우선 카드 전투 무대 */
+:root{--bg:#101d24;--panel:#1c3037;--panel2:#263e44;--line:#3b5960;--ink:#f6f5e9;--soft:#b9c9c8;--gold:#ffe197;--mint:#8ce6b6;--red:#ffaaa3}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at 50% 0,#31595a 0,#15282f 48%,var(--bg) 100%);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(28px + env(safe-area-inset-bottom)) env(safe-area-inset-left)}
+button,a{font:inherit}button{touch-action:manipulation;cursor:pointer}button:disabled{cursor:default;opacity:.42}
+button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+[hidden]{display:none!important}
+.shell{width:min(1100px,100%);padding:12px;margin:auto}
+.header{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:11px}
+.header h1{margin:0;font-size:clamp(19px,3vw,28px);letter-spacing:-.7px}.header small{display:block;color:var(--soft);font-size:11px;font-weight:650}
+.header .tools{display:flex;gap:6px;align-items:center}
+.btn,.back{display:inline-grid;place-items:center;min-height:44px;border:1px solid #57757c;border-radius:12px;padding:9px 12px;text-decoration:none;color:var(--ink);background:#2f4e55;font-weight:850;font-size:12px}
+.btn.primary{background:#ccefa0;border-color:#e4f5c4;color:#20352c;font-weight:1000}
+.btn.gold{background:#f6cb70;border-color:#ffe19c;color:#392d19}
+.btn.danger{background:#664447;border-color:#94626a}
+.btn:active,.pet:active,.offer button:active{transform:translateY(1px)}
+.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.stat{background:#20373d;border:1px solid #426067;border-radius:12px;padding:10px 6px;text-align:center}
+.stat b{display:block;font-size:clamp(16px,3vw,23px);color:#f8e9b9}.stat span{display:block;font-size:10px;color:var(--soft)}
+.notice{margin:10px 0;padding:9px 12px;min-height:38px;border-radius:11px;background:#334950;color:#f7e9ac;font-size:12px;font-weight:750;text-align:center}
+.arena{position:relative;overflow:hidden;min-height:148px;border:1px solid #528078;border-radius:17px;background:radial-gradient(ellipse at 50% 20%,#457867 0,#284e51 48%,#172f35 100%);padding:10px;perspective:850px;isolation:isolate}
+.arena:before{content:"";position:absolute;inset:50% -8% -22%;border:1px solid #79ac8c7a;border-radius:50%;background:repeating-linear-gradient(90deg,transparent 0 70px,#b1eac310 71px 72px),linear-gradient(#315b57,#284347);transform:rotateX(67deg) translateZ(-8px);box-shadow:0 35px 55px #061b2577;z-index:-1}
+.arenaTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;font-weight:950;color:#ebf7db}
+.arenaTitle small{font-size:10px;color:#c5d6cb}
+.stageLine{display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;margin:11px 0 4px;transform-style:preserve-3d}
+.stagePet{min-width:44px;min-height:60px;display:grid;place-items:center;font-size:31px;border-radius:13px;background:#2d5e5ab3;border:1px solid #acd5b789;box-shadow:0 7px 0 #12352e90,0 15px 22px #06191e80;transform:rotateX(8deg) translateZ(17px);text-shadow:0 3px 7px #122b35}
+.stagePet.empty{font-size:22px;opacity:.5}.stageMessage{font-size:12px;color:#d8e4d4;text-align:center;margin:4px 0 0}
+.sectionHead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:14px 1px 8px}
+.sectionHead h2{font-size:16px;margin:0}.sectionHead span{font-size:10px;color:var(--soft)}
+.team{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.pet{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:133px;padding:7px 2px;color:var(--ink);border:1px solid #51766e;border-radius:13px;background:linear-gradient(160deg,#355b56,#203b41);box-shadow:0 5px 0 #10272a;transition:transform .14s,border-color .14s}
+.pet.selected{border:2px solid #f8dc83;box-shadow:0 0 0 2px #d9b75a33,0 5px 0 #483c20;background:linear-gradient(150deg,#617453,#345a51)}
+.pet.empty{border-style:dashed;background:#1f3338;color:#a6babb}
+.pet .face{font-size:clamp(25px,4.5vw,45px);line-height:1.1;filter:drop-shadow(0 5px 2px #071c2480)}
+.pet .name{font-size:11px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pet .stats{font-size:11px;color:#fce3ba;font-weight:850}.pet .level{font-size:9px;color:#cee8d2}
+.shop{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.offer{min-width:0;border:1px solid #597078;border-radius:13px;background:#263d45;padding:9px 6px;text-align:center}
+.offer.locked{border-color:#e2bb67}
+.offer .face{font-size:clamp(26px,4vw,39px);margin:2px 0}
+.offer strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+.offer small{display:block;color:#bed1cf;font-size:10px;min-height:32px;margin:5px 0}
+.offer .buy,.offer .freeze{width:100%;border:0;border-radius:9px;min-height:40px;font-size:11px;font-weight:950}
+.offer .buy{background:#c3e8ac;color:#1d3526}.offer .freeze{min-height:36px;background:#456068;color:#f7f1de;margin-top:5px}
+.offer.locked .freeze{background:#856a37}
+.offer.empty{display:grid;place-items:center;color:#90a8a8;font-size:11px;min-height:160px}
+.actions{position:sticky;bottom:env(safe-area-inset-bottom);display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:7px;padding:10px 0 4px;background:#14252bfa;z-index:5}
+.actions .btn{min-height:52px;font-size:13px}
+.rules{margin:12px 0;font-size:11px;color:#b1c3c4;line-height:1.5}
+.modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:12px;background:#061014df}
+.dialog{width:min(760px,100%);max-height:92dvh;overflow:auto;background:linear-gradient(#2c4a4c,#172d34);border:1px solid #91bcb1;border-radius:18px;box-shadow:0 20px 80px #0009;padding:14px}
+.dialog h2{margin:0 0 5px;font-size:23px}.dialog p{font-size:12px;line-height:1.6;color:#d5e3db}
+.duel{display:grid;grid-template-columns:1fr;gap:7px;margin:10px 0}
+.duel h3{font-size:12px;margin:2px 0}
+.duelRow{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;min-height:82px}
+.duelPet{flex:0 1 100px;min-width:55px;padding:7px 4px;text-align:center;border:1px solid #60998e;border-radius:11px;background:#285953;transform:perspective(300px) rotateX(5deg)}
+.duelPet.foe{background:#744b4c;border-color:#bd7475}
+.duelPet b{display:block;font-size:26px}.duelPet small{font-size:10px}
+.fightText{min-height:50px;display:grid;place-items:center;text-align:center;border:1px solid #567779;border-radius:12px;background:#183238;padding:12px;color:#ffe09b;font-weight:850;font-size:13px}
+.dialogBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.log{margin:11px 0 0;padding:8px 12px;background:#152930;border-radius:11px;color:#d5dfdc;max-height:116px;overflow:auto;font-size:11px;line-height:1.6}
+.bookGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.bookPet{text-align:center;min-width:0;padding:12px 4px;border:1px solid #567f76;border-radius:12px;background:#25474a}
+.bookPet b{display:block;font-size:31px}.bookPet strong{display:block;font-size:12px;margin:3px 0}.bookPet small{display:block;color:#bdd5d0;font-size:10px}
+.bookPet.unknown{filter:saturate(.3);opacity:.55}
+.duelPet:first-child{box-shadow:0 0 0 2px #ffdc84a6,0 8px 16px #06101477;transform:perspective(300px) rotateX(7deg) translateY(-3px)}
+@media(max-width:400px){.bookGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.shell{padding:8px}.header h1{font-size:19px}.header small{font-size:9px}.btn,.back{padding:8px;font-size:10px}.arena{min-height:124px}.stat{padding:7px 3px}.stat span{font-size:9px}.pet{min-height:113px}.pet .name{font-size:10px}.pet .stats{font-size:10px}.shop{gap:5px}.offer{padding:7px 3px}.offer .buy,.offer .freeze{font-size:10px}.offer small{font-size:9px}.actions .btn{font-size:11px}.notice{font-size:11px}}
+@media(max-width:380px){.header{gap:4px}.header .tools{gap:3px}.header h1{font-size:17px}.pet .face{font-size:25px}.pet{min-height:105px}.offer strong{font-size:10px}.offer .face{font-size:28px}.offer .buy{min-height:44px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="header">
+  <div><h1>🐾 동물 자동대전</h1><small>동물을 모아 8승에 도전해!</small></div>
+  <div class="tools"><button class="btn" id="bookBtn" type="button">도감</button><button class="btn" id="helpBtn" type="button">도움말</button><a class="back" href="../../index.html">게임 목록</a></div>
+</header>
+<div class="hud" aria-label="진행 상태">
+  <div class="stat"><b id="round">1</b><span>라운드</span></div>
+  <div class="stat"><b id="gold">10</b><span>금화</span></div>
+  <div class="stat"><b id="hearts">♥ 5</b><span>체력</span></div>
+  <div class="stat"><b id="wins">0 / 8</b><span>승리</span></div>
+</div>
+<div class="notice" id="notice" role="status" aria-live="polite">팀 칸을 선택하고 동물을 구매해</div>
+<section class="arena" aria-label="입체 전투 무대">
+  <div class="arenaTitle">전투 무대 <small id="tierLabel">상점 1단계</small></div>
+  <div class="stageLine" id="stage"></div><p class="stageMessage" id="stageMessage">앞쪽 동물부터 싸워 · 전투는 자동 진행</p>
+</section>
+<div class="sectionHead"><h2>내 동물 팀</h2><span>최대 5마리 · 두 동물 선택으로 자리 교환</span></div>
+<div class="team" id="team" role="group" aria-label="내 동물 팀"></div>
+<div class="sectionHead"><h2>상점</h2><span>구매 3금화 · 고정 무료</span></div>
+<div class="shop" id="shop"></div>
+<div class="actions">
+  <button class="btn" id="rollBtn" type="button">↻ 새로고침 -1</button>
+  <button class="btn danger" id="sellBtn" type="button">선택 동물 판매</button>
+  <button class="btn primary" id="fightBtn" type="button">⚔ 자동 전투</button>
+</div>
+<div class="rules">먹이는 동물을 선택한 뒤 구매해. 같은 동물을 합치면 능력치와 레벨이 올라가. 게임은 이 브라우저에 자동 저장돼. <a href="./privacy.html" style="color:#d7ed95">개인정보 안내</a></div>
+<div class="log" id="log" aria-label="최근 전투 기록"></div>
+</main>
+<div class="modal" id="bookModal" hidden>
+ <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+  <h2 id="bookTitle">동물 도감</h2>
+  <p id="bookStats">발견한 동물을 확인해.</p>
+  <div class="bookGrid" id="bookGrid"></div>
+  <button class="btn primary" id="bookClose" type="button" style="width:100%">상점으로 돌아가기</button>
+ </div>
+</div>
+<div class="modal" id="replayModal" hidden>
+ <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="replayTitle">
+  <h2 id="replayTitle">자동 전투</h2>
+  <p id="replayState">동물들이 싸우고 있어</p>
+  <div class="duel">
+   <h3>내 팀</h3><div class="duelRow" id="replayMine"></div>
+   <div class="fightText" id="fightText" aria-live="off">전투 준비</div>
+   <h3>상대 팀</h3><div class="duelRow" id="replayFoes"></div>
+  </div>
+  <div class="dialogBtns"><button class="btn gold" id="skipBtn" type="button">결과 바로 보기</button><button class="btn primary" id="closeBtn" type="button">상점으로 돌아가기</button></div>
+ </div>
+</div>
+<div class="modal" id="helpModal" hidden>
+ <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <h2 id="helpTitle">플레이 방법</h2>
+  <p>① 팀의 빈 칸이나 동물을 선택하고 상점에서 구매해. 빈 칸을 선택하지 않으면 맨 뒤에 추가돼.</p>
+  <p>② 같은 동물끼리 합성하거나 먹이를 줘. 동물을 두 번 선택하면 서로 자리를 바꿀 수 있어.</p>
+  <p>③ 상점 동물은 고정할 수 있고, 새로고침에는 금화 1개가 필요해.</p>
+  <p>④ 자동 전투에서 서로의 앞 동물이 동시에 공격해. 8승을 먼저 달성하면 성공, 체력 5개를 잃으면 종료야.</p>
+  <p>⑤ 모든 진행은 현재 기기의 브라우저에 자동으로 저장돼. 다른 기기나 로블록스판과 공유되지 않아.</p>
+  <button class="btn primary" id="helpClose" type="button" style="width:100%">확인</button>
+ </div>
+</div>
+<script>
+"use strict";
+/* 파일명: web-games/animal-auto-battle/index.html · 게임 로직 */
+/* 규칙: 기존 roblox-games/animal-auto-battle/shared/Rules.luau 와 기본 수치 일치 */
+const SAVE_KEY="animal-auto-battle-web-v1";
+const START_GOLD=10,START_HEARTS=5,TARGET_WINS=8,TEAM_LIMIT=5,STAT_LIMIT=50;
+const PETS={
+ bunny:{name:"토끼",icon:"🐰",tier:1,a:1,h:4,ability:"food_hp"},
+ cat:{name:"고양이",icon:"🐱",tier:1,a:2,h:3,ability:"food_attack"},
+ dog:{name:"강아지",icon:"🐶",tier:1,a:2,h:2,ability:"team_attack"},
+ pig:{name:"돼지",icon:"🐷",tier:1,a:3,h:2,ability:"sell_gold"},
+ fox:{name:"여우",icon:"🦊",tier:2,a:4,h:3,ability:"first_strike"},
+ turtle:{name:"거북이",icon:"🐢",tier:2,a:2,h:6,ability:"armor"},
+ wolf:{name:"늑대",icon:"🐺",tier:3,a:5,h:4,ability:"knockout"},
+ cow:{name:"젖소",icon:"🐮",tier:3,a:3,h:7,ability:"team_hp"}
+};
+const FOODS={
+ berry:{name:"열매",icon:"🍓",tier:1,a:0,h:2},
+ seed:{name:"씨앗",icon:"🌱",tier:1,a:1,h:1},
+ meal:{name:"영양식",icon:"🥣",tier:2,a:2,h:2},
+ feast:{name:"진수성찬",icon:"🍲",tier:3,a:3,h:3}
+};
+const $=id=>document.getElementById(id);
+let state,selected=-1,replaySerial=0,replayFrames=[],replayVerdict="",replayTimer=0;
+const cap=n=>Math.max(1,Math.min(STAT_LIMIT,Math.floor(n)));
+const tier=round=>Math.max(1,Math.min(3,Math.floor((round+1)/2)));
+const level=exp=>exp>=5?3:exp>=2?2:1;
+const int=(value,low,high,fallback)=>Number.isInteger(value)&&value>=low&&value<=high?value:fallback;
+const pick=items=>items[Math.floor(Math.random()*items.length)];
+const choice=(defs,round)=>pick(Object.keys(defs).filter(id=>defs[id].tier<=tier(round)));
+const newPet=id=>({id:id,a:PETS[id].a,h:PETS[id].h,exp:0,lvl:1});
+function newState(){
+ const s={version:1,round:1,gold:START_GOLD,hearts:START_HEARTS,wins:0,phase:"shop",team:[],shop:[null,null,null,null],log:[],discovered:[],bestWins:0,completedRuns:0};
+ roll(s,false);return s;
+}
+/* 저장·복구: 신규 독립 키만 사용. 다른 게임 저장 데이터는 변경하지 않음 */
+function load(){
+ try{
+  const raw=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");
+  if(!raw||raw.version!==1||!Array.isArray(raw.team)||!Array.isArray(raw.shop))return newState();
+  const s=newState();
+  s.round=int(raw.round,1,99,1);
+  s.gold=int(raw.gold,0,30,START_GOLD);
+  s.hearts=int(raw.hearts,0,START_HEARTS,START_HEARTS);
+  s.wins=int(raw.wins,0,TARGET_WINS,0);
+  s.team=raw.team.slice(0,TEAM_LIMIT).filter(p=>p&&PETS[p.id]).map(p=>{
+   const exp=int(p.exp,0,5,0);
+   return {id:p.id,a:int(p.a,1,STAT_LIMIT,PETS[p.id].a),h:int(p.h,1,STAT_LIMIT,PETS[p.id].h),exp:exp,lvl:level(exp)};
+  });
+  s.shop=[0,1,2,3].map(i=>{
+   const offer=raw.shop[i],kind=i===3?"food":"pet",defs=kind==="pet"?PETS:FOODS;
+   return offer&&defs[offer.id]&&defs[offer.id].tier<=tier(s.round)?{kind:kind,id:offer.id,frozen:offer.frozen===true}:null;
+  });
+  if(raw.shop.length!==4)roll(s,false);
+  s.log=Array.isArray(raw.log)?raw.log.filter(x=>typeof x==="string").slice(0,8).map(x=>x.slice(0,120)):[];
+  s.discovered=Array.isArray(raw.discovered)?[...new Set(raw.discovered.filter(id=>typeof id==="string"&&PETS[id]))]:[];
+  for(const p of s.team)if(!s.discovered.includes(p.id))s.discovered.push(p.id);
+  s.bestWins=Math.max(s.wins,int(raw.bestWins,0,TARGET_WINS,0));
+  s.completedRuns=int(raw.completedRuns,0,999999,0);
+  s.phase=s.hearts===0||s.wins>=TARGET_WINS?"ended":"shop";
+  return s;
+ }catch(e){return newState()}
+}
+function save(){
+ try{localStorage.setItem(SAVE_KEY,JSON.stringify(state))}catch(e){note("브라우저 저장을 사용할 수 없어. 저장 공간을 확인해.")}
+}
+function note(message){$("notice").textContent=message}
+function roll(s,preserve){
+ const old=s.shop||[];
+ s.shop=[0,1,2,3].map(i=>{
+  if(preserve&&old[i]&&old[i].frozen)return old[i];
+  const kind=i===3?"food":"pet";
+  return {kind:kind,id:choice(kind==="pet"?PETS:FOODS,s.round),frozen:false};
+ });
+}
+function setSelected(i){
+ if(state.phase!=="shop")return;
+ if(i===selected){selected=-1;note("선택을 해제했어")}
+ else if(selected>=0&&state.team[selected]&&state.team[i]){
+  const other=state.team[i];state.team[i]=state.team[selected];state.team[selected]=other;
+  selected=-1;save();note("동물 위치를 교환했어");
+ }else{selected=i;note(state.team[i]?"선택: "+PETS[state.team[i].id].name+" · 같은 동물을 합치거나 먹이를 줄 수 있어":"빈 칸 선택 · 동물을 구매해")}
+ render();
+}
+function buy(i){
+ if(state.phase!=="shop")return;
+ const offer=state.shop[i];
+ if(!offer){note("비어 있는 상점 칸이야");return}
+ if(state.gold<3){note("금화가 부족해");return}
+ const target=selected>=0?state.team[selected]:null;
+ if(offer.kind==="food"){
+  if(!target){note("먹이를 줄 동물을 먼저 선택해");return}
+  const food=FOODS[offer.id];
+  target.a=cap(target.a+food.a+(target.id==="cat"?target.lvl:0));
+  target.h=cap(target.h+food.h+(target.id==="bunny"?target.lvl:0));
+  note(PETS[target.id].name+"에게 "+food.name+"을 줬어");
+ }else if(target&&target.id===offer.id){
+  target.exp=Math.min(5,target.exp+1);
+  target.lvl=level(target.exp);
+  target.a=cap(target.a+1);target.h=cap(target.h+1);
+  note(PETS[target.id].name+" 합성! 레벨 "+target.lvl);
+ }else if(!target&&state.team.length<TEAM_LIMIT){
+  const unit=newPet(offer.id);
+  if(selected>=0&&selected<=state.team.length)state.team.splice(selected,0,unit);
+  else state.team.push(unit);
+  note(PETS[offer.id].name+" 영입 완료");
+ }else{
+  note(target?"같은 동물만 합칠 수 있어. 빈 칸을 선택해":"팀은 최대 5마리야");
+  return;
+ }
+ if(offer.kind==="pet"&&!state.discovered.includes(offer.id))state.discovered.push(offer.id);
+ state.gold-=3;state.shop[i]=null;selected=-1;save();render();
+}
+function freeze(i){
+ if(state.phase!=="shop"||!state.shop[i])return;
+ state.shop[i].frozen=!state.shop[i].frozen;
+ note(state.shop[i].frozen?"상점 상품 고정":"상품 고정 해제");save();render();
+}
+function reroll(){
+ if(state.phase!=="shop"||state.gold<1){note("새로고침할 금화가 없어");return}
+ state.gold--;roll(state,true);save();render();note("상점 물품을 새로고침했어");
+}
+function sell(){
+ if(state.phase!=="shop"||selected<0||!state.team[selected]){note("판매할 동물을 먼저 선택해");return}
+ const pet=state.team[selected];
+ const earned=1+(pet.id==="pig"?pet.lvl:0);
+ state.gold=Math.min(30,state.gold+earned);
+ state.team.splice(selected,1);selected=-1;save();render();
+ note(PETS[pet.id].name+" 판매 · 금화 +"+earned);
+}
+/* 전투: 기존 서버 게임의 라운드·사망·능력 처리 규칙을 웹 독립 플레이에 이식 */
+function battleCopy(team){
+ const units=team.map(p=>({id:p.id,a:p.a,h:p.h,lvl:p.lvl}));
+ units.forEach((pet,i)=>{
+  if(pet.id==="dog"&&units[i+1])units[i+1].a=cap(units[i+1].a+pet.lvl);
+  else if(pet.id==="cow")units.forEach((ally,j)=>{if(j!==i)ally.h=cap(ally.h+pet.lvl)});
+  else if(pet.id==="fox")pet.first=1+pet.lvl;
+  else if(pet.id==="turtle")pet.armor=pet.lvl;
+ });
+ return units;
+}
+function enemyTeam(round){
+ const count=Math.min(TEAM_LIMIT,Math.max(1,Math.floor((round+1)/2)));
+ const bonus=Math.floor((round-1)/3);
+ return Array.from({length:count},()=>{
+  const pet=newPet(choice(PETS,round));pet.a=cap(pet.a+bonus);pet.h=cap(pet.h+bonus);return pet;
+ });
+}
+function fight(){
+ if(state.phase==="ended"){
+  const history={discovered:state.discovered.slice(),bestWins:state.bestWins,completedRuns:state.completedRuns};
+  state=newState();Object.assign(state,history);selected=-1;save();render();note("새 도전을 시작했어");return;
+ }
+ if(state.phase!=="shop")return;
+ if(!state.team.length){note("동물을 최소 1마리 편성해");return}
+ let mine=battleCopy(state.team),foes=battleCopy(enemyTeam(state.round));
+ const frames=[];
+ const record=text=>{
+  const frame={mine:mine.map(p=>({id:p.id,a:p.a,h:Math.max(0,p.h),lvl:p.lvl})),
+   foes:foes.map(p=>({id:p.id,a:p.a,h:Math.max(0,p.h),lvl:p.lvl})),text:text};
+  if(frames.length<48)frames.push(frame);else frames[frames.length-1]=frame;
+ };
+ const round=state.round;
+ for(const p of foes)if(!state.discovered.includes(p.id))state.discovered.push(p.id);
+ record(round+"라운드 · 양 팀 준비 완료");
+ let hits=0;
+ while(mine.length&&foes.length&&hits<360){
+  hits++;
+  const a=mine[0],b=foes[0];
+  const ap=cap(a.a+(hits===1?(a.first||0):0));
+  const bp=cap(b.a+(hits===1?(b.first||0):0));
+  const hurtA=Math.max(1,bp-(a.armor||0));
+  const hurtB=Math.max(1,ap-(b.armor||0));
+  a.h-=hurtA;b.h-=hurtB;
+  const text=PETS[a.id].name+" → "+PETS[b.id].name+" "+hurtB+" 피해 · "+PETS[b.id].name+" → "+PETS[a.id].name+" "+hurtA+" 피해";
+  if(b.h<=0&&a.h>0&&a.id==="wolf")a.a=cap(a.a+a.lvl);
+  if(a.h<=0&&b.h>0&&b.id==="wolf")b.a=cap(b.a+b.lvl);
+  if(a.h<=0)mine.shift();
+  if(b.h<=0)foes.shift();
+  record(text);
+ }
+ let result="무승부";
+ if(mine.length&&!foes.length){result="승리";state.wins++}
+ else if(foes.length&&!mine.length){result="패배";state.hearts=Math.max(0,state.hearts-1)}
+ record(round+"라운드 결과 · "+result);
+ state.log.unshift(round+"라운드 · "+result+" · 전투 "+hits+"회");
+ state.log=state.log.slice(0,8);
+ state.bestWins=Math.max(state.bestWins,state.wins);
+ if(state.wins>=TARGET_WINS||state.hearts<=0){state.phase="ended";state.completedRuns=Math.min(999999,state.completedRuns+1)}
+ else{
+  state.round=Math.min(99,state.round+1);
+  state.gold=START_GOLD;
+  roll(state,true);
+ }
+ selected=-1;save();render();note(state.phase==="ended"?(state.wins>=TARGET_WINS?"8승 달성! 새 도전에 도전해":"도전 종료 · 새 도전을 시작할 수 있어"):"전투 결과 "+result+" · 다음 상점 준비");
+ showReplay(round,result,frames);
+}
+/* 전투 재생: 확정된 프레임만 표현하며 피해·보상을 재계산하지 않음 */
+function replayTeam(id,items,isFoe){
+ $(id).innerHTML=items.map(p=>{
+  const def=PETS[p.id];
+  return '<div class="duelPet'+(isFoe?' foe':'')+'"><b>'+def.icon+'</b><small>'+def.name+'<br>⚔ '+p.a+' · ♥ '+p.h+'<br>레벨 '+p.lvl+'</small></div>';
+ }).join("")||'<div class="duelPet"><small>전멸</small></div>';
+}
+function drawFrame(index){
+ const frame=replayFrames[index];if(!frame)return;
+ replayTeam("replayMine",frame.mine,false);
+ replayTeam("replayFoes",frame.foes,true);
+ $("fightText").textContent=frame.text;
+ $("replayState").textContent=index+1+" / "+replayFrames.length+(index===replayFrames.length-1?" · "+replayVerdict:" · 전투 진행 중");
+}
+function showReplay(round,result,frames){
+ replaySerial++;const current=replaySerial;
+ replayFrames=frames;replayVerdict=result;
+ $("replayTitle").textContent=round+"라운드 · 자동 전투";
+ $("replayModal").hidden=false;drawFrame(0);
+ let i=0;
+ function next(){
+  if(current!==replaySerial||$("replayModal").hidden)return;
+  i++;drawFrame(i);
+  if(i<replayFrames.length-1)replayTimer=setTimeout(next,380);
+ }
+ if(frames.length>1)replayTimer=setTimeout(next,650);
+ $("skipBtn").focus();
+}
+/* 도감: 현재 실행 게임에서 확인한 기존 8종만 기록하며, 저장을 별도로 복제하지 않음 */
+function showBook(){
+ $("bookStats").textContent="발견 "+state.discovered.length+" / "+Object.keys(PETS).length+"종 · 최고 "+state.bestWins+"승 · 완료한 도전 "+state.completedRuns+"회";
+ $("bookGrid").innerHTML=Object.entries(PETS).map(([id,d])=>{
+  const known=state.discovered.includes(id);
+  return '<div class="bookPet'+(known?'':' unknown')+'"><b>'+(known?d.icon:'❔')+'</b><strong>'+(known?d.name:'미발견')+'</strong><small>'+(known?'공격 '+d.a+' · 체력 '+d.h+' · '+d.tier+'단계':'전투와 상점에서 발견')+'</small></div>';
+ }).join("");
+ $("bookModal").hidden=false;$("bookClose").focus();
+}
+function closeReplay(){
+ replaySerial++;clearTimeout(replayTimer);$("replayModal").hidden=true;$("fightBtn").focus();
+}
+function skipReplay(){replaySerial++;clearTimeout(replayTimer);drawFrame(replayFrames.length-1)}
+/* 화면: 고정 데이터만 HTML로 렌더링, 사용자 입력 문자열 실행 금지 */
+function render(){
+ $("round").textContent=state.round;
+ $("gold").textContent=state.gold;
+ $("hearts").textContent="♥ "+state.hearts;
+ $("wins").textContent=state.wins+" / "+TARGET_WINS;
+ $("tierLabel").textContent="상점 "+tier(state.round)+"단계";
+ $("team").innerHTML=Array.from({length:TEAM_LIMIT},(_,i)=>{
+  const p=state.team[i],d=p&&PETS[p.id];
+  if(!d)return '<button class="pet empty'+(selected===i?' selected':'')+'" data-slot="'+i+'" type="button" aria-label="'+(i+1)+'번 빈 팀 칸"><span class="face">＋</span><span class="name">'+(i+1)+'번 칸</span><span class="level">선택해서 영입</span></button>';
+  return '<button class="pet'+(selected===i?' selected':'')+'" data-slot="'+i+'" type="button" aria-pressed="'+(selected===i)+'"><span class="face">'+d.icon+'</span><span class="name">'+d.name+'</span><span class="stats">⚔ '+p.a+' · ♥ '+p.h+'</span><span class="level">레벨 '+p.lvl+' · '+p.exp+'/5</span></button>';
+ }).join("");
+ $("shop").innerHTML=state.shop.map((offer,i)=>{
+  if(!offer)return '<div class="offer empty">'+(i+1)+'번<br>판매 완료</div>';
+  const d=(offer.kind==="pet"?PETS:FOODS)[offer.id];
+  const stat=offer.kind==="pet"?'⚔ '+d.a+' · ♥ '+d.h:'공격 +'+d.a+' · 체력 +'+d.h;
+  return '<div class="offer'+(offer.frozen?' locked':'')+'"><div class="face" aria-hidden="true">'+d.icon+'</div><strong>'+d.name+'</strong><small>'+stat+'<br>'+d.tier+'단계</small><button class="buy" type="button" data-buy="'+i+'"'+(state.gold<3||state.phase==="ended"?' disabled':'')+'>구매 · 3</button><button class="freeze" type="button" data-freeze="'+i+'"'+(state.phase==="ended"?' disabled':'')+'>'+(offer.frozen?'🔒 고정됨':'🔓 고정')+'</button></div>';
+ }).join("");
+ const icons=state.team.map(p=>'<span class="stagePet" aria-label="'+PETS[p.id].name+'">'+PETS[p.id].icon+'</span>').join("");
+ $("stage").innerHTML=icons||'<span class="stagePet empty">＋</span><span class="stagePet empty">＋</span><span class="stagePet empty">＋</span>';
+ $("stageMessage").textContent=state.phase==="ended"?(state.wins>=TARGET_WINS?"8승 달성!":"체력을 모두 잃었어"):"앞쪽 동물부터 자동 공격 · 상대는 라운드에 따라 강해져";
+ $("rollBtn").disabled=state.phase==="ended"||state.gold<1;
+ $("sellBtn").disabled=state.phase==="ended"||selected<0||!state.team[selected];
+ $("fightBtn").textContent=state.phase==="ended"?"↻ 새 도전":"⚔ 자동 전투";
+ $("log").textContent=state.log.length?"최근 전투: "+state.log.join(" | "):"첫 전투 기록이 여기에 남아.";
+}
+/* 입력: 클릭·터치 공통 이벤트. 동일 저장 상태에서 순서 변경까지 반영 */
+$("team").addEventListener("click",event=>{
+ const button=event.target.closest("[data-slot]");
+ if(button)setSelected(Number(button.dataset.slot));
+});
+$("shop").addEventListener("click",event=>{
+ const buyButton=event.target.closest("[data-buy]");
+ const freezeButton=event.target.closest("[data-freeze]");
+ if(buyButton)buy(Number(buyButton.dataset.buy));
+ else if(freezeButton)freeze(Number(freezeButton.dataset.freeze));
+});
+$("rollBtn").addEventListener("click",reroll);
+$("sellBtn").addEventListener("click",sell);
+$("fightBtn").addEventListener("click",fight);
+$("skipBtn").addEventListener("click",skipReplay);
+$("closeBtn").addEventListener("click",closeReplay);
+$("bookBtn").addEventListener("click",showBook);
+$("bookClose").addEventListener("click",()=>{$("bookModal").hidden=true;$("bookBtn").focus()});
+$("helpBtn").addEventListener("click",()=>{$("helpModal").hidden=false;$("helpClose").focus()});
+$("helpClose").addEventListener("click",()=>{$("helpModal").hidden=true;$("helpBtn").focus()});
+document.addEventListener("keydown",event=>{
+ if(event.key!=="Escape")return;
+ if(!$("bookModal").hidden)$("bookClose").click();
+ else if(!$("helpModal").hidden)$("helpClose").click();
+ else if(!$("replayModal").hidden)closeReplay();
+});
+state=load();render();
+</script>
+</body>
+</html>

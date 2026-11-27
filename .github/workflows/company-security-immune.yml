@@ -728,6 +728,45 @@ jobs:
               throw new Error('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_SOURCE_PROOF_MISSING');
             console.log('SECURITY_OWNER_LOCAL_WEB_DEVELOPMENT_EXACT_SCOPE=PASS');
           }
+          // Owner-authorized, exact central context restoration (2026-11-25).
+          // Only these reviewed before/after document bytes and the exact repair scope qualify.
+          const contextRecoveryKeys=['version','developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows','changeRecord.centralContextRecovery20261125'];
+          if(changes.some(key=>contextRecoveryKeys.slice(1).includes(key))){
+            const pins=[
+              [policyPath,'3772dce4b98dff8072e2c6dc0326bb070df44602','930005dd7ad0399a260172792e3140044059da02'],
+              ['company-learning/company-log-map.json','e16dc62d01410f411cdb7100135c93fa160bcd12','e16dc62d01410f411cdb7100135c93fa160bcd12'],
+              ['company-learning/company-architecture-map.json','3e2dcd528dea7a21d5c709e250d7f8ba2b48df2f','723d46c702a83edc8bc21cb55eff97d537fc14bd'],
+              ['company-learning/security-immune-system.json','63e6c91b5f93b98f492a7a75a395753b2f3db742','72e8117cd649f2c8c5c6a06c33881f68454f5e08'],
+              ['tools/company-shared-context.mjs',null,'60044c7d4ef414a53f782115d1de51887240d62d']
+            ];
+            for(const [file,before,after] of pins){
+              if((before&&execFileSync('git',['rev-parse',process.env.BASE_SHA+':'+file],{encoding:'utf8'}).trim()!==before)||
+                execFileSync('git',['hash-object',file],{encoding:'utf8'}).trim()!==after)
+                throw new Error('SECURITY_CONTEXT_RECOVERY_PIN_MISMATCH:'+file);
+            }
+            const oldLaunchers=base.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows;
+            const retired='.github/workflows/artbook-free-department-bots.yml';
+            const nextLaunchers=head.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows;
+            const reconstructed=structuredClone(base);
+            reconstructed.version++;
+            reconstructed.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows=oldLaunchers.filter(file=>file!==retired);
+            reconstructed.changeRecord={centralContextRecovery20261125:head.changeRecord.centralContextRecovery20261125,...reconstructed.changeRecord};
+            if(!same(changes.slice().sort(),contextRecoveryKeys.slice().sort())||
+              oldLaunchers.filter(file=>file===retired).length!==1||fs.existsSync(retired)||
+              !same(nextLaunchers,reconstructed.developmentLifecycleMachine.sharedWorkerContext.workerLauncherWorkflows)||
+              !same(reconstructed,head)||!same(base.finalDevelopmentLock,head.finalDevelopmentLock)||
+              !same(base.ownerCanonicalRules,head.ownerCanonicalRules)||
+              !same(base.fixedAutonomousDevelopmentOperatingContract,head.fixedAutonomousDevelopmentOperatingContract))
+              throw new Error('SECURITY_CONTEXT_RECOVERY_EXACT_SCOPE_REQUIRED');
+            const {validateSharedWorkerContext}=await import('./tools/company-shared-context.mjs');
+            const {enforceConstitution}=await import('./tools/company-constitution-enforcer.mjs');
+            const context=validateSharedWorkerContext();
+            if(!context.pass||!enforceConstitution({policy:head,phase:'policy-qa'}).pass||
+              context.workerLaunchersValidated!==nextLaunchers.length)
+              throw new Error('SECURITY_CONTEXT_RECOVERY_VALIDATION_REQUIRED');
+            for(const key of contextRecoveryKeys)approved.add(key);
+            console.log('SECURITY_OWNER_CONTEXT_RECOVERY_EXACT_SCOPE=PASS');
+          }
           const bad=changes.filter(key=>!approved.has(key)&&!webFlow.test(key)&&!ownerScope.test(key)&&!(focusChanged&&focusKeys.has(key))&&!designKeys.has(key)&&!(publicationChanged&&publicationKeys.has(key))&&!(localWebChatAdded&&(key==='localVibeWebChat'||key==='localVibeWebChat.existingPwaOwnerCommentReceiver'))&&!(localWebDevelopmentAdded&&key==='localVibeWebDevelopment'));
           if(!changes.length||changes.length>70||bad.length)throw new Error('SECURITY_AUTO_POLICY_UNAPPROVED_SCOPE:'+bad.join(','));
           const scope=head.ownerActiveDevelopmentScope20261009;

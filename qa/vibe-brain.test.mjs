@@ -1,9 +1,10 @@
+// 파일명: qa/vibe-brain.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { pickGeminiModels, askChain, buildProviders, LlmError } from '../tools/vibe-llm.mjs';
+import { pickGeminiModels, askChain, buildProviders, openaiCompatCall, geminiCall, LlmError } from '../tools/vibe-llm.mjs';
 import { rankProviders, updateProviderStats, signature, similarity, playbookReplay, examplesFor, addCandidate, labelOutcomes, sanitize, datasetLine, emptyPlaybook, pickOrder, gate, findContext, buildPrompt, parseEdits, validateEdits, applyEdits, runBrain, recordAttempt, recordMerged, emptyBrainLedger, LIMITS } from '../tools/vibe-brain.mjs';
 
 const mkRoot = files => {
@@ -284,7 +285,7 @@ test('Studio frames go only to an image-capable provider', async () => {
   const images = [{ mimeType: 'image/png', data: 'AA==' }];
   const requests = [];
   const providers = await buildProviders({
-    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-test-flash', GITHUB_MODELS_TOKEN: 'fake' },
+    env: { GEMINI_API_KEY: 'fake', VIBE_BRAIN_GEMINI_MODELS: 'gemini-3.8-flash', GITHUB_MODELS_TOKEN: 'fake' },
     fetchFn: async (url, init) => {
       requests.push({ url, body: JSON.parse(init.body) });
       return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: '{}' }] } }] }) };
@@ -301,7 +302,7 @@ test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고
   const source = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
   const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
   for (const needle of [
-    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage)",
+    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage, arg('studio-dir'))",
     'coverage.sourceRevision === revision',
     'reviewed.has(label)',
     'STUDIO_VISUAL_REVIEWED=',
@@ -379,7 +380,201 @@ test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는
   assert.ok(capture >= 0 && sourceFetch > capture && pin > sourceFetch,
     'Studio 증거 SHA 를 코드 SHA 재조회 전에 고정해야 한다');
   assert.match(workflow, /git show "\$frames_sha:report\.json"/);
-  assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
+  assert.match(workflow, /gh run download "\$capture_run"/);
+  assert.match(workflow, /captureArtifact\.runId/);
   assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
   assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
+});
+
+
+// [실제 호출 경로 보안] 기존 무료 모델은 유지하되 강제 비무료 모델·비용 발생 응답만 차단한다.
+test('자동 개발 두뇌는 비무료 강제 모델을 제외하고 결제 요구 후 모델 교대를 멈춘다',async()=>{
+  const fetchFn=async()=>({ok:true,json:async()=>({models:[]})});
+  const logs=[];
+  const providers=await buildProviders({env:{
+    GEMINI_API_KEY:'fake', VIBE_BRAIN_GEMINI_MODELS:'gemini-3.8-pro,gemini-3.8-flash',
+    OPENROUTER_API_KEY:'fake',
+    VIBE_BRAIN_OPENROUTER_MODEL:'paid/model,google/gemma-4-31b-it:free'
+  },fetchFn,log:x=>logs.push(x)});
+  assert.deepEqual(providers.map(p=>p.name),
+    ['gemini:gemini-3.8-flash','openrouter:google/gemma-4-31b-it:free']);
+  assert.ok(logs.includes('GEMINI_NONFREE_FORCED_MODEL_BLOCKED'));
+  assert.ok(logs.includes('OPENROUTER_NONFREE_FORCED_MODEL_BLOCKED'));
+  let nextCalls=0;
+  await assert.rejects(()=>askChain({prompt:'bounded',providers:[
+    {name:'only-free',call:async()=>{throw new LlmError('HTTP_402',{status:402});}},
+    {name:'other-free',call:async()=>{nextCalls++;return '{}';}}
+  ]}),/FREE_AI_BILLING_BLOCKED_NO_FALLBACK/);
+  assert.equal(nextCalls,0,'결제 요청이 나오면 다른 무료 공급자로 우회하지 않는다');
+  const respondCost=async()=>({ok:true,json:async()=>({usage:{cost:0.01},
+    choices:[{message:{content:'{}'}}],
+    candidates:[{content:{parts:[{text:'{}'}]}}]})});
+  await assert.rejects(()=>openaiCompatCall({
+    url:'https://fixture.invalid',key:'fixture',model:'safe:free',prompt:'x',
+    fetchFn:respondCost,name:'OPENROUTER'
+  }),/NONZERO_COST_RESPONSE_BLOCKED/);
+  await assert.rejects(()=>geminiCall({
+    key:'fixture',model:'gemini-3.8-flash',prompt:'x',fetchFn:respondCost
+  }),/NONZERO_COST_RESPONSE_BLOCKED/);
+});
+
+
+// [무료 모델 자동 순환] 무효한 출력 뒤에는 같은 모델을 반복하지 않고 다른 승인 모델을 우선한다.
+test('무효 수정안 재시도는 다른 무료 공급자를 우선한다', async () => {
+  const providers = [{name: 'groq:free-code'}, {name: 'openrouter:free-code'}];
+  const now = Date.now();
+  assert.deepEqual(rankProviders(providers, {}, now, 'DEBUG').map(p => p.name),
+    ['groq:free-code', 'openrouter:free-code']);
+  assert.deepEqual(rankProviders(providers, {}, now, 'DEBUG', 'groq:free-code').map(p => p.name),
+    ['openrouter:free-code', 'groq:free-code']);
+  assert.deepEqual(rankProviders(providers.slice(0, 1), {}, now, 'DEBUG', 'groq:free-code')
+    .map(p => p.name), ['groq:free-code'], '다른 무료 모델이 없으면 기존 모델을 유지');
+  const attempts = [];
+  const llm = async (_prompt, _images, {role = '', retryAfterInvalid = ''} = {}) => {
+    const selected = rankProviders(providers, {}, now, role, retryAfterInvalid)[0].name;
+    attempts.push({selected, retryAfterInvalid});
+    return {provider: selected, trace: [{name: selected, ok: true}],
+      text: attempts.length === 1 ? 'invalid-json' : JSON.stringify({summary: 'nil 방어',
+        edits: [{file: GAME, search: 'local p = ui.target.AbsolutePosition',
+          replace: 'if not ui.target then return nil end\n\tlocal p = ui.target.AbsolutePosition'}]})};
+  };
+  const root = mkRoot({[GAME]: SRC});
+  const result = await runBrain({orders: [order], ledger: emptyBrainLedger(), root, llm});
+  assert.equal(result.ok, true);
+  assert.deepEqual(attempts.map(row => row.selected), ['groq:free-code', 'openrouter:free-code']);
+  assert.equal(attempts[1].retryAfterInvalid, 'groq:free-code');
+  assert.equal(result.provider, 'openrouter:free-code');
+  assert.match(fs.readFileSync(path.join(root, GAME), 'utf8'), /if not ui\.target then return nil end/);
+});
+
+test('증거가 준 책임 함수 줄을 중심으로 큰 파일 발췌를 만든다', () => {
+  const body = Array.from({ length: 300 }, (_, i) => i === 199 ? 'function Pose.work(model)' : 'local filler' + i + ' = ' + i).join('\n') + '\n';
+  const root = mkRoot({ [GAME]: body });
+  const ctx = findContext(root, { ...order, sourceFile: GAME, sourceLine: 200 });
+  assert.equal(ctx[0].file, GAME);
+  assert.ok(ctx[0].from <= 200 && ctx[0].to >= 200, '책임 함수 줄이 발췌에 포함되어야 한다');
+  assert.match(ctx[0].body, /function Pose\.work/);
+});
+
+test('Studio 촬영 장면을 실제 책임 함수의 파일·줄로 연결한다', async () => {
+  const { captureSource } = await import('../tools/vibe-brain.mjs');
+  const cases = {
+    tab_trade: /openTradeHall/, ui_yard_inline: /renderYard/, qa_click_codex_to_tech: /RENDERERS\.tech/,
+    harbor_motion_walk: /Pose\.makeR15Action/, harbor_npc_face_front: /drawFace/, field_entry: /FieldScene\.start/,
+    v1_start: /VoyageScene\.play/, b2_mid: /NavalBattle\.play/
+  };
+  for (const [label, re] of Object.entries(cases)) {
+    const src = captureSource(process.cwd(), label);
+    assert.ok(src, label + ' 책임 코드 없음');
+    const line = fs.readFileSync(src.sourceFile, 'utf8').split('\n')[src.sourceLine - 1];
+    assert.match(line, re, label);
+  }
+  assert.equal(captureSource(process.cwd(), 'c00_start'), null, '알 수 없는 장면은 추측하지 않는다');
+});
+
+test('촬영본 분석 수정은 실제 화면 속성을 바꿀 때만 채택한다', async () => {
+  const { visualDelta } = await import('../tools/vibe-brain.mjs');
+  // 실제 사례(PR #14071): 화면 렌더러 안의 nil 보호만 추가 → 화면 변화 없음
+  const nilGuard = ['return mkLabel(content, string.format("특산: %s", table.concat(h.produces, ", ")), 16, COLORS.text, true)',
+    'return mkLabel(content, string.format("특산: %s", table.concat(h.produces or {}, ", ")), 16, COLORS.text, true)'];
+  assert.equal(visualDelta(nilGuard[0], nilGuard[1]), false);
+  assert.equal(visualDelta('frame.Size = UDim2.fromOffset(200, 40)', 'frame.Size = UDim2.fromOffset(240, 48)'), true);
+  assert.equal(visualDelta('label.TextSize = 14', 'label.TextSize = 18'), true);
+  assert.equal(visualDelta('local n = count + 1', 'local n = (count or 0) + 1'), false);
+});
+
+// [실물 화면 보관] 원본은 Git 기록에 추가하지 않고 1일 결과물로만 전달한다.
+test('Studio screenshot artifact expires in one day and visual review verifies exact hashes', () => {
+  const studio = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const brain = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
+  assert.match(studio, /retention-days: 1/);
+  assert.match(studio, /filter: file => !imageExt\.test\(file\)/);
+  assert.match(studio, /entry\.isFile\(\) && !imageExt\.test\(entry\.name\)/);
+  assert.match(studio, /steps\.studio_photo_artifact\.outcome == 'success'/);
+  assert.doesNotMatch(studio, /residentReviewFrames/);
+  assert.match(brain, /checks\.sourceRevision !== revision/);
+  assert.match(brain, /digest\('hex'\) !== hashes\.get\(file\)/);
+});
+
+// [항구 촬영] 정본 181곳을 10개씩 나누고 11개 구도를 모두 기록한다.
+test('Mare port survey covers 181 unique ports without replacing primary QA reports', () => {
+  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const root = 'roblox-games/mare-essentia/tools/devloop/studio-scripts/';
+  const qa = JSON.parse(fs.readFileSync(root + 'mare-qa-click.json', 'utf8'));
+  const town = JSON.parse(fs.readFileSync(root + 'mare-town.json', 'utf8'));
+  const ports = qa.map(row => row.code?.match(/^-- \[항구 위치\] ([a-z0-9_]+)/)?.[1]).filter(Boolean);
+  assert.equal(ports.length, 181);
+  assert.equal(new Set(ports).size, 181);
+  const names = ['01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall','09_rural','10_economy','11_npc_front','12_npc_hair'];
+  for (const name of names) {
+    const i = town.findIndex(row => row.type === 'capture' && row.name === name);
+    assert.ok(i >= 2);
+    assert.equal(town[i-2].type, 'luau');
+    assert.equal(town[i-1].type, 'wait');
+  }
+  assert.match(workflow, /ports\.slice\(\(batch - 1\) \* 10, batch \* 10\)/);
+  assert.match(workflow, /CityPortVisualIdentity/);
+  assert.match(workflow, /if \(!portBatch\)/);
+  assert.match(workflow, /STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED/);
+  assert.match(workflow, /retention-days: 1/);
+});
+
+// [전체 지형] 원본 592 탐험과 27 해역을 기존 실제 장면으로 촬영한다.
+test('Mare world survey binds exact site and sea identities and preserves manual controls', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const base='roblox-games/mare-essentia/';
+  const sites=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Sites.luau','utf8');
+  const ids=[...sites.matchAll(/^\s*\{\s*id\s*=\s*"([a-z0-9_]+)",\s*name\s*=\s*"[^"]+",\s*portId\s*=\s*"([a-z0-9_]+)"/gm)];
+  assert.equal(ids.length,592);
+  assert.equal(new Set(ids.map(m=>m[1])).size,592);
+  const seaDocs=fs.readdirSync(base+'docs/battle_backdrops/naval').filter(n=>n.endsWith('.md'));
+  assert.equal(seaDocs.length,27);
+  const manual=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-voyage-manual.json','utf8'));
+  assert.ok(manual.some(row=>row.code?.includes('rings=true,firstVisit=true')));
+  assert.ok(manual.some(row=>row.code?.includes('MANUAL_MODE_WRONG')));
+  assert.match(workflow,/FIELD_SURVEY_WRONG_SCENE/);
+  assert.match(workflow,/NAVAL_SURVEY_WRONG_SEA/);
+  assert.match(workflow,/MareNavalSurveyExit/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED/);
+});
+
+// [항구 변형 촬영] 게임 정본의 발전 단계와 반구별 계절을 실제 장면 속성으로 검증한다.
+test('Mare port variant survey checks display tier, season and weather without changing saves', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/const variantStart = 107 \+ scenarios\.length/);
+  assert.match(workflow,/Array\.from\(\{length:6\}/);
+  assert.match(workflow,/PORT_SURVEY_SOURCE_TIER/);
+  assert.match(workflow,/PORT_SURVEY_WRONG_SEASON/);
+  assert.match(workflow,/PORT_SURVEY_WRONG_WEATHER/);
+  assert.match(workflow,/PORT_SURVEY_SEASON_DAY/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=525/);
+});
+
+test('Mare field climate survey uses real seasonal weather and lighting in Studio only', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.match(field,/local month = os\.date\("!\*t"\)\.month/);
+  assert.match(field,/RunService:IsStudio\(\) and type\(opts\.studioCaptureMonth\)/);
+  assert.match(field,/if RunService:IsStudio\(\) then\s+if type\(opts\.studioCaptureWeather\)/);
+  assert.match(field,/table\.find\(weatherOptions, wanted\)/);
+  assert.match(field,/biome\.clock = opts\.studioCaptureHour/);
+  assert.match(field,/local clock = \(biome\.clock \+ \(now - clockStart\)/);
+  assert.match(workflow,/FIELD_SURVEY_WRONG_MONTH/);
+  assert.match(workflow,/FIELD_SURVEY_WRONG_PHASE/);
+  assert.match(workflow,/FIELD_SURVEY_PRECIPITATION_WRONG/);
+  assert.match(workflow,/FIELD_SURVEY_CLOCK_MISMATCH/);
+});
+
+test('Mare voyage weather and story survey use existing scenes without choosing or rewarding', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const base='roblox-games/mare-essentia/src/';
+  const game=fs.readFileSync(base+'StarterPlayer/Game.client.luau','utf8');
+  const voyage=fs.readFileSync(base+'ReplicatedStorage/Shared/VoyageScene.luau','utf8');
+  assert.match(game,/if not game:GetService\("RunService"\):IsStudio\(\) then return end\n\tlocal id = workspace:GetAttribute\("DevStory"\)/);
+  assert.match(game,/preview\.submit = function\(\)/);
+  assert.match(game,/StudioStoryChoices/);
+  assert.match(voyage,/precip\.Name = "VoyagePrecipitation"/);
+  assert.match(workflow,/VOYAGE_SURVEY_WEATHER_NOT_RENDERED/);
+  assert.match(workflow,/STORY_SURVEY_RUNTIME_COUNT/);
+  assert.match(workflow,/STORY_SURVEY_CLOSED_NO_CHOICE/);
 });

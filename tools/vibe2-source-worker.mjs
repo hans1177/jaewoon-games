@@ -1048,7 +1048,13 @@ export function executeDeclaredNativeDccAuthoringVerification({cwd=process.cwd()
       const allowed=new Set(declaredGeneratedFiles);
       const escaped=afterStatus.filter(file=>!beforeStatus.includes(file)&&!allowed.has(file));
       if(escaped.length)throw new Error('NATIVE_DCC_CANDIDATE_SCOPE_ESCAPE:'+escaped.join(','));
-    }else if(JSON.stringify(afterStatus)!==beforeStatusKey)throw new Error('NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:'+afterStatus.join(','));
+    }else if(JSON.stringify(afterStatus)!==beforeStatusKey){
+      // [DCC 오류 근거] 실행 전부터 더러웠던 작업 파일을 신규 변조로 오인하지 않는다.
+      // 검증 실패 권한은 유지하고, 이번 실행에서 추가/해제된 경로만 보고한다.
+      const added=afterStatus.filter(file=>!beforeStatus.includes(file));
+      const removed=beforeStatus.filter(file=>!afterStatus.includes(file));
+      throw new Error('NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:added='+added.join(',')+';removed='+removed.join(','));
+    }
     const candidateUsable=results.length>0&&results.every(row=>row.candidateUsable===true);
     const first=results[0]||{};
     return Object.freeze({

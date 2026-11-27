@@ -10,7 +10,7 @@ for key, s in Cultures.STYLE do
 	check(s.mat ~= nil, key .. " 재질(mat)")
 	check(s.ground ~= nil and s.street ~= nil and s.roofPitch ~= nil, key .. " 바닥/길/지붕각")
 	check(Cultures.PROFILE[key] ~= nil, key .. " 배치 프로필")
-	check(Cultures.OUTFIT[key] ~= nil or key == "north" or key == "stone", key .. " 복식")
+	check(Cultures.OUTFIT[key] ~= nil or key == "north", key .. " 복식")
 end
 for id, key in Cultures.REGION do
 	check(Cultures.STYLE[key] ~= nil, id .. " → 알 수 없는 양식 " .. key)
@@ -23,9 +23,15 @@ for id in Data.Ports do
 	if key then
 		check(Cultures.STYLE[key] ~= nil, id .. " 건축 양식 누락")
 		check(Cultures.PROFILE[key] ~= nil, id .. " 거리 배치 누락")
+		local outfit = Cultures.OUTFIT[key]
+		check(outfit ~= nil and #outfit.coats > 0 and #outfit.hats > 0, id .. " 문화권 복식 팔레트 누락")
 		check(Cultures.STYLE[key] ~= nil and Cultures.STYLE[key].house ~= nil, id .. " 주택 형식 누락")
 	end
 end
+local stoneCount = 0
+for _, key in Cultures.REGION do if key == "stone" then stoneCount += 1 end end
+check(stoneCount == 9, "석조 문화권 9개 항구 유지")
+check(Cultures.OUTFIT.stone ~= nil and #Cultures.OUTFIT.stone.trousers > 0, "석조 문화권 하의 팔레트")
 -- 역사적 전환 직전의 양식: 1522년 로도스, 1571년 파마구스타 이후는 PortScene에서 오스만으로 변경한다.
 check(Cultures.REGION.rhodes == "med", "로도스 전환 이전 기본 양식")
 check(Cultures.REGION.famagusta == "italy", "파마구스타 전환 이전 기본 양식")

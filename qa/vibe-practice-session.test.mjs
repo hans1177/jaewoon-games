@@ -200,6 +200,14 @@ test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 �
   assert.match(y,/Chain the next run/);
   assert.match(y,/always\(\) && vars\.VIBE_GYM_CLOUD != 'off' && vars\.VIBE_GYM_CHAIN != 'off'/);
   assert.match(y,/workflows\/vibe-variation-practice\.yml\/dispatches/);
+  assert.ok(y.includes('owner-mare-essentia-assets.yml/runs?branch=main&per_page=100'));
+  assert.ok(y.includes("date -u -d '5 minutes ago' +%s"));
+  assert.ok(y.includes('.status != "completed" or'));
+  assert.ok(y.includes('.event == "schedule" or'));
+  assert.ok(y.includes('endswith(" · periodic")'));
+  assert.ok(y.includes('(.created_at | fromdateiso8601) >= $cutoff'));
+  assert.ok(y.includes('gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true'));
+  assert.ok(y.includes('MARE_PERIODIC_RECOVERY_SKIP=HISTORY_UNVERIFIED'));
   assert.match(y,/cron: '\*\/5 \* \* \* \*'/);                    // 안전망
   // [메인 큐 보존] PR 읽기 전용 검사는 별도 큐를 쓰더라도 main 연습 동시 실행 방지는 유지한다.
   const group=(y.match(/^  group: ([^\n]+)$/m)||[])[1]||'';
@@ -212,4 +220,15 @@ test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 �
   assert.match(y,/practice-cloud:\n    if: .*github.event_name != 'pull_request'/);
   assert.match(y,/practice-local:\n    if: .*github.event_name != 'pull_request'/);
   assert.ok(y.indexOf('Publish stats to vibe-gym-data')<y.indexOf('Chain the next run'));  // 학습 저장 뒤에 예약
+});
+
+// [로컬 원본 확보] 블렌더가 없어도 원본부터 받으며, 공식 무료 패키지만 설치하고 실행 검증을 통과해야 연습한다.
+test('로컬 원본 확보는 블렌더 설치 전에 실행하고 기존 무료 설치 경로만 사용한다',()=>{
+  const y=fs.readFileSync('.github/workflows/vibe-variation-practice.yml','utf8');
+  const local=y.slice(y.indexOf('  practice-local:'));
+  assert.ok(local.indexOf('Ingest inbox, scan library, plan shortage fill')<local.indexOf('Verify or install free Blender'));
+  assert.match(local,/--id BlenderFoundation\.Blender --exact --source winget/);
+  assert.match(local,/LOCAL_BLENDER_VERSION_FAILED/);
+  assert.match(local,/--design roblox-games\/mare-essentia\/assets-wanted\.seed\.json/);
+  assert.match(local,/--wanted roblox-games\/mare-essentia\/assets-wanted\.json/);
 });

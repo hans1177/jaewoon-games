@@ -135,7 +135,10 @@ end
 A.MELEE_TOKENS = 2
 function A.attackersCount(list: {any}): number
 	local n = 0
-	for _, e in list do
+	for _, row in list do
+		-- [전투 프레임] 정본 AC 상태와 원래 적 엔트리를 같은 책임 함수에서 직접 집계한다.
+		-- 기존 호출부는 유지하고 적 스캔용 임시 배열 생성만 생략할 수 있다.
+		local e = row.ac or row
 		if not e.dead and (e.state == "windup" or e.state == "active") then n += 1 end
 	end
 	return n

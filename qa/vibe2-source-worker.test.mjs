@@ -2703,6 +2703,13 @@ function dccFixtureGlb({grounded=false}={}){
 }
 
 test('declared Blender verification executes only declared recipe and restores the repository',()=>{
+  // [DCC 회귀] 공식 Blender 실행 검증과 실제 EEVEE 미리보기 렌더 준비를 동시에 요구한다.
+  const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  const preparation=workflow.split('      - name: Prepare declared native DCC authoring runtime\n')[1]?.split('      - name: Save pinned Blender cache for native DCC authoring\n')[0]||'';
+  assert.match(preparation,/sudo apt-get install -y --no-install-recommends libegl1 libgl1-mesa-dri/);
+  assert.match(preparation,/VIBE2_NATIVE_DCC_EGL_LIBRARY_MISSING/);
+  assert.match(preparation,/bpy\.ops\.render\.render\(write_still=False\)/);
+  assert.match(preparation,/VIBE2_NATIVE_DCC_EGL_PREVIEW=PASS/);
   const root=tempRoot();
   try{
     fs.mkdirSync(path.join(root,'assets/test/native/model'),{recursive:true});
@@ -2742,6 +2749,18 @@ test('declared Blender verification executes only declared recipe and restores t
     assert.equal(result.recipes[0].runtimeVerified,false);
     assert.equal(result.recipes[0].glbDataQaPass,true);
     assert.equal(execFileSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}),'');
+    // [DCC 오류 근거] 사전 변경된 회사 자산 원장은 신규 출력 누락의 원인으로 표시하지 않는다.
+    fs.writeFileSync(path.join(root,'company-asset-library.json'),'{"version":1}\n');
+    fs.appendFileSync(blender,'fs.writeFileSync("assets/test/undeclared.png","unexpected-output");\n');
+    assert.throws(
+      ()=>executeDeclaredNativeDccAuthoringVerification({cwd:root,order:workOrder,blenderExecutable:blender}),
+      error=>{
+        assert.match(error.message,/NATIVE_DCC_VERIFY_MUTATED_REPOSITORY:added=assets\/test\/undeclared\.png;removed=/);
+        assert.doesNotMatch(error.message,/company-asset-library\.json/);
+        return true;
+      }
+    );
+    assert.ok(fs.existsSync(path.join(root,'assets/test/undeclared.png')),'unowned file must remain untouched');
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 test('declared Blender authoring persists exact generated outputs only inside the candidate Work Lock',()=>{

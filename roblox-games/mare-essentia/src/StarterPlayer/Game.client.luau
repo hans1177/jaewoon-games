@@ -47,6 +47,23 @@ do
 	size.MinTextSize = 13
 	size.Parent = H.startupLabel
 end
+-- [로딩 관찰] 무거운 모듈을 기다리는 동안도 표지 문구를 계속 갱신한다.
+-- 독립된 새 로딩 경로 없이 기존 StartLoading 표시와 StartupStage 진단값만 사용한다.
+task.spawn(function()
+    local started = os.clock()
+    while H.startupCover and H.startupCover.Parent do
+        task.wait(1)
+        local stage = tostring(gui:GetAttribute("StartupStage") or "")
+        if stage == "state-failed" or stage == "title-ready" then break end
+        if H.startupLabel and H.startupLabel.Parent then
+            local phase = if string.find(stage, "server-state", 1, true) then "항해 기록 확인"
+                elseif stage == "client-ui-build" then "서재·항구 메뉴 구성"
+                elseif stage == "await-GameAction" then "서버 연결 준비"
+                else "항해 자료 준비"
+            H.startupLabel.Text = string.format("학문의 바다\n%s 중... (%d초)", phase, math.floor(os.clock() - started))
+        end
+    end
+end)
 
 -- [캐릭터 스폰] 항구가 클라이언트에 만들어지기 전에는 바닥이 없으므로 추락을 막는다.
 -- 실제 걸어 다니는 시점에는 아래 applyView에서 고정을 해제한다.
@@ -110,10 +127,10 @@ local SeaRoutes = require(Shared:WaitForChild("SeaRoutes"))
 -- [로딩 분리] 시작 메뉴/서버 상태는 무거운 3D 항구 장면과 독립적으로 표시한다.
 -- 단일 PortScene 정본을 계속 사용하고, 3D 장면은 같은 모듈을 비동기로 준비한다.
 local PortScene = nil
-gui:SetAttribute("StartupStage", "require-VoyageScene")
-local VoyageScene = require(Shared:WaitForChild("VoyageScene"))
-gui:SetAttribute("StartupStage", "require-FieldScene")
-local FieldScene = require(Shared:WaitForChild("FieldScene"))
+-- [진입 시 로딩] 대형 항해·필드 모듈을 초기 표지 표시 전에 동기 호출하지 않는다.
+-- 출항/탐험의 원래 책임 함수가 실제 사용 시 기존 정본 모듈을 불러온다.
+local VoyageScene = nil
+local FieldScene = nil
 gui:SetAttribute("StartupStage", "require-Weapons")
 local Weapons = require(Shared:WaitForChild("Weapons"))
 gui:SetAttribute("StartupStage", "require-Pose")
@@ -121,8 +138,8 @@ local Pose = require(Shared:WaitForChild("Pose"))
 gui:SetAttribute("StartupStage", "require-Sfx")
 local Sfx = require(Shared:WaitForChild("Sfx"))
 local audioLock = false -- 해전·항해 중에는 장면이 음악을 정한다
-gui:SetAttribute("StartupStage", "require-NavalBattle")
-local NavalBattle = require(Shared:WaitForChild("NavalBattle"))
+-- [진입 시 로딩] 3D 해전은 시작 화면 이후 전투 또는 카드 창에서 읽는다.
+local NavalBattle = nil
 gui:SetAttribute("StartupStage", "require-AssetIds")
 local AssetIds = require(Shared:WaitForChild("AssetIds"))
 gui:SetAttribute("StartupStage", "await-GameAction")
@@ -160,7 +177,7 @@ end)
 
 -- 백과사전 공통 표지와 본문 색
 -- [고서적 UI] 표지=낡은 가죽, 내지=미색 양피지, 버튼=색을 아끼는 황동·잉크 인쇄.
--- 메뉴·상점·전투·지도는 기존 사건/입력 흐름을 그대로 두고 색상만 통일한다.
+-- 메뉴·상점·전투·지도에서 행동의 우선순위를 같은 재질과 색으로 표현한다.
 local COLORS = {
 	cover = Color3.fromRGB(42, 32, 25),
 	coverRaised = Color3.fromRGB(74, 53, 39),
@@ -171,8 +188,8 @@ local COLORS = {
 	text = Color3.fromRGB(244, 226, 190),
 	muted = Color3.fromRGB(191, 165, 121),
 	row = Color3.fromRGB(60, 44, 32),
-	blue = Color3.fromRGB(64, 80, 78),
-	green = Color3.fromRGB(71, 99, 75),
+	blue = Color3.fromRGB(112, 80, 52), -- 오래된 해도에 찍은 갈색 잉크
+	green = Color3.fromRGB(124, 104, 61), -- 황동·올리브 안료
 	red = Color3.fromRGB(137, 58, 44),
 	gold = Color3.fromRGB(207, 159, 77),
 	grey = Color3.fromRGB(108, 88, 65),
@@ -191,6 +208,7 @@ local TABS = {
 	{ id = "quest", name = "진행 일지" },
 	{ id = "route", name = "항해" },
 	{ id = "trade", name = "교역" },
+	{ id = "market", name = "거래소·우편" },
 	{ id = "status", name = "현황" },
 	{ id = "harbor", name = "항구 정보" },
 	{ id = "crew", name = "동료 관리" },
@@ -198,8 +216,10 @@ local TABS = {
 	{ id = "scholar", name = "지식 보고" },
 	{ id = "yard", name = "조선소" },
 	{ id = "codex", name = "지식 백과" },
+    { id = "encyclopedia", name = "백과사전" },
 	{ id = "tech", name = "연구" },
 	{ id = "map", name = "지도" },
+	{ id = "diplomacy", name = "외교" },
 	{ id = "explore", name = "지상 탐험" },
 	{ id = "battle", name = "해적 사냥" },
 	{ id = "gwent", name = "카드 대결" },
@@ -208,12 +228,13 @@ local TABS = {
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
 local GROUPS = {
-	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "harbor" } },
+	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "market", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
+	{ name = "외교", keeper = "외교관", tabs = { "diplomacy" } }, -- 도크의 별도 외교 아이콘
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
 	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
 	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } }, -- 전투·지상 탐험·함대전·카드 배틀
-	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech" } },
+	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech", "encyclopedia" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
 local function groupOf(tabId)
@@ -231,11 +252,12 @@ end
 
 -- [전체 메뉴 리뉴얼] 기존 시설 동작은 유지하고 메뉴마다 목적·순서를 짧게 표시한다.
 H.MENU_FOCUS = {
-	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" , "교역 장부 열기" },
+	trade = { "교역 장부", "시세 비교 → 수량 선택 → 매입·판매" , "상품 거래 보기" },
 	harbor = { "항구 정보", "특산품·수요 → 시장·시설 → 발전 현황" , "항구 살펴보기" },
 	route = { "항로 선택", "거리·위험 → 보급 확인 → 출항" , "항로 살펴보기" },
 	map = { "세계 지도", "목적지 탐색 → 항구 정보 → 항로 연결" , "지도 살펴보기" },
-	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" , "새 배 비교" },
+	diplomacy = { "외교", "나라 정세 → 관계·전쟁 → 선물·개입", "외교 살펴보기" },
+	yard = { "선박 관리", "선체·보급 → 선단·대포 → 새 배 비교" , "선박 비교 보기" },
 	board = { "주점 의뢰", "의뢰 조건 → 위험·보상 → 수락·납품" , "의뢰 살펴보기" },
 	quest = { "진행 일지", "현재 목표 → 달성 조건 → 보상 받기" , "진행 목표 보기" },
 	recruit = { "동료 영입", "직업·특기 → 영입 조건 → 선원 배치" , "동료 비교하기" },
@@ -247,6 +269,7 @@ H.MENU_FOCUS = {
 	gwent = { "카드 대결", "덱 구성 → 병종 배치 → 카드 대결" , "덱 살펴보기" },
 	scholar = { "학자와 보고", "새 발견 → 학자에게 보고 → 이해한 지식" , "발견 보고 보기" },
 	codex = { "지식 백과", "분야 선택 → 발견물 확인 → 미수집 목표" , "도감 살펴보기" },
+    encyclopedia = { "세계 백과사전", "발견한 실물 사진 → 역사·과학 설명 → 개인 발견 기록", "책장 넘기기" },
 	tech = { "기술 연구", "연구 조건 → 이해한 지식 → 기술 해금" , "연구 살펴보기" },
 }
 
@@ -254,11 +277,12 @@ H.MENU_FOCUS = {
 function H.marketPriceSignal(g)
 	local average = tonumber(g.avgPrice) or tonumber(g.basePrice) or 0
 	local buying = tonumber(g.buyTotals and g.buyTotals[1]) or tonumber(g.buy) or 0
-	if average <= 0 then return "➖", 0, "key" end
+	if average <= 0 then return "－", 0, "key" end
 	local delta = (buying / average - 1) * 100
-	if delta < -0.5 then return "⬇️", delta, "good" end
-	if delta > 0.5 then return "⬆️", delta, "key" end
-	return "➖", delta, "key"
+	-- [시세] 세계 평균 매입가보다 비싸면 빨강 ▲, 저렴하면 파랑 ▼. 하루 등락을 뜻하지 않는다.
+	if delta < -0.5 then return "▼", delta, "good" end
+	if delta > 0.5 then return "▲", delta, "key" end
+	return "－", delta, "key"
 end
 
 -- [실제 예상 손익] 보유분 평균 매입가와 관세가 반영된 서버 판매 견적만 비교한다.
@@ -331,7 +355,7 @@ function H.rich(text: string): string
 end
 H.richParent = nil -- 시설 창 본문(content)이 만들어지면 지정된다
 
-local UI_MIN_TEXT = 14
+local UI_MIN_TEXT = 17
 local function mkLabel(parent, text, size, color, bold, order)
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
@@ -343,7 +367,7 @@ local function mkLabel(parent, text, size, color, bold, order)
 	l.TextYAlignment = Enum.TextYAlignment.Top
 	l.TextSize = math.max(size or 14, UI_MIN_TEXT) -- 메뉴 전체에서 이보다 작은 글씨는 쓰지 않는다 (통일·가독성)
 	l.TextColor3 = color or COLORS.text
-	l.Font = if bold then Enum.Font.Antique else Enum.Font.Gotham
+	l.Font = if bold then Enum.Font.GothamBold else Enum.Font.Gotham
 	if order then
 		l.LayoutOrder = order
 	end
@@ -513,6 +537,24 @@ local itemMotionConn
 local function addItemMotion(entry)
 	if #itemMotion >= 10 then return end
 	entry.phase = (#itemMotion * 1.7) % 6.28
+	entry.manualTurn = 0
+	entry.gui.Active = true
+	local dragging, lastX = false, 0
+	entry.gui.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			lastX = input.Position.X
+		end
+	end)
+	entry.gui.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+			entry.manualTurn += (input.Position.X - lastX) * 0.018
+			lastX = input.Position.X
+		end
+	end)
+	entry.gui.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+	end)
 	table.insert(itemMotion, entry)
 	if itemMotionConn then return end
 	itemMotionConn = game:GetService("RunService").RenderStepped:Connect(function()
@@ -522,7 +564,7 @@ local function addItemMotion(entry)
 			if not e.gui.Parent or not e.gui:IsDescendantOf(game) then
 				table.remove(itemMotion, i)
 			elseif e.gui.AbsoluteSize.X > 0 then
-				local a = t * 0.8 + e.phase
+				local a = t * 0.35 + e.phase + (e.manualTurn or 0)
 				e.model:PivotTo(CFrame.new(e.center) * CFrame.Angles(0, a, 0) * CFrame.new(-e.center) * e.base)
 			end
 		end
@@ -581,7 +623,47 @@ local function sheetK(atlasName: string?): number
 end
 H.sheetK = sheetK
 
+H.facilityIconAtlas = AssetIds["CardArt/ui_facility_icons"]
+-- [외교 손그림] 기존 승인된 황동 서신·깃펜 원화를 별도 시트에서 쓴다.
+H.diplomacyIconAtlas = AssetIds["CardArt/ui_reserve_icons_2"]
+H.facilityIconCells = {
+	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
+	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
+	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 5, close = 15, -- 외교: 예비 손그림 2번 시트의 봉인 서신(2행 2열)
+}
+-- [청동 아이콘 통일] 기존 승인 청동 예비 시트(768px, 4×4)에서 도형 대신 쓸 칸.
+-- {시트 번호, 칸}: 1 = ui_reserve_icons(닻·지도·두루마리…), 2 = ui_reserve_icons_2(선원·망원경·육분의…)
+H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"] }
+H.reserveIconRowH = { 184, 189 } -- 시트 세로 739/758px ÷ 4
+H.reserveIconCells = {
+	diplomacy = { 2, 5 }, quest = { 1, 8 }, recruit = { 2, 0 }, crew = { 2, 0 }, explore = { 2, 4 },
+	harbor = { 1, 0 }, war = { 2, 8 }, scholar = { 2, 14 }, tech = { 2, 6 }, chart = { 1, 2 },
+}
+function H.hasIconArt(key)
+	local r = H.reserveIconCells[key]
+	if r and H.reserveIconAtlas[r[1]] ~= nil then return true end
+	return H.facilityIconAtlas ~= nil and H.facilityIconCells[key] ~= nil
+end
 local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, portraitOffset)
+	local reserve = if kind == "FacilityArt" then H.reserveIconCells[asset] else nil
+	local reserveAtlas = reserve and H.reserveIconAtlas[reserve[1]]
+	local atlas = if reserveAtlas then reserveAtlas else H.facilityIconAtlas
+	local cell = if reserveAtlas then reserve[2] else (atlas and H.facilityIconCells[asset])
+	if kind == "FacilityArt" and cell ~= nil then
+		local icon = Instance.new("ImageLabel")
+		icon.Size = UDim2.fromOffset(px, px)
+		icon.BackgroundTransparency = 1
+		icon.ScaleType = Enum.ScaleType.Fit
+		-- [아이콘 아틀라스] 예비 시트는 192px 칸, 기존 시설 시트는 512px 시트의 128px 칸.
+		local cellW = if reserveAtlas then 192 else 128
+		local cellH = if reserveAtlas then H.reserveIconRowH[reserve[1]] else 128
+		icon.Image = "rbxassetid://" .. tostring(atlas)
+		icon.ImageRectOffset = Vector2.new(cell % 4 * cellW, math.floor(cell / 4) * cellH)
+		icon.ImageRectSize = Vector2.new(cellW, cellH)
+		icon:SetAttribute("FacilityArtKey", asset)
+		icon.Parent = parent
+		return icon
+	end
 	-- [투명 황동 메뉴 아이콘] 미등록·배경이 있는 그림 대신 같은 팔레트의 작은 도형을
 	-- 기존 메뉴 렌더러 안에서 그린다. 클릭·저장·에셋 등록 흐름은 그대로 둔다.
 	if kind == "Glyph" then
@@ -809,8 +891,19 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 	H.iconPaper(vf, px)
 	-- [배 표면 가독성] 선체 나뭇결·금속·돛천은 과도한 주변광에서 하얗게 떠 보인다.
 	-- 기존 교역품 조명은 유지하고 선박 뷰포트만 대비 있는 경사광으로 조절한다.
-	vf.Ambient = if kind == "Naval" then Color3.fromRGB(135, 140, 145) else Color3.fromRGB(202, 195, 181)
-	vf.LightColor = if kind == "Naval" then Color3.fromRGB(255, 236, 209) else Color3.fromRGB(255, 247, 224)
+	vf.Ambient = if kind == "Naval" then Color3.fromRGB(135, 140, 145)
+		elseif kind == "Castle" and px <= 50 then Color3.fromRGB(255, 245, 220)
+		else Color3.fromRGB(202, 195, 181)
+	vf.LightColor = if kind == "Castle" and px <= 50 then Color3.fromRGB(255, 255, 245)
+		elseif kind == "Naval" then Color3.fromRGB(255, 236, 209) else Color3.fromRGB(255, 247, 224)
+	-- [투명 외교] 기존 등록 깃발 모델은 UI 받침·테두리 없이 아이콘만 남긴다.
+	if kind == "Castle" and px <= 50 then
+		vf.BackgroundTransparency = 1
+		local border = vf:FindFirstChildOfClass("UIStroke")
+		if border then border.Transparency = 1 end
+		local wash = vf:FindFirstChildOfClass("UIGradient")
+		if wash then wash:Destroy() end
+	end
 	vf.LightDirection = Vector3.new(-0.8, -1.6, -0.55).Unit
 	local cam = Instance.new("Camera")
 	cam.FieldOfView = 35
@@ -868,8 +961,8 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		currentModel = model
 		if fallback then fallback:Destroy(); fallback = nil end
 		if readyConnection then readyConnection:Disconnect(); readyConnection = nil end
-		-- [모바일 성능] 52/60px 목록 카드는 정지 표본, 상세(96px)만 회전한다.
-		if px >= 90 then
+		-- [모바일 성능] 작은 거래 카드(96px 포함)는 정지 표본, 큰 전시장(144px 이상)만 회전한다.
+		if px >= 144 then
 			addItemMotion({ gui = vf, model = model, center = cf.Position, base = model:GetPivot() })
 		end
 		return true
@@ -945,12 +1038,22 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	local active = enabled ~= false
 	local highlighted = color == COLORS.gold or color == UI_BRASS
 	local danger = active and color == COLORS.red
-	local inkTint = if danger then Color3.fromRGB(97, 34, 24) else INK
-	b.BackgroundColor3 = if not active then Color3.fromRGB(174, 151, 116)
-		elseif danger then Color3.fromRGB(224, 166, 138) elseif highlighted then Color3.fromRGB(232, 198, 140) else COLORS.paper
-	b.TextColor3 = if active then inkTint else Color3.fromRGB(108, 92, 69)
+	local good = active and color == COLORS.green
+	local travel = active and color == COLORS.blue
+	local back = active and color == COLORS.leather
+	-- [장정 색채] 실행은 황동, 선택·확인은 양피지, 돌아가기는 가죽, 위험은 붉은 인주.
+	-- 기존 color 식별값은 행동 의미 구분에만 사용하고 파랑·초록 단색 채움은 없앤다.
+	local inkTint = if back then Color3.fromRGB(255, 241, 210)
+		elseif danger then Color3.fromRGB(94, 25, 23)
+		else INK
+	b.BackgroundColor3 = if not active then Color3.fromRGB(174, 169, 159)
+		elseif danger then Color3.fromRGB(225, 184, 155)
+		elseif back then Color3.fromRGB(91, 67, 47)
+		elseif highlighted then Color3.fromRGB(239, 202, 123)
+		else Color3.fromRGB(232, 211, 174)
+	b.TextColor3 = if active then inkTint else Color3.fromRGB(97, 93, 89)
 	b.Font = Enum.Font.GothamBold
-	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 32) * 0.42), 13, 19)
+	b.TextSize = math.clamp(math.floor((size.Y.Offset > 0 and size.Y.Offset or 40) * 0.37), 14, 20)
 	b.TextWrapped = true
 	-- [모바일 실제 입력] 장식용 종이·황동 테두리가 클릭을 가리지 않도록 버튼이 카드보다 앞에서 입력을 받는다.
 	b.AutoButtonColor = active
@@ -964,28 +1067,42 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 	do
 		local grad = Instance.new("UIGradient")
 		grad.Color = ColorSequence.new(
-			if highlighted then Color3.fromRGB(241, 210, 146) else Color3.fromRGB(231, 207, 166),
-			if highlighted then Color3.fromRGB(187, 142, 77) else Color3.fromRGB(192, 153, 100)
+			if not active then Color3.fromRGB(211, 206, 196)
+				elseif danger then Color3.fromRGB(248, 209, 194)
+				elseif good or travel then Color3.fromRGB(251, 237, 208)
+				elseif back then Color3.fromRGB(131, 99, 69)
+				elseif highlighted then Color3.fromRGB(254, 224, 158) else Color3.fromRGB(238, 219, 183),
+			if not active then Color3.fromRGB(166, 157, 143)
+				elseif danger then Color3.fromRGB(211, 127, 107)
+				elseif good or travel then Color3.fromRGB(204, 169, 115)
+				elseif back then Color3.fromRGB(74, 51, 35)
+				elseif highlighted then Color3.fromRGB(193, 146, 72) else Color3.fromRGB(193, 156, 103)
 		)
 		grad.Rotation = 90
 		grad.Parent = b
 		local grain = bookMaterial(b, "parchment", 148)
 		if grain then
-			grain.ImageColor3 = if danger then Color3.fromRGB(237, 171, 145)
-				elseif highlighted then Color3.fromRGB(249, 218, 148)
-				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 172, 139)
+			grain.ImageColor3 = if danger then Color3.fromRGB(248, 185, 169)
+				elseif good or travel then Color3.fromRGB(242, 217, 175)
+				elseif back then Color3.fromRGB(138, 111, 78)
+				elseif highlighted then Color3.fromRGB(252, 220, 148)
+				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 183, 168)
+			grain.ImageTransparency = if back then 0.58 elseif danger or good or travel then 0.64 else 0.55
 		end
 		if grain then
 			-- 저장 초기화 재확인처럼 상태가 붉게 바뀌는 경우 종이가 경고색을 가리지 않게 한다.
 			b:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
-				grain.ImageTransparency = if b.BackgroundColor3 == COLORS.red then 1 else 0.06
+				grain.ImageTransparency = if b.BackgroundColor3 == COLORS.red then 1 else 0.55
 			end)
 		end
 		local edge = Instance.new("UIStroke")
 		edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		edge.Color = if active then INK_EDGE else Color3.fromRGB(128, 108, 82)
-		edge.Thickness = if highlighted then 2.3 else 1.6
-		edge.Transparency = if active then 0.06 else 0.38
+		edge.Color = if not active then Color3.fromRGB(125, 121, 115)
+			elseif danger then Color3.fromRGB(154, 47, 42)
+			elseif good or travel then Color3.fromRGB(158, 108, 47)
+			elseif back then Color3.fromRGB(205, 163, 93) else INK_EDGE
+		edge.Thickness = if highlighted or danger or good or travel then 2.3 else 1.6
+		edge.Transparency = if active then 0.02 else 0.4
 		edge.Parent = b
 		-- 깊이를 주는 안쪽 인쇄 테두리
 		local bevel = Instance.new("Frame")
@@ -1006,7 +1123,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		inner.Parent = bevel
 		local mark = Instance.new("Frame")
 		mark.Name = "BookRibbon"
-		mark.BackgroundColor3 = if not active then COLORS.grey else (color or INK_EDGE)
+		mark.BackgroundColor3 = if not active then COLORS.grey elseif danger then Color3.fromRGB(154, 47, 42) elseif highlighted then UI_BRASS else UI_BRASS_DARK
 		mark.BackgroundTransparency = if active then 0.16 else 0.55
 		mark.BorderSizePixel = 0
 		mark.Position = UDim2.fromOffset(5, 8)
@@ -1038,6 +1155,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 			caption.BackgroundTransparency = 1
 			caption.Position = UDim2.fromOffset(9, 1)
 			caption.Size = UDim2.new(1, -18, 1, -2)
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
 			caption.Text = b.Text
 			caption.TextColor3 = b.TextColor3
 			caption.TextSize = b.TextSize
@@ -1109,7 +1227,7 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	end
 
 	local btnCount = buttons and #buttons or 0
-	local btnWidth = btnCount * 100 + 8 -- 넓은 화면에서는 기존 오른쪽 행동 칸을 유지한다
+	local btnWidth = if btnCount > 0 then btnCount * 112 + 8 else 0 -- [넓은 메뉴] 버튼마다 손가락 영역 확보
 	local buttonRefs = {}
 
 	local textBox = Instance.new("Frame")
@@ -1127,9 +1245,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 
 	if buttons then
 		for i, spec in buttons do
-			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(92, 48), spec.onClick, spec.enabled)
+			local b = mkButton(row, spec.text, spec.color or COLORS.blue, UDim2.fromOffset(104, 54), spec.onClick, spec.enabled)
 			b.AnchorPoint = Vector2.new(1, 0.5)
-			b.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
+			b.Position = UDim2.new(1, -6 - (btnCount - i) * 112, 0.5, 0)
 			table.insert(buttonRefs, b)
 		end
 	end
@@ -1142,22 +1260,28 @@ local function mkRow(parent, title, subtitle, buttons, height)
 	-- 한 카드 안에서 '내용 위 / 버튼 아래'로 배치한다. 넓은 화면의 오른쪽 버튼 배치는 유지.
 	local function fitRow()
 		local width = row.AbsoluteSize.X
-		local narrow = width > 0 and width < 450 and btnCount > 0
-		local left = textBox.Position.X.Offset
+		-- [모바일 장부] 버튼이 많은 정보 카드에서는 글과 조작 영역을 세로로 나눈다.
+        local left = textBox.Position.X.Offset
+		local narrow = width > 0 and btnCount > 0 and width < math.max(520, left + btnWidth + 240)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
 		local textHeight = layout.AbsoluteContentSize.Y + 12
-		local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then 54 else 0))
+		-- [모바일 조작] 좁은 화면의 3~4개 버튼을 두 줄로 나눠 읽기 쉬운 너비 확보.
+        local buttonColumns = if narrow and width < 480 then math.min(2, btnCount) else btnCount
+        local buttonRows = if narrow then math.ceil(btnCount / math.max(1, buttonColumns)) else 0
+        local targetHeight = math.max(minH, textHeight + (row:GetAttribute("FooterHeight") or 0) + (if narrow then buttonRows * 60 + 6 else 0))
 		if row.Size.Y.Offset ~= targetHeight then row.Size = UDim2.new(1, -6, 0, targetHeight) end
 		for i, button in buttonRefs do
 			if narrow then
 				button.AnchorPoint = Vector2.new(0, 1)
-				button.Position = UDim2.new((i - 1) / btnCount, 5, 1, -5)
-				button.Size = UDim2.new(1 / btnCount, -10, 0, 44)
+                local rowIndex = math.floor((i - 1) / buttonColumns)
+                local columnIndex = (i - 1) % buttonColumns
+                button.Position = UDim2.new(columnIndex / buttonColumns, 5, 1, -5 - (buttonRows - rowIndex - 1) * 60)
+                button.Size = UDim2.new(1 / buttonColumns, -10, 0, 54)
 			else
 				button.AnchorPoint = Vector2.new(1, 0.5)
-				button.Position = UDim2.new(1, -6 - (btnCount - i) * 100, 0.5, 0)
-				button.Size = UDim2.fromOffset(92, 48)
+				button.Position = UDim2.new(1, -6 - (btnCount - i) * 112, 0.5, 0)
+				button.Size = UDim2.fromOffset(104, 54)
 			end
 		end
 		local rowIcon = row:FindFirstChild("RowIcon")
@@ -1174,11 +1298,16 @@ local function mkRow(parent, title, subtitle, buttons, height)
 end
 
 -- [시설 공통 카드] 기존 그림·양피지·황동 디자인을 모바일과 PC에 같은 비율로 배치한다.
-function H.tileGrid(items, parent, cellW, cellH)
-	cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(216, math.floor((cellH or 156) * 1.3))
-	for _, it in items do
-		if it.desc then cellH = math.max(cellH, 260)
-		elseif it.portrait then cellH = math.max(cellH, 240) end
+function H.tileGrid(items, parent, cellW, cellH, quick)
+	-- [방문 메뉴] 주점의 원화 카드 문법을 유지하면서 시설 바로가기는 모바일 한눈형으로 압축한다.
+	if quick then
+		cellW, cellH = 216, 166
+	else
+		cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(316, math.floor((cellH or 156) * 1.55))
+		for _, it in items do
+			if it.desc then cellH = math.max(cellH, 366)
+			elseif it.portrait then cellH = math.max(cellH, 342) end
+		end
 	end
 	local grid = Instance.new("Frame")
 	grid.BackgroundTransparency = 1
@@ -1216,43 +1345,46 @@ function H.tileGrid(items, parent, cellW, cellH)
 		seal.Size = UDim2.new(1, -12, 0, 3)
 		seal.Parent = tile
 		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
-		local iconPx = if it.portrait then 104 else 78
+		local iconPx = if quick then 66 elseif it.portrait then 164 else 148
 		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
-		ic.AnchorPoint = Vector2.new(0.5, 0)
-		ic.Position = UDim2.new(0.5, 0, 0, 8)
+		ic.AnchorPoint = if quick then Vector2.zero else Vector2.new(0.5, 0)
+		ic.Position = if quick then UDim2.fromOffset(10, 12) else UDim2.new(0.5, 0, 0, 8)
 		local textY = iconPx + 14
-		local nm = mkLabel(tile, it.title, 19, INK, true)
+		local nm = mkLabel(tile, it.title, if quick then 19 else 21, INK, true)
 		nm.AutomaticSize = Enum.AutomaticSize.None
-		nm.Position = UDim2.fromOffset(4, textY)
-		nm.Size = UDim2.new(1, -8, 0, 26)
+		nm.Position = if quick then UDim2.fromOffset(82, 12) else UDim2.fromOffset(4, textY)
+		nm.Size = if quick then UDim2.new(1, -90, 0, 28) else UDim2.new(1, -8, 0, 26)
 		nm.TextXAlignment = Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
-			local sb = mkLabel(tile, it.sub, 15, INK_SOFT, false)
+			local sb = mkLabel(tile, it.sub, 17, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
-			sb.Position = UDim2.fromOffset(4, textY + 28)
-			sb.Size = UDim2.new(1, -8, 0, 20)
+			sb.Position = if quick then UDim2.fromOffset(82, 42) else UDim2.fromOffset(4, textY + 28)
+			sb.Size = if quick then UDim2.new(1, -90, 0, 54) else UDim2.new(1, -8, 0, 40)
+			sb.TextSize = if quick then 14 else 17
+			sb.TextWrapped = true
 			sb.TextXAlignment = Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 		if it.desc then
-			local ds = mkLabel(tile, it.desc, 14, INK, false)
+			local ds = mkLabel(tile, it.desc, 16, INK, false)
 			ds.AutomaticSize = Enum.AutomaticSize.None
-			ds.Position = UDim2.fromOffset(8, textY + 50)
-			ds.Size = UDim2.new(1, -16, 0, 40)
+			ds.Position = UDim2.fromOffset(8, textY + 69)
+			ds.Size = UDim2.new(1, -16, 0, 58)
 			ds.TextWrapped = true
 			ds.TextYAlignment = Enum.TextYAlignment.Top
 			ds.TextXAlignment = Enum.TextXAlignment.Center
 			ds.TextTruncate = Enum.TextTruncate.AtEnd
 		end
+		local buttonHeight = if quick then 48 else 54
 		if it.btn and it.btn2 then
-			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, 44), it.onClick, on)
-			b1.Position = UDim2.new(0, 8, 1, -52)
-			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, 44), it.btn2.onClick, it.btn2.enabled ~= false)
-			b2.Position = UDim2.new(0.5, 4, 1, -52)
+			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, buttonHeight), it.onClick, on)
+			b1.Position = UDim2.new(0, 8, 1, -buttonHeight - 8)
+			local b2 = mkButton(tile, it.btn2.text, it.btn2.color or COLORS.red, UDim2.new(0.5, -12, 0, buttonHeight), it.btn2.onClick, it.btn2.enabled ~= false)
+			b2.Position = UDim2.new(0.5, 4, 1, -buttonHeight - 8)
 		elseif it.btn then
-			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, 44), it.onClick, on)
-			b.Position = UDim2.new(0, 8, 1, -52)
+			local b = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(1, -16, 0, buttonHeight), it.onClick, on)
+			b.Position = UDim2.new(0, 8, 1, -buttonHeight - 8)
 		end
 	end
 	grid.Parent = parent
@@ -1271,12 +1403,14 @@ function H.tileGrid(items, parent, cellW, cellH)
 end
 
 local function mkHeader(parent, text)
-	local l = mkLabel(parent, "◆ " .. text, 17, INK, true)
-	l.Size = UDim2.new(1, -8, 0, 30)
+	-- [항해 장부 목차] 소제목과 본문을 명확히 구분한다.
+    local l = mkLabel(parent, "◆ " .. text, 19, INK, true)
+    l.Size = UDim2.new(1, -8, 0, 34)
 	l.AutomaticSize = Enum.AutomaticSize.Y -- 좁은 화면에서 긴 소제목이 두 줄이 되어도 잘리지 않게 (26은 최소 높이)
 	l.TextYAlignment = Enum.TextYAlignment.Center
 	l.BackgroundTransparency = 0
 	l.BackgroundColor3 = Color3.fromRGB(218, 190, 139)
+    l.TextWrapped = true
 	corner(l, 3)
 	local headingWash = Instance.new("UIGradient")
 	headingWash.Color = ColorSequence.new(Color3.fromRGB(239, 218, 174), Color3.fromRGB(191, 155, 105))
@@ -1318,9 +1452,11 @@ main.Parent = gui
 -- 시설 페이지는 읽을 수 있는 본문 면을 바로 노출한다.
 mainInner.BackgroundColor3 = COLORS.coverRaised
 mainInner.BackgroundTransparency = 0.08
-local sizeLimit = Instance.new("UISizeConstraint")
-sizeLimit.MaxSize = Vector2.new(4000, 3000)
-sizeLimit.Parent = main
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local sizeLimit = Instance.new("UISizeConstraint")
+	sizeLimit.MaxSize = Vector2.new(4000, 3000)
+	sizeLimit.Parent = main
+end
 
 -- 항해 기록의 표제지: 시설 이름, 현재 항구와 선박 정보를 분리한다.
 H.pageMasthead = Instance.new("Frame")
@@ -1373,17 +1509,20 @@ headerLabel.TextTruncate = Enum.TextTruncate.AtEnd
 headerLabel.TextSize = 23
 headerLabel.Font = Enum.Font.Antique
 headerLabel.TextColor3 = COLORS.ink
-local mastheadSize = Instance.new("UITextSizeConstraint")
-mastheadSize.MaxTextSize = 23
-mastheadSize.Parent = headerLabel
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local mastheadSize = Instance.new("UITextSizeConstraint")
+	mastheadSize.MaxTextSize = 23
+	mastheadSize.Parent = headerLabel
+end
 headerLabel.Text = "불러오는 중..."
 headerLabel.Parent = mainInner
 
+-- [초상화 위치] 표제지 y=4~62 안쪽에 52px 초상을 y=7~59로 정렬한다.
 -- 시설 주인 초상화 (대항해시대 온라인의 NPC 얼굴 창처럼)
 local portraitFrame = Instance.new("ViewportFrame")
-portraitFrame.Position = UDim2.fromOffset(11, 12)
+portraitFrame.Position = UDim2.fromOffset(11, 7)
 portraitFrame.Size = UDim2.fromOffset(52, 52)
-portraitFrame.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
+portraitFrame.BackgroundTransparency = 1 -- [인물 초상] 회색 판 제거
 portraitFrame.Ambient = Color3.fromRGB(190, 190, 200)
 portraitFrame.LightColor = Color3.fromRGB(255, 244, 220)
 portraitFrame.Parent = mainInner
@@ -1404,9 +1543,9 @@ portraitFrame.CurrentCamera = portraitCam
 -- 등록된 실사 NPC 초상화가 있으면 기존 3D 초상 위에 표시한다.
 local portraitImage = Instance.new("ImageLabel")
 portraitImage.Name = "NpcPortrait"
-portraitImage.Position = UDim2.fromOffset(11, 12)
+portraitImage.Position = UDim2.fromOffset(11, 7)
 portraitImage.Size = UDim2.fromOffset(52, 52)
-portraitImage.BackgroundColor3 = Color3.fromRGB(40, 56, 80)
+portraitImage.BackgroundTransparency = 1 -- [인물 초상] 원화 뒤 회색 판 제거
 portraitImage.BorderSizePixel = 0
 portraitImage.ScaleType = Enum.ScaleType.Crop
 portraitImage.Visible = false
@@ -1424,9 +1563,9 @@ end
 -- [선장실] 초상화가 완성되기 전에는 파란 물음표를 표시한다.
 local captainPlaceholder = Instance.new("TextLabel")
 captainPlaceholder.Name = "CaptainPortraitPending"
-captainPlaceholder.Position = UDim2.fromOffset(11, 12)
+captainPlaceholder.Position = UDim2.fromOffset(11, 7)
 captainPlaceholder.Size = UDim2.fromOffset(52, 52)
-captainPlaceholder.BackgroundColor3 = Color3.fromRGB(35, 88, 150)
+captainPlaceholder.BackgroundTransparency = 1 -- [선장 미완성] 배경 없이 기호만 표시
 captainPlaceholder.BorderSizePixel = 0
 captainPlaceholder.Text = "?"
 captainPlaceholder.Font = Enum.Font.GothamBlack
@@ -1435,16 +1574,18 @@ captainPlaceholder.TextColor3 = Color3.fromRGB(234, 246, 255)
 captainPlaceholder.Visible = false
 captainPlaceholder.Parent = mainInner
 corner(captainPlaceholder, 8)
-local pendingStroke = Instance.new("UIStroke")
-pendingStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-pendingStroke.Color = Color3.fromRGB(214, 170, 82)
-pendingStroke.Thickness = 2
-pendingStroke.Parent = captainPlaceholder
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local pendingStroke = Instance.new("UIStroke")
+	pendingStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	pendingStroke.Color = Color3.fromRGB(214, 170, 82)
+	pendingStroke.Thickness = 2
+	pendingStroke.Parent = captainPlaceholder
+end
 
 local portraitKey = nil
 local PORTRAIT_ROLE = {
 	["교역소"] = "Rogue", ["항만청"] = "Knight", ["조선소"] = "Barbarian",
-	["주점"] = "Barbarian", ["전투 본부"] = "Knight", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded",
+	["주점"] = "Barbarian", ["전투 본부"] = "Knight", ["학자의 서재"] = "Mage", ["선장실"] = "Rogue_Hooded", ["외교"] = "Knight",
 }
 -- 동료별 실제 등록된 인물 모델. 기존 3D 원본과 역할을 재사용하며 저장 데이터는 건드리지 않는다.
 -- 문화권·성별이 맞지 않는 공용 2D 얼굴을 다른 사람에게 강제로 할당하지 않는다.
@@ -1572,7 +1713,7 @@ end
 end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
-	["주점"] = "tavern", ["학자의 서재"] = "scholar",
+	["주점"] = "tavern", ["학자의 서재"] = "scholar", ["외교"] = "harbor", -- 외교관: 관리 초상
 }
 -- 국가별 주인공 9명은 3x3 시트의 서로 다른 실제 인물 사진/원화를 사용한다.
 -- 이 시트를 기존 초상화 컴포넌트에서 공유하므로 새 UI 구조는 필요 없다.
@@ -1777,18 +1918,72 @@ local coinChip, _, coinValue = CommonUI.CreateCurrencyChip({ name = "Coins", siz
 coinChip.AnchorPoint = Vector2.new(1, 0)
 coinChip.Position = UDim2.new(1, -56, 0, 15)
 coinChip.Parent = mainInner
+coinChip.Visible = false -- [중복 정리] 상단 공통 현황으로 통합, 코인 갱신 참조는 보존.
+-- [공통 상단 현황] 양피지에 진한 잉크와 경계선을 둬 모든 시설에서 같은 위치·대비를 유지한다.
+H.menuStatusLabel = mkLabel(mainInner, "", 18, Color3.fromRGB(255, 239, 183), true)
+H.menuStatusLabel.Name = "MenuGlobalMoneyCargo"
+H.menuStatusLabel.AnchorPoint = Vector2.new(0.5, 0)
+H.menuStatusLabel.AutomaticSize = Enum.AutomaticSize.None
+H.menuStatusLabel.TextXAlignment = Enum.TextXAlignment.Center
+H.menuStatusLabel.TextYAlignment = Enum.TextYAlignment.Center
+H.menuStatusLabel.TextTruncate = Enum.TextTruncate.AtEnd
+H.menuStatusLabel.BackgroundTransparency = 0
+H.menuStatusLabel.BackgroundColor3 = Color3.fromRGB(55, 40, 27) -- [자금·화물] 어두운 가죽판에 금빛 글씨
+H.menuStatusLabel.ZIndex = 5
+corner(H.menuStatusLabel, 6)
+do
+	-- [로컬 레지스터 예산] 장식 인스턴스는 여기서만 필요하며 장기 보유하지 않는다.
+	local statusEdge = Instance.new("UIStroke")
+	statusEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	statusEdge.Color = Color3.fromRGB(229, 181, 95)
+	statusEdge.Thickness = 2
+	statusEdge.Parent = H.menuStatusLabel
+end
+H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, 15)
+H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
+-- [최근 메뉴] 기존 직전 탭 기억을 재사용. 모든 시설의 자금·화물 현황 바로 옆에 둔다.
+H.menuRecentButton = mkButton(mainInner, "← 최근 메뉴", COLORS.leather,
+	UDim2.fromOffset(126, 34), function()
+		local recent = H.recentTab
+		if recent and TAB_NAME[recent] and recent ~= currentTab then
+			openTab(recent, if recent == "map" then "chart" else nil)
+		end
+	end, true)
+H.menuRecentButton.Name = "RecentFacilityShortcut"
+H.menuRecentButton.Visible = false
+H.menuRecentButton.TextSize = 15
+H.menuRecentButton.ZIndex = 9
 
+-- [공통 시설 메뉴] 왼쪽 탭 전용 열을 없애고 창 오른쪽 상단에 가로 책갈피를 둔다.
 local tabBar = Instance.new("Frame")
+tabBar.Name = "FacilityTabBar"
 tabBar.BackgroundTransparency = 1
 tabBar.BorderSizePixel = 0
-tabBar.Position = UDim2.fromOffset(8, 52)
-tabBar.Size = UDim2.new(1, -16, 0, 40) -- 시설별로 관련 탭만 한 줄에 보여준다
+tabBar.AnchorPoint = Vector2.new(1, 0)
+tabBar.Position = UDim2.new(1, -8, 0, 68)
+tabBar.Size = UDim2.fromOffset(0, 58)
 tabBar.Parent = mainInner
-local tabLayout = Instance.new("UIGridLayout")
-tabLayout.CellSize = UDim2.new(0.25, -5, 0, 38)
-tabLayout.CellPadding = UDim2.fromOffset(5, 0)
-tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
-tabLayout.Parent = tabBar
+-- [모바일] 탭이 많으면 줄바꿈 대신 같은 상단 줄을 좌우로 밀어 모든 항목에 접근한다.
+H.tabStrip = Instance.new("ScrollingFrame")
+H.tabStrip.Name = "FacilityTabStrip"
+H.tabStrip.BackgroundTransparency = 1
+H.tabStrip.BorderSizePixel = 0
+H.tabStrip.Size = UDim2.fromScale(1, 1)
+H.tabStrip.ScrollBarThickness = 2
+H.tabStrip.ScrollBarImageColor3 = UI_BRASS
+H.tabStrip.ScrollingDirection = Enum.ScrollingDirection.X
+H.tabStrip.CanvasSize = UDim2.new()
+H.tabStrip.ClipsDescendants = true
+H.tabStrip.Parent = tabBar
+-- [모바일 한 줄 고정] 그리드는 좁은 부모 폭에서 자동 줄바꿈하므로 기존 탭 정렬을 가로 목록으로 바꾼다.
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local tabLayout = Instance.new("UIListLayout")
+	tabLayout.FillDirection = Enum.FillDirection.Horizontal
+	tabLayout.Wraps = false
+	tabLayout.Padding = UDim.new(0, 6)
+	tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	tabLayout.Parent = H.tabStrip
+end
 
 local content = Instance.new("ScrollingFrame")
 content.BackgroundTransparency = 1
@@ -1800,36 +1995,543 @@ content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 content.ScrollBarThickness = 4
 content.Parent = mainInner
 H.richParent = content
-local contentLayout = Instance.new("UIListLayout")
-contentLayout.Padding = UDim.new(0, 5)
-contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-contentLayout.Parent = content
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local contentLayout = Instance.new("UIListLayout")
+	contentLayout.Padding = UDim.new(0, 5)
+	contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	contentLayout.Parent = content
+end
 
--- 넓은 화면은 왼쪽 책갈피, 좁은 화면은 상단 한 줄 목차를 사용한다.
+-- [오른쪽 아래 고정 실행] 스크롤 내용과 분리해 조작 위치를 모든 시설에서 일정하게 유지한다.
+-- 기존 수락·출항·연구·전투의 서버 확인과 저장 흐름은 그대로 호출한다.
+H.menuActionDock = Instance.new("Frame")
+H.menuActionDock.Name = "MenuActionDock"
+H.menuActionDock.BackgroundColor3 = COLORS.paper
+H.menuActionDock.BorderSizePixel = 0
+H.menuActionDock.ZIndex = 9
+H.menuActionDock.Visible = false
+H.menuActionDock.Parent = mainInner
+corner(H.menuActionDock, 7)
+-- [실행 장부] 주요 행동판에는 작은 황동 경계만 사용한다.
+bookMaterial(H.menuActionDock, "parchment", 192)
+do
+  local edge = Instance.new("UIStroke")
+  edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+  edge.Color = UI_BRASS_DARK
+  edge.Thickness = 1.6
+  edge.Parent = H.menuActionDock
+end
+H.menuActionButton = mkButton(H.menuActionDock, "행동 확인", COLORS.gold, UDim2.new(1, -12, 0, 54), function()
+	if H.invokeMenuPrimary then H.invokeMenuPrimary() end
+end, true)
+H.menuActionButton.Name = "MenuPrimaryAction"
+H.menuActionButton.Position = UDim2.fromOffset(6, 6)
+H.menuActionButton.ZIndex = 10
+H.menuActionButton.TextSize = 20
+
+-- [전체 시설 공통 전시장] 기존 시설별 content 렌더러는 그대로 보존하고, 교역소처럼 목록·원화·정보로 분리한다.
+H.facilityGallery = Instance.new("Frame")
+H.facilityGallery.Name = "FacilityGallery"
+H.facilityGallery.BackgroundColor3 = COLORS.paper
+H.facilityGallery.BorderSizePixel = 0
+H.facilityGallery.Visible = false
+H.facilityGallery.ClipsDescendants = true
+H.facilityGallery.Parent = mainInner
+corner(H.facilityGallery, 8)
+bookMaterial(H.facilityGallery, "parchment", 204)
+-- [왼쪽 원화 카드] 카드배틀과 같은 세로 7:10 틀. 기존 가로·정사각형 원화는 Fit으로 보존한다.
+H.galleryCard = Instance.new("Frame")
+H.galleryCard.Name = "FacilityArtCard7x10"
+H.galleryCard.BackgroundColor3 = Color3.fromRGB(239, 224, 194)
+H.galleryCard.BorderSizePixel = 0
+H.galleryCard.ClipsDescendants = true
+H.galleryCard.ZIndex = 4
+H.galleryCard.Parent = H.facilityGallery
+corner(H.galleryCard, 5)
+do -- [로컬 레지스터 200 한도] 최상위 local 을 늘리지 않게 블록 안에 둔다.
+	local galleryBorder = Instance.new("UIStroke")
+	galleryBorder.Color = Color3.fromRGB(213, 164, 81)
+	galleryBorder.Thickness = 1.5
+	galleryBorder.Parent = H.galleryCard
+end
+H.galleryImage = Instance.new("ImageButton")
+H.galleryImage.Name = "ApprovedFacilityArt"
+H.galleryImage.BackgroundTransparency = 1
+H.galleryImage.Size = UDim2.fromScale(1, 1)
+H.galleryImage.ScaleType = Enum.ScaleType.Fit
+H.galleryImage.AutoButtonColor = false
+H.galleryImage.ZIndex = 5
+H.galleryImage.Parent = H.galleryCard
+do -- [반응형 배너 배경] 같은 원화를 흐리게 깔아 화면 폭 전체를 채운다. 본 원화(카드)는 자르지 않는다.
+	local back = Instance.new("ImageLabel")
+	back.Name = "FacilityArtBackdrop"
+	back.BackgroundColor3 = Color3.fromRGB(30, 21, 13)
+	back.BorderSizePixel = 0
+	back.Size = UDim2.fromScale(1, 1)
+	back.ScaleType = Enum.ScaleType.Crop
+	back.ImageTransparency = 0.35
+	back.ZIndex = 2
+	back.Parent = H.facilityGallery
+	H.galleryBackdrop = back
+	local shade = Instance.new("Frame")
+	shade.Name = "FacilityArtShade"
+	shade.BackgroundColor3 = Color3.fromRGB(20, 13, 8)
+	shade.BorderSizePixel = 0
+	shade.Size = UDim2.fromScale(1, 1)
+	shade.ZIndex = 3
+	shade.Parent = H.facilityGallery
+	local g = Instance.new("UIGradient")
+	g.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(0.45, 0.25), NumberSequenceKeypoint.new(1, 0.5) })
+	g.Parent = shade
+end
+H.galleryImage.Activated:Connect(function()
+  if not view or not H.galleryImage.Image or H.galleryImage.Image == "" then return end
+  -- [정확한 목적지] 연결된 발견 카드가 없으면 주제 검색으로 열고 무관한 백과 책갈피를 열지 않는다.
+  H.galleryBookOpenRequested = H.galleryLinkCardId
+    or ("search:" .. (H.gallerySearchTerm or ((H.FACILITY_GALLERY_TOPICS[currentTab] or { "대항해" })[1])))
+  openTab("codex")
+end)
+H.galleryTitle = mkLabel(H.facilityGallery, "", 21, INK, true)
+H.galleryTitle.Name = "FacilityGalleryHeading"
+H.galleryTitle.Position = UDim2.new(0, 12, 1, -40)
+H.galleryTitle.Size = UDim2.new(1, -24, 0, 30)
+H.galleryTitle.AutomaticSize = Enum.AutomaticSize.None
+H.galleryTitle.ZIndex = 6
+H.galleryTitle.TextColor3 = Color3.fromRGB(255, 240, 205)
+H.galleryTitle.TextStrokeColor3 = Color3.fromRGB(25, 16, 9)
+H.galleryTitle.TextStrokeTransparency = 0.35
+-- [공통 원화 안내] 승인된 그림 아래에 시설 이용 순서를 잉크로 함께 적는다.
+H.galleryCaption = mkLabel(H.facilityGallery, "", 16, INK_SOFT, false)
+H.galleryCaption.Name = "FacilityGalleryCaption"
+H.galleryCaption.AutomaticSize = Enum.AutomaticSize.None
+H.galleryCaption.Size = UDim2.new(1, -24, 0, 28)
+H.galleryCaption.TextWrapped = true
+H.galleryCaption.TextTruncate = Enum.TextTruncate.AtEnd
+H.galleryCaption.TextSize = 14
+H.galleryCaption.ZIndex = 6
+H.galleryCaption.TextColor3 = Color3.fromRGB(236, 214, 170)
+H.galleryCaption.TextStrokeColor3 = Color3.fromRGB(25, 16, 9)
+H.galleryCaption.TextStrokeTransparency = 0.5
+-- [원화 넘김] 기존 발견·승인 원화만 순환한다. 원화 가운데 터치는 계속 백과 이동이다.
+for _, direction in { -1, 1 } do
+  local button = Instance.new("TextButton")
+  button.Name = if direction < 0 then "PreviousFacilityArt" else "NextFacilityArt"
+  button.Size = UDim2.fromOffset(40, 40)
+  button.Text = if direction < 0 then "◀" else "▶"
+  button.TextSize = 24
+  button.Font = Enum.Font.GothamBold
+  button.TextColor3 = Color3.fromRGB(255, 236, 169)
+  button.TextStrokeColor3 = Color3.fromRGB(41, 29, 18)
+  button.TextStrokeTransparency = 0.1
+  button.BackgroundTransparency = 1
+  button.BorderSizePixel = 0
+  button.AutoButtonColor = false
+  button.Visible = false
+  button.ZIndex = 7
+  button.Parent = H.facilityGallery
+  button.Activated:Connect(function()
+    local total = #(H.galleryMatches or {})
+    if total <= 1 then return end
+    H.galleryIndex = ((H.galleryIndex or 1) - 1 + direction) % total + 1
+    H.galleryTouchedAt = os.clock() -- 직접 넘기면 잠시 자동 넘김을 멈춘다
+    H.renderFacilityGallery()
+  end)
+  if direction < 0 then H.galleryPrev = button else H.galleryNext = button end
+end
+-- [기존 승인 원화] 외부 유료 자료나 임의 메시 대신 백과·사건 카드 그림을 직접 재사용한다.
+H.FACILITY_GALLERY_ART = {
+  board = "event_royal_charter", quest = "event_cook_voyage", recruit = "event_merchant_lamu",
+  crew = "event_merchant_coromandel", status = "event_title_ship",
+  route = "event_new_route", harbor = "event_canton_system", map = "event_chart_world",
+  trade = "event_trade_boom", yard = "event_title_ship",
+  battle = "event_piracy", explore = "event_angkor", war = "event_anglo_dutch_war", gwent = "event_royal_charter",
+  scholar = "event_principia", codex = "bot_herbarium", tech = "event_industrial_start",
+  diplomacy = "event_title_parchment", -- 외교: 조약 문서(배 그림 기본값이면 조선소로 착각)
+}
+-- [자동 순환 원화] 메뉴마다 의미가 맞는 기존 승인 사건 원화 묶음. 발견 카드 뒤에 섞어 자동으로 넘긴다.
+H.FACILITY_GALLERY_POOL = {
+  trade = { "trade_boom", "merchant_coromandel", "merchant_hoi_an", "merchant_lamu", "merchant_naha", "canton_system", "zanzibar" },
+  market = { "trade_boom", "merchant_hoi_an", "merchant_naha", "canton_system", "festival" },
+  harbor = { "canton_system", "cape_colony", "zanzibar", "merchant_naha", "festival" },
+  route = { "new_route", "cook_voyage", "calm_seas", "title_sea", "canal_opened" },
+  diplomacy = { "title_parchment", "royal_charter", "boston_tea", "anglo_dutch_war" },
+  yard = { "title_ship", "shipworm", "treasure_wreck" },
+  board = { "royal_charter", "festival", "merchant_lamu" },
+  quest = { "cook_voyage", "new_route", "treasure_wreck", "angkor", "machu_picchu" },
+  recruit = { "merchant_lamu", "merchant_hoi_an", "merchant_coromandel" },
+  crew = { "merchant_coromandel", "title_ship" }, status = { "title_ship", "title_sea" },
+  battle = { "piracy", "anglo_dutch_war", "storm" }, war = { "anglo_dutch_war", "piracy" },
+  gwent = { "royal_charter", "piracy" },
+  explore = { "angkor", "petra", "machu_picchu", "giza", "moai", "chichen", "ellora_kailasa", "great_wall", "stonehenge", "uluru", "zimbabwe" },
+  scholar = { "principia", "franklin_kite", "industrial_start", "new_plant" },
+  codex = { "principia", "new_plant" }, encyclopedia = { "principia", "new_plant" },
+  tech = { "industrial_start", "franklin_kite", "canal_opened" },
+}
+-- [실제 지식 연결] 메뉴 의미에 맞는 발견 원화를 우선 사용한다. 미발견 카드·미등록 자산은 노출하지 않는다.
+H.FACILITY_GALLERY_TOPICS = {
+  trade = { "교역", "상업", "무역" }, market = { "교역", "시장", "무역" },
+  harbor = { "항구", "상업", "항만" }, route = { "항로", "항해", "해류" }, map = { "지도", "해도", "지리" },
+  diplomacy = { "외교", "조약", "국가" }, yard = { "선박", "조선", "범선" },
+  board = { "주점", "상인", "길드" }, quest = { "탐험", "항해", "모험" }, recruit = { "선원", "인물", "상인" },
+  battle = { "해전", "해적", "전쟁" }, war = { "함대", "해전", "전쟁" }, gwent = { "갈레온", "해전", "전투" },
+  explore = { "탐험", "유적", "지리" }, codex = { "학문", "지식", "기록" },
+  encyclopedia = { "학문", "지식", "기록" }, scholar = { "학문", "연구", "과학" },
+  tech = { "과학", "기술", "발명" }, status = { "항해", "선원", "인물" }, crew = { "선원", "항해", "인물" },
+}
+function H.renderFacilityGallery()
+  local tab = currentTab
+  if H.gallerySelectedTab ~= tab then
+    H.gallerySelectedTab = tab
+    H.galleryIndex = nil -- [랜덤 시작] 메뉴를 열 때마다 다른 원화부터 보여 준다
+    H.gallerySelection = nil -- [시설 변경] 이전 국가·항구·항로 선택을 해제한다.
+  end
+  local focus = H.MENU_FOCUS[tab]
+  local artName = H.FACILITY_GALLERY_ART[tab] or "event_calm_seas"
+  local fallback = AssetIds["CardArt/" .. artName] or AssetIds["CardArt/event_calm_seas"]
+  -- [지도 선택 연동] 플레이어가 고른 해역의 기존 승인 지도를 왼쪽 원화에도 그대로 보여 준다.
+  local chartName = nil
+  if tab == "map" and H.selectedChart then
+    local chart = AssetIds["CardArt/event_chart_" .. H.selectedChart]
+    if chart then
+      fallback = chart
+      for _, entry in H.CHART_REGIONS or {} do
+        if entry[1] == H.selectedChart then chartName = entry[2]; break end
+      end
+    end
+  end
+  -- [현행 지식] 이미 발견한 카드만 사용하고 주제별 중복 카드를 제거한다.
+  local matches, seen = {}, {}
+  for _, token in H.FACILITY_GALLERY_TOPICS[tab] or {} do
+    for _, card in ((view and view.codex and view.codex.cards) or {}) do
+      if card.found == true and type(card.image) == "string" and card.image ~= "" and not seen[card.id] then
+        local about = string.lower(tostring(card.name or "") .. " " .. tostring(card.topic or "")
+          .. " " .. tostring(card.worldGroup or "") .. " " .. tostring(card.kindName or ""))
+        if string.find(about, string.lower(token), 1, true) then
+          table.insert(matches, card)
+          seen[card.id] = true
+        end
+      end
+    end
+  end
+  for _, key in H.FACILITY_GALLERY_POOL[tab] or {} do
+    local id = AssetIds["CardArt/event_" .. key]
+    if id then table.insert(matches, { image = "rbxassetid://" .. tostring(id), poolArt = true }) end
+  end
+  H.galleryMatches = matches
+  if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = math.random(1, #matches) end
+  H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
+  local matched = if #matches > 0 then matches[H.galleryIndex] else nil
+  -- [선택 원화] 클릭한 국가·항구·항로의 발견 카드/승인 해역도만 우선 전시한다.
+  local selection = H.gallerySelection
+  if selection and selection.tab == tab then
+    matched = nil
+    for _, card in ((view and view.codex and view.codex.cards) or {}) do
+      if card.found == true and type(card.image) == "string" and card.image ~= ""
+        and (card.name == selection.name
+          or string.find(string.lower(tostring(card.name or "")), string.lower(selection.name), 1, true)) then
+        matched = card
+        break
+      end
+    end
+    if selection.chart then
+      fallback = AssetIds["CardArt/event_chart_" .. selection.chart] or fallback
+    elseif selection.art then
+      -- [등록 원화] 해당 국가와 실제 관련 있는 승인 사건 카드만 선택한다.
+      fallback = AssetIds["CardArt/" .. selection.art] or fallback
+    end
+  else
+    selection = nil
+  end
+  if (tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard then
+    matched = H.galleryReadingCard
+  end
+  if chartName and not selection then matched = nil end
+  local image = if matched then matched.image elseif fallback then "rbxassetid://" .. tostring(fallback) else ""
+  local realCard = matched ~= nil and not matched.poolArt
+  H.galleryLinkCardId = if realCard then matched.id else nil
+  H.gallerySearchTerm = if selection then selection.search or selection.name else chartName
+  local canPage = #matches > 1 and not chartName and not selection
+    and not ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard)
+  H.galleryPrev.Visible = canPage
+  H.galleryNext.Visible = canPage
+  H.galleryCanPage = canPage
+  -- [가로 사건 원화] 사건 원화는 가로 그림이라 카드 틀에 넣으면 작아진다. 배경 전체를 원화로 쓰고 카드는 숨긴다.
+  -- 세로 7:10 지식 카드만 카드 틀에 자르지 않고 띄운다.
+  local portraitCard = realCard or ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard ~= nil)
+  H.galleryCard.Visible = portraitCard
+  if H.galleryBackdrop then H.galleryBackdrop.ImageTransparency = if portraitCard then 0.35 else 0 end
+  if H.galleryImage.Image ~= image then
+    -- [전환 성능] 빠른 넘김에서 이전 페이드가 새 그림 밝기를 덮지 않도록 재사용 제어한다.
+    if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
+    H.galleryImage.Image = image
+    if H.galleryBackdrop then H.galleryBackdrop.Image = image end
+    if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
+      H.galleryImage.ImageTransparency = 1
+      H.galleryArtTween = game:GetService("TweenService"):Create(H.galleryImage,
+        TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+      H.galleryArtTween:Play()
+    else
+      H.galleryImage.ImageTransparency = 0
+    end
+  end
+  H.galleryTitle.Text = if selection then selection.name elseif chartName then chartName elseif realCard then matched.name
+    elseif focus then focus[1] else TAB_NAME[tab] or "시설 안내"
+  H.galleryCaption.Text = if canPage then string.format("%d/%d · 자동 넘김 · 원화 터치 → 백과", H.galleryIndex, #matches)
+    elseif realCard then "원화 터치 · 해당 백과 항목"
+    elseif selection or chartName then "원화 터치 · 관련 지식 검색" else "원화 터치 · 세계 백과 검색"
+  H.galleryCaption.Visible = image ~= ""
+end
+
+-- [자동 넘김] 메뉴 원화 배너는 8초마다 다음 그림으로 부드럽게 바뀐다. 직접 넘기면 15초 쉰다.
+task.spawn(function()
+  while true do
+    task.wait(8)
+    if H.galleryCanPage and H.facilityGallery.Visible and main.Visible
+      and os.clock() - (H.galleryTouchedAt or 0) > 15
+      and not game:GetService("GuiService").ReducedMotionEnabled then
+      local total = #(H.galleryMatches or {})
+      if total > 1 then
+        H.galleryIndex = (H.galleryIndex or 1) % total + 1
+        pcall(H.renderFacilityGallery)
+      end
+    end
+  end
+end)
+
+-- [교역소 기준] 가로는 3열, 세로는 큰 원화를 메뉴와 조작 사이에 놓는다.
 H.bookSpine = pageRule(mainInner, UDim2.fromOffset(132, 68), UDim2.new(0, 1, 1, -76))
 function H.layoutBook()
-	local wide = mainInner.AbsoluteSize.X >= 610
-	local tabs = tabBar.Visible
-	H.bookSpine.Visible = tabs and wide
-	if tabs and wide then
-		tabBar.Position = UDim2.fromOffset(8, 68)
-		tabBar.Size = UDim2.new(0, 116, 1, -76)
-		tabLayout.CellSize = UDim2.new(1, 0, 0, 44)
-		tabLayout.CellPadding = UDim2.fromOffset(0, 6)
-		content.Position = UDim2.fromOffset(142, 68)
-		content.Size = UDim2.new(1, -150, 1, -76)
-	else
-		tabBar.Position = UDim2.fromOffset(8, 68)
-		-- [모바일] 좁은 세로 화면의 전투 본부 4개 탭은 2열×2행으로 읽기 쉽게 표시한다.
-		local tabCount = #groupOf(currentTab).tabs
-		local compact = tabs and tabCount >= 4 and mainInner.AbsoluteSize.X < 480
-		tabBar.Size = UDim2.new(1, -16, 0, if compact then 85 else 40)
-		tabLayout.CellSize = UDim2.new(1 / (if compact then 2 else math.max(1, math.min(4, tabCount))), -5, 0, 40)
-		tabLayout.CellPadding = UDim2.fromOffset(5, if compact then 5 else 0)
-		local top = if tabs then (if compact then 161 else 116) else 68
-		content.Position = UDim2.fromOffset(8, top)
-		content.Size = UDim2.new(1, -16, 1, -top - 8)
-	end
+  local width, height = mainInner.AbsoluteSize.X, mainInner.AbsoluteSize.Y
+  -- [공통 현황] 제목과 자금·화물칸이 작은 폰에서도 서로 겹치지 않게 한다.
+  -- [상단 중앙] 모든 시설에서 자금·화물을 가로 중앙에 표시. 작은 폰은 두 번째 줄을 쓴다.
+  -- [모든 시설] 공통 자금 표시와 직전 메뉴를 붙이고 두 영역을 동일한 기준선으로 정렬한다.
+  local recent = view ~= nil and not newGameMode and H.recentTab ~= nil
+    and TAB_NAME[H.recentTab] ~= nil and groupOf(H.recentTab) ~= groupOf(currentTab)
+  local recentWidth = if width < 480 then 90 elseif width < 740 then 116 else 142
+  local statusWidth = if width < 480 then math.max(140, math.min(252, width - 142))
+    elseif width < 740 then math.min(290, width - 156)
+    else math.clamp(math.floor(width * 0.36), 280, 380)
+  local topY = if width < 740 then 68 else 15
+  local rowH = if width < 740 then 44 else 34
+  if width < 740 then
+    -- [폰] 두 칸 전체를 가운데 정렬하며 폭이 작을수록 자금 표시만 줄인다.
+    local reserve = if recent then recentWidth + 8 else 0
+    statusWidth = math.min(statusWidth, math.max(110, width - reserve - 24))
+    local groupWidth = statusWidth + recentWidth + 8
+    local startX = math.max(8, math.floor((width - (if recent then groupWidth else statusWidth)) / 2))
+    H.menuStatusLabel.AnchorPoint = Vector2.zero
+    H.menuStatusLabel.Position = UDim2.fromOffset(startX, topY)
+    H.menuRecentButton.Position = UDim2.fromOffset(startX + statusWidth + 8, topY)
+  else
+    -- [넓은 화면] 중앙 자금 표시의 위치를 유지한 채 바로 오른쪽에 최근 메뉴를 둔다.
+    H.menuStatusLabel.AnchorPoint = Vector2.new(0.5, 0)
+    H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, topY)
+    H.menuRecentButton.Position = UDim2.fromOffset(math.floor(width * 0.5 + statusWidth * 0.5 + 8), topY)
+  end
+  H.menuStatusLabel.Size = UDim2.fromOffset(statusWidth, rowH)
+  H.menuStatusLabel.TextSize = if width < 480 then 14 elseif width < 740 then 16 else 18
+  H.menuRecentButton.Size = UDim2.fromOffset(recentWidth, rowH)
+  H.menuRecentButton.TextSize = if width < 480 then 14 else 16
+  H.menuRecentButton.Visible = recent
+  H.menuRecentButton.Text = if recent then "← " .. groupOf(H.recentTab).name else ""
+  headerLabel.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
+    else math.max(108, math.floor((width - statusWidth) * 0.5) - 82), 29)
+  H.pageDetails.Size = UDim2.fromOffset(if width < 740 then math.max(86, width - 152)
+    else math.max(100, math.floor((width - statusWidth) * 0.5) - 82), 18)
+  local tabCount = #groupOf(currentTab).tabs
+  -- [시설 탭 본문] 교역·조선의 기존 상세 화면은 같은 책 안에서 재사용한다.
+  local facilityDetail = currentTab == "trade" or currentTab == "yard"
+  -- [방문 메뉴 중복 제거] 교역·조선 상세장부에 동일한 자금/최근 메뉴가 있어
+  -- 공통 헤더 표시만 숨긴다. 거래·정비·최근 이동 동작은 기존 상세장부를 사용한다.
+  H.menuStatusLabel.Visible = not facilityDetail
+  H.menuRecentButton.Visible = recent and not facilityDetail
+  local gallery = H.galleryImage.Image ~= "" and not facilityDetail and view ~= nil and not newGameMode
+  local wide = width >= 740
+  -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
+  local tabs = tabCount > 1 and tabBar.Visible
+  -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
+  local compactTabs = not wide
+  local sectionTop = if compactTabs and not facilityDetail then 120 else 68
+  -- [낮은 가로 화면] 가로폰·작은 창은 탭을 머리줄(제목·자금 오른쪽, X 왼쪽)로 올려 본문 높이를 확보한다.
+  local headerTabs, headerTabW = false, 0
+  if wide and tabs and height > 0 and height < 600 then
+    -- 자금 표시는 머리줄 탭 모드에서 220px로 줄여 탭 4개(서재)도 한 줄에 들어가게 한다.
+    local leftReserve = 236 + (if H.menuStatusLabel.Visible then math.min(statusWidth, 220) + 8 else 0)
+    headerTabW = math.floor((width - leftReserve - 64 - math.max(0, tabCount - 1) * 6) / math.max(1, tabCount))
+    headerTabs = headerTabW >= 104
+  end
+  H.headerTabs = headerTabs
+  if headerTabs then
+    sectionTop = 8
+    H.menuRecentButton.Visible = false
+    H.menuStatusLabel.AnchorPoint = Vector2.zero
+    H.menuStatusLabel.Position = UDim2.fromOffset(236, topY)
+    H.menuStatusLabel.Size = UDim2.fromOffset(math.min(statusWidth, 220), rowH)
+    H.menuStatusLabel.TextSize = 15
+    headerLabel.Size = UDim2.fromOffset(150, 29)
+    H.pageDetails.Size = UDim2.fromOffset(150, 18)
+  end
+  local tabHeight = if compactTabs then 52 else 54
+  local tabGap = if width < 340 then 4 else 6
+  local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
+  if tabList then tabList.Padding = UDim.new(0, tabGap) end
+  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 82, 190) else 166
+  if headerTabs then tabWidth = math.min(166, headerTabW) end
+  local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
+  local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
+  tabBar.Position = UDim2.new(1, -8, 0, sectionTop)
+  if headerTabs then tabBar.Position = UDim2.new(1, -60, 0, sectionTop) end
+  tabBar.Size = UDim2.fromOffset(visibleTabsWidth, tabHeight + 3)
+  -- [폰 너비 변경] 기존 버튼을 재생성하지 않고 현재 폭만 갱신한다.
+  H.tabWidth = tabWidth
+  for _, button in H.tabStrip:GetChildren() do
+    if button:IsA("TextButton") then
+      button.Size = UDim2.fromOffset(tabWidth, tabHeight)
+      local icon = button:FindFirstChild("TabIcon")
+      local caption = button:FindFirstChild("PrintedCaption")
+      if icon then
+        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
+      end
+      if icon and caption then
+        caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
+        caption.Size = if compactTabs then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
+        caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
+        local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
+        if limit then
+          limit.MinTextSize = 11
+          limit.MaxTextSize = if compactTabs then 14 else 17
+        end
+      end
+    end
+  end
+  H.tabStrip.CanvasSize = UDim2.fromOffset(allTabsWidth, 0)
+  H.tabStrip.ScrollingEnabled = allTabsWidth > visibleTabsWidth
+  H.tabStrip.ScrollBarThickness = if H.tabStrip.ScrollingEnabled then 2 else 0
+  local selectedIndex = table.find(groupOf(currentTab).tabs, currentTab) or 1
+  local selectedLeft = (selectedIndex - 1) * (tabWidth + tabGap)
+  -- [탭 위치] 같은 화면의 데이터가 갱신될 때는 사용자가 밀어 놓은 위치를 유지한다.
+  local tabViewport = Vector2.new(tabWidth, visibleTabsWidth)
+  if H.lastTabLayoutId ~= currentTab or H.lastTabViewport ~= tabViewport then
+    H.lastTabLayoutId, H.lastTabViewport = currentTab, tabViewport
+    -- 이미 보이는 탭은 제자리에 두고, 화면 밖 탭만 가까운 가장자리까지 이동한다.
+    local currentX = H.tabStrip.CanvasPosition.X
+    local selectedRight = selectedLeft + tabWidth
+    local desiredScroll = if visibleTabsWidth < tabWidth or selectedLeft < currentX then selectedLeft
+      elseif selectedRight > currentX + visibleTabsWidth then selectedRight - visibleTabsWidth else currentX
+    H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
+  end
+  local bodyTop = sectionTop + (if tabs then tabHeight + 12 else 0)
+  H.bookSpine.Visible = false
+  H.facilityGallery.Visible = gallery
+  local primaryVisible = gallery and currentTab ~= "board" and currentTab ~= "battle"
+    and currentTab ~= "war" and currentTab ~= "route" and currentTab ~= "status"
+    and currentTab ~= "scholar" and currentTab ~= "crew" and currentTab ~= "gwent"
+  H.menuActionButton.Visible = primaryVisible
+  H.menuActionDock.Visible = primaryVisible
+  if facilityDetail then
+    -- [교역·조선] 왼쪽 탭 자리까지 기존 장부·선박 본문의 가용 폭으로 돌린다.
+    content.Position = UDim2.fromOffset(8, bodyTop)
+    content.Size = UDim2.new(1, -16, 1, -bodyTop - 8)
+    content.Visible = false
+    H.menuActionDock.Visible = false
+    local detail = mainInner:FindFirstChild("FacilityDetail")
+    if detail then
+      detail.Position = content.Position
+      detail.Size = content.Size
+    end
+    return
+  end
+  content.Visible = true
+  -- [첫 판단 카드] 기존 버튼 하나를 가로 모드의 오른쪽 첫 카드에 배치한다.
+  -- 폰 세로에서는 버튼을 기존 하단 도크로 복귀시켜 터치 동작을 보존한다.
+  if H.menuFocusBanner and H.menuFocusBanner.Parent and currentTab ~= "codex" then
+    local firstCardAction = wide and primaryVisible
+    local bannerH = 84
+    local heading = H.menuFocusBanner:FindFirstChild("MenuFocusHeading")
+    if heading then heading.TextSize = if wide then 20 else 18 end
+    local explanation = H.menuFocusBanner:FindFirstChild("MenuFocusDescription")
+    if explanation then
+      explanation.Visible = explanation.Text ~= ""
+      if explanation.Visible then
+        local artworkWidth = if wide and gallery then math.clamp(math.floor(width * 0.38), 220, 460) + 8 else 0
+        local textWidth = math.max(1, width - artworkWidth - 50)
+        explanation.TextSize = if wide then 18 else 17
+        local measured = game:GetService("TextService"):GetTextSize(
+          explanation.Text, explanation.TextSize, explanation.Font, Vector2.new(textWidth, 10000))
+        explanation.Position = UDim2.fromOffset(14, 82)
+        explanation.Size = UDim2.new(1, -28, 0, measured.Y + 4)
+        bannerH = 94 + measured.Y
+      end
+    end
+    H.menuFocusBanner.Size = UDim2.new(1, -6, 0, bannerH + (if firstCardAction then 60 else 0))
+    H.menuActionButton.Parent = if firstCardAction then H.menuFocusBanner else H.menuActionDock
+    H.menuActionButton.Position = if firstCardAction then UDim2.new(0, 12, 1, -60) else UDim2.fromOffset(6, 6)
+    H.menuActionButton.Size = if firstCardAction then UDim2.new(1, -24, 0, 52) else UDim2.new(1, -12, 0, 54)
+    H.menuActionButton.TextSize = if firstCardAction then 19 else 20
+    H.menuActionDock.Visible = primaryVisible and not firstCardAction
+  end
+  -- [반응형 원화 배너] 왼쪽 세로 칸을 없애고 본문 위 전체 폭 가로 띠로 바꾼다.
+  -- 같은 원화를 흐리게 깐 배경 위에 7:10 원화 카드(자르지 않음)와 제목을 놓는다.
+  -- 본문은 전체 폭을 쓰고, 높이가 모자라면 원화를 숨겨 조작을 우선한다.
+  local bodyH = height - bodyTop
+  local showArt = gallery and bodyH >= (if wide then 300 else 340)
+  -- [낮은 가로 화면] 배너 대신 오른쪽 포스터(흐린 배경 + 원화 카드 + 제목)로 바꿔 본문 높이를 지킨다.
+  local poster = gallery and not showArt and wide and bodyH >= 200
+  H.facilityGallery.Visible = showArt or poster
+  local dockH = if H.menuActionDock.Visible then 80 else 8
+  if poster then
+    local posterW = math.clamp(math.floor(width * 0.24), 200, 300)
+    local posterH = math.max(120, bodyH - 8)
+    H.facilityGallery.Position = UDim2.new(1, -posterW - 8, 0, bodyTop)
+    H.facilityGallery.Size = UDim2.fromOffset(posterW, posterH)
+    local cardH = math.max(60, math.min(posterH - 74, math.floor((posterW - 24) * 10 / 7)))
+    local cardW = math.floor(cardH * 7 / 10)
+    H.galleryCard.Position = UDim2.fromOffset(math.floor((posterW - cardW) / 2), 10)
+    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+    H.galleryTitle.TextWrapped = false
+    H.galleryTitle.TextXAlignment = Enum.TextXAlignment.Center
+    H.galleryTitle.TextSize = 20
+    H.galleryTitle.Position = UDim2.fromOffset(8, cardH + 16)
+    H.galleryTitle.Size = UDim2.new(1, -16, 0, 26)
+    H.galleryCaption.TextWrapped = true
+    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Center
+    H.galleryCaption.Position = UDim2.fromOffset(8, cardH + 42)
+    H.galleryCaption.Size = UDim2.new(1, -16, 0, 26)
+    local midY = 10 + math.floor(cardH / 2) - 20
+    H.galleryPrev.Position = UDim2.fromOffset(4, midY)
+    H.galleryNext.Position = UDim2.new(1, -44, 0, midY)
+    content.Position = UDim2.fromOffset(8, bodyTop)
+    content.Size = UDim2.new(1, -posterW - 24, 1, -bodyTop - dockH)
+    H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
+    H.menuActionDock.Size = UDim2.new(1, -posterW - 24, 0, 68)
+    return
+  end
+  -- [반응형 배너] 같은 원화를 흐리게 깐 배경 위에 7:10 원화 카드(자르지 않음)와 제목을 놓는다.
+  local artH = if showArt then math.clamp(math.floor(bodyH * (if wide then 0.32 else 0.26)), 112, if wide then 230 else 176) else 0
+  H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
+  H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
+  local cardH = math.max(60, artH - 16)
+  local cardW = math.floor(cardH * 7 / 10)
+  local cardX = if wide then 24 else 10
+  H.galleryCard.Position = UDim2.fromOffset(cardX, 8)
+  H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
+  local textX = cardX + cardW + 16
+  H.galleryTitle.TextWrapped = true
+  H.galleryTitle.TextXAlignment = Enum.TextXAlignment.Left
+  H.galleryTitle.TextSize = if wide then 24 else 20
+  H.galleryTitle.Position = UDim2.fromOffset(textX, 14)
+  H.galleryTitle.Size = UDim2.new(1, -textX - 110, 0, if wide then 62 else 52)
+  H.galleryCaption.TextWrapped = true
+  H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
+  H.galleryCaption.Position = UDim2.new(0, textX, 1, -40)
+  H.galleryCaption.Size = UDim2.new(1, -textX - 110, 0, 30)
+  H.galleryPrev.Position = UDim2.new(1, -96, 1, -48)
+  H.galleryNext.Position = UDim2.new(1, -50, 1, -48)
+  local contentY = bodyTop + (if showArt then artH + 8 else 0)
+  content.Position = UDim2.fromOffset(8, contentY)
+  content.Size = UDim2.new(1, -16, 1, -contentY - dockH)
+  H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
+  H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
 end
 mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
 tabBar:GetPropertyChangedSignal("Visible"):Connect(H.layoutBook)
@@ -1900,10 +2602,12 @@ hullBack.Size = UDim2.fromOffset(150, 14)
 hullBack.BorderSizePixel = 0
 hullBack.Parent = card
 corner(hullBack, 4)
-local hullStroke = Instance.new("UIStroke")
-hullStroke.Color = Color3.fromRGB(214, 170, 82)
-hullStroke.Thickness = 1.5
-hullStroke.Parent = hullBack
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullStroke = Instance.new("UIStroke")
+	hullStroke.Color = Color3.fromRGB(214, 170, 82)
+	hullStroke.Thickness = 1.5
+	hullStroke.Parent = hullBack
+end
 hullFill = Instance.new("Frame")
 hullFill.BackgroundColor3 = Color3.fromRGB(214, 40, 36)
 hullFill.Size = UDim2.fromScale(1, 1)
@@ -1911,31 +2615,37 @@ hullFill.BorderSizePixel = 0
 hullFill.Parent = hullBack
 corner(hullFill, 4)
 -- 질감: 위는 밝고 아래는 짙은 붉은 그라데이션 + 윗면 하이라이트 + 세로 줄무늬
-local hullGrad = Instance.new("UIGradient")
-hullGrad.Color = ColorSequence.new(Color3.fromRGB(255, 120, 96), Color3.fromRGB(150, 16, 20))
-hullGrad.Rotation = 90
-hullGrad.Parent = hullFill
-local hullShine = Instance.new("Frame")
-hullShine.BackgroundColor3 = Color3.new(1, 1, 1)
-hullShine.BackgroundTransparency = 0.72
-hullShine.Size = UDim2.new(1, -4, 0.32, 0)
-hullShine.Position = UDim2.fromOffset(2, 1)
-hullShine.BorderSizePixel = 0
-hullShine.Parent = hullFill
-corner(hullShine, 3)
-local hullTicks = Instance.new("Frame")
-hullTicks.BackgroundTransparency = 1
-hullTicks.Size = UDim2.fromScale(1, 1)
-hullTicks.ZIndex = 3
-hullTicks.Parent = hullBack
-for t = 1, 9 do
-	local tick = Instance.new("Frame")
-	tick.BackgroundColor3 = Color3.fromRGB(40, 8, 8)
-	tick.BackgroundTransparency = 0.6
-	tick.BorderSizePixel = 0
-	tick.Position = UDim2.new(t / 10, 0, 0, 0)
-	tick.Size = UDim2.new(0, 1, 1, 0)
-	tick.Parent = hullTicks
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullGrad = Instance.new("UIGradient")
+	hullGrad.Color = ColorSequence.new(Color3.fromRGB(255, 120, 96), Color3.fromRGB(150, 16, 20))
+	hullGrad.Rotation = 90
+	hullGrad.Parent = hullFill
+end
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullShine = Instance.new("Frame")
+	hullShine.BackgroundColor3 = Color3.new(1, 1, 1)
+	hullShine.BackgroundTransparency = 0.72
+	hullShine.Size = UDim2.new(1, -4, 0.32, 0)
+	hullShine.Position = UDim2.fromOffset(2, 1)
+	hullShine.BorderSizePixel = 0
+	hullShine.Parent = hullFill
+	corner(hullShine, 3)
+end
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local hullTicks = Instance.new("Frame")
+	hullTicks.BackgroundTransparency = 1
+	hullTicks.Size = UDim2.fromScale(1, 1)
+	hullTicks.ZIndex = 3
+	hullTicks.Parent = hullBack
+	for t = 1, 9 do
+		local tick = Instance.new("Frame")
+		tick.BackgroundColor3 = Color3.fromRGB(40, 8, 8)
+		tick.BackgroundTransparency = 0.6
+		tick.BorderSizePixel = 0
+		tick.Position = UDim2.new(t / 10, 0, 0, 0)
+		tick.Size = UDim2.new(0, 1, 1, 0)
+		tick.Parent = hullTicks
+end
 end
 hullText = Instance.new("TextLabel")
 hullText.BackgroundTransparency = 1
@@ -1989,38 +2699,45 @@ do
 local banner = Instance.new("Frame")
 banner.AnchorPoint = Vector2.new(0.5, 0)
 banner.Position = UDim2.new(0.5, 0, 0, 8)
-banner.Size = UDim2.fromOffset(130, 28)
+banner.Size = UDim2.fromOffset(420, 54)
 banner.BackgroundColor3 = Color3.fromRGB(90, 62, 28)
+banner.Name = "FirstVoyageObjective"
+H.goalBanner = banner
 banner.Parent = hud
-banner.Visible = false -- 상단 중앙 항구 이름은 쓰지 않는다
+banner.Visible = false -- [항해 목표] 첫 안내가 있을 때만 보여 주는 중앙 목표 리본
 corner(banner, 8)
 hudStroke(banner, 2)
 hudBanner = hudText(banner, UDim2.new(), UDim2.fromScale(1, 1), 20, Color3.fromRGB(255, 240, 200), Enum.TextXAlignment.Center)
-hudBanner.TextSize = 15
+hudBanner.TextSize = 17
+hudBanner.TextWrapped = true
+hudBanner.Font = Enum.Font.GothamBold
 end
 
 -- [코인 카드] 카드 생성 직후 임시 변수 해제.
 do
-local coinCard = Instance.new("Frame")
-coinCard.BackgroundColor3 = NAVY
-coinCard.BackgroundTransparency = 0.08
-coinCard.AnchorPoint = Vector2.new(1, 0)
-coinCard.Position = UDim2.new(1, -8, 0, 8)
-coinCard.Size = UDim2.fromOffset(120, 30)
-coinCard.Parent = hud
-coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
-corner(coinCard, 10)
-hudStroke(coinCard, 2)
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local coinCard = Instance.new("Frame")
+	coinCard.BackgroundColor3 = NAVY
+	coinCard.BackgroundTransparency = 0.08
+	coinCard.AnchorPoint = Vector2.new(1, 0)
+	coinCard.Position = UDim2.new(1, -8, 0, 8)
+	coinCard.Size = UDim2.fromOffset(120, 30)
+	coinCard.Parent = hud
+	coinCard.Visible = false -- 코인은 왼쪽 카드에 표시
+	corner(coinCard, 10)
+	hudStroke(coinCard, 2)
+end
 end
 
 -- [항해 도구] 선 조각 임시 아이콘 대신 기존 등록된 원화와 황동 테두리를 쓴다.
 -- 시스템 4개는 시설 6개와 색으로 구분한다(같은 원화를 쓰는 곳은 색을 바꿔 중복처럼 안 보이게).
 -- [항해 도구] 아이콘 데이터는 바로 아래 H.hudShortcut 메서드에만 유지한다.
+local hudTop, hudTopGui -- 아이콘 애니메이션을 HUD 표시 상태와 연동한다.
 do
-local HUD_MENU_TINT = {
-	view = Color3.fromRGB(196, 222, 246), gear = Color3.fromRGB(196, 222, 246),
-	deck = Color3.fromRGB(255, 176, 150), help = Color3.fromRGB(255, 255, 255),
-}
+local hudTweenService = game:GetService("TweenService")
+-- [청동 컨셉 통일] 모든 HUD·도크 아이콘을 같은 청동 색으로 칠한다(아이콘마다 다른 색 금지).
+local HUD_BRONZE = Color3.fromRGB(214, 152, 92)
+local HUD_MENU_TINT = {}
 local HUD_MENU_ART = {
 	gear = "", deck = "", auto = "harbor", help = "",
 	view = "view", trade = "trade", crew = "", recruit = "", scholar = "tech", route = "route",
@@ -2031,34 +2748,59 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 	local button = Instance.new("TextButton")
 	button.Name = name
 	-- [시설 아이콘] 기존 등록 원화만 투명 배경 위에 표시한다. 클릭 영역·글자·선택 상태는 유지한다.
-	button.Size = UDim2.fromOffset(if dockItem then 52 else 44, if dockItem then 64 else 44)
+	button.Size = UDim2.fromOffset(if dockItem then 58 else 44, if dockItem then 76 else 44)
 	button.BackgroundColor3 = COLORS.leather
 	button.BackgroundTransparency = 1
 	button.BorderSizePixel = 0
 	button.Text = ""
 	button.AutoButtonColor = false
-	corner(button, 8)
+	-- [원형 테두리] 기존 사각 버튼 테두리 대신 아이콘 아래 동그란 음영만 둔다.
+	local disc = Instance.new("Frame")
+	disc.Name = "CircularSelection"
+	disc.AnchorPoint = Vector2.new(0.5, 0.5)
+	disc.Position = UDim2.new(0.5, 0, 0, 24)
+	disc.Size = UDim2.fromOffset(50, 50)
+	disc.BackgroundColor3 = Color3.fromRGB(225, 171, 83)
+	disc.BackgroundTransparency = 1
+	disc.BorderSizePixel = 0
+	disc.ZIndex = 1
+	disc.Parent = button
+	local round = Instance.new("UICorner")
+	round.CornerRadius = UDim.new(1, 0)
+	round.Parent = disc
+	local grad = Instance.new("UIGradient")
+	grad.Color = ColorSequence.new(Color3.fromRGB(232, 170, 110), Color3.fromRGB(110, 62, 30)) -- 청동
+	grad.Rotation = 90
+	grad.Parent = disc
 	local badgeStroke = Instance.new("UIStroke")
-	badgeStroke.Name = "DockBorder"
+	badgeStroke.Name = "CircleBorder"
 	badgeStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	badgeStroke.Color = UI_BRASS_DARK
 	badgeStroke.Thickness = 1.5
 	badgeStroke.Transparency = 1 -- [투명 아이콘] 기존 검사·선택 상태용 객체는 유지하되 외곽 사각 테두리는 그리지 않는다.
-	badgeStroke.Parent = button
+	badgeStroke.Parent = disc
 	button:SetAttribute("ActionLabel", label)
 	button.Parent = parent
 	local specialGlyph = if key == "tavern" then "tavern" elseif key == "deck" then "gwent"
 		elseif key == "journal" then "journal" elseif key == "gear" then "gear"
 		elseif key == "help" then "help" elseif key == "status" then "captain" else nil
 	local artId = if specialGlyph then nil else AssetIds["Menu/" .. (HUD_MENU_ART[key] or key)]
-	-- [메뉴 공통 규격] 시설/시스템 도크는 36px, 개별 버튼은 31px.
-	local artSize = if dockItem then 36 else 31
+	-- [메뉴 규격] 투명 원화 그대로 사용. 3D 외교 깃발과 기존 시설 아이콘은 같은 크기·기준선.
+	local facility = parent.Name == "Dock" and name:sub(1, 5) == "Menu_"
+	local artSize = if facility then 46 elseif dockItem then 43 else 31
 	local artTop = if dockItem then 3 else 4
-	if specialGlyph then
+	if H.hasIconArt(key) then -- [청동 통일] 승인 청동 원화가 있으면 도형보다 우선
+		local icon = modelIcon(button, "FacilityArt", key, nil, artSize, label)
+		icon.Name = "MenuArt"
+		icon.AnchorPoint = Vector2.new(0.5, 0)
+		icon.Position = UDim2.new(0.5, 0, 0, artTop)
+		icon.ZIndex = 2
+	elseif specialGlyph then
 		-- [시설·시스템 통일] 투명 황동 아이콘: 주점 잔/카드/기록장/설정/도움말.
 		local symbol = modelIcon(button, "Glyph", specialGlyph, nil, artSize, label)
 		symbol.Name = "MenuArt"
-		symbol.Position = UDim2.new(0.5, -artSize / 2, 0, artTop)
+		symbol.AnchorPoint = Vector2.new(0.5, 0)
+		symbol.Position = UDim2.new(0.5, 0, 0, artTop)
 		symbol.ZIndex = 2
 	elseif artId then
 		for i = 1, 2 do
@@ -2069,8 +2811,8 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			art.Size = UDim2.fromOffset(artSize, artSize)
 			art.BackgroundTransparency = 1
 			art.Image = "rbxassetid://" .. tostring(artId)
-			art.ImageColor3 = if i == 1 then Color3.fromRGB(10, 6, 3) else (HUD_MENU_TINT[key] or Color3.fromRGB(232, 199, 148))
-			art.ImageTransparency = if i == 1 then 0.45 else 0
+			art.ImageColor3 = if i == 1 then Color3.fromRGB(52, 35, 18) else (HUD_MENU_TINT[key] or HUD_BRONZE)
+			art.ImageTransparency = if i == 1 then 0.76 else 0
 			art.ScaleType = Enum.ScaleType.Fit
 			art.ZIndex = i
 			art.Parent = button
@@ -2086,10 +2828,10 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local caption = Instance.new("TextLabel")
 		caption.Name = "MenuName"
 		caption.BackgroundTransparency = 1
-		caption.Position = UDim2.fromOffset(0, 42)
+		caption.Position = UDim2.fromOffset(0, 53)
 		caption.Size = UDim2.new(1, 0, 0, 19)
 		caption.Font = Enum.Font.GothamBold
-		caption.TextSize = 13
+		caption.TextSize = 14
 		caption.TextWrapped = false
 		caption.ZIndex = 3
 		caption.TextColor3 = Color3.fromRGB(255, 244, 214)
@@ -2102,17 +2844,17 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local selected = button:GetAttribute("SelectedFacility") == true
 		local art = button:FindFirstChild("MenuArt")
 		if art and art:IsA("ImageLabel") then
-			-- [선택 대비] 선택 원화는 밝아지고 기본 원화는 무광 황동으로 차분하게 표시한다.
-			art.ImageColor3 = if selected then Color3.fromRGB(255, 238, 192) else (HUD_MENU_TINT[key] or Color3.fromRGB(232, 199, 148))
+			-- [밝은 투명 원화] 배경 사각형 없이 원본 색을 최대한 유지한다.
+			art.ImageColor3 = if selected then Color3.fromRGB(255, 253, 237) else (HUD_MENU_TINT[key] or HUD_BRONZE)
 		elseif art and art:IsA("Frame") and art:GetAttribute("MenuGlyph") then
 			-- [선택 색 동기화] 원화뿐 아니라 황동 도형도 같은 선택 강조를 받는다.
-			local highlight = if selected then Color3.fromRGB(248, 207, 126) else Color3.fromRGB(226, 174, 84)
+			local highlight = if selected then Color3.fromRGB(255, 243, 190) else Color3.fromRGB(255, 222, 155)
 			for _, part in art:GetDescendants() do
 				if part.Name == "GlyphShape" and part:IsA("Frame") then
 					local shine = part:FindFirstChildOfClass("UIGradient")
 					if shine then
-						shine.Color = if selected then ColorSequence.new(Color3.fromRGB(255, 232, 175), Color3.fromRGB(218, 170, 89))
-								else ColorSequence.new(Color3.fromRGB(249, 211, 139), Color3.fromRGB(193, 137, 57))
+						shine.Color = if selected then ColorSequence.new(Color3.fromRGB(255, 253, 228), Color3.fromRGB(247, 204, 125))
+								else ColorSequence.new(Color3.fromRGB(255, 240, 190), Color3.fromRGB(232, 183, 109))
 					else
 						part.BackgroundColor3 = highlight
 					end
@@ -2124,11 +2866,115 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 				end
 			end
 		end
+		badgeStroke.Color = Color3.fromRGB(255, 233, 170)
+		badgeStroke.Transparency = if selected then 0.20 else 1
+		disc.BackgroundTransparency = if selected then 0.52 else 1
 		local caption = button:FindFirstChild("MenuName")
-		if caption then caption.TextColor3 = if selected then COLORS.gold else Color3.fromRGB(255, 244, 214) end
+		if caption then caption.TextColor3 = if selected then Color3.fromRGB(255, 237, 172) else Color3.fromRGB(255, 244, 214) end
 	end
 	button:GetAttributeChangedSignal("SelectedFacility"):Connect(paintSelection)
 	paintSelection()
+	-- [메인 HUD 아이콘] 원화 자체만 심장박동처럼 커졌다 작아진다. 버튼과 글자는 고정한다.
+	-- 아이콘당 금빛 광휘 1개와 원화 맥동 1개만 반복하며 프레임 업데이트를 만들지 않는다.
+	local iconArt = button:FindFirstChild("MenuArt")
+	local iconGlow = Instance.new("ImageLabel")
+	iconGlow.Name = "IconBreathGlow"
+	iconGlow.AnchorPoint = Vector2.new(0.5, 0.5)
+	iconGlow.Position = UDim2.new(0.5, 0, 0, 23)
+	iconGlow.Size = UDim2.fromOffset(51, 51)
+	iconGlow.BackgroundTransparency = 1
+	iconGlow.BorderSizePixel = 0
+	iconGlow.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	iconGlow.ImageColor3 = Color3.fromRGB(255, 198, 91)
+	iconGlow.ImageTransparency = 0.47
+	iconGlow.Visible = false -- [알림 때만] 평소에는 숨김. IconAlert 속성이 켜질 때만 광휘·맥동.
+	iconGlow.ZIndex = 1
+	iconGlow.Active = false
+	iconGlow.Parent = button
+	local iconScale = nil
+	local breathTween = nil
+	if iconArt and iconArt:IsA("GuiObject") then
+		iconScale = Instance.new("UIScale")
+		iconScale.Name = "IconHeartbeat"
+		iconScale.Scale = 1
+		iconScale.Parent = iconArt
+		breathTween = hudTweenService:Create(iconScale,
+			TweenInfo.new(1.00 + (name:len() % 4) * 0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{ Scale = 1.14 })
+	end
+	local glowTween = hudTweenService:Create(iconGlow,
+		TweenInfo.new(1.22 + (name:len() % 3) * 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+		{ Size = UDim2.fromOffset(63, 63), ImageTransparency = 0.80, Rotation = 24 })
+	local function syncIconMotion()
+		local alerting = button:GetAttribute("IconAlert") == true or button:GetAttribute("GuideAlert") == true
+		iconGlow.Visible = false -- [효과 정리] 반짝이 광휘 제거. 아이콘 맥동만 남긴다.
+		local animate = alerting and not game:GetService("GuiService").ReducedMotionEnabled
+			and (not hudTopGui or hudTopGui.Enabled) and button.Visible
+		if animate then
+			if breathTween then breathTween:Play() end
+		else
+			if breathTween then breathTween:Pause() end
+			glowTween:Pause()
+			if iconScale then iconScale.Scale = 1 end
+			iconGlow.Size = UDim2.fromOffset(51, 51)
+			iconGlow.ImageTransparency = 0.60
+			iconGlow.Rotation = 0
+		end
+	end
+	if hudTopGui then hudTopGui:GetPropertyChangedSignal("Enabled"):Connect(syncIconMotion) end
+	button:GetPropertyChangedSignal("Visible"):Connect(syncIconMotion)
+	button:GetAttributeChangedSignal("IconAlert"):Connect(syncIconMotion)
+	button:GetAttributeChangedSignal("GuideAlert"):Connect(syncIconMotion)
+	game:GetService("GuiService"):GetPropertyChangedSignal("ReducedMotionEnabled"):Connect(syncIconMotion)
+	syncIconMotion()
+	local art = button:FindFirstChild("MenuArt")
+	if facility and art then
+		local restPosition = art.Position
+		local pulse = hudTweenService:Create(art, TweenInfo.new(0.16, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
+			Rotation = if key == "tavern" then -9 elseif key == "route" then 8 else 0,
+			Position = restPosition - UDim2.fromOffset(0, 2),
+			Size = UDim2.fromOffset(50, 50),
+		})
+		H.dockMotion[name] = pulse
+	end
+	-- [터치 광휘] 12개 기존 메뉴에 투명 금빛 파동 1회. 연타 시 이전 파동을 재사용 없이 제거해 누적을 막는다.
+	if dockItem then
+		button.Activated:Connect(function()
+			if game:GetService("GuiService").ReducedMotionEnabled then return end
+			badgeStroke.Transparency = 0
+			hudTweenService:Create(badgeStroke, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Transparency = if button:GetAttribute("SelectedFacility") then 0.20 else 1,
+			}):Play()
+			-- [터치 파동] 눌린 아이콘 안에서만 짧게 퍼지므로 화면 전체를 덮지 않는다.
+			local previousGlow = button:FindFirstChild("PressGlow")
+			if previousGlow then previousGlow:Destroy() end
+			local glow = Instance.new("Frame")
+			glow.Name = "PressGlow"
+			glow.AnchorPoint = Vector2.new(0.5, 0.5)
+			glow.Position = UDim2.new(0.5, 0, 0, 23)
+			glow.Size = UDim2.fromOffset(24, 24)
+			glow.BackgroundColor3 = Color3.fromRGB(255, 213, 112)
+			glow.BackgroundTransparency = 0.54
+			glow.BorderSizePixel = 0
+			glow.Active = false
+			glow.ZIndex = 4
+			glow.Parent = button
+			local curve = Instance.new("UICorner")
+			curve.CornerRadius = UDim.new(1, 0)
+			curve.Parent = glow
+			local rim = Instance.new("UIStroke")
+			rim.Color = Color3.fromRGB(255, 243, 166)
+			rim.Thickness = 2
+			rim.Parent = glow
+			hudTweenService:Create(rim, TweenInfo.new(0.48), { Transparency = 1 }):Play()
+			local tw = hudTweenService:Create(glow,
+				TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{ Size = UDim2.fromOffset(63, 63), BackgroundTransparency = 1 })
+			tw.Completed:Connect(function() glow:Destroy() end)
+			tw:Play()
+			-- [정리] 누를 때 반짝이 파편은 제거(값싼 효과). 눌림 고리와 크기 반응만 남긴다.
+		end)
+	end
 	local scale = Instance.new("UIScale")
 	scale.Parent = button
 	button.InputBegan:Connect(function(input)
@@ -2146,7 +2992,7 @@ end
 end
 
 -- 오른쪽 아이콘은 로블록스 상단 바 높이를 무시하고 화면 맨 위에 붙인다(왼쪽 카드는 기존 위치 유지).
-local hudTopGui = Instance.new("ScreenGui")
+hudTopGui = Instance.new("ScreenGui")
 hudTopGui.Name = "MareEssentiaHudTop"
 hudTopGui.ResetOnSpawn = false
 hudTopGui.IgnoreGuiInset = true
@@ -2154,11 +3000,26 @@ hudTopGui.DisplayOrder = gui.DisplayOrder
 hudTopGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 hudTopGui.Enabled = hud.Visible
 hudTopGui.Parent = player:WaitForChild("PlayerGui")
-local hudTop = Instance.new("Frame")
+hudTop = Instance.new("Frame")
 hudTop.Name = "HudTop"
 hudTop.BackgroundTransparency = 1
 hudTop.Size = UDim2.fromScale(1, 1)
 hudTop.Parent = hudTopGui
+do
+-- [지상·해상 전환] 바탕화면 입자는 없애고 기존 걷기/전경 아이콘만 색광을 전환한다.
+function H.updateScreenAtmosphere()
+	local walk = H.viewFxButton
+	if not walk then return end
+	local aura = walk:FindFirstChild("IconBreathGlow")
+	if aura then
+		aura.ImageColor3 = if overview then Color3.fromRGB(108, 214, 255)
+			else Color3.fromRGB(255, 190, 90)
+	end
+	local disc = walk:FindFirstChild("CircularSelection")
+	if disc then disc.BackgroundTransparency = 1 end
+end
+H.updateScreenAtmosphere()
+end
 hud:GetPropertyChangedSignal("Visible"):Connect(function()
 	hudTopGui.Enabled = hud.Visible and player.PlayerGui:FindFirstChild("TradeHallGui") == nil
 end)
@@ -2172,37 +3033,105 @@ dock.Position = UDim2.new(1, -8, 0, 4)
 dock.Size = UDim2.fromOffset(228, 164)
 dock.CanvasSize = UDim2.new()
 dock.AutomaticCanvasSize = Enum.AutomaticSize.Y
-dock.ScrollBarThickness = 2
+dock.ScrollBarThickness = 3
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hudTop
+-- [12개 도크] 시설 8 + 도구 4 = 위 6개·아래 6개. 배경 없는 기존 아이콘을 2열 격자로 정렬한다.
 local dockGrid = Instance.new("UIGridLayout")
-dockGrid.CellSize = UDim2.fromOffset(52, 64)
-dockGrid.CellPadding = UDim2.fromOffset(4, 4)
+dockGrid.FillDirection = Enum.FillDirection.Horizontal
+dockGrid.FillDirectionMaxCells = 6
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
-dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Right
-dockGrid.FillDirectionMaxCells = 4
+dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+dockGrid.VerticalAlignment = Enum.VerticalAlignment.Center
+dockGrid.CellPadding = UDim2.fromOffset(6, 6)
+dockGrid.CellSize = UDim2.fromOffset(58, 76)
 dockGrid.Parent = dock
-local dockLimit = Instance.new("UISizeConstraint")
-dockLimit.MaxSize = Vector2.new(300, 200)
-dockLimit.Parent = dock
+do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
+	local dockLimit = Instance.new("UISizeConstraint")
+	dockLimit.MaxSize = Vector2.new(620, 200)
+	dockLimit.Parent = dock
+end
 
--- [시설 목차] 시설 7곳은 기존 도크 그대로, 세부 기능은 각 시설의 탭 안에만 둔다.
+-- [시설 목차] 외교 포함 기존 8곳. 별도의 아이콘 아틀라스나 메뉴 구조를 만들지 않는다.
 H.DOCK = {
-	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "yard", "조선소", "yard" },
+	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "diplomacy", "외교", "diplomacy" }, { "yard", "조선소", "yard" },
 	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
 }
 H.dockButtons = {}
+H.dockNotices = {}
+H.dockBlooms = {}
+H.dockMotion = {}
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
 	H.dockButtons[d[1]] = b
+	-- [시설 신호] 기존 아이콘 위에 투명한 색광 두 겹을 한 번만 만든다. 메뉴·자산·터치 영역은 유지.
+	local halo = Instance.new("ImageLabel")
+	halo.Name = "SignalHalo"
+	halo.AnchorPoint = Vector2.new(0.5, 0.5)
+	halo.Position = UDim2.new(0.5, 0, 0, 23) -- [모바일] 셀 가운데에서만 빛이 퍼져 여섯 번째 열에서도 잘리지 않는다.
+	halo.Size = UDim2.fromOffset(28, 28)
+	halo.Image = "rbxasset://textures/particles/sparkles_main.dds"
+	halo.ImageColor3 = Color3.fromRGB(255, 204, 96)
+	halo.ImageTransparency = 0.58
+	halo.BackgroundTransparency = 1
+	halo.BorderSizePixel = 0
+	halo.ZIndex = 6
+	halo.Visible = false
+	halo.Parent = b
+	local notice = Instance.new("ImageLabel")
+	notice.Name = "FacilityNotice"
+	notice.AnchorPoint = Vector2.new(0.5, 0.5)
+	-- [알림 배지] 반짝이 대신 기존 청동 예비 시트의 '느낌표 깃발' 원화를 아이콘 우상단에 작게 단다.
+	notice.Position = UDim2.new(0.5, 17, 0, 5)
+	notice.Size = UDim2.fromOffset(20, 20)
+	local flagSheet = H.reserveIconAtlas[2]
+	notice.Image = if flagSheet then "rbxassetid://" .. tostring(flagSheet) else ""
+	notice.ImageRectOffset = Vector2.new(3 * 192, 1 * 189)
+	notice.ImageRectSize = Vector2.new(192, 189)
+	notice.ScaleType = Enum.ScaleType.Fit
+	notice.BackgroundTransparency = 1
+	notice.BorderSizePixel = 0
+	notice.ImageColor3 = Color3.new(1, 1, 1)
+	notice.ZIndex = 7
+	notice.Visible = false
+	notice.Parent = b
+	H.dockNotices[d[1]] = notice
+	-- [긴급·저가·납품] 스크롤 잘림 밖 100px 둥근 그림자/빛 고리.
+	-- [시설 알림] 기존 알림 판정은 유지하되 100~128px 화면광 대신 아이콘 크기의 원형 음영을 쓴다.
+	local bloom = Instance.new("Frame")
+	bloom.Name = "SignalBloom_" .. d[1]
+	bloom.AnchorPoint = Vector2.new(0.5, 0.5)
+	bloom.Position = UDim2.new(0.5, 0, 0, 23)
+	bloom.Size = UDim2.fromOffset(46, 46)
+	bloom.BackgroundColor3 = Color3.fromRGB(255, 202, 92)
+	bloom.BackgroundTransparency = 0.77
+	bloom.BorderSizePixel = 0
+	bloom.Active = false
+	bloom.Visible = false
+	bloom.ZIndex = 1
+	bloom.Parent = b
+	local r = Instance.new("UICorner")
+	r.CornerRadius = UDim.new(1, 0)
+	r.Parent = bloom
+	local shade = Instance.new("UIGradient")
+	shade.Color = ColorSequence.new(Color3.fromRGB(255, 255, 237), Color3.fromRGB(145, 75, 40))
+	shade.Rotation = 90
+	shade.Parent = bloom
+	local rim = Instance.new("UIStroke")
+	rim.Name = "BloomEdge"
+	rim.Thickness = 2
+	rim.Transparency = 0.24
+	rim.Parent = bloom
+	H.dockBlooms[d[1]] = bloom
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
 end
 
--- [도구 목차] 시설 7곳과 별개인 일지·걷기·내 카드·설정·도움말 5개를 같은 56px 간격으로 정렬한다.
+-- [도구 목차] 설정·걷기·저널·내 카드 4개는 시설 8개와 동일한 6×2 도크에 배치한다.
+-- 도움말은 기존 설정 > 게임 방법에서 열 수 있으므로 중복 HUD 버튼만 숨긴다.
 local render
 local openOptions
 local SYS_Y = 170
@@ -2213,12 +3142,16 @@ do
 	local help = H.hudShortcut(hudTop, "HelpButton", "help", "도움말", true)
 	help.AnchorPoint = Vector2.new(1, 0)
 	help.Position = UDim2.new(1, -8, 0, SYS_Y)
+	help.Visible = false -- [12개] 별도 HUD 아이콘만 숨김. 설정 > 게임 방법은 그대로 유지.
 	help.Activated:Connect(function() openOptions(true) end)
 	local walk = H.hudShortcut(hudTop, "ViewToggle", "view", "걷기", true)
+	H.viewFxButton = walk
+	H.updateScreenAtmosphere()
 	walk.AnchorPoint = Vector2.new(1, 0)
 	walk.Position = UDim2.new(1, -176, 0, SYS_Y)
 	walk.Activated:Connect(function()
 		overview = not overview
+		H.updateScreenAtmosphere()
 		local cap = walk:FindFirstChild("MenuName")
 		if cap then cap.Text = if overview then "걷기" else "전경" end
 		applyView()
@@ -2337,19 +3270,105 @@ do
 			card.Parent = body
 			return card
 		end
-		-- 1) 지금 할 일
+		-- [첫 항해 목표] 기존 튜토리얼 단계와 실제 서버 진행 상태를 저널의 한 카드에서 확인한다.
+		head("첫 항해 목표")
+		do
+			local captain, p, ship = view.captain, view.player, view.ship
+			local sailed = (p.day or 0) > 0
+			if captain and not H.tutorialHidden and (captain.step ~= "done" or not sailed) then
+				local steps = {
+					{ done = captain.step ~= "name", text = "상인 길드 서기에게 이름 올리기" },
+					{ done = captain.step == "portrait" or captain.step == "done", text = "주점 동료 맞이하기" },
+					{ done = captain.step == "done", text = "떠돌이 화가에게 초상 받기" },
+					{ done = sailed or (ship.cargoUsed or 0) > 0, text = "항구 특산품 구매하기" },
+					{ done = sailed, text = "지도에서 다른 항구로 출항하기" },
+				}
+				local count, lines = 0, {}
+				for _, step in steps do
+					if step.done then count += 1 end
+					table.insert(lines, (if step.done then "✓ " else "○ ") .. step.text)
+				end
+				goal(string.format("첫걸음 %d/%d", count, #steps), table.concat(lines, "\n"), count / #steps, COLORS.gold)
+			elseif view.guide then
+				local lines = {}
+				for _, step in (view.guide.steps or {}) do
+					table.insert(lines, tostring(step.mark or "○") .. " " .. tostring(step.text or ""))
+				end
+				goal(view.guide.title or "항해 목표", table.concat(lines, "\n"), nil)
+			elseif view.actIntro or view.act then
+				local mission = view.actIntro or view.act
+				goal(mission.title or "항해 목표", tostring(mission.goal or "기록된 목표를 확인해"), nil)
+			else
+				goal("첫 항해 완료", "진행 중인 의뢰와 새로운 항해 목표는 아래에서 확인해.", nil)
+			end
+		end
+		-- [메뉴 조언 단일화] 비서의 긴급·진행 권고는 저널에서만 보여 준다.
 		head("지금 할 일")
 		local todo = 0
+		do
+			local ship = view.ship
+			local cue, detail, tab = nil, nil, nil
+			if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.4 then
+				cue, detail, tab = "선체 수리 필요", string.format("내구도 %d/%d · 항해 전 수리 확인", ship.hull, ship.maxHull), "yard"
+			elseif ship.supplies <= 5 then
+				cue, detail, tab = "보급품 부족", "보급 " .. tostring(ship.supplies) .. "개 · 출항 전 보급 확인", "yard"
+			elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
+				cue, detail, tab = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전 화물 정리", ship.cargoUsed, ship.cargoCapacity), "trade"
+			end
+			if not cue then
+				for _, q in (view.quests and view.quests.active) or {} do
+					if q.kind == "deliver" and q.progress >= q.amount then
+						cue, detail, tab = "납품 가능한 의뢰", q.name .. " · 보상 수령 조건 확인", "quest"
+						break
+					end
+				end
+			end
+			if not cue then
+				for _, t in (view.tech or {}) do
+					if not t.owned and not t.blocked and (t.cost or 0) <= view.player.coins then
+						cue, detail, tab = "연구 가능한 기술", t.name .. " · 비용 " .. tostring(t.cost or 0) .. "코인", "tech"
+						break
+					end
+				end
+			end
+			if cue then
+				local covered = false
+				for _, advice in (view.counsel or {}) do
+					if advice.tab == tab then covered = true; break end
+				end
+				if not covered then
+					todo += 1
+					local urgent = tab == "yard" or tab == "trade"
+					local card = goal((if urgent then "주의 · " else "다음 할 일 · ") .. cue, detail, nil)
+					local go = mkButton(card, "해당 메뉴로 이동", if urgent then COLORS.red else COLORS.green,
+						UDim2.new(1, 0, 0, 46), function()
+							close()
+							H.goAdvice(tab)
+						end, true)
+					go.LayoutOrder = 4
+				end
+			end
+		end
 		for _, c in view.counsel or {} do
 			if todo >= 3 then break end
+			-- [중복 제거] 튜토리얼 길잡이 문장은 바로 위 첫 항해 체크리스트와 중복 표시하지 않는다.
+			if H.tutorialGoalActive and string.sub(tostring(c.id or ""), 1, 2) == "g_" then continue end
 			todo += 1
 			local card = goal(string.format("%s의 조언", c.who and c.who.name or "동료"), c.text, nil)
 			if c.tab then
-				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 40), function()
+				local go = mkButton(card, c.label or "가 보기", COLORS.green, UDim2.new(1, 0, 0, 46), function()
 					close()
 					H.goAdvice(c.tab)
 				end, true)
 				go.LayoutOrder = 4
+			end
+			if c.dismissable and c.id then
+				-- [기존 서버 동작 보존] 메뉴에서 없어진 '알겠어요'를 저널에 그대로 연결한다.
+				local done = mkButton(card, "알겠어요 · 조언 닫기", COLORS.grey, UDim2.new(1, 0, 0, 46), function()
+					close()
+					call("AdviceDone", { id = c.id })
+				end, true)
+				done.LayoutOrder = 5
 			end
 		end
 		if todo == 0 then
@@ -2378,8 +3397,16 @@ do
 		if cx then
 			goal("백과 도감", string.format("발견 %d / %d", cx.found, cx.total), cx.found / math.max(1, cx.total), COLORS.green)
 		end
-		-- 3) 이야기 기록: 겪은 일을 일기처럼 자세히 남긴다 (최근 것이 위)
+		-- [교역소 프롤로그 이동] 서버의 원문을 변경하지 않고 저널 이야기 기록에 보존한다.
 		head("이야기 기록")
+		if view.prologue then
+			goal("프롤로그 · " .. tostring(view.prologue.title or "첫 항해"), tostring(view.prologue.text or ""), nil)
+		end
+		if view.actIntro then
+			goal(tostring(view.actIntro.title or "시대의 시작"), tostring(view.actIntro.text or ""), nil)
+		elseif view.act and view.act.text then
+			goal(tostring(view.act.title or "항해 이야기"), tostring(view.act.text), nil)
+		end
 		local logged = 0
 		local hv = view.history
 		for i = #(hv and hv.recent or {}), 1, -1 do
@@ -2410,13 +3437,16 @@ end
 
 -- 개인 카드 창: 내가 가진 카드(주인공·동료·지식·유물·동물·우군·배)와 지도자 능력을 보여 준다 (오른쪽 위 버튼)
 do
-	local BC = require(Shared:WaitForChild("BoardingCards"))
+	local BC = nil -- [시작 속도] 내 카드가 열릴 때만 기존 카드 규칙 모듈 로드
 	local KIND = { crew = "🃏 인물", relic = "💎 유물", animal = "🐾 동물", book = "📖 지식", friend = "🤝 우군", ship = "⚓ 배" }
 	local deckBtn = H.hudShortcut(hudTop, "DeckButton", "deck", "내 카드", true)
 	deckBtn.AnchorPoint = Vector2.new(1, 0)
 	deckBtn.Position = UDim2.new(1, -120, 0, SYS_Y)
 	local open = nil
-	function H.openDeck(onlyOpen: boolean?)
+	function H.openDeck(onlyOpen: boolean?, initialTab: string?)
+		-- [첫 게임 보호] 시작 화면/선장 소개 중에는 내 카드 창 자동 개봉을 막는다.
+		if not view or newGameMode or H.titleMenuOpen or H.openingPending or sceneHold
+			or (view.captain and view.captain.step ~= "done") then return end
 		if open then
 			if onlyOpen then
 				return
@@ -2425,31 +3455,29 @@ do
 			open = nil
 			return
 		end
+        -- [내 카드 진입] 시작 화면을 먼저 띄우고, 버튼을 눌렀을 때 정본 모듈을 준비한다.
+        local ready, loaded = pcall(function()
+            BC = BC or require(Shared:WaitForChild("BoardingCards"))
+            return NavalBattle or require(Shared:WaitForChild("NavalBattle"))
+        end)
+        if not ready then
+            warn("[MareEssentia] 카드 장부 로드 실패", loaded)
+            return
+        end
+        NavalBattle = loaded
 		local layer = overlayGui("DeckWindow", 56)
+		layer.ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
 		open = layer
-		local dim = Instance.new("TextButton")
-		dim.Size = UDim2.fromScale(1, 1)
-		dim.BackgroundColor3 = Color3.new(0, 0, 0)
-		dim.BackgroundTransparency = 0.5
-		dim.Text = ""
-		dim.AutoButtonColor = false
-		dim.Parent = layer
-		dim.Activated:Connect(function()
-			layer:Destroy()
-			open = nil
+		local mainWasVisible, hudWasEnabled = main.Visible, hudTopGui.Enabled
+		main.Visible, hudTopGui.Enabled = false, false
+		layer.Destroying:Connect(function()
+			main.Visible, hudTopGui.Enabled = mainWasVisible, hudWasEnabled
 		end)
 		local win = Instance.new("Frame")
-		win.AnchorPoint = Vector2.new(0.5, 0.5)
-		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.fromScale(0.98, 0.96)
+		win.Size = UDim2.fromScale(1, 1)
 		win.BackgroundColor3 = NAVY
 		win.BorderSizePixel = 0
 		win.Parent = layer
-		corner(win, 14)
-		hudStroke(win, 2)
-		local cons = Instance.new("UISizeConstraint")
-		cons.MaxSize = Vector2.new(4000, 3000)
-		cons.Parent = win
 		local deck = view and view.deck
 		local cards = (deck and deck.cards) or {}
 		local CBk = require(Shared:WaitForChild("CardBook"))
@@ -2489,25 +3517,38 @@ do
 				deck = view and view.deck,
 				onCards = function(acts)
 					payload.actions = acts
+					local before = table.clone(bookOf().owned)
 					local r = call(action, payload)
-					return if r and r.ok then "a" else "b"
+					if not r or not r.ok then return "b" end
+					local reward
+					for id, count in bookOf().owned do
+						if count > (before[id] or 0) then
+							if reward then return "a" end
+							reward = id
+						end
+					end
+					return "a", reward
 				end,
-				onDone = function()
+				onDone = function(_, replay)
 					inField = false
 					main.Visible = true
 					render()
+					H.openDeck(true, if replay then "battle" else nil)
 				end,
 			})
 		end
 		local function startPractice()
 			local bk = bookOf()
-			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {} } })
+			playCardOnly("연습전", "CardPractice", {}, { kind = "boarding", seed = 51, my = {}, foe = {}, book = { ids = bk.practiceIds, tier = {}, bonus = {}, practice = true } })
 		end
-		local function startDuel()
-			local r = call("CardDuelStart")
+		local function startDuel(questId: string?)
+			-- [이야기 카드 대결] questId 를 주면 서버가 정한 지도자 덱(duelFoe)과 겨룬다.
+			local r = call("CardDuelStart", if questId then { questId = questId } else nil)
 			local seed = view and view.cardbook and view.cardbook.duelSeed
+			local foe = view and view.cardbook and view.cardbook.duelFoe
 			if r and r.ok and seed then
-				playCardOnly("카드 대결", "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {}, foe = {} })
+				playCardOnly(if foe then "이야기 대결" else "카드 대결", "CardDuelEnd", {}, { kind = "boarding", seed = seed, my = {},
+					foe = if foe then { faction = foe.faction, leader = foe.leader } else {} })
 			end
 		end
 		H.devCards = { duel = startDuel, practice = startPractice }
@@ -2564,10 +3605,16 @@ do
 		}
 		resetWant()
 		ui = DeckBuilder.build(win, {
+			initialTab = initialTab,
 			CB = CBk, BC = BC, AssetIds = AssetIds, artKey = NavalBattle.cardArtworkKey,
 			catalog = catalog, galleryCtx = galleryCtx,
 			getBook = bookOf, getView = bookOf, getWant = function() return want end,
 			onWant = onWant, act = act, startPractice = startPractice, startDuel = startDuel,
+			onReplace = function(ids)
+				want = {}
+				for _, id in ids do want[id] = (want[id] or 0) + 1 end
+				ui.refresh(false)
+			end,
 			buildExtra = buildCrew,
 			onClose = function()
 				if open then
@@ -2588,6 +3635,14 @@ H.hudCalendar = {
 	seasons = { "겨울", "봄", "여름", "가을" },
 	voyage = require(Shared:WaitForChild("Voyage")),
 }
+-- [자금·화물 단일 표기] 기존 HUD·시설 책·교역·조선소의 동일 서버 스냅샷 사용.
+function H.statusMoneyCargo(p, ship, compact)
+	if compact then
+		return string.format("돈 %s · 짐 %d/%d", H.commas(p.coins), ship.cargoUsed, ship.cargoCapacity)
+	end
+	return string.format("자금 %s코인 · 화물 %d/%d", H.commas(p.coins), ship.cargoUsed, ship.cargoCapacity)
+end
+
 function H.updateHud(p, ship)
 	local calendar = H.hudCalendar
 	local day = math.floor(p.day or 0)
@@ -2601,12 +3656,102 @@ function H.updateHud(p, ship)
 	local season = calendar.seasons[calendar.voyage.season(day, port and port.lat or 0)]
 	H.hudName.Text = string.format("%d년 %d월 %d일 · %s", p.year, month, monthDay, season)
 	H.hudPort.Text = tostring(p.portName) .. " · " .. tostring(ship.name)
-	hudBanner.Text = tostring(p.portName)
+	-- [첫 항해 목표 단일화] 항구 현판의 목표 중복 노출을 막고 저널에서만 진행도를 보여 준다.
+	hudBanner.Text = ""
+	H.goalBanner.Visible = false
 	hullFill.Size = UDim2.fromScale(math.clamp(ship.hull / math.max(1, ship.maxHull), 0, 1), 1)
 	hullText.Text = string.format("선체 %d/%d", math.floor(ship.hull), math.floor(ship.maxHull))
 	hullFill.BackgroundColor3 = if ship.hull / math.max(1, ship.maxHull) < 0.35 then Color3.fromRGB(255, 80, 40) else Color3.fromRGB(214, 40, 36)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
+	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship, mainInner.AbsoluteSize.X < 740 or H.headerTabs == true)
+	-- [상황별 표시] 실제 서버 스냅샷의 현재 상태만 사용하고 새 저장 키를 만들지 않는다.
+	local lowPrice = false
+	if (ship.cargoCapacity or 0) > (ship.cargoUsed or 0) then
+		for _, goods in (view and view.goods) or {} do
+			local price = tonumber(goods.buyTotals and goods.buyTotals[1]) or tonumber(goods.buy)
+			local average = tonumber(goods.avgPrice)
+			if price and average and average > 0 and price <= average * 0.9
+				and price <= (p.coins or 0) and (tonumber(goods.supply) or 0) >= 1 then
+				lowPrice = true
+				break
+			end
+		end
+	end
+	local readyDelivery = false
+	for _, q in (view and view.quests and view.quests.active) or {} do
+		if q.kind == "deliver" and (q.progress or 0) >= (q.amount or math.huge) then
+			readyDelivery = true
+			break
+		end
+	end
+	local alerts = {
+		trade = if lowPrice then "저가" else nil,
+		yard = if (ship.hull or 0) / math.max(1, ship.maxHull or 1) < 0.40 then "긴급"
+			elseif (ship.hull or 0) < (ship.maxHull or 0) then "수리"
+			elseif (ship.supplies or 0) <= 5 then "보급" else nil,
+		-- [인원 부족] 선원이 정원의 절반 아래면 주점(선원 고용)에 알림
+		board = if readyDelivery then "납품"
+			elseif (ship.crew or 0) < (ship.maxCrew or 0) * 0.5 then "인원" else nil,
+	}
+	-- [알림 효과] 실제 게임 상태만 사용. 2겹 색광은 활성 알림에만 재생하고 상태 변경 시 기존 트윈을 정리한다.
+	H.dockSignalTweens = H.dockSignalTweens or {}
+	local signalTweenService = game:GetService("TweenService")
+	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
+	for id, notice in H.dockNotices do
+		local alert = alerts[id]
+		local previous = notice:GetAttribute("SignalKind")
+		local changed = (alert or "") ~= (previous or "")
+		local motionChanged = notice:GetAttribute("ReducedMotionLast") ~= reducedMotion
+		local button = H.dockButtons[id]
+		local halo = if button then button:FindFirstChild("SignalHalo") else nil
+		local bloom = H.dockBlooms[id]
+		-- [효과 정리] 반짝이·색광·파편 제거. 알림은 청동 느낌표 배지 + 아이콘 맥동만.
+		if bloom then bloom.Visible = false end
+		if halo then halo.Visible = false end
+		notice.Visible = alert ~= nil
+		notice.ImageColor3 = if alert == "긴급" then Color3.fromRGB(255, 205, 190) else Color3.new(1, 1, 1)
+		if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
+		if changed or motionChanged then
+			notice:SetAttribute("SignalKind", alert or "")
+			notice:SetAttribute("ReducedMotionLast", reducedMotion)
+			local running = H.dockSignalTweens[id]
+			if running then
+				for _, oldTween in running do oldTween:Cancel() end
+				H.dockSignalTweens[id] = nil
+			end
+			notice.Size = UDim2.fromOffset(20, 20)
+			if alert and changed and not reducedMotion then
+				-- 새 알림 순간 배지가 한 번 톡 튀어나온다(반복 없음).
+				notice.Size = UDim2.fromOffset(8, 8)
+				signalTweenService:Create(notice, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+					{ Size = UDim2.fromOffset(20, 20) }):Play()
+			end
+		end
+	end
+		-- [시설 길잡이] 실제 진행 단계가 바뀔 때만 다음 시설을 한 번 강조한다.
+	local captain = view and view.captain
+	local tutorial = if not H.tutorialHidden and captain then captain.step else nil
+	local destination, cue
+	if tutorial == "companion" then
+		destination, cue = "board", "첫 동료"
+	elseif tutorial == "done" and day == 0 then
+		if (ship.cargoUsed or 0) == 0 then
+			destination, cue = "trade", "첫 특산품"
+		else
+			destination, cue = "route", "첫 출항"
+		end
+	elseif readyDelivery then
+		destination, cue = "board", "납품"
+	end
+	if not cue then
+		H.lastDockCue = nil
+	elseif hudTopGui.Enabled and H.lastDockCue ~= cue then
+		H.lastDockCue = cue
+		local pulse = H.dockMotion["Menu_" .. destination]
+		if pulse and not game:GetService("GuiService").ReducedMotionEnabled then pulse:Play() end
+	end
+	-- [글씨 알림 제거] 저가·긴급·수리·보급·납품·추천 상태는 해당 아이콘의 색광·파티클만으로 표시한다.
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
@@ -2626,40 +3771,75 @@ corner(bubble, 12)
 hudStroke(bubble, 2)
 do
 	local function layoutBubble()
-		local width, height = hud.AbsoluteSize.X, hud.AbsoluteSize.Y
+		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
-		-- 오른쪽 위: 시설 6개 한 줄, 그 아래 시스템 5개를 같은 칸(오른쪽 4칸)에 맞춰 둔다.
-		local CW, CH, GAP = 44, 58, 4
-		local cols = if compact then 3 else 6
-		dockGrid.FillDirectionMaxCells = cols
-		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
+		-- [12개 고정 배열] 8개 시설 + 저널·내 카드·설정·걷기 4개 = 위 6 / 아래 6.
+		local GAP = if width < 420 then 4 else 6
+		local CW = math.min(58, math.floor((width - 16 - GAP * 5) / 6))
+		local CH = if CW < 54 then 70 else 76
+		local dockW = CW * 6 + GAP * 5
+		local dockH = CH * 2 + GAP
 		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
-		local rows = math.ceil(6 / cols)
-		local dockH = rows * CH + (rows - 1) * GAP
-		dock.Position = UDim2.new(1, -8, 0, 6)
-		dock.Size = UDim2.fromOffset(cols * CW + (cols - 1) * GAP, dockH)
-		local sysOrder = { "HelpButton", "OptionsButton", "DeckButton", "JournalButton", "ViewToggle" } -- 저널도 같은 칸에 맞춘다 (빠지면 혼자 제자리에 남아 줄이 어긋난다)
-		for i, n in sysOrder do
-			local b = hudTop:FindFirstChild(n)
+		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
+		-- [정렬] 걷기는 2줄 맨 앞(7번째). 시설 1~6 → 1줄, 걷기 → 2줄 첫 칸, 나머지 시설 → 그 뒤, 저널·카드·설정 → 끝.
+		local sysOrder = { "JournalButton", "DeckButton", "OptionsButton" }
+		for i, d in H.DOCK do
+			local fb = H.dockButtons[d[1]]
+			if fb then fb.LayoutOrder = if i <= 6 then i else i + 1 end
+		end
+		local walkBtn = dock:FindFirstChild("ViewToggle") or hudTop:FindFirstChild("ViewToggle")
+		if walkBtn then
+			if walkBtn.Parent ~= dock then walkBtn.Parent = dock end
+			walkBtn.LayoutOrder = 7
+		end
+		for i, name in sysOrder do
+			local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
 			if b then
-				b.Size = UDim2.fromOffset(CW, CH)
-				b.AnchorPoint = Vector2.new(1, 0)
-				local col = (i - 1) % cols
-				local row = math.floor((i - 1) / cols)
-				b.Position = UDim2.new(1, -8 - col * (CW + GAP), 0, 6 + dockH + GAP + row * (CH + GAP))
+				if b.Parent ~= dock then b.Parent = dock end
+				b.LayoutOrder = #H.DOCK + 1 + i
 			end
 		end
-		card.Position = UDim2.fromOffset(8, if width < 405 then 51 else 8)
-		card.Size = UDim2.fromOffset(if compact then 252 else 262, 114)
-		-- [모바일 조언] 상단 메뉴 아이콘보다 아래에 한 줄로 펼쳐 작은 화면에서도 읽고 누를 수 있게 한다.
+		for _, item in dock:GetChildren() do
+			if item:IsA("TextButton") then
+				item.AnchorPoint = Vector2.zero
+				item.Size = UDim2.fromOffset(CW, CH)
+				local art = item:FindFirstChild("MenuArt")
+				local artSize = math.min(46, CW - 6, CH - 26)
+				if art and art:IsA("GuiObject") then
+					art.Size = UDim2.fromOffset(artSize, artSize)
+					art.Position = UDim2.new(0.5, 0, 0, 3)
+				end
+				local caption = item:FindFirstChild("MenuName")
+				if caption and caption:IsA("TextLabel") then
+					caption.Position = UDim2.fromOffset(0, CH - 23)
+					caption.Size = UDim2.new(1, 0, 0, 19)
+					caption.TextSize = if CW < 52 then 11 else 13
+				end
+			end
+		end
+		dock.AutomaticCanvasSize = Enum.AutomaticSize.None
+		dock.ScrollingEnabled = false
+		dock.CanvasSize = UDim2.fromOffset(dockW, dockH)
+		dock.ScrollBarThickness = 0
+		dock.AnchorPoint = if compact then Vector2.zero else Vector2.new(1, 0)
+		dock.Position = if compact then UDim2.fromOffset(8, 6) else UDim2.new(1, -8, 0, 6)
+		dock.Size = UDim2.fromOffset(dockW, dockH)
+		-- [작은 폰] 선장 상태 카드와 조언은 두 줄 메뉴 아래에 배치한다.
+		card.Position = UDim2.fromOffset(8, if compact then dockH + 12 else 8)
+		card.Size = UDim2.fromOffset(if compact then math.min(252, width - 16) else 262, 114)
 		local left = if width < 1050 then 8 else 282
 		local right = if width < 1050 then 8 else 304
 		local bubbleWidth = math.clamp(width - left - right, 1, 760)
-		bubble.AnchorPoint = Vector2.new(0, 0)
+		bubble.AnchorPoint = Vector2.zero
 		bubble.Position = UDim2.fromOffset(left + math.max(0, (width - left - right - bubbleWidth) / 2),
-			if width < 610 then 262 elseif width < 1050 then 142 else 8)
+			if compact then dockH + 134 elseif width < 1050 then dockH + 18 else 76)
+		H.goalBanner.Position = UDim2.new(0.5, 0, 0, if compact then dockH + 250 elseif width < 790 then dockH + 20 else 8)
+		H.goalBanner.Size = UDim2.fromOffset(if compact then math.max(170, width - 16)
+			elseif width < 790 then math.min(530, width - 24)
+			else math.clamp(width - 590, 204, 480), 54)
 		bubble.Size = UDim2.fromOffset(bubbleWidth, 0)
 	end
+	H.layoutDock = layoutBubble
 	hud:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutBubble)
 	layoutBubble()
 	local pad = Instance.new("UIPadding")
@@ -2726,7 +3906,7 @@ do
 end
 -- [글씨 하한] 화면 어디서 만든 글씨든 15보다 작으면 15로 올린다 (대화·이벤트·시작 화면 포함).
 do
-	local FLOOR = 15
+	local FLOOR = 16
 	local function lift(obj)
 		if (obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox")) and not obj.TextScaled and obj.TextSize < FLOOR then
 			obj.TextSize = FLOOR
@@ -2762,38 +3942,23 @@ local GUIDE_BTN = {
 	tech = "Menu_codex", codex = "Menu_codex", scholar = "Menu_codex",
 	crew = "Menu_status", status = "Menu_status",
 }
-local guidePulseToken = 0
+-- [시설 안내] 버튼 외곽 사각 테두리·30fps 흔들림 대신 원화 중심에만 금빛을 맥동시킨다.
 function H.setGuidePulse(tab)
-	guidePulseToken += 1
-	local token = guidePulseToken
+	-- [튜토리얼 안내] 반짝이 대신 해당 아이콘만 맥동(GuideAlert)시킨다.
 	for _, holder in { dock, hudTop } do
 		for _, n in GUIDE_BTN do
 			local b = holder:FindFirstChild(n)
-			local old = b and b:FindFirstChild("GuidePulse")
-			if old then old:Destroy() end
-			if b then b.Rotation = 0 end
+			if b then
+				local old = b:FindFirstChild("GuidePulse")
+				if old then old:Destroy() end
+				b:SetAttribute("GuideAlert", false)
+			end
 		end
 	end
 	local name = tab and GUIDE_BTN[tab]
 	if not name then return end
 	local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
-	if not b then return end
-	local stroke = Instance.new("UIStroke")
-	stroke.Name = "GuidePulse"
-	stroke.Color = Color3.fromRGB(255, 214, 96)
-	stroke.Thickness = 3
-	stroke.Parent = b
-	task.spawn(function()
-		local t0 = os.clock()
-		while guidePulseToken == token and b.Parent do
-			local t = os.clock() - t0
-			stroke.Thickness = 3 + math.abs(math.sin(t * 4)) * 3
-			b.Rotation = math.sin(t * 9) * 4 * math.max(0, math.sin(t * 1.5)) -- 숨 쉬듯 이따금 흔들림
-			task.wait(0.03)
-		end
-		if stroke.Parent then stroke:Destroy() end
-		if b.Parent then b.Rotation = 0 end
-	end)
+	if b then b:SetAttribute("GuideAlert", true) end
 end
 local function refreshBubble()
 	local adv = view and view.advice
@@ -2855,6 +4020,11 @@ menuToggle:GetPropertyChangedSignal("Visible"):Connect(function()
 end)
 
 function H.clearContent()
+	-- [시설 메뉴] 첫 판단 카드의 실행 버튼을 보존한 뒤 이전 화면을 정리한다.
+	if H.menuActionButton and H.menuActionDock and H.menuActionButton.Parent ~= H.menuActionDock then
+		H.menuActionButton.Parent = H.menuActionDock
+	end
+	H.menuFocusBanner = nil
 	for _, child in content:GetChildren() do
 		if not child:IsA("UIListLayout") then
 			child:Destroy()
@@ -2868,6 +4038,8 @@ local tradeHallRefresh -- 교역소 별도 화면이 열려 있으면 서버 응
 
 local lastCallAt = 0
 local function call(action, payload)
+	-- [첫 접속] 저장 응답 확인 중에는 전체 게임 창을 그리지 않는다.
+	local startupStateRequest = action == "State" and H.startupCover and H.startupCover.Parent ~= nil
 	-- 앞선 요청이 끝나길 잠깐 기다린다 (버튼을 눌렀는데 아무 반응이 없던 문제 방지). 너무 오래 걸리면 풀어 준다.
 	local waited = 0
 	while busy and waited < 8 do
@@ -2879,6 +4051,9 @@ local function call(action, payload)
 	if gap < 0.13 then
 		task.wait(0.13 - gap)
 	end
+	-- [첫 게임 카드 팝업] 서버 요청 이전에 실제 카드 선택 보상이 있었는지 기억한다.
+	local oldPick = view and view.cardbook and view.cardbook.pick
+	local pickBefore = if type(oldPick) == "table" and #oldPick > 0 then table.concat(oldPick, ",") else nil
 	busy = true
 	local done, ok, result = false, false, nil
 	task.spawn(function()
@@ -2888,7 +4063,8 @@ local function call(action, payload)
 		done = true
 	end)
 	local t = 0
-	while not done and t < 15 do
+	local timeout = if startupStateRequest then 6 else 15
+	while not done and t < timeout do
 		task.wait(0.05)
 		t += 0.05
 	end
@@ -2896,13 +4072,13 @@ local function call(action, payload)
 	lastCallAt = os.clock()
 	if not done then
 		message, messageOk = "서버 응답이 늦어요. 잠시 후 다시 눌러 주세요", false
-		render()
+		if not startupStateRequest then render() end
 		return nil
 	end
 	if DEBUG_LOG then print("[Game] call", action, ok, type(result) == "table" and result.ok, type(result) == "table" and result.message or result) end
 	if not ok or type(result) ~= "table" then
 		message, messageOk = "서버와 연결하지 못했어요", false
-		render()
+		if not startupStateRequest then render() end
 		return nil
 	end
 	do
@@ -2972,7 +4148,7 @@ local function call(action, payload)
 			snd = "sfx_deck_step"
 		elseif action == "CardSetDeck" or action == "CardSlotSave" or action == "CardSlotUse" or action == "CardAutoDeck" or action == "CardRecommend" or action == "CardSetLeader" then
 			snd = "sfx_card_place"
-		elseif action == "CardUpgrade" or action == "UpgradeCodexCard" or action == "CardPick" or action == "ClaimCollection" then
+		elseif action == "CardUpgrade" or action == "UpgradeCodexCard" or action == "CardPick" or action == "ClaimCollection" or action == "WikiQuiz" then
 			snd = "sfx_card_magic"
 		end
 		local msg = result.message or ""
@@ -2988,18 +4164,8 @@ local function call(action, payload)
 			task.delay(0.4, Sfx.play, "sfx_treasure_chest", 0.8)
 		end
 	end
-	if result.scene and action ~= "Sail" then
-		-- 발견 연출 역시 이야기·항해가 모두 끝난 뒤에 띄운다.
-		local sceneId = result.scene
-		task.spawn(function()
-			local pg = player:WaitForChild("PlayerGui")
-			while player.Parent and (sceneHold or inField or H.questScenesPlaying or H.sceneBusy
-				or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)) do
-				task.wait(0.2)
-			end
-			if player.Parent then H.playWonderScene(sceneId) end
-		end)
-	end
+	-- [카드 습득 연출] 카드를 얻을 때 큰 원화 이벤트 씬(원더 씬)은 자동으로 띄우지 않는다.
+	-- 카드 습득 연출(H.showCardGain)만 쓰고, 카드 상세의 '원더 연출 다시 보기'는 직접 누를 때만 재생한다.
 	if result.ranking then
 		ranking = result.ranking
 	end
@@ -3021,30 +4187,52 @@ local function call(action, payload)
 	if result.message and result.message ~= "" then
 		message, messageOk = result.message, result.ok
 	end
-	render()
+	-- 서버 상태 로드가 끝날 때 제목 화면만 한 번 만들고, 실제 게임 창은 이어하기에서 구성한다.
+	if not startupStateRequest then render() end
 	if tradeHallRefresh then
 		tradeHallRefresh()
 	end
 	if H.cabinRefresh then
 		H.cabinRefresh()
 	end
-	-- 이긴 뒤 카드 고르기 보상이 생기면 덱 창을 열어 준다
-	-- (같은 보상은 한 번만 연다: 안 고르고 다른 행동을 해도 창이 계속 뜨지 않게)
+	-- [카드 보상 창] 새로 획득한 3장 선택 보상만 자동으로 연다.
+	-- 첫 접속 State·NewGame·시작 안내 중 기존 선택 보상을 다시 띄우지 않는다.
 	local pickIds = view and view.cardbook and view.cardbook.pick
-	if pickIds == nil then
+	if type(pickIds) ~= "table" or #pickIds == 0 then
 		H.deckPickShown = nil
-	end
-	if result.ok and action ~= "CardPick" and pickIds and H.openDeck and not inField then
+	elseif result.ok and action ~= "State" and action ~= "NewGame" and action ~= "CardPick"
+		and string.sub(action, 1, 5) ~= "Intro" -- 이름·동료·초상 안내는 카드 보상 이벤트가 아니다.
+		and (not view.captain or view.captain.step == "done")
+		and H.openDeck and not inField and not sceneHold and not newGameMode
+		and not H.titleMenuOpen and not H.openingPending then
 		local pickKey = table.concat(pickIds, ",")
-		if H.deckPickShown ~= pickKey then
+		if pickBefore ~= pickKey and H.deckPickShown ~= pickKey then
 			H.deckPickShown = pickKey
 			task.delay(1.5, function()
-				if view and view.cardbook and view.cardbook.pick and not inField then H.openDeck(true) end
+				local currentPick = view and view.cardbook and view.cardbook.pick
+				if type(currentPick) == "table" and #currentPick > 0
+					and table.concat(currentPick, ",") == pickKey
+					and not inField and not sceneHold and not newGameMode
+					and (not view.captain or view.captain.step == "done")
+					and not H.titleMenuOpen and not H.openingPending then
+					H.openDeck(true)
+				end
 			end)
 		end
 	end
 	-- 해전을 했다면 전투 기록을 3D 장면으로 보여 준다
 	if result.ok and (action == "Hunt" or action == "ChallengeBoss" or action == "WarStart" or action == "WarNext" or action == "TavernJob") and view and view.lastBattle and not inField then
+        -- [해전 진입] 기존 정본 전투 모듈만 늦게 읽는다. 실패하면 항구 메뉴를 유지한다.
+        local ready, loaded = pcall(function()
+            return NavalBattle or require(Shared:WaitForChild("NavalBattle"))
+        end)
+        if not ready then
+            warn("[MareEssentia] 해전 장면 로드 실패", loaded)
+            message, messageOk = "해전 장면을 불러오지 못했어.", false
+            render()
+            return result
+        end
+        NavalBattle = loaded
 		local lb = view.lastBattle
 		local resolved = false
 		inField = true
@@ -3443,13 +4631,6 @@ local function sail(portId)
 	if result and result.ok then
 		-- 서버가 새 항구·시대 사건을 큐에 넣어도 먼저 모두 끝내고 출항한다.
 		finishRegionEvents()
-		if result.scene then
-			H.playWonderScene(result.scene)
-			local playerGui = player:WaitForChild("PlayerGui")
-			while player.Parent and (H.sceneBusy or playerGui:FindFirstChild("WonderScene", true)) do
-				task.wait(0.15)
-			end
-		end
 		departureEventPhase = false
 		audioLock = true
 		-- 지역 이벤트를 닫은 뒤에만 출항 음악·닻줄 연출을 시작한다.
@@ -3525,7 +4706,9 @@ local function sail(portId)
 			end
 		end)
 		-- 3D 바다 항해 (끝날 때까지 메뉴는 숨겨 둔다). 실패하면 예전 2D 연출로 대신한다.
-		local ok, err, hits, ringTotal = pcall(VoyageScene.play, {
+		local ok, err, hits, ringTotal = pcall(function()
+            VoyageScene = VoyageScene or require(Shared:WaitForChild("VoyageScene"))
+            return VoyageScene.play({
 			shipId = view.ship.id,
 			steam = steam,
 			days = days,
@@ -3567,7 +4750,8 @@ local function sail(portId)
 				end
 				return { merchants = POOL[rid] or POOL.europe, fleets = fleets, names = names }
 			end)(),
-		})
+		    })
+        end)
 		if not ok then
 			warn("[Game] 3D 항해 오류, 2D로 대체:", err)
 			local cam = workspace.CurrentCamera
@@ -4001,9 +5185,589 @@ function H.playRumorScene(r)
 	})
 end
 
+
+-- [역사 시네마틱 · 메인] 책이 열리면 실제 항구 좌표의 세계 해도와 등록 3D 역사 무대가 펼쳐진다.
+-- 서버 선택/보상/저장에 개입하지 않고 기존 모델·음원만 사용하는 순수 클라이언트 연출.
+function H.historyCinematic(parent, ev)
+	local TS = game:GetService("TweenService")
+	local lessMotion = game:GetService("GuiService").ReducedMotionEnabled
+	local keyPorts = {
+		magellan_circum = "seville", mercator_projection = "amsterdam", lepanto = "venice",
+		imjin_war = "busan", armada = "plymouth", manila_galleon = "manila",
+		great_fire = "london", great_plague = "london", principia = "london",
+		lisbon_quake = "lisbon", boston_tea = "boston", independence = "boston",
+		french_revolution = "rouen", cook_voyage = "plymouth", dutch_revolt = "amsterdam",
+	}
+	local regionPorts = { europe = "london", w_africa = "zanzibar", new_world = "kingston",
+		indian = "calcutta", far_east = "edo", pacific = "sydney" }
+	local referenceId = ev.portId or ev.port or keyPorts[ev.id] or (ev.regions and regionPorts[ev.regions[1]])
+	local origin = PortData.Ports[view and view.player and view.player.portId or "london"] or PortData.Ports.london
+	local located = referenceId and PortData.Ports[referenceId]
+	local destination = located or origin
+	local gold = Color3.fromRGB(248, 199, 113)
+	local root = Instance.new("Frame")
+	root.Name = "HistoryLivingScene"
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundColor3 = Color3.fromRGB(33, 45, 53)
+	root.BorderSizePixel = 0
+	root.ClipsDescendants = true
+	root.Parent = parent
+
+	-- [일러스트 프레임 제거 · 2026-11-24 오너] 30프레임 원화판(history_open/map/record)은 256색·저해상도이고
+	-- 로딩에 실패하면 정지 그림만 남아 아래 3D 연출이 막혔다. 퀘스트·사건 모두 아래 해도·3D 연출만 쓴다.
+	-- [세계지도] 기존 승인된 세계 해도와 좌표·항로·사건 위치 표시.
+	local map = Instance.new("Frame")
+	map.Name = "HistoryWorldChart"
+	map.AnchorPoint = Vector2.new(0.5, 0.5)
+	map.Position = UDim2.fromScale(0.5, 0.5)
+	map.Size = UDim2.fromScale(1, 1)
+	map.BackgroundColor3 = Color3.fromRGB(65, 70, 69)
+	map.BorderSizePixel = 0
+	map.Parent = root
+	local imageId = AssetIds["CardArt/event_chart_world"] or AssetIds["Menu/chart_folded_map"]
+	if imageId then
+		local chart = Instance.new("ImageLabel")
+		chart.Name = "RegisteredHistoricalWorldMap"
+		chart.Size = UDim2.fromScale(1, 1)
+		chart.BackgroundTransparency = 1
+		chart.Image = "rbxassetid://" .. tostring(imageId)
+		chart.ImageTransparency = 0.24
+		chart.ScaleType = Enum.ScaleType.Crop
+		chart.Parent = map
+	end
+	local tint = Instance.new("Frame")
+	tint.Size = UDim2.fromScale(1, 1)
+	tint.BackgroundColor3 = Color3.fromRGB(17, 34, 44)
+	tint.BackgroundTransparency = 0.55
+	tint.BorderSizePixel = 0
+	tint.Parent = map
+	for i = 1, 5 do
+		local longitude = Instance.new("Frame")
+		longitude.Name = "MapLongitude"
+		longitude.Position = UDim2.fromScale(i / 6, 0)
+		longitude.Size = UDim2.new(0, 1, 1, 0)
+		longitude.BackgroundColor3 = gold
+		longitude.BackgroundTransparency = 0.83
+		longitude.BorderSizePixel = 0
+		longitude.Parent = map
+	end
+	for i = 1, 3 do
+		local latitude = Instance.new("Frame")
+		latitude.Name = "MapLatitude"
+		latitude.Position = UDim2.fromScale(0, i / 4)
+		latitude.Size = UDim2.new(1, 0, 0, 1)
+		latitude.BackgroundColor3 = gold
+		latitude.BackgroundTransparency = 0.83
+		latitude.BorderSizePixel = 0
+		latitude.Parent = map
+	end
+	local function coordinates(port)
+		return Vector2.new(math.clamp((port.lon + 180) / 360, 0.03, 0.97),
+			math.clamp((90 - port.lat) / 180, 0.06, 0.94))
+	end
+	local from = coordinates(origin)
+	local target = coordinates(destination)
+	if (from - target).Magnitude < 0.015 then from += Vector2.new(-0.10, 0.035) end
+	local dots = if lessMotion then 5 else 10
+	for i = 1, dots do
+		local t = i / dots
+		local point = from:Lerp(target, t) + Vector2.new(0, -0.09 * math.sin(math.pi * t))
+		local dot = Instance.new("Frame")
+		dot.Name = "AnimatedSeaRoute"
+		dot.AnchorPoint = Vector2.new(0.5, 0.5)
+		dot.Position = UDim2.fromScale(point.X, point.Y)
+		dot.Size = UDim2.fromOffset(4, 4)
+		dot.BackgroundColor3 = gold
+		dot.BackgroundTransparency = if lessMotion then 0.12 else 1
+		dot.BorderSizePixel = 0
+		dot.Parent = map
+		corner(dot, 20)
+		if not lessMotion then
+			task.delay(0.42 + i * 0.055, function()
+				if dot.Parent then TS:Create(dot, TweenInfo.new(0.2), { BackgroundTransparency = 0.12 }):Play() end
+			end)
+		end
+	end
+	local marker = Instance.new("TextLabel")
+	marker.Name = "HistoricMapBeacon"
+	marker.AnchorPoint = Vector2.new(0.5, 0.5)
+	marker.Position = UDim2.fromScale(target.X, target.Y)
+	marker.Size = UDim2.fromOffset(34, 34)
+	marker.BackgroundTransparency = 1
+	marker.Text = "✦"
+	marker.Font = Enum.Font.GothamBold
+	marker.TextSize = 28
+	marker.TextColor3 = gold
+	marker.Parent = map
+	local pulse = Instance.new("Frame")
+	pulse.Name = "HistoricalMapPulse"
+	pulse.AnchorPoint = Vector2.new(0.5, 0.5)
+	pulse.Position = marker.Position
+	pulse.Size = UDim2.fromOffset(22, 22)
+	pulse.BackgroundTransparency = 1
+	pulse.Parent = map
+	corner(pulse, 100)
+	local ring = Instance.new("UIStroke")
+	ring.Color = gold
+	ring.Thickness = 2
+	ring.Parent = pulse
+	if not lessMotion then
+		TS:Create(pulse, TweenInfo.new(1.05, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Size = UDim2.fromOffset(94, 94),
+		}):Play()
+		TS:Create(ring, TweenInfo.new(1.05), { Transparency = 1 }):Play()
+		TS:Create(map, TweenInfo.new(3.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+			Position = UDim2.fromScale(0.5 + (0.5 - target.X) * 0.18, 0.5 + (0.5 - target.Y) * 0.10),
+			Size = UDim2.fromScale(1.10, 1.10),
+		}):Play()
+	end
+	local place = Instance.new("TextLabel")
+	place.Name = "HistoryMapPlace"
+	place.AnchorPoint = Vector2.new(0, 1)
+	place.Position = UDim2.fromScale(0.04, 0.97)
+	place.Size = UDim2.new(0.53, 0, 0, 25)
+	place.BackgroundTransparency = 1
+	place.Text = "해도 · " .. (if located then located.name else "현재 항해 기준점")
+	place.Font = Enum.Font.GothamBold
+	place.TextSize = 14
+	place.TextXAlignment = Enum.TextXAlignment.Left
+	place.TextColor3 = gold
+	place.TextStrokeTransparency = 0.4
+	place.Parent = root
+
+	-- [3D 역사 무대] 해전·학문·교역에 맞는 승인 원본 모델을 작은 뷰포트에 배치한다.
+	local stage = Instance.new("ViewportFrame")
+	stage.Name = "ApprovedHistory3DStage"
+	stage.AnchorPoint = Vector2.new(1, 0)
+	stage.Position = UDim2.fromScale(0.97, 0.06)
+	stage.Size = UDim2.fromScale(0.44, 0.78)
+	stage.BackgroundColor3 = Color3.fromRGB(27, 40, 52)
+	stage.BackgroundTransparency = 1 -- 모델이 안 보일 때 빈 어두운 칸이 남지 않게
+	stage.Ambient = Color3.fromRGB(169, 153, 147)
+	stage.LightColor = Color3.fromRGB(255, 222, 161)
+	stage.LightDirection = Vector3.new(-0.65, -0.75, -0.46).Unit
+	stage.Parent = root
+	corner(stage, 10)
+	local world = Instance.new("WorldModel")
+	world.Parent = stage
+	local cam = Instance.new("Camera")
+	cam.FieldOfView = 42
+	cam.CFrame = CFrame.lookAt(Vector3.new(13, 9, 18), Vector3.new(0, 2, 0))
+	cam.Parent = stage
+	stage.CurrentCamera = cam
+	local subject = tostring(ev.tag or "") .. " " .. tostring(ev.title or "") .. " " .. tostring(ev.art or "")
+	local war = string.find(subject, "전쟁", 1, true) or string.find(subject, "해전", 1, true)
+	local scholar = string.find(subject, "학문", 1, true) or string.find(subject, "과학", 1, true)
+		or ev.art == "library" or ev.art == "observatory"
+	local commerce = string.find(subject, "무역", 1, true) or string.find(subject, "경제", 1, true)
+		or ev.art == "tavern"
+	local selection = if war then { { "Naval", "ship-large" }, { "Naval", "ship-medium" }, { "People", "Soldier_Male" } }
+		elseif scholar then { { "Interior", "bookcaseopenlow" }, { "People", "Doctor_Male_Old" }, { "Relics", "map" } }
+		elseif commerce then { { "Naval", "ship-medium" }, { "Cargo", "box-open" }, { "People", "Worker_Male" } }
+		else { { "Naval", "ship-medium" }, { "People", "Casual_Male" }, { "Relics", "map" } }
+	task.spawn(function()
+		local library = ReplicatedStorage:FindFirstChild("MareAssets") or ReplicatedStorage:WaitForChild("MareAssets", 2)
+		if not library or not stage.Parent then return end
+		local populated = 0
+		for i, spec in selection do
+			local group = library:FindFirstChild(spec[1])
+			local modelSource = group and group:FindFirstChild(spec[2])
+			if modelSource and modelSource:IsA("Model") and modelSource:FindFirstChildWhichIsA("BasePart", true)
+				and stage.Parent then
+				local model = modelSource:Clone()
+				for _, p in model:GetDescendants() do
+					if p:IsA("BasePart") then
+						p.Anchored = true
+						p.CanCollide = false
+						p.CanTouch = false
+						p.CanQuery = false
+					end
+				end
+				model.Parent = world
+				local _, bounds = model:GetBoundingBox()
+				pcall(function()
+					model:ScaleTo((if i == 1 then 7 else 4) / math.max(bounds.X, bounds.Y, bounds.Z, 0.1))
+				end)
+				local measured, size = model:GetBoundingBox()
+				model:PivotTo(CFrame.new((i - 2) * 4.6,
+					model:GetPivot().Position.Y - measured.Position.Y + size.Y / 2,
+					(i - 2) * 0.7) * CFrame.Angles(0, math.rad(18 - i * 16), 0))
+				populated += 1
+			end
+		end
+		if populated > 0 and stage.Parent and not lessMotion then
+			TS:Create(cam, TweenInfo.new(3.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
+				CFrame = CFrame.lookAt(Vector3.new(10, 7, 13), Vector3.new(0, 2, 0)),
+				FieldOfView = 37,
+			}):Play()
+		end
+	end)
+
+	-- [책 개봉] 양피지 두 장이 펼쳐지며 지도·3D 무대가 드러나고 기존 장부/해도 소리가 이어진다.
+	local book = Instance.new("Frame")
+	book.Name = "HistoricBookOpening"
+	book.Size = UDim2.fromScale(1, 1)
+	book.BackgroundTransparency = 1
+	book.ZIndex = 10
+	book.Parent = root
+	for i = 1, 2 do
+		local page = Instance.new("Frame")
+		page.Name = if i == 1 then "BookLeft" else "BookRight"
+		page.AnchorPoint = Vector2.new(if i == 1 then 1 else 0, 0.5)
+		page.Position = UDim2.fromScale(0.5, 0.5)
+		page.Size = UDim2.fromScale(0.5, 0.96)
+		page.BackgroundColor3 = if i == 1 then Color3.fromRGB(214, 184, 132) else Color3.fromRGB(243, 218, 171)
+		page.BorderSizePixel = 0
+		page.ZIndex = 11
+		page.Parent = book
+		local glyph = Instance.new("TextLabel")
+		glyph.Size = UDim2.fromScale(1, 1)
+		glyph.BackgroundTransparency = 1
+		glyph.Text = if i == 1 then "✦" else "역사"
+		glyph.Font = Enum.Font.Antique
+		glyph.TextSize = if i == 1 then 58 else 26
+		glyph.TextColor3 = Color3.fromRGB(90, 61, 41)
+		glyph.ZIndex = 12
+		glyph.Parent = page
+		task.delay(0.15, function()
+			if not page.Parent then return end
+			TS:Create(page, TweenInfo.new(if lessMotion then 0.16 else 0.60, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = UDim2.fromScale(0.006, 0.96), BackgroundTransparency = 1,
+			}):Play()
+			TS:Create(glyph, TweenInfo.new(0.23), { TextTransparency = 1 }):Play()
+		end)
+	end
+	Sfx.play("sfx_book_turn", 0.25)
+	task.delay(0.40, function()
+		if root.Parent then Sfx.play("sfx_chart_unfold", 0.31, 1.04, "sfx_book_turn") end
+	end)
+	task.delay(1, function() if book.Parent then book:Destroy() end end)
+
+	-- [서재 수납] 서버 승인 후 책장에 기록됐다는 황동 봉인을 띄운다.
+	local recorded = false
+	return function()
+		if recorded or not root.Parent then return end
+		recorded = true
+		-- [사건 귀환] 현실로 펼쳐졌던 지도가 양쪽 책장 속으로 접히며 서재에 기록된다.
+		local closeBook = Instance.new("Frame")
+		closeBook.Name = "HistoricBookClosing"
+		closeBook.Size = UDim2.fromScale(1, 1)
+		closeBook.BackgroundTransparency = 1
+		closeBook.ZIndex = 11
+		closeBook.Parent = root
+		for i = 1, 2 do
+			local leaf = Instance.new("Frame")
+			leaf.Name = if i == 1 then "ReturnLeftPage" else "ReturnRightPage"
+			leaf.AnchorPoint = Vector2.new(if i == 1 then 0 else 1, 0.5)
+			leaf.Position = UDim2.fromScale(if i == 1 then 0 else 1, 0.5)
+			leaf.Size = UDim2.fromScale(0.006, 0.94)
+			leaf.BackgroundColor3 = if i == 1 then Color3.fromRGB(229, 199, 146) else Color3.fromRGB(244, 219, 176)
+			leaf.BorderSizePixel = 0
+			leaf.ZIndex = 12
+			leaf.Parent = closeBook
+			TS:Create(leaf, TweenInfo.new(if lessMotion then 0.16 else 0.46, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = UDim2.fromScale(0.5, 0.94),
+			}):Play()
+		end
+		Sfx.play("sfx_contract_stamp", 0.28, 1.03, "sfx_book_turn")
+		task.delay(0.25, function()
+			if root.Parent then Sfx.play("sfx_quest_book_close", 0.23, 1.03, "sfx_book_turn") end
+		end)
+		local seal = Instance.new("TextLabel")
+		seal.Name = "HistoricalBookArchived"
+		seal.AnchorPoint = Vector2.new(0.5, 0.5)
+		seal.Position = UDim2.fromScale(0.5, 0.5)
+		seal.Size = UDim2.fromScale(0.80, 0.34)
+		seal.BackgroundColor3 = Color3.fromRGB(64, 44, 32)
+		seal.BackgroundTransparency = 0.08
+		seal.BorderSizePixel = 0
+		seal.Font = Enum.Font.Antique
+		seal.TextSize = 23
+		seal.TextColor3 = gold
+		seal.TextWrapped = true
+		seal.Text = "✦ 역사 기록 완료 ✦" .. string.char(10) .. "서재에 새겨졌다"
+		seal.TextTransparency = 1
+		seal.ZIndex = 15
+		seal.Parent = root
+		corner(seal, 10)
+		TS:Create(seal, TweenInfo.new(0.22), { TextTransparency = 0 }):Play()
+		task.delay(0.46, function()
+			if seal.Parent then TS:Create(seal, TweenInfo.new(0.29), {
+				TextTransparency = 1, BackgroundTransparency = 1,
+			}):Play() end
+		end)
+	end
+end
+
+-- [퀘스트 연출씬 · 2026-11-24 오너] 일러스트 없이 실제 3D 세계를 카메라가 천천히 훑는다.
+--  · 목적지 항로: 해도 창에 현재 항구→목적지 점선과 배 표시가 따라간다.
+--  · 분위기: 전쟁(흔들림·붉은 그늘·전쟁 효과음) / 학문(촛불 그늘·책장) / 교역(동전·항구) / 항해(바람·갈매기).
+--  · 길이: 일반 의뢰는 짧게(3.5초), 연계·서막·역사·고난도는 길게(8초). 이미 본 장면은 짧게.
+--  · 수락 도장: 선택을 마치면 밀랍 봉인이 찍히고 저널 아이콘으로 날아간다.
+--  · 건너뛰기: H.sceneSkip 으로 카메라를 끝 위치로 보낸다.
+-- 서버 선택/보상/저장에는 개입하지 않는 순수 클라이언트 연출이다.
+function H.questCinematic(parent, ev, overlay)
+	local TS = game:GetService("TweenService")
+	local lessMotion = game:GetService("GuiService").ReducedMotionEnabled
+	local seen = H.seenScenes and H.seenScenes[tostring(ev.id)] == true
+	local long = ev.long == true and not seen
+	local duration = if lessMotion then 0.01 elseif long then 8 else 3.5
+	local mood = tostring(ev.mood or "voyage")
+	local gold = Color3.fromRGB(248, 199, 113)
+	local root = Instance.new("Frame")
+	root.Name = "QuestLiveScene"
+	root.Size = UDim2.fromScale(1, 1)
+	root.BackgroundTransparency = 1
+	root.Parent = parent
+
+	-- 1) 실제 세계 카메라 무빙 (끝나면 원래 카메라로 되돌린다)
+	local cam = workspace.CurrentCamera
+	local oldType, oldCF, oldFov = cam.CameraType, cam.CFrame, cam.FieldOfView
+	local focus = oldCF.Position + oldCF.LookVector * 42
+	local startOffset = oldCF.Position - focus
+	local alpha = Instance.new("NumberValue")
+	local shake = mood == "war" and not lessMotion
+	local bound = true
+	cam.CameraType = Enum.CameraType.Scriptable
+	local function place(t)
+		local angle = math.rad(if long then 50 else 26) * t
+		local off = CFrame.Angles(0, angle, 0):VectorToWorldSpace(startOffset) * (1 - 0.25 * t) + Vector3.new(0, 7 * t, 0)
+		local cf = CFrame.lookAt(focus + off, focus)
+		if shake then
+			local k = 0.12 + 0.18 * math.abs(math.sin(os.clock() * 7))
+			cf = cf * CFrame.new(math.noise(os.clock() * 9, 1) * k, math.noise(os.clock() * 9, 2) * k, 0)
+		end
+		cam.CFrame = cf
+		cam.FieldOfView = oldFov - 6 * t
+	end
+	-- 다른 카메라 코드보다 뒤에 돌도록 마지막 순서로 묶는다.
+	game:GetService("RunService"):BindToRenderStep("QuestLiveSceneCamera", Enum.RenderPriority.Last.Value, function()
+		if root.Parent then place(alpha.Value) end
+	end)
+	local camTween = TS:Create(alpha, TweenInfo.new(duration, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), { Value = 1 })
+	camTween:Play()
+	-- 장면 동안 다른 화면(메뉴·HUD)을 숨겨 3D 세계만 보이게 한다.
+	local hidden = {}
+	local myGui = overlay:FindFirstAncestorOfClass("ScreenGui")
+	for _, g in player:WaitForChild("PlayerGui"):GetChildren() do
+		if g:IsA("ScreenGui") and g ~= myGui and g.Enabled then
+			g.Enabled = false
+			table.insert(hidden, g)
+		end
+	end
+	local function restore()
+		for _, g in hidden do if g.Parent then g.Enabled = true end end
+		table.clear(hidden)
+		if not bound then return end
+		bound = false
+		pcall(function() game:GetService("RunService"):UnbindFromRenderStep("QuestLiveSceneCamera") end)
+		camTween:Cancel()
+		cam.CameraType = oldType
+		cam.CFrame = oldCF
+		cam.FieldOfView = oldFov
+	end
+	overlay.Destroying:Connect(restore)
+	root.Destroying:Connect(restore)
+	H.sceneSkip = function()
+		camTween:Cancel()
+		alpha.Value = 1
+	end
+
+	-- 영화 띠(위)와 아래 대화창 쪽으로 부드럽게 어두워지는 그늘
+	local bar = Instance.new("Frame")
+	bar.Name = "CinemaBar"
+	bar.Size = UDim2.new(1, 0, 0, 10)
+	bar.BackgroundColor3 = Color3.new(0, 0, 0)
+	bar.BorderSizePixel = 0
+	bar.Parent = root
+	TS:Create(bar, TweenInfo.new(0.5), { Size = UDim2.new(1, 0, 0.09, 0) }):Play()
+	local fade = Instance.new("Frame")
+	fade.Name = "SceneBottomFade"
+	fade.AnchorPoint = Vector2.new(0, 1)
+	fade.Position = UDim2.fromScale(0, 1)
+	fade.Size = UDim2.fromScale(1, 0.35)
+	fade.BackgroundColor3 = Color3.fromRGB(24, 28, 38)
+	fade.BorderSizePixel = 0
+	fade.Parent = root
+	local fg = Instance.new("UIGradient")
+	fg.Rotation = 90
+	fg.Transparency = NumberSequence.new(1, 0)
+	fg.Parent = fade
+
+	-- 2) 분위기 효과
+	local moodTint = if mood == "war" then Color3.fromRGB(120, 24, 16)
+		elseif mood == "scholar" then Color3.fromRGB(150, 96, 30)
+		elseif mood == "commerce" then Color3.fromRGB(150, 120, 40)
+		else Color3.fromRGB(30, 70, 110)
+	local vignette = Instance.new("Frame")
+	vignette.Name = "SceneMoodVignette"
+	vignette.Size = UDim2.fromScale(1, 1)
+	vignette.BackgroundColor3 = moodTint
+	vignette.BackgroundTransparency = 1
+	vignette.BorderSizePixel = 0
+	vignette.Parent = root
+	local vg = Instance.new("UIGradient")
+	vg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.2), NumberSequenceKeypoint.new(0.3, 1), NumberSequenceKeypoint.new(0.7, 1), NumberSequenceKeypoint.new(1, 0.2) })
+	vg.Parent = vignette
+	TS:Create(vignette, TweenInfo.new(0.8), { BackgroundTransparency = if mood == "voyage" then 0.75 else 0.55 }):Play()
+	if mood == "scholar" and not lessMotion then
+		-- 촛불처럼 은은하게 흔들리는 그늘
+		TS:Create(vignette, TweenInfo.new(0.9, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { BackgroundTransparency = 0.68 }):Play()
+	end
+	if mood == "war" then
+		Sfx.play("sfx_event_war", 0.32, 1, "sfx_cannon")
+		task.delay(0.9, function() if root.Parent then Sfx.play("sfx_naval_cannon", 0.18, 0.9, "sfx_cannon") end end)
+	elseif mood == "scholar" then
+		Sfx.play("sfx_book_turn", 0.28)
+		task.delay(0.8, function() if root.Parent then Sfx.play("sfx_story_library", 0.2, 1, "sfx_book_turn") end end)
+	elseif mood == "commerce" then
+		Sfx.play("sfx_coin_pouch", 0.3, 1, "sfx_coin")
+		task.delay(0.7, function() if root.Parent then Sfx.play("sfx_event_trade", 0.22, 1, "sfx_bell") end end)
+	else
+		Sfx.play("sfx_wind", 0.22)
+		task.delay(0.6, function() if root.Parent then Sfx.play("sfx_gull", 0.2) end end)
+	end
+
+	-- 3) 목적지 항로 해도 창
+	local origin = PortData.Ports[view and view.player and view.player.portId or "london"] or PortData.Ports.london
+	local dest = ev.portId and PortData.Ports[ev.portId]
+	if dest and dest ~= origin then
+		local chart = Instance.new("Frame")
+		chart.Name = "QuestRouteChart"
+		chart.AnchorPoint = Vector2.new(0, 1)
+		chart.Position = UDim2.new(0, 16, 1, -10)
+		chart.Size = UDim2.new(0.30, 0, 0.58, 0)
+		chart.BackgroundColor3 = Color3.fromRGB(40, 48, 52)
+		chart.BorderSizePixel = 0
+		chart.ClipsDescendants = true
+		chart.Parent = root
+		corner(chart, 8)
+		local edge = Instance.new("UIStroke")
+		edge.Color = gold
+		edge.Thickness = 1.5
+		edge.Parent = chart
+		local mapId = AssetIds["CardArt/event_chart_world"]
+		if mapId then
+			local img = Instance.new("ImageLabel")
+			img.BackgroundTransparency = 1
+			img.Size = UDim2.fromScale(1, 1)
+			img.ScaleType = Enum.ScaleType.Crop
+			img.Image = "rbxassetid://" .. tostring(mapId)
+			img.ImageTransparency = 0.15
+			img.Parent = chart
+		end
+		local function at(port)
+			return Vector2.new(math.clamp((port.lon + 180) / 360, 0.04, 0.96), math.clamp((90 - port.lat) / 180, 0.06, 0.94))
+		end
+		local a, b = at(origin), at(dest)
+		local dots = 12
+		local points = {}
+		for i = 0, dots do
+			local t = i / dots
+			table.insert(points, a:Lerp(b, t) + Vector2.new(0, -0.12 * math.sin(math.pi * t)))
+		end
+		for i, pt in points do
+			local d = Instance.new("Frame")
+			d.Name = "QuestRouteDot"
+			d.AnchorPoint = Vector2.new(0.5, 0.5)
+			d.Position = UDim2.fromScale(pt.X, pt.Y)
+			d.Size = UDim2.fromOffset(4, 4)
+			d.BackgroundColor3 = gold
+			d.BackgroundTransparency = if lessMotion then 0.1 else 1
+			d.BorderSizePixel = 0
+			d.Parent = chart
+			corner(d, 10)
+			if not lessMotion then
+				task.delay(0.3 + i * (duration * 0.5 / dots), function()
+					if d.Parent then TS:Create(d, TweenInfo.new(0.18), { BackgroundTransparency = 0.1 }):Play() end
+				end)
+			end
+		end
+		local ship = Instance.new("TextLabel")
+		ship.Name = "QuestRouteShip"
+		ship.AnchorPoint = Vector2.new(0.5, 0.5)
+		ship.Position = UDim2.fromScale(a.X, a.Y)
+		ship.Size = UDim2.fromOffset(22, 22)
+		ship.BackgroundTransparency = 1
+		ship.Text = "⛵"
+		ship.TextSize = 18
+		ship.TextColor3 = Color3.new(1, 1, 1)
+		ship.ZIndex = 3
+		ship.Parent = chart
+		if not lessMotion then
+			task.spawn(function()
+				for i, pt in points do
+					if not ship.Parent then return end
+					TS:Create(ship, TweenInfo.new(duration * 0.5 / dots, Enum.EasingStyle.Linear), { Position = UDim2.fromScale(pt.X, pt.Y) }):Play()
+					task.wait(duration * 0.5 / dots)
+					if i == #points then break end
+				end
+			end)
+		else
+			ship.Position = UDim2.fromScale(b.X, b.Y)
+		end
+		local label = Instance.new("TextLabel")
+		label.Name = "QuestRouteLabel"
+		label.AnchorPoint = Vector2.new(0, 1)
+		label.Position = UDim2.new(0, 6, 1, -4)
+		label.Size = UDim2.new(1, -12, 0, 22)
+		label.BackgroundColor3 = Color3.fromRGB(20, 16, 12)
+		label.BackgroundTransparency = 0.25
+		label.Text = string.format("%s → %s", origin.name, dest.name)
+		label.Font = Enum.Font.GothamBold
+		label.TextSize = 14
+		label.TextColor3 = Color3.fromRGB(255, 236, 190)
+		label.ZIndex = 4
+		label.Parent = chart
+		corner(label, 5)
+		Sfx.play("sfx_chart_unfold", 0.22, 1.04, "sfx_book_turn")
+	end
+
+	-- 4) 수락 도장: 선택을 마치면 봉인이 찍히고 저널로 날아간다
+	return function()
+		if not root.Parent then return end
+		local sheet = AssetIds["CardArt/ui_reserve_icons"]
+		Sfx.play("sfx_contract_stamp", 0.34, 1, "sfx_quest_accept")
+		if not sheet then return end
+		local seal = Instance.new("ImageLabel")
+		seal.Name = "QuestAcceptSeal"
+		seal.AnchorPoint = Vector2.new(0.5, 0.5)
+		seal.Position = UDim2.fromScale(0.5, 0.5)
+		seal.Size = UDim2.fromOffset(300, 300)
+		seal.BackgroundTransparency = 1
+		seal.Image = "rbxassetid://" .. tostring(sheet)
+		seal.ImageRectOffset = Vector2.new(0, 2 * 184) -- 두루마리·밀랍 봉인 칸
+		seal.ImageRectSize = Vector2.new(192, 184)
+		seal.ScaleType = Enum.ScaleType.Fit
+		seal.ImageTransparency = 0.2
+		seal.ZIndex = 20
+		seal.Parent = root
+		if lessMotion then
+			seal.Size = UDim2.fromOffset(120, 120)
+			task.delay(0.6, function() if seal.Parent then seal:Destroy() end end)
+			return
+		end
+		TS:Create(seal, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(130, 130), ImageTransparency = 0 }):Play()
+		task.delay(0.75, function()
+			if not seal.Parent then return end
+			-- 저널 아이콘 위치로 날아간다(없으면 위로 사라진다)
+			local target = UDim2.fromScale(0.95, -0.2)
+			local journal = hudTop and hudTop:FindFirstChild("JournalButton")
+			if journal and journal.AbsoluteSize.X > 0 then
+				local p0 = root.AbsolutePosition
+				local center = journal.AbsolutePosition + journal.AbsoluteSize / 2
+				target = UDim2.fromOffset(center.X - p0.X, center.Y - p0.Y)
+			end
+			TS:Create(seal, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Position = target, Size = UDim2.fromOffset(28, 28), ImageTransparency = 0.4 }):Play()
+			task.delay(0.6, function() if seal.Parent then seal:Destroy() end end)
+		end)
+	end
+end
+
 function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
+	if game:GetService("RunService"):IsStudio() then overlay:SetAttribute("StudioStoryId", tostring(ev.id)) end
 	overlay.Size = UDim2.fromScale(1, 1)
 	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 	overlay.BorderSizePixel = 0
@@ -4022,52 +5786,14 @@ function playStory(ev)
 	end)
 	local picture = mkBox(overlay, UDim2.fromScale(0, 0), UDim2.fromScale(1, 0.56), Color3.new(0, 0, 0))
 	picture.ClipsDescendants = true
-	-- 배경 그림 우선순위: ① 이 이벤트 전용 그림(CardArt/story_<이벤트id>) ② 이 이벤트가 주는 지식카드의 그림 ③ 장면 종류별 공용 그림.
-	-- 어느 것도 없으면 UI 도형으로 그린 임시 배경은 쓰지 않고, 지금 서 있는 항구의 실제 3D 풍경을 어둡게 깔아 보여 준다.
-	do
-		local ILLUST = { tavern = "event_festival", harbor = "event_trade_boom", storm = "event_storm", palace = "event_royal_charter", ruins = "event_stonehenge", observatory = "event_principia", library = "event_principia" }
-		local img = AssetIds["CardArt/story_" .. tostring(ev.id or "")]
-		if not img then
-			pcall(function()
-				for _, choice in ev.choices or {} do
-					local cid = choice.effect and choice.effect.cardId
-					if cid and AssetIds["CardArt/" .. cid] then
-						img = AssetIds["CardArt/" .. cid]
-						break
-					end
-				end
-			end)
-		end
-		img = img or AssetIds["CardArt/" .. (ILLUST[ev.art or ""] or "none")]
-		if not img then
-			if ev.art == "epilogue" then
-				H.paintScene(picture, ev.art) -- 에필로그만 기존 연출 유지
-			else
-				overlay.BackgroundTransparency = 1
-				picture.BackgroundTransparency = 1
-				local dim = mkBox(overlay, UDim2.fromScale(0, 0.56), UDim2.fromScale(1, 0.44), Color3.new(0, 0, 0))
-				dim.BackgroundTransparency = 0.12
-				local top = mkBox(picture, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0))
-				top.BackgroundTransparency = 0.78
-			end
-		end
-		if img then
-			local bg = Instance.new("ImageLabel")
-			bg.Name = "Illustration"
-			bg.AnchorPoint = Vector2.new(0.5, 0.5)
-			bg.Position = UDim2.fromScale(0.5, 0.5)
-			bg.Size = UDim2.fromScale(1, 1)
-			bg.BackgroundTransparency = 1
-			bg.ScaleType = Enum.ScaleType.Crop
-			bg.Image = "rbxassetid://" .. tostring(img)
-			bg.Parent = picture
-			local shade = Instance.new("UIGradient")
-			shade.Rotation = 90
-			shade.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 0.25) })
-			shade.Parent = bg
-			-- [이벤트 원화] 원본보다 14% 더 확대하면 저해상도 원화와 세부 질감이 흐려져 확대를 생략한다.
-		end
+	-- [연출씬 · 2026-11-24 오너] 퀘스트 장면은 일러스트 없이 실제 3D 세계를 카메라가 훑고,
+	-- 목적지 항로·분위기 효과·수락 도장으로 연출한다. 그 밖의 사건은 기존 해도 연출.
+	local liveScene = string.sub(tostring(ev.id or ""), 1, 6) == "quest_" and H.questCinematic ~= nil
+	if liveScene then
+		overlay.BackgroundTransparency = 1
+		picture.BackgroundTransparency = 1
 	end
+	local recordHistory = if liveScene then H.questCinematic(picture, ev, overlay) else H.historyCinematic(picture, ev)
 
 	-- [초상 원본 화질] 256폭 지역 아틀라스를 330px로 확장하지 않고 원본 이하로 표시한다.
 	local storyViewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
@@ -4205,6 +5931,16 @@ function playStory(ev)
 		mkRound(npc, UDim2.fromOffset(45, 34), UDim2.fromOffset(40, 40), Color3.fromRGB(232, 196, 160), 0, Vector2.new(0.5, 0.5))
 	end
 
+	if liveScene then
+		-- 초상은 오른쪽 아래로 비켜 실제 장면이 가운데 보이게 한다.
+		for _, c in picture:GetChildren() do
+			if c.Name == "NpcPortrait" or c:IsA("ViewportFrame") then
+				c.AnchorPoint = Vector2.new(1, 1)
+				c.Position = UDim2.new(1, -18, 1, 0)
+				c.Size = UDim2.new(0, math.floor(portraitWidth * 0.8), 0.86, 0)
+			end
+		end
+	end
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
 	chapter.Position = UDim2.fromOffset(0, 14)
@@ -4293,6 +6029,7 @@ function playStory(ev)
 		local lay = Instance.new("UIListLayout")
 		lay.Padding = UDim.new(0, 5)
 		lay.Parent = list
+		if game:GetService("RunService"):IsStudio() then overlay:SetAttribute("StudioStoryChoices", #ev.choices) end
 		for _, ch in ev.choices do
 			local label = ch.text
 			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 46), function()
@@ -4306,6 +6043,7 @@ function playStory(ev)
 					hint.TextSize = 16
 				end
 				if result and result.ok then
+					recordHistory()
 					for _, c in list:GetChildren() do
 						if c:IsA("TextButton") then
 							c:Destroy()
@@ -4341,6 +6079,35 @@ function playStory(ev)
 		end
 		advancing = false
 	end)
+	-- [건너뛰기] 연출·대사를 건너뛰고 바로 선택지로. 한 번 본 장면은 다음부터 짧게 나온다.
+	do
+		local skip = Instance.new("TextButton")
+		skip.Name = "StorySkip"
+		skip.AnchorPoint = Vector2.new(1, 0)
+		skip.Position = UDim2.new(1, -12, 0, 12)
+		skip.Size = UDim2.fromOffset(112, 36)
+		skip.BackgroundColor3 = Color3.fromRGB(24, 20, 16)
+		skip.BackgroundTransparency = 0.25
+		skip.Text = "건너뛰기 ▶▶"
+		skip.Font = Enum.Font.GothamBold
+		skip.TextSize = 16
+		skip.TextColor3 = Color3.fromRGB(246, 222, 170)
+		skip.ZIndex = 70
+		skip.Parent = overlay
+		corner(skip, 8)
+		skip.Activated:Connect(function()
+			skip:Destroy()
+			if H.sceneSkip then pcall(H.sceneSkip) end
+			if next.Parent then
+				idx = #ev.lines
+				advancing = true
+				showChoices()
+				advancing = false
+			end
+		end)
+		H.seenScenes = H.seenScenes or {}
+		H.seenScenes[tostring(ev.id)] = true
+	end
 	task.spawn(function()
 		typeLine(ev.lines[1])
 	end)
@@ -4376,67 +6143,62 @@ end
 -- items = { { label, value, tone = "good" | "bad" | "key" | nil }, ... }
 H.TONE = { good = Color3.fromRGB(47, 122, 58), bad = Color3.fromRGB(166, 42, 31), key = Color3.fromRGB(154, 79, 10) }
 -- 지갑 줄: 가운데에 내 코인을 크게, 양옆에 지금 한 번에 처리할 일 (채우기·수리·납품)
+-- [메뉴 중복 정리] 코인·선박 숫자는 상단 현황에 한 번만 표시한다.
+-- 보급·수리·납품은 기존 서버 요청 그대로, 실제 실행할 일이 있을 때만 노출한다.
 function H.walletBar(mode)
+	local sh, sy = view.ship, view.shipyard
+	local needCrew = math.max(0, sh.maxCrew - sh.crew)
+	local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
+	local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
+	local turnIns = 0
+	if mode == "tavern" then
+		for _, q in view.quests.active do
+			if q.kind == "deliver" and q.progress >= q.amount then turnIns += 1 end
+		end
+	end
+	local repair = mode ~= "tavern" and (sy.missing or 0) > 0
+	if cost <= 0 and turnIns == 0 and not repair then return end
+
 	add(function()
-		local sh, sy, p = view.ship, view.shipyard, view.player
-		local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 70), Color3.fromRGB(58, 42, 28))
-		corner(f, 10)
-		local coin = mkLabel(f, "💰 " .. H.commas(p.coins), 24, Color3.fromRGB(255, 226, 120), true)
-		coin.AnchorPoint = Vector2.new(0.5, 0)
-		coin.Position = UDim2.new(0.5, 0, 0, 6)
-		coin.Size = UDim2.fromOffset(220, 30)
-		coin.AutomaticSize = Enum.AutomaticSize.None
-		coin.TextXAlignment = Enum.TextXAlignment.Center
-		local needCrew = math.max(0, sh.maxCrew - sh.crew)
-		local needSup = math.max(0, (view.supplyMax or 100) - sh.supplies)
-		local info = mkLabel(f, string.format("선원 %d/%d · 보급 %d/%d · 선체 %d%%", sh.crew, sh.maxCrew, sh.supplies, view.supplyMax or 100, math.floor(sh.hull / math.max(1, sh.maxHull) * 100 + 0.5)), 12, Color3.fromRGB(230, 214, 180), false)
-		info.AnchorPoint = Vector2.new(0.5, 0)
-		info.Position = UDim2.new(0.5, 0, 0, 40)
-		info.Size = UDim2.fromOffset(300, 22)
-		info.AutomaticSize = Enum.AutomaticSize.None
-		info.TextXAlignment = Enum.TextXAlignment.Center
-		local cost = needCrew * sy.hireCost + needSup * sy.supplyCost
-		local fill = mkButton(f, if cost > 0 then string.format("채우기\n%d", cost) else "준비 완료", COLORS.gold, UDim2.fromOffset(86, 54), function() call("Resupply", { what = "both" }) end, cost > 0)
-		fill.Position = UDim2.fromOffset(8, 8)
-		local right
-		if mode == "tavern" then
-			local n = 0
-			for _, q in view.quests.active do
-				if q.kind == "deliver" and q.progress >= q.amount then
-					n += 1
-				end
-			end
-			-- 납품할 퀘스트가 없을 땐 버튼 자체를 숨겨 화면을 비운다
-			right = if n == 0 then nil else mkButton(f, string.format("의뢰 납품\n%d건", n), COLORS.green, UDim2.fromOffset(86, 54), function()
-				task.spawn(function()
-					for _, q in view.quests.active do
-						if q.kind == "deliver" and q.progress >= q.amount then
-							call("TurnIn", { questId = q.id })
+		local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 56), Color3.fromRGB(58, 42, 28))
+		f.Name = "MenuQuickActions"
+		corner(f, 8)
+		local caption = mkLabel(f, "필요한 정비", 16, Color3.fromRGB(255, 231, 179), true)
+		caption.Position = UDim2.fromOffset(10, 12)
+		caption.Size = UDim2.new(0.28, -12, 0, 30)
+		caption.AutomaticSize = Enum.AutomaticSize.None
+		local buttons = {}
+		if cost > 0 then
+			table.insert(buttons, mkButton(f, string.format("보급·선원 채우기 %s코인", H.commas(cost)), COLORS.gold,
+				UDim2.fromOffset(88, 48), function() call("Resupply", { what = "both" }) end, true))
+		end
+		if turnIns > 0 then
+			table.insert(buttons, mkButton(f, string.format("의뢰 납품 %d건", turnIns), COLORS.green,
+				UDim2.fromOffset(88, 48), function()
+					task.spawn(function()
+						for _, q in view.quests.active do
+							if q.kind == "deliver" and q.progress >= q.amount then
+								call("TurnIn", { questId = q.id })
+							end
 						end
-					end
-				end)
-			end, n > 0)
-		else
-			right = mkButton(f, if (sy.missing or 0) > 0 then string.format("%s\n%d", if sy.field then "응급 수리" else "수리", sy.repairTotal) else "선체 튼튼", COLORS.green, UDim2.fromOffset(86, 54), function() call("Repair") end, (sy.missing or 0) > 0)
+					end)
+				end, true))
+		elseif repair then
+			table.insert(buttons, mkButton(f, string.format("%s %s코인",
+				if sy.field then "응급 수리" else "선체 수리", H.commas(sy.repairTotal or 0)),
+				COLORS.green, UDim2.fromOffset(88, 48), function() call("Repair") end, true))
 		end
-		if right then
-			right.AnchorPoint = Vector2.new(1, 0)
-			right.Position = UDim2.new(1, -8, 0, 8)
-		end
-		-- [모바일] 재화와 선체 상태 위, 정비·납품 버튼 아래의 2단 배치.
 		local function fitWallet()
-			local compact = f.AbsoluteSize.X > 0 and f.AbsoluteSize.X < 460
-			f.Size = UDim2.new(1, -6, 0, if compact then 122 else 70)
-			coin.Size = if compact then UDim2.new(1, -24, 0, 30) else UDim2.fromOffset(220, 30)
-			coin.TextSize = if compact then 22 else 24
-			info.Size = if compact then UDim2.new(1, -20, 0, 22) else UDim2.fromOffset(300, 22)
-			info.Position = UDim2.new(0.5, 0, 0, if compact then 37 else 40)
-			fill.Position = if compact then UDim2.fromOffset(8, 68) else UDim2.fromOffset(8, 8)
-			fill.Size = if compact then UDim2.new(if right then 0.5 else 1, if right then -12 else -16, 0, 46) else UDim2.fromOffset(86, 54)
-			if right then
-				right.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0)
-				right.Position = if compact then UDim2.new(0.5, 4, 0, 68) else UDim2.new(1, -8, 0, 8)
-				right.Size = if compact then UDim2.new(0.5, -12, 0, 46) else UDim2.fromOffset(86, 54)
+			local width = f.AbsoluteSize.X
+			if width <= 0 then return end
+			local compact = width < 430
+			caption.Visible = not compact
+			local begin = if compact then 0 else 0.28
+			for i, button in buttons do
+				button.AnchorPoint = Vector2.zero
+				button.Position = UDim2.new(begin + (i - 1) * (1 - begin) / #buttons, 5, 0, 4)
+				button.Size = UDim2.new((1 - begin) / #buttons, -10, 0, 48)
+				button.TextSize = 16
 			end
 		end
 		f:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWallet)
@@ -4451,7 +6213,7 @@ function H.statStrip(items)
 		local strip = Instance.new("Frame")
 		strip.Name = "MenuSummaryMetrics"
 		strip.BackgroundTransparency = 1
-		strip.Size = UDim2.new(1, -6, 0, 50)
+		strip.Size = UDim2.new(1, -6, 0, 56)
 		local lay = Instance.new("UIGridLayout")
 		lay.CellPadding = UDim2.fromOffset(6, 6)
 		lay.SortOrder = Enum.SortOrder.LayoutOrder
@@ -4473,7 +6235,7 @@ function H.statStrip(items)
 			lb.Position = UDim2.fromOffset(8, 4)
 			lb.Size = UDim2.new(1, -16, 0, 16)
 			lb.Font = Enum.Font.Gotham
-			lb.TextSize = 12
+			lb.TextSize = 14
 			lb.TextXAlignment = Enum.TextXAlignment.Left
 			lb.TextTruncate = Enum.TextTruncate.AtEnd
 			lb.TextColor3 = INK_SOFT
@@ -4484,7 +6246,7 @@ function H.statStrip(items)
 			vl.Position = UDim2.fromOffset(8, 20)
 			vl.Size = UDim2.new(1, -16, 0, 26)
 			vl.Font = Enum.Font.GothamBold
-			vl.TextSize = 18
+			vl.TextSize = 20
 			vl.TextXAlignment = Enum.TextXAlignment.Left
 			vl.TextTruncate = Enum.TextTruncate.AtEnd
 			vl.TextColor3 = H.TONE[it.tone or "key"] or INK
@@ -4496,8 +6258,8 @@ function H.statStrip(items)
 			if width <= 0 then return end
 			local cols = if width < 460 and #items >= 3 then 2 else math.max(1, #items)
 			local rows = math.ceil(#items / cols)
-			lay.CellSize = UDim2.new(1 / cols, -6 * (cols - 1) / cols, 0, 50)
-			local height = rows * 50 + (rows - 1) * 6
+			lay.CellSize = UDim2.new(1 / cols, -6 * (cols - 1) / cols, 0, 56)
+			local height = rows * 56 + (rows - 1) * 6
 			if strip.Size.Y.Offset ~= height then
 				strip.Size = UDim2.new(1, -6, 0, height)
 			end
@@ -4521,10 +6283,82 @@ function RENDERERS.harbor()
 		{ "항구 수요", tostring(#(h.demands or {})) .. "종", tone = "key" },
 		{ "항구 발전", tostring(h.level) .. "단계", tone = "key" },
 	})
+	-- [교역 재미] 상회 등급·축제 예고·라이벌 상단·희귀 화물·신상품 열풍
+	local tf = view.tradeFun
+	if tf then
+		add(function() return mkHeader(content, "교역 소식") end)
+		add(function()
+			local rk = tf.rank
+			local sub = if rk.nextName then string.format("누적 이익 %s / 다음 %s %s · 판매 +%d%% · 관세 -%d%%", tostring(rk.profit), rk.nextName, tostring(rk.nextNeed), rk.level, rk.level * 10)
+				else string.format("누적 이익 %s · 최고 등급 · 판매 +%d%% · 관세 -%d%%", tostring(rk.profit), rk.level, rk.level * 10)
+			local row = mkRow(content, "상회 등급 · " .. rk.name, sub, {}, 64)
+			row.Name = "TradeFunRank"
+			return row
+		end)
+		if tf.lot then
+			add(function()
+				local lot = tf.lot
+				local sub = string.format("%d개 · 개당 %d코인 (총 %d) · %d일 남음\n%s 중 한 곳에 팔면 2.2배, 다른 곳은 손해",
+					lot.qty, lot.unitPrice, lot.total, lot.untilIn, table.concat(lot.targets, "·"))
+				local buttons = {}
+				if not lot.bought then
+					table.insert(buttons, { text = "통째로 사기", color = COLORS.gold, onClick = function() call("BuyRareLot", {}) end })
+				end
+				local row = mkRow(content, (if lot.bought then "희귀 화물 (구매함) · " else "희귀 화물 입고! · ") .. lot.good, sub, buttons, 82)
+				row.Name = "TradeFunRareLot"
+				return row
+			end)
+		end
+		for _, r in tf.rare or {} do
+			add(function()
+				return mkRow(content, "싣고 있는 희귀 화물 · " .. r.good .. " " .. r.qty .. "개",
+					string.format("%s에 팔면 2.2배 · %d일 남음", table.concat(r.targets, "·"), r.left), {}, 60)
+			end)
+		end
+		if #(tf.festivals or {}) > 0 then
+			add(function()
+				local lines = {}
+				for _, f in tf.festivals do
+					table.insert(lines, if f.active then string.format("● %s 축제 중 (%d일 남음) · %s 수요 +60%%", f.port, f.endIn + 1, f.good)
+						else string.format("○ %s 축제 %d일 뒤 · %s 수요 +60%%", f.port, f.inDays, f.good))
+				end
+				local row = mkRow(content, "항구 축제 예고", table.concat(lines, "\n"), {}, 28 + 20 * #lines)
+				row.Name = "TradeFunFestivals"
+				return row
+			end)
+		end
+		if tf.rival then
+			add(function()
+				local rv = tf.rival
+				local sub = if rv.arrived then string.format("%s의 %s 시장을 휩쓸었다 · %d일간 -15%%", rv.port, rv.good, math.max(0, rv.endIn) + 1)
+					else string.format("%d일 뒤 %s에 %s를 풀 예정 · 먼저 팔면 +15%%", rv.inDays, rv.port, rv.good)
+				local row = mkRow(content, "라이벌 상단 · " .. rv.name, sub, {}, 64)
+				row.Name = "TradeFunRival"
+				return row
+			end)
+		end
+		if #(tf.crazes or {}) > 0 then
+			add(function()
+				local names = {}
+				for _, c in tf.crazes do table.insert(names, string.format("%s(%d일)", c.good, c.left)) end
+				return mkRow(content, "신상품 열풍 · 이 항구", table.concat(names, ", ") .. " · 판매 +12%", {}, 60)
+			end)
+		end
+		add(function()
+			return mkLabel(content, "팁: 이 항구 특산이 아닌 상품을 처음 팔면 '최초 수입' +25%, 이후 5일 열풍 +12%.", 14, COLORS.text, true)
+		end)
+	end
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
 	end)
+	-- [국가·지도자·항구] 항구 주인 나라의 지도자·군사·연구와 이 항구의 문화권·입장·관세 (시뮬 표시 전용)
+	if h.sim and h.sim.nation and h.sim.nation.lines then
+		add(function() return mkHeader(content, "국가 · 지도자 · 항구 정보") end)
+		add(function()
+			return mkLabel(content, table.concat(h.sim.nation.lines, "\n"), 15, COLORS.text, true)
+		end)
+	end
 	-- [항구별 특산 산업] 실물경제 시뮬의 품목별 생산·재고·가격·기술 발전을 표시한다.
 	if h.sim and h.sim.specialties and #h.sim.specialties > 0 then
 		add(function() return mkHeader(content, "지역 특산품 · 산업 발전") end)
@@ -4580,7 +6414,11 @@ function RENDERERS.harbor()
 		return mkLabel(content, string.format("누적 투자 %d · %s\n혜택: 이 항구에서 팔 때 +%d%%, 수리·고용·보급 비용 -%d%%", h.invested, nextText, math.floor(h.sellBonus * 100 + 0.5), math.floor(h.discount * 100 + 0.5)), 13, COLORS.text, false)
 	end)
 	local function section(title)
-		add(function() return mkHeader(content, title) end)
+		add(function()
+			local heading = mkHeader(content, title)
+			if title == "은행" then heading.Name = "BankEntry" end
+			return heading
+		end)
 	end
 	local fac = {}
 	for _, k in view.facilities do
@@ -4636,27 +6474,6 @@ function RENDERERS.harbor()
 				return mkRow(content, ch.name, sub, {
 					{ text = "건축", color = COLORS.gold, onClick = function() call("BuildStage", { chain = ch.id }) end, enabled = ch.next ~= nil and ch.next.can },
 				}, 112)
-			end)
-		end
-	end
-
-	if fac.guild then
-		section("상인 길드")
-		local g = view.guild
-		if g.contract then
-			local c = g.contract
-			add(function()
-				return mkRow(content, string.format("진행 중: %s %d개 → %s", c.goodName, c.amount, c.toPortName), string.format("보상 %d · 남은 %d일 · 보유 %d", c.reward, c.daysLeft, c.have), {
-					{ text = "납품", color = COLORS.green, onClick = function() call("TurnInContract", {}) end },
-					{ text = "포기", color = COLORS.red, onClick = function() call("AbandonContract", {}) end },
-				}, 60)
-			end)
-		end
-		for _, o in g.offers do
-			add(function()
-				return mkRow(content, string.format("%s %d개 → %s", o.goodName, o.amount, o.toPortName), string.format("보상 %d코인 · 명성 +%d", o.reward, o.fame), {
-					{ text = "계약", color = COLORS.blue, onClick = function() call("AcceptContract", { index = o.index }) end },
-				}, 56)
 			end)
 		end
 	end
@@ -4862,20 +6679,15 @@ function RENDERERS.crew()
 		if st.seatId then filled += 1; if st.matched then matched += 1 end end
 	end
 	H.statStrip({
-		{ "승선 동료", tostring(joined) .. "명", tone = "key" },
 		{ "직책 배치", tostring(filled) .. "/" .. tostring(#(view.companions.stations or {})), tone = "good" },
-		{ "적합 직책", tostring(matched) .. "자리", tone = "good" },
 		{ "미배치", tostring(math.max(0, joined - filled)) .. "명", tone = if joined > filled then "bad" else "good" },
+		{ "빈 직책", tostring(#(view.companions.stations or {}) - filled) .. "곳", tone = "key" },
 	})
-	add(function() return mkHeader(content, "동료와 대화") end)
-	add(function()
-		return mkLabel(content, "배에 탄 동료의 [대화] 버튼을 누르면 이야기를 나눌 수 있어요. 대화할수록 호감도가 올라 새 이야기와 선물이 열려요.", 13, COLORS.muted, true)
-	end)
 	add(function() return mkHeader(content, string.format("내 배 · 동료 자리 %d칸", view.companions.max)) end)
 	add(function()
 		local sh = view.ship
-		local row = mkRow(content, sh.name .. "  (눌러서 선장실 열기)", string.format("선체 %d/%d · 선원 %d/%d · 포 %d · 속도 %d\n동료를 끌어다 자리에 앉힐 수 있어요", sh.hull, sh.maxHull, sh.crew, sh.maxCrew, sh.cannons, sh.speed), {
-			{ text = "선장실", color = COLORS.gold, onClick = function() H.openCabin() end },
+		local row = mkRow(content, sh.name, string.format("직책 %d개 · 적합 배치 %d명", #(view.companions.stations or {}), matched), {
+			{ text = "직책 배치", color = COLORS.gold, onClick = function() H.openCabin() end },
 			{ text = "자동 배치", color = COLORS.green, onClick = function() call("AutoStations") end },
 		}, 120)
 		local si = SHIP_ICON[sh.id]
@@ -4889,9 +6701,12 @@ function RENDERERS.crew()
 		if vac and (vac.speed < 0 or vac.cannon < 0) then
 			warn = "\n조타수/포술장 자리가 비어 있어 " .. (if vac.speed < 0 then "항해 속도 -2% " else "") .. (if vac.cannon < 0 then "포격 -2%" else "")
 		end
-		return mkLabel(content, "동료는 자기 직책 자리에 앉으면 효과 x1.2, 다른 자리에 앉으면 x0.6이에요. 버튼을 누르면 자리를 바꿔요." .. warn, 12, COLORS.muted, true)
+		return mkLabel(content, "직책 일치 ×1.2 · 다른 직책 ×0.6" .. warn, 12, COLORS.muted, true)
 	end)
-	for _, st in view.companions.stations do
+	local stations = {}
+	for _, st in view.companions.stations do if not st.seatId then table.insert(stations, st) end end
+	for _, st in view.companions.stations do if st.seatId then table.insert(stations, st) end end
+	for _, st in stations do
 		add(function()
 			local joined = {}
 			for _, c in view.companions.list do
@@ -4994,14 +6809,9 @@ function RENDERERS.status()
 	H.counselRows(1)
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
-		{ ship.name .. (if ship.steam then " (증기)" else ""), string.format("선체 %d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
-		{ "선원", string.format("%d/%d", ship.crew, ship.maxCrew), tone = "key" },
-		{ "포 · 속도", string.format("%d · %d", ship.cannons, ship.speed), tone = "key" },
-	})
-	H.statStrip({
+		{ "선체", string.format("%d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
 		{ "화물", string.format("%d/%d", ship.cargoUsed, ship.cargoCapacity), tone = "key" },
-		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 8 then "bad" else "key" },
-		{ "석탄", tostring(ship.coal), tone = "key" },
+		{ "명성", tostring(p.fame or 0), tone = "key" },
 	})
 	-- [선장 현황] 현재 배의 역할·갑판 대포·개조 효과를 숫자와 설명으로 연결한다.
 	add(function()
@@ -5196,32 +7006,7 @@ function intelName(level)
 	return "감만 잡는 힌트"
 end
 
--- 이야기와 조언: 프롤로그, 새 해역의 막, 동료의 한마디
-function H.addStoryPanel()
-	if view.prologue then
-		add(function() return mkHeader(content, view.prologue.title) end)
-		add(function() return mkLabel(content, view.prologue.text, 16, COLORS.gold, true) end)
-	end
-	if view.actIntro then
-		add(function() return mkHeader(content, view.actIntro.title) end)
-		add(function() return mkLabel(content, view.actIntro.text .. "\n목표: " .. view.actIntro.goal, 16, COLORS.gold, true) end)
-	elseif view.act then
-		add(function() return mkLabel(content, view.act.title .. " — 목표: " .. view.act.goal, 15, COLORS.gold, true) end)
-	end
-	if view.guide then
-		add(function() return mkHeader(content, "🧭 " .. view.guide.title) end)
-		add(function()
-			local lines = {}
-			for _, st in view.guide.steps do
-				table.insert(lines, st.mark .. " " .. st.text)
-			end
-			return mkLabel(content, table.concat(lines, "\n"), 15, COLORS.text, true)
-		end)
-	end
-	if view.advice then
-		add(function() return mkLabel(content, string.format("💬 %s의 조언\n\"%s\"", view.advice.who, view.advice.text), 16, COLORS.gold, true) end)
-	end
-end
+-- [프롤로그·시대 이야기] 교역 메뉴가 아니라 개인 저널의 이야기 기록에서만 표시한다.
 
 -- 뱃사람 귀띔: 크게, 눈에 잘 띄게
 function addRumorPanel()
@@ -5245,17 +7030,10 @@ function H.commas(n)
 end
 local hallGood = nil
 local function closeTradeHall()
-	local g = player.PlayerGui:FindFirstChild("TradeHallGui")
-	if g then
-		g:Destroy()
-	end
-	tradeHallRefresh = nil
-	-- [복귀 화면 단일화] 조언 바로가기 취소 후 책 메뉴와 도크 아이콘이 동시에 남지 않도록 한다.
-	-- 교역·조선소에서 돌아올 때는 시설 책만 연다. 거래·저장 데이터는 그대로 둔다.
-	menuToggle.Visible = false
-	hud.Visible = false
-	hudTopGui.Enabled = false
-	main.Visible = true
+  -- [시설 탭 정리] 탭의 상세 본문만 제거한다. 공통 시설 책은 그대로 둔다.
+  local detail = mainInner:FindFirstChild("FacilityDetail")
+  if detail then detail:Destroy() end
+  tradeHallRefresh = nil
 end
 
 -- 비주얼 래더가 켜 준 기능인지 (Shared.VisualLadderState.Features[분야][이름])
@@ -5277,22 +7055,20 @@ local function openTradeHall()
 	if view and view.player then
 		Sfx.merchantGreeting(PortData.Ports[view.player.portId])
 	end
-	local layer = overlayGui("TradeHallGui", 15)
-	main.Visible = false
-	-- [전용 화면] 교역·조선소 위로 이전 HUD 및 도크 아이콘이 남지 않게 숨긴다.
-	hud.Visible = false
-	hudTopGui.Enabled = false
+	-- [교역 탭] 기존 3열 교역 장부를 시설 책 본문에 사용한다.
 	local root = Instance.new("Frame")
-	root.Size = UDim2.fromScale(1, 1)
+	root.Name = "FacilityDetail"
 	root.BackgroundColor3 = Color3.fromRGB(34, 26, 20)
 	root.BorderSizePixel = 0
-	root.Parent = layer
+	root.ClipsDescendants = true
+	root.Parent = mainInner
+	H.layoutBook()
 	local lastScroll, detailScroll = 0, 0
 	local detailOpen = false
 	local query = ""
 
 	local function build()
-		if not layer.Parent or not view then
+		if not root.Parent or not view then
 			return
 		end
 		for _, c in root:GetChildren() do
@@ -5315,12 +7091,24 @@ local function openTradeHall()
 		local p, ship = view.player, view.ship
 		local width = root.AbsoluteSize.X
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
-		local narrow = width < 740
-		local showMerchant = width >= 1040
-		local inset = if showMerchant then 258 else 10
-		-- [모바일 메뉴] 지갑·화물·알림을 각각 다른 높이에 배치한다.
-		local headH = if narrow then 140 else 62
-		local menuY = headH + 16
+		local narrow = width < 680
+        -- [작은 가로폰] 헤더와 고정 거래판을 줄여 읽을 수 있는 장부 공간을 확보한다.
+        local shortScreen = root.AbsoluteSize.Y > 0 and root.AbsoluteSize.Y < 530
+		local showMerchant = width >= 1550
+		local inset = if showMerchant then 258 else 8
+		local availableW = width - inset - 16
+		local listWidth = if narrow then availableW else math.max(185, math.floor(availableW * 0.24))
+		local detailWidth = if narrow then availableW else math.max(270, math.floor(availableW * 0.34))
+		local heroX = inset + listWidth + 4
+		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
+		local compactList = not narrow
+		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
+		local headH = if narrow then (if shortScreen then 128 else 146)
+            elseif width < 1160 then (if shortScreen then 94 else 108) else 70
+		-- [낮은 가로 화면] 시설 책 머리줄에 이미 시설·항구 이름이 있어 장부 제목을 숨기고 한 줄로 줄인다.
+		local slimHead = shortScreen and not narrow
+		if slimHead then headH = 48 end
+		local menuY = headH + 12
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, headH), COLORS.paper)
@@ -5331,47 +7119,79 @@ local function openTradeHall()
 		title.Size = if narrow then UDim2.new(1, -110, 0, 25) else UDim2.new(0.32, 0, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		-- 화면 가운데에 내 코인을 크게: 사고팔 때마다 바로 보인다
-		local coinBox = mkBox(top, UDim2.new(0.5, 0, 0.5, 0), UDim2.fromOffset(if narrow then 150 else 210, 46), Color3.fromRGB(58, 42, 28))
-		coinBox.AnchorPoint = Vector2.new(0.5, 0.5)
-		if narrow then
-			coinBox.Position = UDim2.new(0.5, 0, 0, 87)
-			coinBox.Size = UDim2.fromOffset(178, 38)
+		-- [교역 상단] 자금과 직전 메뉴를 이웃한 한 줄로 배치하고 거래 안내 중복은 숨긴다.
+		-- [교역소] 자금·화물과 최근 메뉴를 중앙 한 줄에 나란히, 같은 높이로 둔다.
+		local recent = H.recentTab
+		local showRecent = recent and TAB_NAME[recent] ~= nil and groupOf(recent) ~= groupOf("trade")
+		local recentWidth = if width < 330 then 84 elseif narrow then 104 else 136
+		local cashWidth = if narrow then math.max(110, math.min(274, width - (if showRecent then recentWidth + 44 else 40)))
+			else math.clamp(math.floor(width * 0.36), 220, 315)
+		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
+		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
+		local rowY = if narrow then (if shortScreen then 52 else 64)
+            elseif width < 1160 then (if shortScreen then 30 else 38) else 32
+		if slimHead then
+			title.Visible = false
+			rowY = 7
 		end
-		corner(coinBox, 10)
-		local coinText = mkLabel(coinBox, string.format("💰 %s", H.commas and H.commas(p.coins) or tostring(p.coins)), if narrow then 20 else 26, Color3.fromRGB(255, 226, 120), true)
-		coinText.Size = UDim2.fromScale(1, 1)
-		coinText.AutomaticSize = Enum.AutomaticSize.None
-		coinText.TextXAlignment = Enum.TextXAlignment.Center
-		local hold = mkLabel(top, string.format("화물 %d/%d", ship.cargoUsed, ship.cargoCapacity), 13, INK_SOFT, false)
-		-- [교역소 동료 조언] 전용 매매 화면에서도 관련 조언이 사라지지 않게 표시한다.
-		local tradeHint = "시세와 화물칸을 비교한 뒤 매입·판매하세요."
-		for _, counsel in (view.counsel or {}) do
-			if counsel.id == "menu_trade" then
-				tradeHint = (counsel.who and counsel.who.name or "동료") .. ": 특산품 시세를 비교하세요."
-				break
-			end
+		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
+		commonStatus.Name = "TradeGlobalMoneyCargo"
+        -- [교역 자금] 황동 테두리로 상단의 거래 자금을 별도 현판 처리.
+        commonStatus.BackgroundColor3 = PARCHMENT_TOP
+        commonStatus.BackgroundTransparency = 0.08
+        corner(commonStatus, 5)
+        local moneyEdge = Instance.new("UIStroke")
+        moneyEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        moneyEdge.Color = UI_BRASS_DARK
+        moneyEdge.Thickness = 1.4
+        moneyEdge.Parent = commonStatus
+        commonStatus.AnchorPoint = Vector2.zero
+		commonStatus.Position = UDim2.fromOffset(groupX, rowY)
+		commonStatus.Size = UDim2.fromOffset(cashWidth, 34)
+		commonStatus.AutomaticSize = Enum.AutomaticSize.None
+		commonStatus.TextTruncate = Enum.TextTruncate.AtEnd
+		commonStatus.TextXAlignment = Enum.TextXAlignment.Center
+		commonStatus.TextYAlignment = Enum.TextYAlignment.Center
+		if showRecent then
+			local recentBtn = mkButton(top, "← " .. groupOf(recent).name, COLORS.leather,
+				UDim2.fromOffset(recentWidth, 34), function()
+					closeTradeHall()
+					openTab(recent, if recent == "map" then "chart" else nil)
+				end, true)
+			recentBtn.Name = "TradeRecentFacility"
+			recentBtn.TextSize = if width < 330 then 13 else 15
+			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, rowY)
 		end
-		local toastLbl = mkLabel(top, if message ~= "" then message else tradeHint, 13, Color3.fromRGB(60, 100, 50), true)
-		toastLbl.Position = if narrow then UDim2.fromOffset(12, 114) else UDim2.new(0.5, 112, 0, 8)
-		toastLbl.Size = if narrow then UDim2.new(1, -24, 0, 20) else UDim2.new(0.5, -210, 0, 44)
+		-- [중복 설명 제거] 조언은 저널에서, 거래 알림은 결과가 있을 때만 보여 준다.
+		local toastLbl = mkLabel(top, message, 15, INK_SOFT, true)
+		toastLbl.Visible = message ~= ""
+		toastLbl.Position = if narrow then UDim2.fromOffset(12, if shortScreen then 94 else 112)
+            elseif width < 1160 then UDim2.fromOffset(12, if shortScreen then 68 else 80)
+            else UDim2.fromOffset(12, 36)
+        toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 22)
+            elseif width < 1160 then UDim2.new(1, -24, 0, 22) else UDim2.new(0.24, -10, 0, 24)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
-		hold.Position = UDim2.fromOffset(12, if narrow then 40 else 34)
-		hold.Size = UDim2.new(if narrow then 0.3 else 0.32, 0, 0, 20)
-		hold.AutomaticSize = Enum.AutomaticSize.None
+		if slimHead then
+			toastLbl.Position = UDim2.fromOffset(12, 12)
+			toastLbl.Size = UDim2.fromOffset(math.max(60, groupX - 24), 24)
+		end
 		local backToList = narrow and detailOpen
-		local leave = mkButton(top, if backToList then "목록" else "나가기", COLORS.leather, UDim2.fromOffset(78, 44), function()
+		local leave = mkButton(top, if backToList then "목록" else "닫기", COLORS.leather, UDim2.fromOffset(78, 44), function()
 			if backToList then
 				detailOpen = false
 				build()
 			else
 				closeTradeHall()
+				main.Visible = false
+				menuToggle.Visible = true
 			end
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = if narrow then UDim2.new(1, -9, 0, 32) else UDim2.new(1, -9, 0.5, 0)
+		-- [닫기 중복 제거] 시설 책 오른쪽 위 X가 이미 닫기를 맡는다. 좁은 화면의 "목록"만 남긴다.
+		leave.Visible = backToList
 
 		-- 왼쪽: 상인 초상과 말풍선
 		local left = mkBox(root, UDim2.fromOffset(8, 78), UDim2.new(0, 240, 1, -86), Color3.fromRGB(46, 34, 26))
@@ -5444,8 +7264,8 @@ local function openTradeHall()
 		-- 가운데: 물품 목록
 		local list = Instance.new("ScrollingFrame")
 		list.Name = "TradeIndex"
-		list.Position = UDim2.fromOffset(inset, menuY + 92)
-		list.Size = UDim2.new(1, -inset - (if narrow then 8 else 336), 1, -menuY - 100)
+		list.Position = UDim2.fromOffset(inset, menuY + (if compactList then 150 else 98))
+		list.Size = UDim2.new(0, listWidth, 1, -menuY - (if compactList then 158 else 106))
 		list.Visible = not narrow or not detailOpen
 		list.BackgroundTransparency = 1
 		list.BorderSizePixel = 0
@@ -5460,16 +7280,16 @@ local function openTradeHall()
 		local search = Instance.new("TextBox")
 		search.Name = "TradeSearch"
 		search.Position = UDim2.fromOffset(inset, menuY)
-		search.Size = UDim2.new(list.Size.X.Scale, list.Size.X.Offset - 8, 0, 42)
+		search.Size = UDim2.new(0, listWidth, 0, 42)
 		search.BackgroundColor3 = COLORS.paper
 		search.BorderSizePixel = 0
 		search.TextColor3 = INK
 		search.PlaceholderColor3 = INK_SOFT
 		search.TextXAlignment = Enum.TextXAlignment.Left
 		search.Font = Enum.Font.GothamMedium
-		search.TextSize = 14
+		search.TextSize = 17
 		search.ClearTextOnFocus = false
-		search.PlaceholderText = "품목 검색 · ⬇️ 평균보다 저렴 · ⬆️ 비쌈"
+		search.PlaceholderText = "상품 이름·분류 검색"
 		search.Text = query
 		search.Visible = list.Visible
 		search.Parent = root
@@ -5480,25 +7300,85 @@ local function openTradeHall()
 		searchPad.Parent = search
 		H.hallFilter = H.hallFilter or "all"
 		local free0 = ship.cargoCapacity - ship.cargoUsed
+		-- [세계 백과] 기존 서버 자원·발견 지식만 읽는다. 미발견 내용은 노출하지 않는다.
+		local bookResource, bookCard = nil, nil
+		if sel then
+			for _, resource in ((view.codex and view.codex.resources) or {}) do
+				if resource.id == sel.id then bookResource = resource; break end
+			end
+			if bookResource and bookResource.cardId then
+				for _, card in ((view.codex and view.codex.cards) or {}) do
+					if card.id == bookResource.cardId and card.found == true then bookCard = card; break end
+				end
+			end
+		end
+		local bookSummary = if sel and sel.id == "coal" then
+			"석탄은 오래된 식물이 퇴적돼 오랜 시간 열과 압력을 받아 형성된 탄소질 화석 연료야. 증기선과 제련 산업의 열원으로 사용돼."
+			else (sel and sel.purpose or "항구에서 거래하는 상품")
+		if bookResource then
+			bookSummary ..= "\n분류 " .. (bookResource.categoryName or sel.category or "교역품")
+				.. " · 학문 " .. (bookResource.discipline or "미분류")
+			if bookResource.origin then bookSummary ..= "\n원산지 " .. bookResource.origin end
+			if bookResource.appliedDiscipline then bookSummary ..= " · 가공 " .. bookResource.appliedDiscipline end
+			if bookResource.chain then
+				bookSummary ..= "\n생산·가공 " .. tostring(bookResource.chain.raw or "원료")
+					.. " → " .. tostring(bookResource.chain.processed or "가공품")
+			end
+		end
+		if bookCard and type(bookCard.description) == "string" and bookCard.description ~= "" then
+			bookSummary ..= "\n발견 지식: " .. bookCard.description
+		elseif bookResource and bookResource.cardId then
+			bookSummary ..= "\n연관 지식은 서재에서 발견하면 읽을 수 있어."
+		else
+			bookSummary ..= "\n백과 기록은 학자의 서재에서 이어 볼 수 있어."
+		end
+		-- [원화 클릭] 발견한 상품 지식은 해당 장으로, 미발견 상품은 기존 자원 백과로 간다.
+		local function openSelectedGoodEncyclopedia()
+			if not sel then return end
+			H.tradeBookGood = sel.id
+			if bookCard then
+				H.galleryBookOpenRequested = bookCard.id
+			else
+				H.tradeBookOpenRequested = true
+			end
+			closeTradeHall()
+			openTab("codex")
+		end
 		-- [기존 시세 함수] 서버의 실제 1개 가격은 기존 흥정 이월 할인까지 포함한다.
 		local function unitBuyOf(g)
 			return if g.buyTotals and g.buyTotals[1] then g.buyTotals[1] else g.buy
 		end
 		do
 			-- 걸러 보기 칩 + 보유 전부 팔기 (일괄)
-			local chips = mkBox(root, UDim2.fromOffset(inset, menuY + 46), UDim2.new(1, -inset - (if narrow then 8 else 336), 0, 40), Color3.fromRGB(34, 26, 20))
+			local chips = mkBox(root, UDim2.fromOffset(inset, menuY + 46), UDim2.new(0, listWidth, 0, if compactList then 96 else 46), Color3.fromRGB(34, 26, 20))
 			chips.BackgroundTransparency = 1
 			chips.Visible = list.Visible
 			local cl = Instance.new("UIListLayout")
 			cl.FillDirection = Enum.FillDirection.Horizontal
 			cl.Padding = UDim.new(0, 5)
-			cl.Parent = chips
+			if not compactList then cl.Parent = chips end
+			local chipIndex = 0
 			local function chip(id, text)
-				local c = mkButton(chips, text, if H.hallFilter == id then COLORS.gold else COLORS.paper, UDim2.new(0.17, -4, 1, 0), function()
+				local c = mkButton(chips, text, if H.hallFilter == id then COLORS.gold else COLORS.paper, if compactList then UDim2.new(0.25, -4, 0, 44) else UDim2.new(0.17, -4, 1, 0), function()
 					H.hallFilter = id
 					build()
 				end)
-				c.TextSize = 14
+				-- [교역 필터] 활성화된 분류는 황동 책갈피로 표식한다.
+                c.Name = "TradeFilter_" .. id
+                c:SetAttribute("SelectedFilter", H.hallFilter == id)
+                if H.hallFilter == id then
+                    local selectedRule = Instance.new("Frame")
+                    selectedRule.Name = "SelectedFilterRule"
+                    selectedRule.BackgroundColor3 = UI_BRASS_DARK
+                    selectedRule.BorderSizePixel = 0
+                    selectedRule.Position = UDim2.new(0, 8, 1, -5)
+                    selectedRule.Size = UDim2.new(1, -16, 0, 3)
+                    selectedRule.ZIndex = c.ZIndex + 3
+                    selectedRule.Parent = c
+                end
+                c.TextSize = 16
+				if compactList then c.Position = UDim2.new(chipIndex * 0.25, 2, 0, 0) end
+				chipIndex += 1
 			end
 			chip("all", "전체")
 			chip("specialty", "특산")
@@ -5511,7 +7391,7 @@ local function openTradeHall()
 					ownedValue += g.sell * g.owned
 				end
 			end
-			local sellAll = mkButton(chips, if narrow then "일괄 판매" else string.format("보유 전부 팔기 (+%d)", ownedValue), COLORS.green, UDim2.new(0.32, -4, 1, 0), function()
+			local sellAll = mkButton(chips, if narrow then "일괄 판매" else string.format("보유 전부 팔기 (+%d)", ownedValue), COLORS.green, if compactList then UDim2.new(1, -4, 0, 44) else UDim2.new(0.32, -4, 1, 0), function()
 				task.spawn(function()
 					for _, g in goods do
 						local left = g.owned
@@ -5523,10 +7403,43 @@ local function openTradeHall()
 					end
 				end)
 			end, ownedCount > 0)
-			sellAll.TextSize = 12
+			sellAll.TextSize = 16
+			if compactList then sellAll.Position = UDim2.fromOffset(2, 50) end
 		end
+		-- [교역품 정렬 복구] 기존 싼 순·판매이익·보유순·이름순을 교역 장부 목록 위에 그대로 둔다.
+		H.tradeSort = H.tradeSort or "price"
+		local sortBar = Instance.new("Frame")
+		sortBar.Name = "TradeSort"
+		sortBar.BackgroundTransparency = 1
+		sortBar.Size = UDim2.new(1, -8, 0, 42)
+		sortBar.LayoutOrder = -1
+		sortBar.Parent = list
+		for i, spec in { { "싼 순", "price" }, { "판매이익", "profit" }, { "보유순", "owned" }, { "이름순", "name" } } do
+			local key = spec[2]
+			local button = mkButton(sortBar, spec[1], if H.tradeSort == key then COLORS.gold else COLORS.paper,
+				UDim2.new(0.25, -4, 0, 38), function()
+					H.tradeSort = key
+					list.CanvasPosition = Vector2.zero
+					build()
+				end, true)
+			button.Position = UDim2.new((i - 1) * 0.25, 2, 0, 0)
+			button.TextSize = 13
+		end
+		local sortedGoods = table.clone(goods)
+		table.sort(sortedGoods, function(a, b)
+			local function score(g)
+				if H.tradeSort == "profit" then return H.tradeProfit(g, 1) or -math.huge end
+				if H.tradeSort == "owned" then return tonumber(g.owned) or 0 end
+				if H.tradeSort == "name" then return 0 end
+				local _, pct = H.marketPriceSignal(g)
+				return pct
+			end
+			local left, right = score(a), score(b)
+			if left ~= right then return if H.tradeSort == "price" then left < right else left > right end
+			return a.name < b.name
+		end)
 		local indexed = {}
-		for i, g in (if list.Visible then goods else {}) do
+		for i, g in (if list.Visible then sortedGoods else {}) do
 			local show = H.hallFilter == "all" or (H.hallFilter == "specialty" and g.tag == "특산") or (H.hallFilter == "demand" and g.tag == "수요") or (H.hallFilter == "owned" and g.owned > 0)
 			if not show then
 				continue
@@ -5534,7 +7447,9 @@ local function openTradeHall()
 			local row = Instance.new("TextButton")
 			row.Text = ""
 			row.LayoutOrder = i
-			row.Size = UDim2.new(1, -8, 0, 190)
+			-- [물품 목록] 거래 정보·보유 손익·특산 도장이 서로 침범하지 않도록 아래 여백을 넓힌다.
+            row.Size = UDim2.new(1, -8, 0, 204)
+            row:SetAttribute("SelectedGood", g.id == hallGood)
 			row.BackgroundColor3 = if g.id == hallGood then Color3.fromRGB(236, 210, 156) else COLORS.paper
 			row.BorderSizePixel = 0
 			row.AutoButtonColor = true
@@ -5543,10 +7458,20 @@ local function openTradeHall()
 			table.insert(indexed, { name = string.lower(g.name .. " " .. (g.category or "") .. " " .. (g.purpose or "")), row = row })
 			local rule = Instance.new("UIStroke")
 			rule.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			rule.Color = INK_EDGE
-			rule.Thickness = if g.id == hallGood then 2 else 1
-			rule.Parent = row
-			row.Activated:Connect(function()
+			rule.Color = if g.id == hallGood then UI_BRASS_DARK else INK_EDGE
+            rule.Thickness = if g.id == hallGood then 2.4 else 1
+            rule.Parent = row
+            -- [선택한 물품] 페이지 가장자리의 황동 책갈피로 표시한다.
+            if g.id == hallGood then
+                local mark = Instance.new("Frame")
+                mark.Name = "SelectedGoodBookmark"
+                mark.BackgroundColor3 = UI_BRASS_DARK
+                mark.BorderSizePixel = 0
+                mark.Position = UDim2.fromOffset(2, 8)
+                mark.Size = UDim2.new(0, 5, 1, -16)
+                mark.Parent = row
+            end
+            row.Activated:Connect(function()
 				hallGood = g.id
 				detailOpen = true
 				detailScroll = 0
@@ -5556,13 +7481,33 @@ local function openTradeHall()
 				build()
 			end)
 			local gi = GOOD_ICON[g.id]
-			if gi and gi[4] == "Goods/" .. g.id then gi = { "Goods", g.id } end
-			local icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], 78, g.name, gi[4]) else modelIcon(row, nil, nil, nil, 78, g.name)
+			-- [교역품 2D] 승인된 큰 원화 우선. 표현 제한 화물의 중립 외형은 바꾸지 않는다.
+			if AssetIds["Goods/" .. g.id] and not RESTRICTED_CARGO_ICON[g.id]
+				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", g.id } end
+			local listArtId = AssetIds["Goods/" .. g.id]
+			local listPx = if listWidth < 230 then 82 else 102
+			local icon
+			if listArtId and not RESTRICTED_CARGO_ICON[g.id] and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then
+				-- [상품 사진] 원본 512px 승인 원화를 102px로 선명하게 표시한다.
+				icon = Instance.new("ImageLabel")
+				icon.Name = "TradeIndexArt"
+				icon.Image = "rbxassetid://" .. tostring(listArtId)
+				icon.ScaleType = Enum.ScaleType.Fit
+				icon.BackgroundTransparency = 1
+				icon.Size = UDim2.fromOffset(listPx, listPx)
+				icon.Parent = row
+			else
+				icon = if gi then modelIcon(row, gi[1], gi[2], gi[3], listPx, g.name, gi[4]) else modelIcon(row, nil, nil, nil, listPx, g.name)
+			end
 			icon.Position = UDim2.fromOffset(8, 8)
 			local indicator, pct = H.marketPriceSignal(g)
-			local nm = mkLabel(row, indicator .. " " .. g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 17, INK, true)
-			nm.Position = UDim2.fromOffset(94, 8)
-			nm.Size = UDim2.new(1, if g.tag ~= "" then -150 else -104, 0, 26)
+			local nm = mkLabel(row, g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else "") .. (if g.scarcity and ladderHas("goods", "scarcity") then " 〔" .. g.scarcity .. "〕" else ""), 19, INK, true)
+			nm.RichText = true
+			nm.Text = '<font color="' .. (if pct > 0.5 then "#B12F39" elseif pct < -0.5 then "#236BAC" else "#655849") .. '"><b>' .. indicator .. '</b></font> ' .. nm.Text
+			nm.Position = UDim2.fromOffset(listPx + 16, 8)
+			nm.Size = UDim2.new(1, -listPx - 22, 0, 44)
+			nm.TextSize = 18
+			nm.TextWrapped = true
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
 			local profit = H.tradeProfit(g, 1)
@@ -5574,75 +7519,36 @@ local function openTradeHall()
 				if cost <= p.coins then budgetQty = n end
 			end
 			-- [교역품 읽기 순서] 가격 → 세계 평균 화살표 → 세후 손익 → 현재 보유·구매 가능.
-			local priceText = string.format("매입 %s · 판매 %s\n%s 세계평균 %s (%+.1f%%)\n보유 %d · 구매 가능 %d\n%s",
-				H.commas(unitBuyOf(g)), H.commas(g.sell), indicator, H.commas(g.avgPrice or g.basePrice or 0), pct,
-				g.owned, budgetQty, profitText)
-			local pr = mkLabel(row, priceText, 14, INK, false)
+			-- [상품 목록] 가격만 짧게, 이익·보유는 아랫줄로 분리한다.
+			local priceText = string.format("매입 %s\n판매 %s\n재고 %s",
+				H.commas(unitBuyOf(g)), H.commas(g.sell), H.commas(g.supply or 0))
+			local pr = mkLabel(row, priceText, 17, INK, false)
+			pr.RichText = true
+			pr.Text = priceText:gsub("▲", '<font color="#B12F39"><b>▲</b></font>'):gsub("▼", '<font color="#236BAC"><b>▼</b></font>')
 			pr.TextWrapped = true
-			pr.Position = UDim2.fromOffset(94, 34)
-			pr.Size = UDim2.new(1, -102, 0, 76)
+			pr.Position = UDim2.fromOffset(listPx + 16, 55)
+			pr.Size = UDim2.new(1, -listPx - 22, 0, 70)
+			pr.TextSize = if listWidth < 230 then 15 else 17
 			pr.AutomaticSize = Enum.AutomaticSize.None
-			local use = mkLabel(row, (g.category or "교역품") .. " · " .. (g.purpose or "항구 간 판매"), 12, INK_SOFT, false)
-			use.Position = UDim2.fromOffset(94, 116)
-			use.Size = UDim2.new(1, -102, 0, 20)
-			use.AutomaticSize = Enum.AutomaticSize.None
-			use.TextTruncate = Enum.TextTruncate.AtEnd
-			-- [세계 평균 그래프] 가운데 세로선이 실시간 세계 항구 평균, 채움은 현재 매입시세.
-			local average = g.avgPrice or g.basePrice or 0
-			if average > 0 then
-				local pm = unitBuyOf(g) / average
-				local gauge = Instance.new("Frame")
-				gauge.BackgroundColor3 = Color3.fromRGB(200, 184, 150)
-				gauge.BorderSizePixel = 0
-				gauge.Position = UDim2.new(0, 94, 0, 142)
-				gauge.Size = UDim2.new(1, -102, 0, 5)
-				corner(gauge, 3)
-				gauge.Parent = row
-				local ratio = math.clamp((pm - 0.5) / 1.0, 0, 1) -- 세계평균(1.0배)은 50% 위치
-				local fill = Instance.new("Frame")
-				fill.BorderSizePixel = 0
-				fill.Size = UDim2.fromScale(ratio, 1)
-				fill.BackgroundColor3 = if pct < -0.5 then COLORS.green elseif pct > 0.5 then COLORS.gold else Color3.fromRGB(150, 140, 120)
-				corner(fill, 3)
-				fill.Parent = gauge
-				local tick = Instance.new("Frame")
-				tick.BorderSizePixel = 0
-				tick.BackgroundColor3 = INK
-				tick.Position = UDim2.fromScale(0.5, -0.4)
-				tick.Size = UDim2.new(0, 2, 1.8, 0)
-				tick.Parent = gauge
-			end
-			-- 바로 사고팔기: 수량 고르는 화면 없이 한 번에
-			local oc = view.orderCap or 20
-			local canBuy = budgetQty
-			local canSell = math.min(g.owned, oc, g.absorb or oc)
-			local bar = Instance.new("Frame")
-			bar.BackgroundTransparency = 1
-			bar.Position = UDim2.fromOffset(94, 152)
-			bar.Size = UDim2.new(1, -100, 0, 34)
-			bar.Parent = row
-			local bl = Instance.new("UIListLayout")
-			bl.FillDirection = Enum.FillDirection.Horizontal
-			bl.Padding = UDim.new(0, 4)
-			bl.Parent = bar
-			local function quick(text, color, enabled, fn, w)
-				local b = mkButton(bar, text, color, UDim2.new(w or 0.25, -3, 1, 0), fn, enabled)
-				b.TextSize = 12
-			end
-			quick("구매 1", COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = 1 }) end)
-			quick("구매 5", COLORS.gold, canBuy >= 5, function() call("Buy", { goodId = g.id, amount = 5 }) end)
-			quick(string.format("일괄 구매 %d", canBuy), COLORS.gold, canBuy >= 1, function() call("Buy", { goodId = g.id, amount = canBuy }) end)
-			quick(string.format("판매 %d", canSell), COLORS.green, canSell >= 1, function() call("Sell", { goodId = g.id, amount = canSell }) end)
-			if g.tag ~= "" then
-				local badge = Instance.new("TextLabel")
+			local ownedLine = mkLabel(row,
+				string.format("보유 %d개 · 구매 가능 %d개\n%s", g.owned, budgetQty, profitText), 16, if profit and profit < 0 then COLORS.red else INK_SOFT, true)
+			ownedLine.Position = UDim2.fromOffset(10, 147)
+            ownedLine.Size = UDim2.new(1, -20, 0, 50)
+            ownedLine.TextWrapped = true
+            ownedLine.TextSize = if listWidth < 230 then 14 else 16
+			ownedLine.AutomaticSize = Enum.AutomaticSize.None
+			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
+			if g.tag and g.tag ~= "" then
+                local badge = Instance.new("TextLabel")
 				badge.Text = g.tag
 				badge.TextSize = 16
 				badge.Font = Enum.Font.GothamBold
-				badge.TextColor3 = Color3.new(1, 1, 1)
-				badge.BackgroundColor3 = if g.tag == "특산" then COLORS.green else COLORS.gold
+				-- [특산·수요 도장] 어두운 잉크/밝은 황동으로 밝은 양피지와 대비.
+                badge.TextColor3 = INK
+                badge.BackgroundColor3 = if g.tag == "특산" then Color3.fromRGB(216, 197, 143) else Color3.fromRGB(236, 201, 139)
 				badge.Size = UDim2.fromOffset(56, 26)
 				badge.AnchorPoint = Vector2.new(1, 0)
-				badge.Position = UDim2.new(1, -10, 0, 8)
+				badge.Position = UDim2.new(1, -10, 0, 117)
 				corner(badge, 6)
 				badge.Parent = row
 			end
@@ -5665,36 +7571,172 @@ local function openTradeHall()
 		filter()
 		list.CanvasPosition = Vector2.new(0, lastScroll)
 
+		-- [중앙] 승인 원화와 세계 백과를 한 장의 책처럼 이어 읽는다.
+		if sel and not narrow then
+			local exhibit = mkBox(root, UDim2.fromOffset(heroX, menuY),
+				UDim2.new(0, heroW, 1, -menuY - 8), Color3.fromRGB(230, 209, 171))
+			exhibit.Name = "TradeEncyclopediaGallery"
+			exhibit.ClipsDescendants = true
+			corner(exhibit, 8)
+			bookMaterial(exhibit, "parchment", 220)
+			local pages = Instance.new("ScrollingFrame")
+			pages.Name = "TradeEncyclopediaPages"
+			pages.Size = UDim2.fromScale(1, 1)
+			pages.BackgroundTransparency = 1
+			pages.BorderSizePixel = 0
+			pages.ScrollBarThickness = 4
+			pages.ScrollingDirection = Enum.ScrollingDirection.Y
+			pages.Parent = exhibit
+			local heroPx = math.floor(math.clamp(heroW - 22, 164, 380))
+			local heroH = math.floor(heroPx * 10 / 7)
+			local artId = AssetIds["Goods/" .. sel.id]
+			local gi = GOOD_ICON[sel.id]
+			if artId and not RESTRICTED_CARGO_ICON[sel.id] and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then
+				-- [실제 등록 2D] 512px 원본을 480px 이하 Fit으로 표시해 확대 흐림을 피한다.
+				local art = Instance.new("ImageLabel")
+				art.Name = "TradeHighResArt"
+				art.Size = UDim2.fromOffset(heroPx, heroH)
+				art.AnchorPoint = Vector2.new(0.5, 0)
+				art.Position = UDim2.new(0.5, 0, 0, 32)
+				art.Image = "rbxassetid://" .. tostring(artId)
+				art.ScaleType = Enum.ScaleType.Fit
+				art.BackgroundTransparency = 1
+				art.Parent = pages
+			else
+				local icon = if gi then modelIcon(pages, gi[1], gi[2], gi[3], heroPx, sel.name, gi[4])
+					else modelIcon(pages, nil, nil, nil, heroPx, sel.name)
+				icon.Size = UDim2.fromOffset(heroPx, heroH)
+				icon.AnchorPoint = Vector2.new(0.5, 0)
+				icon.Position = UDim2.new(0.5, 0, 0, 32)
+			end
+			local artTap = Instance.new("TextButton")
+			artTap.Name = "TradeArtToCodex"
+			artTap.Text = ""
+			artTap.BackgroundTransparency = 1
+			artTap.BorderSizePixel = 0
+			artTap.AutoButtonColor = false
+			artTap.Size = UDim2.fromOffset(heroPx, heroH)
+			artTap.AnchorPoint = Vector2.new(0.5, 0)
+			artTap.Position = UDim2.new(0.5, 0, 0, 32)
+			artTap.ZIndex = 8
+			artTap.Parent = pages
+			artTap.Activated:Connect(openSelectedGoodEncyclopedia)
+			local ribbon = mkLabel(pages, "세계 교역 · 산업 백과 · 원화 터치 시 이동", 17, INK_SOFT, true)
+			ribbon.Position = UDim2.fromOffset(12, 6)
+			ribbon.Size = UDim2.new(1, -24, 0, 25)
+			ribbon.AutomaticSize = Enum.AutomaticSize.None
+			local title = mkLabel(pages, sel.name .. (if sel.tag ~= "" then " · " .. sel.tag else ""), 22, INK, true)
+			title.Position = UDim2.fromOffset(12, heroH + 40)
+			title.Size = UDim2.new(1, -24, 0, 35)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			title.TextXAlignment = Enum.TextXAlignment.Center
+			local sheet = mkBox(pages, UDim2.fromOffset(10, heroH + 86),
+				UDim2.new(1, -20, 0, 250), COLORS.paper)
+			sheet.Name = "TradeBookPage"
+			corner(sheet, 6)
+			bookMaterial(sheet, "parchment", 180)
+			local heading = mkLabel(sheet, "제1장 · " .. (bookResource and bookResource.categoryName or sel.category or "교역품"),
+				18, INK, true)
+			heading.Position = UDim2.fromOffset(10, 8)
+			heading.Size = UDim2.new(1, -20, 0, 28)
+			heading.AutomaticSize = Enum.AutomaticSize.None
+			local story = mkLabel(sheet, bookSummary, 17, INK_SOFT, false)
+			story.Position = UDim2.fromOffset(12, 42)
+			story.Size = UDim2.new(1, -24, 0, 148)
+			story.AutomaticSize = Enum.AutomaticSize.None
+			story.TextWrapped = true
+			story.TextTruncate = Enum.TextTruncate.AtEnd
+			story.TextYAlignment = Enum.TextYAlignment.Top
+			local openBook = mkButton(sheet, "서재 백과사전에서 읽기", COLORS.blue,
+				UDim2.new(1, -24, 0, 46), openSelectedGoodEncyclopedia, true)
+			openBook.Position = UDim2.fromOffset(12, 198)
+			pages.CanvasSize = UDim2.fromOffset(0, heroH + 350)
+		end
+
 		-- 오른쪽: 선택한 물품의 거래 상자
 		local detail = Instance.new("ScrollingFrame")
 		detail.Name = "TradeSpecimen"
-		detail.Position = if narrow then UDim2.fromOffset(8, menuY) else UDim2.new(1, -326, 0, menuY)
-		detail.Size = if narrow then UDim2.new(1, -16, 1, -menuY - 8) else UDim2.new(0, 318, 1, -menuY - 8)
-		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, 162) end
+		detail.Position = if narrow then UDim2.fromOffset(8, menuY) else UDim2.fromOffset(width - detailWidth - 8, menuY)
+		detail.Size = if narrow then UDim2.new(1, -16, 1, -menuY - 8) else UDim2.new(0, detailWidth, 1, -menuY - 8)
+		if sel then detail.Size = detail.Size - UDim2.fromOffset(0, if shortScreen then 158 else 190) end
 		detail.BackgroundColor3 = COLORS.paper
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
-		detail.CanvasSize = UDim2.fromOffset(0, 760)
+		local bigPx = if narrow then math.floor(math.min(width - 54, math.max(170, root.AbsoluteSize.Y * 0.48), 330)) else 0
+		local bigH = math.floor(bigPx * 10 / 7)
+		-- [모바일 세로] 원화는 카드배틀과 같은 7:10, 원본 이미지는 Fit으로 읽는다.
+		local infoTop = if narrow then bigH + 242 else 80
+		detail.CanvasSize = UDim2.fromOffset(0, infoTop + 812)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
 		detail.Parent = root
 		corner(detail, 7)
-		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, 760), COLORS.paper)
+		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, infoTop + 812), COLORS.paper)
 		bookMaterial(right, "parchment", 220)
 		if sel and detail.Visible then
 			local gi = GOOD_ICON[sel.id]
-			local big = if gi then modelIcon(right, gi[1], gi[2], gi[3], 96, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, 96, sel.name)
-			big.Position = UDim2.fromOffset(12, 12)
+			if AssetIds["Goods/" .. sel.id] and not RESTRICTED_CARGO_ICON[sel.id]
+				and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then gi = { "Goods", sel.id } end
 			local detailIcon, diff = H.marketPriceSignal(sel)
-			local hn = mkLabel(right, detailIcon .. " " .. sel.name, 24, INK, true)
-			hn.Position = UDim2.fromOffset(120, 16)
-			hn.Size = UDim2.new(1, -130, 0, 30)
+			local hn = mkLabel(right, sel.name, 22, INK, true)
+			hn.RichText = true
+			hn.Text = '<font color="' .. (if diff > 0.5 then "#B12F39" elseif diff < -0.5 then "#236BAC" else "#655849") .. '"><b>' .. detailIcon .. '</b></font> ' .. hn.Text
+			hn.Position = UDim2.fromOffset(12, 8)
+			hn.Size = UDim2.new(1, -24, 0, 30)
 			hn.AutomaticSize = Enum.AutomaticSize.None
-			local note = (sel.category or "교역품") .. "\n" .. (sel.purpose or "다른 항구에 운송해 판매")
-			local hnote = mkLabel(right, note, 14, INK_SOFT, false)
-			hnote.Position = UDim2.fromOffset(120, 48)
-			hnote.Size = UDim2.new(1, -130, 0, 68)
+			local note = (sel.category or "교역품") .. " · " .. (sel.purpose or "항구 간 판매")
+			local hnote = mkLabel(right, note, 16, INK_SOFT, false)
+			hnote.Position = UDim2.fromOffset(12, if narrow then bigH + 46 else 42)
+			hnote.Size = UDim2.new(1, -24, 0, 38)
 			hnote.AutomaticSize = Enum.AutomaticSize.None
+			if narrow then
+				local artId = AssetIds["Goods/" .. sel.id]
+				local big
+				if artId and not RESTRICTED_CARGO_ICON[sel.id] and not (gi and gi[1] == "Cargo" and gi[2] == "barrel") then
+					big = Instance.new("ImageLabel")
+					big.Name = "TradeHighResArt"
+					big.Image = "rbxassetid://" .. tostring(artId)
+					big.ScaleType = Enum.ScaleType.Fit
+					big.Size = UDim2.fromOffset(bigPx, bigH)
+					big.BackgroundTransparency = 1
+					big.Parent = right
+				else
+					big = if gi then modelIcon(right, gi[1], gi[2], gi[3], bigPx, sel.name, gi[4])
+						else modelIcon(right, nil, nil, nil, bigPx, sel.name)
+				end
+				big.Size = UDim2.fromOffset(bigPx, bigH)
+				big.AnchorPoint = Vector2.new(0.5, 0)
+				big.Position = UDim2.new(0.5, 0, 0, 42)
+				local artTap = Instance.new("TextButton")
+				artTap.Name = "TradeArtToCodex"
+				artTap.Text = ""
+				artTap.BackgroundTransparency = 1
+				artTap.BorderSizePixel = 0
+				artTap.AutoButtonColor = false
+				artTap.Size = UDim2.fromOffset(bigPx, bigH)
+				artTap.AnchorPoint = Vector2.new(0.5, 0)
+				artTap.Position = UDim2.new(0.5, 0, 0, 42)
+				artTap.ZIndex = 8
+				artTap.Parent = right
+				artTap.Activated:Connect(openSelectedGoodEncyclopedia)
+				local sheet = mkBox(right, UDim2.fromOffset(12, bigH + 82),
+					UDim2.new(1, -24, 0, 148), COLORS.paper)
+				sheet.Name = "TradeBookPage"
+				bookMaterial(sheet, "parchment", 180)
+				local summaryTitle = mkLabel(sheet, "세계 백과 · " .. sel.name, 18, INK, true)
+				summaryTitle.Position = UDim2.fromOffset(8, 5)
+				summaryTitle.Size = UDim2.new(1, -16, 0, 25)
+				summaryTitle.AutomaticSize = Enum.AutomaticSize.None
+				local summary = mkLabel(sheet, bookSummary, 17, INK_SOFT, false)
+				summary.Position = UDim2.fromOffset(8, 32)
+				summary.Size = UDim2.new(1, -16, 0, 70)
+				summary.AutomaticSize = Enum.AutomaticSize.None
+				summary.TextWrapped = true
+				summary.TextTruncate = Enum.TextTruncate.AtEnd
+				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 38),
+					openSelectedGoodEncyclopedia, true)
+				openBook.Position = UDim2.fromOffset(8, 106)
+			end
 			local qty = math.clamp(hallQty, 1, 20)
 			local free = ship.cargoCapacity - ship.cargoUsed
 			local deal = view.haggle and view.haggle.deal
@@ -5711,21 +7753,65 @@ local function openTradeHall()
 			local profit = H.tradeProfit(sel, 1)
 			local profitText = if profit == nil then "미보유"
 				elseif profit >= 0 then "+" .. H.commas(profit) else "-" .. H.commas(-profit)
-			local info = mkLabel(right, string.format("매입 %s%s · 판매 %s\n%s 세계 평균시세 %s · %+.1f%%\n내 평균 매입가 %s · 보유 %d개\n판매 1개 예상손익 %s (관세 후)\n내 돈 %s · 살 수 있는 수량 %d\n빈 화물 %d · 항구 구매한도 %s / 판매한도 %s",
-				H.commas(unitBuy), if dealPct > 0 then " (할인중)" else "", H.commas(sel.sell),
-				detailIcon, H.commas(sel.avgPrice or sel.basePrice or 0), diff, basis, sel.owned, profitText, H.commas(p.coins),
-				maxBuy, free, if sel.supply then tostring(sel.supply) else "-", if sel.absorb then tostring(sel.absorb) else "-"), 15, INK, true)
-			info.Position = UDim2.fromOffset(14, 124)
-			info.Size = UDim2.new(1, -28, 0, 184)
-			info.AutomaticSize = Enum.AutomaticSize.None
+			-- [교역 핵심] 실제 서버 매입·판매가 → 세계 평균 비교 → 현재 보유·세후손익.
+			-- [교역 판단] 실제 서버 단가·세계 평균·세후손익을 큰 숫자로 분리한다.
+			local prices = mkBox(right, UDim2.fromOffset(10, infoTop),
+				UDim2.new(1, -20, 0, 94), Color3.fromRGB(61, 48, 34))
+			prices.Name = "TradeDecisionPrices"
+			corner(prices, 7)
+			local buyPrice = mkLabel(prices, "매입가\n" .. H.commas(unitBuy) .. "코인",
+				22, Color3.fromRGB(255, 226, 135), true)
+			buyPrice.Position = UDim2.fromOffset(8, 10)
+			buyPrice.Size = UDim2.new(0.5, -10, 0, 78)
+			buyPrice.AutomaticSize = Enum.AutomaticSize.None
+			buyPrice.TextWrapped = true
+			local sellPrice = mkLabel(prices, "판매가\n" .. H.commas(sel.sell) .. "코인",
+				22, Color3.fromRGB(246, 217, 161), true)
+			sellPrice.Position = UDim2.new(0.5, 4, 0, 10)
+			sellPrice.Size = UDim2.new(0.5, -12, 0, 78)
+			sellPrice.AutomaticSize = Enum.AutomaticSize.None
+			sellPrice.TextWrapped = true
+			local meanStatus = if diff > 0.5 then string.format("▲ 평균보다 %.1f%% 비쌈", diff)
+				elseif diff < -0.5 then string.format("▼ 평균보다 %.1f%% 저렴", -diff)
+				else "－ 세계 평균과 비슷함"
+			local meanLabel = mkLabel(right, meanStatus, 23,
+				if diff > 0.5 then Color3.fromRGB(177, 47, 57)
+					elseif diff < -0.5 then Color3.fromRGB(35, 107, 177) else INK_SOFT, true)
+			meanLabel.Position = UDim2.fromOffset(12, infoTop + 105)
+			meanLabel.Size = UDim2.new(1, -24, 0, 32)
+			meanLabel.AutomaticSize = Enum.AutomaticSize.None
+			local worldPrice = mkLabel(right, "세계 평균 매입가 " .. H.commas(sel.avgPrice or sel.basePrice or 0)
+				.. "코인" .. (if dealPct > 0 then " · 흥정 할인 적용" else ""), 16, INK_SOFT, false)
+			worldPrice.Position = UDim2.fromOffset(12, infoTop + 143)
+			worldPrice.Size = UDim2.new(1, -24, 0, 46)
+			worldPrice.AutomaticSize = Enum.AutomaticSize.None
+			worldPrice.TextWrapped = true
+			local profitBox = mkBox(right, UDim2.fromOffset(10, infoTop + 198),
+				UDim2.new(1, -20, 0, 74), Color3.fromRGB(242, 220, 176))
+			profitBox.Name = "TradeDecisionProfit"
+			corner(profitBox, 6)
+			local profitLabel = mkLabel(profitBox,
+				"1개 세후 예상손익\n" .. (if profit == nil then "매입 기록 없음" else profitText .. "코인"),
+				22, if profit and profit < 0 then Color3.fromRGB(177, 47, 57)
+					else Color3.fromRGB(96, 78, 41), true)
+			profitLabel.Position = UDim2.fromOffset(10, 5)
+			profitLabel.Size = UDim2.new(1, -20, 0, 64)
+			profitLabel.AutomaticSize = Enum.AutomaticSize.None
+			profitLabel.TextWrapped = true
+			local inventory = mkLabel(right, string.format("내 보유 %d개 · 구매 가능 %d개\n내 평균 매입가 %s코인\n빈 화물칸 %d · 이번 판매 한도 %d개",
+				sel.owned, maxBuy, basis, free, maxSell), 18, INK, true)
+			inventory.Position = UDim2.fromOffset(12, infoTop + 283)
+			inventory.Size = UDim2.new(1, -24, 0, 92)
+			inventory.AutomaticSize = Enum.AutomaticSize.None
+			inventory.TextWrapped = true
 			-- 상세 페이지를 스크롤해도 수량과 거래 버튼은 화면 아래에 남긴다.
-			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, -156),
-				UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, 148), COLORS.leather)
+			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, if shortScreen then -150 else -182),
+                UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, if shortScreen then 142 else 174), COLORS.leather)
 			corner(desk, 7)
 			bookMaterial(desk, "leather", 144)
-			local receipt = mkLabel(desk, "", 12, COLORS.text, false)
-			receipt.Position = UDim2.fromOffset(8, 5)
-			receipt.Size = UDim2.new(1, -16, 0, 38)
+			local receipt = mkLabel(desk, "", 17, COLORS.text, false)
+			receipt.Position = UDim2.fromOffset(8, if shortScreen then 3 else 5)
+            receipt.Size = UDim2.new(1, -16, 0, if shortScreen then 34 else 38)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
 			local function refreshReceipt()
@@ -5745,18 +7831,21 @@ local function openTradeHall()
 				build()
 			end
 			local function quantityButton(index, label, action, enabled)
-				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, 44), action, enabled)
-				b.Position = UDim2.new((index - 1) / 4, 4, 0, 46)
+				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, if shortScreen then 40 else 50), action, enabled)
+                b.Position = UDim2.new((index - 1) / 4, 4, 0, if shortScreen then 39 else 47)
+				b.TextSize = 17
 			end
 			quantityButton(1, "−", function() setQuantity(qty - 1) end)
 			quantityButton(2, "+", function() setQuantity(qty + 1) end)
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
 			refreshReceipt()
-			local buy = mkButton(desk, if maxBuy >= qty then "구매" else "구매 불가", COLORS.gold, UDim2.new(0.5, -8, 0, 44), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
-			buy.Position = UDim2.fromOffset(4, 98)
-			local sell = mkButton(desk, if maxSell >= qty then "판매" else "판매 가능 " .. tostring(maxSell), COLORS.green, UDim2.new(0.5, -8, 0, 44), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(0.5, 4, 0, 98)
+			local buy = mkButton(desk, if maxBuy >= qty then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족", COLORS.gold, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
+			buy.Position = UDim2.fromOffset(4, if shortScreen then 84 else 106)
+			buy.TextSize = 21
+			local sell = mkButton(desk, if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 가능 " .. tostring(maxSell) else "보유·한도 부족", COLORS.green, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sell.Position = UDim2.new(0.5, 4, 0, if shortScreen then 84 else 106)
+			sell.TextSize = 21
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
 			local bargain = view.haggle or {}
 			local tried = bargain.tried and bargain.tried[sel.id]
@@ -5764,14 +7853,14 @@ local function openTradeHall()
 				elseif tried then "자동 흥정: 이번 항구·품목 협상 시도 완료"
 				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
 			local alert = mkLabel(right, status, 14, if bargain.auto then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
-			alert.Position = UDim2.fromOffset(14, 326)
+			alert.Position = UDim2.fromOffset(14, infoTop + 390)
 			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sm.Position = UDim2.fromOffset(12, 394)
+			sm.Position = UDim2.fromOffset(12, infoTop + 456)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
-			allB.Position = UDim2.fromOffset(12, 446)
-			allB.TextSize = 15
+			allB.Position = UDim2.fromOffset(12, infoTop + 519)
+			allB.TextSize = 18
 			do
 				local top = view.compare and view.compare[sel.id]
 				local lines = {}
@@ -5785,16 +7874,17 @@ local function openTradeHall()
 					elseif #lines == 0 then "다른 항구 시세 정보 없음"
 					else (if view.intel >= 2 then "비싸게 팔리는 항구 (팔기 시세)\n" else "비싸게 팔릴 듯한 항구\n") .. table.concat(lines, "\n")
 				local cl = mkLabel(right, cmpText, 15, INK, false)
-				cl.Position = UDim2.fromOffset(14, 510)
+				cl.Position = UDim2.fromOffset(14, infoTop + 587)
 				cl.Size = UDim2.new(1, -28, 0, 128)
 				cl.AutomaticSize = Enum.AutomaticSize.None
 			end
 			local hint = mkLabel(right, string.format("장사 정보 %s · 거래 도중 시세 변동 · 판매 때 관세 차감", intelName(view.intel or 0)), 13, INK_SOFT, false)
-			hint.Position = UDim2.fromOffset(14, 658)
+			hint.Position = UDim2.fromOffset(14, infoTop + 729)
 			hint.Size = UDim2.new(1, -28, 0, 58)
 			hint.AutomaticSize = Enum.AutomaticSize.None
 		end
 		detail.CanvasPosition = Vector2.new(0, detailScroll)
+		-- [교역] 전체 화면 확대는 제거하고 원화·정보·거래를 한 화면에 유지한다.
 	end
 	local lastWidth
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -5806,211 +7896,57 @@ local function openTradeHall()
 end
 H.tradeHall = openTradeHall
 
-function RENDERERS.trade()
-	H.counselRows(1)
-	add(function() return mkLabel(content, "⬇️ 세계 평균보다 저렴 · ⬆️ 평균보다 비쌈 · ➖ 비슷함\n예상 판매손익은 내 매입원가와 관세를 반영해 표시해.", 14, COLORS.gold, true) end)
-	if view.rep then
-		local r = view.rep
-		H.statStrip({
-			{ r.name .. " 우호", string.format("%d/100", r.value), tone = if r.value >= 50 then "good" else "key" },
-			{ "되파는 비율", string.format("+%.1f%%", r.bonus * 100), tone = "good" },
-			{ "관세", string.format("%.1f%%", r.tariff * 100), tone = if r.tariff > 0.1 then "bad" else "key" },
-			{ "동료 감각", intelName(view.intel or 0), tone = "key" },
-		})
+-- [교역소 서비스 탭] 실제 교역은 기존 장부 탭에서, 게시판·시장 소식·우편은 별도 탭에서 사용한다.
+-- 서버 거래·저장·우편·게시물 처리 로직은 기존 호출을 그대로 유지한다.
+function RENDERERS.market()
+	-- [시설 역할 분리] 상인 길드 계약을 거래소 첫 화면으로 이동한다. 기존 서버 호출 유지.
+	if view.guild and table.find(view.facilities or {}, "guild") then
+		add(function() return mkHeader(content, "상인 길드 계약") end)
+		local g = view.guild
+		if g.contract then
+			local c = g.contract
+			add(function()
+				return mkRow(content, string.format("진행 중: %s %d개 → %s", c.goodName, c.amount, c.toPortName), string.format("보상 %d · 남은 %d일 · 보유 %d", c.reward, c.daysLeft, c.have), {
+					{ text = "납품", color = COLORS.green, onClick = function() call("TurnInContract", {}) end },
+					{ text = "포기", color = COLORS.red, onClick = function() call("AbandonContract", {}) end },
+				}, 60)
+			end)
+		end
+		for _, o in g.offers do
+			add(function()
+				return mkRow(content, string.format("%s %d개 → %s", o.goodName, o.amount, o.toPortName), string.format("보상 %d코인 · 명성 +%d", o.reward, o.fame), {
+					{ text = "계약", color = COLORS.blue, onClick = function() call("AcceptContract", { index = o.index }) end },
+				}, 56)
+			end)
+		end
 	end
+
+	-- 거래소 등록 수량은 기존 공통 선택값을 사용한다.
 	add(function()
-		return H.tileGrid({
-			{ icon = "trade", title = "교역 장부", sub = "용도 · 시세 · 예산 · 자동 흥정", btn = "열기", color = COLORS.gold, onClick = function() openTradeHall() end },
-			{ icon = "cc0_chest", title = "특산품", sub = "싸게 사서 비싼 곳에 팔기", enabled = false },
-			{ icon = "cc0_goldcoins", title = "암시장", sub = "관세 없음 +10% · 압수 위험", enabled = false },
-		}, content)
+		local frame = Instance.new("Frame")
+		frame.BackgroundTransparency = 1
+		frame.Size = UDim2.new(1, -6, 0, 40)
+		local label = mkLabel(frame, "게시 수량", 14, COLORS.muted, false)
+		label.Size = UDim2.new(0.4, 0, 1, 0)
+		label.AutomaticSize = Enum.AutomaticSize.None
+		label.TextYAlignment = Enum.TextYAlignment.Center
+		for i, qty in AMOUNTS do
+			local button = mkButton(frame, tostring(qty), if i == amountIndex then COLORS.gold else COLORS.grey, UDim2.fromOffset(52, 34), function()
+				amountIndex = i
+				render()
+			end, true)
+			button.AnchorPoint = Vector2.new(1, 0.5)
+			button.Position = UDim2.new(1, -6 - (#AMOUNTS - i) * 58, 0.5, 0)
+		end
+		frame.Parent = content
+		return frame
 	end)
-	H.addStoryPanel()
+	-- [교역소 부가 정보] 소문과 시장 소식은 즉시 거래할 상품 아래에 정리한다.
 	if view.news and #view.news > 0 then
 		add(function() return mkHeader(content, "시장 소식") end)
 		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
 	end
 	addRumorPanel()
-	add(function()
-		local frame = Instance.new("Frame")
-		frame.BackgroundTransparency = 1
-		frame.Size = UDim2.new(1, -6, 0, 40)
-		local lbl = mkLabel(frame, string.format("수량 선택 (되파는 비율 %d%%)", math.floor(view.sellRate * 100 + 0.5)), 12, COLORS.muted, false)
-		lbl.Size = UDim2.new(0.5, 0, 1, 0)
-		lbl.AutomaticSize = Enum.AutomaticSize.None
-		lbl.TextYAlignment = Enum.TextYAlignment.Center
-		for i, a in AMOUNTS do
-			local b = mkButton(frame, tostring(a), if i == amountIndex then COLORS.gold else COLORS.grey, UDim2.fromOffset(52, 34), function()
-				amountIndex = i
-				render()
-			end, true)
-			b.AnchorPoint = Vector2.new(1, 0.5)
-			b.Position = UDim2.new(1, -6 - (#AMOUNTS - i) * 58, 0.5, 0)
-		end
-		frame.Parent = content
-		return frame
-	end)
-	-- [교역 정렬] 실제 세계 평균시세·서버 판매견적·보유 수량으로 화면 순서만 바꾼다.
-	H.tradeSort = H.tradeSort or "price"
-	add(function()
-		local buttons = {}
-		for _, option in { { "싼 순", "price" }, { "판매이익", "profit" }, { "보유순", "owned" }, { "이름순", "name" } } do
-			local key = option[2]
-			table.insert(buttons, { text = option[1], color = if H.tradeSort == key then COLORS.gold else COLORS.blue,
-				onClick = function() H.tradeSort = key; render() end })
-		end
-		return mkRow(content, "교역품 정렬", "평균 대비 매입 할인과 내 보유분 세후손익은 다른 기준이야.", buttons, 72)
-	end)
-	local sortedGoods = table.clone(view.goods)
-	table.sort(sortedGoods, function(a, b)
-		local function score(g)
-			if H.tradeSort == "profit" then return H.tradeProfit(g, 1) or -math.huge end
-			if H.tradeSort == "owned" then return tonumber(g.owned) or 0 end
-			if H.tradeSort == "name" then return 0 end
-			local _, pct = H.marketPriceSignal(g)
-			return pct
-		end
-		local left, right = score(a), score(b)
-		if left ~= right then return if H.tradeSort == "price" then left < right else left > right end
-		return a.name < b.name
-	end)
-	-- 우편·거래소 (아래쪽에서 이어서 그린다)
-	-- 상품 카드 격자: 한눈에 보고 바로 사고판다 (대항해시대 온라인 교역소처럼)
-	add(function()
-		local grid = Instance.new("Frame")
-		grid.BackgroundTransparency = 1
-		grid.Size = UDim2.new(1, -6, 0, 0)
-		grid.AutomaticSize = Enum.AutomaticSize.Y
-		local gl = Instance.new("UIGridLayout")
-		gl.CellSize = UDim2.new(1, -6, 0, 228)
-		gl.CellPadding = UDim2.fromOffset(6, 6)
-		gl.SortOrder = Enum.SortOrder.LayoutOrder
-		gl.Parent = grid
-		for i, g in sortedGoods do
-			local priceIcon, deviation = H.marketPriceSignal(g)
-			local cardF = Instance.new("Frame")
-			cardF.LayoutOrder = i
-			cardF.BackgroundColor3 = COLORS.row
-			cardF.BorderSizePixel = 0
-			corner(cardF, 10)
-			cardF.Parent = grid
-			local st = Instance.new("UIStroke")
-			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			st.Color = if priceIcon == "⬇️" then COLORS.green elseif priceIcon == "⬆️" then COLORS.gold else Color3.fromRGB(70, 84, 104)
-			st.Thickness = 1.5
-			st.Parent = cardF
-			local gi = GOOD_ICON[g.id]
-			local icon = if gi then modelIcon(cardF, gi[1], gi[2], gi[3], 60, g.name, gi[4])
-				else modelIcon(cardF, nil, nil, nil, 60, g.name)
-			icon.Position = UDim2.fromOffset(8, 8)
-			local nm = mkLabel(cardF, priceIcon .. " " .. g.name .. (if g.upgraded then " (신상)" else "") .. (if g.cheaper then " (할인)" else ""), 18, COLORS.text, true)
-			nm.Position = UDim2.fromOffset(76, 6)
-			nm.Size = UDim2.new(1, -150, 0, 24)
-			nm.AutomaticSize = Enum.AutomaticSize.None
-			if g.tag ~= "" then
-				local badge = Instance.new("TextLabel")
-				badge.Text = g.tag
-				badge.TextSize = 15
-				badge.Font = Enum.Font.GothamBold
-				badge.TextColor3 = Color3.new(1, 1, 1)
-				badge.BackgroundColor3 = if g.tag == "특산" then COLORS.green else COLORS.gold
-				badge.Size = UDim2.fromOffset(52, 24)
-				badge.AnchorPoint = Vector2.new(1, 0)
-				badge.Position = UDim2.new(1, -8, 0, 6)
-				corner(badge, 6)
-				badge.Parent = cardF
-			end
-			local profit = H.tradeProfit(g, 1)
-			local profitLabel = if profit == nil then "세후손익 미확인"
-				elseif profit >= 0 then "세후이익 +" .. H.commas(profit) else "세후손실 -" .. H.commas(-profit)
-			local info = mkLabel(cardF, string.format("매입 %s · 판매 %s\n%s 평균 %s (%+.1f%%)\n보유 %d · %s",
-				H.commas(g.buyTotals and g.buyTotals[1] or g.buy), H.commas(g.sell),
-				priceIcon, H.commas(g.avgPrice or g.basePrice or 0), deviation, g.owned, profitLabel), 14, COLORS.text, false)
-			info.TextWrapped = true
-			info.Position = UDim2.fromOffset(76, 34)
-			info.Size = UDim2.new(1, -84, 0, 70)
-			info.AutomaticSize = Enum.AutomaticSize.None
-			-- [교역 카드 가격 비교] 중앙 표식은 모든 항구의 현재 평균 매입가, 채움은 이 항구 매입가다.
-			local average = tonumber(g.avgPrice) or tonumber(g.basePrice) or 0
-			if average > 0 then
-				local price = tonumber(g.buyTotals and g.buyTotals[1]) or tonumber(g.buy) or 0
-				local track = Instance.new("Frame")
-				track.Name = "WorldAverageBar"
-				track.Position = UDim2.fromOffset(76, 114)
-				track.Size = UDim2.new(1, -84, 0, 9)
-				track.BorderSizePixel = 0
-				track.BackgroundColor3 = Color3.fromRGB(118, 99, 76)
-				track.Parent = cardF
-				corner(track, 4)
-				local fill = Instance.new("Frame")
-				fill.Name = "PortPriceFill"
-				fill.Size = UDim2.fromScale(math.clamp(price / average - 0.5, 0, 1), 1)
-				fill.BackgroundColor3 = if deviation < -0.5 then COLORS.green elseif deviation > 0.5 then COLORS.gold else COLORS.grey
-				fill.BorderSizePixel = 0
-				fill.Parent = track
-				corner(fill, 4)
-				local mid = Instance.new("Frame")
-				mid.Name = "WorldAverageMark"
-				mid.Position = UDim2.new(0.5, -1, -0.25, 0)
-				mid.Size = UDim2.new(0, 2, 1.5, 0)
-				mid.BackgroundColor3 = INK
-				mid.BorderSizePixel = 0
-				mid.Parent = track
-				local legend = mkLabel(cardF, if deviation < -0.5 then "● 저렴 · 중앙선=세계평균" elseif deviation > 0.5 then "● 비쌈 · 중앙선=세계평균" else "● 평균 근처 · 중앙선=세계평균", 11, INK_SOFT, false)
-				legend.Position = UDim2.fromOffset(76, 126)
-				legend.Size = UDim2.new(1, -84, 0, 18)
-				legend.AutomaticSize = Enum.AutomaticSize.None
-				legend.TextTruncate = Enum.TextTruncate.AtEnd
-			end
-			-- [실거래 조건] 선택 수량·현재 재고·선창·자금·판매한도 안내.
-			local qty = amount()
-			local freeCargo = math.max(0, view.ship.cargoCapacity - view.ship.cargoUsed)
-			local buyCost = if g.buyTotals and g.buyTotals[qty] then g.buyTotals[qty] else (g.buy or 0) * qty
-			local canBuy = qty <= math.min(freeCargo, view.orderCap or qty, g.supply or qty) and buyCost <= view.player.coins
-			local canSell = qty <= math.min(g.owned or 0, view.orderCap or qty, g.absorb or qty)
-			local buyReason = if canBuy then "매입 가능" elseif freeCargo < qty then "화물칸 부족"
-				elseif (g.supply or qty) < qty then "항구 재고 부족"
-				elseif (view.orderCap or qty) < qty then "거래한도 초과" else "코인 부족"
-			local sellReason = if canSell then "판매 가능" elseif (g.owned or 0) < qty then "보유 수량 부족" else "판매한도 초과"
-			local observed = view.compare and view.compare[g.id]
-			local bestName, bestPrice, fromMemory = nil, -math.huge, false
-			for _, dest in observed or {} do
-				if dest.sell and dest.sell > bestPrice then
-					bestName, bestPrice, fromMemory = dest.name, dest.sell, dest.memory == true
-				end
-			end
-			local destination = mkLabel(cardF, if bestName then string.format("관측 최고 매각: %s %s%s", bestName, H.commas(bestPrice), if fromMemory then " (거래 기억)" else "")
-				else "다른 항구 시세: 장부에서 확인", 12, COLORS.muted, false)
-			destination.Position = UDim2.fromOffset(76, 147)
-			destination.Size = UDim2.new(1, -84, 0, 19)
-			destination.AutomaticSize = Enum.AutomaticSize.None
-			destination.TextTruncate = Enum.TextTruncate.AtEnd
-			local condition = mkLabel(cardF, "매입: " .. buyReason .. " · 매각: " .. sellReason, 12, if canBuy or canSell then COLORS.text else COLORS.red, true)
-			condition.Position = UDim2.fromOffset(10, 171)
-			condition.Size = UDim2.new(1, -20, 0, 19)
-			condition.AutomaticSize = Enum.AutomaticSize.None
-			condition.TextTruncate = Enum.TextTruncate.AtEnd
-			local buy = mkButton(cardF, "구매 " .. tostring(qty), COLORS.blue, UDim2.new(0.5, -10, 0, 36), function() call("Buy", { goodId = g.id, amount = amount() }) end, canBuy)
-			buy.Position = UDim2.new(0, 6, 1, -42)
-			local sell = mkButton(cardF, "판매 " .. tostring(qty), COLORS.green, UDim2.new(0.5, -10, 0, 36), function() call("Sell", { goodId = g.id, amount = amount() }) end, canSell)
-			sell.Position = UDim2.new(0.5, 4, 1, -42)
-			if g.owned > 0 then
-				local sm = mkButton(cardF, "암", COLORS.red, UDim2.fromOffset(34, 24), function() call("Smuggle", { goodId = g.id, amount = amount() }) end, true)
-				sm.AnchorPoint = Vector2.new(1, 0)
-				sm.Position = UDim2.new(1, -8, 0, 34)
-			end
-		end
-		-- [모바일 교역 카드] 좁은 화면은 1열, 중간은 2열, 넓은 화면은 3열로 글자가 잘리지 않게 한다.
-		local function fitGrid()
-			local width = grid.AbsoluteSize.X
-			if width <= 0 then return end
-			local columns = if width < 460 then 1 elseif width < 910 then 2 else 3
-			gl.CellSize = UDim2.new(1 / columns, -6 * (columns - 1) / columns, 0, 228)
-		end
-		grid:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitGrid)
-		task.defer(fitGrid)
-		return grid
-	end)
 
 	-- 거래소 게시판: 다른 항해자와 고정가로 사고판다 (수수료 5%)
 	local function mkInput(parent, placeholder, text, width, onChanged)
@@ -6106,16 +8042,7 @@ end
 
 function RENDERERS.route()
 	local ship = view.ship
-	local possible = 0
-	for _, r in (view.routes or {}) do
-		if not r.locked and r.supplies <= ship.supplies and (r.coal or 0) <= (ship.coal or 0) then possible += 1 end
-	end
-	H.statStrip({
-		{ "보급품", tostring(ship.supplies), tone = if ship.supplies <= 5 then "bad" else "key" },
-		{ "석탄", tostring(ship.coal or 0), tone = "key" },
-		{ "준비된 항로", tostring(possible) .. "/" .. tostring(#(view.routes or {})), tone = "good" },
-	})
-	if view.weather then
+if view.weather then
 		add(function()
 			local fc = ""
 			if view.forecast and #view.forecast > 0 then
@@ -6135,13 +8062,9 @@ function RENDERERS.route()
 		add(function()
 			return H.tileGrid({
 				{ icon = "route", title = "하루 기다리기", sub = "날씨가 나쁠 때 · 사기 +2", btn = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
-				{ icon = "map", title = "해도 보기", sub = "항구 위치 한눈에", btn = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
 			}, content, 176, 150)
 		end)
 	end
-	add(function()
-		return mkLabel(content, string.format("보급품 %d · 석탄 %d%s", ship.supplies, ship.coal, if ship.steam then " (증기선은 석탄을 태워요)" else ""), 13, COLORS.muted, false)
-	end)
 	-- 정렬: 가까운 순(기본) · 의뢰 목적지 · 조선소 · 이름 · 해역
 	H.routeSort = H.routeSort or "near"
 	add(function()
@@ -6150,7 +8073,6 @@ function RENDERERS.route()
 			{ text = "의뢰", color = if H.routeSort == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "quest"; render() end },
 			{ text = "조선소", color = if H.routeSort == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "yard"; render() end },
 			{ text = "해역", color = if H.routeSort == "region" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "region"; render() end },
-			{ text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end },
 		}, 60)
 		return row
 	end)
@@ -6181,7 +8103,7 @@ function RENDERERS.route()
 			local coalLeft = (ship.coal or 0) - (r.coal or 0)
 			local warn = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
 				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
-				else string.format("🟢 보급 충분 · 예상 잔량 %d", supplyLeft)
+				else string.format("출항 가능 · 보급 %d 남음", supplyLeft)
 			if view.weather and (view.weather.id == "storm" or view.weather.id == "rain") then
 				warn ..= if view.weather.id == "storm" then " · 🔴 현재 폭풍 주의" else " · 🟡 현재 비 주의"
 			end
@@ -6191,9 +8113,23 @@ function RENDERERS.route()
 				}, 56)
 			end
 			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "")
-			return mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
-				{ text = "출항", color = COLORS.blue, onClick = function() confirmSail(r) end },
+			local row = mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
+				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.gold else COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
+			-- [항로 원화] 목적지 제목을 누르면 승인된 지역 해역도로 바뀐다. 출항 버튼과 겹치지 않는다.
+			local choose = Instance.new("TextButton")
+			choose.Name = "RouteArtwork_" .. tostring(r.id)
+			choose.Text = ""
+			choose.BackgroundTransparency = 1
+			choose.BorderSizePixel = 0
+			choose.Size = UDim2.new(1, -124, 0, 42)
+			choose.ZIndex = row.ZIndex + 3
+			choose.Parent = row
+			choose.Activated:Connect(function()
+				H.gallerySelection = { tab = "route", name = r.name, search = r.name, chart = H.chartForPort(r.id) }
+				H.renderFacilityGallery()
+			end)
+			return row
 		end)
 	end
 end
@@ -6201,7 +8137,8 @@ end
 local openYardHall
 -- 동료 조언 줄: 말하는 동료의 초상과 말, 그리고 바로 가는 버튼 (최대 n개)
 function H.counselRows(n)
-	if H.contextAdviceShown or not view then return end
+	-- [중복 방지] 핵심 판단이 있는 시설의 동료 조언은 저널에서만 보여 준다.
+	if H.MENU_FOCUS[currentTab] or H.contextAdviceShown or not view then return end
 	local relevant = {}
 	for _, counsel in (view.counsel or {}) do
 		-- 교역 화면에는 교역, 조선소에는 선박 조언만 표시한다.
@@ -6295,20 +8232,12 @@ function H.counselRows(n)
 		shown += 1
 		add(function()
 			local buttons = {}
-			if cs.tab ~= currentTab then
+			if cs.tab ~= currentTab and TAB_NAME[cs.tab] and groupOf(cs.tab) ~= groupOf(currentTab) then
 				table.insert(buttons, { text = cs.label or "이동", color = COLORS.green, onClick = function() H.goAdvice(cs.tab) end })
-			elseif currentTab == "trade" then
-				table.insert(buttons, { text = "교역 장부", color = COLORS.green, onClick = function() if H.tradeHall then H.tradeHall() end end })
-			elseif currentTab == "yard" then
-				table.insert(buttons, { text = "선박 관리", color = COLORS.green, onClick = function() if H.yardHall then H.yardHall() end end })
-			elseif currentTab == "route" then
-				table.insert(buttons, { text = "지도", color = COLORS.green, onClick = function() openTab("map", "chart") end })
-			elseif currentTab == "map" then
-				table.insert(buttons, { text = "항로", color = COLORS.green, onClick = function() openTab("route") end })
-			elseif currentTab == "crew" then
+			elseif cs.tab == currentTab and (currentTab == "trade" or currentTab == "yard") then
+				table.insert(buttons, { text = "상세 보기", color = COLORS.green, onClick = function() if H.invokeMenuPrimary then H.invokeMenuPrimary() end end })
+			elseif cs.tab == currentTab and currentTab == "crew" then
 				table.insert(buttons, { text = "영입", color = COLORS.green, onClick = function() openTab("recruit") end })
-			elseif currentTab == "quest" then
-				table.insert(buttons, { text = "의뢰판", color = COLORS.green, onClick = function() openTab("board") end })
 			end
 			if cs.dismissable then
 				table.insert(buttons, { text = "알겠어요", color = COLORS.grey, onClick = function() call("AdviceDone", { id = cs.id }) end })
@@ -6341,244 +8270,246 @@ function H.companionFace(row, id, px)
 	return nil
 end
 
-local function renderYard()
-	local yard = view.shipyard
-	H.walletBar("yard")
-	-- [조선소 첫 화면] 기함 특징과 실측 수치를 가장 먼저 보여준다. 갑판 대포와 승조원을 분리한다.
-	local sh = view.ship
-	local active = add(function() return mkHeader(content, "내 기함 · " .. sh.className) end)
-	active.Name = "YardSectionShip"
-	H.statStrip({
-		{ "선체", string.format("%d / %d", sh.hull, sh.maxHull), tone = if sh.hull < sh.maxHull * 0.5 then "bad" else "good" },
-		{ "화물칸", string.format("%d / %d", sh.cargoUsed, sh.cargoCapacity), tone = "key" },
-		{ "속도 · 포문", string.format("%.1f · %d", sh.speed, sh.cannons), tone = "key" },
-	})
-	add(function()
-		local kind = if sh.steam then "증기 추진 · 석탄 " .. tostring(sh.fuelPerDay) .. "개/일"
-			elseif sh.rowed then "노젓기 병행 · 무풍 항해 특성" else "바람으로 이동하는 범선"
-		local row = mkRow(content, sh.name .. " · 지금 타는 배", sh.summary .. "\n" ..
-			string.format("갑판 승조원 %d/%d · 포 %d문\n%s · %s · 포격 개조 +%d%% · 보강 %d단계",
-			sh.crew, sh.maxCrew, sh.cannons, sh.cannonName, kind, math.floor(sh.cannonBonus * 100 + 0.5), sh.plating), nil, 132)
-		local icon = SHIP_ICON[sh.id]
-		if icon then withIcon(row, icon[1], icon[2], icon[3], 102) end
-		return row
-	end)
-	H.counselRows(1)
-	-- [선박 고유 능력] 현재 기함 성능과 약점을 실제 서버 운용 보정치로 안내한다.
-	if sh.trait then
+local function renderYard(page)
+	local yard, sh = view.shipyard, view.ship
+	if not page or page == "maintenance" then
+		H.walletBar("yard")
+		local active = add(function() return mkHeader(content, "내 기함 · " .. sh.className) end)
+		active.Name = "YardSectionShip"
+		H.statStrip({
+			{ "선체", string.format("%d / %d", sh.hull, sh.maxHull), tone = if sh.hull < sh.maxHull * 0.5 then "bad" else "good" },
+			{ "화물칸", string.format("%d / %d", sh.cargoUsed, sh.cargoCapacity), tone = "key" },
+			{ "속도 · 포문", string.format("%.1f · %d", sh.speed, sh.cannons), tone = "key" },
+		})
 		add(function()
-			local t = sh.trait
-			return mkRow(content, "기함 특화 · " .. t.role,
-				string.format("약점: %s\n항해 %+d%% · 장거리 %+d%% · 역풍대응 %+d%%\n보급 %+d%% · 선창 %+d%% · 관세절감 %+d%%\n포격 %+d%% · 백병 %+d%% · 폭풍피해 감소 %+d%% · 탐사 %+d%%",
-				t.weak or "없음",
-				math.floor((t.sail or 0) * 100 + 0.5), math.floor((t.long or 0) * 100 + 0.5),
-				math.floor((t.wind or 0) * 100 + 0.5), math.floor((t.supplies or 0) * 100 + 0.5),
-				math.floor((t.cargo or 0) * 100 + 0.5), math.floor((t.tariff or 0) * 100 + 0.5),
-				math.floor((t.cannon or 0) * 100 + 0.5), math.floor((t.melee or 0) * 100 + 0.5),
-				math.floor((t.storm or 0) * 100 + 0.5), math.floor((t.explore or 0) * 100 + 0.5)),
-				nil, 125)
+			local kind = if sh.steam then "증기 추진 · 석탄 " .. tostring(sh.fuelPerDay) .. "개/일"
+				elseif sh.rowed then "노젓기 병행 · 무풍 항해 특성" else "바람으로 이동하는 범선"
+			local row = mkRow(content, sh.name .. " · 지금 타는 배", sh.summary .. "\n" ..
+				string.format("갑판 승조원 %d/%d · 포 %d문\n%s · %s · 포격 개조 +%d%% · 보강 %d단계",
+				sh.crew, sh.maxCrew, sh.cannons, sh.cannonName, kind, math.floor(sh.cannonBonus * 100 + 0.5), sh.plating), nil, 132)
+			local icon = SHIP_ICON[sh.id]
+			if icon then withIcon(row, icon[1], icon[2], icon[3], 102) end
+			return row
 		end)
-	end
-	add(function() return mkHeader(content, "정비 · 보급 · 선원") end)
-	if not yard.available and view.nearestYard then
+		H.counselRows(1)
+		-- [선박 고유 능력] 현재 기함 성능과 약점을 실제 서버 운용 보정치로 안내한다.
+		if sh.trait then
+			add(function()
+				local t = sh.trait
+				return mkRow(content, "기함 특화 · " .. t.role,
+					string.format("약점: %s\n항해 %+d%% · 장거리 %+d%% · 역풍대응 %+d%%\n보급 %+d%% · 선창 %+d%% · 관세절감 %+d%%\n포격 %+d%% · 백병 %+d%% · 폭풍피해 감소 %+d%% · 탐사 %+d%%",
+					t.weak or "없음",
+					math.floor((t.sail or 0) * 100 + 0.5), math.floor((t.long or 0) * 100 + 0.5),
+					math.floor((t.wind or 0) * 100 + 0.5), math.floor((t.supplies or 0) * 100 + 0.5),
+					math.floor((t.cargo or 0) * 100 + 0.5), math.floor((t.tariff or 0) * 100 + 0.5),
+					math.floor((t.cannon or 0) * 100 + 0.5), math.floor((t.melee or 0) * 100 + 0.5),
+					math.floor((t.storm or 0) * 100 + 0.5), math.floor((t.explore or 0) * 100 + 0.5)),
+					nil, 125)
+			end)
+		end
+		add(function() return mkHeader(content, "정비 · 보급 · 선원") end)
+		if not yard.available and view.nearestYard then
+			add(function()
+				local ny = view.nearestYard
+				local r
+				for _, x in view.routes do
+					if x.id == ny.id then
+						r = x
+					end
+				end
+				return mkRow(content, "가장 가까운 조선소: " .. ny.name, string.format("%d일 · %d km · 보급품 %d\n여기서는 응급 수리만 돼요", ny.days, ny.distanceKm, ny.supplies), {
+					{ text = "그곳으로 출항", color = COLORS.blue, onClick = function() if r then confirmSail(r) end end },
+				}, 76)
+			end)
+		end
 		add(function()
-			local ny = view.nearestYard
-			local r
-			for _, x in view.routes do
-				if x.id == ny.id then
-					r = x
+			local sh = view.ship
+			local maxH = math.max(1, yard.maxHull or sh.maxHull)
+			local cur = maxH - (yard.fullMissing or yard.missing or 0)
+			local pct = math.floor(cur / maxH * 100 + 0.5)
+			local need = (yard.missing or 0) > 0
+			return H.tileGrid({
+				{ icon = "yard", title = if yard.field then "응급 수리" else "선체 수리", sub = if need then string.format("선체 %d%% · %d코인", pct, yard.repairTotal) else string.format("선체 %d%% 튼튼해요", pct),
+					btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
+				{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
+				{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
+			}, content, nil, nil, true)
+		end)
+		if not yard.available then
+			add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
+		end
+		local rf = view.refit
+		add(function()
+			return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지 15코인/일", view.fleet.price, view.fleet.needFame), {
+				{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
+				{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
+			}, 84)
+		end)
+		-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
+		local fleetHeader = add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
+		fleetHeader.Name = "YardSectionFleet"
+		add(function()
+			return mkLabel(content, string.format("화물 +%d · 속도 %d(가장 느린 배 기준) · 유지 %d코인/척/일 · 다음 배 명성 %d", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
+		end)
+		for _, f in view.fleet.ships do
+			add(function()
+				local frow = mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
+					{ text = "기함으로", color = COLORS.blue, onClick = function() call("SetFlagship", { index = f.index }) end },
+					{ text = string.format("매각 %d", f.sell), color = COLORS.red, onClick = function() call("SellFleetShip", { index = f.index }) end },
+				}, 96)
+				local fsi = SHIP_ICON[f.id or ""] or SHIP_ICON.frigate
+				withIcon(frow, fsi[1], fsi[2], fsi[3], 80)
+				return frow
+			end)
+		end
+		if #view.fleet.ships < view.fleet.max then
+			for _, s in yard.ships do
+				if not s.locked and s.price > 0 then
+					add(function()
+						return mkRow(content, string.format("선단에 추가: %s", s.name), string.format("포 %d · 화물 %d · 속도 %d · 선체 %d", s.cannons, s.cargo, s.speed, s.hull), {
+							{ text = tostring(s.price), color = COLORS.green, enabled = yard.available, onClick = function() call("BuyFleetShip", { shipId = s.id }) end },
+						}, 56)
+					end)
 				end
 			end
-			return mkRow(content, "가장 가까운 조선소: " .. ny.name, string.format("%d일 · %d km · 보급품 %d\n여기서는 응급 수리만 돼요", ny.days, ny.distanceKm, ny.supplies), {
-				{ text = "그곳으로 출항", color = COLORS.blue, onClick = function() if r then confirmSail(r) end end },
-			}, 76)
-		end)
-	end
-	add(function()
-		local sh = view.ship
-		local maxH = math.max(1, yard.maxHull or sh.maxHull)
-		local cur = maxH - (yard.fullMissing or yard.missing or 0)
-		local pct = math.floor(cur / maxH * 100 + 0.5)
-		local need = (yard.missing or 0) > 0
-		return H.tileGrid({
-			{ icon = "yard", title = if yard.field then "응급 수리" else "선체 수리", sub = if need then string.format("선체 %d%% · %d코인", pct, yard.repairTotal) else string.format("선체 %d%% 튼튼해요", pct),
-				btn = if need then "수리" else "불필요", color = COLORS.green, enabled = need, onClick = function() call("Repair") end },
-			{ icon = "cc0_helmet", title = "선원 고용", sub = string.format("%d코인/명 · %d/%d", yard.hireCost, sh.crew, sh.maxCrew), btn = "+5명", color = COLORS.blue, onClick = function() call("HireCrew", { amount = 5 }) end },
-			{ icon = "cc0_chest", title = "보급품", sub = string.format("%d코인/개 · 보유 %d", yard.supplyCost, sh.supplies), btn = "+20", color = COLORS.blue, onClick = function() call("BuySupplies", { amount = 20 }) end },
-			{ icon = "harbor", title = "조선소 입장", sub = "배·대포·보강 고르기", btn = "입장", color = COLORS.gold, enabled = yard.available, onClick = function() openYardHall() end },
-		}, content)
-	end)
-	if not yard.available then
-		add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
-	end
-	local rf = view.refit
-	add(function()
-		return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지 15코인/일", view.fleet.price, view.fleet.needFame), {
-			{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
-			{ text = "해산", color = COLORS.red, enabled = view.fleet.escorts > 0, onClick = function() call("DismissEscort") end },
-		}, 84)
-	end)
-	-- 선단 편성: 기함 외에 실제 배를 최대 3척 거느린다
-	local fleetHeader = add(function() return mkHeader(content, string.format("선단 편성 (기함 + %d/%d척)", #view.fleet.ships, view.fleet.max)) end)
-	fleetHeader.Name = "YardSectionFleet"
-	add(function()
-		return mkLabel(content, string.format("화물 +%d · 속도 %d(가장 느린 배 기준) · 유지 %d코인/척/일 · 다음 배 명성 %d", view.fleet.cargo, view.fleet.speed, view.fleet.upkeep, view.fleet.fameNeed), 12, COLORS.muted, false)
-	end)
-	for _, f in view.fleet.ships do
+		end
+		local upgradeHeader = add(function() return mkHeader(content, string.format("대포 · 선체 개조 (등급 %d · %s)", rf.class, rf.className)) end)
+		upgradeHeader.Name = "YardSectionRefit"
 		add(function()
-			local frow = mkRow(content, string.format("%d번함 · %s", f.index, f.name), string.format("선체 %d/%d · 포 %d · 화물 %d · 속도 %d", f.hull, f.maxHull, f.cannons, f.cargo, f.speed), {
-				{ text = "기함으로", color = COLORS.blue, onClick = function() call("SetFlagship", { index = f.index }) end },
-				{ text = string.format("매각 %d", f.sell), color = COLORS.red, onClick = function() call("SellFleetShip", { index = f.index }) end },
-			}, 96)
-			local fsi = SHIP_ICON[f.id or ""] or SHIP_ICON.frigate
-			withIcon(frow, fsi[1], fsi[2], fsi[3], 80)
-			return frow
+			return mkLabel(content, "현재 장착: " .. rf.cannonName .. string.format(" (포격 +%d%%) · 보강 %d단계\n교체 전후 화물·내구·대포 성능과 실제 결제 금액을 확인해. 새 배를 사면 개조가 초기화돼.", math.floor(rf.cannonMult * 100 + 0.5), rf.plating), 14, COLORS.muted, false)
 		end)
+		for _, c in rf.cannons do
+			add(function()
+				local delta = math.floor((c.mult - rf.cannonMult) * 100 + 0.5)
+				local cargoDelta = c.capacityAfter - sh.cargoCapacity
+				local sub = string.format("%s\n포격 보너스 +%d%% (현재 대비 %+d%%)\n화물 %d → %d (%+d칸) · 실결제 %s / 소지금 %s",
+					c.summary, math.floor(c.mult * 100 + 0.5), delta, sh.cargoCapacity, c.capacityAfter, cargoDelta,
+					H.commas(c.netCost), H.commas(view.player.coins))
+				if not c.canCarry then sub ..= "\n화물 초과: 장착 전 짐을 내려야 해" end
+				if c.locked then sub ..= "\n" .. c.locked end
+				local crow = mkRow(content, c.name .. (if c.owned then " · 현재 장착" else ""), sub, {
+					{ text = if c.owned then "장착 중" else "장착\n" .. H.commas(c.netCost), color = COLORS.steam,
+						enabled = yard.available and not c.owned and not c.locked and c.canCarry and view.player.coins >= c.netCost,
+						onClick = function() call("BuyCannon", { cannonId = c.id }) end },
+				}, 144)
+				withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 88)
+				return crow
+			end)
+		end
+		if rf.nextPlating then
+			local np = rf.nextPlating
+			add(function()
+				local sub = string.format("최대 선체 %d → %d (%+d) · 속도 %.1f → %.1f\n화물칸 %d → %d (%+d칸)\n실결제 %s / 소지금 %s · 현재 보강 %d단계",
+					sh.maxHull, np.hullAfter, np.hullAfter - sh.maxHull, sh.speed, np.speedAfter,
+					sh.cargoCapacity, np.capacityAfter, np.capacityAfter - sh.cargoCapacity,
+					H.commas(np.price), H.commas(view.player.coins), rf.plating)
+				if not np.canCarry then sub ..= "\n화물이 무거워 보강 불가" end
+				if np.locked then sub ..= "\n" .. np.locked end
+				local row = mkRow(content, "다음 선체 보강 · " .. np.name, sub, {
+					{ text = "보강\n" .. H.commas(np.price), color = COLORS.green,
+						enabled = yard.available and not np.locked and np.canCarry and view.player.coins >= np.price,
+						onClick = function() call("BuyPlating", {}) end },
+				}, 135)
+				withIcon(row, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
+				return row
+			end)
+		else
+			add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
+		end
 	end
-	if #view.fleet.ships < view.fleet.max then
-		for _, s in yard.ships do
-			if not s.locked and s.price > 0 then
+	if not page or page == "blueprints" then
+		-- [7대륙 36척] 지역별 신규 선박은 기존 조선소 구매 목록에 연결하고 지역·면허·모험 제한을 안내한다.
+		-- 모델·구매/저장·전투 구조는 기존 시스템을 재사용한다.
+		local blueprintHead = add(function()
+			return mkHeader(content, string.format("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData.Blueprints))
+		end)
+		blueprintHead.Name = "YardSectionBlueprints"
+		H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
+		add(function() return mkLabel(content,
+			"실존 6대륙 1~5단계 · 미지의 땅 1~6단계. 36척 모두 3D 원본·개별 항해·교역·전투 성능 적용. 신규 23척은 해당 지역 조선소에서, 미지 선박은 호놀룰루에서 구매해.",
+			13, COLORS.muted, false) end)
+		local stageScenes = {
+			"얇은 포염·가벼운 물보라", "선측 불티·파편 증가", "연장된 포탄 잔상·진한 포연",
+			"확산 섬광·2지점 화재", "무거운 포성·3지점 화재·2중 물결", "미지 선박의 발광 궤적·해무·최종 충격파",
+		}
+		local regionScenes = {
+			europe = "황금 포염·굵은 화약 연기", east_asia = "붉은 화포 불티·노선 거품",
+			new_world = "흰 포탄 잔상·날렵한 항적", middle_east = "황금 포염·연한 물보라",
+			southeast_asia = "청록 파도·기동 항적", africa = "목재 파편·노선 물결",
+			lost = "청록·보라 발광 충격파",
+		}
+		-- [지역 조선소 배색 해설] 실제 38색 원본 재질을 손상 없이 복원했는지 눈으로 비교할 수 있다.
+		local regionMaterials = {
+			europe = "호두빛 판재·황동 장식·상아색 캔버스 돛",
+			east_asia = "짙은 목재·주홍 선체 장식·노선 갑판",
+			new_world = "밝은 목재·미색 돛천·철제 난간",
+			middle_east = "황갈색 목재·삼각돛·황동 선수 장식",
+			southeast_asia = "거친 열대 목재·직물 돛·노",
+			africa = "갈대 편조·무광 목재·천연 섬유 돛",
+			lost = "암청·청록 선체·보라 장식·은빛 금속",
+		}
+		local regionPaint = {
+			europe = Color3.fromRGB(156, 93, 53), east_asia = Color3.fromRGB(142, 59, 45),
+			new_world = Color3.fromRGB(172, 128, 84), middle_east = Color3.fromRGB(205, 158, 89),
+			southeast_asia = Color3.fromRGB(97, 132, 116), africa = Color3.fromRGB(164, 125, 80),
+			lost = Color3.fromRGB(67, 151, 167),
+		}
+		for _, category in ShipsData.BlueprintFactions do
+			add(function()
+				return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
+				if category.id == "lost" then "호놀룰루 비밀 조선소 · 모험 레벨 필요" else "지역 조선소에서만 구매 · 선박별 운용 특화", {
+					{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
+						onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
+				}, 70)
+			end)
+		end
+		for _, plan in ShipsData.Blueprints do
+			if plan.faction == H.shipBlueprintFaction then
 				add(function()
-					return mkRow(content, string.format("선단에 추가: %s", s.name), string.format("포 %d · 화물 %d · 속도 %d · 선체 %d", s.cannons, s.cargo, s.speed, s.hull), {
-						{ text = tostring(s.price), color = COLORS.green, enabled = yard.available, onClick = function() call("BuyFleetShip", { shipId = s.id }) end },
-					}, 56)
+					-- 36척 실제 등록번호와 조선소 구매 개방을 따로 보여주고 전투 효과는 시각 전용임을 명시한다.
+					local hasFull = AssetIds["Naval/" .. plan.id .. "-v5"] ~= nil
+					local hasMobile = AssetIds["Naval/" .. plan.id .. "-v5-mobile"] ~= nil
+					local definition = ShipsData.Ships[plan.id]
+					local shop = nil
+					for _, item in yard.ships do
+						if item.id == plan.id then shop = item; break end
+					end
+					local status = if shop then (if shop.owned then "현재 기함" elseif shop.locked then shop.locked else "이 조선소에서 구매 가능")
+						elseif plan.faction == "lost" then "호놀룰루 전용"
+						else "해당 지역의 조선소에서 구매"
+					local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
+					local role = definition and definition.trait and definition.trait.role or "고유 특화"
+					local weak = definition and definition.trait and definition.trait.weak or "없음"
+					local info = string.format("⚓ %s · %s\n🎨 배색·질감: %s\n🪵 선체: %s\n⛵ 돛·노: %s\n갑판: %s\n3D: %s\n전투 연출: %s\n%d단계 포격: %s\n주특화: %s\n약점: %s\n구매 위치·조건: %s",
+						plan.era, plan.sailingZone, regionMaterials[plan.faction] or "원본 배색",
+						plan.hull, plan.rig, plan.deck, visual, regionScenes[plan.faction] or "기본 해전 연출",
+						plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
+					-- [지역 전용선 바로 구매] 기존 BuyShip 서버 검사만 호출한다. 이 화면에서 우회 구매는 불가능하다.
+					local purchase = nil
+					if shop then
+						local pay = math.max(0, shop.netCost)
+						info ..= string.format("\n정가 %s · 기함 매각 보상 %s · 실결제 %s",
+							H.commas(shop.price), H.commas(shop.tradeIn), H.commas(pay))
+						if not shop.canCarry then info ..= "\n화물을 먼저 내려야 구매 가능" end
+						purchase = {{
+							text = if shop.owned then "현재 기함" elseif shop.locked then "잠김" else "교체\n" .. H.commas(pay),
+							color = if shop.owned then COLORS.gold else COLORS.blue,
+							enabled = yard.available and not shop.owned and not shop.locked and shop.canCarry and shop.netCost <= view.player.coins,
+							onClick = function() call("BuyShip", { shipId = shop.id }) end
+						}}
+					end
+					local row = mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 300)
+					-- 설명이 긴 선박도 기존 가변 높이 카드가 끝까지 표시하고, 모바일에서는 정지 3D로 성능을 아낀다.
+					local icon = SHIP_ICON[plan.id]
+					if icon then withIcon(row, icon[1], icon[2], icon[3], 76) end
+					local swatch = row:FindFirstChild("AccentBar")
+					if swatch then swatch.BackgroundColor3 = regionPaint[plan.faction] or UI_BRASS end
+					return row
 				end)
 			end
 		end
 	end
-	local upgradeHeader = add(function() return mkHeader(content, string.format("대포 · 선체 개조 (등급 %d · %s)", rf.class, rf.className)) end)
-	upgradeHeader.Name = "YardSectionRefit"
-	add(function()
-		return mkLabel(content, "현재 장착: " .. rf.cannonName .. string.format(" (포격 +%d%%) · 보강 %d단계\n교체 전후 화물·내구·대포 성능과 실제 결제 금액을 확인해. 새 배를 사면 개조가 초기화돼.", math.floor(rf.cannonMult * 100 + 0.5), rf.plating), 14, COLORS.muted, false)
-	end)
-	for _, c in rf.cannons do
-		add(function()
-			local delta = math.floor((c.mult - rf.cannonMult) * 100 + 0.5)
-			local cargoDelta = c.capacityAfter - sh.cargoCapacity
-			local sub = string.format("%s\n포격 보너스 +%d%% (현재 대비 %+d%%)\n화물 %d → %d (%+d칸) · 실결제 %s / 소지금 %s",
-				c.summary, math.floor(c.mult * 100 + 0.5), delta, sh.cargoCapacity, c.capacityAfter, cargoDelta,
-				H.commas(c.netCost), H.commas(view.player.coins))
-			if not c.canCarry then sub ..= "\n화물 초과: 장착 전 짐을 내려야 해" end
-			if c.locked then sub ..= "\n" .. c.locked end
-			local crow = mkRow(content, c.name .. (if c.owned then " · 현재 장착" else ""), sub, {
-				{ text = if c.owned then "장착 중" else "장착\n" .. H.commas(c.netCost), color = COLORS.steam,
-					enabled = yard.available and not c.owned and not c.locked and c.canCarry and view.player.coins >= c.netCost,
-					onClick = function() call("BuyCannon", { cannonId = c.id }) end },
-			}, 144)
-			withIcon(crow, "Naval", if c.id == "basic" then "cannon" else "cannon-mobile", if c.id == "steam_gun" then Color3.fromRGB(150, 110, 70) else nil, 88)
-			return crow
-		end)
-	end
-	if rf.nextPlating then
-		local np = rf.nextPlating
-		add(function()
-			local sub = string.format("최대 선체 %d → %d (%+d) · 속도 %.1f → %.1f\n화물칸 %d → %d (%+d칸)\n실결제 %s / 소지금 %s · 현재 보강 %d단계",
-				sh.maxHull, np.hullAfter, np.hullAfter - sh.maxHull, sh.speed, np.speedAfter,
-				sh.cargoCapacity, np.capacityAfter, np.capacityAfter - sh.cargoCapacity,
-				H.commas(np.price), H.commas(view.player.coins), rf.plating)
-			if not np.canCarry then sub ..= "\n화물이 무거워 보강 불가" end
-			if np.locked then sub ..= "\n" .. np.locked end
-			local row = mkRow(content, "다음 선체 보강 · " .. np.name, sub, {
-				{ text = "보강\n" .. H.commas(np.price), color = COLORS.green,
-					enabled = yard.available and not np.locked and np.canCarry and view.player.coins >= np.price,
-					onClick = function() call("BuyPlating", {}) end },
-			}, 135)
-			withIcon(row, "Naval", "ship-large", Color3.fromRGB(110, 96, 82), 88)
-			return row
-		end)
-	else
-		add(function() return mkLabel(content, "선체 보강: 최고 단계 · 추가 개조 없음", 14, COLORS.green, true) end)
-	end
-	-- [7대륙 36척] 지역별 신규 선박은 기존 조선소 구매 목록에 연결하고 지역·면허·모험 제한을 안내한다.
-	-- 모델·구매/저장·전투 구조는 기존 시스템을 재사용한다.
-	local blueprintHead = add(function()
-		return mkHeader(content, string.format("7대륙 선박 %d종 · 3D 원본 설계", #ShipsData.Blueprints))
-	end)
-	blueprintHead.Name = "YardSectionBlueprints"
-	H.shipBlueprintFaction = H.shipBlueprintFaction or "europe"
-	add(function() return mkLabel(content,
-		"실존 6대륙 1~5단계 · 미지의 땅 1~6단계. 36척 모두 3D 원본·개별 항해·교역·전투 성능 적용. 신규 23척은 해당 지역 조선소에서, 미지 선박은 호놀룰루에서 구매해.",
-		13, COLORS.muted, false) end)
-	local stageScenes = {
-		"얇은 포염·가벼운 물보라", "선측 불티·파편 증가", "연장된 포탄 잔상·진한 포연",
-		"확산 섬광·2지점 화재", "무거운 포성·3지점 화재·2중 물결", "미지 선박의 발광 궤적·해무·최종 충격파",
-	}
-	local regionScenes = {
-		europe = "황금 포염·굵은 화약 연기", east_asia = "붉은 화포 불티·노선 거품",
-		new_world = "흰 포탄 잔상·날렵한 항적", middle_east = "황금 포염·연한 물보라",
-		southeast_asia = "청록 파도·기동 항적", africa = "목재 파편·노선 물결",
-		lost = "청록·보라 발광 충격파",
-	}
-	-- [지역 조선소 배색 해설] 실제 38색 원본 재질을 손상 없이 복원했는지 눈으로 비교할 수 있다.
-	local regionMaterials = {
-		europe = "호두빛 판재·황동 장식·상아색 캔버스 돛",
-		east_asia = "짙은 목재·주홍 선체 장식·노선 갑판",
-		new_world = "밝은 목재·미색 돛천·철제 난간",
-		middle_east = "황갈색 목재·삼각돛·황동 선수 장식",
-		southeast_asia = "거친 열대 목재·직물 돛·노",
-		africa = "갈대 편조·무광 목재·천연 섬유 돛",
-		lost = "암청·청록 선체·보라 장식·은빛 금속",
-	}
-	local regionPaint = {
-		europe = Color3.fromRGB(156, 93, 53), east_asia = Color3.fromRGB(142, 59, 45),
-		new_world = Color3.fromRGB(172, 128, 84), middle_east = Color3.fromRGB(205, 158, 89),
-		southeast_asia = Color3.fromRGB(97, 132, 116), africa = Color3.fromRGB(164, 125, 80),
-		lost = Color3.fromRGB(67, 151, 167),
-	}
-	for _, category in ShipsData.BlueprintFactions do
-		add(function()
-			return mkRow(content, category.name .. " · 선박 " .. (if category.id == "lost" then "6" else "5") .. "종",
-			if category.id == "lost" then "호놀룰루 비밀 조선소 · 모험 레벨 필요" else "지역 조선소에서만 구매 · 선박별 운용 특화", {
-				{ text = if H.shipBlueprintFaction == category.id then "선택 중" else "선택", color = if H.shipBlueprintFaction == category.id then COLORS.gold else COLORS.blue,
-					onClick = function() H.shipBlueprintFaction = category.id; if tradeHallRefresh then tradeHallRefresh() else render() end end },
-			}, 70)
-		end)
-	end
-	for _, plan in ShipsData.Blueprints do
-		if plan.faction == H.shipBlueprintFaction then
-			add(function()
-				-- 36척 실제 등록번호와 조선소 구매 개방을 따로 보여주고 전투 효과는 시각 전용임을 명시한다.
-				local hasFull = AssetIds["Naval/" .. plan.id .. "-v5"] ~= nil
-				local hasMobile = AssetIds["Naval/" .. plan.id .. "-v5-mobile"] ~= nil
-				local definition = ShipsData.Ships[plan.id]
-				local shop = nil
-				for _, item in yard.ships do
-					if item.id == plan.id then shop = item; break end
-				end
-				local status = if shop then (if shop.owned then "현재 기함" elseif shop.locked then shop.locked else "이 조선소에서 구매 가능")
-					elseif plan.faction == "lost" then "호놀룰루 전용"
-					else "해당 지역의 조선소에서 구매"
-				local visual = if hasFull and hasMobile then "원본·모바일 경량판 등록" elseif hasFull then "원본 등록·경량판 미등록" else "자산 등록 대기"
-				local role = definition and definition.trait and definition.trait.role or "고유 특화"
-				local weak = definition and definition.trait and definition.trait.weak or "없음"
-				local info = string.format("⚓ %s · %s\n🎨 배색·질감: %s\n🪵 선체: %s\n⛵ 돛·노: %s\n갑판: %s\n3D: %s\n전투 연출: %s\n%d단계 포격: %s\n주특화: %s\n약점: %s\n구매 위치·조건: %s",
-					plan.era, plan.sailingZone, regionMaterials[plan.faction] or "원본 배색",
-					plan.hull, plan.rig, plan.deck, visual, regionScenes[plan.faction] or "기본 해전 연출",
-					plan.stage, stageScenes[plan.stage] or "기본 해전 연출", role, weak, status)
-				-- [지역 전용선 바로 구매] 기존 BuyShip 서버 검사만 호출한다. 이 화면에서 우회 구매는 불가능하다.
-				local purchase = nil
-				if shop then
-					local pay = math.max(0, shop.netCost)
-					info ..= string.format("\n정가 %s · 기함 매각 보상 %s · 실결제 %s",
-						H.commas(shop.price), H.commas(shop.tradeIn), H.commas(pay))
-					if not shop.canCarry then info ..= "\n화물을 먼저 내려야 구매 가능" end
-					purchase = {{
-						text = if shop.owned then "현재 기함" elseif shop.locked then "잠김" else "교체\n" .. H.commas(pay),
-						color = if shop.owned then COLORS.gold else COLORS.blue,
-						enabled = yard.available and not shop.owned and not shop.locked and shop.canCarry and shop.netCost <= view.player.coins,
-						onClick = function() call("BuyShip", { shipId = shop.id }) end
-					}}
-				end
-				local row = mkRow(content, string.format("[%d단계] %s", plan.stage, plan.name), info, purchase, 300)
-				-- 설명이 긴 선박도 기존 가변 높이 카드가 끝까지 표시하고, 모바일에서는 정지 3D로 성능을 아낀다.
-				local icon = SHIP_ICON[plan.id]
-				if icon then withIcon(row, icon[1], icon[2], icon[3], 76) end
-				local swatch = row:FindFirstChild("AccentBar")
-				if swatch then swatch.BackgroundColor3 = regionPaint[plan.faction] or UI_BRASS end
-				return row
-			end)
-		end
-	end
+	if page and page ~= "compare" then return end
 	local shipHeader = add(function() return mkHeader(content, "새 배 비교 · 실제 구매 가격") end)
 	shipHeader.Name = "YardSectionShips"
 	add(function() return mkLabel(content, "막대 색=새 배 · 흰 선=현재 기함 · ▲ 향상 / ▼ 감소\n실결제는 기함 매각 보상을 뺀 금액이고, 교체하면 기존 대포·보강은 초기화돼.", 14, COLORS.muted, false) end)
@@ -6589,7 +8520,7 @@ local function renderYard()
 		if candidate.id == H.shipPreviewId then previewShip = candidate; break end
 	end
 	if not previewShip then previewShip = yard.ships[1] end
-	if previewShip then
+	if previewShip and not H.yardHallActive then
 		H.shipPreviewId = previewShip.id
 		add(function()
 			local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 164), Color3.fromRGB(229, 208, 169))
@@ -6633,11 +8564,10 @@ local function renderYard()
 		add(function()
 			local pay = math.max(0, s.netCost)
 			local refund = if s.netCost < 0 then " · 차액 환급 " .. H.commas(-s.netCost) else ""
-			local diffCargo = s.capacityAfter - sh.cargoCapacity
-			local sub = string.format("%s\n정가 %s - 내 기함 보상 %s = 실결제 %s%s\n화물 %+d칸 · 속도 %+.1f · 선체 %+d · 포 %+d\n승조원 정원 %+d · 현재 화물 %d/%d · 내 돈 %s",
-				s.summary, H.commas(s.price), H.commas(s.tradeIn), H.commas(pay), refund,
-				diffCargo, s.speed - sh.speed, s.hull - sh.maxHull, s.cannons - sh.cannons,
-				s.crew - sh.maxCrew, sh.cargoUsed, s.capacityAfter, H.commas(view.player.coins))
+			-- [선박 비교 중복 제거] 화물·속도·내구·포문·승조원은 바로 아래 5개 비교 막대에서 확인.
+			-- 상세 글에는 실제 구매 판단을 좌우하는 정가·보상·실결제와 필수 적재 한도만 남긴다.
+			local sub = string.format("%s\n실결제 %s코인%s\n정가 %s · 기함 보상 %s\n교체 후 적재 한도 %d칸",
+				s.summary, H.commas(pay), refund, H.commas(s.price), H.commas(s.tradeIn), s.capacityAfter)
 			if s.trait then
 				local t = s.trait
 				sub ..= string.format("\n특화: %s · 약점: %s", t.role or "일반", t.weak or "없음")
@@ -6663,20 +8593,43 @@ local function renderYard()
 			if not s.canCarry then sub ..= "\n화물 부족: 교체 전에 짐을 내려야 해" end
 			if s.locked then sub ..= "\n" .. s.locked end
 			if not s.owned and s.netCost > view.player.coins then sub ..= "\n자금 부족 " .. H.commas(s.netCost - view.player.coins) .. "코인" end
-			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
+			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.id == H.shipPreviewId then " · 중앙 3D 선택" elseif s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
 				sub, {
-					{ text = if s.id == H.shipPreviewId then "미리보기 중" else "모형 보기", color = COLORS.gold,
-						onClick = function()
-							H.shipPreviewId = s.id
-							if tradeHallRefresh then tradeHallRefresh() else render() end
-						end },
-					{ text = if s.owned then "현재 배" elseif s.locked then "잠김" else "교체\n" .. H.commas(pay),
+					{ text = if s.owned then "현재 배" elseif s.locked then "잠김" elseif not s.canCarry then "화물 초과" elseif s.netCost > view.player.coins then "코인 부족" else "교체\n" .. H.commas(pay),
 						color = if s.steam then COLORS.steam else COLORS.blue,
 						enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
 						onClick = function() call("BuyShip", { shipId = s.id }) end },
 				}, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
+			-- [선택 강조] 중앙 3D로 연결된 선박만 황동 선·두꺼운 테두리로 표시한다.
+			if s.id == H.shipPreviewId then
+				local border = row:FindFirstChildOfClass("UIStroke")
+				if border then
+					border.Color = UI_BRASS_DARK
+					border.Thickness = 2.5
+				end
+				local accent = row:FindFirstChild("AccentBar")
+				if accent then accent.BackgroundColor3 = COLORS.gold end
+			end
 			local si = SHIP_ICON[s.id]
 			if si then withIcon(row, si[1], si[2], si[3], 100) end
+			-- [선박 원화 선택] 상세장부에서도 이름·사진을 누르면 중앙 7:10 선박이 바뀐다.
+			-- 선택만 하는 터치 영역이며 기존 실제 교체/구매 버튼과 겹치지 않는다.
+			local selectArea = Instance.new("TextButton")
+			selectArea.Name = "SelectShip3D_" .. tostring(s.id)
+			selectArea.Text = ""
+			selectArea.BackgroundTransparency = 1
+			selectArea.BorderSizePixel = 0
+			selectArea.AutoButtonColor = false
+			selectArea.Size = UDim2.new(1, -4, 0, 78)
+			selectArea.ZIndex = 4
+			selectArea.Parent = row
+			local inYardHall = H.yardHallActive
+			selectArea.Activated:Connect(function()
+				if H.shipPreviewId == s.id then return end
+				H.shipPreviewId = s.id
+				-- [선택 원화 갱신] 콜백 시점에는 H.yardHallActive가 false이므로 생성 시의 소속을 사용한다.
+				if inYardHall and tradeHallRefresh then tradeHallRefresh() else render() end
+			end)
 			-- [선박 시각 비교] 실제 교체 후 화물칸·속도·선체를 표시한다.
 			-- 공통 카드의 본문 높이에 비교 영역을 예약해 모바일에서도 버튼·설명과 겹치지 않게 한다.
 			row:SetAttribute("FooterHeight", 118)
@@ -6740,16 +8693,14 @@ function openYardHall()
 	Sfx.play("sfx_creak")
 	Sfx.facilityCue("yard")
 	closeTradeHall()
-	local layer = overlayGui("TradeHallGui", 15)
-	main.Visible = false
-	-- [전용 화면] 교역·조선소 위로 이전 HUD 및 도크 아이콘이 남지 않게 숨긴다.
-	hud.Visible = false
-	hudTopGui.Enabled = false
+	-- [조선 탭] 기존 선박 비교·정비·구매 내용 그대로 시설 책 본문에 사용한다.
 	local root = Instance.new("Frame")
-	root.Size = UDim2.fromScale(1, 1)
+	root.Name = "FacilityDetail"
 	root.BackgroundColor3 = COLORS.cover
 	root.BorderSizePixel = 0
-	root.Parent = layer
+	root.ClipsDescendants = true
+	root.Parent = mainInner
+	H.layoutBook()
 	local scroll = Instance.new("ScrollingFrame")
 	scroll.Position = UDim2.fromOffset(258, 62)
 	scroll.Size = UDim2.new(1, -266, 1, -70)
@@ -6764,9 +8715,11 @@ function openYardHall()
 	sl.SortOrder = Enum.SortOrder.LayoutOrder
 	sl.Parent = scroll
 	local lastScroll = 0
+	local zoomOpen = false
+	local page = "maintenance"
 
 	local function build()
-		if not layer.Parent or not view then
+		if not root.Parent or not view then
 			return
 		end
 		lastScroll = scroll.CanvasPosition.Y
@@ -6783,43 +8736,165 @@ function openYardHall()
 		local p, ship = view.player, view.ship
 		local width = root.AbsoluteSize.X
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
-		local showPortrait = width >= 760
-		local inset = if showPortrait then 258 else 10
-		local compactNav = not showPortrait
-		-- [조선소 모바일 길찾기] 다섯 목차 버튼을 3열×2행으로 배치하고 본문과 겹치지 않게 내린다.
-		scroll.Position = UDim2.fromOffset(inset, if compactNav then 172 else 128)
-		scroll.Size = UDim2.new(1, -inset - 8, 1, if compactNav then -180 else -136)
-		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 62), COLORS.paper)
-		corner(top, 6)
-		bookMaterial(top, "parchment", 220)
-		local title = mkLabel(top, "조선 도감 · " .. p.portName, 19, INK, true)
+		local showPortrait = width >= 1800
+		local inset = if showPortrait then 258 else 8
+		local landscape = width >= 740
+		local compactNav = not landscape
+		local availableH = math.max(300, root.AbsoluteSize.Y)
+		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
+		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
+		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
+		local heroTop = if landscape then 92 else 150
+		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.46) else width - inset - 8
+		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.24), 98, 172)
+		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + heroWidth + 16, heroTop)
+			else UDim2.fromOffset(inset, heroTop + heroHeight + 8)
+		scroll.Size = if landscape then UDim2.new(1, -inset - navWidth - heroWidth - 24, 1, -heroTop - 8)
+			else UDim2.new(1, -inset - 8, 1, -heroTop - heroHeight - 16)
+		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 74), COLORS.paper)
+        corner(top, 6)
+        bookMaterial(top, "parchment", 220)
+        local title = mkLabel(top, "조선 도감 · " .. p.portName, 19, INK, true)
 		title.Position = UDim2.fromOffset(12, 7)
 		title.Size = UDim2.new(1, -104, 0, 25)
 		title.AutomaticSize = Enum.AutomaticSize.None
 		title.TextTruncate = Enum.TextTruncate.AtEnd
-		local hold = mkLabel(top, string.format("소지금 %s · 기함 %s · 선체 %d/%d · 화물 %d/%d",
-			H.commas(p.coins), ship.name, ship.hull, ship.maxHull, ship.cargoUsed, ship.cargoCapacity), 14, INK_SOFT, false)
-		hold.Position = UDim2.fromOffset(12, 34)
-		hold.Size = UDim2.new(1, -100, 0, 20)
+		-- [조선소 상단] 기함 이름의 중복 표기를 빼고 자금·최근 메뉴를 나란히 둔다.
+		-- [조선소] 자금 표시 옆으로 최근 시설을 옮기고 교역소와 같은 간격으로 정렬한다.
+		local recent = H.recentTab
+		local showRecent = recent and TAB_NAME[recent] ~= nil and groupOf(recent) ~= groupOf("yard")
+		local recentWidth = if width < 380 then 78 elseif width < 740 then 94 else 132
+		local cashWidth = if width < 740 then math.max(100, math.min(260, width - (if showRecent then recentWidth + 44 else 40)))
+			else math.clamp(math.floor(width * 0.38), 230, 330)
+		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
+		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
+		local cashText = if width < 480 then "돈 " .. H.commas(p.coins)
+			else H.statusMoneyCargo(p, ship, width < 740)
+		local hold = mkLabel(top, cashText, if width < 480 then 14 else 17, INK_SOFT, true)
+		-- [조선소 자금] 교역소와 같은 황동 양피지 현판.
+        hold.BackgroundColor3 = PARCHMENT_TOP
+        hold.BackgroundTransparency = 0.08
+        corner(hold, 5)
+        local moneyEdge = Instance.new("UIStroke")
+        moneyEdge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        moneyEdge.Color = UI_BRASS_DARK
+        moneyEdge.Thickness = 1.4
+        moneyEdge.Parent = hold
+        hold.AnchorPoint = Vector2.zero
+        hold.Position = UDim2.fromOffset(groupX, 36)
+		hold.Size = UDim2.fromOffset(cashWidth, 34)
 		hold.AutomaticSize = Enum.AutomaticSize.None
 		hold.TextTruncate = Enum.TextTruncate.AtEnd
-		local leave = mkButton(top, "나가기", COLORS.leather, UDim2.fromOffset(78, 44), closeTradeHall, true)
+		hold.TextXAlignment = Enum.TextXAlignment.Center
+		hold.TextYAlignment = Enum.TextYAlignment.Center
+		if showRecent then
+			local recentBtn = mkButton(top, "← " .. groupOf(recent).name, COLORS.leather,
+				UDim2.fromOffset(recentWidth, 34), function()
+					closeTradeHall()
+					openTab(recent, if recent == "map" then "chart" else nil)
+				end, true)
+			recentBtn.Name = "YardRecentFacility"
+			recentBtn.Position = UDim2.fromOffset(groupX + cashWidth + 8, 36)
+			recentBtn.TextSize = if width < 480 then 13 else 15
+		end
+		local leave = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(78, 44), function()
+			closeTradeHall()
+			main.Visible = false
+			menuToggle.Visible = true
+		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
 		leave.Position = UDim2.new(1, -9, 0.5, 0)
+		-- [닫기 중복 제거] 시설 책 오른쪽 위 X가 이미 닫기를 맡는다.
+		leave.Visible = false
 
-		-- [조선소 항목 탐색] 기존 renderYard의 제목으로 바로 이동. 별도 메뉴/저장 구조를 만들지 않는다.
-		local nav = mkBox(root, UDim2.fromOffset(inset, 76), UDim2.new(1, -inset - 8, 0, if compactNav then 88 else 44), COLORS.leather)
-		local navColumns = if compactNav then 3 else 5
-		for i, entry in { { "내 배·정비", "YardSectionShip" }, { "선단", "YardSectionFleet" }, { "대포·보강", "YardSectionRefit" }, { "7대륙 설계", "YardSectionBlueprints" }, { "새 배 비교", "YardSectionShips" } } do
-			local btn0 = mkButton(nav, entry[1], COLORS.paper, UDim2.new(1 / navColumns, -6, 0, 40), function()
-				local target = scroll:FindFirstChild(entry[2])
-				if target then
-					scroll.CanvasPosition = Vector2.new(0, math.max(0, target.AbsolutePosition.Y - scroll.AbsolutePosition.Y + scroll.CanvasPosition.Y))
-				end
-			end, true)
-			btn0.Position = UDim2.new(((i - 1) % navColumns) / navColumns, 4, 0, 2 + math.floor((i - 1) / navColumns) * 44)
-			btn0.TextSize = 14
+		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90),
+			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 52), COLORS.leather)
+		for i, entry in { { "정비", "maintenance" }, { "선박 비교", "compare" }, { "지역 설계", "blueprints" } } do
+			local selected = page == entry[2]
+			local button = mkButton(nav, entry[1], if selected then COLORS.gold else COLORS.paper,
+				if landscape then UDim2.new(1, -8, 0, 52) else UDim2.new(1 / 3, -6, 0, 46), function()
+					if page == entry[2] then return end
+					page = entry[2]
+					scroll.CanvasPosition = Vector2.zero
+					build()
+				end, true)
+			button.Name = "YardTab_" .. entry[2]
+			button:SetAttribute("SelectedTab", selected)
+			if selected then
+				local activeRule = Instance.new("Frame")
+				activeRule.Name = "ActiveTabRule"
+				activeRule.BackgroundColor3 = INK
+				activeRule.BorderSizePixel = 0
+				activeRule.Position = UDim2.new(0, 8, 1, -5)
+				activeRule.Size = UDim2.new(1, -16, 0, 3)
+				activeRule.ZIndex = button.ZIndex + 3
+				activeRule.Parent = button
+			end
+			button.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56) else UDim2.new((i - 1) / 3, 4, 0, 3)
+			button.TextSize = 16
 		end
+		-- [선박 전시장] 기존 등록된 함종에만 적용, 함선 성능·구매 규칙 불변.
+		local preview = nil
+		H.shipPreviewId = H.shipPreviewId or ship.id
+		for _, candidate in (view.shipyard and view.shipyard.ships or {}) do
+			if candidate.id == H.shipPreviewId then preview = candidate; break end
+		end
+		if not preview then
+			for _, candidate in (view.shipyard and view.shipyard.ships or {}) do
+				if candidate.id == ship.id then preview = candidate; break end
+			end
+		end
+		if preview then H.shipPreviewId = preview.id end
+		local gallery = mkBox(root, UDim2.fromOffset(inset + (if landscape then navWidth + 8 else 0), heroTop),
+			UDim2.fromOffset(heroWidth, heroHeight), Color3.fromRGB(230, 209, 171))
+		gallery.Name = "YardShipGallery"
+		corner(gallery, 8)
+		bookMaterial(gallery, "parchment", 220)
+		local shipName = preview and preview.name or ship.name
+		local shipId = preview and preview.id or ship.id
+		local shipArt = SHIP_ICON[shipId]
+		-- [조선소 원화 카드] 기존 승인 선박 모델을 세로 7:10 슬롯에 맞춰 전시한다.
+		local availableArtH = math.max(44, heroHeight - 72)
+		local cardW = math.floor(math.max(34, math.min(heroWidth - 20, availableArtH * 0.7)))
+		local cardH = math.floor(cardW * 10 / 7)
+		local card = Instance.new("Frame")
+		card.Name = "YardShipCard7x10"
+		card.Size = UDim2.fromOffset(cardW, cardH)
+		card.AnchorPoint = Vector2.new(0.5, 0)
+		card.Position = UDim2.new(0.5, 0, 0, 7)
+		card.BackgroundTransparency = 1
+		card.ClipsDescendants = true
+		card.Parent = gallery
+		if shipArt then
+			local model = modelIcon(card, shipArt[1], shipArt[2], shipArt[3], math.max(cardW, 44), shipName)
+			model.Size = UDim2.fromScale(1, 1)
+			model.Position = UDim2.fromOffset(0, 0)
+			model.BackgroundTransparency = 1
+			local bookCard = nil
+			for _, item in ((view.codex and view.codex.cards) or {}) do
+				if item.found and item.name == shipName then bookCard = item; break end
+			end
+			local link = Instance.new("TextButton")
+			link.Name = "YardArtToCodex"
+			link.Size = UDim2.fromScale(1, 1)
+			link.BackgroundTransparency = 1
+			link.Text = ""
+			link.ZIndex = model.ZIndex + 1
+			link.Parent = card
+			link.Activated:Connect(function()
+				H.galleryBookOpenRequested = if bookCard then bookCard.id else "search:" .. shipName
+				openTab("codex")
+			end)
+		end
+		local label = mkLabel(gallery, shipName .. (if preview and preview.owned then " · 현재 기함" else ""), 21, INK, true)
+		label.Position = UDim2.new(0, 12, 1, -60)
+		label.Size = UDim2.new(1, -24, 0, 22)
+		label.AutomaticSize = Enum.AutomaticSize.None
+		label.TextTruncate = Enum.TextTruncate.AtEnd
+		label.TextXAlignment = Enum.TextXAlignment.Center
+		local inspect = mkButton(gallery, "선박 확대", COLORS.gold, UDim2.fromOffset(128, 44), function() zoomOpen = true; build() end, shipArt ~= nil)
+		inspect.AnchorPoint = Vector2.new(0.5, 1)
+		inspect.Position = UDim2.new(0.5, 0, 1, -5)
 		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
 		left.Visible = showPortrait
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
@@ -6876,12 +8951,31 @@ function openYardHall()
 		local saved, previousAdvice = content, H.contextAdviceShown
 		content = scroll
 		H.contextAdviceShown = false
-		local ok, err = pcall(renderYard)
+		H.yardHallActive = true
+		local ok, err = pcall(renderYard, page)
+		H.yardHallActive = false
 		content, H.contextAdviceShown = saved, previousAdvice
 		if not ok then
 			warn("[Game] 조선소 화면 오류", err)
 		end
 		scroll.CanvasPosition = Vector2.new(0, lastScroll)
+		if zoomOpen then
+			local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(35, 26, 19))
+			shade.ZIndex = 50
+			local px = math.floor(math.min(root.AbsoluteSize.X * 0.78, root.AbsoluteSize.Y * 0.76, 520))
+			if shipArt then
+				local art = modelIcon(shade, shipArt[1], shipArt[2], shipArt[3], px, shipName)
+				art.AnchorPoint = Vector2.new(0.5, 0.5)
+				art.Position = UDim2.fromScale(0.5, 0.5)
+			end
+			local title = mkLabel(shade, "선박 도감 · " .. shipName, 20, COLORS.paper, true)
+			title.Position = UDim2.fromOffset(12, 8)
+			title.Size = UDim2.new(1, -130, 0, 32)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			local done = mkButton(shade, "닫기", COLORS.gold, UDim2.fromOffset(94, 44), function() zoomOpen = false; build() end, true)
+			done.AnchorPoint = Vector2.new(1, 0)
+			done.Position = UDim2.new(1, -10, 0, 8)
+		end
 	end
 	local lastWidth
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -6912,6 +9006,18 @@ function H.startField(s)
 		return
 	end
 	workspace:SetAttribute("FieldEntryFailure", nil)
+    -- [지상 탐험 진입] 최초 탐험 때만 기존 필드 정본을 로드한다.
+    local sceneOk, loaded = pcall(function()
+        return FieldScene or require(Shared:WaitForChild("FieldScene"))
+    end)
+    if not sceneOk then
+        workspace:SetAttribute("FieldEntryFailure", "FIELD_MODULE_UNAVAILABLE")
+        warn("[MareEssentia] 지상 탐험 모듈 로드 실패", loaded)
+        message, messageOk = "지상 탐험을 준비하지 못했어.", false
+        render()
+        return
+    end
+    FieldScene = loaded
 	-- 필드 생성 오류가 나더라도 항구 시점·조작·기존 캐릭터 상태를 되돌릴 수 있게 보관한다.
 	local returnCharacter = player.Character
 	local returnCFrame = returnCharacter and returnCharacter:GetPivot()
@@ -6993,6 +9099,7 @@ function H.startField(s)
 		name = s.name,
 		portId = s.portId,
 		siteId = s.id, -- 기존 Sites의 지역·도감 후보를 탐험 시각 연출에 그대로 연결한다.
+		portScenery = PortScene and PortScene.Signatures and PortScene.Signatures[s.portId], -- 항구 경관 정본, 시각 전용
 		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
@@ -7292,7 +9399,7 @@ local function findField(id)
 end
 
 -- 카드 그림: 등록된 이미지가 표시될 때까지 분야 색과 이름을 보여준다.
-local function paintCardArt(parent, card, fieldDef, fitImage)
+local function paintCardArt(parent, card, fieldDef)
 	parent.ClipsDescendants = true
 	local base = if card.found then fieldColor(fieldDef) else Color3.fromRGB(46, 52, 64)
 	parent.BackgroundColor3 = base
@@ -7317,7 +9424,7 @@ local function paintCardArt(parent, card, fieldDef, fitImage)
 		local img = Instance.new("ImageLabel")
 		img.Size = UDim2.fromScale(1, 1)
 		img.BackgroundTransparency = 1
-		img.ScaleType = if fitImage then Enum.ScaleType.Fit else Enum.ScaleType.Crop
+		img.ScaleType = Enum.ScaleType.Fit
 		img.Image = card.image
 		img.Parent = parent
 		img:GetPropertyChangedSignal("IsLoaded"):Connect(function()
@@ -7438,18 +9545,26 @@ function H.showCardDetail(card)
 	end
 	mkLabel(body, fieldDef.name .. "  ·  " .. rarity, 14, brown, true, 0)
 	encHeading(card.name, 1).TextSize = 28
-	local art = Instance.new("Frame")
-	art.LayoutOrder = 2
+	-- [원화 자리] 세로 7:10 빈 틀. 등록된 원화가 없으면 분야 색 틀만 보이고, 원화가 생기면 그 자리에 들어간다.
+	local artRow = Instance.new("Frame")
+	artRow.LayoutOrder = 2
+	artRow.BackgroundTransparency = 1
 	local camera = workspace.CurrentCamera
 	local viewportHeight = if camera then camera.ViewportSize.Y else 600
-	art.Size = UDim2.new(1, -8, 0, math.clamp(math.floor(viewportHeight * 0.43), 140, 410))
+	local artH = math.clamp(math.floor(viewportHeight * 0.43), 140, 410)
+	artRow.Size = UDim2.new(1, -8, 0, artH)
+	artRow.Parent = body
+	local art = Instance.new("Frame")
+	art.AnchorPoint = Vector2.new(0.5, 0)
+	art.Position = UDim2.fromScale(0.5, 0)
+	art.Size = UDim2.fromOffset(math.floor(artH * 0.7), artH)
 	local artBorder = Instance.new("UIStroke")
 	artBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	artBorder.Color = brown
 	artBorder.Parent = art
 	corner(art, 5)
-	art.Parent = body
-	paintCardArt(art, card, fieldDef, true)
+	art.Parent = artRow
+	paintCardArt(art, card, fieldDef)
 
 	-- 강화 2단계부터 삽화가 움직인다 (천천히 확대·이동 + 반짝임)
 	local maxLevel = (view and view.codex and view.codex.maxLevel) or 3
@@ -7528,6 +9643,28 @@ function H.showCardDetail(card)
 		if card.relatedDisciplines and #card.relatedDisciplines > 0 then
 			mkLabel(body, "연관 학문: " .. table.concat(card.relatedDisciplines, " · "), 13, brown, false, 4)
 		end
+	end
+	-- [개인 탐험 백과] 원본 백과 정의와 내 최초 발견 경위를 구분해서 보여 준다.
+	if card.found then
+		local first = card.provenance
+		if first then
+			local notes = { "내 최초 발견: " .. (first.port or "위치 미상") .. " · 항해 " .. tostring(first.day or 0) .. "일째" }
+			table.insert(notes, "획득 방식: " .. (first.method or "발견"))
+			if first.site then table.insert(notes, "현장: " .. first.site) end
+			if first.person then table.insert(notes, "배운 인물: " .. first.person) end
+			if first.quest then table.insert(notes, "획득 퀘스트: " .. first.quest) end
+			if first.event then table.insert(notes, "관련 사건: " .. first.event) end
+			mkLabel(body, table.concat(notes, "\n"), 14, ink, true, 4)
+		else
+			mkLabel(body, "개인 발견 기록: 이전에 획득한 카드 · 당시 항구와 인물 정보 없음", 12, brown, false, 4)
+		end
+	end
+	-- [지식→후속 이야기] 카드 하나가 연속 퀘스트의 다음 원인이 된 경우만 표시한다.
+	if card.found and card.nextClue then
+		local clue = card.nextClue
+		mkLabel(body, "이 발견으로 열린 다음 이야기: " .. clue.quest
+			.. "\n다음 목적지: " .. (clue.port or "항해 지도 확인")
+			.. " · 단서: " .. (clue.source or "지역 탐험"), 14, ink, true, 4)
 	end
 	if card.found and card.entityType then
 		mkLabel(body, "백과 개체: " .. card.entityType, 13, brown, false, 4)
@@ -7634,6 +9771,113 @@ function H.showCardDetail(card)
 			mkLabel(body, "연결된 카드  " .. card.combat.origin, 13, brown, false, 7)
 		end
 	elseif card.found then
+		local wiki = require(Shared:WaitForChild("KnowledgeWiki")).Wiki[card.id]
+		if wiki then
+			-- [위키식 해설] 한 줄 요약 + 접는 섹션(첫 섹션만 펼침). 기존 본문은 아래에 그대로 둔다.
+			mkLabel(body, wiki.summary, 16, brown, true, 4)
+			for i, sec in wiki.sections do
+				local open = i == 1
+				local head = Instance.new("TextButton")
+				head.LayoutOrder = 40 + i * 2
+				head.Size = UDim2.new(1, -8, 0, 36)
+				head.BackgroundTransparency = 1
+				head.AutoButtonColor = false
+				head.TextXAlignment = Enum.TextXAlignment.Left
+				head.Font = Enum.Font.GothamBold
+				head.TextSize = 17
+				head.TextColor3 = ink
+				head.Parent = body
+				local txt = mkLabel(body, sec.body, 15, ink, false, 41 + i * 2)
+				txt.Visible = open
+				local function sync()
+					head.Text = (if txt.Visible then "▾ " else "▸ ") .. sec.title
+				end
+				sync()
+				head.Activated:Connect(function()
+					txt.Visible = not txt.Visible
+					sync()
+				end)
+			end
+			if wiki.quiz then
+				-- [읽기 퀴즈] 3문제를 모두 맞히면 카드당 한 번 보상. 정답·중복 판정은 서버가 한다.
+				local reward = require(Shared:WaitForChild("KnowledgeCards")).QuizReward
+				if card.quizDone then
+					mkLabel(body, "읽기 퀴즈 완료 · 보상을 받았어요", 14, brown, true, 56)
+				else
+					local quizHead = Instance.new("TextButton")
+					quizHead.LayoutOrder = 56
+					quizHead.Size = UDim2.new(1, -8, 0, 40)
+					quizHead.BackgroundColor3 = Color3.fromRGB(239, 202, 123)
+					quizHead.AutoButtonColor = true
+					quizHead.Font = Enum.Font.GothamBold
+					quizHead.TextSize = 16
+					quizHead.TextColor3 = ink
+					quizHead.TextWrapped = true
+					quizHead.Parent = body
+					corner(quizHead, 6)
+					local quizBox = Instance.new("Frame")
+					quizBox.LayoutOrder = 57
+					quizBox.BackgroundTransparency = 1
+					quizBox.Size = UDim2.new(1, -8, 0, 0)
+					quizBox.AutomaticSize = Enum.AutomaticSize.Y
+					quizBox.Visible = false
+					quizBox.Parent = body
+					local quizLay = Instance.new("UIListLayout")
+					quizLay.Padding = UDim.new(0, 5)
+					quizLay.SortOrder = Enum.SortOrder.LayoutOrder
+					quizLay.Parent = quizBox
+					local function syncQuizHead()
+						quizHead.Text = (if quizBox.Visible then "▾ " else "▸ ") .. string.format("읽기 퀴즈 (+%d코인 · 명성 +%d, 카드당 한 번)", reward.coins, reward.fame)
+					end
+					syncQuizHead()
+					quizHead.Activated:Connect(function()
+						quizBox.Visible = not quizBox.Visible
+						syncQuizHead()
+					end)
+					local picks = {}
+					local order = 0
+					for qi, q in wiki.quiz do
+						order += 1
+						mkLabel(quizBox, string.format("%d. %s", qi, q.q), 15, ink, true, order)
+						local optButtons = {}
+						for oi, optionText in q.options do
+							order += 1
+							local ob = mkButton(quizBox, optionText, COLORS.blue, UDim2.new(1, 0, 0, 34), function()
+								picks[qi] = oi
+								for k, other in optButtons do
+									other.BackgroundColor3 = if k == oi then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(232, 211, 174)
+								end
+							end, true)
+							ob.LayoutOrder = order
+							optButtons[oi] = ob
+						end
+					end
+					order += 1
+					local quizMsg = mkLabel(quizBox, "", 14, COLORS.red, true, order + 1)
+					local submit = mkButton(quizBox, "정답 제출", COLORS.gold, UDim2.new(1, 0, 0, 38), function()
+						local res = call("WikiQuiz", { id = card.id, answers = picks })
+						if res and res.ok and view and view.codex then
+							for _, c in view.codex.cards do
+								if c.id == card.id then
+									overlay:Destroy()
+									H.showCardDetail(c)
+									break
+								end
+							end
+						elseif res then
+							quizMsg.Text = res.message or "다시 도전해 보세요"
+						end
+					end, true)
+					submit.LayoutOrder = order
+				end
+			end
+			mkLabel(body, "해설 참고  위키백과 · " .. wiki.topic:gsub("_", " ") .. " (CC BY-SA 4.0)", 12, brown, false, 60)
+		end
+		-- [이야기 카드] 이 카드가 등장한 이야기를 끝내면 한 단락씩 열린다(가상의 이야기).
+		for li, lore in card.lore or {} do
+			mkLabel(body, "이야기 · " .. lore.title .. " (가상의 이야기)", 15, brown, true, 61 + li * 2)
+			mkLabel(body, lore.text, 15, ink, false, 62 + li * 2)
+		end
 		if article then
 			encHeading("특징과 원리", 5)
 			mkLabel(body, article.details, 15, ink, false, 6)
@@ -7653,6 +9897,13 @@ function H.showCardDetail(card)
 		end
 	else
 		mkLabel(body, "발견하면 이 항목의 삽화와 해설을 읽을 수 있어요.", 13, brown, false, 5)
+		-- [실루엣 힌트] 지상 탐험에서 어디서·어떻게 찾는지(대표 모양 매핑표)
+		local okDF, DFm = pcall(function() return require(Shared:WaitForChild("DiscoveryForms")) end)
+		local hintText = okDF and DFm and DFm.hint(card)
+		if hintText then
+			local hl = mkLabel(body, "실루엣 힌트 · " .. hintText, 13, brown, true, 6)
+			hl.Name = "CodexDiscoveryHint"
+		end
 	end
 
 	local replayScene = require(Shared:WaitForChild("WonderScenes")).Scenes[card.id]
@@ -7735,8 +9986,8 @@ function H.showCombatCard(unit, origin, skill)
 	})
 end
 
--- [카드 습득 화면] 도감/보상은 별도 정본으로 유지한다. 디버그 미리보기만 작은 비차단 알림으로 남긴다.
--- 첫 카드부터 자동 팝업·뒤집기·광선·팡파르·화면 암전은 재생하지 않는다.
+-- [카드 습득] 실제 서버 신규 발견 시 중앙 공개 → 등급별 금빛·효과음 → 이름 강조 → 서재 도크 귀속.
+-- 서버 보상·도감 저장은 그대로 사용하며 장면·전투 중에는 기존 대기열에서 안전하게 재생한다.
 local GAIN_COLOR = {
 	Common = Color3.fromRGB(190, 170, 130), Uncommon = Color3.fromRGB(110, 190, 120),
 	Rare = Color3.fromRGB(90, 150, 230), Epic = Color3.fromRGB(180, 110, 230),
@@ -7746,56 +9997,601 @@ local GAIN_RARITY = { Common = "흔함", Uncommon = "보통", Rare = "희귀", E
 
 function H.showCardGain(card, moreCount)
 	if not card then return end
-	-- [스튜디오 수동 미리보기] 카드 획득 자동 호출은 하지 않는다. 다른 화면의 터치를 가리지 않는다.
+	-- [카드 획득 · 메인] 기존 카드/도감 원화만 표시한다. 보상과 저장값에는 관여하지 않는다.
+	-- [모바일] 7:10 카드 비율, 비차단 알림, 등급별 가벼운 트윈 및 기존 SFX만 사용한다.
 	local pg = player:WaitForChild("PlayerGui")
 	local previous = pg:FindFirstChild("CardGain")
 	if previous then previous:Destroy() end
 	local g = overlayGui("CardGain", 95)
-	local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-	local badge = Instance.new("Frame")
-	badge.Name = "CardDiscoveryNotice"
-	badge.AnchorPoint = Vector2.new(0.5, 0)
-	badge.Position = UDim2.new(0.5, 0, 0, if vp.Y < 500 then 66 else 78)
-	badge.Size = UDim2.fromOffset(math.min(320, math.max(180, vp.X - 32)), 54)
-	badge.BackgroundColor3 = Color3.fromRGB(27, 35, 43)
-	badge.BackgroundTransparency = 0.08
-	badge.BorderSizePixel = 0
-	badge.Parent = g
-	corner(badge, 10)
-	local edge = Instance.new("UIStroke")
-	edge.Color = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
-	edge.Thickness = 1.5
-	edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	edge.Parent = badge
-	local title = Instance.new("TextLabel")
-	title.BackgroundTransparency = 1
-	title.Position = UDim2.fromOffset(12, 5)
-	title.Size = UDim2.new(1, -24, 0, 23)
-	title.Font = Enum.Font.GothamBold
-	title.TextSize = 15
-	title.TextXAlignment = Enum.TextXAlignment.Left
-	title.TextTruncate = Enum.TextTruncate.AtEnd
-	title.TextColor3 = Color3.fromRGB(246, 238, 221)
-	title.TextStrokeTransparency = 1
-	title.Text = tostring(card.name or "지식 카드")
-	title.Parent = badge
-	local detail = Instance.new("TextLabel")
-	detail.BackgroundTransparency = 1
-	detail.Position = UDim2.fromOffset(12, 29)
-	detail.Size = UDim2.new(1, -24, 0, 19)
-	detail.Font = Enum.Font.Gotham
-	detail.TextSize = 12
-	detail.TextXAlignment = Enum.TextXAlignment.Left
-	detail.TextTruncate = Enum.TextTruncate.AtEnd
-	detail.TextColor3 = Color3.fromRGB(189, 204, 214)
-	detail.TextStrokeTransparency = 1
-	detail.Text = "도감 등록 · " .. (GAIN_RARITY[card.rarity] or tostring(card.rarity or "일반"))
-	detail.Parent = badge
-	task.delay(3, function()
+	g:SetAttribute("NonBlockingCardNotice", true)
+	local TS = game:GetService("TweenService")
+	local isCombat = card.gainType == "combat"
+	local tone = GAIN_COLOR[card.rarity] or GAIN_COLOR.Common
+	local rarityLevel = ({ Common = 0, Uncommon = 1, Rare = 2, Epic = 3, Legendary = 4 })[card.rarity] or 0
+	local gold = Color3.fromRGB(255, 217, 124):Lerp(tone, if rarityLevel >= 2 then 0.22 else 0.5)
+	local viewport = if workspace.CurrentCamera then workspace.CurrentCamera.ViewportSize else Vector2.new(720, 900)
+	local revealHeight = math.floor(math.min(if rarityLevel >= 3 then 280 else 254, math.max(185, viewport.Y * 0.41)))
+	local revealWidth = math.floor(revealHeight * 0.7)
+	local center = UDim2.fromScale(0.5, 0.46)
+	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
+	-- [획득 연출] 유럽 원화의 동일 품질 검수 제외 규칙을 전투·도감과 똑같이 적용한다.
+	local excludedEuropeanArt = type(card.id) == "string"
+		and string.match(card.id, "^eu_%d%d$") ~= nil
+		and not require(Shared:WaitForChild("CardArt")).Art[card.id]
+	local imageId = if excludedEuropeanArt then nil else AssetIds["CardArt/" .. tostring(card.id)]
+	local artImage = if excludedEuropeanArt then "" elseif imageId then "rbxassetid://" .. tostring(imageId)
+		elseif type(card.image) == "string" and card.image ~= "" then card.image
+		elseif type(card.stageArt) == "string" and AssetIds[card.stageArt] then "rbxassetid://" .. tostring(AssetIds[card.stageArt])
+		else ""
+
+	-- [등급 광륜] 고급 이상일 때만 빛살을 추가한다. 텍스처·반복 루프·파츠를 만들지 않는다.
+	local rayCount = if rarityLevel >= 4 then 6 elseif rarityLevel >= 2 then 4 else 0
+	for i = 1, rayCount do
+		local ray = Instance.new("Frame")
+		ray.Name = "RarityRay"
+		ray.AnchorPoint = Vector2.new(0.5, 0.5)
+		ray.Position = center
+		ray.Size = UDim2.fromOffset(9, revealHeight * 0.45)
+		ray.Rotation = (i - 1) * 180 / rayCount
+		ray.BackgroundColor3 = gold
+		ray.BackgroundTransparency = 0.69
+		ray.BorderSizePixel = 0
+		ray.ZIndex = 5
+		ray.Parent = g
+		task.delay(0.38, function()
+			if ray.Parent then
+				TS:Create(ray, TweenInfo.new(0.78, Enum.EasingStyle.Quad), {
+					Size = UDim2.fromOffset(3, revealHeight * 1.48), BackgroundTransparency = 1,
+				}):Play()
+			end
+		end)
+	end
+
+	-- [발견 아우라] 책의 금박이 열릴 때 카드 뒤에서 번지는 부드러운 빛.
+	if not reducedMotion then
+		local bloom = Instance.new("Frame")
+		bloom.Name = "CardDiscoveryBloom"
+		bloom.AnchorPoint = Vector2.new(0.5, 0.5)
+		bloom.Position = center
+		bloom.Size = UDim2.fromOffset(48, 48)
+		bloom.BackgroundColor3 = gold
+		bloom.BackgroundTransparency = 0.66
+		bloom.BorderSizePixel = 0
+		bloom.ZIndex = 5
+		bloom.Parent = g
+		corner(bloom, 100)
+		TS:Create(bloom, TweenInfo.new(0.69, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Size = UDim2.fromOffset(math.floor(revealWidth * 1.8), math.floor(revealHeight * 1.75)),
+			BackgroundTransparency = 1,
+		}):Play()
+	end
+
+	local frame = Instance.new("Frame")
+	frame.Name = "AcquiredCardReveal"
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	frame.Position = center
+	frame.Size = UDim2.fromOffset(58, 83)
+	frame.BackgroundColor3 = Color3.fromRGB(234, 212, 166)
+	frame.BorderSizePixel = 0
+	frame.Rotation = -7
+	frame.ClipsDescendants = true
+	frame.ZIndex = 8
+	frame.Parent = g
+	corner(frame, 10)
+	local rim = Instance.new("UIStroke")
+	rim.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	rim.Color = gold
+	rim.Thickness = if rarityLevel >= 3 then 4 else 3
+	rim.Parent = frame
+	local paper = Instance.new("UIGradient")
+	paper.Color = ColorSequence.new(Color3.fromRGB(252, 238, 205), Color3.fromRGB(173, 136, 88))
+	paper.Rotation = 90
+	paper.Parent = frame
+	local art = Instance.new("ImageLabel")
+	art.Name = "ApprovedCardArt"
+	art.BackgroundTransparency = 1
+	art.Position = UDim2.fromOffset(8, 9)
+	art.Size = UDim2.new(1, -16, 1, -76)
+	art.Image = artImage
+	art.ImageTransparency = 1
+	art.ScaleType = Enum.ScaleType.Fit
+	art.ZIndex = 9
+	art.Parent = frame
+	if artImage == "" then
+		local missing = Instance.new("TextLabel")
+		missing.Name = "ArtworkPending"
+		missing.BackgroundTransparency = 1
+		missing.Position = art.Position
+		missing.Size = art.Size
+		missing.Font = Enum.Font.Antique
+		missing.TextColor3 = Color3.fromRGB(98, 75, 49)
+		missing.TextSize = 15
+		missing.TextWrapped = true
+		missing.Text = "원화 준비 중"
+		missing.ZIndex = 9
+		missing.Parent = frame
+	end
+	local name = Instance.new("TextLabel")
+	name.Name = "CardName"
+	name.BackgroundTransparency = 1
+	name.Position = UDim2.new(0, 6, 1, -61)
+	name.Size = UDim2.new(1, -12, 0, 31)
+	name.Font = Enum.Font.GothamBold
+	name.TextSize = 18
+	name.TextColor3 = Color3.fromRGB(52, 36, 24)
+	name.TextTruncate = Enum.TextTruncate.AtEnd
+	name.Text = tostring(card.name or "새 카드")
+	name.ZIndex = 9
+	name.Parent = frame
+	local rarity = Instance.new("TextLabel")
+	rarity.BackgroundTransparency = 1
+	rarity.Position = UDim2.new(0, 6, 1, -29)
+	rarity.Size = UDim2.new(1, -12, 0, 22)
+	rarity.Font = Enum.Font.GothamBold
+	rarity.TextSize = 13
+	rarity.TextColor3 = Color3.fromRGB(75, 54, 34)
+	rarity.Text = if isCombat then
+		(if card.isHero then "영웅 카드" elseif card.isSpecial then "특수 카드" else "전투 카드") .. " · 덱에 보관"
+		else (GAIN_RARITY[card.rarity] or "지식") .. " · 서재에 보관"
+	rarity.ZIndex = 9
+	rarity.Parent = frame
+	-- [금박 측면] 팽이 회전 시 세로 축으로 접혔다 펼쳐지는 두께와 반사광을 보이게 한다.
+	local foil = Instance.new("Frame")
+	foil.Name = "CardFoilEdge"
+	foil.AnchorPoint = Vector2.new(1, 0)
+	foil.Position = UDim2.fromScale(1, 0)
+	foil.Size = UDim2.new(0, 5, 1, 0)
+	foil.BackgroundColor3 = gold
+	foil.BackgroundTransparency = 0.58
+	foil.BorderSizePixel = 0
+	foil.ZIndex = 10
+	foil.Parent = frame
+
+	-- [봉인 해제] 황동 문장으로 뒷면을 먼저 보여 주고, 가로 축을 좁혔다 펴며 실제 원화를 드러낸다.
+	local seal = Instance.new("TextLabel")
+	seal.Name = "CardSeal"
+	seal.Size = UDim2.fromScale(1, 1)
+	seal.BackgroundColor3 = Color3.fromRGB(62, 47, 37)
+	seal.BorderSizePixel = 0
+	seal.Font = Enum.Font.Antique
+	seal.Text = "✦"
+	seal.TextSize = 60
+	seal.TextColor3 = gold
+	seal.ZIndex = 11
+	seal.Parent = frame
+	corner(seal, 10)
+	local sealGradient = Instance.new("UIGradient")
+	sealGradient.Color = ColorSequence.new(Color3.fromRGB(103, 72, 49), Color3.fromRGB(44, 39, 41))
+	sealGradient.Rotation = 35
+	sealGradient.Parent = seal
+
+	local spotlightName = Instance.new("TextLabel")
+	spotlightName.Name = "CardGainTitle"
+	spotlightName.AnchorPoint = Vector2.new(0.5, 0)
+	spotlightName.Position = UDim2.new(0.5, 0, 0.46, math.floor(revealHeight * 0.5) + 12)
+	spotlightName.Size = UDim2.new(0.88, 0, 0, 38)
+	spotlightName.BackgroundTransparency = 1
+	spotlightName.Font = Enum.Font.GothamBold
+	spotlightName.TextSize = if rarityLevel >= 2 then 25 else 22
+	spotlightName.TextColor3 = gold
+	spotlightName.TextStrokeColor3 = Color3.fromRGB(33, 25, 18)
+	spotlightName.TextStrokeTransparency = 0.74
+	spotlightName.TextWrapped = true
+	spotlightName.TextTruncate = Enum.TextTruncate.AtEnd
+	spotlightName.Text = tostring(card.name or "새 카드")
+	spotlightName.TextTransparency = 1
+	spotlightName.ZIndex = 12
+	spotlightName.Parent = g
+
+	local rings = {}
+	for i = 1, 2 + (if rarityLevel >= 3 then 2 elseif rarityLevel >= 2 then 1 else 0) do
+		local ring = Instance.new("Frame")
+		ring.Name = "DiscoveryHalo"
+		ring.AnchorPoint = Vector2.new(0.5, 0.5)
+		ring.Position = center
+		ring.Size = UDim2.fromOffset(85, 85)
+		ring.BackgroundTransparency = 1
+		ring.ZIndex = 6
+		ring.Parent = g
+		corner(ring, 100)
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = gold
+		stroke.Thickness = if i == 1 then 3.5 else 1.5
+		stroke.Transparency = 0.08
+		stroke.Parent = ring
+		table.insert(rings, { ring, stroke })
+	end
+	local caption = Instance.new("TextLabel")
+	caption.Name = "CardAcquired"
+	caption.AnchorPoint = Vector2.new(0.5, 0)
+	local captionY = -math.floor(revealHeight * 0.5) - 55
+	caption.Position = UDim2.new(0.5, 0, 0.46, captionY - 10)
+	caption.Size = UDim2.new(0.92, 0, 0, 36)
+	caption.BackgroundTransparency = 1
+	caption.Font = Enum.Font.GothamBold
+	caption.TextSize = 19
+	caption.TextColor3 = gold
+	caption.TextStrokeColor3 = Color3.fromRGB(18, 15, 12)
+	caption.TextStrokeTransparency = 0.82
+	local headline = if card.isDuplicate then "카드 추가 획득!" elseif isCombat then "새 전투 카드 획득!" else "새 지식 발견!"
+	caption.Text = if (moreCount or 0) > 0 then string.format("%s · 추가 %d장", headline, moreCount) else headline
+	caption.ZIndex = 10
+	caption.Parent = g
+
+	local sparkleCount = if viewport.X < 540 then 4 + rarityLevel * 2 else 6 + rarityLevel * 3
+	for i = 1, sparkleCount do
+		local angle = (i - 1) * math.pi * 2 / sparkleCount
+		local glint = Instance.new("TextLabel")
+		glint.Name = "CardSparkle"
+		glint.AnchorPoint = Vector2.new(0.5, 0.5)
+		glint.Position = center
+		glint.Size = UDim2.fromOffset(23, 23)
+		glint.BackgroundTransparency = 1
+		glint.Font = Enum.Font.GothamBold
+		glint.Text = "✦"
+		glint.TextSize = if i % 2 == 0 then 18 else 25
+		glint.TextColor3 = gold
+		glint.ZIndex = 7
+		glint.Parent = g
+		TS:Create(glint, TweenInfo.new(0.85, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+			Position = UDim2.new(0.5, math.cos(angle) * (110 + rarityLevel * 12), 0.46, math.sin(angle) * (94 + rarityLevel * 8)),
+			TextTransparency = 1,
+		}):Play()
+	end
+
+	-- [효과음] 기존 등록 음원만 사용하며 모바일에서 과도하게 중첩하지 않는다.
+	Sfx.play("sfx_card_deal", 0.35, 1.05, "sfx_book_turn")
+	if rarityLevel >= 2 then Sfx.play("sfx_card_coin", 0.5, 1 + rarityLevel * 0.035) end
+	if rarityLevel >= 3 then task.delay(0.48, Sfx.play, "sfx_fanfare", if rarityLevel == 4 then 0.64 else 0.35, 1.02) end
+	TS:Create(frame, TweenInfo.new(0.36, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+		Size = UDim2.fromOffset(revealWidth, revealHeight), Rotation = 0,
+	}):Play()
+	for i, pair in rings do
+		TS:Create(pair[1], TweenInfo.new(0.85 + i * 0.13, Enum.EasingStyle.Quart), {
+			Size = UDim2.fromOffset(190 + i * (32 + rarityLevel * 6), 190 + i * (32 + rarityLevel * 6)),
+		}):Play()
+		TS:Create(pair[2], TweenInfo.new(0.9 + i * 0.15), { Transparency = 1 }):Play()
+	end
+	TS:Create(caption, TweenInfo.new(0.47, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Position = UDim2.new(0.5, 0, 0.46, captionY),
+	}):Play()
+
+	task.delay(0.37, function()
+		if not frame.Parent then return end
+		TS:Create(frame, TweenInfo.new(0.13, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Size = UDim2.fromOffset(6, revealHeight),
+		}):Play()
+		task.delay(0.14, function()
+			if not frame.Parent then return end
+			seal:Destroy()
+			-- [공개 충격파] 카드가 펼쳐지는 바로 그 순간 황동 문장 파편이 튀고 한 번 크게 울린다.
+			Sfx.play("sfx_card_page", 0.26, 1.13, "sfx_book_turn")
+			if rarityLevel == 2 then task.delay(0.11, Sfx.play, "sfx_bell", 0.24, 1.12) end
+			if not reducedMotion then
+				local impact = Instance.new("Frame")
+				impact.Name = "CardSealShockwave"
+				impact.AnchorPoint = Vector2.new(0.5, 0.5)
+				impact.Position = center
+				impact.Size = UDim2.fromOffset(32, 32)
+				impact.BackgroundTransparency = 1
+				impact.ZIndex = 7
+				impact.Parent = g
+				corner(impact, 100)
+				local outline = Instance.new("UIStroke")
+				outline.Color = gold
+				outline.Thickness = if rarityLevel >= 3 then 4 else 2.5
+				outline.Transparency = 0.12
+				outline.Parent = impact
+				TS:Create(impact, TweenInfo.new(0.52, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+					Size = UDim2.fromOffset(math.floor(revealHeight * 1.5), math.floor(revealHeight * 1.5)),
+				}):Play()
+				TS:Create(outline, TweenInfo.new(0.52), { Transparency = 1 }):Play()
+				local fragments = (if viewport.X < 540 then 5 else 8) + (if rarityLevel >= 3 then 3 else 0)
+				for i = 1, fragments do
+					local shard = Instance.new("TextLabel")
+					shard.Name = "CardSealFragment"
+					shard.AnchorPoint = Vector2.new(0.5, 0.5)
+					shard.Position = center
+					shard.Size = UDim2.fromOffset(17, 17)
+					shard.BackgroundTransparency = 1
+					shard.Text = "✦"
+					shard.Font = Enum.Font.GothamBold
+					shard.TextSize = if i % 2 == 0 then 14 else 20
+					shard.TextColor3 = gold
+					shard.ZIndex = 10
+					shard.Parent = g
+					local angle = i * math.pi * 2 / fragments
+					TS:Create(shard, TweenInfo.new(0.52, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						Position = UDim2.new(center.X.Scale, math.cos(angle) * (86 + rarityLevel * 9),
+							center.Y.Scale, math.sin(angle) * (110 + rarityLevel * 12)),
+						Rotation = math.deg(angle) + 90,
+						TextTransparency = 1,
+					}):Play()
+				end
+			end
+			TS:Create(frame, TweenInfo.new(0.27, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+				Size = UDim2.fromOffset(revealWidth, revealHeight),
+			}):Play()
+			TS:Create(art, TweenInfo.new(0.25), { ImageTransparency = 0 }):Play()
+			TS:Create(spotlightName, TweenInfo.new(0.28), { TextTransparency = 0 }):Play()
+			local sheen = Instance.new("Frame")
+			sheen.Name = "CardLightSweep"
+			sheen.Position = UDim2.fromOffset(-36, 0)
+			sheen.Size = UDim2.new(0, 23, 1, 0)
+			sheen.Rotation = 13
+			sheen.BorderSizePixel = 0
+			sheen.BackgroundColor3 = Color3.fromRGB(255, 249, 221)
+			sheen.BackgroundTransparency = 0.69
+			sheen.ZIndex = 10
+			sheen.Parent = frame
+			TS:Create(sheen, TweenInfo.new(0.48, Enum.EasingStyle.Quad), {
+				Position = UDim2.new(1, 36, 0, 0), BackgroundTransparency = 1,
+			}):Play()
+			-- [공개 무게감] 가볍게 부풀었다가 정규 7:10 비율로 정확히 돌아오는 한 박자.
+			if not reducedMotion then
+				task.delay(0.22, function()
+					if not frame.Parent then return end
+					TS:Create(frame, TweenInfo.new(0.12, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+						Size = UDim2.fromOffset(math.floor(revealWidth * 1.07), math.floor(revealHeight * 1.07)),
+					}):Play()
+					task.delay(0.13, function()
+						if frame.Parent then
+							TS:Create(frame, TweenInfo.new(0.19, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+								Size = UDim2.fromOffset(revealWidth, revealHeight),
+							}):Play()
+						end
+					end)
+				end)
+			end
+		end)
+	end)
+	-- [팽이 수납 · 메인] 원화 공개 후 가속 회전·곡선 축소·잔상을 거쳐 기존 서재/내 카드 버튼으로 흡수한다.
+	-- 별도 UI 시스템·음원·저장 경로를 만들지 않으며, 움직임 감소 설정과 모바일 도크 스크롤을 존중한다.
+	task.delay(1.43, function()
+		if not g.Parent or not frame.Parent then return end
+		local icon = if isCombat then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and H.dockButtons.codex
+		local canTarget = icon and icon.Parent and icon.Visible and hudTopGui.Enabled and icon.AbsoluteSize.X > 0
+		-- [모바일 서재] 가로 도크에 가려진 서재 버튼은 기존 스크롤만 움직여 수납 목적지를 보여 준다.
+		if canTarget and not isCombat and icon:IsDescendantOf(dock) then
+			local left = dock.AbsolutePosition.X
+			local right = left + dock.AbsoluteSize.X
+			local iconX = icon.AbsolutePosition.X + icon.AbsoluteSize.X * 0.5
+			if iconX < left + 22 or iconX > right - 22 then
+				local maxScroll = math.max(0, dock.AbsoluteCanvasSize.X - dock.AbsoluteSize.X)
+				local desired = math.clamp(dock.CanvasPosition.X + iconX - (left + dock.AbsoluteSize.X * 0.68), 0, maxScroll)
+				TS:Create(dock, TweenInfo.new(0.26, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					CanvasPosition = Vector2.new(desired, dock.CanvasPosition.Y),
+				}):Play()
+			end
+		end
+
+		local startPoint = Vector2.new(viewport.X * center.X.Scale, viewport.Y * center.Y.Scale)
+		local fallbackPoint = Vector2.new(viewport.X - 44, 70)
+		local revolutions = if rarityLevel >= 4 then 4 elseif rarityLevel >= 3 then 3.5
+			elseif rarityLevel >= 2 then 3 else 2.5
+		local trails, ribbons, orbit = {}, {}, {}
+		if not reducedMotion then
+			-- [빛 궤적] 카드 바퀴 뒤에서 길게 휘어지는 황동빛 선과 주변의 작은 마법 문장.
+			for i = 1, if viewport.X < 540 then 2 else 3 do
+				local ribbon = Instance.new("Frame")
+				ribbon.Name = "CardArchiveLightRibbon"
+				ribbon.AnchorPoint = Vector2.new(0.5, 0.5)
+				ribbon.Position = center
+				ribbon.Size = UDim2.fromOffset(2, 3)
+				ribbon.BackgroundColor3 = gold
+				ribbon.BackgroundTransparency = 1
+				ribbon.BorderSizePixel = 0
+				ribbon.ZIndex = 6
+				ribbon.Parent = g
+				corner(ribbon, 100)
+				table.insert(ribbons, ribbon)
+			end
+			local motes = if viewport.X < 540 then (if rarityLevel >= 3 then 5 else 3)
+				else (if rarityLevel >= 3 then 7 else 5)
+			for i = 1, motes do
+				local light = Instance.new("TextLabel")
+				light.Name = "CardArchiveOrbit"
+				light.AnchorPoint = Vector2.new(0.5, 0.5)
+				light.Position = center
+				light.Size = UDim2.fromOffset(20, 20)
+				light.BackgroundTransparency = 1
+				light.Font = Enum.Font.GothamBold
+				light.Text = "✦"
+				light.TextSize = if i % 2 == 0 then 12 else 18
+				light.TextColor3 = gold
+				light.ZIndex = 10
+				light.Parent = g
+				table.insert(orbit, light)
+			end
+			for i = 1, if viewport.X < 540 then 2 else 3 do
+				local ghost = Instance.new("Frame")
+				ghost.Name = "CardSpinAfterimage"
+				ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+				ghost.Position = center
+				ghost.Size = UDim2.fromOffset(revealWidth, revealHeight)
+				ghost.BackgroundTransparency = 1
+				ghost.ZIndex = 7
+				ghost.Parent = g
+				corner(ghost, 8)
+				local outline = Instance.new("UIStroke")
+				outline.Color = gold
+				outline.Thickness = if rarityLevel >= 3 then 2.5 else 1.7
+				outline.Transparency = 0.55 + i * 0.11
+				outline.Parent = ghost
+				table.insert(trails, { ghost, outline })
+			end
+		end
+		Sfx.play("sfx_card_swing", 0.31, 1.14, "sfx_card_deal")
+		TS:Create(caption, TweenInfo.new(0.32), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		TS:Create(spotlightName, TweenInfo.new(0.3), { TextTransparency = 1 }):Play()
+
+		local progress = Instance.new("NumberValue")
+		progress.Name = "CardArchiveProgress"
+		progress.Parent = g
+		local changed = progress.Changed:Connect(function(value)
+			if not g.Parent or not frame.Parent then return end
+			local t = math.clamp(value, 0, 1)
+			-- 도크가 펼쳐지거나 스크롤되는 동안에도 버튼의 실제 화면 좌표를 매 프레임 따라간다.
+			local target = fallbackPoint
+			if canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
+				target = icon.AbsolutePosition + icon.AbsoluteSize * 0.5
+			end
+			local bend = math.min(86, viewport.Y * 0.13)
+			local control = Vector2.new(
+				startPoint.X + (target.X - startPoint.X) * 0.40,
+				math.min(startPoint.Y, target.Y) - bend)
+			local current = if reducedMotion then startPoint:Lerp(target, t)
+				else startPoint * ((1 - t) ^ 2) + control * (2 * (1 - t) * t) + target * (t ^ 2)
+			local spin = if reducedMotion then 0 else revolutions * 360 * t
+			local scale = math.max(0.035, (1 - t) ^ 1.35)
+			local widthRipple = if reducedMotion then 1 else 0.74 + 0.26 * math.abs(math.cos(math.rad(spin)))
+			frame.Position = UDim2.fromOffset(current.X, current.Y)
+			frame.Size = UDim2.fromOffset(
+				math.max(2, math.floor(revealWidth * scale * widthRipple)),
+				math.max(3, math.floor(revealHeight * scale)))
+			frame.Rotation = spin
+			paper.Rotation = 90 + spin * 0.15
+			foil.Size = UDim2.new(0, math.max(2, math.floor(5 + (1 - widthRipple) * 26)), 1, 0)
+			foil.BackgroundTransparency = math.clamp(0.34 + t * 0.65, 0, 1)
+			frame.BackgroundTransparency = math.clamp((t - 0.72) / 0.28, 0, 1)
+			art.ImageTransparency = math.clamp((t - 0.74) / 0.26, 0, 1)
+			rim.Transparency = math.clamp((t - 0.70) / 0.30, 0, 1)
+			name.TextTransparency = math.clamp((t - 0.36) / 0.42, 0, 1)
+			rarity.TextTransparency = name.TextTransparency
+			for i, light in orbit do
+				local angle = (i - 1) * math.pi * 2 / #orbit + math.rad(spin * 1.35)
+				local radius = math.max(4, revealWidth * scale * 0.69)
+				light.Position = UDim2.fromOffset(
+					current.X + math.cos(angle) * radius,
+					current.Y + math.sin(angle) * radius * 1.18)
+				light.Rotation = spin * 0.62
+				light.TextTransparency = math.clamp(0.15 + t * 0.74, 0, 1)
+			end
+			for i, ribbon in ribbons do
+				local a = math.max(0, t - (i - 1) * 0.046)
+				local b = math.max(0, t - i * 0.046)
+				local pa = startPoint * ((1 - a) ^ 2) + control * (2 * (1 - a) * a) + target * (a ^ 2)
+				local pb = startPoint * ((1 - b) ^ 2) + control * (2 * (1 - b) * b) + target * (b ^ 2)
+				local delta = pa - pb
+				ribbon.Position = UDim2.fromOffset((pa.X + pb.X) * 0.5, (pa.Y + pb.Y) * 0.5)
+				ribbon.Size = UDim2.fromOffset(math.max(1, delta.Magnitude), math.max(1, 6 - i))
+				ribbon.Rotation = math.deg(math.atan2(delta.Y, delta.X))
+				ribbon.BackgroundTransparency = if a <= b then 1 else math.clamp(0.28 + i * 0.13 + t * 0.25, 0, 1)
+			end
+			for i, pair in trails do
+				local lag = math.max(0, t - i * 0.09)
+				local echoPos = startPoint * ((1 - lag) ^ 2) + control * (2 * (1 - lag) * lag) + target * (lag ^ 2)
+				pair[1].Position = UDim2.fromOffset(echoPos.X, echoPos.Y)
+				pair[1].Size = UDim2.fromOffset(
+					math.max(2, math.floor(revealWidth * (1 - lag) ^ 1.35)),
+					math.max(3, math.floor(revealHeight * (1 - lag) ^ 1.35)))
+				pair[1].Rotation = revolutions * 360 * lag - i * 13
+				pair[2].Transparency = math.clamp(0.55 + i * 0.11 + t * 0.20, 0, 1)
+			end
+		end)
+		local flight = TS:Create(progress, TweenInfo.new(
+			if reducedMotion then 0.38 else 0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Value = 1 })
+		flight.Completed:Once(function()
+			changed:Disconnect()
+			progress:Destroy()
+			if not g.Parent then return end
+			frame.Visible = false
+			for _, pair in trails do pair[1]:Destroy() end
+			for _, ribbon in ribbons do ribbon:Destroy() end
+			for _, light in orbit do light:Destroy() end
+			local landed = fallbackPoint
+			if canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
+				landed = icon.AbsolutePosition + icon.AbsoluteSize * 0.5
+			end
+			-- [수납 완료] 기존 등록 책장/카드장 효과음과 아이콘 위 황동 파동 1회.
+			Sfx.play(if isCombat then "sfx_card_page" else "sfx_book_turn", 0.30, 1.08, "sfx_book_turn")
+			task.delay(0.07, Sfx.play, "sfx_quest_book_close", 0.22, 1.15, "sfx_click")
+			local pulse = Instance.new("Frame")
+			pulse.Name = "CardArchivePulse"
+			pulse.AnchorPoint = Vector2.new(0.5, 0.5)
+			pulse.Position = UDim2.fromOffset(landed.X, landed.Y)
+			pulse.Size = UDim2.fromOffset(20, 20)
+			pulse.BackgroundTransparency = 1
+			pulse.ZIndex = 13
+			pulse.Parent = g
+			corner(pulse, 100)
+			local pulseStroke = Instance.new("UIStroke")
+			pulseStroke.Color = gold
+			pulseStroke.Thickness = if rarityLevel >= 3 then 3.5 else 2.5
+			pulseStroke.Transparency = 0.08
+			pulseStroke.Parent = pulse
+			TS:Create(pulse, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Size = UDim2.fromOffset(if rarityLevel >= 3 then 96 else 78, if rarityLevel >= 3 then 96 else 78),
+			}):Play()
+			TS:Create(pulseStroke, TweenInfo.new(0.28), { Transparency = 1 }):Play()
+			-- [수납 착지] 기존 메뉴 아이콘이 짧게 숨을 쉬고 작은 기록 문구와 빛점이 남는다.
+			if not reducedMotion and canTarget and icon.Parent and icon.Visible and hudTopGui.Enabled then
+				local bounce = Instance.new("UIScale")
+				bounce.Name = "CardArchiveIconBounce"
+				bounce.Scale = 0.94
+				bounce.Parent = icon
+				TS:Create(bounce, TweenInfo.new(0.17, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+					Scale = 1.16,
+				}):Play()
+				task.delay(0.18, function()
+					if bounce.Parent then
+						TS:Create(bounce, TweenInfo.new(0.2, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
+					end
+				end)
+				task.delay(0.45, function()
+					if bounce.Parent then bounce:Destroy() end
+				end)
+			end
+			if not reducedMotion then
+				for i = 1, if rarityLevel >= 3 then 6 else 3 do
+					local spark = Instance.new("TextLabel")
+					spark.Name = "CardArchiveLandingSpark"
+					spark.AnchorPoint = Vector2.new(0.5, 0.5)
+					spark.Position = UDim2.fromOffset(landed.X, landed.Y)
+					spark.Size = UDim2.fromOffset(16, 16)
+					spark.BackgroundTransparency = 1
+					spark.Text = "✦"
+					spark.Font = Enum.Font.GothamBold
+					spark.TextSize = 16
+					spark.TextColor3 = gold
+					spark.ZIndex = 14
+					spark.Parent = g
+					local angle = (i - 1) * math.pi * 2 / (if rarityLevel >= 3 then 6 else 3)
+					TS:Create(spark, TweenInfo.new(0.42, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+						Position = UDim2.fromOffset(landed.X + math.cos(angle) * 42, landed.Y + math.sin(angle) * 42),
+						TextTransparency = 1,
+					}):Play()
+				end
+			end
+			local stamp = Instance.new("TextLabel")
+			stamp.Name = "CardArchivedConfirmation"
+			stamp.AnchorPoint = Vector2.new(0.5, 0)
+			stamp.Position = UDim2.fromOffset(math.clamp(landed.X, 100, viewport.X - 100), landed.Y + 29)
+			stamp.Size = UDim2.fromOffset(190, 28)
+			stamp.BackgroundColor3 = Color3.fromRGB(60, 44, 34)
+			stamp.BackgroundTransparency = 0.12
+			stamp.BorderSizePixel = 0
+			stamp.Font = Enum.Font.GothamBold
+			stamp.TextSize = 14
+			stamp.TextColor3 = gold
+			stamp.Text = if isCombat then "✦ 내 카드에 기록됨" else "✦ 서재에 기록됨"
+			stamp.TextTransparency = 1
+			stamp.ZIndex = 15
+			stamp.Parent = g
+			corner(stamp, 8)
+			TS:Create(stamp, TweenInfo.new(0.14), { TextTransparency = 0 }):Play()
+			task.delay(0.45, function()
+				if stamp.Parent then
+					TS:Create(stamp, TweenInfo.new(0.20), { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
+				end
+			end)
+		end)
+		flight:Play()
+	end)
+	task.delay(3.04, function()
 		if g.Parent then g:Destroy() end
 	end)
 end
-
 -- 개발 확인용: workspace 속성 DevSail 에 항구 id 를 넣으면 그 항구로 출항 연출을 보여 준다
 workspace:GetAttributeChangedSignal("DevSail"):Connect(function()
 	local id = workspace:GetAttribute("DevSail")
@@ -7857,6 +10653,8 @@ do
 						id = "quest_" .. tostring(sc.name), title = tostring(sc.name),
 						chapter = if isChron then string.format("%d년 · 역사의 현장", sc.year or 0) elseif isStart then "새 이야기" else "이야기의 끝",
 						npc = if isChron then tostring(sc.npc or "학자") elseif isStart then "의뢰인" else "일지", art = if isChron then tostring(sc.art or "library") else "tavern",
+						-- [연출씬] 목적지 항로·분위기·길이·수락 도장
+						portId = sc.portId, mood = sc.mood, long = sc.long == true, questKind = sc.kind,
 						lines = if isChron then sc.lines else sentences(tostring(sc.text or "")),
 						choices = { { text = if isChron then "기록을 마친다" elseif isStart then "알겠다, 맡아 보자" else "마음에 새긴다", index = 1 } },
 						submit = function()
@@ -7883,33 +10681,46 @@ end
 
 -- 개발 확인용: workspace 속성 DevStory 에 이벤트 id 를 넣으면 그 이야기 장면을 바로 보여 준다(선택해도 저장되지 않는 미리보기)
 workspace:GetAttributeChangedSignal("DevStory"):Connect(function()
+	if not game:GetService("RunService"):IsStudio() then return end
 	local id = workspace:GetAttribute("DevStory")
 	if type(id) == "string" and id ~= "" and view then
 		task.spawn(function()
 			local ev = require(Shared:WaitForChild("Story")).ById[id]
 			if ev then
-				pcall(playStory, ev)
+				-- [Studio 이야기 촬영] 원본 장면·선택지는 유지하고 미리보기에서 서버 선택/보상 호출만 차단한다.
+				local preview = table.clone(ev)
+				preview.submit = function()
+					return { ok = false, message = "촬영 미리보기: 선택은 저장하지 않아요." }
+				end
+				local ok, err = pcall(playStory, preview)
+				if not ok then warn("[Game] 이야기 촬영 오류:", err) end
 			end
 		end)
 	end
 end)
 
--- 개발 확인용: workspace 속성 DevTradeHall 를 켜면 교역소 화면을 연다
+-- 개발 확인용: 별도 큰 창 대신 현재 교역소의 방문 화면을 연다.
 workspace:GetAttributeChangedSignal("DevTradeHall"):Connect(function()
 	if workspace:GetAttribute("DevTradeHall") and view then
-		openTradeHall()
+		openTab("trade")
 	end
 end)
 
 -- 개발 확인용: workspace 속성 DevCardGain 에 카드 id 를 넣으면 그 카드의 습득 연출을 보여 준다
 workspace:GetAttributeChangedSignal("DevCardGain"):Connect(function()
 	local id = workspace:GetAttribute("DevCardGain")
-	if type(id) ~= "string" or id == "" or not (view and view.codex) then return end
-	for _, c in view.codex.cards do
+	if type(id) ~= "string" or id == "" or not view then return end
+	for _, c in (view.codex and view.codex.cards or {}) do
 		if c.id == id then
 			H.showCardGain(if c.found then c else { id = c.id, name = c.name ~= "???" and c.name or id, field = c.field, rarity = c.rarity, description = c.description, found = true }, 0)
-			break
+			return
 		end
+	end
+	local CB = require(Shared:WaitForChild("CardBook"))
+	local def = CB.def(id)
+	if def then
+		H.showCardGain({ id = id, name = def.name, rarity = if def.hero then "Legendary" else "Common",
+			gainType = "combat", isHero = def.hero == true, isSpecial = CB.isSpecial(id), stageArt = def.stage and def.stage.art }, 0)
 	end
 end)
 
@@ -7917,15 +10728,78 @@ end)
 -- 강제 전면 이벤트/사운드/클릭 대기는 없으며, 도감과 덱 상세 기능은 그대로 이용할 수 있다.
 function H.checkNewCards()
 	local cards = view and view.codex and view.codex.cards
-	if not cards then return end
-	H.seenCards = H.seenCards or {}
-	for _, c in cards do
-		if c.found and not H.seenCards[c.id] then
-			H.seenCards[c.id] = true
+	local owned = view and view.cardbook and view.cardbook.owned
+	if not cards and type(owned) ~= "table" then return end
+	-- [저장 보호] 최초 서버 스냅샷은 양쪽 컬렉션의 기준선으로만 삼아 재접속 중복 연출을 막는다.
+	local acquired, gainedIds = {}, {}
+	if cards then
+		local firstKnowledgeSnapshot = H.seenCards == nil
+		H.seenCards = H.seenCards or {}
+		for _, c in cards do
+			if c.found and not H.seenCards[c.id] then
+				H.seenCards[c.id] = true
+				if not firstKnowledgeSnapshot then
+					table.insert(acquired, { card = c, extra = 0 })
+					gainedIds[c.id] = true
+				end
+			end
 		end
 	end
+	-- [전투 카드] 서버가 실제로 늘려 준 보유 수만 감지한다. 지식카드와 같은 ID는 이중 표시하지 않는다.
+	-- 이미 있던 카드의 추가 1장도 획득으로 표시하되, 강화 등 수량 감소로는 연출하지 않는다.
+	if type(owned) == "table" then
+		local firstCombatSnapshot = H.seenCombatCards == nil
+		local oldOwned = H.seenCombatCards or {}
+		if not firstCombatSnapshot then
+			local CB = require(Shared:WaitForChild("CardBook"))
+			for id, amount in owned do
+				if type(id) == "string" and type(amount) == "number" and amount > (oldOwned[id] or 0)
+					and not gainedIds[id] then
+					local def = CB.def(id)
+					if def then
+						local oldCount = oldOwned[id] or 0
+						table.insert(acquired, {
+							card = {
+								id = id, name = def.name,
+								rarity = if def.hero then "Legendary" else "Common",
+								gainType = "combat", isHero = def.hero == true,
+								isSpecial = CB.isSpecial(id),
+								isDuplicate = oldCount > 0,
+								stageArt = def.stage and def.stage.art,
+							},
+							extra = math.max(0, amount - oldCount - 1),
+						})
+						gainedIds[id] = true
+					end
+				end
+			end
+		end
+		H.seenCombatCards = table.clone(owned)
+	end
+	if #acquired == 0 then return end
+	-- [단일 연출 큐] 퀘스트/전투/카드선택 중 끼어들지 않고, 획득순으로 비차단 표시한다.
+	H.cardGainQueue = H.cardGainQueue or {}
+	for _, entry in acquired do
+		table.insert(H.cardGainQueue, entry)
+	end
+	if H.cardGainPlaying then return end
+	H.cardGainPlaying = true
+	task.spawn(function()
+		while #H.cardGainQueue > 0 and player.Parent do
+			local pg = player:WaitForChild("PlayerGui")
+			while player.Parent and (newGameMode or inField or sceneHold or H.sceneBusy
+				or H.questScenesPlaying or pg:FindFirstChild("StoryScene", true)
+				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)) do
+				task.wait(0.2)
+			end
+			if not player.Parent then break end
+			local found = table.remove(H.cardGainQueue, 1)
+			H.showCardGain(found.card, found.extra)
+			task.wait(3.14)
+		end
+		H.cardGainPlaying = false
+	end)
 end
-
 local function tierRows(list: { any }, scope: string, labelFmt: string)
 	for _, t in list do
 		add(function()
@@ -7982,30 +10856,50 @@ local function renderCodexOverview()
 		return cover
 	end)
 
+	-- [지식 백과] 기존 도감에서 백과사전 양장본으로 연결한다.
 	add(function()
-		local row = mkRow(content, "접현 전투 카드", "병종·영웅·특수 카드의 위력과 효과", {
-			{ text = "열기", color = COLORS.blue, onClick = function() codexField = "boarding"; render() end },
+		return mkRow(content, "대항해 지식 대백과", "대표 삽화 1장 · 역사 해설 · 관련 지식 · 책갈피", {
+			{ text = "책 펼치기", color = COLORS.gold, onClick = function()
+				codexField = "book"
+				render()
+			end },
+		}, 76)
+	end)
+	-- [서재 빠른 길] 긴 설명 카드 대신 네 가지 목적지를 손가락 두 번 이내에 연다.
+	add(function()
+		local quick = Instance.new("Frame")
+		quick.Name = "CodexQuickNavigation"
+		quick.BackgroundTransparency = 1
+		local compact = content.AbsoluteSize.X < 600
+		quick.Size = UDim2.new(1, -6, 0, if compact then 122 else 56)
+		local layout = Instance.new("UIGridLayout")
+		layout.CellSize = UDim2.new(if compact then 0.5 else 0.25, -6, 0, 54)
+		layout.CellPadding = UDim2.fromOffset(6, 6)
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+		layout.Parent = quick
+		for index, action in {
+			{ "이름 검색", "search" },
+			{ "자원 도감", "r:all" },
+			{ "14개 주제", "o:all" },
+			{ "근거 보기", "e:all" },
+		} do
+			local button = mkButton(quick, action[1], if index == 1 then COLORS.gold else COLORS.blue,
+				UDim2.new(), function()
+					codexField = action[2]
+					H.tradeBookGood = nil
+					render()
+				end, true)
+			button.LayoutOrder = index
+		end
+		return quick
+	end)
+	add(function() return mkHeader(content, "지식 탐색 · 7개 영역") end)
+	add(function()
+		local row = mkRow(content, "접현 전투 카드", "병종·영웅·특수 카드 효과", {
+			{ text = "카드 보기", color = COLORS.blue, onClick = function() codexField = "boarding"; render() end },
 		}, 60)
 		withIcon(row, "Menu", "battle", nil, 44)
 		return row
-	end)
-	-- [지구·인류 오브젝트] 기존 7개 세계 영역·42종 소재와 독립된 백과 14대 주제를 제공한다.
-	add(function() return mkHeader(content, "지구·인류 전체 오브젝트") end)
-	add(function()
-		return mkRow(content, "백과 통합 검색", "카드 이름·별칭·소재 태그·학문을 한곳에서 찾기", {
-			{ text = "검색", color = COLORS.blue, onClick = function() codexField = "search"; render() end },
-		}, 54)
-	end)
-	-- [모바일 백과] 한 번 탭해 14대 주제를 연다. 기존 7대 세계 분류·학문/소재 탐색은 유지.
-	add(function()
-		return mkRow(content, "세계 백과 · 14대 주제", "인물·국가·역사·경제부터 우주·수학까지", {
-			{ text = "주제별 보기", color = COLORS.blue, onClick = function() codexField = "o:all"; render() end },
-		}, 54)
-	end)
-	add(function()
-		return mkRow(content, "사실·가설·전설·창작", "발견한 지식의 근거 분류별 보기", {
-			{ text = "근거별 보기", color = COLORS.blue, onClick = function() codexField = "e:all"; render() end },
-		}, 54)
 	end)
 	for _, group in cx.worldGroups or {} do
 		add(function()
@@ -8014,11 +10908,6 @@ local function renderCodexOverview()
 			}, 52)
 		end)
 	end
-	add(function()
-		return mkRow(content, "세계 교역·자원 목록 · " .. tostring(#(cx.resources or {})) .. "종", "광석·금속·목재·식량·섬유·연료·가공품까지 기존 상품 원본 연결", {
-			{ text = "보기", color = COLORS.blue, onClick = function() codexField = "r:all"; render() end },
-		}, 58)
-	end)
 	-- [새 분류] 습득 방식은 카드 종류·희귀도·학문과 독립된다. 기존 학문 화면도 그대로 유지한다.
 	add(function() return mkHeader(content, "습득 방식 · 3가지") end)
 	for _, row in { { id = "discover", name = "발견", hint = "항구 방문·항해 중 관찰·단순 사건" },
@@ -8446,30 +11335,146 @@ if string.sub(codexField, 1, 2) == "r:" then
 		}, 52) end)
 		local cardById = {}
 		for _, card in view.codex.cards do cardById[card.id] = card end
+		-- [책 판면] 기존 자원·도감 데이터를 두 페이지로 읽는다. 모바일은 손가락으로 한 쪽씩 넘긴다.
+		-- 다른 품목도 같은 책을 열며, 자원·카드·가격·저장 구조는 변경하지 않는다.
 		for _, item in view.codex.resources or {} do
-			if item.category == selected then
+			if item.id == H.tradeBookGood and item.category == selected then
+				add(function()
+					local book = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 396), COLORS.leather)
+					book.Name = "ScholarTradeEncyclopediaBook"
+					corner(book, 9)
+					bookMaterial(book, "leather", 192)
+					local heading = mkLabel(book, "세계 산업 백과  ·  " .. item.name, 23, Color3.fromRGB(255, 232, 177), true)
+					heading.Position = UDim2.fromOffset(14, 9)
+					heading.Size = UDim2.new(1, -28, 0, 30)
+					heading.AutomaticSize = Enum.AutomaticSize.None
+					local left = mkBox(book, UDim2.fromOffset(12, 48), UDim2.new(0.5, -17, 1, -116), COLORS.paper)
+					left.Name = "CodexBookLeftPage"
+					corner(left, 4)
+					bookMaterial(left, "parchment", 180)
+					local right = mkBox(book, UDim2.new(0.5, 5, 0, 48), UDim2.new(0.5, -17, 1, -116), COLORS.paper)
+					right.Name = "CodexBookRightPage"
+					corner(right, 4)
+					bookMaterial(right, "parchment", 180)
+					local spine = Instance.new("Frame")
+					spine.Name = "CodexBookSpine"
+					spine.BackgroundColor3 = INK_EDGE
+					spine.BorderSizePixel = 0
+					spine.Position = UDim2.new(0.5, -3, 0, 49)
+					spine.Size = UDim2.new(0, 6, 1, -119)
+					spine.Parent = book
+					local figureHead = mkLabel(left, "01  ·  그림과 분류", 19, INK, true)
+					figureHead.Position = UDim2.fromOffset(12, 10)
+					figureHead.Size = UDim2.new(1, -24, 0, 25)
+					figureHead.AutomaticSize = Enum.AutomaticSize.None
+					local artId = AssetIds["Goods/" .. item.id]
+					if artId and not RESTRICTED_CARGO_ICON[item.id] then
+						local picture = Instance.new("ImageLabel")
+						picture.Name = "ScholarTradeArt"
+						picture.Image = "rbxassetid://" .. tostring(artId)
+						picture.ScaleType = Enum.ScaleType.Fit
+						picture.BackgroundTransparency = 1
+						picture.Position = UDim2.fromOffset(12, 41)
+						picture.Size = UDim2.new(1, -24, 1, -116)
+						picture.Parent = left
+					else
+						local noArt = mkLabel(left, "등록된 대표 원화가 없어요", 17, INK_SOFT, false)
+						noArt.Position = UDim2.fromOffset(12, 90)
+						noArt.Size = UDim2.new(1, -24, 0, 70)
+						noArt.AutomaticSize = Enum.AutomaticSize.None
+					end
+					local caption = mkLabel(left, "분류  " .. (item.categoryName or "자원")
+						.. "\n연관 학문  " .. (item.discipline or "기타"), 16, INK_SOFT, true)
+					caption.Position = UDim2.new(0, 12, 1, -66)
+					caption.Size = UDim2.new(1, -24, 0, 62)
+					caption.AutomaticSize = Enum.AutomaticSize.None
+					caption.TextWrapped = true
+					local card = item.cardId and cardById[item.cardId]
+					local definition = if item.id == "coal" then
+						"석탄은 오래된 식물이 퇴적돼 오랜 시간 열과 압력을 받아 형성된 탄소질 화석 연료야. 증기선과 제련 산업의 열원으로 쓰여."
+						elseif card and card.found and type(card.description) == "string" and card.description ~= "" then card.description
+						else "이 품목에 연결된 지식은 아직 발견되지 않았어. 현재는 분류와 생산 기록만 확인할 수 있어."
+					local noteHead = mkLabel(right, "02  ·  뜻과 활용", 19, INK, true)
+					noteHead.Position = UDim2.fromOffset(12, 10)
+					noteHead.Size = UDim2.new(1, -24, 0, 26)
+					noteHead.AutomaticSize = Enum.AutomaticSize.None
+					local detail = mkLabel(right, definition, 18, INK, false)
+					detail.Position = UDim2.fromOffset(12, 42)
+					detail.Size = UDim2.new(1, -24, 0, 145)
+					detail.AutomaticSize = Enum.AutomaticSize.None
+					detail.TextWrapped = true
+					detail.TextTruncate = Enum.TextTruncate.AtEnd
+					local source = "기록 원산지  " .. (item.origin or "기록 없음")
+					if item.chain then
+						source ..= "\n가공 경로  " .. tostring(item.chain.raw or "원료")
+							.. " → " .. tostring(item.chain.processed or "가공품")
+					elseif item.appliedDiscipline then
+						source ..= "\n가공 학문  " .. item.appliedDiscipline
+					end
+					local sourceText = mkLabel(right, source, 16, INK_SOFT, false)
+					sourceText.Position = UDim2.new(0, 12, 1, -78)
+					sourceText.Size = UDim2.new(1, -24, 0, 72)
+					sourceText.AutomaticSize = Enum.AutomaticSize.None
+					sourceText.TextWrapped = true
+					local back = mkButton(book, "목록", COLORS.leather, UDim2.fromOffset(110, 46), function()
+						H.tradeBookGood = nil
+						render()
+					end, true)
+					local showingNotes = false
+					local flip = mkButton(book, "다음 쪽", COLORS.gold, UDim2.fromOffset(120, 46), function()
+						showingNotes = not showingNotes
+						left.Visible = not showingNotes
+						right.Visible = showingNotes
+						flip.Text = if showingNotes then "이전 쪽" else "다음 쪽"
+					end, true)
+					local open = mkButton(book, "연관 지식", COLORS.blue, UDim2.fromOffset(160, 46),
+						function() if card and card.found then H.showCardDetail(card) end end,
+						card ~= nil and card.found == true)
+					local function layoutPages()
+						local spread = book.AbsoluteSize.X >= 620
+						local width = if spread then UDim2.new(0.5, -18, 1, -116) else UDim2.new(1, -24, 1, -116)
+						left.Position = UDim2.fromOffset(12, 48)
+						left.Size = width
+						right.Position = if spread then UDim2.new(0.5, 6, 0, 48) else UDim2.fromOffset(12, 48)
+						right.Size = width
+						spine.Visible = spread
+						left.Visible = spread or not showingNotes
+						right.Visible = spread or showingNotes
+						back.Position = UDim2.new(0, 12, 1, -55)
+						if spread then
+							back.Size = UDim2.fromOffset(122, 46)
+							flip.Visible = false
+							open.Position = UDim2.new(1, -191, 1, -55)
+							open.Size = UDim2.fromOffset(179, 46)
+						else
+							back.Size = UDim2.new(0.25, -12, 0, 46)
+							flip.Visible = true
+							flip.Position = UDim2.new(0.25, 4, 1, -55)
+							flip.Size = UDim2.new(0.38, -11, 0, 46)
+							open.Position = UDim2.new(0.63, 4, 1, -55)
+							open.Size = UDim2.new(0.37, -16, 0, 46)
+						end
+					end
+					book:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutPages)
+					task.defer(layoutPages)
+					return book
+				end)
+				break
+			end
+		end
+		for _, item in view.codex.resources or {} do
+			if item.category == selected and item.id ~= H.tradeBookGood then
 				add(function()
 					local card = item.cardId and cardById[item.cardId]
-					local detail = "연결 학문: " .. item.discipline
-						.. (if item.appliedDiscipline then " · 가공법: " .. item.appliedDiscipline else "")
-						.. " · 연관 지식: " .. item.cardName
-					if item.chain then
-						local destinations = item.chain.markets or {}
-						if #destinations > 0 then
-							detail ..= string.format("\n%s → %s → 지역 명품\n원산지 %s · 관련 학문 %s\n수출 목표 %s%s",
-								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research,
-								destinations[1], if #destinations > 1 then " 외 " .. tostring(#destinations - 1) .. "개 항구" else "")
-						else
-							detail ..= string.format("\n원료 %s → 가공품 %s\n생산 항구 %s · 관련 학문 %s",
-								item.chain.raw, item.chain.processed, item.chain.port, item.chain.research)
-						end
-					elseif item.origin then
-						detail ..= "\n생산 항구: " .. item.origin
-					end
-					return mkRow(content, item.name, detail, {
-						{ text = if card then "지식" else "미등록", color = COLORS.blue, enabled = card ~= nil,
-							onClick = function() if card then H.showCardDetail(card) end end },
-					}, if item.chain then 114 elseif item.origin then 82 else 62)
+					local hint = (item.origin and "원산지 " .. item.origin or "원산지 기록 없음")
+						.. " · " .. (item.discipline or "관련 학문 없음")
+						.. " · " .. (if card and card.found then "지식 발견" else "지식 미발견")
+					return mkRow(content, item.name, hint, {
+						{ text = "책 펼치기", color = COLORS.blue, onClick = function()
+							H.tradeBookGood = item.id
+							render()
+						end },
+					}, 76)
 				end)
 			end
 		end
@@ -8709,14 +11714,581 @@ local f = findField(codexField)
 end
 
 function RENDERERS.codex()
-	if not codexField then H.counselRows(1) end
-	if codexField then
+	-- [서재 전환] 책장을 닫은 경우에만 이전 장의 왼쪽 원화 선택을 해제한다.
+	if codexField ~= "book" and H.galleryReadingCard then
+		H.galleryReadingCard = nil
+		H.renderFacilityGallery()
+	end
+	-- [지식 백과의 책 펼치기] 기존 검색·분류·카드 기능은 보존한다.
+	if codexField == "book" then
+		RENDERERS.encyclopedia()
+	elseif codexField then
 		H.renderCodexField()
 	else
 		renderCodexOverview()
 	end
 end
 
+-- [세계 백과사전] 새 저장소·카드 목록을 만들지 않고 기존 발견된 지식과 승인 사진만 책 페이지로 편집한다.
+-- [세계 백과사전 · 양장본] 이미 승인된 삽화와 편집된 자료만 사용한다.
+-- 금지된 외부 그림 자동 수집은 하지 않으며 보상·저장·게임 규칙은 변경하지 않는다.
+function RENDERERS.encyclopedia()
+	local cx = view.codex or {}
+	-- [계정별 책갈피] 이전 접속의 서버 저장을 진실값으로 쓴다.
+	H.encyclopediaBookmarkId = cx.bookmarkId
+	local articles = require(Shared:WaitForChild("KnowledgeCards")).Articles
+	local all, groups, known, byId = {}, { { id = "all", name = "전체" } }, {}, {}
+	local fieldCounts, explained, pictured = {}, 0, 0
+	local collectedOriginals = 0
+	-- [해전 원화 화첩] 기존 소장 목록과 등록된 동일 ID의 승인 원화만 가져온다.
+	-- 백과 발견 수, 전투 카드 수, 강화, 보상, 저장 구조에는 영향을 주지 않는다.
+	local owned = (view.cardbook and view.cardbook.owned) or {}
+	local boarding = require(Shared:WaitForChild("BoardingCards"))
+	local registeredArt = require(Shared:WaitForChild("CardArt")).Art
+	local motionCards = { ea_03 = true, ea_04 = true, ea_05 = true, ea_08 = true, ea_09 = true,
+		ea_10 = true, ea_12 = true, ea_13 = true, ea_14 = true, ea_15 = true, ea_16 = true, ea_17 = true }
+	for _, card in (cx.cards or {}) do
+		if card.found then
+			table.insert(all, card)
+			byId[card.id] = card
+			fieldCounts[card.field or ""] = (fieldCounts[card.field or ""] or 0) + 1
+			if articles[card.id] then explained += 1 end
+			if type(card.image) == "string" and card.image ~= "" then pictured += 1 end
+			if card.field and not known[card.field] then
+				known[card.field] = true
+				local group = findField(card.field)
+				table.insert(groups, { id = card.field, name = if group then group.name else tostring(card.field) })
+			end
+		end
+	end
+	for cardId, quantity in owned do
+		if type(cardId) == "string" and type(quantity) == "number" and quantity > 0
+			and string.match(cardId, "^%a%a_%d%d$") and not byId[cardId] then
+			local unit = boarding.Units[cardId] or boarding.Specials[cardId]
+			local art = registeredArt[cardId]
+			if unit and art and type(art.image) == "string" and art.image ~= "" then
+				-- [24프레임 전용] 시트는 기존 승인·업로드 경로에서 등록된 경우에만 사용.
+				-- 미등록된 JPG 시안을 로컬/외부 주소로 불러오거나 원화를 대체하지 않는다.
+				local sheetId = if motionCards[cardId] then AssetIds["CardArt/" .. cardId .. "_24f"] else nil
+				local item = {
+					id = cardId, name = unit.name, description = unit.lore or "해전 카드에서 수집한 원화야.",
+					field = "ArtGallery", found = true, combatArt = true, motionCandidate = motionCards[cardId] == true,
+					motionSheet = if type(sheetId) == "number" and sheetId > 0 then sheetId else nil,
+					topic = unit.category or "전투 카드", kindName = unit.category or "해전 카드",
+					worldGroup = "해전 수집 원화", entityType = "보유 전투 카드",
+					discipline = "해양 문화·전투 카드", source = "내 카드 수집책 · 현재 보유 중",
+					image = art.image, credit = art.credit, tags = { unit.category or "해전 카드" },
+				}
+				table.insert(all, item)
+				byId[cardId] = item
+				collectedOriginals += 1
+				pictured += 1
+			end
+		end
+	end
+	if collectedOriginals > 0 then
+		fieldCounts.ArtGallery = collectedOriginals
+		table.insert(groups, { id = "ArtGallery", name = "해전 원화 화첩" })
+		known.ArtGallery = true
+	end
+	table.sort(all, function(a, b)
+		if a.field ~= b.field then return tostring(a.field) < tostring(b.field) end
+		return tostring(a.name) < tostring(b.name)
+	end)
+	table.sort(groups, function(a, b) return a.name < b.name end)
+	local fieldId = H.encyclopediaCategoryId or "all"
+	if fieldId ~= "all" and not known[fieldId] then fieldId = "all"; H.encyclopediaCategoryId = fieldId end
+	local groupName = "전체"
+	for _, g in groups do
+		if g.id == fieldId then groupName = g.name; break end
+	end
+	-- [정규 본문 검색] 실제 장문 해설까지 찾는다. 여러 단어는 모두 일치해야 한다.
+	local queryWords = {}
+	for term in string.gmatch(string.lower(string.sub(H.encyclopediaSearchText or "", 1, 120)), "%S+") do
+		if #queryWords >= 6 then break end
+		table.insert(queryWords, term)
+	end
+	local found = {}
+	for _, card in all do
+		if fieldId == "all" or card.field == fieldId then
+			local article = articles[card.id]
+			local words = { card.name or "", card.description or "", card.discipline or "",
+				card.era or "", card.region or "", card.topic or "", card.kindName or "",
+				card.source or "", card.evidence or "", card.worldGroup or "" }
+			if article then
+				table.insert(words, article.details or "")
+				table.insert(words, article.context or "")
+				table.insert(words, article.history or "")
+			end
+			for _, tag in (card.tags or {}) do table.insert(words, tostring(tag)) end
+			for _, alias in (card.aliases or {}) do table.insert(words, tostring(alias)) end
+			local haystack = string.lower(table.concat(words, " "))
+			local matches = true
+			for _, term in queryWords do
+				if not string.find(haystack, term, 1, true) then matches = false; break end
+			end
+			if matches then table.insert(found, card) end
+		end
+	end
+	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 지식 %d / %d · 해전 원화 %d",
+		cx.found or (#all - collectedOriginals), cx.total or #all, collectedOriginals)) end)
+	add(function() return mkLabel(content, string.format("장문 해설 %d장 · 등록 도판 %d장 · 미발견 지식은 비공개", explained, pictured), 15, INK_SOFT, false) end)
+	if #queryWords > 0 or fieldId ~= "all" then
+		add(function() return mkLabel(content, string.format("분야 · %s / 검색 결과 %d장", groupName, #found), 16, INK, true) end)
+	end
+	-- [목차] 검색과 분야 선택은 이 접속의 UI에만 기억한다.
+	add(function()
+		local panel = mkBox(content, UDim2.new(), UDim2.new(1, -8, 0, 107), COLORS.paper)
+		panel.Name = "EncyclopediaIndex"
+		corner(panel, 7)
+		local search = Instance.new("TextBox")
+		search.Name = "EncyclopediaSearch"
+		search.Position = UDim2.fromOffset(8, 8)
+		search.Size = UDim2.new(1, -109, 0, 42)
+		search.BackgroundColor3 = Color3.fromRGB(249, 236, 208)
+		search.TextColor3 = INK
+		search.PlaceholderColor3 = INK_SOFT
+		search.PlaceholderText = "이름 · 본문 · 역사 · 지역"
+		search.Text = H.encyclopediaSearchText or ""
+		search.ClearTextOnFocus = false
+		search.Font = Enum.Font.Gotham
+		search.TextSize = 16
+		search.Parent = panel
+		corner(search, 5)
+		search:GetPropertyChangedSignal("Text"):Connect(function() H.encyclopediaSearchText = search.Text end)
+		search.FocusLost:Connect(function(enter)
+			if enter then H.encyclopediaPage = 1; render() end
+		end)
+		local submit = mkButton(panel, "검색", COLORS.gold, UDim2.fromOffset(90, 42), function()
+			H.encyclopediaSearchText = search.Text
+			H.encyclopediaPage = 1
+			render()
+		end, true)
+		submit.Position = UDim2.new(1, -98, 0, 8)
+		local group = mkButton(panel, (if H.encyclopediaIndexOpen then "목차 닫기 · " else "목차 열기 · ") .. groupName, COLORS.leather,
+			UDim2.new(0.62, -12, 0, 42), function()
+				H.encyclopediaIndexOpen = not H.encyclopediaIndexOpen
+				H.encyclopediaIndexPage = 1
+				render()
+			end, true)
+		group.Position = UDim2.fromOffset(8, 58)
+		group.TextSize = 15
+		local reset = mkButton(panel, "전체 목차", COLORS.blue, UDim2.new(0.38, -8, 0, 42), function()
+			H.encyclopediaCategoryId = "all"
+			H.encyclopediaSearchText = ""
+			H.encyclopediaPage = 1
+			H.encyclopediaIndexPage = 1
+			render()
+		end, true)
+		reset.Position = UDim2.new(0.62, 0, 0, 58)
+		reset.TextSize = 15
+		return panel
+	end)
+
+	-- [분야/장 목차] 발견 기록을 재활용하며 12장 단위로만 표시해 모바일 부하를 줄인다.
+	if H.encyclopediaIndexOpen then
+		add(function() return mkLabel(content, "분야별 목차 · 발견한 지식", 18, INK, true) end)
+		add(function()
+			local columns = if content.AbsoluteSize.X >= 620 then 3 else 2
+			local frame = Instance.new("Frame")
+			frame.Name = "EncyclopediaFieldIndex"
+			frame.BackgroundTransparency = 1
+			frame.Size = UDim2.new(1, -8, 0, math.ceil(#groups / columns) * 49 + 6)
+			for i, g in groups do
+				local col = (i - 1) % columns
+				local row = math.floor((i - 1) / columns)
+				local total = if g.id == "all" then #all else fieldCounts[g.id] or 0
+				local selectedField = g.id
+				local button = mkButton(frame, g.name .. " · " .. tostring(total),
+					if g.id == fieldId then COLORS.gold else COLORS.blue,
+					UDim2.new(1 / columns, -7, 0, 43), function()
+						H.encyclopediaCategoryId = selectedField
+						H.encyclopediaPage = 1
+						H.encyclopediaIndexPage = 1
+						render()
+					end, true)
+				button.Position = UDim2.new(col / columns, 3, 0, row * 49 + 3)
+				button.TextSize = 15
+			end
+			return frame
+		end)
+		if #found > 0 then
+			local pageCount = math.ceil(#found / 12)
+			H.encyclopediaIndexPage = math.clamp(H.encyclopediaIndexPage or 1, 1, pageCount)
+			local indexPage = H.encyclopediaIndexPage
+			add(function()
+				return mkLabel(content, string.format("장 제목 목록 · %d건 중 %d쪽 / %d쪽", #found, indexPage, pageCount), 17, INK, true)
+			end)
+			for i = (indexPage - 1) * 12 + 1, math.min(#found, indexPage * 12) do
+				local entryIndex, entry = i, found[i]
+				add(function()
+					local button = mkButton(content, string.format("%03d. %s", entryIndex, entry.name),
+						if H.encyclopediaPage == entryIndex then COLORS.gold else COLORS.blue,
+						UDim2.new(1, -8, 0, 42), function()
+							H.encyclopediaPage = entryIndex
+							H.encyclopediaIndexOpen = false
+							Sfx.play("sfx_book_turn", 0.3)
+							render()
+						end, true)
+					button.Name = "EncyclopediaIndexEntry"
+					button.TextSize = 17
+					return button
+				end)
+			end
+			add(function()
+				local nav = Instance.new("Frame")
+				nav.Name = "EncyclopediaIndexPages"
+				nav.BackgroundTransparency = 1
+				nav.Size = UDim2.new(1, -8, 0, 46)
+				local previous = mkButton(nav, "◀ 앞 목차", COLORS.leather, UDim2.new(0.5, -4, 0, 44), function()
+					H.encyclopediaIndexPage = math.max(1, indexPage - 1)
+					render()
+				end, indexPage > 1)
+				previous.Position = UDim2.fromOffset(0, 1)
+				local following = mkButton(nav, "뒤 목차 ▶", COLORS.leather, UDim2.new(0.5, -4, 0, 44), function()
+					H.encyclopediaIndexPage = math.min(pageCount, indexPage + 1)
+					render()
+				end, indexPage < pageCount)
+				following.Position = UDim2.new(0.5, 4, 0, 1)
+				return nav
+			end)
+		end
+	end
+	if #found == 0 then
+		add(function()
+			local hint = if #all == 0 then "탐험과 학자 보고로 발견하면 이곳에 기록돼."
+				else "검색어 또는 분야에 해당하는 책이 없어. 전체 목차를 열어 줘."
+			return mkRow(content, "읽을 지식이 없어", hint, {}, 80)
+		end)
+		return
+	end
+	-- [원화 직접 이동] 발견한 카드 ID를 찾아 해당 장을 열고, 없는 기록은 임의로 해금하지 않는다.
+	if H.encyclopediaTargetId then
+		local target = H.encyclopediaTargetId
+		H.encyclopediaTargetId = nil
+		H.encyclopediaPage = nil
+		for index, entry in found do
+			if entry.id == target then H.encyclopediaPage = index; break end
+		end
+	end
+	-- [이어 읽기] 새 접속에서 책갈피가 있으면 해당 장을 처음 펼친다.
+	if not H.encyclopediaPage and H.encyclopediaBookmarkId then
+		for i, entry in found do
+			if entry.id == H.encyclopediaBookmarkId then H.encyclopediaPage = i; break end
+		end
+	end
+	H.encyclopediaPage = math.clamp(H.encyclopediaPage or 1, 1, #found)
+	local current = found[H.encyclopediaPage]
+	-- [백과-원화 동기화] 책장을 넘기면 왼쪽 카드도 현재 읽는 발견 원화로 갱신한다.
+	if currentTab == "codex" or currentTab == "encyclopedia" then
+		H.galleryReadingCard = if current.found and type(current.image) == "string" and current.image ~= "" then current else nil
+		H.renderFacilityGallery()
+	end
+	local category = if current.combatArt then {
+		name = "해전 원화 화첩", color = { 122, 89, 48 },
+		detail = "해전 카드에서 수집한 물건·배·유물의 원화를 정리한 도판이야. 실제 역사 지식과 게임 카드 설정을 구분해 읽어 줘.",
+		tip = "내 카드 수집책에서 보유 중인 원화만 여기에 나타나.",
+	} else findField(current.field) or { name = tostring(current.field or "세계 지식"), color = { 122, 89, 48 } }
+	local article = articles[current.id]
+	-- [가죽 표지·양피지] 한 장의 사진과 전체 길이 해설. 말줄임 없이 책 안에서 읽는다.
+	local bookFrame
+	add(function()
+		local book = Instance.new("Frame")
+		book.Name = "EncyclopediaBookPage"
+		bookFrame = book
+		book.Size = UDim2.new(1, -8, 0, math.clamp(math.max(content.AbsoluteSize.Y, 530) - 120, 410, 690))
+		book.BackgroundColor3 = COLORS.leather
+		book.BorderSizePixel = 0
+		corner(book, 9)
+		bookMaterial(book, "leather", 192)
+		local border = Instance.new("UIStroke")
+		border.Color = UI_BRASS
+		border.Thickness = 2
+		border.Parent = book
+		local paper = mkBox(book, UDim2.fromOffset(9, 9), UDim2.new(1, -18, 1, -137), COLORS.paper)
+		corner(paper, 5)
+		bookMaterial(paper, "parchment", 192)
+		local sheet = Instance.new("ScrollingFrame")
+		sheet.Name = "EncyclopediaFullArticle"
+		sheet.BackgroundTransparency = 1
+		sheet.BorderSizePixel = 0
+		sheet.Position = UDim2.fromOffset(6, 6)
+		sheet.Size = UDim2.new(1, -12, 1, -12)
+		sheet.ScrollBarThickness = 4
+		sheet.ScrollingDirection = Enum.ScrollingDirection.Y
+		sheet.CanvasSize = UDim2.new()
+		sheet.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		sheet.Parent = paper
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop = UDim.new(0, 12)
+		pad.PaddingBottom = UDim.new(0, 18)
+		pad.PaddingLeft = UDim.new(0, 12)
+		pad.PaddingRight = UDim.new(0, 12)
+		pad.Parent = sheet
+		local layout = Instance.new("UIListLayout")
+		layout.Padding = UDim.new(0, 9)
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+		layout.Parent = sheet
+		local order = 0
+		local function line(textValue, size, strong, tone)
+			local label = mkLabel(sheet, tostring(textValue), size, tone or INK, strong, order)
+			label.Size = UDim2.new(1, -8, 0, 0)
+			label.AutomaticSize = Enum.AutomaticSize.Y
+			label.TextTruncate = Enum.TextTruncate.None
+			order += 1
+			return label
+		end
+		line(string.format("대항해 지식 대백과  ·  제%03d장 / %d", H.encyclopediaPage, #found), 16, true, INK_SOFT)
+		line(current.name, 25, true, INK)
+		line(category.name .. " · " .. (current.discipline or "세계 지식")
+			.. (if current.era then " · " .. current.era else ""), 16, true, INK_SOFT)
+		local art = Instance.new("Frame")
+		art.Name = "EncyclopediaIllustration"
+		art.Size = UDim2.new(1, -8, 0, if type(current.image) ~= "string" or current.image == "" then 115 elseif content.AbsoluteSize.X >= 620 then 270 else 200)
+		art.BackgroundColor3 = Color3.fromRGB(208, 185, 146)
+		art.BorderSizePixel = 0
+		art.LayoutOrder = order
+		order += 1
+		corner(art, 5)
+		art.Parent = sheet
+		-- [원화 표시 규칙] 정확히 24프레임으로 등록된 원화만 시트 애니메이션.
+		-- 나머지는 기존 등록 원화를 정지 상태 그대로 보여 주며 미등록은 빈칸이다.
+		if current.combatArt and current.motionSheet then
+			local image = Instance.new("ImageLabel")
+			image.Name = "Encyclopedia24FrameArt"
+			image.BackgroundTransparency = 1
+			image.Size = UDim2.fromScale(1, 1)
+			image.ScaleType = Enum.ScaleType.Fit
+			image.Image = "rbxassetid://" .. tostring(current.motionSheet)
+			image.ImageRectSize = Vector2.new(256, 256)
+			image.ImageRectOffset = Vector2.new(0, 0)
+			image.Parent = art
+			-- [모바일 성능] 현재 펼쳐 놓은 장에서만 6열×4행, 24장의 원본 프레임을 순환한다.
+			task.spawn(function()
+				local frame = 0
+				while image.Parent and image:IsDescendantOf(game) do
+					image.ImageRectOffset = Vector2.new((frame % 6) * 256, math.floor(frame / 6) * 256)
+					frame = (frame + 1) % 24
+					task.wait(0.15)
+				end
+			end)
+		elseif type(current.image) == "string" and current.image ~= "" then
+			paintCardArt(art, current, category)
+		end
+		line(if current.combatArt and current.motionSheet then "24프레임 움직이는 원화 · " .. current.name
+			elseif current.combatArt and current.motionCandidate then "24프레임 시트 미등록 · 정지 원화 표시"
+			elseif type(current.image) == "string" and current.image ~= "" then "정지 원화 · " .. current.name
+			else "대표 그림 자리 · 추후 등록", 14, false, INK_SOFT)
+		line("Ⅰ. 개요", 19, true)
+		line(current.description or "등록된 개요가 없어.", 17, false)
+		if current.combatArt then
+			line("Ⅱ. 원화 기록", 19, true)
+			line("현재 소장한 해전 카드에 등록된 원화를 보여 주고 있어. 실제 역사적 고증과 게임 속 전투 설정은 구분해서 읽어야 해.", 17, false)
+			line("Ⅲ. 카드 수집 정보", 19, true)
+			line("분류: " .. tostring(current.topic or "해전 카드")
+				.. "\n원화 출처: " .. tostring(current.credit or "기존 등록 자료")
+				.. "\n등록 방식: " .. (if current.motionSheet then "24프레임 애니메이션"
+					elseif current.motionCandidate then "정지 원화 · 24프레임 시트 등록 대기" else "정지 원화"), 16, false)
+		elseif article then
+			if article.details and article.details ~= "" then
+				line("Ⅱ. 특징과 구조", 19, true)
+				line(article.details, 17, false)
+			end
+			if article.context and article.context ~= "" then
+				line("Ⅲ. 쓰임과 배경", 19, true)
+				line(article.context, 17, false)
+			end
+			if article.history and article.history ~= "" then
+				line("Ⅳ. 역사 속 이야기", 19, true)
+				line(article.history, 17, false)
+			end
+		else
+			-- [전 항목 독서 본문] 장문 원고가 없는 항목도 기존 정규 설명·분야 사료·탐구 경로로 장을 구성한다.
+			-- 해당 개체만의 고유 역사나 효과를 임의로 생성하지 않는다.
+			line("Ⅱ. 이 분야의 학문적·역사적 배경", 19, true)
+			line(category.detail or category.summary or "이 지식은 현장에서 발견한 원본 기록을 통해 연구할 수 있어.", 17, false)
+			line("Ⅲ. 조사와 기록 방법", 19, true)
+			line((category.tip or "관찰 자료와 문헌을 대조해 기록을 정리한다.")
+				.. (if current.source and current.source ~= "" then "\n원본 카드의 확인 경로: " .. current.source else ""), 17, false)
+			local notes = {}
+			if current.era then
+				table.insert(notes, "시대: " .. current.era .. " · 이 항목에 부여된 시대 분류를 따라 읽어야 해.")
+			end
+			if current.region then
+				table.insert(notes, "지역: " .. current.region .. " · 기록에 연결된 대표 지역이야.")
+			end
+			if current.domain then
+				table.insert(notes, "연구 계통: " .. current.domain)
+			end
+			if current.relatedDisciplines and #current.relatedDisciplines > 0 then
+				table.insert(notes, "연계 학문: " .. table.concat(current.relatedDisciplines, " · "))
+			end
+			if current.path and current.path ~= "" then
+				table.insert(notes, "탐구 경로: " .. tostring(current.path))
+			end
+			if #notes > 0 then
+				line("Ⅳ. 시대·지역·연계 연구", 19, true)
+				line(table.concat(notes, "\n"), 17, false)
+			end
+		end
+		line("분류와 시대", 19, true)
+		line("대분류: " .. (current.worldGroup or "세계 지식")
+			.. "\n주제: " .. (current.topic or "기타")
+			.. "\n자료 유형: " .. (current.kindName or "기타")
+			.. "\n존재 형태: " .. (current.entityType or "기록")
+			.. "\n학문: " .. (current.discipline or "미분류")
+			.. (if current.era then "\n시대: " .. current.era else "")
+			.. (if current.region then "\n관련 지역: " .. current.region else "")
+			.. (if current.evidence then "\n자료 검증 구분: " .. current.evidence else "")
+			.. (if current.fromYear then "\n게임 내 등장 가능 연도: " .. tostring(current.fromYear) else ""), 16, false)
+		if current.evidenceId == "fiction" then
+			line("※ 이 항목은 실제 역사 자료가 아닌 게임 속 가상 설정이야.", 16, true, INK_SOFT)
+		elseif current.evidenceId == "legend" or current.evidenceId == "hypothesis" then
+			line("※ 전승 또는 가설을 다룬 자료로, 사실로 확정되지 않은 내용이 포함돼.", 16, false, INK_SOFT)
+		elseif current.evidenceId == "unreviewed" then
+			line("※ 개별 자료의 검증이 아직 완료되지 않았어. 기록과 해석을 구분해서 읽어 줘.", 16, false, INK_SOFT)
+		end
+		if current.relatedDisciplines and #current.relatedDisciplines > 0 then
+			local disciplines = {}
+			for _, name in current.relatedDisciplines do table.insert(disciplines, tostring(name)) end
+			line("함께 살펴볼 학문", 19, true)
+			line(table.concat(disciplines, " · "), 16, false)
+		end
+		if current.source and current.source ~= "" then
+			line("원본 기록의 발견 경로", 19, true)
+			line(current.source, 16, false)
+		end
+		line("내 항해 기록", 19, true)
+		local first = current.provenance
+		line(if first then "첫 발견: " .. tostring(first.port or "위치 미상")
+			.. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견")
+			.. (if first.person then "\n전수한 인물: " .. first.person else "")
+			.. (if first.site then "\n탐험 현장: " .. first.site else "")
+			.. (if first.quest then "\n관련 의뢰: " .. first.quest else "")
+			.. (if first.event then "\n관련 사건: " .. first.event else "")
+			else "이전에 획득한 지식 · 자세한 발견 위치는 기록되지 않았어.", 16, false)
+		line("자료·저작권", 19, true)
+		line(if article and article.topic then "본문 참고: 위키백과 · " .. string.gsub(article.topic, "_", " ")
+			.. "\n해설은 게임에 편집·수록된 자료야. 실시간 연동은 아니야."
+			else "본문: 게임 지식카드 · 외부 참고 자료 확인 대기", 15, false, INK_SOFT)
+		-- [외부 참고 주소] Roblox 안에서 외부 페이지를 강제로 띄우지 않는다.
+		-- 승인된 상세 원고는 위키백과 원문 주소를, 그 외는 검색 주소를 구별하여 표시한다.
+		if not current.combatArt and current.evidenceId ~= "fiction" then
+			local referenceUrl = if article and article.topic and article.topic ~= ""
+				then "https://en.wikipedia.org/wiki/" .. article.topic
+				else "https://ko.wikipedia.org/w/index.php?search=" .. game:GetService("HttpService"):UrlEncode(current.name)
+			line(if article and article.topic then "참고 원문 주소" else "위키백과 검색 주소 · 내용 미검증", 18, true)
+			local reference = Instance.new("TextBox")
+			reference.Name = "EncyclopediaReferenceUrl"
+			reference.Size = UDim2.new(1, -12, 0, 55)
+			reference.BackgroundColor3 = Color3.fromRGB(249, 236, 208)
+			reference.TextColor3 = INK
+			reference.TextWrapped = true
+			reference.TextXAlignment = Enum.TextXAlignment.Left
+			reference.Font = Enum.Font.Gotham
+			reference.TextSize = 15
+			reference.TextEditable = false
+			reference.ClearTextOnFocus = false
+			reference.Text = referenceUrl
+			reference.LayoutOrder = order
+			order += 1
+			reference.Parent = sheet
+		end
+		if current.wikidata then line("위키데이터 항목: " .. tostring(current.wikidata), 15, false, INK_SOFT) end
+		if current.nextClue then
+			line("이어지는 탐구 단서", 19, true)
+			line((current.nextClue.quest or "관련 연구")
+				.. (if current.nextClue.port then " · " .. current.nextClue.port else "")
+				.. (if current.nextClue.source then "\n" .. current.nextClue.source else ""), 16, false)
+		end
+		if current.credit and current.credit ~= "" then
+			line("대표 그림 출처: " .. current.credit, 15, false, INK_SOFT)
+		end
+		-- [관련 항목] 발견된 다른 지식도 백과 안에서 계속 읽고, 장소/상품은 별도 텍스트로 보여 준다.
+		local linked, places = 0, {}
+		for _, rel in (current.relations or {}) do
+			local target = rel.cardId and byId[rel.cardId]
+			if target and rel.found and linked < 5 then
+				if linked == 0 then line("이어 읽을 지식", 19, true) end
+				linked += 1
+				local related = mkButton(sheet, target.name .. " · " .. tostring(rel.relation or "관련 항목"), COLORS.blue,
+					UDim2.new(1, -12, 0, 42), function()
+						H.encyclopediaCategoryId = "all"
+						H.encyclopediaSearchText = ""
+						for i, discovered in all do
+							if discovered.id == target.id then H.encyclopediaPage = i; break end
+						end
+						Sfx.play("sfx_book_turn", 0.3)
+						render()
+					end, true)
+				related.LayoutOrder = order
+				order += 1
+				related.TextSize = 16
+			elseif not rel.cardId and rel.name and #places < 4 then
+				table.insert(places, tostring(rel.name) .. " · " .. tostring(rel.relation or "연관 장소·상품"))
+			end
+		end
+		if #places > 0 then
+			line("연관된 장소·상품·사료", 19, true)
+			line(table.concat(places, "\n"), 16, false)
+		end
+		if not current.combatArt then
+			local more = mkButton(sheet, "카드 원문 · 추가 연구 기록", COLORS.gold,
+				UDim2.new(1, -12, 0, 46), function() H.showCardDetail(current) end, true)
+			more.LayoutOrder = order
+			more.TextSize = 16
+		end
+		return book
+	end)
+	-- [책 하단 고정] 본문을 읽는 동안 이전/다음 장과 책갈피 버튼은 제자리에 둔다.
+	-- 기존 저장 키에 책갈피 카드 1개만 추가하며 발견 여부를 서버에서 검증한다.
+	do
+		local nav = Instance.new("Frame")
+		nav.Parent = bookFrame
+		nav.Position = UDim2.new(0, 9, 1, -117)
+		nav.Name = "EncyclopediaPageNavigation"
+		nav.BackgroundTransparency = 1
+		nav.Size = UDim2.new(1, -8, 0, 108)
+		local prev = mkButton(nav, "◀ 이전 장", COLORS.leather, UDim2.new(0.35, -5, 0, 46), function()
+			H.encyclopediaPage = math.max(1, H.encyclopediaPage - 1)
+			Sfx.play("sfx_book_turn", 0.3)
+			render()
+		end, H.encyclopediaPage > 1)
+		prev.Position = UDim2.fromOffset(0, 3)
+		local count = mkLabel(nav, string.format("%d / %d", H.encyclopediaPage, #found), 17, COLORS.gold, true)
+		count.Position = UDim2.new(0.35, 0, 0, 13)
+		count.Size = UDim2.new(0.3, 0, 0, 28)
+		count.AutomaticSize = Enum.AutomaticSize.None
+		count.TextXAlignment = Enum.TextXAlignment.Center
+		local nextPage = mkButton(nav, "다음 장 ▶", COLORS.gold, UDim2.new(0.35, -5, 0, 46), function()
+			H.encyclopediaPage = math.min(#found, H.encyclopediaPage + 1)
+			Sfx.play("sfx_book_turn", 0.3)
+			render()
+		end, H.encyclopediaPage < #found)
+		nextPage.Position = UDim2.new(0.65, 5, 0, 3)
+		local save = mkButton(nav, if current.combatArt then "지식 책갈피 전용" elseif H.encyclopediaBookmarkId == current.id then "책갈피 빼기" else "책갈피 꽂기",
+			COLORS.leather, UDim2.new(0.5, -5, 0, 44), function()
+				local result = call("SetEncyclopediaBookmark", { id = current.id })
+				if result and result.ok then Sfx.play("sfx_book_turn", 0.3) end
+			end, not current.combatArt)
+		save.Position = UDim2.fromOffset(0, 59)
+		save.TextSize = 16
+		local saved = H.encyclopediaBookmarkId and byId[H.encyclopediaBookmarkId]
+		local jump = mkButton(nav, if saved then "책갈피 · " .. saved.name else "책갈피 없음",
+			COLORS.blue, UDim2.new(0.5, -5, 0, 44), function()
+				if not saved then return end
+				H.encyclopediaCategoryId = "all"
+				H.encyclopediaSearchText = ""
+				H.encyclopediaPage = 1
+				for i, card in all do
+					if card.id == saved.id then H.encyclopediaPage = i; break end
+				end
+				render()
+			end, saved ~= nil)
+		jump.Position = UDim2.new(0.5, 5, 0, 59)
+		jump.TextSize = 15
+	end
+end
 function RENDERERS.scholar()
 	H.exploreScholarView = true
 	local ok, err = pcall(RENDERERS.explore)
@@ -8736,9 +12308,8 @@ function RENDERERS.tech()
 	end
 	H.statStrip({
 		{ "연구 완료", tostring(completed), tone = "good" },
-		{ "지금 가능", tostring(affordable), tone = "good" },
+		{ "연구 가능", tostring(affordable), tone = "key" },
 		{ "조건 잠금", tostring(blocked), tone = "key" },
-		{ "보유 코인", H.commas(view.player.coins), tone = "key" },
 	})
 	add(function()
 		return mkLabel(content, "기술은 선행 지식과 보유 코인을 확인해 연구해. 증기 장비는 석탄을 사용해.", 14, COLORS.muted, false)
@@ -8774,16 +12345,40 @@ function RENDERERS.quest()
 	if #view.quests.active == 0 then
 		add(function() return mkLabel(content, "아직 기록이 없어요. 소문을 듣거나 사람과 이야기해 보세요.", 13, COLORS.muted, true) end)
 	end
-	for _, q in view.quests.active do
+	local active = table.clone(view.quests.active)
+	local order = {}
+	for index, quest in active do order[quest] = index end
+	table.sort(active, function(a, b)
+		local readyA = a.kind == "deliver" and a.progress >= a.amount
+		local readyB = b.kind == "deliver" and b.progress >= b.amount
+		if readyA ~= readyB then return readyA end
+		return order[a] < order[b]
+	end)
+	for _, q in active do
 		add(function()
 			local buttons = {}
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
+			-- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전 버튼
+			local ex = q.story2
+			if ex and ex.choices and not ex.picked then
+				for _, opt in ex.choices do
+					table.insert(buttons, { text = opt.label, color = COLORS.gold, onClick = function() call("StoryChoose", { questId = q.id, value = opt.value }) end })
+				end
+			elseif ex and ex.duel then
+				table.insert(buttons, { text = "대결", color = COLORS.red, onClick = function()
+					if H.openDeck then H.openDeck(true) end
+					task.defer(function() if H.devCards and H.devCards.duel then H.devCards.duel(q.id) end end)
+				end })
+			elseif ex and ex.warId then
+				table.insert(buttons, { text = "작전", color = COLORS.red, onClick = function() openTab("war") end })
+			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local filled = math.clamp(math.floor(done / total * 10 + 0.5), 0, 10)
 			local progress = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
-			return mkRow(content, q.name, string.format("%s\n%s  %d/%d · 보상 %d코인", strandText(q), progress, done, q.amount, q.rewardCoins), buttons, if q.story then 136 else 92)
+			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
+			return mkRow(content, q.name, string.format("%s%s\n%s  %d/%d · 보상 %d코인", strandText(q), said, progress, done, q.amount, q.rewardCoins), buttons, if q.story or said ~= "" then 136 else 92)
 		end)
 	end
 	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
@@ -8799,17 +12394,17 @@ function RENDERERS.quest()
 			end)
 		end
 	end
-	-- [세계 현장 탐험] 해외 8개 권역의 다음 1~5단 목적지 표시.
+	-- [세계 현장 탐험] 10대 이야기 항로의 다음 1~5단 목적지와 단서 출처 표시.
 	-- 현지라면 탐험 탭으로, 먼 지역이면 기존 항해 지도로 안내한다.
 	if view.quests.fieldRoutes and #view.quests.fieldRoutes > 0 then
-		add(function() return mkHeader(content, "세계 현장 탐험 · 8개 권역") end)
+		add(function() return mkHeader(content, string.format("세계 탐험 · %d대 항로", view.quests.routeCount or 10)) end)
 		for _, route in view.quests.fieldRoutes do
 			add(function()
 				local action = if route.here then "탐험지" else "항해 지도"
 				local targetTab = if route.here then "explore" else "map"
 				return mkRow(content, route.name,
-					string.format("%d/5단 · %s · %s", route.grade or 1, route.port, route.summary),
-					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 94)
+					string.format("%d/5단 · %s · 단서: %s\n%s", route.grade or 1, route.port, route.leadSource or "현지 탐험", route.summary),
+					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 112)
 			end)
 		end
 	end
@@ -8830,7 +12425,6 @@ end
 
 -- 주점의 지식 카드 배틀: 카드 덱을 짜고 연습전·오늘의 퍼즐로 카드 대결을 즐긴다 (해상전과는 별개).
 function RENDERERS.gwent()
-	H.walletBar("tavern")
 	local BC = require(Shared:WaitForChild("BoardingCards"))
 	local bk = view and view.cardbook
 	local fac = view and view.deck and BC.Factions[view.deck.faction or ""]
@@ -8843,7 +12437,8 @@ function RENDERERS.gwent()
 	end
 	local total = cnt.melee + cnt.ranged + cnt.cannon + cnt.special
 	H.statStrip({
-		{ "내 덱", string.format("%s · %d장", fac and fac.name or "기본", total), tone = "key" },
+		{ "덱 진영", fac and fac.name or "기본", tone = "key" },
+		{ "보관함", string.format("%d장", total), tone = "key" },
 		{ "근접 · 사격", string.format("%d · %d", cnt.melee, cnt.ranged), tone = "key" },
 		{ "포 · 특수", string.format("%d · %d", cnt.cannon, cnt.special), tone = "key" },
 		{ "오늘 보상", string.format("%d회", (bk and bk.duelLeft) or 0), tone = "good" },
@@ -8852,11 +12447,11 @@ function RENDERERS.gwent()
 		return H.tileGrid({
 			{ icon = "codex", title = "덱 짜기", sub = "카드를 골라 덱 구성", btn = "열기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 			{ icon = "cc0_shield", title = "연습전", sub = "기본 카드로 규칙 배우기", btn = "시작", color = COLORS.green, onClick = function()
-				if H.openDeck then H.openDeck() end
+				if H.openDeck then H.openDeck(true) end
 				task.defer(function() if H.devCards and H.devCards.practice then H.devCards.practice() end end)
 			end },
 			{ icon = "cc0_sword", title = "카드 대결", sub = "이기면 새 지식 카드", btn = "대결", color = COLORS.red, onClick = function()
-				if H.openDeck then H.openDeck() end
+				if H.openDeck then H.openDeck(true) end
 				task.defer(function() if H.devCards and H.devCards.duel then H.devCards.duel() end end)
 			end },
 		}, content, 176, 150)
@@ -8973,7 +12568,7 @@ function RENDERERS.war()
 		{ "작전 후보", tostring(#(view.wars or {})) .. "개", tone = "key" },
 	})
 	add(function()
-		return mkRow(content, "대규모 해전 의뢰", "한 번의 출격이 아니라 여러 척을 차례로 상대하는 작전이에요. 파도마다 실시간으로 싸우고, 모두 돌파하면 큰 보상! 한 번이라도 지면 작전 실패예요. 파도 사이에 선체는 회복되지 않으니 아껴 싸우세요.", nil, 92)
+		return mkRow(content, "대규모 해전 의뢰", "전 차수 승리 시 완료 · 차수 사이 선체 회복 없음", nil, 60)
 	end)
 	local w = view.war
 	if w then
@@ -8997,7 +12592,6 @@ function RENDERERS.battle()
 	H.walletBar("battle")
 	H.statStrip({
 		{ "선체", string.format("%d/%d", view.ship.hull, view.ship.maxHull), tone = if view.ship.hull < view.ship.maxHull * 0.5 then "bad" else "good" },
-		{ "포문", tostring(view.ship.cannons), tone = "key" },
 		{ "승조원", string.format("%d/%d", view.ship.crew, view.ship.maxCrew), tone = "key" },
 		{ "속도", string.format("%.1f", view.ship.speed), tone = "key" },
 	})
@@ -9108,7 +12702,126 @@ H.SEA_NAMES = {
 }
 
 -- 실제 위도·경도 위에 항구를 찍은 세계지도 (Natural Earth 해안선)
+-- [외교] 나라 정세·관계·전쟁·선물·개입·항해자를 한 곳에 모은 탭 (항만청). 기존 지도 탭 하단의 외교 목록을 옮겨 왔다.
+function RENDERERS.diplomacy()
+	-- [외교 화면] 조선소 정비 바(보급·수리)는 외교와 무관해 조선소로 착각되므로 띄우지 않는다.
+	local dp = view.diplo
+	if not dp then
+		add(function() return mkLabel(content, "아직 외교 정보가 없어요.", 14, COLORS.muted, false) end)
+		return
+	end
+	local STATUS = { war = "⚔ 전쟁", hostile = "적대", neutral = "중립", friend = "우호", ally = "동맹", own = "우리" }
+	-- [외교 승인 원화] 국가와 직접 관련 있는 기존 사건·상인 카드만 사용한다. 신규 에셋 없음.
+	local nationArt = {
+		england = "event_royal_charter", netherlands = "event_anglo_dutch_war",
+		china = "event_canton_system", japan = "event_merchant_naha",
+		swahili = "event_zanzibar", malabar = "event_merchant_coromandel",
+	}
+	-- 1) 한눈에: 우리 나라 · 이 항구 나라 · 전쟁 수
+	H.statStrip({
+		{ "우리 나라", dp.power.name, tone = "key" },
+		{ "이 항구", if dp.here and dp.here.power then string.format("%s · %s", dp.here.power, STATUS[dp.here.status] or "") else "-", tone = "key" },
+		{ "큰 전쟁", tostring(#dp.wars) .. "건", tone = if #dp.wars > 0 then "bad" else "good" },
+	})
+	-- 2) 이 항구 나라: 지도자·군사·연구·문화권·관세 (국가 시뮬 요약)
+	local nat = view.harbor and view.harbor.sim and view.harbor.sim.nation
+	if nat and nat.lines then
+		add(function() return mkHeader(content, "이 항구의 나라") end)
+		add(function() return mkLabel(content, table.concat(nat.lines, "\n"), 14, COLORS.text, true) end)
+	end
+	-- 3) 세계 정세: 국력 순위
+	if view.worldNations and #view.worldNations > 0 then
+		add(function() return mkHeader(content, "세계 정세 · 국력 순위") end)
+		for _, n in view.worldNations do
+			add(function()
+				local sub = string.format("%s · %s\n육군 %.0f · 해군 %.0f · 발견 %d종%s%s", n.leader, n.regime, n.army, n.navy, n.techs,
+					if n.war then " · 전쟁: " .. n.war else "", if n.allies > 0 then string.format(" · 동맹 %d", n.allies) else "")
+				local natInfo = PortData.Nations[n.id]
+				local nationName = if natInfo then natInfo.name else tostring(n.id)
+				local row = mkRow(content, string.format("%d위 %s%s", n.rank, nationName, if n.hegemon then " · 패권국" else ""), sub, {}, 70)
+				-- [외교 원화] 국가 순위의 이름을 누르면 같은 시설 원화 카드에 해당 국가를 표시한다.
+				local choose = Instance.new("TextButton")
+				choose.Name = "DiplomacyArtwork_" .. tostring(n.id)
+				choose.Text = ""
+				choose.BackgroundTransparency = 1
+				choose.BorderSizePixel = 0
+				choose.Size = UDim2.fromScale(1, 1)
+				choose.ZIndex = row.ZIndex + 3
+				choose.Parent = row
+				choose.Activated:Connect(function()
+					H.gallerySelection = { tab = "diplomacy", name = nationName, search = nationName, art = nationArt[n.id] }
+					H.renderFacilityGallery()
+				end)
+				return row
+			end)
+		end
+	end
+	-- 4) 관계·전쟁, 외교 행동(선물·증서·전쟁 개입), 항해자
+	add(function()
+		return mkLabel(content, string.format("🏳 국가 관계 — 우리는 %s%s", dp.power.name, if dp.here and dp.here.power then string.format(" · 이 항구: %s (%s)", dp.here.power, STATUS[dp.here.status] or "") else " · 이 항구: 자유 항구"), 15, COLORS.gold, true)
+	end)
+	if #dp.wars == 0 then
+		add(function() return mkLabel(content, "지금은 큰 전쟁이 없어요. 항구들이 평화롭게 오가요.", 12, COLORS.muted, false) end)
+	end
+	for _, w in dp.wars do
+		add(function()
+			return mkRow(content, (if w.mine then "⚔ [우리 편 연루] " else "⚔ ") .. w.title, string.format("%s 대 %s · %d년까지\n%s", w.a, w.b, w.until_, w.text), {}, 84)
+		end)
+	end
+	add(function()
+		local parts = {}
+		for _, r in dp.rel do
+			table.insert(parts, string.format("%s %s(%d)", r.name, STATUS[r.status] or "", r.rep))
+		end
+		return mkLabel(content, table.concat(parts, "  ·  "), 11, COLORS.muted, false)
+	end)
+	add(function()
+		return mkRow(content, "외교", string.format("선물로 호감을 쌓거나, 통행 증서(%d일)로 적국 항구의 입항세를 면해요.%s", 60, if dp.here and dp.here.passLeft > 0 then string.format(" 증서 %d일 남음", dp.here.passLeft) else ""), {
+			{ text = string.format("선물 %d", dp.giftCost), color = COLORS.green, onClick = function() call("DiploGift", {}) end, enabled = dp.here ~= nil and dp.here.canGift == true },
+			{ text = string.format("증서 %d", dp.passCost), color = COLORS.blue, onClick = function() call("DiploPass", {}) end, enabled = true },
+		}, 84)
+	end)
+	add(function()
+		return mkRow(content, "전쟁 개입", "이 항구 나라가 전쟁 중이면 군수 물자(전쟁 점수↑), 중재(휴전 시도), 용병 해군(6개월)을 쓸 수 있어요. 성공할 때만 코인이 나가요.", {
+			{ text = "군수 500", color = COLORS.green, onClick = function() call("DiploAid", { kind = "supply", amount = 500 }) end, enabled = true },
+			{ text = "중재 500", color = COLORS.blue, onClick = function() call("DiploAid", { kind = "mediate", amount = 500 }) end, enabled = true },
+			{ text = "용병 500", color = COLORS.gold, onClick = function() call("DiploAid", { kind = "mercenary", amount = 500 }) end, enabled = true },
+		}, 96)
+	end)
+	add(function()
+		return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
+	end)
+	if #dp.voyagers == 0 then
+		add(function() return mkLabel(content, "지금 이 항구에 머무는 다른 항해자는 없어요.", 12, COLORS.muted, false) end)
+	end
+	for _, v in dp.voyagers do
+		add(function()
+			return mkRow(content, string.format("%s · %s (%s)", v.name, v.role, v.power), v.text, {
+				{ text = if v.met then "대화" else "인사", color = COLORS.green, onClick = function() call("VoyagerMeet", { id = v.id }) end, enabled = true },
+			}, 96)
+		end)
+	end
+	if #dp.sea > 0 then
+		add(function()
+			local lines = {}
+			for _, v in dp.sea do
+				table.insert(lines, string.format("%s(%s) %s → %s %d%%", v.name, v.role, v.from, v.to, v.pct))
+			end
+			return mkLabel(content, "🌊 항해 중: " .. table.concat(lines, " · "), 11, COLORS.muted, false)
+		end)
+	end
+end
+
 function RENDERERS.map()
+	-- [항구 선택 원화] 지도 점 또는 해역 목록에서 고른 항구에 맞는 승인 해역 원화를 사용한다.
+	if selectedPort and PortData.Ports[selectedPort] then
+		local port = PortData.Ports[selectedPort]
+		H.gallerySelection = { tab = "map", name = port.name, search = port.name,
+			chart = H.chartForPort(selectedPort) }
+	else
+		H.gallerySelection = nil
+	end
+	H.renderFacilityGallery()
 	-- 상단 바로가기는 지도를, 항해 일지는 기록을 먼저 펼친다.
 	if H.mapPage ~= "chart" then
 		local p = view.player
@@ -9349,57 +13062,6 @@ function RENDERERS.map()
 			}, 56)
 		end)
 	end
-	-- 국가 관계·전쟁·다른 항해자
-	if view.diplo then
-		local dp = view.diplo
-		local STATUS = { war = "⚔ 전쟁", hostile = "적대", neutral = "중립", friend = "우호", ally = "동맹", own = "우리" }
-		add(function()
-			return mkLabel(content, string.format("🏳 국가 관계 — 우리는 %s%s", dp.power.name, if dp.here and dp.here.power then string.format(" · 이 항구: %s (%s)", dp.here.power, STATUS[dp.here.status] or "") else " · 이 항구: 자유 항구"), 15, COLORS.gold, true)
-		end)
-		if #dp.wars == 0 then
-			add(function() return mkLabel(content, "지금은 큰 전쟁이 없어요. 항구들이 평화롭게 오가요.", 12, COLORS.muted, false) end)
-		end
-		for _, w in dp.wars do
-			add(function()
-				return mkRow(content, (if w.mine then "⚔ [우리 편 연루] " else "⚔ ") .. w.title, string.format("%s 대 %s · %d년까지\n%s", w.a, w.b, w.until_, w.text), {}, 84)
-			end)
-		end
-		add(function()
-			local parts = {}
-			for _, r in dp.rel do
-				table.insert(parts, string.format("%s %s(%d)", r.name, STATUS[r.status] or "", r.rep))
-			end
-			return mkLabel(content, table.concat(parts, "  ·  "), 11, COLORS.muted, false)
-		end)
-		add(function()
-			return mkRow(content, "외교", string.format("선물로 호감을 쌓거나, 통행 증서(%d일)로 적국 항구의 입항세를 면해요.%s", 60, if dp.here and dp.here.passLeft > 0 then string.format(" 증서 %d일 남음", dp.here.passLeft) else ""), {
-				{ text = string.format("선물 %d", dp.giftCost), color = COLORS.green, onClick = function() call("DiploGift", {}) end, enabled = dp.here ~= nil and dp.here.canGift == true },
-				{ text = string.format("증서 %d", dp.passCost), color = COLORS.blue, onClick = function() call("DiploPass", {}) end, enabled = true },
-			}, 84)
-		end)
-		add(function()
-			return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
-		end)
-		if #dp.voyagers == 0 then
-			add(function() return mkLabel(content, "지금 이 항구에 머무는 다른 항해자는 없어요.", 12, COLORS.muted, false) end)
-		end
-		for _, v in dp.voyagers do
-			add(function()
-				return mkRow(content, string.format("%s · %s (%s)", v.name, v.role, v.power), v.text, {
-					{ text = if v.met then "대화" else "인사", color = COLORS.green, onClick = function() call("VoyagerMeet", { id = v.id }) end, enabled = true },
-				}, 96)
-			end)
-		end
-		if #dp.sea > 0 then
-			add(function()
-				local lines = {}
-				for _, v in dp.sea do
-					table.insert(lines, string.format("%s(%s) %s → %s %d%%", v.name, v.role, v.from, v.to, v.pct))
-				end
-				return mkLabel(content, "🌊 항해 중: " .. table.concat(lines, " · "), 11, COLORS.muted, false)
-			end)
-		end
-	end
 	local function addSelectedRoute()
 		if selectedPort and selectedPort ~= view.player.portId then
 			for _, r in view.routes do
@@ -9478,61 +13140,129 @@ H.TAB_ICON = {
 	-- [의미 통일] 등록된 투명 황동 원화 우선. 별도 원화가 없는 메뉴만 기존 렌더러의 황동 도형을 쓴다.
 	-- 주점: 의뢰판/퀘스트/동료, 전투: 전투/탐험/함대전/카드, 서재: 보고/백과/연구.
 	board = { "Glyph", "board" }, quest = { "Menu", "quest" }, recruit = { "Glyph", "recruit" }, explore = { "Menu", "explore" },
-	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
+	route = { "Menu", "route" }, map = { "Menu", "map" }, trade = { "Menu", "trade" }, market = { "Menu", "trade" }, harbor = { "Menu", "harbor" },
 	yard = { "Menu", "yard" }, battle = { "Menu", "battle" }, war = { "Glyph", "war" }, gwent = { "Glyph", "gwent" },
-	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, tech = { "Glyph", "research" },
+	scholar = { "Glyph", "scholar" }, codex = { "Menu", "codex" }, encyclopedia = { "Menu", "codex" }, tech = { "Glyph", "research" },
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
+	diplomacy = { "Castle", "flag-banner-short" }, -- 승인된 외교 서신 원화가 없을 때만 기존 모델 사용
 }
 function H.renderTabs()
-	-- [중복 렌더 제거] 같은 탭의 상태/재화가 바뀌어도 메뉴 버튼과 원화를 매번 파괴하지 않는다.
-	-- 탭 전환 시에만 다시 만들고, 화면 크기 변경은 기존 UIGridLayout이 맡는다.
-	if H.renderedTabId == currentTab and tabBar:FindFirstChild("FacilityTab_" .. currentTab) then
-		return
-	end
-	for _, child in tabBar:GetChildren() do
-		if child:IsA("TextButton") then
-			child:Destroy()
+	-- [시설 아이콘 동작] 기존 탭 아이콘에만 터치 선택·마우스 반응을 적용한다.
+	-- 매 프레임 갱신이나 무한 반복은 사용하지 않아 모바일 배터리·입력 성능을 유지한다.
+	local motionService = game:GetService("TweenService")
+	local motionSettings = game:GetService("GuiService")
+	-- [시설 탭 재사용] 같은 시설 안에서 이동할 때 아이콘·원화를 다시 생성하지 않는다.
+	-- 소속 시설이 바뀌거나 버튼이 없을 때에만 기존 생성 경로를 사용한다.
+	local g = groupOf(currentTab)
+	local cached = H.renderedTabGroup == g.name
+	if cached then
+		for _, id in g.tabs do
+			if not H.tabStrip:FindFirstChild("FacilityTab_" .. id) then cached = false; break end
 		end
 	end
-	local g = groupOf(currentTab)
+	if cached then
+		if H.renderedTabId ~= currentTab then
+			for _, id in g.tabs do
+				local b = H.tabStrip:FindFirstChild("FacilityTab_" .. id)
+				local selected = id == currentTab
+				b:SetAttribute("SelectedTab", selected)
+				b.BackgroundColor3 = if selected then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(91, 67, 47)
+				b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
+				local gradient = b:FindFirstChildOfClass("UIGradient")
+				if gradient then
+					gradient.Color = ColorSequence.new(
+						if selected then Color3.fromRGB(254, 224, 158) else Color3.fromRGB(131, 99, 69),
+						if selected then Color3.fromRGB(193, 146, 72) else Color3.fromRGB(74, 51, 35))
+				end
+				local grain = b:FindFirstChild("BookMaterial")
+				if grain then
+					grain.ImageColor3 = if selected then Color3.fromRGB(252, 220, 148) else Color3.fromRGB(138, 111, 78)
+					grain.ImageTransparency = if selected then 0.55 else 0.58
+				end
+				local border = b:FindFirstChildOfClass("UIStroke")
+				if border then
+					border.Color = if selected then UI_BRASS_DARK else Color3.fromRGB(205, 163, 93)
+					border.Thickness = if selected then 2.5 else 1.6
+				end
+				local underline = b:FindFirstChild("ActiveTabRule")
+				if underline then underline.Visible = selected end
+				local icon = b:FindFirstChild("TabIcon")
+				local iconScale = icon and icon:FindFirstChild("TabIconScale")
+				if selected and iconScale and not motionSettings.ReducedMotionEnabled then
+					motionService:Create(iconScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
+						Scale = 1.15,
+					}):Play()
+				end
+			end
+		end
+		H.renderedTabId = currentTab
+		return
+	end
+	for _, child in H.tabStrip:GetChildren() do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local b = mkButton(tabBar, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(68, 38), function()
-			currentTab = id
-			Sfx.facilityCue(id)
-			message = "" -- 지난 탭의 안내 문구가 새 탭 맨 위에 남지 않게
-			H.mapPage = nil
-			if id ~= "battle" then
-				equipped = nil
-			end
-			render()
+		local compactTabs = mainInner.AbsoluteSize.X < 740
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, if compactTabs then 52 else 54), function()
+			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
+			openTab(id)
 		end, true)
 		b.Name = "FacilityTab_" .. id
 		b.LayoutOrder = i
 		b:SetAttribute("SelectedTab", selected)
-		b.TextColor3 = if selected then INK else INK_SOFT
-		b.TextSize = 16
+		b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
+		b.TextSize = 18
+		for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
+			local decoration = b:FindFirstChild(name)
+			if decoration then decoration.Visible = false end
+		end
 		local ti = H.TAB_ICON[id]
 		if ti then
-			-- [공통 규격] 도크는 36px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
-			local icon = modelIcon(b, ti[1], ti[2], nil, 26, TAB_NAME[id])
+			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
+			local atlas = H.hasIconArt(id)
+			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
 			icon.Name = "TabIcon"
-			icon.Position = UDim2.new(0, 7, 0.5, -13)
+			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
+			icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
-			local pad = Instance.new("UIPadding")
-			pad.PaddingLeft = UDim.new(0, 35)
-			pad.Parent = b
+			-- [아이콘 일관성] 원화 아틀라스와 기존 황동 도형 모두 같은 15% 선택 확대를 쓴다.
+			-- UIScale은 버튼의 클릭 영역·스크롤 탭 크기·원본 이미지 자산을 바꾸지 않는다.
+			local iconScale = Instance.new("UIScale")
+			iconScale.Name = "TabIconScale"
+			iconScale.Scale = 1
+			iconScale.Parent = icon
+			b.MouseEnter:Connect(function()
+				if not motionSettings.ReducedMotionEnabled then
+					motionService:Create(iconScale, TweenInfo.new(0.16, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+						Scale = 1.1,
+					}):Play()
+				end
+			end)
+			b.MouseLeave:Connect(function()
+				if iconScale.Parent then
+					motionService:Create(iconScale, TweenInfo.new(0.18, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+						Scale = 1,
+					}):Play()
+				end
+			end)
+			if selected and not motionSettings.ReducedMotionEnabled then
+				motionService:Create(iconScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
+					Scale = 1.15,
+				}):Play()
+			end
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
-				caption.Position = UDim2.fromOffset(35, 1)
-				caption.Size = UDim2.new(1, -39, 1, -2)
+				caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
+				caption.Size = if compactTabs then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
 				caption.TextWrapped = false
 				caption.TextScaled = true
+				caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
 				local textLimit = Instance.new("UITextSizeConstraint")
-				textLimit.MinTextSize = 10
-				textLimit.MaxTextSize = 14
+				textLimit.MinTextSize = 11
+				textLimit.MaxTextSize = if compactTabs then 14 else 17
 				textLimit.Parent = caption
 			else
 				b.TextXAlignment = Enum.TextXAlignment.Right
@@ -9540,17 +13270,22 @@ function H.renderTabs()
 			end
 		end
 		if selected then
-			-- [선택 상태] 글자색 외에 황동 밑줄을 넣어 원화 색을 바꾸지 않고도 선택 탭이 드러나게 한다.
-			local rule = Instance.new("Frame")
-			rule.Name = "ActiveTabRule"
-			rule.BackgroundColor3 = UI_BRASS_DARK
-			rule.BorderSizePixel = 0
-			rule.Position = UDim2.new(0, 8, 1, -4)
-			rule.Size = UDim2.new(1, -16, 0, 3)
-			rule.ZIndex = b.ZIndex + 3
-			rule.Parent = b
+            -- [선택한 책갈피] 황동 가장자리와 얇은 가죽 표식을 더해 색면 없이 위치를 구분한다.
+            local border = b:FindFirstChildOfClass("UIStroke")
+            if border then border.Color = UI_BRASS_DARK; border.Thickness = 2.5 end
 		end
+		-- [선택 띠 재사용] 모든 탭에 한 번 만들고 선택 시 보이기만 전환한다.
+		local rule = Instance.new("Frame")
+		rule.Name = "ActiveTabRule"
+		rule.BackgroundColor3 = UI_BRASS_DARK
+		rule.BorderSizePixel = 0
+		rule.Position = UDim2.new(0, 8, 1, -4)
+		rule.Size = UDim2.new(1, -16, 0, 2)
+		rule.ZIndex = b.ZIndex + 3
+		rule.Visible = selected
+		rule.Parent = b
 	end
+	H.renderedTabGroup = g.name
 	H.renderedTabId = currentTab
 end
 
@@ -9559,7 +13294,7 @@ H.closeX = Instance.new("TextButton")
 H.closeX.Name = "CloseX"
 H.closeX.AnchorPoint = Vector2.new(1, 0)
 H.closeX.Position = UDim2.new(1, -8, 0, 8)
-H.closeX.Size = UDim2.fromOffset(40, 40)
+H.closeX.Size = UDim2.fromOffset(44, 44)
 H.closeX.BackgroundColor3 = COLORS.leather
 H.closeX.Text = "×"
 H.closeX.Font = Enum.Font.GothamBold
@@ -9568,6 +13303,13 @@ H.closeX.TextColor3 = Color3.fromRGB(255, 244, 214)
 H.closeX.AutoButtonColor = true
 H.closeX.ZIndex = 30
 H.closeX.Parent = mainInner
+if H.facilityIconAtlas then
+	local icon = modelIcon(H.closeX, "FacilityArt", "close", nil, 22, "닫기")
+	icon.AnchorPoint = Vector2.new(0.5, 0.5)
+	icon.Position = UDim2.fromScale(0.5, 0.5)
+	icon.ZIndex = H.closeX.ZIndex + 1
+	H.closeX.TextTransparency = 1
+end
 corner(H.closeX, 8)
 hudStroke(H.closeX, 1.5)
 H.closeX.Activated:Connect(function()
@@ -9582,20 +13324,36 @@ syncScene = function()
 	if sceneHold or inField then
 		return -- 항해 중·지상 탐험 중에는 항구 장면을 다시 짓거나 캐릭터를 항구로 되돌리지 않는다
 	end
-	-- 서버가 CC0 모델을 불러오는 동안(최대 약 25초) 기다렸다가 장면을 만든다
+	-- [시작 로딩 단축] 첫 장면 모델만 최대 5초 기다리고 기존 항구를 만든다.
+	-- 전체 모델 수입 종료 후 현재 항구를 한 번 갱신하며 메뉴·저장·항해는 기다리지 않는다.
 	local RS = game:GetService("ReplicatedStorage")
-	if not RS:GetAttribute("MareAssetsReady") and not H.assetWaitDone then
+	if not H.assetWaitDone then
 		if not assetWaitStarted then
 			assetWaitStarted = true
 			task.spawn(function()
 				local t0 = os.clock()
-				while not RS:GetAttribute("MareAssetsReady") and os.clock() - t0 < 45 do
-					task.wait(0.3)
+				while not RS:GetAttribute("MareAssetsReady") and os.clock() - t0 < 5 and player.Parent do
+					task.wait(0.2)
 				end
-				H.assetWaitDone = true -- 모델이 덜 와도 장면은 만든다 (하늘에 캐릭터만 뜨는 것 방지)
+				if not player.Parent then return end
+				local assetsSettled = RS:GetAttribute("MareAssetsSettled") == true
+				H.assetWaitDone = true
 				sceneKey = nil
-				if view then
+				if view and not sceneHold and not inField then
 					syncScene()
+				end
+				if not assetsSettled then
+					-- 초기 준비가 먼저 끝나도 전체 수입 종료까지 한 번만 기다린다.
+					-- 출항·탐험 중 장면을 빼앗지 않고 다음 항구 진입에서 최신 모델을 사용한다.
+					while not RS:GetAttribute("MareAssetsSettled") and player.Parent do
+						task.wait(0.5)
+					end
+					if player.Parent and RS:GetAttribute("MareAssetsSettled") and view then
+						sceneKey = nil
+						if not sceneHold and not inField then
+							syncScene()
+						end
+					end
 				end
 			end)
 		end
@@ -9622,6 +13380,12 @@ syncScene = function()
 		H.shownLv[p.portId] = portLevel
 	end
 	local construction = nil
+	-- [건축 시뮬] 플레이어가 지은 건물의 공사 기간에는 공사장(비계·일꾼)과 진행 공정을 보여 준다.
+	local proj = view and view.buildProjects and view.buildProjects[1]
+	if proj then
+		construction = { to = portLevel, seconds = 0, progress = proj.progress, label = proj.name, paused = proj.paused ~= nil }
+	end
+	H.buildCelebrate = view and view.buildCelebrate or nil
 	if portLevel > shownLv then
 		local secs = math.clamp(40 * (portLevel - shownLv), 40, 120)
 		construction = { to = portLevel, seconds = secs }
@@ -9631,8 +13395,11 @@ syncScene = function()
 			task.delay(secs, function()
 				H.buildDue[pid] = nil
 				H.shownLv[pid] = nil -- 다음 동기화에서 현재 단계로 확정
-				sceneKey = nil
-				if syncScene then pcall(syncScene) end
+				-- [항구 중복 생성 방지] 다른 항구의 공사 완료는 그 항구를 다시 방문할 때 반영한다.
+				if view and view.player and view.player.portId == pid then
+					sceneKey = nil
+					if syncScene then pcall(syncScene) end
+				end
 			end)
 		end
 		portLevel = shownLv
@@ -9674,16 +13441,32 @@ syncScene = function()
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
 	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp .. "_B" .. buildStamp) or "-") .. "|V" .. siteStamp .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	-- [분할 생성 재진입 방지] 기존 키와 같더라도 생성 중에는 최신 상태 확인을 예약한다.
+	-- A→B 생성 중 다시 A로 돌아오면 이전 A의 키만 보고 갱신을 누락하지 않는다.
+	if H.portBuilding then
+		H.portBuildPending = true
+		return
+	end
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
 	end
 	workspace:SetAttribute("PortMood", sim and sim.mood or "steady")
+	H.portBuilding = true
+	H.portBuildPending = false
+	-- [상태 갱신과 장면 생성 분리] 분할 생성(약 6.5초)을 호출한 쪽이 끝까지 기다리면 State 갱신·탭 전환 같은
+	-- 같은 스레드의 다음 동작이 그동안 막혔다(정밀검사 233단계 4초 대기 초과 반복: 44980792550, 44980939526).
+	-- 생성은 별도 스레드에서 진행하고, 재진입은 기존 portBuilding/portBuildPending 장치가 막는다.
+	task.spawn(function()
+	-- [항구 전환 체감 시간] 생성 시간만이 아니라 첫 화면 표시·실제 조작 가능 시점을 따로 잰다.
+	local transitionStart = os.clock()
+	local timing = H.measurePortTransition(transitionStart, p.portId)
 	local ok, res = pcall(PortScene.build, {
 		portId = p.portId,
 		portName = p.portName,
 		level = portLevel,
 		construction = construction,
+		celebrate = H.buildCelebrate, -- [완공 축하] 최근 완공 건물: 깃발·축하 인파
 		econ = econKind,
 		econIndex = eco.index,
 		sim = sim,
@@ -9703,24 +13486,23 @@ syncScene = function()
 		companions = crew,
 		voyagers = view.diplo and view.diplo.voyagers,
 		arrive = arriveNext,
-	}, function(tab)
-		currentTab = tab
-		H.mapPage = nil
-		menuToggle.Visible = false
-		if tab == "trade" then
-			openTradeHall()
-		elseif tab == "yard" then
-			openYardHall()
-		else
-			main.Visible = true
-			render()
-		end
+	}, function(tab, facility)
+		-- [방문 단일화] 건물·HUD 이동은 동일한 탭 함수를 사용한다. 건물명만 UI에 전달한다.
+		if TAB_NAME[tab] then openTab(tab, nil, facility) end
 	end)
+	H.portBuilding = false
+	timing.buildEnd = os.clock()
+	if H.portBuildPending then
+		-- 생성 중 들어온 갱신은 최신 view로 다시 맞춘다. 같은 열쇠면 곧바로 끝난다.
+		H.portBuildPending = false
+		task.defer(function() if syncScene then syncScene() end end)
+	end
 	if not ok then
 		warn("[Game] 항구 장면 오류", res)
 		if H.portLoadingLabel then H.portLoadingLabel.Text = "항구 준비 오류 · 다시 접속해 줘." end
 		return
 	end
+	local postStart = os.clock()
 	sceneKey = key
 	sceneCtl = res.controls
 	arriveNext = false
@@ -9728,6 +13510,50 @@ syncScene = function()
 	applyView()
 	-- [준비 완료] 실제 항구가 설치된 뒤에만 시작 배경을 닫는다.
 	if H.setTitleMode then H.setTitleMode(not view or newGameMode) end
+	-- [멈춤 원인 실측] 생성 직후 화면 적용(카메라·UI) 구간도 따로 잰다.
+	workspace:SetAttribute("PortPostBuildMs", math.floor((os.clock() - postStart) * 1000))
+	end)
+end
+
+-- [항구 전환 체감 시간] 생성(빌드)·첫 화면·조작 가능 시점을 각각 기록한다.
+-- 빌드가 메인 스레드를 막는 동안에는 Heartbeat가 오지 않으므로 첫 Heartbeat 간격이 실제 멈춤 시간이다.
+-- 조작 가능 = 첫 화면 뒤 프레임 간격이 100ms 미만으로 돌아온 첫 시점. 출력 로그는 남기지 않고 속성만 쓴다.
+-- 분할 생성 중에는 기존 항구가 보이고 입력도 처리되므로, 측정은 생성 시작부터 한다.
+-- buildMs = 새 항구 생성 완료, firstFrameMs = 새 항구가 처음 그려진 프레임, inputReadyMs = 시작 후 프레임 간격이 처음 100ms 미만,
+-- maxStallMs = 전환 전체에서 가장 긴 멈춤.
+function H.measurePortTransition(startedAt: number, portId: string)
+	local timing = { buildEnd = nil :: number?, stallAt = nil :: number?, stallPhase = nil :: string? }
+	local last = startedAt
+	local firstFrameAt: number? = nil
+	local readyAt: number? = nil
+	local maxStall = 0
+	local conn
+	conn = RunService.Heartbeat:Connect(function()
+		local now = os.clock()
+		local dt = now - last
+		last = now
+		if dt > maxStall then
+			maxStall = dt
+			-- [최장 멈춤 위치] 시작 후 몇 ms에, 생성 중/후 어느 단계에서 났는지 남긴다.
+			timing.stallAt = math.floor((now - startedAt) * 1000)
+			timing.stallPhase = if timing.buildEnd then (if now - timing.buildEnd < 0.5 then "afterBuild" else "late") else "duringBuild"
+		end
+		if not readyAt and dt < 0.1 then readyAt = now end
+		if timing.buildEnd and not firstFrameAt then firstFrameAt = now end
+		local buildEnd = timing.buildEnd
+		if (buildEnd and firstFrameAt and readyAt and now - startedAt > 3) or now - startedAt > 30 then
+			conn:Disconnect()
+			buildEnd = buildEnd or now
+			workspace:SetAttribute("PortTransitionBuildMs", math.floor((buildEnd - startedAt) * 1000))
+			workspace:SetAttribute("PortTransitionFirstFrameMs", math.floor(((firstFrameAt or now) - startedAt) * 1000))
+			workspace:SetAttribute("PortTransitionInputReadyMs", if readyAt then math.floor((readyAt - startedAt) * 1000) else -1)
+			workspace:SetAttribute("PortTransitionMaxStallMs", math.floor(maxStall * 1000))
+			workspace:SetAttribute("PortTransitionStallAt", tostring(timing.stallAt) .. "ms:" .. tostring(timing.stallPhase))
+			workspace:SetAttribute("PortTransitionPort", portId)
+			workspace:SetAttribute("PortTransitionSeq", (workspace:GetAttribute("PortTransitionSeq") or 0) + 1)
+		end
+	end)
+	return timing
 end
 
 -- 항구 전경: 대항해시대 온라인처럼 항구 전체를 보여 주는 고정 시점 (천천히 흔들린다)
@@ -10207,10 +14033,12 @@ end
 function H.startNewGame()
 	local restart = view ~= nil
 	newGameMode = false
+	H.openingPending = true -- 시작 응답을 기다리는 사이 카드 창이 겹치지 않도록 선점한다.
 	sceneHold = true -- 오프닝이 끝날 때까지 마을 장면을 먼저 짓지 않는다
 	local result = call("NewGame", { nationId = chosenNation, startYear = chosenYear, origin = H.chosenOrigin, restart = restart, room = H.roomMode == true })
 	if not (result and result.ok) then
 		sceneHold = false
+		H.openingPending = false
 	end
 	if not (result and result.ok) and restart then
 		newGameMode = true
@@ -10238,7 +14066,7 @@ titleGui.ScreenInsets = Enum.ScreenInsets.None
 titleGui.ClipToDeviceSafeArea = false
 titleGui.Enabled = false
 ;(function()
-	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(40, 76, 98))
+	local root = mkBox(titleGui, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(54, 38, 27))
 	root.ClipsDescendants = true
 	-- [바닥 준비 대기] 원본 표지 배경 위에 상태만 표시한다. 새 화면·우회 로딩 파이프라인은 만들지 않는다.
 	H.portLoadingLabel = Instance.new("TextLabel")
@@ -10300,7 +14128,7 @@ titleGui.Enabled = false
 	})
 	rayFade.Parent = rays
 
-	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(23, 26, 30), 0.28)
+	local shade = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(41, 28, 21), 0.28)
 	shade.ZIndex = 5
 	local shadeFade = Instance.new("UIGradient")
 	shadeFade.Transparency = NumberSequence.new(1, 0)
@@ -10322,7 +14150,7 @@ titleGui.Enabled = false
 	subtitle.TextStrokeColor3 = COLORS.ink
 	subtitle.TextStrokeTransparency = 0.6
 	subtitle.ZIndex = 6
-	local curtain = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(19, 24, 30), 1)
+	local curtain = mkBox(root, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.fromRGB(36, 25, 19), 1)
 	curtain.ZIndex = 8
 
 	local function layout()
@@ -10379,10 +14207,13 @@ titleGui.Enabled = false
 			curtain.BackgroundTransparency = math.clamp(t / 1.1, 0, 1)
 			rayFade.Offset = Vector2.new(math.sin(t * 0.31) * 0.24, 0)
 			if layered then
-				local swell = t * 0.91
-				local pitch = math.sin(swell - 0.68) * 1.05 + math.sin(t * 1.44) * 0.22
+				-- [표지 배] 원본 이미지는 유지하고, 빠른 떨림 대신 긴 파도와 미세한 수평 이동만 적용한다.
+				local slowWave = t * 0.48
+				local pitch = math.sin(slowWave - 0.68) * 0.72 + math.sin(t * 0.29) * 0.15
+				local drift = math.sin(t * 0.23) * math.min(18, ship.AbsoluteSize.X * 0.034)
 				local pivotShift = math.sin(math.rad(pitch)) * ship.AbsoluteSize.Y * 0.34
-				ship.Position = UDim2.fromOffset(shipX + pivotShift, shipY + math.sin(swell) * waveHeight)
+				local bob = math.sin(t * 0.76) * waveHeight * 0.68 + math.sin(t * 0.41 + 0.8) * waveHeight * 0.22
+				ship.Position = UDim2.fromOffset(shipX + drift + pivotShift, shipY + bob)
 				ship.Rotation = pitch
 			end
 		end)
@@ -10485,6 +14316,7 @@ local function tLabel(parent, text, size, color, bold, order)
 end
 
 renderTitle = function()
+	local previousScroll = titleScroll.CanvasPosition.Y
 	for _, c in titleScroll:GetChildren() do
 		if not c:IsA("UIListLayout") and not c:IsA("UIPadding") then
 			c:Destroy()
@@ -10529,6 +14361,65 @@ renderTitle = function()
 		tLabel(titleScroll, message, 17, if messageOk then GOLD else COLORS.red, true, nxt())
 	end
 
+	-- [첫 화면 단일화] 저장된 항해와 새 항해 준비를 기존 표지의 같은 페이지에서 선택한다.
+	local setupOpen = not view or newGameMode or H.titleSetupOpen
+	if view then
+		local current = view.player
+		tLabel(titleScroll, string.format("기존 항해 · %s · %d년 · %s코인",
+			current.portName, current.year, H.commas(current.coins)), 16, INK_SOFT, false, nxt())
+		local firstActions = Instance.new("Frame")
+		firstActions.Name = "TitleQuickActions"
+		firstActions.BackgroundTransparency = 1
+		firstActions.Size = UDim2.new(1, 0, 0, 58)
+		firstActions.LayoutOrder = nxt()
+		firstActions.ZIndex = 12
+		firstActions.Parent = titleScroll
+		local resume = mkButton(firstActions, "▶ 이어하기", COLORS.gold, UDim2.new(0.55, -4, 1, 0), function()
+			H.titleMenuOpen = false
+			H.titleSetupOpen = false
+			H.titleConfirmRestart = false
+			newGameMode = false
+			H.setTitleMode(false) -- [이어하기] 기존 항구가 준비될 때까지는 로딩 표지를 유지한다.
+			render()
+			menuToggle.Visible = false
+		end, true)
+		resume.Position = UDim2.new(0, 0, 0, 0)
+		resume.ZIndex = 13
+		local prepare = mkButton(firstActions, if setupOpen then "설정 접기" else "＋ 새 항해", COLORS.blue, UDim2.new(0.45, -4, 1, 0), function()
+			H.titleSetupOpen = not setupOpen
+			newGameMode = H.titleSetupOpen
+			H.titleConfirmRestart = false
+			renderTitle()
+		end, true)
+		prepare.Position = UDim2.new(0.55, 4, 0, 0)
+		prepare.ZIndex = 13
+		if not setupOpen then
+			tLabel(titleScroll, "새 항해를 준비해도 기존 기록은 출항 확인 전까지 유지돼.", 15, INK_SOFT, false, nxt())
+		end
+	end
+	local optionRow = Instance.new("Frame")
+	optionRow.Name = "TitleControls"
+	optionRow.BackgroundTransparency = 1
+	optionRow.Size = UDim2.new(1, 0, 0, 46)
+	-- [표제지 동선] 새 항해에서는 출신·나라·출항을 설정과 음악보다 먼저 보여 준다.
+	optionRow.LayoutOrder = if setupOpen then 1000 else nxt()
+	optionRow.ZIndex = 12
+	optionRow.Parent = titleScroll
+	local settings = mkButton(optionRow, "설정", COLORS.paper, UDim2.new(0.5, -4, 1, 0), openOptions, true)
+	settings.ZIndex = 13
+	local music
+	music = mkButton(optionRow, if Sfx.state() then "음악 켜짐" else "음악 꺼짐", COLORS.paper,
+		UDim2.new(0.5, -4, 1, 0), function()
+			Sfx.setMusicEnabled(not Sfx.state())
+			music.Text = if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
+		end, true)
+	music.Position = UDim2.new(0.5, 4, 0, 0)
+	music.ZIndex = 13
+	if not setupOpen then
+		titleScroll.CanvasPosition = Vector2.new(0, previousScroll)
+		return
+	end
+
 	-- ① 나라
 	tLabel(titleScroll, "① 출발할 나라를 선택해", 22, COLORS.muted, true, nxt())
 	local grid = Instance.new("Frame")
@@ -10557,8 +14448,19 @@ renderTitle = function()
 		local st = Instance.new("UIStroke")
 		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		st.Thickness = if selected then 2.5 else 1
-		st.Color = if selected then INK_EDGE else Color3.fromRGB(151, 114, 75)
-		st.Parent = card
+		st.Color = if selected then UI_BRASS_DARK else Color3.fromRGB(151, 114, 75)
+        st.Parent = card
+        -- [나라 선택] 현재 페이지의 황동 책갈피. 국기·이름·항구 글씨는 보존.
+        if selected then
+            local mark = Instance.new("Frame")
+            mark.Name = "SelectedNationBookmark"
+            mark.BackgroundColor3 = UI_BRASS_DARK
+            mark.BorderSizePixel = 0
+            mark.Position = UDim2.new(0, 5, 1, -5)
+            mark.Size = UDim2.new(1, -10, 0, 3)
+            mark.ZIndex = 16
+            mark.Parent = card
+        end
 		local flag = require(Shared:WaitForChild("Flags")).build(card, n.id, 34, 24)
 		flag.Position = UDim2.fromOffset(8, 13)
 		flag.ZIndex = 14
@@ -10658,8 +14560,19 @@ renderTitle = function()
 			local bst = Instance.new("UIStroke")
 			bst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			bst.Thickness = if sel then 2.5 else 1
-			bst.Color = if sel then INK_EDGE else Color3.fromRGB(151, 114, 75)
-			bst.Parent = b
+			bst.Color = if sel then UI_BRASS_DARK else Color3.fromRGB(151, 114, 75)
+            bst.Parent = b
+            -- [집안 선택] 나라 선택과 같은 책갈피 사용.
+            if sel then
+                local mark = Instance.new("Frame")
+                mark.Name = "SelectedOriginBookmark"
+                mark.BackgroundColor3 = UI_BRASS_DARK
+                mark.BorderSizePixel = 0
+                mark.Position = UDim2.new(0, 5, 1, -5)
+                mark.Size = UDim2.new(1, -10, 0, 3)
+                mark.ZIndex = 15
+                mark.Parent = b
+            end
 			local n1 = mkLabel(b, o.name, 19, INK, true)
 			n1.Position = UDim2.fromOffset(8, 4)
 			n1.Size = UDim2.new(1, -12, 0, 24)
@@ -10715,45 +14628,48 @@ renderTitle = function()
 		row.ZIndex = 12
 	end
 
-	-- 출발
-	local actions = Instance.new("Frame")
-	actions.BackgroundTransparency = 1
-	actions.Size = UDim2.new(1, 0, 0, 68)
-	actions.LayoutOrder = nxt()
-	actions.ZIndex = 12
-	actions.Parent = titleScroll
-	local al = Instance.new("UIListLayout")
-	al.FillDirection = Enum.FillDirection.Horizontal
-	al.Padding = UDim.new(0, 8)
-	al.Parent = actions
+	-- [새 항해 출항] 저장된 기록이 있으면 기존 확인 절차를 같은 화면의 버튼에서 수행한다.
 	if view then
-		local cancel = mkButton(actions, "이어서 하기", Color3.fromRGB(44, 56, 74), UDim2.new(0.28, 0, 1, 0), function()
-			newGameMode = false
-			render()
+		tLabel(titleScroll, "주의 · 새 항해를 출항하면 현재 저장 기록을 교체해.", 16, COLORS.red, true, nxt())
+	end
+	local go = mkButton(titleScroll,
+		if view and H.titleConfirmRestart then "기존 기록 교체 · 출항 확인"
+			elseif view then "⚓ 새 항해 출항" else "⚓ 출항하기",
+		if view and H.titleConfirmRestart then COLORS.red else COLORS.gold,
+		UDim2.new(1, 0, 0, 62), function()
+			if view and not H.titleConfirmRestart then
+				H.titleConfirmRestart = true
+				renderTitle()
+				return
+			end
+			H.titleMenuOpen = false
+			H.titleSetupOpen = false
+			H.titleConfirmRestart = false
+			H.startNewGame()
 		end, true)
-		cancel.ZIndex = 13
-		cancel.TextSize = 18
-	end
-	local go = mkButton(actions, "⚓  출항하기", Color3.fromRGB(206, 154, 56), UDim2.new(if view then 0.72 else 1, if view then -8 else 0, 1, 0), H.startNewGame, true)
+	go.LayoutOrder = nxt()
 	go.ZIndex = 13
-	go.TextSize = 26
+	go.TextSize = 22
 	go.TextColor3 = INK
-	do
-		local gst = Instance.new("UIStroke")
-		gst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		gst.Color = Color3.fromRGB(255, 226, 150)
-		gst.Thickness = 2
-		gst.Parent = go
-	end
+	-- 선택 항목을 바꿔 다시 그려도 사용자가 보던 위치를 유지한다.
+	task.defer(function()
+		if titleScroll.Parent then
+			titleScroll.CanvasPosition = Vector2.new(0, previousScroll)
+		end
+	end)
 end
 
 H.wasTitle = false
 H.titleMenuOpen = false
+H.titleSetupOpen = false -- 이어하기와 새 항해 준비를 같은 화면에서 펼친다.
+H.titleConfirmRestart = false -- 기존 진행 데이터 교체는 출항 버튼 재확인 후에만 진행한다.
 function H.setTitleMode(on)
 	-- [공중 캐릭터 방지] 서버 스냅샷만 왔다고 3D 항구가 준비된 것은 아니다.
-	local waitingPort = view ~= nil and not inField and sceneSpawn == nil and not on
+	local waitingPort = view ~= nil and not inField and sceneSpawn == nil and not on and not H.titleMenuOpen
+	local titleVisible = on or H.titleMenuOpen
+	-- [항구 시작] 표지·메뉴·항구 준비 중 하나를 노출해 로딩 중 공중 캐릭터가 보이지 않게 한다.
 	titleGui.Enabled = on or H.titleMenuOpen or waitingPort
-	titlePanel.Visible = on and not H.titleMenuOpen
+	titlePanel.Visible = titleVisible
 	if H.portLoadingLabel then H.portLoadingLabel.Visible = waitingPort and not H.titleMenuOpen end
 	local currentCamera = workspace.CurrentCamera
 	local screen = if currentCamera then currentCamera.ViewportSize else Vector2.new(1280, 720)
@@ -10761,18 +14677,28 @@ function H.setTitleMode(on)
 	titlePanel.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
 	titlePanel.Position = if portrait then UDim2.new(0.5, 0, 1, -8) else UDim2.new(1, -14, 0.5, 0)
 	titlePanel.Size = if portrait then UDim2.new(0.94, 0, 0.70, 0) else UDim2.new(0.58, 0, 1, -28)
-	if on then
+	if titleVisible then
 		main.Visible = false
 	elseif H.wasTitle then
 		main.Visible = true
 	end
-	H.wasTitle = on
+	H.wasTitle = titleVisible
 end
 
 function render()
+	-- [시설 메뉴 스크롤] 서버 응답으로 같은 탭을 다시 그릴 때 읽던 위치를 유지한다.
+	-- 탭을 바꾸거나 새 게임을 열면 기존처럼 첫 줄부터 시작한다.
+	local retainScroll = view ~= nil and not newGameMode and not H.bankVisitPending
+		and H.contentRenderedTab == currentTab
+		and H.contentRenderedPortId == (view.player and view.player.portId)
+		and currentTab ~= "trade" and currentTab ~= "yard"
+	local savedScroll = if retainScroll then content.CanvasPosition.Y else 0
+	H.contentRenderSerial = (H.contentRenderSerial or 0) + 1
+	local renderSerial = H.contentRenderSerial
 	order = 0
 	H.contextAdviceShown = false
 	H.clearContent()
+	if not retainScroll then content.CanvasPosition = Vector2.zero end
 	if not audioLock then
 		Sfx.portMusic(view and view.player and PortData.Ports[view.player.portId],
 			view ~= nil and currentTab == "trade")
@@ -10783,6 +14709,8 @@ function render()
 
 	H.setTitleMode(not view or newGameMode)
 	if not view or newGameMode then
+		H.contentRenderedTab = nil
+		H.contentRenderedPortId = nil
 		headerLabel.Text = "새 게임"
 		setPortrait("선장실")
 		tabBar.Visible = false
@@ -10795,20 +14723,24 @@ function render()
 		return
 	end
 
-	tabBar.Visible = #groupOf(currentTab).tabs > 1 -- 탭이 하나뿐이면 시설 이름과 겹치므로 탭 줄을 숨긴다
+	-- [시설 탭] 선택지가 두 개 이상인 시설에만 공통 탭을 표시한다.
+	tabBar.Visible = #groupOf(currentTab).tabs > 1
+	H.renderTabs()
+	H.renderFacilityGallery()
 	H.layoutBook()
 
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
 	setPortrait(grp.name)
-	headerLabel.Text = grp.name
-	-- [현재 위치] 모바일에는 항구·선택 탭만, 넓은 화면에는 담당자까지 표시한다.
-	H.pageDetails.Text = if mainInner.AbsoluteSize.X < 480
-		then string.format("%s · %s", p.portName, TAB_NAME[currentTab])
-		else string.format("%s · %s · %s", p.portName, grp.keeper, TAB_NAME[currentTab])
+	-- [중복 이름 제거] 화면 제목에서 조선소·은행·길드 이름을 반복하지 않는다.
+	local placeName = H.visitFacility or grp.name
+	-- 시설은 제목, 현재 기능은 선택 탭, 항구와 담당자는 보조 줄에서 표시한다.
+	local tabName = TAB_NAME[currentTab] or ""
+	headerLabel.Text = if #grp.tabs <= 1 and currentTab ~= "yard" and placeName ~= tabName
+		then placeName .. " · " .. tabName else placeName
+	H.pageDetails.Text = string.format("%s · %s", p.portName, grp.keeper)
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
-	H.renderTabs()
 	-- [현재 시설 표시] 가죽 도크의 선택 상태와 실제 열려 있는 시설을 동기화한다.
 	for _, spec in H.DOCK do
 		local dockButton = H.dockButtons[spec[1]]
@@ -10821,270 +14753,315 @@ function render()
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
-	-- [전체 메뉴 1순위 행동] 단계 안내와 핵심 진입 버튼을 첫 화면에 둔다.
-	local focus = H.MENU_FOCUS[currentTab]
+	-- [오른쪽 상단 판단 정보] 교역소 기준: 실제 서버 값 → 조건 → 실행을 순서대로 읽는다.
+	-- 보상·위험·연구 효과·선박 능력은 표시만 하며 기존 규칙과 서버 판정을 바꾸지 않는다.
+	local focus = if currentTab == "trade" or currentTab == "yard" or currentTab == "gwent" then nil else H.MENU_FOCUS[currentTab]
+	H.menuPrimaryRoute = nil
 	if focus then
+		local fact, context, urgent = "현재 항구 " .. tostring(p.portName), "실제 진행 상태와 조건을 아래에서 확인해.", false
+		local actionText = focus[3] or "첫 동작 확인"
+		if currentTab == "board" then
+			-- [주점] 주점 전용 의뢰가 일지 의뢰와 다르므로 tavernQ의 보상·제한을 표시한다.
+			local q = view.tavernQ or {}
+			local job = q.active or (q.offer or {})[1]
+			if job then
+				fact = if job.kind == "event" then "선택 사건 · 결과 확인"
+					else string.format("보상 %s코인 · 명성 +%d", H.commas(job.coins or 0), job.fame or 0)
+				local grade = if job.shady then "고위험" elseif job.kind == "hunt" then "해전" else "일반"
+				local condition = if job.blocked then tostring(job.blocked) elseif q.active then "실행 가능"
+					else "수락 가능 · 현재 진행 의뢰 없음"
+				context = string.format("%s · 난이도 %s\n조건: %s%s", job.name or "의뢰", grade, condition,
+					if q.active and job.left then string.format(" · 남은 %d일", job.left) else "")
+				urgent = job.blocked ~= nil or job.shady == true
+				actionText = if q.active and job.blocked == nil and job.kind ~= "event" then "진행 중 의뢰 실행"
+					else "의뢰 조건·선택 확인"
+			else
+				fact = string.format("새 일감 %d건", #(q.offer or {}))
+				context = "받은 의뢰 없음 · 소문을 듣고 수락 조건과 보상을 확인해."
+				actionText = "새 의뢰 찾기"
+			end
+		elseif currentTab == "quest" then
+			local qs = view.quests or {}
+			local active = (qs.active or {})[1]
+			fact = string.format("진행 중 %d건 · 새 의뢰 %d건", #(qs.active or {}), #(qs.available or {}))
+			context = if active then string.format("현재 목표: %s\n난이도 %d/5 · 조건과 보상은 일지에서 확인", active.name or active.summary or "진행 중", tonumber(active.grade) or 1)
+				else string.format("완료 기록 %d건 · 다음 의뢰의 보상과 조건 확인", qs.doneCount or 0)
+		elseif currentTab == "route" or currentTab == "map" then
+			-- [항만청] 가까운 해상 항로의 실제 거리·기간·소모량을 보여 준다.
+			local nearest, ready = nil, 0
+			for _, r in (view.routes or {}) do
+				if not r.locked then
+					if not nearest or (r.distanceKm or math.huge) < (nearest.distanceKm or math.huge) then nearest = r end
+					if (r.supplies or 0) <= (ship.supplies or 0) and (r.coal or 0) <= (ship.coal or 0) then ready += 1 end
+				end
+			end
+			if nearest then
+				fact = string.format("%d km · %d일 · 보급 %d개", nearest.distanceKm or 0, nearest.days or 0, nearest.supplies or 0)
+				local safe = (ship.supplies or 0) >= (nearest.supplies or 0) and (ship.coal or 0) >= (nearest.coal or 0)
+				local risk = if view.weather and view.weather.id == "storm" then "폭풍 주의"
+					elseif view.weather and view.weather.id == "rain" then "비·시야 주의" else "항해 중 해적·돌발 사건 가능"
+				context = string.format("가까운 항구 %s · 석탄 %d개 필요\n출항 가능 %d항로 · 현재 석탄 %d · %s",
+					nearest.name, nearest.coal or 0, ready, ship.coal or 0, risk)
+				urgent = not safe
+				H.menuPrimaryRoute = if safe then nearest else nil
+				actionText = if safe then "가까운 항구 출항 확인" else "보급 부족 · 항로 확인"
+			else
+				fact = string.format("출항 가능 %d / %d항로", ready, #(view.routes or {}))
+				context = string.format("보급 %d개 · 석탄 %d개 · 해금된 항로 확인", ship.supplies or 0, ship.coal or 0)
+				urgent = ready == 0
+			end
+		elseif currentTab == "recruit" or currentTab == "crew" or currentTab == "status" or currentTab == "yard" then
+			-- [선장실] 이미 계산된 배와 동료 배치 수치만 읽어 전력·빈 자리를 강조한다.
+			local joined, filled, matched = 0, 0, 0
+			for _, c in ((view.companions and view.companions.list) or {}) do
+				if c.joined then joined += 1 end
+			end
+			for _, station in ((view.companions and view.companions.stations) or {}) do
+				if station.seatId then
+					filled += 1
+					if station.matched then matched += 1 end
+				end
+			end
+			fact = string.format("선체 %d/%d · 동료 %d명", ship.hull or 0, ship.maxHull or 0, joined)
+			context = string.format("적합 직책 %d/%d · 포 %d문 · 선원 %d명\n보급 %d개 · 선체와 적재 조건 확인",
+				matched, filled, ship.cannons or 0, ship.crew or 0, ship.supplies or 0)
+			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
+			actionText = if currentTab == "crew" or currentTab == "status" then "동료 직책 배치"
+				elseif currentTab == "yard" then "조선소 관리 열기" else "동료 영입 조건 확인"
+		elseif currentTab == "trade" or currentTab == "harbor" then
+			fact = "시세 비교 · 실제 판매손익 확인"
+			context = "자금·화물은 상단에서, 매입·판매가는 장부에서 확인해."
+		elseif currentTab == "battle" or currentTab == "war" then
+			-- [전투 본부] 적 전력을 공개하지 않은 경우 임의 수치를 만들지 않는다.
+			local mission = (view.wars or {})[1]
+			local enemy = (view.bosses or {})[1]
+			if currentTab == "war" and view.war then
+				fact = string.format("진행 %d/%d파도 · 선체 %d/%d", view.war.wave or 0, view.war.total or 0, ship.hull or 0, ship.maxHull or 0)
+				context = string.format("상대: %s · 승리: 마지막 파도까지 전부 격파\n패배 시 작전 실패 · 파도 사이 선체 회복 없음", view.war.name or "적 함대")
+				actionText = if view.war.next then "다음 파도 전투" else "현재 전투 상태 확인"
+			elseif currentTab == "war" and mission then
+				fact = string.format("적 함대 %d파도 · 보상 %s코인", mission.waves or 0, H.commas(mission.coins or 0))
+				context = string.format("%s · 승리: 전 파도 격파\n수락 조건: %s", mission.name or "해전 의뢰",
+					mission.blocked or string.format("전투 Lv.%d 이상", mission.minLevel or 0))
+				actionText = "해전 작전 선택"
+				urgent = mission.blocked ~= nil
+			else
+				fact = string.format("대포 %d문 · 선체 %d/%d", ship.cannons or 0, ship.hull or 0, ship.maxHull or 0)
+				context = string.format("상대: %s · 적 전력 미공개\n승리: 적 함선 격파 · 출격 전에 선체와 자동스킬 확인",
+					if enemy then enemy.name or "해적" else "해적 함선")
+				actionText = "사략선 사냥 출격"
+			end
+			urgent = urgent or ((ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4)
+		elseif currentTab == "explore" then
+			local available = 0
+			for _, site in (view.sites or {}) do
+				if site.unlocked and (site.left or 0) > 0 then available += 1 end
+			end
+			fact = string.format("탐험 가능 %d / %d지역", available, #(view.sites or {}))
+			context = string.format("보급품 %d개", ship.supplies or 0)
+		elseif currentTab == "scholar" or currentTab == "codex" then
+			local cx = view.codex or {}
+			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
+			context = string.format("만난 학자 %d명 · 미발견 카드 내용은 공개하지 않음", #(view.scholars or {}))
+			if currentTab == "scholar" then
+				-- [학자의 서재] 보고 화면에서도 연구 효과·해금 조건을 잊지 않게 연결한다.
+				for _, t in (view.tech or {}) do
+					if not t.owned then
+						context = string.format("연계 연구: %s · %s\n해금: %s", t.name or "기술", t.summary or "연구 효과 확인",
+							t.blocked or string.format("비용 %s코인", H.commas(t.cost or 0)))
+						break
+					end
+				end
+				actionText = "연구 효과·해금 조건 보기"
+			end
+		elseif currentTab == "tech" then
+			-- [학자의 서재] 실제 연구 요약·필요 선행지식·비용을 우선 보여 준다.
+			local researchable, candidate = 0, nil
+			for _, t in (view.tech or {}) do
+				if not t.owned then
+					if not candidate then candidate = t end
+					if not t.blocked and (t.cost or 0) <= p.coins then
+						researchable += 1
+						if not candidate or candidate.blocked then candidate = t end
+					end
+				end
+			end
+			fact = string.format("연구 가능 %d개", researchable)
+			if candidate then
+				local reason = if candidate.blocked then tostring(candidate.blocked)
+					elseif (candidate.cost or 0) > p.coins then string.format("코인 %s 부족", H.commas((candidate.cost or 0) - p.coins))
+					else string.format("해금 충족 · 비용 %s코인", H.commas(candidate.cost or 0))
+				context = string.format("%s 효과: %s\n해금: %s", candidate.name or "연구", candidate.summary or "연구 효과 확인", reason)
+				urgent = candidate.blocked ~= nil
+			else
+				context = "연구 완료 · 새 기술은 선행 지식을 발견하면 해금돼."
+			end
+			actionText = "연구 효과·조건 확인"
+		end
+		H.menuActionButton.Name = "MenuPrimaryAction_" .. currentTab -- [기존 런타임 QA 이름 계약 유지]
+		H.menuActionButton.Text = actionText
+		-- [서재 중복 제거] 백과 표지에 발견 진행도가 있으므로 같은 숫자·설명 배너를 다시 넣지 않는다.
+		if currentTab ~= "codex" then
 		add(function()
-			local compact = mainInner.AbsoluteSize.X < 480
-			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, if compact then 136 else 76), Color3.fromRGB(64, 48, 35))
+			-- [전 시설 공통 첫 카드] 제목 → 핵심 수치 → 조건 → 정본 실행 버튼 순으로 읽는다.
+			local wide = mainInner.AbsoluteSize.X >= 740
+			local short = mainInner.AbsoluteSize.Y < 500
+			local bannerH = if wide then (if short then 210 else 242) else (if short then 140 else 178)
+			local banner = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, bannerH), Color3.fromRGB(64, 48, 35))
 			banner.Name = "MenuFocus_" .. currentTab
 			corner(banner, 8)
-			local heading = mkLabel(banner, "◆ " .. focus[1], 18, Color3.fromRGB(255, 222, 144), true)
-			heading.Position = UDim2.fromOffset(12, 5)
-			heading.Size = UDim2.new(1, if compact then -24 else -142, 0, 25)
+			local bookmark = Instance.new("Frame")
+			bookmark.Name = "MenuFocusBookmark"
+			bookmark.BackgroundColor3 = if urgent then WAX else UI_BRASS
+			bookmark.BorderSizePixel = 0
+			bookmark.Position = UDim2.fromOffset(4, 10)
+			bookmark.Size = UDim2.new(0, 5, 1, -20)
+			bookmark.Parent = banner
+			local tabIcon = H.TAB_ICON[currentTab]
+			if tabIcon then
+				local atlas = H.hasIconArt(currentTab)
+				local icon = modelIcon(banner, if atlas then "FacilityArt" else tabIcon[1], if atlas then currentTab else tabIcon[2], nil, 26, TAB_NAME[currentTab])
+				icon.Name = "MenuFocusIcon"
+				icon.Position = UDim2.fromOffset(14, 7)
+				icon.ZIndex = banner.ZIndex + 1
+			end
+			local heading = mkLabel(banner, "현재 상태", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
+			heading.Name = "MenuFocusHeading"
+			heading.Position = UDim2.fromOffset(if tabIcon then 46 else 14, 7)
+			heading.Size = UDim2.new(1, if tabIcon then -60 else -28, 0, 26)
 			heading.AutomaticSize = Enum.AutomaticSize.None
-			local stages = string.split(focus[2], " → ")
-			local guide = if compact and #stages >= 3
-				then "① " .. stages[1] .. "   ② " .. stages[2] .. "\n③ " .. stages[3]
-				else "① " .. table.concat(stages, "   →   ")
-			local steps = mkLabel(banner, guide, if compact then 13 else 14, Color3.fromRGB(243, 231, 204), false)
-			steps.Position = UDim2.fromOffset(12, 34)
-			steps.Size = UDim2.new(1, if compact then -24 else -132, 0, if compact then 48 else 34)
-			steps.AutomaticSize = Enum.AutomaticSize.None
-			steps.TextWrapped = true
-			local action = mkButton(banner, focus[3] or "바로 보기",
-				COLORS.gold, if compact then UDim2.new(1, -24, 0, 38) else UDim2.fromOffset(110, 42), function()
-					if currentTab == "trade" and H.tradeHall then H.tradeHall() return end
-					if currentTab == "yard" and H.yardHall then H.yardHall() return end
-					-- 다른 메뉴는 실제 화면의 첫 조작 버튼으로 스크롤한다. 구매·보상 판정은 실행하지 않는다.
-					for _, element in content:GetDescendants() do
-						if element:IsA("TextButton") and element.Interactable
-							and not element:FindFirstAncestor("MenuFocus_" .. currentTab)
-							and not element:FindFirstAncestor("MenuAdvice_" .. currentTab) then
-							local y = element.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 12
+			heading.TextTruncate = Enum.TextTruncate.AtEnd
+			local values = string.split(fact, " · ")
+			local metrics = Instance.new("Frame")
+			metrics.Name = "MenuFocusValue"
+			metrics.BackgroundTransparency = 1
+			metrics.Position = UDim2.fromOffset(14, 34)
+			metrics.Size = UDim2.new(1, -28, 0, 42)
+			metrics.Parent = banner
+			local count = #values
+			for index, value in values do
+				local metric = mkLabel(metrics, value, 18, if urgent then Color3.fromRGB(255, 165, 151) else Color3.fromRGB(255, 238, 187), true)
+				metric.AutomaticSize = Enum.AutomaticSize.None
+				metric.Position = UDim2.new((index - 1) / count, 2, 0, 0)
+				metric.Size = UDim2.new(1 / count, -4, 1, 0)
+				metric.BackgroundColor3 = Color3.fromRGB(43, 34, 28)
+				metric.BackgroundTransparency = 0
+				metric.TextXAlignment = Enum.TextXAlignment.Center
+				metric.TextWrapped = true
+				metric.TextScaled = true
+				local limit = Instance.new("UITextSizeConstraint")
+				limit.MinTextSize = 11
+				limit.MaxTextSize = 19
+				limit.Parent = metric
+				corner(metric, 5)
+			end
+			local explanation = mkLabel(banner, context, if wide then 18 else 17, Color3.fromRGB(249, 232, 207), true)
+			explanation.Name = "MenuFocusDescription"
+			explanation.Position = UDim2.fromOffset(14, if wide then 88 else 84)
+			explanation.Size = UDim2.new(1, -28, 0, if wide then (if short then 59 else 85) else (if short then 49 else 86))
+			explanation.TextTruncate = Enum.TextTruncate.AtEnd
+			explanation.AutomaticSize = Enum.AutomaticSize.None
+			explanation.TextWrapped = true
+			explanation.TextYAlignment = Enum.TextYAlignment.Top
+			-- [단일 행동] 클릭/검사 이름/서버 호출을 가진 기존 버튼을 이동한다.
+			H.menuFocusBanner = banner
+			H.layoutBook()
+			return banner
+		end)
+		end
+		-- [고정 하단 버튼] 기존 실행 함수를 재사용한다. 출항만 기존 확인 창으로 보낸다.
+		H.invokeMenuPrimary = function()
+			-- [시설 내 바로가기] 조선소 목록은 기존 스크롤 위치로 안내한다.
+			if currentTab == "yard" then
+				local target = content:FindFirstChild("YardSectionShips", true)
+				if target then
+					local y = target.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
+					content.CanvasPosition = Vector2.new(0, math.max(0, y))
+				end
+				return
+			end
+			if currentTab == "scholar" then openTab("tech") return end
+			if (currentTab == "crew" or currentTab == "status") and H.openCabin then H.openCabin() return end
+			if currentTab == "route" and H.menuPrimaryRoute then confirmSail(H.menuPrimaryRoute) return end
+			if currentTab == "board" then
+				local active = view.tavernQ and view.tavernQ.active
+				if active and not active.blocked and active.kind ~= "event" then
+					call("TavernJob", { id = active.id })
+					return
+				end
+			end
+			if currentTab == "war" and view.war and view.war.next then call("WarNext") return end
+			if currentTab == "battle" then call("Hunt") return end
+			-- 연구·전투 작전·수락 후보가 여러 개면 플레이어가 목록에서 직접 고른다.
+			local tile = content:FindFirstChild("BookTile", true)
+			if tile then
+				local y = tile.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
+				content.CanvasPosition = Vector2.new(0, math.max(0, y))
+			else
+				for _, section in content:GetChildren() do
+					if section.Name ~= "MenuQuickActions"
+						and section.Name ~= "MenuSummaryMetrics" and string.sub(section.Name, 1, 10) ~= "MenuFocus_" then
+						local button = section:FindFirstChildWhichIsA("TextButton", true)
+						if button and button.Interactable and button.Visible then
+							local y = section.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y - 8
 							content.CanvasPosition = Vector2.new(0, math.max(0, y))
 							break
 						end
 					end
-				end, true)
-			action.Name = "MenuPrimaryAction_" .. currentTab
-			action.AnchorPoint = if compact then Vector2.new(0, 0) else Vector2.new(1, 0.5)
-			action.Position = if compact then UDim2.fromOffset(12, 91) else UDim2.new(1, -10, 0.5, 0)
-			return banner
-		end)
-	end
-	-- [선장 항해 비서] 서버 실측 상태에서 가장 시급한 일 한 개만 추천. 자원 조작은 실행하지 않는다.
-	local cue, detail, target = nil, nil, nil
-	if ship.maxHull > 0 and ship.hull < ship.maxHull * 0.4 then
-		cue, detail, target = "선체 수리 필요", string.format("내구도 %d/%d · 항해 전 수리 상태를 확인해.", ship.hull, ship.maxHull), "yard"
-	elseif ship.supplies <= 5 then
-		cue, detail, target = "보급품 부족", "현재 보유 " .. tostring(ship.supplies) .. "개 · 필요한 보급과 비용을 확인해.", "yard"
-	elseif ship.cargoCapacity > 0 and ship.cargoUsed >= ship.cargoCapacity then
-		cue, detail, target = "화물칸 가득 참", string.format("%d/%d칸 · 거래 전에 적재 화물을 정리해.", ship.cargoUsed, ship.cargoCapacity), "trade"
-	else
-		for _, q in (view.quests and view.quests.active) or {} do
-			if q.kind == "deliver" and q.progress >= q.amount then
-				cue, detail, target = "납품 가능한 의뢰", q.name .. " · 보상 수령 조건을 확인해.", "quest"
-				break
-			end
-		end
-		if not cue then
-			for _, t in (view.tech or {}) do
-				if not t.owned and not t.blocked and (t.cost or 0) <= p.coins then
-					cue, detail, target = "연구 가능한 기술", t.name .. " · 비용 " .. H.commas(t.cost or 0) .. "코인", "tech"
-					break
 				end
 			end
 		end
+	else
+		H.invokeMenuPrimary = nil
+		H.menuActionDock.Visible = false
 	end
-	if cue and target ~= currentTab then
-		add(function()
-			local row = mkRow(content, "🧭 항해 비서 · " .. cue, detail, {
-				{ text = TAB_NAME[target] .. " 보기", color = COLORS.green, onClick = function() openTab(target) end },
-			}, 76)
-			row.Name = "CaptainPriorityAdvice"
-			return row
-		end)
-	end
-	if H.recentTab and H.recentTab ~= currentTab and TAB_NAME[H.recentTab] then
-		local recent = H.recentTab
-		add(function()
-			local b = mkButton(content, "↶ 최근 메뉴: " .. TAB_NAME[recent], COLORS.grey, UDim2.new(1, -6, 0, 36), function()
-				openTab(recent, if recent == "map" then "chart" else nil)
+	-- [시설별 기존 콘텐츠] 교역·조선은 기존 상세 렌더러를 탭 본문에 바로 표시한다.
+	-- 서재의 보고·도감·연구·백과는 기존 탭 렌더러를 그대로 사용한다.
+	if currentTab == "trade" then
+		if not mainInner:FindFirstChild("FacilityDetail") then H.tradeHall() end
+	elseif currentTab == "yard" then
+		if not mainInner:FindFirstChild("FacilityDetail") then H.yardHall() end
+	else
+		H.counselRows(1)
+		RENDERERS[currentTab]()
+		if currentTab == "harbor" and H.bankVisitPending then
+			H.bankVisitPending = false
+			-- [은행 방문] 실제 건물에서 처음 들어왔을 때만 금융 메뉴로 이동한다.
+			task.defer(function()
+				-- 실제 UIListLayout이 배치된 다음 은행 섹션 위치를 사용한다.
+				game:GetService("RunService").Heartbeat:Wait()
+				if currentTab ~= "harbor" or H.visitFacility ~= "은행" then return end
+				local bank = content:FindFirstChild("BankEntry")
+				if bank then
+					local y = bank.AbsolutePosition.Y - content.AbsolutePosition.Y + content.CanvasPosition.Y
+					content.CanvasPosition = Vector2.new(0, math.max(0, y - 8))
+				end
 			end)
-			b.Name = "RecentFacilityShortcut"
-			b.TextSize = 14
-			return b
+		end
+	end
+	H.contentRenderedTab = currentTab
+	H.contentRenderedPortId = view.player and view.player.portId
+	if retainScroll and savedScroll > 0 then
+		-- [재배치 후 복원] UIListLayout이 실제 콘텐츠 높이를 계산한 다음 복원한다.
+		task.defer(function()
+			game:GetService("RunService").Heartbeat:Wait()
+			if H.contentRenderSerial ~= renderSerial or H.contentRenderedTab ~= currentTab then return end
+			local limit = math.max(0, content.AbsoluteCanvasSize.Y - content.AbsoluteSize.Y)
+			content.CanvasPosition = Vector2.new(0, math.clamp(savedScroll, 0, limit))
 		end)
 	end
-	H.counselRows(1)
-	RENDERERS[currentTab]()
 end
 
--- 시작 화면: 이어하기 / 새 게임 / 소리 ---------------------------------------------
-
+-- [단일 시작 화면] 기존 항해 일지 팝업을 새로 생성하지 않고 한 장의 타이틀을 연다.
+-- 상태·나라·집안·이어하기·음악 설정은 위 renderTitle의 정본 UI를 사용한다.
 function H.showTitle()
-	local layer = overlayGui("TitleGui", 40)
-	local wasMain = main.Visible
-	main.Visible = false
-	menuToggle.Visible = false
 	H.titleMenuOpen = true
-	titleGui.Enabled = true
-	titlePanel.Visible = false
-	local visibility = main:GetPropertyChangedSignal("Visible"):Connect(function()
-		if H.titleMenuOpen and main.Visible then main.Visible = false end
-	end)
-	layer.Destroying:Connect(function() visibility:Disconnect() end)
-	local function leave()
-		H.titleMenuOpen = false
-		layer:Destroy()
-	end
-
-	local root = Instance.new("Frame")
-	root.Size = UDim2.fromScale(1, 1)
-	root.BackgroundTransparency = 1
-	root.Parent = layer
-	-- 한 장의 항해 기록. 종이결은 본문과 조작 뒤에만 깐다.
-	local box = Instance.new("Frame")
-	box.Name = "VoyageLogPage"
-	box.BackgroundColor3 = COLORS.paper
-	box.BorderSizePixel = 0
-	box.Parent = root
-	corner(box, 5)
-	local paperId = AssetIds["CardArt/event_title_parchment"]
-	if paperId then
-		box.BackgroundTransparency = 1
-		local sheet = Instance.new("ImageLabel")
-		sheet.Name = "TornParchment"
-		sheet.BackgroundTransparency = 1
-		sheet.Size = UDim2.fromScale(1, 1)
-		sheet.Image = "rbxassetid://" .. tostring(paperId)
-		sheet.Parent = box
-	else
-		local grain = bookMaterial(box, "parchment", 360)
-		if grain then grain.ImageTransparency = 0.22 end
-	end
-	local bounds = Instance.new("UISizeConstraint")
-	-- [첫 화면 가독성] 모바일/가로 화면에서 이어하기·새 항해·설정 세 동작을 한눈에 보여 준다.
-	bounds.MaxSize = Vector2.new(500, if view then 440 else 350)
-	bounds.Parent = box
-
-	local pages = Instance.new("ScrollingFrame")
-	pages.Size = UDim2.fromScale(1, 1)
-	pages.BackgroundTransparency = 1
-	pages.BorderSizePixel = 0
-	pages.ScrollBarThickness = 3
-	pages.ScrollBarImageColor3 = COLORS.brown
-	pages.ScrollingDirection = Enum.ScrollingDirection.Y
-	pages.AutomaticCanvasSize = Enum.AutomaticSize.Y
-	pages.CanvasSize = UDim2.new()
-	pages.ZIndex = box.ZIndex + 1
-	pages.Parent = box
-	local pad = Instance.new("UIPadding")
-	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 18), UDim.new(0, 18)
-	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 25), UDim.new(0, 25)
-	pad.Parent = pages
-	local list = Instance.new("UIListLayout")
-	list.Padding = UDim.new(0, 8)
-	list.SortOrder = Enum.SortOrder.LayoutOrder
-	list.Parent = pages
-
-	local function placeMenu()
-		local portrait = root.AbsoluteSize.Y > root.AbsoluteSize.X
-		box.AnchorPoint = if portrait then Vector2.new(0.5, 1) else Vector2.new(1, 0.5)
-		box.Position = if portrait then UDim2.new(0.5, 0, 1, -16) else UDim2.new(1, -22, 0.5, 0)
-		box.Size = if portrait then UDim2.fromScale(0.94, 0.68) else UDim2.new(0.46, 0, 0.88, 0)
-	end
-	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(placeMenu)
-	placeMenu()
-
-	local head = Instance.new("Frame")
-	head.LayoutOrder = 1
-	head.Size = UDim2.new(1, 0, 0, 62)
-	head.BackgroundTransparency = 1
-	head.BorderSizePixel = 0
-	head.Parent = pages
-	pageRule(head, UDim2.new(0, 2, 1, -3), UDim2.new(1, -4, 0, 1))
-	local seal = Instance.new("ImageLabel")
-	seal.Size = UDim2.fromOffset(34, 34)
-	seal.Position = UDim2.fromOffset(10, 9)
-	seal.BackgroundTransparency = 1
-	seal.ScaleType = Enum.ScaleType.Fit
-	seal.Image = "rbxassetid://" .. AssetIds["Menu/chart_compass"]
-	seal.ImageColor3 = COLORS.brown
-	seal.Parent = head
-	local title = mkLabel(head, "선장의 항해 일지", 27, COLORS.ink, true)
-	title.Position = UDim2.fromOffset(53, 0)
-	title.Size = UDim2.new(1, -60, 1, 0)
-	title.AutomaticSize = Enum.AutomaticSize.None
-	title.TextYAlignment = Enum.TextYAlignment.Center
-	title.Font = Enum.Font.Antique
-	title.TextStrokeColor3 = INK_SOFT
-	title.TextStrokeTransparency = 0.75
-
-	local function action(parent, text, size, primary, callback)
-		local b = Instance.new("TextButton")
-		b.Size = size
-		b.Text = text
-		b.Font = if primary then Enum.Font.GothamBold else Enum.Font.GothamMedium
-		b.TextSize = if primary then 23 else 19
-		b.TextColor3 = if primary then Color3.fromRGB(250, 232, 193) else INK
-		b.BackgroundColor3 = if primary then Color3.fromRGB(35, 54, 59) else Color3.fromRGB(225, 204, 166)
-		b.BackgroundTransparency = if primary then 0 else 0.06
-		b.BorderSizePixel = 0
-		b.TextWrapped = true
-		b.Parent = parent
-		corner(b, 9)
-		local stroke = Instance.new("UIStroke")
-		stroke.Color = if primary then Color3.fromRGB(235, 195, 118) else INK_EDGE
-		stroke.Thickness = if primary then 2.2 else 1.5
-		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		stroke.Parent = b
-		b.Activated:Connect(function()
-			Sfx.play("sfx_click")
-			callback()
-		end)
-		return b
-	end
-	if view then
-		local log = mkLabel(pages, string.format("진행 중인 항해 · %s · %d년\n소지금 %d코인", view.player.portName, view.player.year, view.player.coins), 18, INK_SOFT, false, 2)
-		log.Size = UDim2.new(1, 0, 0, 0)
-		local resume = action(pages, "▶ 이어하기 · 기존 항해", UDim2.new(1, 0, 0, 60), true, function()
-			leave()
-			H.setTitleMode(false)
-			main.Visible = wasMain
-			menuToggle.Visible = not wasMain
-		end)
-		resume.LayoutOrder = 3
-	end
-	if not view then
-		local guide = mkLabel(pages, "나라와 집안을 고르고, 출발 무기를 확인한 뒤 항해해.", 18, INK_SOFT, false, 2)
-		guide.TextWrapped = true
-		guide.Size = UDim2.new(1, 0, 0, 50)
-	end
-	local confirmed = false
-	local newBtn
-	newBtn = action(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2.new(1, 0, 0, 60), not view, function()
-		if view and not confirmed then
-			confirmed = true
-			newBtn.Text = "저장을 지우고 새로 시작"
-			newBtn.TextColor3 = COLORS.text
-			newBtn.BackgroundColor3 = COLORS.red
-			newBtn.BackgroundTransparency = 0
-			return
-		end
-		leave()
-		newGameMode = true
-		render()
-	end)
-	newBtn.LayoutOrder = 4
-
-	local controls = Instance.new("Frame")
-	controls.BackgroundTransparency = 1
-	controls.Size = UDim2.new(1, 0, 0, 60)
-	controls.LayoutOrder = 5
-	controls.Parent = pages
-	pageRule(controls, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 1))
-	action(controls, "⚙ 설정", UDim2.new(0.48, 0, 1, 0), false, openOptions)
-	local function musicLabel()
-		return if Sfx.state() then "음악 켜짐" else "음악 꺼짐"
-	end
-	local musicBtn
-	musicBtn = action(controls, musicLabel(), UDim2.new(0.48, 0, 1, 0), false, function()
-		Sfx.setMusicEnabled(not Sfx.state())
-		musicBtn.Text = musicLabel()
-	end)
-	musicBtn.Position = UDim2.fromScale(0.52, 0)
+	H.titleSetupOpen = not view
+	H.titleConfirmRestart = false
+	titleScroll.CanvasPosition = Vector2.zero
+	H.setTitleMode(true)
+	renderTitle()
+	menuToggle.Visible = false
 	Sfx.music("music_harbor")
 end
 
@@ -11093,6 +15070,12 @@ end
 -- 첫 시작 화면은 저장 응답을 우선 표시하고, 완료 후 현재 항구를 그대로 그린다.
 gui:SetAttribute("PortSceneLoadState", "loading")
 task.spawn(function()
+    -- [시작 응답 우선] 저장 상태와 타이틀이 실제 표시된 뒤에 무거운 정본 항구를 불러온다.
+    -- 렌더링·저장·입항 함수는 건드리지 않고 기존 비동기 항구 준비의 시작 시점만 조정한다.
+    while H.startupCover and H.startupCover.Parent and player.Parent do
+        task.wait(0.1)
+    end
+    if not player.Parent then return end
 	local ok, scene = pcall(function()
 		return require(Shared:WaitForChild("PortScene"))
 	end)
@@ -11108,17 +15091,8 @@ end)
 gui:SetAttribute("StartupStage", "server-state-request")
 
 task.spawn(function()
-	-- 서버가 늦으면 얼마나 기다렸는지 화면에 보여 준다(멈춘 것처럼 보이지 않게)
-	local startedAt = os.clock()
-	task.spawn(function()
-		while H.startupCover and H.startupLabel do
-			task.wait(1)
-			if H.startupCover and H.startupLabel then
-				H.startupLabel.Text = string.format("학문의 바다\n항구와 항해 기록을 불러오는 중... (%d초)", math.floor(os.clock() - startedAt))
-			end
-		end
-	end)
-	for attempt = 1, 30 do
+	-- [표지 갱신 단일화] 모듈 대기 전부터 시작된 같은 로딩 표시를 사용한다.
+    for attempt = 1, 8 do
 		gui:SetAttribute("StartupStage", "server-state-" .. tostring(attempt))
 		local result = call("State")
 		if result and (result.view or result.needsNewGame) then
@@ -11126,7 +15100,6 @@ task.spawn(function()
 			message = ""
 			-- 화면을 그리다 오류가 나도 로딩 화면에 갇히지 않게 하고, 오류 내용을 보여 준다.
 			local okDraw, errDraw = pcall(function()
-				render()
 				H.showTitle()
 			end)
 			if not okDraw then
@@ -11134,7 +15107,8 @@ task.spawn(function()
 				if H.startupLabel then
 					H.startupLabel.Text = "시작 화면 오류\n" .. string.sub(tostring(errDraw), 1, 160)
 				end
-				task.wait(8)
+				gui:SetAttribute("StartupStage", "title-failed")
+				return
 			end
 			-- 실제 시작 메뉴가 완성된 뒤에만 로딩 화면을 닫는다.
 			if H.startupCover then
@@ -11165,12 +15139,16 @@ function H.openCabin()
 	local UIS = game:GetService("UserInputService")
 	local g = overlayGui("CabinGui", 40)
 	H.cabinGui = g
-	local root = Instance.new("Frame")
+	local root = Instance.new("ScrollingFrame")
 	root.Size = UDim2.fromScale(1, 1)
 	root.BackgroundColor3 = COLORS.cover
 	root.BorderSizePixel = 0
+	root.ScrollingDirection = Enum.ScrollingDirection.Y
+	root.ScrollBarThickness = 4
+	root.CanvasSize = UDim2.new()
 	root.Parent = g
 	local selected = nil -- 눌러서 고른 동료 id
+	local pendingStation = nil
 	local drag = nil -- { id, ghost, startPos, moved }
 	local slotFrames = {}
 	local build
@@ -11183,7 +15161,7 @@ function H.openCabin()
 		end
 	end
 	local function place(id, stationId)
-		selected = nil
+		selected, pendingStation = nil, nil
 		call("Station", { companionId = id, station = stationId })
 	end
 	local function slotAt(pos)
@@ -11212,7 +15190,11 @@ function H.openCabin()
 				build()
 			end
 		else
-			selected = if selected == d.id then nil else d.id -- 누르기만 했으면 선택/해제
+			if pendingStation then
+				place(d.id, pendingStation)
+				return
+			end
+			selected = if selected == d.id then nil else d.id
 			build()
 		end
 	end
@@ -11267,22 +15249,24 @@ function H.openCabin()
 		local sh = view.ship
 		local W = root.AbsoluteSize.X
 		local wide = W >= 760
+		root.ScrollingEnabled = not wide
+		if wide then root.CanvasSize = UDim2.new(); root.CanvasPosition = Vector2.zero end
 
 		-- 윗줄
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 58), COLORS.paper)
 		corner(top, 6)
 		local title = mkLabel(top, "선장실 · " .. sh.name, 19, Color3.fromRGB(50, 36, 24), true)
 		title.Position = UDim2.fromOffset(12, 6)
-		title.Size = UDim2.new(1, -330, 0, 24)
+		title.Size = UDim2.new(1, -184, 0, 24)
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local hint = mkLabel(top, "동료 초상을 끌어서 자리에 놓으세요 (누른 뒤 자리를 눌러도 돼요)", 12, Color3.fromRGB(90, 70, 50), false)
+		local hint = mkLabel(top, "직책을 고르고 동료 선택", 12, Color3.fromRGB(90, 70, 50), false)
 		hint.Position = UDim2.fromOffset(12, 32)
-		hint.Size = UDim2.new(1, -330, 0, 20)
+		hint.Size = UDim2.new(1, -184, 0, 20)
 		hint.AutomaticSize = Enum.AutomaticSize.None
 		local closeBtn = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(70, 40), close, true)
 		closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 		closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
-		local autoBtn = mkButton(top, "자동 배치 (추천)", COLORS.green, UDim2.fromOffset(160, 40), function() selected = nil; call("AutoStations") end, #v.stations > 0)
+		local autoBtn = mkButton(top, "자동 배치", COLORS.green, UDim2.fromOffset(88, 40), function() selected, pendingStation = nil, nil; call("AutoStations") end, #v.stations > 0)
 		autoBtn.AnchorPoint = Vector2.new(1, 0.5)
 		autoBtn.Position = UDim2.new(1, -86, 0.5, 0)
 
@@ -11334,7 +15318,7 @@ function H.openCabin()
 			slot.BorderSizePixel = 0
 			slot.Parent = slotsBox
 			corner(slot, 8)
-			if selected then
+			if selected or pendingStation == st.id then
 				local stroke = Instance.new("UIStroke")
 				stroke.Color = COLORS.gold
 				stroke.Thickness = 2
@@ -11344,13 +15328,16 @@ function H.openCabin()
 			slot.Activated:Connect(function()
 				if selected then
 					place(selected, st.id)
+				else
+					pendingStation = if pendingStation == st.id then nil else st.id
+					build()
 				end
 			end)
 			local nm = mkLabel(slot, st.name, 14, COLORS.gold, true)
 			nm.Position = UDim2.fromOffset(78, 6)
 			nm.Size = UDim2.new(1, -84, 0, 20)
 			nm.AutomaticSize = Enum.AutomaticSize.None
-			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음 x1.2)" else "  (다른 직책 x0.6)")) else "비어 있음 — 동료를 놓으세요", 12, COLORS.text, false)
+			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음 x1.2)" else "  (다른 직책 x0.6)")) elseif pendingStation == st.id then "아래에서 동료 선택" else "빈 직책", 12, COLORS.text, false)
 			desc.Position = UDim2.fromOffset(78, 28)
 			desc.Size = UDim2.new(1, -84, 0, 54)
 			desc.AutomaticSize = Enum.AutomaticSize.None
@@ -11365,7 +15352,12 @@ function H.openCabin()
 
 		-- 오른쪽 아래: 함께하는 동료 초상 (끌어서 놓기)
 		local listY = if wide then 74 + slotsH + 8 else 272 + slotsH + 8
-		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 1, -listY - 8) else UDim2.new(1, -16, 1, -listY - 8), COLORS.leather)
+		local joined = 0
+		for _, c in v.list do if c.joined then joined += 1 end end
+		local columns = math.max(1, math.floor((W - 28 + 8) / 112))
+		local listHeight = 38 + math.max(1, math.ceil(joined / columns)) * 128
+		if not wide then root.CanvasSize = UDim2.fromOffset(0, listY + listHeight + 8) end
+		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 1, -listY - 8) else UDim2.new(1, -16, 0, listHeight), COLORS.leather)
 		corner(listBox, 8)
 		local lt = mkLabel(listBox, string.format("함께하는 동료 (%d/%d)", (function() local n = 0 for _, c in v.list do if c.joined then n += 1 end end return n end)(), v.max), 14, COLORS.gold, true)
 		lt.Position = UDim2.fromOffset(10, 6)
@@ -11376,7 +15368,8 @@ function H.openCabin()
 		sc.Size = UDim2.new(1, -12, 1, -38)
 		sc.BackgroundTransparency = 1
 		sc.BorderSizePixel = 0
-		sc.ScrollBarThickness = 5
+		sc.ScrollBarThickness = if wide then 5 else 0
+		sc.ScrollingEnabled = wide
 		sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		sc.CanvasSize = UDim2.new()
 		sc.Parent = listBox
@@ -11433,25 +15426,59 @@ function H.openCabin()
 	build()
 end
 
--- 조언을 눌렀을 때 그 화면으로 바로 간다 (조선소·교역소는 전용 큰 화면)
+-- [방문 단일화] 조언 바로가기도 주점과 같은 시설 책을 연다.
 function H.goAdvice(tab)
-	-- [동료 바로가기] 산책 HUD와 시설 책의 표시 상태를 먼저 정리한다.
 	H.hideBubble()
 	menuToggle.Visible = false
-	if tab == "yard" then
-		currentTab = "yard"
-		openYardHall()
-	elseif tab == "trade" then
-		currentTab = "trade"
-		openTradeHall()
-	else
-		openTab(tab)
-	end
+	openTab(tab)
 end
 
-openTab = function(tabId, mapPage)
+openTab = function(tabId, mapPage, facility)
+	-- [같은 메뉴 재진입] 이미 열린 탭이면 장부·버튼·원화를 불필요하게 다시 만들지 않는다.
+	-- 숨겨진 창 재개방·지도 페이지 변경·건물 방문·백과 연결은 기존 흐름으로 연다.
+	local origin = if facility == "은행" or facility == "상인 길드" then facility else nil
+	if main.Visible and view and not newGameMode and not H.titleMenuOpen
+		and currentTab == tabId and H.mapPage == mapPage
+		and H.visitFacility == origin and not H.tradeBookOpenRequested and not H.galleryBookOpenRequested then
+		return
+	end
+	-- [시설 방문 표시] 출입 건물명은 실행 중 화면에만 사용한다. 저장 구조 변경 없음.
+	H.visitFacility = origin
+	H.bankVisitPending = origin == "은행"
+	-- [교역 장부→서재] 선택한 상품의 분류는 백과 상태 변수 선언 이후,
+	-- 기존 탭 전환 함수에서만 지정한다. 별도 화면·저장 키를 생성하지 않는다.
+	if tabId == "codex" and H.galleryBookOpenRequested then
+		local target = H.galleryBookOpenRequested
+		H.galleryBookOpenRequested = nil
+		H.tradeBookOpenRequested = nil
+		if type(target) == "string" and string.sub(target, 1, 7) == "search:" then
+			-- [연결 원화 없음] 기존 검색 화면에서 관련 주제만 보여 주고 임의 발견 처리하지 않는다.
+			H.codexSearchTerm = string.sub(target, 8)
+			H.encyclopediaTargetId = nil
+			codexField = "search"
+		else
+			H.encyclopediaTargetId = if type(target) == "string" then target else nil
+			H.encyclopediaCategoryId = "all"
+			H.encyclopediaSearchText = ""
+			H.encyclopediaIndexOpen = false
+			H.encyclopediaPage = nil
+			codexField = "book"
+		end
+	elseif tabId == "codex" and H.tradeBookOpenRequested then
+		H.tradeBookOpenRequested = nil
+		codexField = "r:all"
+		for _, resource in ((view and view.codex and view.codex.resources) or {}) do
+			if resource.id == H.tradeBookGood then
+				codexField = "r:" .. resource.category
+				break
+			end
+		end
+	end
 	-- [최근 사용] 영구 저장 키 변경 없이 이 실행 중 직전 메뉴만 기억한다.
-	if currentTab ~= tabId and TAB_NAME[currentTab] then H.recentTab = currentTab end
+	-- [이전 시설] 같은 창의 탭을 넘겨도 돌아갈 시설과 탭을 보존한다.
+	if TAB_NAME[currentTab] and groupOf(currentTab) ~= groupOf(tabId) then
+		H.recentTab = currentTab
+	end
 	currentTab = tabId
 	message = "" -- 창을 새로 열 때 지난 안내 문구는 지운다
 	H.mapPage = mapPage
@@ -11464,6 +15491,8 @@ openTab = function(tabId, mapPage)
 	if tabId ~= "battle" then
 		equipped = nil
 	end
+	-- [시설 탭 이동] 이전 탭 본문을 정리하고 같은 시설 책 안에서 표시한다.
+	closeTradeHall()
 	main.Visible = true
 	menuToggle.Visible = false
 	render()
@@ -11505,6 +15534,8 @@ do
 		dim.BackgroundTransparency = 0.5
 		dim.BorderSizePixel = 0
 		dim.Parent = layer
+		-- [역사 이벤트] 책에서 지도와 기존 3D 무대가 등장한 뒤 선택창이 나타난다.
+		local recordHistory = H.historyCinematic(layer, ev)
 		local win = Instance.new("Frame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
@@ -11512,7 +15543,11 @@ do
 		win.AutomaticSize = Enum.AutomaticSize.Y
 		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
+		win.Visible = false
 		win.Parent = layer
+		task.delay(1.18, function()
+			if win.Parent then win.Visible = true end
+		end)
 		corner(win, 16)
 		local wst = Instance.new("UIStroke")
 		wst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -11545,8 +15580,21 @@ do
 			rl.Parent = row
 			local ok = (view and view.player and view.player.coins or 0) >= ch.cost
 			local b = mkButton(row, ch.label, COLORS.gold, UDim2.new(1, 0, 0, 40), function()
-				closePopup()
-				call("HistoryChoose", { choice = ch.index })
+				-- 서버가 선택을 승인해야만 책에 기록되는 효과를 준다. 판정과 보상은 그대로.
+				if not popupGui or popupFor ~= ev.id then return end
+				local response = call("HistoryChoose", { choice = ch.index })
+				if response and response.ok then
+					-- [수납 화면] 기존 선택창을 숨겨 책으로 되접히는 최종 연출이 가려지지 않게 한다.
+					win.Visible = false
+					recordHistory()
+					-- 신규 30프레임 책 수납이 있으면 마지막 장면이 끝난 뒤 닫는다.
+					local archiveDelay = if AssetIds["CardArt/history_record"] then 1.08 else 0.62
+					task.delay(archiveDelay, function()
+						if popupFor == ev.id then closePopup() end
+					end)
+				else
+					closePopup()
+				end
 			end, ok)
 			b.LayoutOrder = 1
 			local hint = mkLabel(row, ch.hint or "", 12, COLORS.muted, false, 2)
@@ -11589,8 +15637,17 @@ end
 (function()
 	local TweenService = game:GetService("TweenService")
 	local dlg = nil
+	-- [Studio 진단] 시작 안내 창 열림·닫힘 순서와 그때의 서버 단계를 시간순으로 남긴다(Studio 실행에서만).
+	local function introTrace(event: string)
+		if not game:GetService("RunService"):IsStudio() then return end
+		local stepNow = view and view.captain and view.captain.step or "-"
+		local line = string.format("%.1f:%s:%s", os.clock() % 1000, event, tostring(stepNow))
+		local old = tostring(workspace:GetAttribute("IntroQATrace") or "")
+		workspace:SetAttribute("IntroQATrace", string.sub(old .. "|" .. line, -900))
+	end
 	local dlgPrevMusic = nil
 	local function closeDlg()
+		if dlg then introTrace("close:" .. tostring(H.introDlgStep) .. ":" .. string.sub(debug.traceback("", 2):gsub("%s+", " "), 1, 120)) end
 		H.introDlgStep = nil
 		if dlg then
 			dlg:Destroy()
@@ -11662,6 +15719,7 @@ end
 	-- spec: speaker, role, text, input(placeholder), choices(list of {label,value}), portraits(list of values), button
 	local function openDlg(spec, onDone)
 		closeDlg()
+		introTrace("open:" .. tostring(spec.speaker))
 		local layer = overlayGui("IntroDialog", 58)
 		dlg = layer
 		local dim = Instance.new("Frame")
@@ -11919,7 +15977,7 @@ end
 				task.delay(0.7, function() if dlg == layer then submit() end end) -- 조용히 몇 번 더
 			elseif ok == false then
 				note.Text = tostring(msg or "")
-				if msg == "이미 초상화를 받았어요" or msg == "이미 장부에 올렸어요" then
+				if (msg == "이미 초상화를 받았어요" or msg == "이미 장부에 올렸어요") and dlg == layer then
 					closeDlg()
 				end
 			end
@@ -12175,18 +16233,28 @@ end
 		return out
 	end
 
+	local runStepBody
 	local function runStep(step)
-		task.defer(function() H.introDlgStep = step end) -- 안내창이 열린 뒤에 기록한다 (closeDlg가 지우므로)
+		runStepBody(step)
+		if dlg then H.introDlgStep = step end
+	end
+	function runStepBody(step)
+		-- [안내창 단계 기록] 지연(task.defer) 기록은 다음 단계 창이 열린 뒤에 옛 단계 이름을 덮어써
+		-- 서버와 다르다고 새 창을 닫는 경합을 만들었다(Studio 44921931706: stale=name>companion, 동료 단계 영구 정지).
+		-- 창을 연 직후 같은 스레드에서 기록한다(openDlg가 먼저 closeDlg로 지운 뒤).
 		local c = view.captain
 		local role = if step == "name" then "상인 길드" elseif step == "companion" then "주점" else "떠돌이 화가"
 		if step == "name" then
 			openDlg({ speaker = "길드 서기", role = role, music = "music_market", sting = "sfx_bell", input = "이름을 적으세요 (12글자까지)", button = "장부에 올린다",
 				text = "(배에서 내리는 당신에게 상인 길드의 서기가 다가온다) 처음 보는 얼굴이군요. 이 항구에서 거래하려면 거래 장부에 이름이 있어야 합니다. 값을 치르고 영수증을 받는 사람의 이름이니까요. 뭐라고 적을까요?" },
 				function(v)
+					-- [자기 창만 닫기] 서버 응답을 기다리는 사이 다음 단계 창이 열렸을 수 있다(Studio 44925289818:
+					-- 이름 응답이 늦게 돌아와 막 열린 동료 창을 닫음 → 동료 단계 영구 정지). 응답 뒤에는 자기 창일 때만 닫는다.
+					local mine = dlg
 					local r = call("IntroName", { name = v })
 					if r and r.ok then
 						Sfx.play("sfx_contract_stamp", 0.7)
-						closeDlg()
+						if dlg == mine then closeDlg() end
 					end
 					return r and r.ok, r and r.message
 				end)
@@ -12199,10 +16267,15 @@ end
 			openDlg({ speaker = who.name, role = who.role, music = "music_story_tavern", sting = "sfx_story_tavern", button = "함께 가자",
 				text = string.format("(주점 구석에서 다가온다) 당신이 새로 온 선장이군요. 소문을 들었어요. 대가는 필요 없습니다. 같은 고향 사람끼리, 항해에 보탬이 되고 싶어요. 저를 태워 주시겠어요? (%s)", who.role) },
 				function()
+					local mine = dlg
 					local r = call("IntroCompanion", {})
+					-- [Studio 진단] 시작 안내가 동료 단계에서 멈추는 회차(44912240071 등)의 실제 서버 응답을 남긴다.
+					if game:GetService("RunService"):IsStudio() then
+						workspace:SetAttribute("IntroQACompanionReply", tostring(r and r.ok) .. "|" .. tostring(r and r.message))
+					end
 					if r and r.ok then
 						Sfx.play("sfx_quest_accept", 0.6)
-						closeDlg()
+						if dlg == mine then closeDlg() end
 					end
 					return r and r.ok, r and r.message
 				end)
@@ -12211,9 +16284,10 @@ end
 				text = string.format("%s 선장님이시죠? 저는 항구를 떠돌며 항해자 화첩을 만들고 있어요. 바다로 나간 사람들의 얼굴을 남기면, 훗날 그들의 이야기가 사라지지 않거든요. 대가는 받지 않을게요. 어떤 모습으로 그려 드릴까요?", c.name or "선장") },
 				function(v)
 					local name = c.name or "선장"
+					local mine = dlg
 					local r = call("IntroPortrait", { portrait = v })
 					if r and r.ok then
-						closeDlg()
+						if dlg == mine then closeDlg() end
 						task.spawn(function()
 							reveal(v, name)
 						end)
@@ -12237,72 +16311,16 @@ end
 			end)
 	end
 
-	-- 첫걸음 안내 띠: 지금 할 일을 한 줄로 보여 준다 (끝나면 사라진다)
-	local goalGui = overlayGui("TutorialGoal", 11)
-	local goalBar = Instance.new("TextButton")
-	goalBar.AnchorPoint = Vector2.new(0.5, 0)
-	goalBar.Position = UDim2.new(0.5, 0, 0, 8)
-	goalBar.Size = UDim2.new(1, -20, 0, 48)
-	local goalMax = Instance.new("UISizeConstraint")
-	goalMax.MaxSize = Vector2.new(430, 48)
-	goalMax.Parent = goalBar
-	goalBar.BackgroundColor3 = COLORS.cover
-	goalBar.BackgroundTransparency = 0.1
-	goalBar.AutoButtonColor = false
-	goalBar.Font = Enum.Font.GothamBold
-	goalBar.TextSize = 15
-	goalBar.TextWrapped = true
-	goalBar.TextColor3 = Color3.fromRGB(246, 208, 130)
-	goalBar.TextStrokeTransparency = 1 -- 작은 글자에 테두리가 겹쳐 번져 보이던 문제
-	goalBar.TextTruncate = Enum.TextTruncate.AtEnd
-	goalBar.Text = ""
-	goalBar.Visible = false
-	goalBar.Parent = goalGui
-	corner(goalBar, 14)
-	do
-		local gs = Instance.new("UIStroke")
-		gs.Color = BRASS
-		gs.Thickness = 1.5
-		gs.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 기본값(Contextual)은 버튼 글자에도 테두리를 입혀 번져 보인다
-		gs.Parent = goalBar
-	end
-	goalBar.Activated:Connect(function()
-		-- [안내 통합] 첫걸음을 누르면 별도 팝업 대신 기존 저널의 상세 조언을 보여 준다.
-		H.openJournal()
-	end)
+	-- [첫 항해 목표] 기존 튜토리얼 상태만 갱신한다. 목표와 행동 단계는 저널 한 곳에 표시.
 	local function refreshGoal()
 		local c = view and view.captain
 		if not c or newGameMode or H.tutorialHidden then
 			H.tutorialGoalActive = false
-			goalBar.Visible = false
 			return
 		end
-		local p, ship = view.player, view.ship
-		local sailed = p and (p.day or 0) > 0
-		local goals = {
-			{ done = c.step ~= "name", text = "상인 길드 서기에게 이름을 올리세요" },
-			{ done = c.step == "portrait" or c.step == "done", text = "주점 동료를 맞이하세요" },
-			{ done = c.step == "done", text = "떠돌이 화가에게 초상을 받으세요" },
-			{ done = sailed or (ship and ship.cargoUsed or 0) > 0, text = "교역 탭에서 이 항구의 특산품을 사세요" },
-			{ done = sailed, text = "지도 탭에서 다른 항구로 출항하세요" },
-		}
-		local n, next_ = 0, nil
-		for _, g in goals do
-			if g.done then n += 1 elseif not next_ then next_ = g end
-		end
-		if not next_ then
-			H.tutorialHidden = true
-			H.tutorialGoalActive = false
-			goalBar.Visible = false
-			return
-		end
-		H.tutorialGoalActive = true
-		-- [첫걸음 전용 위치] 책 메뉴·대화 중에는 숨기고, 모바일에서는 도크 아이콘 아래에 둔다.
-		goalBar.Visible = not main.Visible and hud.Visible and not bubble.Visible
-			and not H.openingPending and not dlg and not inField and not sceneHold
-		local width = hud.AbsoluteSize.X
-		goalBar.Position = UDim2.new(0.5, 0, 0, if width < 610 then 260 elseif width < 1050 then 142 else 8)
-		goalBar.Text = string.format("첫걸음 %d/%d · %s\n눌러서 동료 조언·일지 보기", n, #goals, next_.text)
+		local sailed = view.player and (view.player.day or 0) > 0
+		H.tutorialGoalActive = c.step ~= "done" or not sailed
+		if not H.tutorialGoalActive then H.tutorialHidden = true end
 	end
 
 	task.spawn(function()
@@ -12332,8 +16350,13 @@ end
 			local c = view and view.captain
 			-- 서버에서 이미 다음 단계로 넘어갔는데 옛 안내창이 남아 있으면 닫는다 (화면에 갇히지 않게)
 			if dlg and c and H.introDlgStep and c.step ~= H.introDlgStep and not H.openingPending then
+				if game:GetService("RunService"):IsStudio() then
+					workspace:SetAttribute("IntroQAStaleClose", tostring(H.introDlgStep) .. ">" .. tostring(c.step))
+				end
 				H.introDlgStep = nil
 				closeDlg()
+				-- 닫은 뒤 현재 서버 단계의 창을 다시 연다(이미 열었던 단계로 기억돼 영영 멈추지 않게).
+				last = nil
 			end
 			if c and not newGameMode and not sceneHold and not dlg and c.step ~= "done" then
 				local want = main.Visible and not H.openingPending
@@ -12369,9 +16392,16 @@ task.spawn(function()
 			end)
 			workspace:SetAttribute("DevResult", tostring(ok) .. " " .. tostring(if type(err) == "table" then err.message else err))
 		end
+		if workspace:GetAttribute("DevCall") == "QuestScene" then
+			-- 개발 캡처용: 퀘스트 수주 장면(연출씬)을 그대로 재생해 촬영한다(서버 변경 없음)
+			workspace:SetAttribute("DevCall", nil)
+			if H.playQuestScenes then
+				H.playQuestScenes({ { kind = "start", name = "연출 점검 의뢰", text = "항구에 낯선 배가 들어왔다. 선장은 비밀 지도를 들고 있다고 한다. 그를 찾아 이야기를 들어 보자.", summary = "연출 점검", portId = "lisbon", mood = "war", long = true } })
+			end
+		end
 		if workspace:GetAttribute("DevCall") == "Hall" then
 			workspace:SetAttribute("DevCall", nil)
-			openTradeHall()
+			openTab("trade")
 		end
 		local dc = workspace:GetAttribute("DevCall")
 		if type(dc) == "string" and dc:sub(1, 4) == "Tab:" then
@@ -12391,7 +16421,7 @@ task.spawn(function()
 			workspace:SetAttribute("DevResult", dc .. " " .. tostring(okTab) .. " " .. tostring(errTab))
 		elseif dc == "Yard" then
 			workspace:SetAttribute("DevCall", nil)
-			openYardHall()
+			openTab("yard")
 		elseif dc == "Deck" then
 			workspace:SetAttribute("DevCall", nil)
 			pcall(function() H.openDeck() end)

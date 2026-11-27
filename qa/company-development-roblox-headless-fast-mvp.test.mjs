@@ -540,3 +540,14 @@ test('F0 planning rechecks legacy evidence and waits for current source gameplay
   const matrix=JSON.parse(output.split('\n').find(line=>line.startsWith('matrix=')).slice(7));
   assert.deepEqual(matrix.include.map(row=>row.gameId),['legacy','repair-stale']);
 });
+
+test('Roblox package preflight exposes exactly five canonical department leads without reviving balance as a department',()=>{
+  const rev='a'.repeat(40),artifact='sha256:'+'b'.repeat(64);
+  const evidence=inspectRobloxBuildPreflight({item:{
+    productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',
+    robloxSourceCommit:rev,robloxBuildSourceRevision:rev,
+    robloxBuildArtifactIdentity:artifact,robloxBuildOrPackagePassed:true
+  }});
+  assert.deepEqual(Object.keys(evidence.leads),['planning','graphics','development','qa','audio']);
+  assert.equal(Object.hasOwn(evidence.leads,'balance'),false);
+});

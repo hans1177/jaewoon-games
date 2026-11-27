@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {runInNewContext} from 'node:vm';
@@ -13,6 +14,20 @@ import {
   ensureRobloxExperiencePrivate,
   publishRobloxDedicatedPlace,
 } from '../tools/company-roblox-dedicated-experience.mjs';
+
+// [검사 종료 진단] 시험 프로세스 강제 종료 시 마지막 시작 시험을 확인한다.
+test.beforeEach(({name})=>{fs.writeSync(2,'ROBLOX_CONTRACT_TEST_START='+name+'\n');});
+test.afterEach(({name})=>{fs.writeSync(2,'ROBLOX_CONTRACT_TEST_END='+name+'\n');});
+
+// [교역품 3D] 기존 생성기를 실행해 8종의 서로 다른 메시와 모바일 삼각면 예산을 검증한다.
+test('Mare trade cargo eight distinct 3D model silhouettes stay within mobile budget',()=>{
+  const output=execFileSync(process.execPath,['roblox-games/mare-essentia/tools/make_cargo.mjs','--check'],{
+    cwd:process.cwd(),encoding:'utf8',timeout:20000,
+  });
+  for(const id of ['amber','ambergris','camphor','coal','guano','gum_arabic','jade','nitrate'])
+    assert.match(output,new RegExp('CARGO_3D_QUALITY_CHECK='+id+' TRIANGLES=\\d+'));
+  assert.match(output,/CARGO_3D_UNIQUE_SHAPES=8 PASS/);
+});
 
 test('forest model registration fails closed when cached creator does not match the API key owner',()=>{
   const uploader=fs.readFileSync(new URL('../tools/baeksu-war-upload-meshes.mjs',import.meta.url),'utf8');
@@ -241,6 +256,11 @@ test('unrelated web commits do not starve the canonical Roblox owner publisher',
   assert.match(workflow,/OWNER_STALE_MAIN_REVISION=UNCHANGED_ROBLOX_SOURCE/);
   assert.match(workflow,/OWNER_STALE_MAIN_REVISION=SKIP_SUPERSEDED_SOURCE/);
   assert.match(workflow,/git diff --name-only "\$BEFORE_SHA" HEAD -- roblox-games\//);
+  assert.match(workflow,/group: owner-roblox-dedicated-private-experiences-\$\{\{ github\.event_name == 'pull_request' && format\('qa-pr-\{0\}', github\.event\.pull_request\.number\) \|\| inputs\.game_id \|\| 'main' \}\}/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+  assert.match(workflow,/publish:\s*\n[\s\S]*?if: github\.event_name != 'pull_request'/);
+  assert.match(workflow,/persist:\s*\n[\s\S]*?if: always\(\) && github\.event_name != 'pull_request'/);
+  assert.equal((workflow.match(/cancel-in-progress: false/g)||[]).length,2);
   assert.doesNotMatch(workflow,/git push --force/);
 });
 
@@ -367,9 +387,11 @@ test('Studio Auto QA routes Mare publisher by workflow path without launching Fo
   assert.doesNotMatch(qa,/gh workflow run devloop-studio\.yml[^\n]*fantasy-survival/);
   assert.equal(qa.split('gh workflow run devloop-studio.yml').length-1,1);
   assert.ok(qa.includes("    - cron: '*/10 * * * *'")); // Studio 상태 확인 10분 간격
-  assert.ok(qa.includes('STUDIO_ROTATION_SKIP=RUNNER_BUSY'));
+  assert.match(qa,/if \[ "\$busy" -ge 1 \]; then\s+echo "STUDIO_WATCHDOG_SKIP=RUNNER_BUSY:\$busy"\s+exit 0/);
   assert.ok(qa.includes('group: studio-autoqa-dispatch-mare-essentia'));
-  assert.ok(qa.includes('STUDIO_PUSH_TARGET=SHIPS'));
+  assert.match(qa,/assets\/naval\/\*\|[^\n]+mare-ships\.json\)\s+candidate=SHIPS ;;/);
+  assert.ok(qa.includes('SHIPS) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-ships.json ;;'));
+  assert.ok(qa.includes('STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope'));
   assert.doesNotMatch(qa,/scripts\+=\(|for script in/);
   assert.ok(qa.includes('github.event.repository.private == false'));
 });
@@ -539,9 +561,13 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.doesNotMatch(client,/kind == "Cargo" and px < 64/);
   assert.match(client,/local assetId = AssetIds\[kind \.\. "\/" \.\. asset\]/);
   assert.match(client,/local vf = Instance\.new\("ViewportFrame"\)/);
-  assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], 96, sel\.name, gi\[4\]\)/);
-  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], 78, g\.name, gi\[4\]\)/);
-  assert.match(client,/modelIcon\(cardF, gi\[1\], gi\[2\], gi\[3\], 60, g\.name, gi\[4\]\)/);
+  assert.match(client,/modelIcon\(right, gi\[1\], gi\[2\], gi\[3\], bigPx, sel\.name, gi\[4\]\)/);
+  // [현행 교역 UI] 원화 우선, 목록 폭에 따라 82/102px. 원화가 없으면 기존 Cargo 3D 표본으로 복구한다.
+  assert.match(client,/local listPx = if listWidth < 230 then 82 else 102/);
+  assert.match(client,/icon\.Name = "TradeIndexArt"/);
+  assert.match(client,/modelIcon\(row, gi\[1\], gi\[2\], gi\[3\], listPx, g\.name, gi\[4\]\)/);
+  // [현행 탭 교역] 제거된 별도 cardF 화면 대신 목록의 실제 상품 ID와 원화 바인딩을 확인한다.
+  assert.match(client,/local listArtId = AssetIds\["Goods\/" \.\. g\.id\]/);
   // 현행 디자인은 별도 음영 이미지 대신 종이 프레임 안에 승인 원화를 직접 표시한다.
   assert.match(client,/art\.Name = "OriginalArt"/);
   assert.match(client,/art\.Image = "rbxassetid:\/\/" \.\. tostring\(assetId\)/);
@@ -560,7 +586,7 @@ test('Mare trade cards use registered 3D Cargo viewports even at compact mobile 
   assert.match(client,/if kind == "Cargo" and px < 90 then/);
   assert.match(client,/cf:VectorToWorldSpace\(Vector3\.new\(half\.X \* x, half\.Y \* y, half\.Z \* z\)\)/);
   assert.match(client,/reach = fitted \* 1\.06/);
-  assert.match(client,/if px >= 90 then\s+addItemMotion/);
+  assert.match(client,/if px >= 144 then\s+addItemMotion/,'realtime spin only on enlarged 3D showcase');
   assert.doesNotMatch(client.slice(client.indexOf('local function modelIcon('),client.indexOf('-- 줄(row) 왼쪽에 아이콘')),/Instance\.new\("Part"\)|Instance\.new\("MeshPart"\)/);
 });
 
@@ -604,6 +630,33 @@ test('Mare trade goods practice validates existing originals, rights and blocked
 });
 
 
+// [정기 자산 등록 → 기존 게시] 원본 장부 갱신만으로 게시하거나 실제 배치 통과를 기록하지 않는다.
+test('Mare scheduled verified asset registration dispatches existing publisher only on committed registry change',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const publisher=fs.readFileSync('.github/workflows/owner-mare-essentia-direct-publish.yml','utf8');
+  const studio=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.match(workflow,/id: registered_commit\s*\n\s*if: always\(\)/);
+  assert.ok(workflow.includes('[[ "$MARE_ASSET_OUTCOME" == "success" ]] && ! git diff --quiet HEAD -- "$registry" "$ids"'));
+  assert.ok(workflow.includes('for f in "$registry" "$ids"; do'));
+  assert.ok(workflow.includes('MARE_ASSET_PUBLISH_HANDOFF_NOT_VERIFIED:$f'));
+  assert.ok(workflow.includes('echo "registered_change=$changed" >> "$GITHUB_OUTPUT"'));
+  assert.ok(workflow.includes("success() && inputs.studio_regrant != true && (inputs.publish_after_register == true || (steps.asset_registration.outcome == 'success' && steps.registered_commit.outputs.registered_change == 'true'))"));
+  assert.ok(workflow.includes('gh workflow run owner-mare-essentia-direct-publish.yml --ref main -f universe_id="$MARE_PUBLISH_UNIVERSE"'));
+  assert.ok(workflow.includes('MARE_ASSET_PUBLISH_REQUESTED=YES'));
+  assert.ok(publisher.includes('MARE_ASSET_ID_OR_UNIVERSE_GRANT_UNVERIFIED:'));
+  assert.ok(publisher.includes('MARE_CANONICAL_TARGET_MISMATCH'));
+  assert.ok(studio.includes('workflows: ["Owner Mare Essentia Direct Publish"]'));
+  assert.doesNotMatch(publisher,/^  workflow_run:/m); // 등록 후 중복 게시 트리거 금지
+  assert.match(publisher,/^  workflow_dispatch:/m);
+  assert.match(publisher,/^  push:/m);
+  assert.equal(workflow.split('gh workflow run owner-mare-essentia-direct-publish.yml').length - 1, 1);
+  assert.match(publisher,/cancel-in-progress: false/);
+  assert.ok(workflow.includes("MARE_MODELS_ONLY: ${{ github.event_name == 'schedule' || inputs.scheduled_recovery == true }}"));
+  assert.ok(workflow.includes("inputs.scheduled_recovery == true || github.event_name == 'repository_dispatch' || github.event_name == 'workflow_run'"));
+  assert.ok(workflow.includes("inputs.scheduled_recovery != true || (inputs.studio_regrant != true"));
+  assert.ok(workflow.includes('if [[ "$MARE_MODELS_ONLY" != "true" ]]; then'));
+});
+
 // [교역품 3D] 남은 69종의 실물·권한·자동개선 관문을 검증한다.
 test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe asset lane',()=>{
   const root='roblox-games/mare-essentia';
@@ -644,9 +697,32 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.match(script,/asset\.get\("sourceSha256"\) == source_hash/);
   assert.match(script,/nativeRuntimeVerified": False, "visualQualityPass": False/);
   assert.match(script,/"tradeGoods3DPractice"/);
+  assert.match(script,/BRIEF_BUILDING_ROLE_CANDIDATE_ONLY/);
+  assert.match(script,/BRIEF_SCENE_COMPONENT_CANDIDATE_ONLY/);
+  assert.match(script,/component_targets\[role\]\.append\(asset\)/);
+  assert.match(script,/if asset in scene_catalog:/);
+  assert.match(script,/if entry\.get\("regionalAdaptationRequired"\) is True:/);
+  assert.match(script,/regionalAdaptationRequired/);
+  assert.match(script,/report\["lastPreviewRun"\] = last/);
+  assert.match(script,/animal_audit\["lastPreviewRun"\] = \{/);
+  assert.match(fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8'),/lastPreviewRun\.visualObservationCount=observed/);
   const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
-  assert.match(workflow,/schedule:\s*\n\s*- cron: '20 19 \* \* \*'/);
-  assert.match(workflow,/github\.event_name != 'schedule'/);
+  assert.match(workflow,/schedule:\s*\n\s*- cron: '2,7,12,17,22,27,32,37,42,47,52,57 \* \* \* \*'/);
+  assert.equal((fs.readFileSync('tools/devloop/assets_wanted.py','utf8').match(/time\.time\(\) \/\/ 300/g)||[]).length,2);
+  assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ env\.MARE_MODELS_ONLY == 'true' \}\}/);
+  assert.match(workflow,/run: node tools\/mare-essentia-upload-assets\.mjs --animal-source-preflight/);
+  const sourceSearch=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8').split("if (process.argv.includes('--animal-source-preflight'))")[1].split('const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY')[0];
+  assert.match(sourceSearch,/RATE_LIMIT/);
+  assert.match(sourceSearch,/AUTH_OR_PERMISSION/);
+  assert.match(sourceSearch,/MARE_ANIMAL_SOURCE_SEARCH_BATCH_DEFERRED/);
+  assert.match(sourceSearch,/if \(limited \|\| denied\) \{[\s\S]*?break;/);
+  assert.doesNotMatch(sourceSearch,/console\.log\([^\n]*diagnostic/);
+  assert.match(sourceSearch,/pending\.length\|\|reviewedSceneModels\.length/);
+  assert.ok(workflow.indexOf('id: animal_practice') < workflow.indexOf('id: card_recovery'),'scheduled animal preflight precedes card recovery mode selection');
+  assert.match(workflow,/old\.get\('sourceSha256'\)!=review\.get\('replacesSha256'\)/);
+  assert.match(workflow,/hashlib\.sha256\(raw\)\.hexdigest\(\)!=digest/);
+  assert.match(workflow,/out\.write\('MARE_MODELS_ONLY=false\\n'\)/);
+  assert.match(workflow,/env\.MARE_MODELS_ONLY != 'true' \|\| steps\.animal_practice\.outputs\.pending == 'true'/);
   assert.match(workflow,/TRADE_GOODS_3D_SOURCE_PROVENANCE_MISSING/);
   assert.match(workflow,/j=report\['tradeGoodsPractice'\]/);
   assert.match(workflow,/three=report\['tradeGoods3DPractice'\]/);
@@ -737,11 +813,16 @@ test('Mare harbor animals preserve imported mesh scale and verify final bounds',
   const scene=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
   assert.match(scene,/local isAnimal = kind == "Animals"/);
   assert.match(scene,/elseif isAnimal then math\.max\(ext\.X, ext\.Y, ext\.Z\)/);
-  assert.match(scene,/if not isAnimal and \(ratio < 0\.01 or ratio > 100\)/);
-  assert.match(scene,/m:GetScale\(\) \* ratio/);
+  // 원경 예외는 비충돌 Terrain/Castle에 한정하며 일반 모델의 배율 제한을 보존한다.
+  assert.match(scene,/local distantBackdrop = not solid and desiredSize >= 80 and \(kind == "Terrain" or kind == "Castle"\)/);
+  assert.match(scene,/if not isAnimal and not distantBackdrop and \(ratio < 0\.01 or ratio > 100\) then\s*error\(/);
+  assert.match(scene,/local scale = if isAnimal or distantBackdrop then m:GetScale\(\) \* ratio else ratio/);
+  assert.match(scene,/if scale ~= scale or scale <= 0 or scale == math\.huge then error\(/);
+  assert.match(scene,/if isAnimal or distantBackdrop then\s*local _, actualSize = m:GetBoundingBox\(\)\s*local actualAxis = if isAnimal then math\.max\(actualSize\.X, actualSize\.Y, actualSize\.Z\)/);
   assert.match(scene,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
-  assert.match(scene,/local m = if species == "duck" then nil else k and importedModel\(folder, "Animals", if species == "dog" then "dog-pug" else species/);
-  assert.match(scene,/if isAnimal then m:GetScale\(\) \* ratio else ratio/);
+  assert.match(scene,/local asset = if species == "dog" then "dog-pug" else species/);
+  // 오리도 승인된 원본 등록 전에는 숨기고, 등록 이후 기존 수입 모델 경로만 사용한다.
+  assert.match(scene,/local m = if k and AssetIds\["Animals\/" \.\. asset\]\s*then importedModel\(folder, "Animals", asset, pos, k\[1\], false, coat\) else nil\s*if not m then return end/);
 });
 
 test('Mare animals and harbor life models retain exact CC0 source hashes without a fake native quality pass',()=>{
@@ -771,6 +852,455 @@ test('Mare animals and harbor life models retain exact CC0 source hashes without
   }
 });
 
+
+
+// [동물 원본 자동 충원] 기존 Python 함수 자체를 실행한다. 게임·등록번호·시각 PASS는 부여하지 않는다.
+test('Mare animal archive candidates verify bounded original bytes without automatic visual approval',()=>{
+  const script=String.raw`
+import ast,io,os,re,struct,hashlib,json,zipfile,tarfile
+from pathlib import Path
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8')
+tree=ast.parse(source)
+fn=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='inspect_animal_archive')
+exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+def zip_data(entries):
+    stream=io.BytesIO()
+    with zipfile.ZipFile(stream,'w',compression=zipfile.ZIP_DEFLATED) as archive:
+        for name,body in entries:
+            archive.writestr(name,body)
+    return stream.getvalue()
+def tar_data(entries):
+    stream=io.BytesIO()
+    with tarfile.open(fileobj=stream,mode='w:gz') as archive:
+        for name,body in entries:
+            item=tarfile.TarInfo(name)
+            item.size=len(body)
+            archive.addfile(item,io.BytesIO(body))
+    return stream.getvalue()
+def rejected(fn):
+    try:
+        fn()
+    except ValueError:
+        return
+    raise AssertionError('expected rejection')
+body=b'{"asset":{"version":"2.0"}} '
+glb=b'glTF'+struct.pack('<III',2,20+len(body),len(body))+b'JSON'+body
+assert inspect_animal_archive(zip_data([('models/Goat.glb',glb),('cow.glb',glb)]),'goat.zip','goat')==[{'member':'models/Goat.glb','format':'GLB','bytes':len(glb),'sha256':hashlib.sha256(glb).hexdigest()}]
+assert inspect_animal_archive(zip_data([('cow.glb',glb)]),'goat.zip','goat')==[]
+rejected(lambda:inspect_animal_archive(zip_data([('../goat.glb',glb)]),'goat.zip','goat'))
+rejected(lambda:inspect_animal_archive(zip_data([('goat.glb',b'bad')]),'goat.zip','goat'))
+rejected(lambda:inspect_animal_archive(zip_data([('goat.glb',b'0'*5000001)]),'goat.zip','goat'))
+assert len(inspect_animal_archive(tar_data([('goat.glb',glb),('cow.glb',glb)]),'goat.tar.gz','goat'))==1
+rejected(lambda:inspect_animal_archive(tar_data([('../goat.glb',glb)]),'goat.tar.gz','goat'))
+print('MARE_ANIMAL_ARCHIVE_FIXTURES=7')
+`;
+  const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
+  assert.match(output,/MARE_ANIMAL_ARCHIVE_FIXTURES=7/);
+  const source=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  assert.match(source,/"registrationApproved": False/);
+  assert.match(source,/"visualQualityApproved": False/);
+  assert.match(source,/"actualRobloxRuntimeVerified": False/);
+});
+
+
+test('Mare source preview uses bounded exact original member and never grants approval',()=>{
+  const script=String.raw`
+import ast,io,os,re,struct,hashlib,json,zipfile,tarfile,tempfile
+from pathlib import Path
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+tree=ast.parse(source)
+names={'inspect_animal_archive','materialize_animal_review_member'}
+exec(compile(ast.Module(body=[x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name in names],type_ignores=[]),'assets_wanted.py','exec'))
+body=b'BLENDER-v404'+b'original'
+png=b'\x89PNG\r\n\x1a\n'+b'texture'
+stream=io.BytesIO()
+with zipfile.ZipFile(stream,'w') as z:
+    z.writestr('models/goat.blend',body)
+    z.writestr('models/goat.png',png)
+    z.writestr('models/alternate.png',png)
+    z.writestr('other/ignored.png',png)
+    z.writestr('models/texture.jpg',b'\xff\xd8\xff'+b'jpeg'+b'\xff\xd9')
+data=stream.getvalue()
+member=inspect_animal_archive(data,'goat.zip','goat')[0]
+with tempfile.TemporaryDirectory() as dest:
+    path=materialize_animal_review_member(data,'goat.zip','goat',member,dest)
+    assert Path(path).read_bytes()==body
+    assert Path(dest,'goat.png').read_bytes()==png
+    assert Path(dest,'alternate.png').read_bytes()==png
+    assert Path(dest,'texture.jpg').read_bytes().startswith(b'\xff\xd8\xff')
+    assert not Path(dest,'ignored.png').exists()
+    try:
+        materialize_animal_review_member(data,'goat.zip','goat',{**member,'sha256':'0'*64},dest)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('wrong member digest accepted')
+print('MARE_SOURCE_PREVIEW_FIXTURES=3')
+`;
+  assert.match(execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000}),/MARE_SOURCE_PREVIEW_FIXTURES=3/);
+  const source=fs.readFileSync('tools/devloop/assets_wanted.py','utf8');
+  const mesh=fs.readFileSync('tools/vibe_mesh_audit.py','utf8');
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  assert.match(source,/--disable-autoexec/);
+  assert.match(source,/timeout=600, check=False, stdout=diagnostic, stderr=subprocess\.STDOUT\)/);
+  assert.match(source,/RENDERED_AWAITING_VISUAL_REVIEW/);
+  assert.match(mesh,/use_scripts=False/);
+  const textureGuardFixture=String.raw`
+from pathlib import Path
+from types import SimpleNamespace
+import tempfile, textwrap, re
+mesh=Path('tools/vibe_mesh_audit.py').read_text(encoding='utf8')
+guard=textwrap.dedent(mesh.split('    ignored_reference_images = 0\n',1)[1].split('    scene = bpy.data.scenes.new(',1)[0])
+guard='ignored_reference_images = 0\n'+guard
+class Screen: pass
+class Object:
+    def __init__(self, kind, data): self.type,self.data=kind,data
+class Material: pass
+class Image:
+    def __init__(self, path, packed=False):
+        self.source,self.packed_file,self.filepath='FILE',packed,str(path)
+        self.has_data=False
+        self.size=(0,0)
+    def reload(self):
+        self.has_data=Path(self.filepath).is_file()
+        self.size=(4,4) if self.has_data else (0,0)
+class Images(list):
+    def remove(self, image, do_unlink=False):
+        assert do_unlink
+        super().remove(image)
+with tempfile.TemporaryDirectory() as folder:
+    source=Path(folder)/'animal.blend'
+    local=Path(folder)/'valid.png'
+    local.write_bytes(b'\x89PNG\r\n\x1a\n'+b'texture')
+    (Path(folder)/'bad.png').write_bytes(b'invalid')
+    for owner_kind, allowed in [('none',True),('screen',True),('empty',True),('material',False),('mesh',False),('mixed',False),('local',True),('packed',True),('legacy',True),('invalid',False)]:
+        original=local if owner_kind=='local' else r'C:\old\valid.png' if owner_kind=='legacy' else r'C:\old\bad.png' if owner_kind=='invalid' else Path(folder)/'missing.png'
+        im=Image(original,owner_kind=='packed')
+        owners={'none':set(),'screen':{Screen()},'empty':{Object('EMPTY',im)},'material':{Material()},'mesh':{Object('MESH',im)},'mixed':{Screen(),Material()},'local':{Material()},'packed':{Material()},'legacy':{Material()},'invalid':{Material()}}[owner_kind]
+        images=Images([im])
+        bpy=SimpleNamespace(data=SimpleNamespace(images=images,user_map=lambda:{im:owners}),path=SimpleNamespace(abspath=lambda p:p),types=SimpleNamespace(Screen=Screen,Object=Object))
+        scope=dict(Path=Path,source=source,bpy=bpy,re=re)
+        try:
+            exec(guard,scope)
+        except ValueError as error:
+            assert not allowed and str(error)=='SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE',owner_kind
+            assert images==[im]
+        else:
+            assert allowed,owner_kind
+            preserved=owner_kind in ('local','packed','legacy')
+            assert (images==[im])==preserved,owner_kind
+            assert scope['ignored_reference_images']==(0 if preserved else 1),owner_kind
+            assert scope['restored_texture_references']==(1 if owner_kind=='legacy' else 0),owner_kind
+            if owner_kind=='legacy': assert im.filepath==str(local)
+print('MARE_REFERENCE_TEXTURE_FIXTURES=10')
+`;
+  assert.match(execFileSync('python3',['-c',textureGuardFixture],{encoding:'utf8',timeout:15000}),/MARE_REFERENCE_TEXTURE_FIXTURES=10/);
+
+  assert.match(mesh,/'visualQualityApproved': False, 'registrationApproved': False/);
+  assert.match(workflow,/--animal-preview-dir=/);
+  assert.match(workflow,/retention-days: 3/);
+  assert.match(workflow,/--animal-source-visual-review=/);
+  assert.match(source,/failureReason/);
+  assert.match(source,/MARE_ANIMAL_RENDER_DIAGNOSTIC/);
+  assert.match(source,/failureDiagnostic/);
+  assert.match(source,/SOURCE_PREVIEW_GPU_CONTEXT/);
+  assert.match(source,/SOURCE_PREVIEW_PYTHON_EXCEPTION/);
+  assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE IMPORT/);
+  assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE SCENE/);
+  assert.match(mesh,/MARE_SOURCE_PREVIEW_STAGE RENDER_/);
+  assert.ok(workflow.includes("blender --version"));
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.match(uploader,/SOURCE_VISUAL_FRAME_HASH/);
+  assert.match(uploader,/VIBE2_GEMINI_FREE_TIER_VERIFIED==='YES'/);
+  assert.match(uploader,/buildProviders\(/);
+  assert.match(uploader,/askChain\(/);
+  assert.match(uploader,/FREE_VISION_BILLING_BLOCKED/);
+  assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
+  assert.match(source,/VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED/);
+  assert.match(source,/MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY/);
+  assert.match(source,/"deferredTextureOriginals":/);
+  assert.match(source,/MARE_ANIMAL_TEXTURE_ORIGINAL_DEFERRED/);
+  const alternateRetryFixture=String.raw`
+from pathlib import Path
+import textwrap
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+block=textwrap.dedent(source.split('    deferred = []\n',1)[1].split('    fresh = ',1)[0])
+def check(observation, expected_first, alternatives=True):
+    old={'name':'hippo','targets':['zoo_hippo'],'priorRenderRetry':True,'priorRenderFailureReason':'SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE'}
+    other={'name':'goat','priorRenderRetry':True}
+    alt={'name':'hippo','targets':['zoo_hippo'],'directModel':True,'license':'CC0-1.0','geometry':{'triangles':382},'modelMembers':[{'sha256':'exact'}],'sourceVisualObservation':observation}
+    retry=[other,old]
+    scope={'ordered':[other,old,alt] if alternatives else [other,old],'retry':retry,'deferred':[]}
+    exec(block,scope)
+    assert retry[0]['name']==expected_first
+    if alternatives:
+        assert old in scope['deferred'] and old not in retry
+        assert old['sourcePreview']['state']=='DEFERRED_TEXTURE_ALTERNATE'
+        assert old['priorRenderRetry'] is True
+        assert old['sourcePreview']['failureReason']=='SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE'
+        assert old['sourcePreview']['registrationApproved'] is False
+        assert old['sourcePreview']['visualQualityApproved'] is False
+    else:
+        assert old in retry and not scope['deferred']
+check({},'hippo')
+valid={'state':'SOURCE_VISUAL_OBSERVED_ONLY','sourceMemberSha256':'exact','contentSafe':True,'speciesMatch':True,'uncertain':False}
+check(valid,'goat')
+check(dict(valid,sourceMemberSha256='stale'),'hippo')
+check({},'goat',False)
+print('MARE_ALTERNATE_RETRY_FIXTURES=4')
+`;
+  assert.match(execFileSync('python3',['-c',alternateRetryFixture],{encoding:'utf8',timeout:15000}),/MARE_ALTERNATE_RETRY_FIXTURES=4/);
+  assert.match(source,/"directModel": True/);
+  assert.match(source,/SOURCE_PREVIEW_DIRECT_EVIDENCE/);
+  assert.match(source,/restore_pinned_animal_glb\(proof, source\)/);
+  assert.match(source,/HELD_SOURCE_RESTORE_HASH/);
+  assert.match(workflow,/MARE_ANIMAL_RESTORED_PROOF_INVALID/);
+  assert.match(workflow,/MARE_ANIMAL_PUBLISHER_PROOF_INVALID/);
+  assert.ok(source.includes('report["downloadAttempts"] = restore_attempts'));
+  assert.ok(source.includes('if report["downloadAttempts"] >= 3:'));
+  assert.ok(source.includes('report["downloadAttempts"] += 1'));
+  assert.ok(workflow.includes('len(restored)+len(acquired)<=attempts<=3'));
+  assert.match(source,/PUBLISHER_FREE_CATALOG_HELD_ONLY/);
+  assert.match(workflow,/inbox-hold\/Animals/);
+  assert.match(workflow,/GEMINI_API_KEY:.*VIBE2_GEMINI_FREE_TIER_VERIFIED == 'YES'/);
+  assert.match(uploader,/LOCAL_VISION_NOT_CONFIGURED/);
+  assert.match(uploader,/SOURCE_VISUAL_OBSERVED_ONLY/);
+  assert.match(uploader,/PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED/);
+  assert.match(uploader,/FREE_QUOTA_LIMIT/);
+  assert.match(source,/SOURCE_GEOMETRY_REPAIR_REQUIRED/);
+  assert.match(source,/\(retry, 1\), \(quality, 1\), \(preferred, 1\), \(fresh, 3\)/);
+  assert.match(mesh,/CATMULL_CLARK_BUDGETED_ONE_LEVEL/);
+  assert.match(mesh,/ANIMAL_QUALITY_WEIGHT_INVALID/);
+  assert.match(source,/ANIMAL_QUALITY_CANDIDATE_REGRESSION/);
+  assert.match(source,/QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON/);
+  assert.match(source,/ANIMAL_QUALITY_CANDIDATE_FRAME_HASH/);
+  assert.match(uploader,/SOURCE_QUALITY_MODEL_HASH/);
+  assert.match(uploader,/sets\.push\(\{directory:key\+'\/quality',frames:quality\.frames\}\)/);
+  assert.match(uploader,/QUALITY_COMPARISON_OBSERVED_ONLY/);
+  assert.match(uploader,/QUALITY_COMPARISON_CONTENT_BLOCKED/);
+  assert.match(uploader,/candidateFrameSha256:quality\.frames\.map/);
+  assert.match(uploader,/row\.sourceVisualLastAttempt=review/);
+  assert.match(source,/row\["lastQualityComparison"\] = comparison/);
+  assert.match(source,/"QUALITY_COMPARISON_OBSERVED_ONLY", "QUALITY_COMPARISON_CONTENT_BLOCKED"/);
+  assert.match(workflow,/mare-animal-source-preview\/\*\*\/quality\.glb/);
+  execFileSync('python3',['-c',"import ast,pathlib; [ast.parse(pathlib.Path(p).read_text(encoding='utf-8')) for p in ('tools/vibe_mesh_audit.py','tools/devloop/assets_wanted.py')]"],{timeout:15000});
+  assert.match(source,/HEAD:.*assets-wanted\.json/);
+  assert.match(uploader,/registrationApproved:false,visualQualityApproved:false/);
+  assert.match(workflow,/MARE_ANIMAL_PREVIEW:.*github\.event_name == 'schedule'.*\[mare-animal-preview\].*inputs\.animal_preview == true.*inputs\.studio_regrant != true/);
+  assert.equal((workflow.match(/always\(\) && env\.MARE_ANIMAL_PREVIEW == 'true'/g)||[]).length,2);
+  assert.match(workflow,/if \[\[ "\$MARE_ANIMAL_PREVIEW" == "true" \]\]; then/);
+});
+
+// [검수 이력] 비렌더 장부 갱신에서 동일 원본 이력만 보존하고 현재 승인·프레임으로 재사용하지 않는다.
+test('Mare animal ledger preserves bounded historical render evidence without treating it as current',()=>{
+  const fixture=String.raw`
+import ast,json,os,re,subprocess
+from pathlib import Path
+from unittest.mock import patch
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+tree=ast.parse(source)
+fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='render_animal_review_candidates')
+root='roblox-games/mare-essentia'
+exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+member='a'*64
+def row():
+    return {'name':'goat','sourceSha256':'b'*64,'modelMembers':[{'sha256':member}], 'geometry':{}}
+def run(old):
+    report={'candidates':[row()]}
+    prior={'animalSourcePractice':{'candidates':[old],'lastPreviewRun':{'runId':'123'}}}
+    with patch.object(subprocess,'check_output',return_value=json.dumps(prior).encode()):
+        render_animal_review_candidates(report,'')
+    return report['candidates'][0]
+old=row()
+old['sourcePreview']={'state':'RENDERED_AWAITING_VISUAL_REVIEW','sourceMemberSha256':member,'registrationApproved':False,'visualQualityApproved':False,'artifactDirectory':'old','frames':[{'name':'front.png','sha256':'c'*64}]}
+old['qualityCandidate']={'state':'QUALITY_CANDIDATE_RETRY_REQUIRED','sourceMemberSha256':member,'registrationApproved':False,'visualQualityApproved':False,'nativeRuntimeVerified':False,'failureReason':'ANIMAL_QUALITY_CANDIDATE_STRUCTURE'}
+first=run(old)
+assert 'sourcePreview' not in first and 'qualityCandidate' not in first
+assert first['lastSourcePreview']['historicalOnly'] is True
+assert first['lastSourcePreview']['runId']=='123'
+assert 'artifactDirectory' not in first['lastSourcePreview']
+assert first['lastQualityCandidate']['failureReason']=='ANIMAL_QUALITY_CANDIDATE_STRUCTURE'
+assert run(first)==first
+bad=row()
+bad['sourcePreview']=dict(old['sourcePreview'],sourceMemberSha256='d'*64)
+assert 'lastSourcePreview' not in run(bad)
+bad['sourcePreview']=dict(old['sourcePreview'],registrationApproved=True)
+assert 'lastSourcePreview' not in run(bad)
+report={'candidates':[row()]}
+with patch.object(subprocess,'check_output',side_effect=OSError('no prior ledger')):
+    render_animal_review_candidates(report,'')
+assert 'lastSourcePreview' not in report['candidates'][0]
+print('MARE_HISTORICAL_RENDER_FIXTURES=PASS')
+`;
+  assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_HISTORICAL_RENDER_FIXTURES=PASS/);
+});
+
+// [정적 배치 진단] 기존 주점 prop과 항구 stack 호출만 정확히 추적한다.
+test('Mare reference audit recognizes existing scene placement without claiming native placement',()=>{
+  const fixture=String.raw`
+import tempfile,json,subprocess,sys
+from pathlib import Path
+scanner=Path('roblox-games/mare-essentia/tools/devloop/asset_check.py').resolve()
+with tempfile.TemporaryDirectory() as temp:
+    root=Path(temp)
+    src=root/'src'
+    src.mkdir()
+    keys=['Interior/lampwall','Interior/unused','Castle/tower-hexagon-mid','Castle/tower-hexagon-roof','Castle/unused']
+    (root/'assets-registered.json').write_text(json.dumps({'assets':{k:{'assetType':'Model'} for k in keys}}))
+    (root/'default.project.json').write_text(json.dumps({'tree':{'ReplicatedStorage':{'MareAssets':{'Interior':{},'Castle':{}}}}}))
+    (src/'NavalBattle.luau').write_text('prop("Interior", "lampwall", at, 7, 0)\n-- prop("Interior", "unused", at, 7, 0)\n')
+    (src/'PortScene.luau').write_text('stack("Castle", { "tower-hexagon-mid", "tower-hexagon-roof" }, 7, 0, 0)\n')
+    out=subprocess.check_output([sys.executable,str(scanner),str(root)],text=True)
+    result=json.loads(next(x.split('=',1)[1] for x in out.splitlines() if x.startswith('MARE_ASSET_REFERENCE_EVIDENCE=')))
+    assert result['literalOrPlacementReferenceCount']==3
+    assert result['unresolvedReferenceKeys']==['Castle/unused','Interior/unused']
+    assert result['scope']=='STATIC_REFERENCE_CANDIDATES_NOT_RUNTIME_PLACEMENT'
+print('MARE_SCENE_REFERENCE_FIXTURE=PASS')
+`;
+  assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_SCENE_REFERENCE_FIXTURE=PASS/);
+});
+
+// [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
+test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
+  const script=String.raw`
+import ast, csv, json, struct, math, hashlib, os, re, tempfile, http.client
+from unittest.mock import patch
+from pathlib import Path
+tree=ast.parse(Path('tools/devloop/assets_wanted.py').read_text(encoding='utf-8'))
+names={'inspect_held_animal_glb','restore_pinned_animal_glb','gobkit_animal_sources','read_gobkit_free','scene_source_targets'}
+exec(compile(ast.Module(body=[node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name in names],type_ignores=[]),'assets_wanted.py','exec'))
+def glb(triangles=1000, bad_index=False, nan=False, negative_accessor=False, external=False, invalid_joint=False):
+    pos=struct.pack('<9f',0,0,0,1,0,0,0,1,float('nan') if nan else 0)
+    idx=struct.pack('<'+'H'*(3*triangles),*([0,1,3 if bad_index else 2]*triangles))
+    binary=pos+idx
+    model={'asset':{'version':'2.0'},'buffers':[{'byteLength':len(binary)}], 'bufferViews':[{'buffer':0,'byteLength':len(pos)},{'buffer':0,'byteOffset':len(pos),'byteLength':len(idx)}], 'accessors':[{'bufferView':0,'componentType':5126,'count':3,'type':'VEC3'},{'bufferView':1,'componentType':5123,'count':3*triangles,'type':'SCALAR'}], 'meshes':[{'primitives':[{'attributes':{'POSITION':-1 if negative_accessor else 0},'indices':1}]}]}
+    if external: model['buffers'][0]['uri']='file.bin'
+    if invalid_joint: model['skins']=[{'joints':[9]}]
+    meta=json.dumps(model).encode();meta+=b' '*((-len(meta))%4); binary+=b'\x00'*((-len(binary))%4)
+    return b'glTF'+struct.pack('<III',2,28+len(meta)+len(binary),len(meta))+b'JSON'+meta+struct.pack('<I',len(binary))+b'BIN\x00'+binary
+assert inspect_held_animal_glb(glb())=={'triangles':1000,'jointCount':0,'animationCount':0,'mobileGeometryWithinBudget':True,'speciesVerified':False,'visualQualityApproved':False}
+assert inspect_held_animal_glb(glb(999))['mobileGeometryWithinBudget'] is False
+assert inspect_held_animal_glb(glb(3001))['mobileGeometryWithinBudget'] is False
+for option,reason in [('bad_index','GLB_INDEX_RANGE'),('nan','GLB_NONFINITE_POSITION'),('negative_accessor','GLB_ACCESSOR_INDEX'),('external','GLB_EXTERNAL_OR_INVALID_BUFFER'),('invalid_joint','GLB_INVALID_JOINT')]:
+    try: inspect_held_animal_glb(glb(**{option:True}))
+    except ValueError as e: assert str(e)==reason,(option,e)
+    else: raise AssertionError(option)
+print('MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8')
+data=glb()
+digest=hashlib.sha256(data).hexdigest()
+proof={'source':'https://github.com/owner/repo/blob/'+'a'*40+'/animal/Goat.glb',
+       'license':'CC0-1.0','commercialUseAllowed':True,'bytes':len(data),'triangles':1000,
+       'sourceSha256':digest,'originalSha256':digest,
+       'pinnedBlobSha':hashlib.sha1(('blob %d\0'%len(data)).encode()+data).hexdigest()}
+with tempfile.TemporaryDirectory() as dest:
+    target=str(Path(dest)/'goat.glb')
+    with patch.object(http.client,'HTTPSConnection') as connection:
+        response=connection.return_value.getresponse.return_value
+        response.status=200
+        response.read.return_value=data
+        assert restore_pinned_animal_glb(proof,target)==data
+        assert Path(target).read_bytes()==data
+        connection.assert_called_once_with('raw.githubusercontent.com',timeout=25)
+        assert connection.return_value.request.call_args.args==('GET','/owner/repo/'+'a'*40+'/animal/Goat.glb')
+        response.read.assert_called_once_with(len(data)+1)
+        for case, expected in [(proof,'HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS')]:
+            try: restore_pinned_animal_glb(case,target)
+            except ValueError as e: assert str(e)==expected
+            else: raise AssertionError('overwrite allowed')
+        Path(target).unlink()
+        for case,status,body,expected in [
+            ({**proof,'source':'https://example.com/Goat.glb'},200,data,'HELD_SOURCE_RESTORE_NOT_PINNED_OR_EXISTS'),
+            ({**proof,'license':'CC-BY-4.0'},200,data,'HELD_SOURCE_RESTORE_PROVENANCE'),
+            (proof,302,data,'HELD_SOURCE_RESTORE_HTTP'),
+            (proof,200,data+b'x','HELD_SOURCE_RESTORE_HASH'),
+            (proof,200,b'x'+data[1:],'HELD_SOURCE_RESTORE_HASH'),
+            ({**proof,'triangles':999},200,data,'HELD_SOURCE_RESTORE_GEOMETRY')]:
+            response.status=status
+            response.read.return_value=body
+            try: restore_pinned_animal_glb(case,target)
+            except ValueError as e: assert str(e)==expected,(expected,e)
+            else: raise AssertionError(expected)
+            assert not Path(target).exists()
+print('MARE_HELD_ANIMAL_RESTORE_FIXTURES=8')
+license_text='CC0 1.0 (public domain) — free for any use, commercial or personal, no attribution required.'
+url='https://gobkit.com/freebies/animal013/Pigeon.glb'
+entry={'name':'Pigeon','format':'glb','url':url,'license':license_text}
+def catalog(model, listed=True):
+    return {'schemaVersion':2,'glbs':[url] if listed else [],'packs':[{'models':[model]}]}
+assert gobkit_animal_sources(catalog(entry),['pigeon','penguin'])=={'pigeon':{'name':'Pigeon','url':url,'license':license_text}}
+assert gobkit_animal_sources(catalog(entry,False),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'license':'CC BY'}),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'name':'Rockhopper Penguin'}),['penguin'])=={}
+assert gobkit_animal_sources(catalog({**entry,'url':'https://example.com/Pigeon.glb'}),['pigeon'])=={}
+assert gobkit_animal_sources(catalog({**entry,'name':'Sea Otter'}),['sea_otter'])['sea_otter']['url']==url
+with patch.object(http.client,'HTTPSConnection') as connection:
+    response=connection.return_value.getresponse.return_value
+    response.status=200
+    response.read.return_value=b'123'
+    assert read_gobkit_free('/api/free',3)==b'123'
+    response.read.assert_called_once_with(4)
+    for path,status,body in [('/api/free',302,b'123'),('/api/free',200,b'1234'),('/redirect',200,b'123')]:
+        response.status=status
+        response.read.return_value=body
+        try: read_gobkit_free(path,3)
+        except ValueError: pass
+        else: raise AssertionError('unsafe publisher download')
+print('MARE_ANIMAL_PUBLISHER_FIXTURES=10')
+with tempfile.TemporaryDirectory() as root:
+    docs=Path(root)/'docs'
+    ports=docs/'ports'
+    ports.mkdir(parents=True)
+    tick=chr(96)
+    (ports/'README.md').write_text('| [A](a.md) | x |\n| [B](b.md) | x |\n',encoding='utf-8')
+    (ports/'a.md').write_text('#### '+tick+'a_house_1'+tick+' — house\n- building · 1단계 · size\n#### '+tick+'a_lamp'+tick+' — lamp\n- lamp · 3단계 · size\n',encoding='utf-8')
+    (ports/'b.md').write_text('#### '+tick+'b_house_1'+tick+' — house\n- building · 1단계 · size\n',encoding='utf-8')
+    (docs/'port_asset_prompts.csv').write_text('port_id,asset_id,tier\na,a_house_1,1\nb,b_plaza,2\nb,a_unrelated,2\n',encoding='utf-8')
+    (docs/'battle_backdrops').mkdir()
+    (docs/'battle_backdrops'/'backdrop_prompts.csv').write_text('category,asset_id\nfield,field_one\nnaval-near,sea_test_near\nnaval-far,sea_test_far\nnaval-mid,sea_test_mid\n',encoding='utf-8')
+    (docs/'battle_backdrops'/'quests.md').write_text('| Test ('+tick+'q_test'+tick+') | field | current site |\n| Sea ('+tick+'q_sea'+tick+') | war_clear | naval/test.md |\n',encoding='utf-8')
+    shared=Path(root)/'src'/'ReplicatedStorage'/'Shared'
+    shared.mkdir(parents=True)
+    (shared/'Pose.luau').write_text('"hair_test"',encoding='utf-8')
+    (docs/'residents').mkdir()
+    (docs/'residents'/'jobs.md').write_text('| Sailor ('+tick+'sailor'+tick+') | x |',encoding='utf-8')
+    (docs/'discoveries').mkdir()
+    (docs/'discoveries'/'MISSING.md').write_text('- zoo_otter test',encoding='utf-8')
+    seed=[]
+    missing=[('example.luau','Monsters/example')]
+    hold=Path(root)/'assets'/'inbox-hold'/'Town'
+    hold.mkdir(parents=True)
+    (hold/'gobkit-free-a_lamp.glb').touch()
+    (hold/'gobkit-free-a_lamp.glb.license.json').touch()
+    status={}
+    battle_status={}
+    outstanding=scene_source_targets({'Town/a_house_1':{'assetId':'10','assetType':'Model','usePermissionGranted':True},
+                                      'Town/b_house_1':{'assetId':'11','assetType':'Image','usePermissionGranted':True},
+                                      'Naval/sea_test_far':{'assetId':'12','assetType':'Model','usePermissionGranted':True}},status,battle_status)
+    assert status['portCount']==2 and status['planned']==4 and status['registeredModelRights']==1
+    assert status['heldUnverified']==1 and status['missingOriginal']==2
+    assert status['nativeRuntimeVerified'] is False and status['visualQualityApproved'] is False
+    assert status['ports'][0]['stages']['3']=={'planned':1,'registeredModelRights':0}
+    assert status['ports'][1]['nextMissing']==[{'assetKey':'Town/b_house_1','tier':1},{'assetKey':'Town/b_plaza','tier':2}]
+    assert outstanding['hair_test']=='People' and outstanding['example']=='Monsters'
+    assert outstanding['sailor_work']=='Motion' and outstanding['otter_rig']=='Rig'
+    assert {k:v for k,v in outstanding.items() if v in ('Town','Naval','Terrain')}=={'a_lamp':'Town','b_house_1':'Town','b_plaza':'Town','field_one':'Terrain','sea_test_near':'Naval','sea_test_mid':'Naval'}
+    assert battle_status['seaCount']==1 and battle_status['siteCount']==1 and battle_status['questBriefCount']==2
+    assert battle_status['planned']==4 and battle_status['registeredModelRights']==1 and battle_status['missingOriginal']==3
+    assert battle_status['seas'][0]['layers']['far']['state']=='REGISTERED_MODEL_RIGHTS'
+    assert battle_status['sites'][0]['siteId']=='one'
+    assert battle_status['quests'][0]['route']=='CURRENT_EXPLORATION_SITE'
+    assert battle_status['quests'][1]['explicitSeaCandidates']==['test']
+    assert battle_status['nativeRuntimeVerified'] is False and battle_status['quests'][1]['runtimeRouteVerified'] is False
+print('MARE_PORT_BRIEF_COVERAGE_FIXTURES=7')
+print('MARE_BATTLE_BRIEF_COVERAGE_FIXTURES=7')
+`;
+  const output=execFileSync('python3',['-c',script],{encoding:'utf8',timeout:15000});
+  assert.match(output,/MARE_HELD_ANIMAL_GEOMETRY_FIXTURES=8/);
+  assert.match(output,/MARE_HELD_ANIMAL_RESTORE_FIXTURES=8/);
+  assert.match(output,/MARE_ANIMAL_PUBLISHER_FIXTURES=10/);
+  assert.match(output,/MARE_PORT_BRIEF_COVERAGE_FIXTURES=7/);
+  assert.match(output,/MARE_BATTLE_BRIEF_COVERAGE_FIXTURES=7/);
+});
 
 test('Mare Quaternius donkey is an immutable CC0 source-derived static model, not fake rig motion',()=>{
   const root='roblox-games/mare-essentia/assets/animals/';
@@ -803,13 +1333,60 @@ test('Mare Quaternius donkey is an immutable CC0 source-derived static model, no
   assert.equal(animals.autoBindWithoutRuntimeProof,false);
 });
 
+// [실제 가축 골격 QA] 정적 Quaternius 원본은 보존하고 스킨 가중치와 전신 관절 클립을 검증한다.
+test('Mare donkey rig candidate keeps original geometry and has real skinned joint animations',()=>{
+  const root='roblox-games/mare-essentia/assets/animals/';
+  const original=fs.readFileSync(root+'donkey.glb');
+  const rig=fs.readFileSync(root+'donkey-rig.glb');
+  const read=bytes=>JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+  const src=read(original),doc=read(rig);
+  assert.equal(rig.subarray(0,4).toString('ascii'),'glTF');
+  assert.equal(rig.readUInt32LE(8),rig.length);
+  assert.equal(doc.meshes.length,src.meshes.length);
+  assert.deepEqual(doc.materials,src.materials,'original eight Quaternius materials preserved');
+  assert.deepEqual(doc.meshes[0].primitives.map(p=>p.material),src.meshes[0].primitives.map(p=>p.material));
+  assert.equal(doc.skins.length,1);
+  assert.equal(doc.skins[0].joints.length,12);
+  assert.ok(doc.nodes.some(n=>n.name==='front_left_knee'));
+  assert.ok(doc.nodes.some(n=>n.name==='rear_right_knee'));
+  assert.ok(doc.nodes.some(n=>n.name==='donkey_neck'));
+  assert.ok(doc.nodes.some(n=>n.name==='donkey_tail'));
+  for(const prim of doc.meshes[0].primitives){
+    assert.ok(Number.isInteger(prim.attributes.JOINTS_0));
+    assert.ok(Number.isInteger(prim.attributes.WEIGHTS_0));
+    const pos=doc.accessors[prim.attributes.POSITION];
+    assert.equal(doc.accessors[prim.attributes.JOINTS_0].count,pos.count);
+    assert.equal(doc.accessors[prim.attributes.WEIGHTS_0].count,pos.count);
+  }
+  // GLB BIN 청크 헤더는 JSON 끝에 위치한다. 길이/타입 8바이트 뒤부터 실제 메시 데이터다.
+  const staticBin=20+original.readUInt32LE(12);
+  const rigBin=20+rig.readUInt32LE(12);
+  assert.equal(original.readUInt32LE(staticBin+4),0x004e4942);
+  assert.equal(rig.readUInt32LE(rigBin+4),0x004e4942);
+  const originalLen=original.readUInt32LE(staticBin);
+  const rigLen=rig.readUInt32LE(rigBin);
+  assert.ok(originalLen>0&&rigLen>=originalLen);
+  assert.equal(staticBin+8+originalLen,original.length);
+  assert.equal(rigBin+8+rigLen,rig.length);
+  // 전체 바이너리를 바이트 단위 비교하되 실패 시 거대한 배열 차이를 생성하지 않는다.
+  assert.ok(rig.subarray(rigBin+8,rigBin+8+originalLen).equals(original.subarray(staticBin+8,staticBin+8+originalLen)),'original mesh BIN must be bit-identical');
+  assert.deepEqual(doc.animations.map(a=>a.name),['idle','walk','trot','graze','drink','shake']);
+  assert.ok(doc.animations.every(a=>a.channels.length>=11));
+  assert.match(fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8'),/await prepareDonkeyRig\(\)/);
+  const license=JSON.parse(fs.readFileSync(root+'donkey-rig.glb.license.json','utf8'));
+  assert.equal(license.license,'CC0-1.0');
+  assert.equal(license.sourceGitBlobSha1,'408de349a14a3d270441fc61033f09646cdca866');
+  assert.equal(license.runtimeVerified,false,'new asset cannot auto-replace existing donkey without Roblox visual QA');
+});
+
 // [주민 정면] 얼굴 표면은 머리의 원본 데칼 면을 따라야 한다. 몸통 축으로 반대쪽에 덧그리지 않는다.
 test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
-  assert.match(pose,/gui\.Face = if decal then decal\.Face else Enum\.NormalId\.Front/);
+  assert.match(pose,/decal = head:FindFirstChildWhichIsA\("Decal"\)/);
+  assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
   assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
-  assert.match(pose,/pcall\(drawFace, headPart, role, skin, rng\)/);
+  assert.match(pose,/pcall\(drawFace, headPart\)/);
   assert.match(port,/local guestRoot = character and character:FindFirstChild\("HumanoidRootPart"\)/);
   assert.match(port,/elseif guestRoot then guestRoot\.Position elseif cam then cam\.CFrame\.Position else nil/);
   assert.match(port,/local nearGuest = flat\.Magnitude > 1 and flat\.Magnitude < 26/);
@@ -820,7 +1397,7 @@ test('Mare R15 faces use their native head front and stationary villagers greet 
 });
 
 // [탐험 전투] 기존 판정·무기 목록은 보존하고, 화면 이동·두 무기·이미지 가독성을 검증한다.
-test('Mare field charge, follower formation, two-weapon quick swap and approved skill art stay coherent',()=>{
+test('Mare field charge, noncombat party, two-weapon quick swap and approved skill art stay coherent',()=>{
   const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
   const weapons=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau','utf8');
   const assets=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/assets-registered.json','utf8')).assets;
@@ -828,9 +1405,10 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
   assert.ok(field.includes('desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))'));
   assert.ok(!field.includes('e.model:PivotTo(e.model:GetPivot() + to.Unit * step)'),'no one-frame enemy charge teleport');
   assert.ok(field.includes('math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))'),'enemy speed respects frame lag');
-  assert.ok(field.includes('pcall(Pose.createR15, folder, pos0, 0, ad.coat, rng, ad.role, heroHeight, outfit)'));
-  assert.ok(field.includes('a.focus = tgt'),'ally retains combat target instead of switching every frame');
-  assert.ok(field.includes('root0.CFrame * CFrame.new(if a.slot == 1 then -3.4 else 3.4, 0, 4.7)'));
+  assert.doesNotMatch(field,/pcall\(Pose\.createR15, folder, pos0|a\.focus = tgt|root0\.CFrame \* CFrame\.new\(if a\.slot/,'solo combat must not spawn or command companion combat actors');
+  assert.match(field,/local party = if type\(opts\.allies\) == "table" then opts\.allies else \{\}/);
+  assert.match(field,/for _, member in party do\s*if count >= 2 then break end/);
+  assert.match(field,/status:SetAttribute\("CompanionId", member\.id\)\s*status:SetAttribute\("CombatEnabled", false\)/);
   assert.ok(field.includes('wbtn:SetAttribute("WeaponChoiceCount", 2)'));
   assert.ok(field.includes('wpn, reserveWeapon = reserveWeapon, wpn'));
   assert.ok(weapons.includes('function Weapons.cycle('),'all historical weapon definitions remain available');
@@ -838,7 +1416,8 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
     assert.equal(assets[key]?.assetType,'Image',key);
     assert.equal(assets[key]?.usePermissionGranted,true,key);
   }
-  assert.ok(field.includes('local dodgeIcon = addIcon(b, "Menu/chart_compass")'));
+  assert.ok(field.includes('local dodgeIcon = if AssetIds["Menu/field_dodge"] then addIcon(b, "Menu/field_dodge")'));
+  assert.ok(field.includes('else addIcon(b, "Menu/chart_compass")'),'registered dodge art has safe compass fallback');
   assert.ok(field.includes('img.ScaleType = Enum.ScaleType.Fit'));
   // 아이콘 전용 버튼은 원화의 중앙 배치·잘림 방지를 위해 별도 크기를 사용한다.
   assert.ok(field.includes('img.Position = UDim2.fromScale(0.5, if iconOnly then 0.5 else 0.385)'));
@@ -846,7 +1425,7 @@ test('Mare field charge, follower formation, two-weapon quick swap and approved 
 });
 
 // [탐험 안정성] 지역별 무리/지역 실물 배경, 검증된 무기, 동료 접지, 철수 중단을 기존 경로에서 검증한다.
-test('Mare exploration preserves combat rules while grounding allies and containing cancelled scene builds',()=>{
+test('Mare exploration preserves combat rules while preserving noncombat party and containing cancelled scene builds',()=>{
   const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
@@ -860,11 +1439,13 @@ test('Mare exploration preserves combat rules while grounding allies and contain
     assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
   }
   assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
-  assert.match(field,/local pos0 = Vector3\.new\(footX, ORIGIN\.Y \+ 0\.015, root0\.Position\.Z - 4\)/);
+  assert.doesNotMatch(field,/local pos0 = Vector3\.new\(footX|pcall\(Pose\.createR15, folder, pos0/,'no combat companion spawn in solo field');
+  assert.match(field,/local companionRows: \{ any \} = \{\}/);
   assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
-  assert.match(field,/local created, m = pcall\(Pose\.createR15, folder, pos0/);
-  assert.match(field,/local visualTreeCount = if visualMobile then math\.min\(treeCount, 44\)/);
-  assert.match(field,/local visualRockCount = if visualMobile then math\.min\(rockCount, 36\)/);
+  assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
+  assert.match(field,/ui\.portrait = opts\.allyPortraits and opts\.allyPortraits\[member\.id\]/);
+  assert.match(field,/local visualTreeCount = treeCount/);
+  assert.match(field,/local visualRockCount = rockCount/);
   assert.match(field,/local hillCount = if visualMobile then 16 else 28/);
   // [집안별 무기] 임의 전체 순환이 아닌 최초 선택 무기 두 개만 실제 교체한다.
   assert.match(field,/wbtn:SetAttribute\("WeaponChoiceCount", 2\)/);
@@ -914,7 +1495,7 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/b\.Name = "FieldDodge"/);
   assert.match(field,/bindPress\(b, function\(\) useMove\("dodge"\) end\)/);
   assert.match(field,/attackBtn\.Position\.X\.Offset - 146/);
-  assert.match(field,/local dodgeIcon = addIcon\(b, "Menu\/chart_compass"\)/);
+  assert.match(field,/local dodgeIcon = if AssetIds\["Menu\/field_dodge"\] then addIcon\(b, "Menu\/field_dodge"\)/);
   assert.doesNotMatch(field,/slotPos\("heavy"\), skillSize/);
   assert.match(field,/local observedCardId = nil/);
   assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
@@ -925,7 +1506,10 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/for clueIndex = 1, 2 do/);
   assert.match(field,/FieldRareTraceFound/);
   assert.match(field,/FieldEvidence/);
-  assert.match(field,/animal and AssetIds\["Animals\/" \.\. animal\[1\]\]/);
+  assert.match(field,/local template = animalShelf:FindFirstChild\(species\)\s*if AssetIds\["Animals\/" \.\. species\] and template and template:IsA\("Model"\) then\s*table.insert\(available, species\)/);
+  assert.match(field,/if #available == 0 then return end/);
+  assert.match(field,/local species = available\[wildlifeRng:NextInteger\(1, #available\)\]/);
+  assert.match(field,/local model = placeModel\(folder, "Animals", species, pos, visual.size, false, Color3.fromRGB\(table.unpack\(visual.coats\[coatIndex\]\)\)\)/);
   assert.match(field,/AssetIds\["CardArt\/" \.\. targetCard\.id\]/);
   assert.match(assets,/Animals\/elephant/);
   assert.match(assets,/Animals\/llama/);
@@ -957,11 +1541,12 @@ test('Mare selected family shows and equips its original historical weapon with 
   assert.match(ui,/local originWeapon = Weapons\.originWeapon\(o\.id, chosenYear\)/);
   assert.match(ui,/ogl\.CellSize = UDim2\.new\(0\.5, -4, 0, 120\)/);
   assert.match(ui,/first|intro|menu/i);
-  assert.match(ui,/bounds\.MaxSize = Vector2\.new\(500, if view then 440 else 350\)/);
-  assert.match(ui,/b\.TextSize = if primary then 23 else 19/);
-  assert.match(ui,/resume = action\(pages, "▶ 이어하기 · 기존 항해", UDim2\.new\(1, 0, 0, 60\)/);
-  assert.match(ui,/newBtn = action\(pages, if view then "＋ 새 항해 시작" else "⚓ 새 게임 시작", UDim2\.new\(1, 0, 0, 60\)/);
-  assert.match(ui,/controls\.Size = UDim2\.new\(1, 0, 0, 60\)/);
+  assert.match(ui,/titlePanel\.Size = UDim2\.new\(0\.58, 0, 1, -28\)/,'single-start-screen title selection stays within viewport');
+  assert.match(ui,/lim\.MaxSize = Vector2\.new\(720, 9999\)/);
+  assert.match(ui,/go\.TextSize = 22/,'main start button stays legible');
+  assert.match(ui,/H\.titleSetupOpen = false -- 이어하기와 새 항해 준비를 같은 화면에서 펼친다/);
+  assert.match(ui,/elseif view then "⚓ 새 항해 출항" else "⚓ 출항하기"/);
+  assert.match(ui,/go\.LayoutOrder = nxt\(\)/);
 });
 
 test('Mare existing Quaternius outfit originals remain source-verifiable without claiming native animation QA',()=> {
@@ -1057,7 +1642,8 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/function FX\.flame\(pos, scale, profile\)[\s\S]*?FX\.burst\(/,'sinking flames use profile-based particles');
 
   assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
-  assert.match(battle,/shadow\.CFrame = CFrame\.new\(bpos\.X/,'PC ballistic water shadow follows the real cannonball');
+  assert.match(battle,/local bpos = from:Lerp\(to, u\) \+ Vector3\.new\(0, math\.sin\(u \* math\.pi\) \* nc\.arc, 0\)/,'actual ballistic arc remains consistent');
+  assert.doesNotMatch(battle,/shadow\.CFrame/,'removed fake water shadow does not obstruct projectile');
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
   assert.match(battle,/vent\.Position = root\.CFrame:PointToObjectSpace\(origin\)/,'damage fire follows actual moving ships');
   assert.match(battle,/vent\.fire\.Rate = if hp < 0\.42/,'fire intensity must reflect the unchanged hull fraction');
@@ -1068,7 +1654,7 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = 76 .* - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom is visual-only and scales by tier');
+  assert.match(battle,/cam\.FieldOfView = \(if opts\.cardOnly then \(if MOBILE_VFX then 73 else 75\) else \(if MOBILE_VFX then 69 else 71\)\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
@@ -1088,24 +1674,24 @@ test('Mare naval steering, smooth hulls, aiming and battle presentation stay con
   assert.ok(battle.includes('elseif i.KeyCode == Enum.KeyCode.D or i.KeyCode == Enum.KeyCode.Right then\n\t\t\tsteerDir = 1'));
   assert.ok(battle.includes('me.theta += steerDir * turnSign * (if now < skillUntil.evade then 2.6 else 1.5) * dt'));
   assert.ok(battle.includes('local turnSign = if rightTurn:Dot(cam.CFrame.RightVector) < -0.05 then -1 else 1'));
-  assert.doesNotMatch(battle,/TextStrokeTransparency\s*=\s*0\./,'battle labels are clean fonts without stroke blur');
+  assert.match(battle,/l\.TextStrokeTransparency = 1 -- \[해전 글씨\]/,'main text is clean; tiny contextual combat badges can retain contrast outlines');
   assert.ok(battle.includes('f.Visible = star or battleViewport.X >= 720'));
-  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)'));
+  assert.ok(battle.includes('skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)'));
   assert.ok(battle.includes('local coasts = {'));
   for(const id of ['cliff-rock','tropical-palm-tall','ruins-pillar-decorated','north-pine-fall','egypt-obelisk']){
     assert.ok(assetIds.includes('"Terrain/'+id+'"'),'battle coast must use a registered mesh: '+id);
   }
   assert.ok(battle.includes('AssetIds["Terrain/" .. spec[1]]'));
   assert.ok(battle.includes('node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'));
-  assert.ok(battle.includes('local aimAngle = if dd > 0.1 then math.deg(math.acos'));
-  assert.ok(battle.includes('local sideDeviation = math.floor(math.abs(90 - aimAngle) + 0.5)'));
+  assert.match(battle,/local broadside = if dd > 0\.1 then math\.abs\(heading:Cross\(direction\.Unit\)\.Y\) else 0/);
+  assert.match(battle,/local enemyBearing = if dd > 0\.1 then math\.atan2\(direction\.Z, direction\.X\) else me\.theta\s*local turnLeft = \(enemyBearing \+ math\.pi \/ 2 - me\.theta \+ math\.pi\) % \(math\.pi \* 2\) - math\.pi\s*local turnRight = \(enemyBearing - math\.pi \/ 2 - me\.theta \+ math\.pi\) % \(math\.pi \* 2\) - math\.pi\s*local turnNeeded = if math\.abs\(turnRight\) < math\.abs\(turnLeft\) then turnRight else turnLeft/);
   assert.ok(battle.includes('local aligned = broadside > 0.5'),'gun-angle display cannot redefine existing fire rule');
   assert.ok(battle.includes('local scanAngle = (now * 2.45) % tau'));
   assert.ok(battle.includes('sweep.Width0, sweep.Width1 = 0.035'));
   assert.ok(battle.includes('if trailAngle < 1.45'));
   assert.ok(battle.includes('nextSmoke = now + 0.18'));
   assert.ok(battle.includes('n = if MOBILE_VFX then 5 else 11'));
-  assert.ok(battle.includes('s1 = 19 + k * 13'));
+  assert.ok(battle.includes('s0 = 3.8 + k * 2, s1 = 11 + k * 9'),'sinking smoke scales with progress but avoids obscuring the hull');
   assert.ok(battle.includes('FX.flame(ORIGIN + sunk.pos + Vector3.new(0, 6 - k * 8, 0), 4.8, sunk.fx)'));
   assert.ok(battle.includes('Sfx.play("sfx_naval_splash"'));
   assert.ok(battle.includes('Sfx.play("sfx_naval_wood"'));
@@ -1131,9 +1717,10 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
   assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.new\(if battleViewport\.X < 480 then 0\.52/);
+  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\), if battleViewport\.X < 480 then math\.max\(80, battleViewport\.X - 206\) else 168\), 26\)/);
+  assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
   assert.match(src,/l\.TextStrokeTransparency = 1/);
-  for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','land-floating-island']){
+  for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
     assert.ok(src.includes('"'+key+'",'),key+' has a registered-region background binding');
   }
   // [16해역 회귀] 지역 풀을 유지하고 시간·날씨·모바일 예산은 전투 판정과 분리한다.
@@ -1147,14 +1734,15 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/folder:SetAttribute\("NavalTimePhase", phase\)/);
   assert.match(src,/folder:SetAttribute\("NavalWeatherMode", mode\)/);
   assert.match(src,/local portLat, portLon = tonumber\(opts\.portLat\), tonumber\(opts\.portLon\)/);
-  assert.match(src,/for i = 1, \(if MOBILE_VFX then 11 else 26\) do/);
-  assert.match(src,/if MOBILE_VFX and index > 2 then break end/);
+  assert.match(src,/for i = 1, \(if MOBILE_VFX then 12 else 20\) do/,'foam attachments remain bounded on mobile and desktop');
+  assert.match(src,/for index, spec in coast\.props do\s*if not MOBILE_VFX or index <= 3 then table\.insert\(shoreModels, spec\) end/,'mobile mid-shore cap remains three');
+  assert.match(src,/for index, spec in depthCoast do\s*if \(not MOBILE_VFX or index <= 1\) and AssetIds\["Terrain\/" \.\. spec\[1\]\] then\s*table\.insert\(shoreModels, spec\)/,'mobile far-shore cap is one registered model');
   assert.match(src,/folder\.Destroying:Connect\(function\(\)[\s\S]*?colorGrade:Destroy\(\)/);
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   assert.match(client,/portLat = view\.player and PortData\.Ports\[view\.player\.portId\]/);
   assert.match(client,/portLon = view\.player and PortData\.Ports\[view\.player\.portId\]/);
-  assert.match(src,/local steerCue = \(if turnNeeded >= 0 then "우로 " else "좌로 "\)/);
-  assert.match(src,/\) \.\. "°"/, "aim cue string literal must be closed");
+  assert.match(src,/local steerCue = if turnNeeded >= 0 then "우현으로 조타" else "좌현으로 조타"/);
+  assert.match(src,/if not inRange then "적선에 접근" elseif not aligned then steerCue else ""/);
   assert.match(src,/local scanAngle = \(now \* 2\.45\) % tau/);
   assert.match(src,/if trailAngle < 1\.45/);
   assert.match(src,/s0 = scale \* 1\.95/);
@@ -1170,37 +1758,57 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   const battle=fs.readFileSync(root+'ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   const game=fs.readFileSync(root+'StarterPlayer/Game.client.luau','utf8');
   for(const token of [
-    'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, 119)',
+    'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)',
     'if battleViewport.X < 480 then 56 else 96',
     'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
     'f.Visible = star or battleViewport.X >= 720',
-    'comboLabel.Visible = battleViewport.X >= 720',
+    'navalHitCue.Visible = false',
+    'navalHitCue.Name = "NavalHitStreak"',
+    'navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)',
+    'math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08)))',
+    'navalHitCueScale.Scale = 1.08',
     'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
-    'rangeLabel.Visible = battleViewport.X >= 720',
+    'tactic.Position = UDim2.fromOffset(16, 126)',
+    'math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168)',
+    'panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 173 else 122)',
+    'local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 482)',
+    'sk.x = -72',
+    'sk.y = if i == 1 then -300 else -184',
+    'if compact then 104 elseif MOBILE_VFX',
+    'if compact then 86 elseif MOBILE_VFX',
+    'local size = if compact then 76 elseif MOBILE_VFX',
+    'stickBase.Position = UDim2.new(0, 28, 1, -28)',
+    'stickBase.Size = UDim2.fromOffset(170, 170)',
     'distLabel.Visible = not opts.cardOnly and battleViewport.X >= 720',
-    'if i == 1 then -250 else -170',
+    'skip.Size = if compactCards then UDim2.fromOffset(96, 40) else UDim2.fromOffset(112, 44)',
     'local panel = Instance.new("ScrollingFrame")',
     'panel.CanvasSize = UDim2.fromOffset(0, entriesHeight)',
     'panel.Visible = battleViewport.Y >= 380 and (battleViewport.X >= 720 or battleViewport.Y >= 520)',
     'math.min(entriesHeight, availableHeight)',
-    'reloadBack.Visible = not opts.cardOnly and (battleViewport.X >= 720',
-    'string.format("장전 %.1f초", math.max(0, nextMeFire - now))',
+    'reloadBack.Visible = not opts.cardOnly',
+    'local compactReload = battleViewport.X < 720 or battleViewport.Y < 420',
+    'reloadBack.Parent = if compactReload then skillBtn.fire else gui',
+    'reloadBack.Position = if compactReload then UDim2.new(0.5, 0, 0, 12)',
+    'reloadBack.Size = if compactReload then UDim2.new(1, -42, 0, 19)',
+    'reloadText.Text = if not inRange then "사거리 밖"',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
-  // [휴대전화 세로] 320~430폭에서 왼쪽 스틱, 2개 기술, 가속·건너뛰기가 서로 터치하지 않는다.
-  for(const [w,h] of [[320,640],[360,640],[390,844],[430,932]]){
+  // [휴대전화 세로] 실제 104/86/76px 버튼, 전술판·카드 지원판·연타 확대 좌표를 검증한다.
+  for(const w of [320,360,390,430]) for(const h of [520,560,640,844,932]) for(const entries of [1,4,12]){
     const stick={x:28,y:h-198,w:170,h:170};
-    const speed={x:w-120,y:h-120,w:96,h:96};
-    const skill1={x:w-107,y:h-285,w:70,h:70};
-    const skill2={x:w-107,y:h-205,w:70,h:70};
-    const skip={x:12,y:119,w:56,h:36};
-    const tactic={x:w*.24,y:119,w:w*.52,h:46};
+    const speed={x:w-100,y:h-100,w:76,h:76};
+    const fire={x:w-124,y:h-352,w:104,h:104};
+    const special={x:w-115,y:h-227,w:86,h:86};
+    const skip={x:12,y:181,w:56,h:36};
+    const tactic={x:16,y:126,w:Math.min(168,Math.floor(w*0.42),Math.max(80,w-206)),h:26};
     const fleetLeft={x:16,y:66,w:96,h:46},fleetRight={x:w-112,y:66,w:96,h:46};
     const wind={x:(w-Math.max(80,w-240))/2,y:69,w:Math.max(80,w-240),h:20};
-    const reload={x:(w-Math.min(260,w-40))/2,y:h-315,w:Math.min(260,w-40),h:20};
-    const panelHeight=Math.min(24+4*30,Math.max(34,h-520));
-    const cardPanel={x:w-182,y:173,w:166,h:panelHeight};
-    for(const [left,right] of [[stick,speed],[stick,skill1],[stick,skill2],[speed,skill1],[speed,skill2],[skill1,skill2],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,skill1],[reload,skill2],[reload,cardPanel]]){
+    const reload={x:fire.x+21,y:fire.y+12,w:62,h:19};
+    const panel={x:w-182,y:120,w:166,h:Math.min(24+entries*30,Math.max(34,h-482))};
+    const cue={x:16,y:225,w:Math.min(182,Math.max(80,Math.floor((w-206)/1.08)))*1.08,h:46*1.08};
+    assert.ok(reload.x>=fire.x&&reload.x+reload.w<=fire.x+fire.w&&reload.y>=fire.y&&reload.y+reload.h<=fire.y+fire.h,'reload gauge must stay inside fire button');
+    assert.ok(fire.y-(panel.y+panel.h)>=10,'scrolling panel must leave at least 10px before fire button');
+    for(const [left,right] of [[stick,speed],[stick,fire],[stick,special],[speed,fire],[speed,special],[fire,special],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,special],[reload,panel],[panel,fire],[panel,special],[panel,speed],[panel,stick],[panel,tactic],[panel,skip],[cue,skip],[cue,panel],[cue,fire],[cue,stick]]){
       assert.equal(intersects(left,right),false,'phone HUD overlap at '+w+'x'+h+': '+JSON.stringify([left,right]));
     }
   }
@@ -1209,7 +1817,23 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   const discovered=game.slice(seenStart,seenEnd);
   assert.ok(seenStart>0 && seenEnd>seenStart);
   assert.match(discovered,/H\.seenCards\[c\.id\] = true/,'real codex discovery bookkeeping remains');
-  assert.doesNotMatch(discovered,/H\.showCardGain\(|H\.gainQueue|H\.gainBusy|Sfx\.play/,'new cards cannot launch blocking events');
+  assert.match(discovered,/local firstKnowledgeSnapshot = H\.seenCards == nil/);
+  assert.match(discovered,/local firstCombatSnapshot = H\.seenCombatCards == nil/);
+  assert.match(discovered,/if not firstKnowledgeSnapshot then\s*table\.insert\(acquired, \{ card = c, extra = 0 \}\)/);
+  assert.match(discovered,/if not firstCombatSnapshot then[\s\S]*?amount > \(oldOwned\[id\] or 0\)\s*and not gainedIds\[id\]/);
+  assert.match(discovered,/H\.seenCombatCards = table\.clone\(owned\)/);
+  assert.match(discovered,/H\.showCardGain\(found\.card, found\.extra\)/,'only genuine new discovery starts UI reveal');
+  assert.match(discovered,/H\.cardGainQueue = H\.cardGainQueue or \{\}/,'multiple simultaneous gains are queued without modal scenes');
+  assert.match(discovered,/rarity = if def\.hero then "Legendary" else "Common"/);
+  assert.match(discovered,/extra = math\.max\(0, amount - oldCount - 1\)/);
+  assert.match(discovered,/for _, entry in acquired do\s*table\.insert\(H\.cardGainQueue, entry\)/);
+  assert.match(discovered,/if H\.cardGainPlaying then return end/);
+  assert.match(discovered,/while player\.Parent and \(newGameMode or inField or sceneHold or H\.sceneBusy/);
+  assert.match(discovered,/local found = table\.remove\(H\.cardGainQueue, 1\)/);
+  assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
+  assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
+  assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
+  assert.match(game,/Name = "DiscoveryHalo"/,'card acquisition light rings');
   assert.match(game,/local previous = pg:FindFirstChild\("CardGain"\)/,'Studio card preview remains opt-in');
   assert.doesNotMatch(game,/새 지식 카드 발견!|TweenInfo\.new\(20, Enum\.EasingStyle\.Sine\)/,'dated reveal and 14%-zoomed blurry illustration removed');
   assert.match(game,/local portraitWidth = math\.min\(256,/,'low-res portrait atlas must not be upscaled to 330px');
@@ -1246,14 +1870,15 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/blueprint\.existingId and not FX_PROFILES\[blueprint\.existingId\]/,'legacy save id is preserved');
   assert.match(battle,/AssetIds\["Naval\/" \.\. shipId \.\. "-v5"\]/,'only registered V5 IDs can select combat models');
   assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
-  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style\)/);
-  assert.match(battle,/FX\.impact\(to, nc\.ball, style\)/);
-  assert.match(battle,/FX\.splash\(to, style, nc\.ball\)/);
+  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
+  assert.match(battle,/FX\.impact\(to, nc\.ball, style, nc\)/,'impact uses current weapon profile');
+  assert.match(battle,/local power = nc\.ball \* \(splashScale or 1\)\s*if MOBILE_VFX and splashScale and splashScale < 0\.8 then\s*FX\.waterColumn\(Vector3\.new\(to\.X, ORIGIN\.Y \+ 0\.35, to\.Z\), style, power\)\s*else\s*local flight = Vector3\.new\(velocity\.X, 0, velocity\.Z\)\s*FX\.splash\(to, style, power, if flight\.Magnitude > 0 then flight\.Unit else nil\)/);
   assert.match(battle,/FX\.flame\(ORIGIN \+ sunk\.pos \+ Vector3\.new\(0, 6 - k \* 8, 0\), 4\.8, sunk\.fx\)/);
   assert.match(battle,/function FX\.waterColumn\(pos, profile, power\)/);
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/);
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
-  assert.match(battle,/local density = if MOBILE_VFX then 0\.55 else 1/,'mobile density is bounded');
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.56 else 1/,'mobile cannon particle budget stays below desktop');
+  assert.match(battle,/local density = if MOBILE_VFX then 0\.5 else 1/,'secondary mobile particle budget remains at half desktop');
   assert.match(battle,/FX\.wake\(me, "me", now\)/,'existing wake loop remains in place');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun range remains untouched');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'actual damage computation remains untouched');
@@ -1347,23 +1972,26 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
   const readme=fs.readFileSync('roblox-games/mare-essentia/assets/cardart/src/README.md','utf8');
   assert.match(source,/AssetIds\["CardArt\/battle_board"\] then "CardArt\/battle_board" else "CardArt\/event_chart_world"/);
+  assert.match(source,/local showDawn = opts\.cardOnly and AssetIds\[dawnBoardKey\] ~= nil/);
   assert.match(source,/boardArt.Name = "NavalCardBattleBoard"/);
   assert.match(source,/boardArt.ScaleType = Enum.ScaleType.Crop/);
-  assert.match(source,/boardArt.ImageTransparency = if opts.cardOnly then 0\.9 elseif cfg then 0\.64/);
+  assert.match(source,/boardArt.ImageTransparency = if showDawn then 0 elseif opts\.cardOnly then \(if regionArtKey and AssetIds\[regionArtKey\] then 0\.25 else 0\.9\)/);
   assert.match(source,/elseif boardArtKey == "CardArt\/battle_board" then 0\.07 else 0\.58/);
   assert.match(source,/boardWash.Name = "BattleBoardContrast"/);
   assert.match(source,/boardShade.Parent = boardWash/);
   assert.match(source,/handTray.Name = "NavalCardHandTray"/);
     // 카드 전용 화면·일반 해전의 좌표를 둘 다 유지하는지 검사한다.
-  assert.match(source,/handFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.215 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
-  assert.match(source,/boardFrame.Position = UDim2.fromScale\(if opts\.cardOnly then 0\.21 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
-  assert.match(source,/boardFrame.Size = UDim2.fromScale\(if opts\.cardOnly then 0\.57 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
+  assert.match(source,/handFrame.Position = if compactCards then UDim2.fromScale\(0\.018, 0\.716\) else UDim2.fromScale\(if opts\.cardOnly then 0\.025 else 0\.02, if opts\.cardOnly then 0\.665 else 0\.72\)/);
+  assert.match(source,/boardFrame.Position = if compactCards then UDim2.fromScale\(0\.15, 0\.135\) else UDim2.fromScale\(if opts\.cardOnly then 0\.02 else 0\.2, if opts\.cardOnly then 0\.13 else 0\.14\)/);
+  assert.match(source,/boardFrame.Size = if compactCards then UDim2.fromScale\(0\.838, 0\.57\) else UDim2.fromScale\(if opts\.cardOnly then 0\.76 else 0\.78, if opts\.cardOnly then 0\.52 else 0\.56\)/);
   assert.match(source,/local order = \{ \{ "foe", "ranged" \}, \{ "foe", "melee" \}, \{ "me", "melee" \}, \{ "me", "ranged" \} \}/);
   assert.match(source,/laneAccent.Name = "SideLaneAccent"/);
   assert.match(source,/laneStroke.Thickness = 1/);
   assert.match(source,/BC.rowMatchup\(m, side, row\)/);
   assert.match(source,/BC.play\(m, "me", i\)/);
-  assert.match(source,/focusFrame.Size = UDim2.fromOffset\(math.floor\(height \* 0\.69\), height\)/);
+  assert.match(source,/focusFrame.Size = UDim2.fromScale\(0\.9, 0\.82\)/);
+  assert.match(source,/focusRatio.AspectRatio = if opts\.cardOnly then portraitCardRatio else 0\.69/);
+  assert.match(source,/focusBounds.MaxSize = Vector2.new\(430, 620\)/);
   assert.equal(source.split('RunService.RenderStepped:Connect(').length-1,1,'reuse existing render loop');
   // 검증 등록된 개별 카드만 우선, 미등록 카드는 승인된 기존 그림을 유지한다.
   assert.match(source,/local individualArt = "CardArt\/" \.\. card\.id/);
@@ -1377,10 +2005,12 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(source,/CARD_DECK\[regionId\]/);
   assert.match(source,/frameEdge\(art, if c\.hero then .* elseif regionDeck then regionDeck\.color/);
   // [이미 낸 카드 확대] 터치로 지역·분류·원화를 읽되 전투 카드 재사용은 막는다.
-  assert.ok(source.includes('local playedCard = chip(cards, c, 62, BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('local power = BC.cardPower(m, side, row, idx)'));
+  assert.ok(source.includes('local playedCard = chip(cards, c, 62, power, c == lastPlayed.me or c == lastPlayed.foe)'));
   assert.ok(source.includes('playedCard.Activated:Connect(function()'));
   assert.ok(source.includes('showCardCodex(c, true)'),'played card must open read-only zoom');
-  assert.ok(source.includes('focusUse.Visible = not readOnly'),'played card must not be playable again');
+  assert.ok(source.includes('focusUse.Visible = if leaderProfile then (leaderPreviewId ~= nil and m.turn == "me" and not m.over and not m.leaderUsed.me and not playing and not auto)'));
+  assert.ok(source.includes('else not readOnly'),'deployed card remains read-only; leader ability only on valid turn');
   assert.ok(source.includes('if selectedPlay then selectedPlay() else closeCardCodex() end'),'read-only art tap must close');
   assert.ok(source.includes('local f = Instance.new("TextButton")'),'deployed card supports touch activation');
   const playedStart=source.indexOf('playedCard.Activated:Connect(function()');
@@ -1392,6 +2022,121 @@ test('Mare standalone card duel board respects four rendered rows, zoom and appr
   assert.match(uploader,/if \(approvedImages\[id\] !== hash\)/,'image SHA gate remains required');
   assert.match(readme,/GitHub에 실제 JPG 바이너리 미업로드/);
   assert.match(readme,/1536×864/);
+});
+
+// [카드 원화 무절단] 그림 비율이 달라도 손패·전투판·확대·도감에서 잘라내지 않는다.
+test('Mare card art retains full source frame during battle animation and codex rendering', () => {
+  const root = 'roblox-games/mare-essentia/src/';
+  const battle = fs.readFileSync(root+'ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const deck = fs.readFileSync(root+'ReplicatedStorage/Shared/DeckBuilder.luau','utf8');
+  const gallery = fs.readFileSync(root+'ReplicatedStorage/Shared/CardGallery.luau','utf8');
+  const game = fs.readFileSync(root+'StarterPlayer/Game.client.luau','utf8');
+  for (const token of ['painting.ScaleType = Enum.ScaleType.Fit',
+    'focusImage.ScaleType = Enum.ScaleType.Fit',
+    'image.ScaleType = Enum.ScaleType.Fit',
+    'painting.Size = UDim2.fromScale(0.92, 0.92)',
+    'local artZoom = 0.91 + (if focused then 0.005 else 0) + 0.01 * impact',
+    'math.clamp(0.5 + (if opts.cardOnly then 0.012 * wind else pan - 0.045 * lunge + 0.02 * recoil), 0.486, 0.514)',
+  ]) assert.ok(battle.includes(token), 'card image cropping regression: '+token);
+  assert.doesNotMatch(battle, /(?:painting|focusImage|image)\.ScaleType = if opts\.cardOnly.*Enum\.ScaleType\.Crop/);
+  assert.match(battle,/boardArt.ScaleType = Enum.ScaleType.Crop/,'board background is intentionally unaffected');
+  assert.match(deck,/art.ScaleType = Enum.ScaleType.Fit\n\s*local asset = ctx.AssetIds\["CardArt\/" \.. option\[3\]\]/);
+  assert.match(gallery,/art.ScaleType = Enum.ScaleType.Fit/);
+  assert.match(game,/local function paintCardArt\(parent, card, fieldDef\)/);
+  assert.match(game,/img.ScaleType = Enum.ScaleType.Fit/);
+  assert.doesNotMatch(game,/if fitImage then Enum\.ScaleType\.Fit else Enum\.ScaleType\.Crop/);
+});
+
+// [유럽 원화 품질 회귀] 등록 자산 45장은 보존하고 검수된 세로 7:10 그림만 게임에 노출한다.
+test('Mare European card art hides unverified ratios and styles without deleting any registered assets', () => {
+  const root = 'roblox-games/mare-essentia/';
+  const art = fs.readFileSync(root+'src/ReplicatedStorage/Shared/CardArt.luau','utf8');
+  const battle = fs.readFileSync(root+'src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
+  const client = fs.readFileSync(root+'src/StarterPlayer/Game.client.luau','utf8');
+  const ids = fs.readFileSync(root+'src/ReplicatedStorage/Shared/AssetIds.luau','utf8');
+  const approved = JSON.parse(fs.readFileSync(root+'assets/APPROVED_IMAGES.json','utf8'));
+  const registered = JSON.parse(fs.readFileSync(root+'assets-registered.json','utf8'));
+  const permitted = ['eu_18','eu_19','eu_20','eu_28'];
+  const allowedBlock = art.match(/local ApprovedEuropeanArt: \{ \[string\]: boolean \} = \{([\s\S]*?)\n\}/);
+  assert.ok(allowedBlock,'explicit European review gate required');
+  const exposed = [...allowedBlock[1].matchAll(/^[ \t]*(eu_\d\d)[ \t]*=[ \t]*true,?[ \t]*(?:--[^\r\n]*)?$/gm)].map(m=>m[1]).sort();
+  assert.deepEqual(exposed,permitted,'only portrait-verified European art may render');
+  assert.match(art,/not string\.match\(cardId, "\^eu_%d%d\$"\) or ApprovedEuropeanArt\[cardId\]/);
+  assert.match(battle,/string\.match\(card\.id, "\^eu_%d%d\$"\) and not CardArt\[card\.id\]/);
+  assert.match(battle,/if string\.match\(card\.id, "\^eu_%d%d\$"\) and not CardArt\[card\.id\] then\s*return nil/);
+  assert.match(client,/local imageId = if excludedEuropeanArt then nil else AssetIds\["CardArt\/" \.\. tostring\(card\.id\)\]/);
+  assert.match(client,/local artImage = if excludedEuropeanArt then "" elseif imageId/);
+  for (let n=1;n<=45;n++){
+    const id='eu_'+String(n).padStart(2,'0');
+    const key='CardArt/'+id;
+    assert.ok(approved.approved[key],key+' approved source preserved');
+    assert.ok(registered.assets[key]?.assetId,key+' Roblox asset preserved');
+    const previous=registered.assets[key];
+    assert.ok(ids.includes('["'+key+'"] = '+previous.assetId),key+' Luau ID unchanged');
+    if (previous.sourceSha256!==approved.approved[key]) {
+      // [원화 교체 대기] 기존 등록 이미지와 신규 검수 원본 양쪽의 실제 해시·권한을 검증한다.
+      // 등록 완료 전 신규 원화가 게임에 노출되는 것은 허용하지 않는다.
+      const review=approved.modelOriginals?.[key];
+      assert.ok(!permitted.includes(id),key+' pending replacement must remain hidden');
+      assert.equal(review?.replacesSha256,previous.sourceSha256,key+' previous source identity');
+      assert.equal(String(review?.replacesAssetId),String(previous.assetId),key+' previous asset identity');
+      assert.equal(previous.assetType,'Image');
+      assert.equal(previous.usePermissionGranted,true);
+      assert.match(String(previous.assetId),/^[1-9][0-9]*$/);
+      assert.equal(review.sourceType,'IMAGE_GENERATION_MODEL');
+      assert.equal(review.reviewer,'VIBE_AGENT_VISUAL_REVIEW');
+      assert.equal(review.license,'PROJECT_ORIGINAL_ART');
+      assert.match(review.reviewedAt,/^\d{4}-\d{2}-\d{2}$/);
+      for(const field of ['subjectMatch','historicalContext','houseStyle','singleFinishedScene','noPartsOrSprites','robloxSafety','commercialRights'])
+        assert.equal(review[field],true,key+' '+field);
+      const oldPath='assets/cardart/'+id+'.png';
+      const original='assets/cardart/src/'+id+'-original.png';
+      const portrait='assets/cardart/src/'+id+'-1400x2000.png';
+      assert.ok([original,portrait].includes(review.sourceFile),key+' replacement source path');
+      const old=fs.readFileSync(root+oldPath);
+      const next=fs.readFileSync(root+review.sourceFile);
+      assert.equal(createHash('sha256').update(old).digest('hex'),previous.sourceSha256,key+' existing bytes preserved');
+      assert.equal(createHash('sha256').update(next).digest('hex'),review.sourceSha256,key+' replacement bytes');
+      assert.equal(review.sourceSha256,approved.approved[key],key+' replacement approved hash');
+      assert.ok(next.length>=50000 && next.length<=20*1024*1024);
+      assert.ok(next.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])));
+      assert.equal(next.toString('ascii',12,16),'IHDR');
+      const w=next.readUInt32BE(16),h=next.readUInt32BE(20);
+      assert.ok(w>=768 && h>=768 && w<=4096 && h<=4096);
+      assert.ok(Math.abs(w*10-h*7)<=h*0.05);
+      if(review.sourceFile===portrait){assert.equal(w,1400);assert.equal(h,2000);}
+      assert.equal(next[24],8);
+      assert.ok([2,6].includes(next[25]),key+' true-color replacement required');
+      const safety=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'))
+        .livingMotionVisualQualityContract.assetAdaptation.contentSafety;
+      assert.equal(safety.enabled,true);
+      for(const blocked of safety.blockedAssets){
+        assert.ok(!(blocked.sha256||[]).some(hash=>[previous.sourceSha256,review.sourceSha256].includes(hash)));
+        assert.ok(!(blocked.assetIds||[]).map(String).includes(String(previous.assetId)));
+        assert.ok(!(blocked.sourcePaths||[]).some(file=>[oldPath,review.sourceFile,root+oldPath,root+review.sourceFile].includes(file)));
+      }
+      console.log('MARE_CARD_REPLACEMENT_PENDING_REGISTRATION',key);
+      continue;
+    }
+    assert.equal(previous.sourceSha256,approved.approved[key],key+' approved and registered SHA unchanged');
+    if (!permitted.includes(id))continue;
+    const review=approved.modelOriginals[key];
+    assert.equal(review?.sourceSha256,approved.approved[key],key+' model original reviewed');
+    assert.equal(review?.subjectMatch,true);
+    assert.equal(review?.houseStyle,true);
+    assert.equal(review?.robloxSafety,true);
+    const png=fs.readFileSync(root+review.sourceFile);
+    assert.equal(png.toString('ascii',1,4),'PNG',key+' actual PNG');
+    // 원본 직접 등록 규격: 실제 7:10 원본을 임의 확대하지 않는다.
+    const w=png.readUInt32BE(16), h=png.readUInt32BE(20);
+    assert.ok(w>=768 && h>=768 && w<=4096 && h<=4096,key+' original dimensions');
+    assert.ok(Math.abs(w*10-h*7)<=h*0.05,key+' original portrait ratio');
+    if(review.sourceFile.endsWith('-1400x2000.png')){
+      assert.equal(w,1400,key+' named portrait width');
+      assert.equal(h,2000,key+' named portrait height');
+    }
+    assert.equal(createHash('sha256').update(png).digest('hex'),review.sourceSha256,key+' actual approved source bytes');
+  }
 });
 
 test('Mare 150 regional card illustrations remain source complete and SHA-approved before Roblox registration', () => {
@@ -1413,7 +2158,12 @@ test('Mare 150 regional card illustrations remain source complete and SHA-approv
   }
   // [기존 정식 등록기] 5개 덱의 원본 PNG만 받고 미승인 해시·차단 이미지·권한 미확인은 거절한다.
   assert.ok(uploader.includes("['event_title_ship.png', 'event_title_parchment.png']"));
-  assert.ok(uploader.includes('(?:eu|ea|me|nw|af)_(?:0[1-9]|[12][0-9]|30)\\.png'));
+  // 기존 150종 원본 목록은 유지하고 확장된 등록기 ID 범위도 실제 승인 경로와 일치시킨다.
+  assert.ok(uploader.includes('(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])\\.png'));
+  assert.ok(uploader.includes("const regionalCardArt = item.kind === 'CardArt' && /^(?:eu|ea|me|nw|af|sa)_(?:0[1-9]|[1-4][0-9])$/.test(item.name)"));
+  assert.match(uploader,/if \(\(!previous\?\.assetId \|\| !previous\.sourceSha256 \|\| previous\.sourceSha256 !== sourceSha256\)\s*&& modelOriginals\[id\]\?\.sourceSha256 !== sourceSha256\) \{[\s\S]*?MODEL_ORIGINAL_REVIEW_REQUIRED[\s\S]*?continue;/);
+  assert.match(uploader,/review\.sourceSha256 !== hash \|\| cardApprovalDocument\.approved\?\.\[id\] !== hash\s*\|\| blockedHashes\.has\(hash\)/);
+  assert.match(uploader,/!reviewChecks\.every\(key => review\[key\] === true\)/);
   assert.ok(uploader.includes("const regionalCardArt = item.kind === 'CardArt'"));
   assert.ok(uploader.includes("approvedImages[id] !== sourceSha256"));
   assert.ok(uploader.includes("REGIONAL_CARD_ART_NOT_APPROVED"));
@@ -1437,6 +2187,9 @@ test('Mare generated original art is promoted only after model-source visual QA 
   assert.ok(approved.modelOriginals && !Array.isArray(approved.modelOriginals));
   assert.match(uploader, /MODEL_ORIGINAL_REVIEW_REQUIRED/);
   assert.match(uploader, /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+  assert.match(uploader, /MODEL_ORIGINAL_RGB_RGBA_REQUIRED/);
+  assert.match(uploader, /MODEL_ORIGINAL_LEGACY_PALETTE_REPLACEMENT_REQUIRED/);
+  assert.match(uploader, /const replacingOriginal = review\?\.sourceFile === originalSource/);
   assert.match(workflow, /SKIP_UNVERIFIED_MODEL_ORIGINAL/);
   assert.match(workflow, /assets\/cardart\/\*\.png/);
   const marker = '// [모델 원화 제작 분리·자동 인입]';
@@ -1458,10 +2211,12 @@ test('Mare generated original art is promoted only after model-source visual QA 
       robloxSafety:true, commercialRights:true};
     const record = {approved:{[id]:hash},modelOriginals:{[id]:review}};
     const save = () => fs.writeFileSync(path.join(root,'assets/APPROVED_IMAGES.json'),JSON.stringify(record));
-    const execute = () => runInNewContext('(async()=>{' + intake + '\n})()', {
-      ROOT:root,fs:fs.promises,path,crypto:{createHash},Buffer,
-      studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
+    const execute = (modelsOnly = false) => runInNewContext('(async()=>{' + intake + '\n})()', {
+      ROOT:root,JSON_OUT:path.join(root,'assets-registered.json'),fs:fs.promises,path,crypto:{createHash},Buffer,
+      modelsOnly,studioRegrantPath:'',blockedHashes:new Set(),blockedPaths:new Set(),console:{log:()=>{}}
     });
+    await execute(true);
+    assert.equal(fs.existsSync(dest),false);
     review.subjectMatch=false;
     save();
     await assert.rejects(execute(), /MODEL_ORIGINAL_QA_REQUIRED/);
@@ -1471,6 +2226,53 @@ test('Mare generated original art is promoted only after model-source visual QA 
     save();
     await assert.rejects(execute(), /MODEL_ORIGINAL_APPROVAL_OR_SAFETY_MISMATCH/);
     assert.equal(fs.existsSync(dest),false);
+    // [원화 무손실 재등록] 실제 256색(P 모드) PNG는 승인 해시가 있어도 신규 승격할 수 없다.
+    const pngChunk=(type,payload)=>{
+      const body=Buffer.concat([Buffer.from(type),payload]);
+      let crc=0xffffffff;
+      for(const byte of body){
+        crc^=byte;
+        for(let bit=0;bit<8;bit++)crc=(crc>>>1)^(0xedb88320&-(crc&1));
+      }
+      const header=Buffer.alloc(4),tail=Buffer.alloc(4);
+      header.writeUInt32BE(payload.length);
+      tail.writeUInt32BE((crc^0xffffffff)>>>0);
+      return Buffer.concat([header,body,tail]);
+    };
+    const {deflateSync}=await import('node:zlib');
+    // 실제 게임 자산이 풀컬러로 교체되어도 256색 거부 검사가 유지되도록 독립 PNG를 생성한다.
+    const paletteWidth=768,paletteHeight=768,paletteStride=paletteWidth+1;
+    const paletteHeader=Buffer.alloc(13);
+    paletteHeader.writeUInt32BE(paletteWidth,0);
+    paletteHeader.writeUInt32BE(paletteHeight,4);
+    paletteHeader[8]=8;
+    paletteHeader[9]=3;
+    const palette=Buffer.alloc(256*3);
+    for(let i=0;i<256;i++){palette[i*3]=i;palette[i*3+1]=(i*17)&255;palette[i*3+2]=(i*53)&255;}
+    const paletteScan=Buffer.alloc(paletteStride*paletteHeight);
+    let noise=0x12345678;
+    for(let y=0;y<paletteHeight;y++) for(let x=1;x<paletteStride;x++){
+      noise^=noise<<13; noise^=noise>>>17; noise^=noise<<5;
+      paletteScan[y*paletteStride+x]=noise&255;
+    }
+    const indexed=Buffer.concat([
+      Buffer.from([137,80,78,71,13,10,26,10]),
+      pngChunk('IHDR',paletteHeader),
+      pngChunk('PLTE',palette),
+      pngChunk('IDAT',deflateSync(paletteScan,{level:6})),
+      pngChunk('IEND',Buffer.alloc(0)),
+    ]);
+    assert.ok(indexed.length>=50000,'palette fixture meets real source size gate');
+    assert.equal(indexed[25],3,'indexed fixture must really be a palette PNG');
+    fs.writeFileSync(source,indexed);
+    const indexedHash=createHash('sha256').update(indexed).digest('hex');
+    review.sourceSha256=indexedHash;
+    record.approved[id]=indexedHash;
+    save();
+    await assert.rejects(execute(), /MODEL_ORIGINAL_RGB_RGBA_REQUIRED/);
+    assert.equal(fs.existsSync(dest),false);
+    fs.copyFileSync('roblox-games/mare-essentia/assets/cardart/nw_03.png',source);
+    review.sourceSha256=hash;
     record.approved[id]=hash;
     save();
     await execute();
@@ -1478,6 +2280,59 @@ test('Mare generated original art is promoted only after model-source visual QA 
     await execute(); // 반복 실행은 기존 파일과 ID를 그대로 보존한다.
     fs.writeFileSync(dest,'unexpected overwrite attempt');
     await assert.rejects(execute(), /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+
+    // [검수된 세로 교체] 기존 원화·등록 ID·권한과 정확히 맞을 때만 승격한다.
+    fs.copyFileSync(source,dest);
+    const upgradeId='CardArt/eu_18';
+    const reviewUpgrade={...review,sourceFile:'assets/cardart/src/eu_18-1400x2000.png',replacesAssetId:'2'};
+    const original='roblox-games/mare-essentia/assets/cardart/eu_18.png';
+    const upgradeSource=path.join(root,'assets/cardart/src/eu_18-1400x2000.png');
+    const upgradeDest=path.join(root,'assets/cardart/eu_18.png');
+    // [독립 QA 원본] 기존 eu_18 교체 시안은 256색이므로 승인 테스트에 재사용하지 않는다.
+    // 게임 원화가 아닌 테스트 전용 1400×2000 RGB PNG를 표준 청크·CRC로 생성한다.
+    const width=1400,height=2000,stride=width*3+1;
+    const scanlines=Buffer.alloc(stride*height);
+    for(let y=0;y<height;y++) for(let x=0;x<width;x++){
+      const offset=y*stride+1+x*3;
+      scanlines[offset]=(x*17+y*31)&255;
+      scanlines[offset+1]=(x*13+y*47)&255;
+      scanlines[offset+2]=(x*53+y*7)&255;
+    }
+    const ihdr=Buffer.alloc(13);
+    ihdr.writeUInt32BE(width,0);
+    ihdr.writeUInt32BE(height,4);
+    ihdr[8]=8;
+    ihdr[9]=2;
+    fs.writeFileSync(upgradeSource,Buffer.concat([
+      Buffer.from([137,80,78,71,13,10,26,10]),
+      pngChunk('IHDR',ihdr),
+      pngChunk('IDAT',deflateSync(scanlines,{level:6})),
+      pngChunk('IEND',Buffer.alloc(0)),
+    ]));
+    fs.copyFileSync(original,upgradeDest);
+    const digest=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    reviewUpgrade.replacesSha256=digest(original);
+    reviewUpgrade.sourceSha256=digest(upgradeSource);
+    assert.equal(digest(upgradeDest),reviewUpgrade.replacesSha256);
+    assert.equal(digest(upgradeSource),reviewUpgrade.sourceSha256);
+    record.modelOriginals[upgradeId]=reviewUpgrade;
+    record.approved[upgradeId]=reviewUpgrade.sourceSha256;
+    fs.writeFileSync(path.join(root,'assets-registered.json'),JSON.stringify({assets:{
+      [upgradeId]:{assetId:reviewUpgrade.replacesAssetId,sourceSha256:reviewUpgrade.replacesSha256,
+        assetType:'Image',usePermissionGranted:true}
+    }}));
+    const registeredId=reviewUpgrade.replacesAssetId;
+    reviewUpgrade.replacesAssetId='1';
+    save();
+    await assert.rejects(execute(), /MODEL_ORIGINAL_EXISTING_CARD_PRESERVED/);
+    assert.equal(digest(upgradeDest),reviewUpgrade.replacesSha256);
+    reviewUpgrade.replacesAssetId=registeredId;
+    save();
+    await execute();
+    assert.equal(digest(upgradeDest),reviewUpgrade.sourceSha256);
+    assert.equal(digest(original),reviewUpgrade.replacesSha256,'registered fixture must remain intact');
+    await execute();
+    assert.equal(digest(upgradeDest),reviewUpgrade.sourceSha256,'repeat must not replace approved art');
   } finally {fs.rmSync(root,{recursive:true,force:true});}
 });
 
@@ -1611,7 +2466,7 @@ test('Mare ship original derived fleet provenance and geometry boundaries',()=>{
     assert.equal(after.gltf.meshes.length>originalMeshCount,true,ship+' rebuilt geometry');
     assert.equal(before.gltf.meshes.length,originalMeshCount,ship+' original mesh baseline');
     assert.deepEqual(after.gltf.meshes.slice(0,originalMeshCount),before.gltf.meshes,ship+' source mesh must survive');
-    assert.deepEqual(after.bin.subarray(0,before.bin.length),before.bin,ship+' original binary must survive');
+    assert.ok(after.bin.subarray(0,before.bin.length).equals(before.bin),ship+' original binary must survive');
     const extra=after.gltf.meshes.slice(originalMeshCount);
     const addedTriangles=extra.reduce((n,m)=>n+m.primitives.reduce((s,p)=>s+after.gltf.accessors[p.indices].count/3,0),0);
     assert.equal(meta.derivedTriangleCount,addedTriangles,ship+' added triangle provenance');
@@ -1731,7 +2586,7 @@ test('Mare external CC0 nau original hull and Roblox registration integrity',()=
   assert.deepEqual(meta.modelGeometryGroups,['wood','linen','rope']);
   assert.deepEqual(derived.gltf.meshes.slice(0,source.gltf.meshes.length),source.gltf.meshes,
     'external source hull must remain unchanged');
-  assert.deepEqual(derived.bin.subarray(0,source.bin.length),source.bin,
+  assert.ok(derived.bin.subarray(0,source.bin.length).equals(source.bin),
     'external source geometry bytes must remain unchanged');
   assert.equal(derived.gltf.meshes.length,source.gltf.meshes.length+3);
   assert.ok(derived.gltf.meshes.some(m=>m.name==='nau mizzen lateen cloth'));
@@ -1818,7 +2673,7 @@ test('Mare external CC0 coastal original hull and Roblox registration integrity'
     for(const group of ['wood','edge','linen','rope','carved'])
       assert.ok(meta.modelGeometryGroups.includes(group),ship+' missing material group '+group);
     assert.deepEqual(after.model.meshes.slice(0,before.model.meshes.length),before.model.meshes);
-    assert.deepEqual(after.bin.subarray(0,before.bin.length),before.bin);
+    assert.ok(after.bin.subarray(0,before.bin.length).equals(before.bin),ship+' original binary must survive');
     assert.ok(after.model.meshes.some(m=>m.name===ship+' joined curved outer hull planks'));
     assert.ok(after.model.meshes.some(m=>m.name===ship+' timber gunwale and ribs'));
     assert.ok(after.model.meshes.some(m=>m.name===ship+' handworked open cargo deck and timber boxes'));
@@ -1918,11 +2773,132 @@ test('Mare naval battle uses three approved original circular HUD images without
     assert.ok(upload.includes("'"+name+".png'"),name+':original-license');
     assert.ok(naval.includes('Menu/'+name),name+':image-binding');
   }
-  assert.match(naval,/local speedBtn = mkBtn\("가속"[\s\S]*?"Menu\/naval_speed"\)/);
+  assert.match(naval,/local speedBtn\s+do\s+local compact = MOBILE_VFX and \(battleViewport\.X < 520 or battleViewport\.X <= battleViewport\.Y\)\s+local size = if compact then 76 elseif MOBILE_VFX and battleViewport\.Y < 330 then 72\s+elseif MOBILE_VFX then 80 else 82\s+speedBtn = mkBtn\("가속", UDim2\.new\(1, -24, 1, -24\),\s*UDim2\.fromOffset\(size, size\), Vector2\.new\(1, 1\), "Menu\/naval_speed"\)\s+end/);
   assert.match(naval,/if sk\.id == "fire" then "Menu\/naval_fire" else "Menu\/naval_skill"/);
   assert.match(naval,/speedBtn\.Activated:Connect\(function\(\)/);
   assert.match(naval,/throttle = if throttle >= 1 then 0\.45 elseif throttle > 0\.4 then 0 else 1/);
-  assert.match(naval,/b\.Interactable = ready and phase == "duel"/);
+  assert.match(naval,/b\.Interactable = ready and phase == "duel" and not opts\.cardOnly and not opts\.card/);
   assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
   assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
+});
+
+
+// [도시 자동 사건·카드 원더 차단] 수동으로 듣는 이야기는 유지하고 같은 방문의 자동 씬만 절제한다.
+test('Mare first card has no forced wonder and spontaneous port events are limited to one',()=>{
+  const root='roblox-games/mare-essentia/src/ServerScriptService/Services/';
+  const discovery=fs.readFileSync(root+'Discovery.luau','utf8');
+  const cardGrant=discovery.slice(discovery.indexOf('local function grantCard('),discovery.indexOf('-- [발견] 항구 도착만으로'));
+  assert.ok(cardGrant.includes('state.discovered[cardId] = true'),'card rewards still update canonical discovery');
+  assert.ok(cardGrant.includes('S.Cardbook.reward(state, "discover"'),'card-drop probability unchanged');
+  assert.doesNotMatch(cardGrant,/state\.pendingScene\s*=\s*cardId/,'first and later cards do not summon a blocking wonder movie');
+  const quest=fs.readFileSync(root+'Quest.luau','utf8');
+  const arrive=quest.slice(quest.indexOf('local function arrivalHooks('),quest.indexOf('-- 항구에 도착하면 받아 둔'));
+  for(const token of ['S.History.tick(state)','local offered = offer(state, msgs, "주점에서 소문을 들었다")',
+    'S.Chronicle.arrive(state, msgs)','S.Story.autoTrigger(state, msgs)','state._autoEventPort = state.portId'])
+    assert.ok(arrive.includes(token),'arrival keeps existing responsibility: '+token);
+  assert.ok(arrive.indexOf('S.History.tick(state)')<arrive.indexOf('local offered = offer('));
+  assert.ok(arrive.indexOf('local offered = offer(')<arrive.indexOf('S.Chronicle.arrive(state, msgs)'));
+  assert.ok(arrive.indexOf('S.Chronicle.arrive(state, msgs)')<arrive.indexOf('S.Story.autoTrigger(state, msgs)'));
+  assert.match(arrive,/if offered then[\s\S]*?state\._autoEventPort = state\.portId[\s\S]*?return/);
+  assert.match(arrive,/if S\.Chronicle and S\.Chronicle\.arrive\(state, msgs\) then[\s\S]*?return/);
+  const history=fs.readFileSync(root+'History.luau','utf8');
+  assert.match(history,/if state\._autoEventPort == state\.portId then return nil end/);
+  assert.match(history,/h\.seen\[ev\.id\] = math\.floor\(idx\)[\s\S]*?state\._autoEventPort = state\.portId/);
+  assert.match(history,/h\.pending = best\.id/,'unseen history is deferred, not marked as seen');
+  const payout=quest.slice(quest.indexOf('local function payout('),quest.indexOf('function handlers.Claim('));
+  assert.match(payout,/quest\.id ~= "q_first_discovery"/,'first discovered card pays rewards without the passive First Discovery quest movie');
+  assert.match(payout,/state\.quests\.done\[quest\.id\] = true/,'auto quest still completes');
+  assert.match(payout,/state\.coins \+= quest\.rewardCoins/,'coins are still granted');
+  assert.match(payout,/state\.fame \+= quest\.rewardFame/,'fame is still granted');
+  assert.match(payout,/not AUTO_KINDS\[quest\.kind\]/,'manual quest completion cutscenes remain unchanged');
+  assert.match(payout,/state\._autoEventPort ~= state\.portId and not \(state\.history and state\.history\.pending\)/,'spontaneous end scenes yield to queued history and obey one per visit');
+  assert.match(arrive,/state\._autoEventPort = nil/,'leaving then reentering a port resets only the transient one-visit throttle');
+  const story=fs.readFileSync(root+'Story.luau','utf8');
+  assert.match(story,/function handlers\.PlayStory\(state, p\)/,'player-initiated story stays intact');
+  assert.match(quest,/local function offer\(state, msgs, how, personId\)/,'player initiated quests preserved');
+});
+
+// Dropbox 후보의 수동 QA도 실제 동일 SHA의 GitHub Actions 검사로 검증한다.
+test('Mare Dropbox candidate recognizes exact successful check runs without weakening native merge protection',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'),workflow.indexOf('      - name: Check reviewed animal originals'));
+  assert.ok(block.includes("'/commits/'+head+'/check-runs?filter=latest&per_page=100'"));
+  assert.ok(block.includes("row.get('head_sha')==head"));
+  assert.ok(block.includes("row.get('app',{}).get('slug')=='github-actions'"));
+  assert.ok(block.includes("str(row.get('details_url','')).startswith(prefix)"));
+  assert.ok(block.includes('CARD_DROPBOX_REQUIRED_CHECK_RUN_NOT_VERIFIED:'));
+  assert.ok(block.includes('CARD_DROPBOX_CHECK_RUN_PENDING_OR_FAILED'));
+  assert.ok(block.includes('gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required'));
+  assert.ok(block.includes("no checks reported on the '$CARD_BRANCH' branch"));
+  assert.ok(block.includes("no required checks reported on the '$CARD_BRANCH' branch"));
+  const guard=block.split('\n').find(line=>line.includes('if [[ "$required_checks" !='));
+  assert.ok(guard);
+  const script='CARD_BRANCH=exact-candidate\nrequired_checks="$1"\n'+guard+'\nexit 1\nfi\nexit 0\n';
+  for(const prefix of ['no checks reported','no required checks reported'])
+    assert.doesNotThrow(()=>execFileSync('bash',['-c',script,'--',prefix+" on the 'exact-candidate' branch"]));
+  for(const message of ["no required checks reported on the 'other' branch","required check failed","HTTP 403"])
+    assert.throws(()=>execFileSync('bash',['-c',script,'--',message]));
+  assert.ok(block.includes('gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"'));
+  assert.ok(!block.includes('--admin'));
+  assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
+});
+
+test('Mare Dropbox candidate allows only exact post-merge skipped workflows while required checks stay fail closed',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const start=workflow.indexOf('          post_merge_only=');
+  const end=workflow.indexOf('          # 수동 실행 검사도',start);
+  assert.ok(start>=0&&end>start);
+  const gate=workflow.slice(start,end).split('\n').map(line=>line.slice(10)).join('\n');
+  const success={status:'completed',conclusion:'success',event:'pull_request'};
+  const sync='Roblox Changed Source Runtime Sync', provenance='Vibe2 Merged PR Provenance';
+  const skipped={status:'completed',conclusion:'skipped',event:'pull_request'};
+  const good={...skipped,path:'.github/workflows/company-roblox-source-drift-sync.yml'};
+  const prov={...skipped,path:'.github/workflows/vibe2-merged-pr-provenance.yml'};
+  const required={'All Games Development Sync':success,'Vibe QA':success,'Devloop Gates (Mare Essentia)':success};
+  const cases=[
+    [{...required,[sync]:good,[provenance]:prov},true],
+    [{...required,'Vibe QA':skipped},false],
+    [{...required,[sync]:{...good,conclusion:'failure'}},false],
+    [{...required,[sync]:{...good,status:'in_progress'}},false],
+    [{...required,[sync]:{...good,path:'.github/workflows/other.yml'}},false],
+    [{...required,[sync]:{...good,event:'workflow_dispatch'}},false],
+    [{...required,'unknown skipped check':skipped},false],
+  ];
+  const program='import json,sys\ncases=json.loads(sys.argv[1])\nfor latest,expected in cases:\n    try:\n'+gate.split('\n').filter(Boolean).map(line=>'        '+line).join('\n')+'\n    except SystemExit:\n        assert not expected\n    else:\n        assert expected\n';
+  execFileSync('python3',['-c',program,JSON.stringify(cases)],{encoding:'utf8',timeout:10000});
+});
+
+test('Mare Dropbox UI replacement preserves existing verified registration and exact candidate checks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const stage=workflow.slice(workflow.indexOf('      - name: Stage reviewed Dropbox original'),workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'));
+  const pr=workflow.slice(workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'),workflow.indexOf('      - name: Check reviewed animal originals'));
+  const recovery=workflow.slice(workflow.indexOf('      - name: Select existing full registration'),workflow.indexOf('      - name: Restore full-color originals'));
+  assert.ok(stage.includes("ui = name.startswith('ui_')"));
+  assert.ok(stage.includes("relative = 'assets/cardart/'+name+'.png' if ui else"));
+  assert.ok(stage.includes("old_raw[25]!=3"));
+  assert.ok(stage.includes("previous.get('source')!=str(target)"));
+  assert.ok(stage.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+  assert.ok(stage.includes("if not ui:"));
+  assert.ok(pr.includes("original=root+'cardart/'+name+'.png' if ui else"));
+  assert.ok(pr.includes("CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:"));
+  assert.ok(pr.includes("CARD_DROPBOX_UI_PR_PNG_INVALID:"));
+  assert.ok(pr.includes("pr['changed_files']!=2"));
+  assert.ok(pr.includes("if not ui:"));
+  assert.ok(recovery.includes("CARD_UI_APPROVED_REGISTRATION_RECOVERY"));
+  assert.ok(recovery.includes("old.get('sourceSha256')==digest"));
+  assert.ok(recovery.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+  assert.ok(recovery.includes("MARE_MODELS_ONLY=false"));
+});
+
+test('Mare indexed PNG audit separates exact registered SHA from archived and pending originals',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('      - name: Audit 256-color indexed'),workflow.indexOf('      - name: Practice and verify approved trade goods'));
+  assert.ok(block.includes("hashlib.file_digest(f, 'sha256').hexdigest()"));
+  assert.ok(block.includes("row.get('sourceSha256')"));
+  assert.ok(block.includes("row.get('assetType') == 'Image'"));
+  assert.ok(block.includes("'icons', 'materials', 'menu', 'goods'"));
+  assert.ok(block.includes('ART_PALETTE256_REGISTERED_SHA_MATCH'));
+  assert.ok(block.includes('ART_PALETTE256_OTHER_SOURCE'));
+  assert.ok(block.includes('ART_PALETTE256_REGISTERED_KEYS='));
+  assert.ok(block.includes('PNG_INDEXED_HEADER_ONLY_NOT_FULL_COLOR_OR_RUNTIME_AUDIT'));
 });

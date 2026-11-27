@@ -30,6 +30,57 @@ test('Forest Defense renders actual WebGL 3D without silently falling back to 2D
   assert.ok(fs.existsSync('assets/roblox/world-ghosts/native/mesh/three/three.module.js'));
 });
 
+// [GPU 자원 회귀] 실제 path/rebuildPads 함수에서 크기 변경 후 오래된 메쉬를 해제한다.
+test('Forest Defense repeated resize releases replaced path and pad GPU allocations once',()=>{
+ const pathStart=native.indexOf(' function path(){');
+ const pathEnd=native.indexOf(' function rebuildPads(){',pathStart);
+ const padEnd=native.indexOf(' function resize(){',pathEnd);
+ assert.ok(pathStart>=0&&pathEnd>pathStart&&padEnd>pathEnd);
+ const pathSource=native.slice(pathStart,pathEnd);
+ const padsSource=native.slice(pathEnd,padEnd);
+ const disposed={geometries:0,materials:0};
+ class Geometry{dispose(){this.disposals=(this.disposals||0)+1;disposed.geometries++}}
+ class Material{dispose(){this.disposals=(this.disposals||0)+1;disposed.materials++}}
+ class Vector3{
+  constructor(x=0,y=0,z=0){this.x=x;this.y=y;this.z=z}
+  clone(){return new Vector3(this.x,this.y,this.z)}
+  sub(v){this.x-=v.x;this.y-=v.y;this.z-=v.z;return this}
+  length(){return Math.hypot(this.x,this.y,this.z)}
+  addScaledVector(v,t){this.x+=v.x*t;this.y+=v.y*t;this.z+=v.z*t;return this}
+ }
+ class Mesh{
+  constructor(geometry,material){this.geometry=geometry;this.material=material;
+   this.position={set(){}};this.rotation={y:0};this.userData={}}
+ }
+ const group=()=>({children:[],add(mesh){this.children.push(mesh)},clear(){this.children.length=0}});
+ const pathGroup=group(),pads=group(),THREE={Vector3,BoxGeometry:Geometry,CylinderGeometry:Geometry,Mesh};
+ const context=vm.createContext({THREE,pathGroup,pads,PATH_N:[[0,0],[.5,.4],[1,1]],
+  PADS_N:[[.1,.1],[.8,.8]],worldWidth:10,worldDepth:10,material:()=>new Material(),
+  box(parent,x,y,z,w,h,d,mat){parent.add(new Mesh(new Geometry(),mat))}});
+ vm.runInContext(pathSource+'\n'+padsSource+'\npath();rebuildPads();',context,{timeout:1000});
+ const old=[...pathGroup.children,...pads.children],geometry=new Set(old.map(x=>x.geometry));
+ const materials=new Set(old.map(x=>x.material));
+ assert.ok(old.length>=7);
+ vm.runInContext('worldWidth=13;worldDepth=7;path();rebuildPads();',context,{timeout:1000});
+ assert.equal(old.every(mesh=>!pathGroup.children.includes(mesh)&&!pads.children.includes(mesh)),true);
+ for(const obj of geometry)assert.equal(obj.disposals,1,'old geometry must release once');
+ for(const obj of materials)assert.equal(obj.disposals,1,'shared material must release once');
+ assert.equal(disposed.geometries,geometry.size);
+ assert.equal(disposed.materials,materials.size);
+ assert.ok(pathGroup.children.length>0&&pads.children.length>0);
+});
+
+// [모바일 렌더 회귀] 화면이 숨겨지거나 픽셀이 비어 있으면 추가 GPU 작업을 하지 않는다.
+test('Forest Defense skips hidden rendering and redundant GPU matrix updates',()=>{
+ assert.match(native,/if\(disposed\|\|!state\|\|document\.hidden\)return/);
+ assert.match(native,/if\(!items\.length\)\{target\.count=0;return target;\}/);
+ assert.match(native,/if\(width===nextWidth&&height===nextHeight\)return/);
+ assert.match(native,/if\(disposed\)return;\s*disposed=true/);
+ assert.match(native,/for\(const geometry of geometries\)geometry\.dispose\(\)/);
+ assert.match(native,/for\(const mat of materials\)mat\.dispose\(\)/);
+ assert.doesNotMatch(native,/localStorage|\.hp\s*[-+]?=/);
+});
+
 test('10-wave defense, boss scheduling, tower prices, damage, upgrades and best score preserved',()=>{
   const expected=[
     "const KEY='jaewoon-defense-v1',MAX_WAVE=10",

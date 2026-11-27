@@ -314,7 +314,7 @@ do
 	check("함대전: 레벨이 모자라면 거부", okBlock == false)
 	local okS = Registry.handlers.WarStart(stW, { id = "blockade" }, ctx)
 	check("함대전: 시작하면 첫 파도 해전이 열린다", okS == true and stW.war ~= nil and stW.war.wave == 1 and stW.pendingBattle ~= nil)
-	check("함대전: 화면 정보에 진행이 보인다", S.View.build(stW, ctx).war ~= nil and #S.View.build(stW, ctx).wars == 3)
+	check("함대전: 화면 정보에 진행이 보인다", S.View.build(stW, ctx).war ~= nil and #S.View.build(stW, ctx).wars == 9)
 	for wave = 1, 3 do
 		stW.pendingBattle.winner = "a"
 		stW.pendingBattle.reason = "sunk"
@@ -337,6 +337,76 @@ do
 	check("함대전: 한 파도라도 지면 작전 실패", stL.war == nil)
 	local again = Registry.handlers.WarStart(stW, { id = "blockade" }, ctx)
 	check("함대전: 완수 직후엔 같은 의뢰를 바로 못 받는다", again == false)
+end
+
+-- 해역별 함대전: 그 해역 항구에서만 받고, 완수 기록이 해상 연속 퀘스트로 이어진다
+do
+	local stR = S.State.new("england", 1700)
+	stR.careers.battle.level = 4
+	stR.portId = "london"
+	local okFar = Registry.handlers.WarStart(stR, { id = "war_new_world" }, ctx)
+	check("해역 함대전: 다른 해역 항구에서는 못 받는다", okFar == false and stR.war == nil)
+	local okHere = Registry.handlers.WarStart(stR, { id = "war_europe" }, ctx)
+	check("해역 함대전: 그 해역 항구에서는 시작된다", okHere == true and stR.war ~= nil)
+	for wave = 1, 3 do
+		stR.pendingBattle.winner = "a"
+		stR.pendingBattle.reason = "sunk"
+		stR.pendingBattle.hull = stR.ship.hull
+		stR.pendingBattle.crew = stR.ship.crew
+		Registry.handlers.ResolveBattle(stR, {}, ctx)
+		if wave < 3 then
+			Registry.handlers.WarNext(stR, {}, ctx)
+		end
+	end
+	local clears: any = (stR.stats :: any).warClears
+	check("해역 함대전: 완수하면 해역별 기록이 남는다", stR.war == nil and clears ~= nil and clears.europe == 1)
+	local loaded: any = S.State.sanitize(S.State.serialize(stR))
+	local loadedClears: any = loaded.stats.warClears
+	check("해역 함대전: 저장 후 불러와도 기록이 유지된다", loadedClears ~= nil and loadedClears.europe == 1)
+end
+
+-- 이야기 퀘스트 시스템: 선택 분기·지도자 대결·함대전 id 기록·카드 이야기 (내용은 시험용 퀘스트로 확인)
+do
+	local Qd: any = D.Quests
+	local Kit: any = Qd.Kit
+	local choiceQ: any = { id = "q_test_choice", name = "시험 선택", summary = "고르기", kind = "choice", amount = 1, rewardCoins = 0, rewardFame = 0, rewardXp = 0,
+		choices = { { value = "a", label = "믿는다" }, { value = "b", label = "의심한다" } } }
+	local branchQ: any = { id = "q_test_branch", name = "시험 분기", summary = "a 선택만", kind = "duel_leader", leaderId = "suleiman", amount = 1, rewardCoins = 0, rewardFame = 0, rewardXp = 0,
+		after = "q_test_choice", needChoice = "q_test_choice=a", loreCardId = "nav_star_compass", loreText = "시험 이야기" }
+	Qd.ById[choiceQ.id] = choiceQ
+	Qd.ById[branchQ.id] = branchQ
+	local st = S.State.new("england", 1700)
+	st.quests.active[choiceQ.id] = { delivered = 0, baseWins = 0 }
+	local bad = Registry.handlers.StoryChoose(st, { questId = choiceQ.id, value = "zzz" })
+	check("이야기: 없는 선택지는 거부", bad == false)
+	local okC = Registry.handlers.StoryChoose(st, { questId = choiceQ.id, value = "a" })
+	local again = Registry.handlers.StoryChoose(st, { questId = choiceQ.id, value = "b" })
+	check("이야기: 선택은 한 번만 저장된다", okC == true and again == false and Kit.choice(st, "q_test_choice") == "a")
+	check("이야기: 선택하면 진행도 1", Kit.progress(st, choiceQ) == 1)
+	st.quests.done[choiceQ.id] = true
+	st.quests.active[choiceQ.id] = nil
+	check("이야기: 고른 분기의 퀘스트만 보인다", S.Quest.visible(st, branchQ) == true)
+	local stB = S.State.new("england", 1700)
+	stB.quests.done[choiceQ.id] = true;
+	(stB.stats :: any).storyChoices = { q_test_choice = "b" }
+	check("이야기: 다른 분기에서는 안 보인다", S.Quest.visible(stB, branchQ) == false)
+	st.quests.active[branchQ.id] = { delivered = 0, baseWins = 0 }
+	local foe = Kit.duelFoe(D, st, branchQ.id)
+	check("이야기 대결: 지도자 진영이 상대로 정해진다", foe ~= nil and foe.leader == "suleiman" and foe.faction == "middle_east")
+	check("이야기 대결: 진행 중이 아니면 상대 없음", Kit.duelFoe(D, stB, branchQ.id) == nil)
+	local m: any = D.BoardingCards.build("boarding", 777, { deckCards = nil, faction = "europe" }, { faction = "middle_east", leader = "suleiman" })
+	check("이야기 대결: 상대 지도자가 고정된다", m ~= nil and m.leader.foe == "suleiman")
+	Kit.recordDuelWin(st, "suleiman")
+	check("이야기 대결: 이기면 지도자별 기록", Kit.progress(st, branchQ) == 1)
+	st.quests.done[branchQ.id] = true
+	local lore = Kit.loreFor(st, Kit.loreIndex({ branchQ }), "nav_star_compass")
+	check("이야기 카드: 완료하면 단락이 열린다", lore ~= nil and lore[1].text == "시험 이야기")
+	local back: any = S.State.sanitize(S.State.serialize(st))
+	check("이야기: 선택·대결 기록이 저장된다", back.stats.storyChoices.q_test_choice == "a" and back.stats.duelWins.suleiman == 1)
+	Kit.recordWar(st, { id = "war_europe", region = "europe" })
+	check("이야기 함대전: 함대전 id 기록", Kit.progress(st, { kind = "war_clear", warId = "war_europe" }) == 1 and Kit.progress(st, { kind = "war_clear" }) == 1)
+	Qd.ById[choiceQ.id] = nil
+	Qd.ById[branchQ.id] = nil
 end
 
 -- 주점 의뢰판: 그 항구·그 시기에만 나오고, 납품·전투·이벤트가 각각 정산된다

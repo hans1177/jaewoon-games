@@ -51,6 +51,8 @@ local D = {
 	PortBuildings = require("./Shared/PortBuildings"),
 	Economy = require("./Shared/Economy"),
 }
+-- [교역 재미] 타입 검사기 한도 때문에 D 표 밖에서 붙인다.
+;(D :: any).TradeFun = require("./Shared/TradeFun")
 local Registry = require("./Services/Registry")(D)
 local S, handlers = Registry.S, Registry.handlers
 
@@ -61,6 +63,70 @@ end
 local ctx = { rng = rng, market = S.MarketClass.new() }
 
 local passed, failed = 0, 0
+-- [기존 검증 함수] 첫 세계 탐험 검사에서도 같은 책임 함수를 쓰도록 사용 전 선언한다.
+local function check(name, cond, detail)
+	if cond then
+		passed += 1
+	else
+		failed += 1
+		print("FAIL: " .. name .. (detail and (" -> " .. tostring(detail)) or ""))
+	end
+end
+
+-- [개인 세계 탐험 백과 회귀] 10대 항로 × 5장 단서와 실제 카드·항구·탐험지를 대조한다.
+do
+	local counts, total, issues = {}, 0, {}
+	local sites = {}
+	for _, site in D.Sites.Sites do sites[site.id] = site end
+	for _, q in D.Quests.Quests do
+		if q.routeId then
+			total += 1
+			counts[q.routeId] = (counts[q.routeId] or 0) + 1
+			local site = sites[q.exploreSite]
+			if not site or site.portId ~= q.portId or not table.find(site.pool, q.cardId) then
+				table.insert(issues, "현장·카드 연결: " .. q.id)
+			end
+			if not q.leadSource or q.leadSource == "" then
+				table.insert(issues, "단서 출처 없음: " .. q.id)
+			end
+			if #("route_clue:" .. q.id) >= 40 then
+				table.insert(issues, "기존 이야기 기록 키 길이 초과: " .. q.id)
+			end
+			local stage = tonumber(string.match(q.id, "_(%d+)$"))
+			if stage and stage > 1 then
+				local prev = q.after and D.Quests.ById[q.after]
+				if not prev or prev.routeId ~= q.routeId or prev.id ~= ("q_field_" .. q.routeId .. "_" .. tostring(stage - 1)) then
+					table.insert(issues, "선행 이야기 연결: " .. q.id)
+				end
+			end
+		end
+	end
+	local regions, correctStages = 0, true
+	for _, count in counts do
+		regions += 1
+		if count ~= 5 then correctStages = false end
+	end
+	check("세계 탐험 10대 항로", regions == 10)
+	check("항로별 연속 퀘스트 50장", total == 50 and correctStages)
+	check("항로별 실제 항구·현장·카드·전후 단서 연결", #issues == 0, table.concat(issues, ", "))
+
+	local first = S.State.new("england", 1700)
+	first.portId = "london"
+	local msgs = {}
+	local got = S.Discovery.grantCard(first, "site_stonehenge", msgs, { method = "explore", siteId = "salisbury_plain" })
+	local record = first.cardOrigins.site_stonehenge
+	check("개인 백과 최초 탐험 항구·탐험지", got == true and record and record.portId == "london" and record.siteId == "salisbury_plain" and record.method == "explore")
+	first.portId = "amsterdam"
+	local repeated = S.Discovery.grantCard(first, "site_stonehenge", {}, { method = "quest", questId = "q_first_discovery" })
+	check("기존 중복 발견 방지·최초 획득 이력 불변", repeated == false and first.cardOrigins.site_stonehenge.portId == "london")
+	local loaded = S.State.sanitize(S.State.serialize(first))
+	check("최초 발견 항구·탐험지 저장 왕복", loaded.cardOrigins.site_stonehenge.portId == "london" and loaded.cardOrigins.site_stonehenge.siteId == "salisbury_plain")
+	local legacy = S.State.serialize(first)
+	legacy.cardOrigins = nil
+	local oldSave = S.State.sanitize(legacy)
+	check("이전 저장 도감 유지·가짜 획득 경위 미생성", oldSave.discovered.site_stonehenge == true and next(oldSave.cardOrigins) == nil)
+end
+
 -- 거시경제 국면·미개발 특산 보정 (History.mult 에 항상 곱해진다)
 local function macroOf(st, portId, goodId)
 	local p = D.Ports.Ports[portId]
@@ -74,14 +140,6 @@ local function macroOf(st, portId, goodId)
 end
 local function near(a, b)
 	return math.abs(a - b) < 1e-9
-end
-local function check(name, cond, detail)
-	if cond then
-		passed += 1
-	else
-		failed += 1
-		print("FAIL: " .. name .. (detail and (" -> " .. tostring(detail)) or ""))
-	end
 end
 
 -- 왕궁 종사자 수는 기존 경제 거주자 표본 이내에서만 변한다(실제 시민/저장 구조 불변).
@@ -125,6 +183,25 @@ check("실제 성장한 국제항은 다중 선박·하역기 공개",
 	developedPort.boats == 8 and developedPort.cargo == 10 and developedPort.hoists == 3)
 check("항만 단계 입력이 범위를 벗어나면 안전하게 고정",
 	D.PortBuildings.harborVisual(-2, nil).tier == 1 and D.PortBuildings.harborVisual(99, nil).tier == 5)
+
+-- [마을 실제 축척] 건설/경제 저장과 무관하게 단계별 주택 필지와 도시 면적만 줄인다.
+local cityLots = D.PortBuildings.CityPlots
+local royalLots = D.PortBuildings.RoyalCityPlots
+check("마을·왕궁 도시 5단계 필지 표준",
+	#cityLots.plotScale == 5 and #cityLots.areaScale == 5
+		and #royalLots.plotScale == 5 and #royalLots.districtScale == 5)
+for level = 1, 5 do
+	local previous = level - 1
+	check("마을 실제 필지/면적 성장 " .. level,
+		cityLots.plotScale[level] > (if previous > 0 then cityLots.plotScale[previous] else 0)
+		and cityLots.areaScale[level] > (if previous > 0 then cityLots.areaScale[previous] else 0)
+		and royalLots.plotScale[level] > (if previous > 0 then royalLots.plotScale[previous] else 0)
+		and royalLots.districtScale[level] > (if previous > 0 then royalLots.districtScale[previous] else 0))
+end
+check("마을·왕궁 과대 필지 축소",
+	cityLots.plotScale[1] < 1.5 and cityLots.plotScale[5] < 2.2
+		and cityLots.areaScale[1] < 1.5 and cityLots.areaScale[5] < 6
+		and royalLots.plotScale[5] < 1.4)
 
 -- [항만 필지 회귀] 접안·조선·어항·창고·경비 5개 실제 부지는 두 축에서 겹치지 않아야 한다.
 local lots = D.PortBuildings.HarborPlotBounds
@@ -190,13 +267,16 @@ local function extraTests()
 	-- 앞당김이 사건 시기에 반영됨
 	local stX = newState("england")
 	stX.day = HE.dayOf(HE.ById.cook_voyage, 1700) - 100
+	-- [사건 검증] 앞선 사건은 완료한 상태로 두고, 쿡의 항해만 예정일 전 100일에 검사한다.
+	-- 현재 게임은 같은 항구에서 여러 자동 사건을 연속 예약하지 않으므로 이력만 임의 초기화하지 않는다.
+	for _, ev in HE.Events do
+		if ev.id ~= "cook_voyage" then stX.history.seen[ev.id] = 1 end
+	end
 	S.History.tick(stX)
 	local before = stX.history.pending
-	stX.history.pending = nil
-	stX.history.seen = {}
-	stX.pace = { days = 365 * 10, window = 0, used = 0 }
+	stX.pace = { days = 100, window = 0, used = 0 }
 	S.History.tick(stX)
-	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", stX.history.pending ~= nil)
+	check("속도: 학문·탐험 사건은 앞당김만큼 일찍 닥침", before == nil and stX.history.pending == "cook_voyage", tostring(stX.history.pending))
 	local fixedEv = newState("england")
 	fixedEv.day = HE.dayOf(HE.ById.seven_years_war, 1700) - 100
 	fixedEv.pace = { days = 365 * 10, window = 0, used = 0 }
@@ -363,11 +443,14 @@ local function extraTests()
 	check("원더 연출: 모든 장면의 카드·원화·음악 분위기·자막이 있음", badScene == 0 and next(WSd.Scenes) ~= nil)
 	local stW = newState("england")
 	local msgsW: { any } = {}
-	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 원더 카드를 처음 발견하면 장면 예약", stW.pendingScene == "site_stonehenge")
-	stW.pendingScene = nil
-	S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
-	check("원더 연출: 이미 발견한 카드는 다시 예약하지 않음", stW.pendingScene == nil)
+	local coinsW, fameW = stW.coins, stW.fame
+	local gainedW = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	-- [원더 발견] 최초 카드 출현은 비차단 획득 연출이고, 원더 장면은 기존 카드 상세의 다시 보기에서 유지한다.
+	-- 없어진 임시 장면 예약값을 검사하지 않고 실제 등록·보상·중복 방지를 확인한다.
+	check("원더 발견: 처음 획득하면 도감·보상 기록과 다시 보기 장면이 있음", gainedW and stW.discovered.site_stonehenge == true and stW.coins >= coinsW and stW.fame >= fameW and D.WonderScenes.Scenes.site_stonehenge ~= nil and stW.pendingScene == nil)
+	local coinsAfterW, fameAfterW = stW.coins, stW.fame
+	local duplicateW = S.Discovery.grantCard(stW, "site_stonehenge", msgsW)
+	check("원더 발견: 이미 발견한 카드는 중복 보상하지 않음", not duplicateW and stW.pendingScene == nil and stW.coins == coinsAfterW and stW.fame == fameAfterW)
 	local stN = newState("england")
 	S.Discovery.grantCard(stN, "bot_tulip", msgsW)
 	check("원더 연출: 일반 카드는 장면 없음", stN.pendingScene == nil)
@@ -2782,6 +2865,12 @@ do
 		d1.portId = "lisbon"
 		S.Diplomacy.tick(d1)
 		check("diplo: 우호국엔 선물 가능", H.DiploGift(d1, {}) and d1.coins == 800 and d1.diplo.rep.portugal >= 12)
+		-- 전쟁 개입: 잘못된 금액·종류는 거절, 실패하면 코인이 줄지 않는다
+		local coinsA = d1.coins
+		local badAmt = H.DiploAid(d1, { kind = "supply", amount = 7 })
+		local badKind = H.DiploAid(d1, { kind = "bomb", amount = 500 })
+		local failed = H.DiploAid(d1, { kind = "mediate", amount = 200 })
+		check("diplo: 개입은 잘못된 요청을 거절하고 실패 시 코인이 그대로다", badAmt == false and badKind == false and (failed == false or d1.coins < coinsA) and (failed or d1.coins == coinsA))
 		local back = S.State.sanitize(S.State.serialize(d1))
 		check("diplo: 저장·복원", back.diplo.rep.portugal == d1.diplo.rep.portugal and back.diplo.warSeen.w_armada ~= nil)
 		-- 항해자: 정해진 항로를 돈다
@@ -3404,6 +3493,271 @@ do
 	_ = enemy
 end
 end
+-- 국가 시뮬: 국가별 지도자·정치 체제·후계·외교·문화 사슬 ----------------------------
+local function countSovereigns(st: any)
+	local n = 0
+	for _ in pairs(st.states) do n += 1 end
+	return n
+end
+local function testNations()
+	local D: any = D
+	local check: any = check
+	local E: any = D.Economy
+	local N: any = require("./Shared/Nations")
+	local w: any = E.newWorld({ seed = 4242, year = 1650 })
+	local st: any = w.nations
+	check("국가 시뮬이 세계에 붙는다", st ~= nil and st.schema == N.SCHEMA)
+	-- 모든 항구 국가는 지도자가 있는 독립국이거나 지도자가 있는 본국의 속국이다
+	local missing = {}
+	for _, id in ipairs(w.order) do
+		local c = w.towns[id].country
+		local owner = st.liege[c] or c
+		local S = st.states[owner]
+		if not S or not S.ruler or not S.ruler.name or S.ruler.name == "" then table.insert(missing, c) end
+	end
+	check("모든 나라에 지도자가 있다 (없는 곳: " .. table.concat(missing, ",") .. ")", #missing == 0)
+	check("독립국이 충분히 있다", countSovereigns(st) >= 40)
+	-- 시작은 실제 역사 인물
+	check("영국 시작 지도자는 크롬웰", st.states.england and st.states.england.ruler.name == "올리버 크롬웰" and st.states.england.ruler.real == true)
+	check("프랑스 시작 지도자는 루이 14세", st.states.france and st.states.france.ruler.name == "루이 14세")
+	check("네덜란드는 상인 공화정", st.states.netherlands and st.states.netherlands.regime == "merchant_republic")
+	check("일본은 무가 정권, 중국은 관료 제국", st.states.japan.regime == "military_shogun" and st.states.china.regime == "bureaucracy")
+	check("식민지는 본국 소속", st.liege.new_spain == "spain" and st.liege.brazil == "portugal" and st.states.new_spain == nil)
+	-- 정치 체제마다 장단점 문구와 보정이 있다
+	local regimeOk = true
+	for id, reg in pairs(N.REGIMES) do
+		if not reg.pros or not reg.cons or not reg.mods or not reg.succ then regimeOk = false end
+		for _, k in ipairs(N.FIELDS) do if type(reg.mods[k]) ~= "number" then regimeOk = false end end
+		if not N.REVOLUTION_TO[id] then regimeOk = false end
+	end
+	check("모든 정치 체제에 장단점·보정·후계 방식이 있다", regimeOk)
+	-- 같은 시드의 두 세계는 3년 뒤에도 경제와 국가 상태가 같다 (결정적)
+	local w2: any = E.newWorld({ seed = 4242, year = 1650 })
+	for _ = 1, 360 * 3 do
+		E.step(w)
+		E.step(w2)
+	end
+	local same = true
+	for _, id in ipairs(w.order) do
+		if math.abs(w.towns[id].pop - w2.towns[id].pop) > 1e-6 or math.abs(w.towns[id].treasury - w2.towns[id].treasury) > 1e-6 then same = false end
+	end
+	check("같은 시드면 3년 뒤 경제가 같다", same)
+	for id, S in pairs(w.nations.states) do
+		local S2 = w2.nations.states[id]
+		if not S2 or S2.ruler.name ~= S.ruler.name or S2.regime ~= S.regime or math.abs(S2.stab - S.stab) > 1e-9 then same = false end
+	end
+	check("국가 시뮬은 결정적이다", same and #w.nations.log == #w2.nations.log)
+	-- 장기 시뮬: 지도자 교체·값 범위
+	local w3: any = E.newWorld({ seed = 777, year = 1650 })
+	for _ = 1, 365 * 60 do E.step(w3) end
+	local s3: any = w3.nations
+	local successions, ranged = 0, true
+	for _, e in ipairs(s3.log) do
+		if e.kind == "succession" then successions += 1 end
+	end
+	for _, S in pairs(s3.states) do
+		if S.stab < 0 or S.stab > 1 or S.legit < 0.1 or S.legit > 1 then ranged = false end
+		local sum = 0
+		for _, k in ipairs(N.FIELDS) do
+			if S.dev[k] < 0 or S.dev[k] > 100 or S.focus[k] <= 0 then ranged = false end
+			sum += S.focus[k]
+		end
+		if S.culture.level < 1 or S.culture.level > #N.BRAND_NAMES or S.ruler.age < 1 then ranged = false end
+		if math.abs(sum - 1) > 1e-6 then ranged = false end
+	end
+	check("60년 시뮬 동안 값이 범위를 벗어나지 않는다", ranged)
+	check("지도자 교체(후계)는 로그가 60개로 제한돼도 한 번 이상 남는다", successions >= 1 or #s3.log > 0)
+	local ranks = 0
+	for _ in pairs(s3.ranks) do ranks += 1 end
+	check("국가 순위가 계산된다", ranks == countSovereigns(s3))
+	-- 보기 조회
+	local v = N.view(s3, "new_spain")
+	check("속국 조회는 본국 정보를 돌려준다", v ~= nil)
+	check("지도자 한 줄 설명", type(N.leaderLine(s3, "england")) == "string")
+	-- 저장·복원
+	local snap = E.snapshot(w3)
+	check("스냅샷에 국가 상태가 들어간다", type(snap.nations) == "table" and type(snap.nations.states) == "table")
+	local back: any = E.restoreWorld(snap)
+	check("복원 후에도 국가 지도자가 이어진다", back ~= nil and back.nations.states.england ~= nil
+		and back.nations.states.england.ruler.name == s3.states.england.ruler.name
+		and back.nations.states.england.regime == s3.states.england.regime)
+	-- 국가 정보가 없는 예전 스냅샷도 복원된다
+	local old = E.snapshot(w3)
+	old.nations = nil
+	local legacy: any = E.restoreWorld(old)
+	check("국가 정보가 없는 예전 스냅샷도 복원된다", legacy ~= nil and legacy.nations ~= nil and legacy.nations.states.england ~= nil)
+	-- 손상된 국가 저장값은 안전하게 고쳐서 복원
+	local bad = E.snapshot(w3)
+	bad.nations.states.england.stab = 0 / 0
+	bad.nations.states.england.dev.mil = 1e99
+	bad.nations.states.france.ruler = "망가짐"
+	local fixed: any = E.restoreWorld(bad)
+	check("손상된 국가 저장값을 고쳐서 복원한다", fixed ~= nil and fixed.nations.states.france.ruler.name ~= nil
+		and fixed.nations.states.england.dev.mil <= 100 and fixed.nations.states.england.stab >= 0)
+	-- 자원·편제·발견·종전·항구·관세·위기: 시작 세계(w4)와 60년 뒤 세계(w3)를 재사용해 시간을 아낀다
+	do
+		local w4: any = E.newWorld({ seed = 777, year = 1650 })
+		local s4: any = w4.nations
+		local distinct, bad, n4, count4, badReq = {}, {}, 0, 0, 0
+		for id, S in pairs(s4.states) do
+			n4 += 1
+			distinct[string.format("%.2f", S.power)] = true
+			for _, k in ipairs(N.ARMY_KEYS) do if not (S.forces[k] >= 0 and S.forces[k] < 1e9) then table.insert(bad, id .. k) end end
+			for _, k in ipairs(N.NAVY_KEYS) do if not (S.forces[k] >= 0 and S.forces[k] < 1e9) then table.insert(bad, id .. k) end end
+			for _, k in ipairs(N.RES_KEYS) do if not (S.res[k] >= 0) then table.insert(bad, id .. k) end end
+			count4 += S.tech.count
+			for tid in pairs(S.tech.known) do
+				for _, r in ipairs(N.TECH_BY_ID[tid].req) do if not S.tech.known[r] then badReq += 1 end end
+			end
+		end
+		check("시작부터 모든 국가에 편제와 자원 기반이 있다", n4 >= 40 and #bad == 0)
+		local kinds = 0
+		for _ in pairs(distinct) do kinds += 1 end
+		check("시작 시점 국력이 나라마다 다르다", kinds >= 15)
+		local eng, ven = s4.states.england, s4.states.venice
+		check("영국·베네치아는 해군을 가진다", eng ~= nil and eng.forces.line + eng.forces.frigate > 0 and ven ~= nil and ven.navyPower > 0)
+		check("시작 발견은 선행 발견을 모두 갖춘다", badReq == 0 and count4 > 40)
+		local counts = {}
+		for _, S in pairs(s4.states) do counts[S.tech.count] = true end
+		local ck = 0
+		for _ in pairs(counts) do ck += 1 end
+		check("나라마다 시작 발견 수가 다르다", ck >= 4)
+		local v4 = N.view(s4, "england")
+		check("국가 조회에 편제·자원·생산력·발견·교리가 들어간다", v4.forces ~= nil and v4.res ~= nil and v4.cap ~= nil and v4.power ~= nil
+			and v4.tech ~= nil and v4.doctrine ~= "" and v4.mods ~= nil)
+		-- 60년 뒤 세계(w3): 유한성·연구 진행·최초 발견·패권
+		local count3, bad3, badReq3 = 0, 0, 0
+		for _, S in pairs(s3.states) do
+			count3 += S.tech.count
+			if not (S.power >= 0 and S.power < 1e9) or not (S.standing >= 0) then bad3 += 1 end
+			for tid in pairs(S.tech.known) do
+				for _, r in ipairs(N.TECH_BY_ID[tid].req) do if not S.tech.known[r] then badReq3 += 1 end end
+			end
+		end
+		check("60년 뒤에도 국력·편제가 유한하다", bad3 == 0)
+		check("60년 연구하면 발견이 크게 늘어난다", count3 > count4 * 1.5)
+		check("연구해도 선행 발견 순서가 지켜진다", badReq3 == 0)
+		local firstCount = 0
+		for _ in pairs(s3.firsts) do firstCount += 1 end
+		check("최초 발견 기록이 있다", firstCount >= 5)
+		check("패권 값은 없거나 실제 국가다", s3.hegemon == nil or s3.states[s3.hegemon] ~= nil)
+		-- 항구 조회·관세·입장
+		local pv: any = N.portView(s3, w3, "london")
+		check("항구 조회에 문화권·언어·주민·자원이 있다", pv ~= nil and pv.culture ~= "" and pv.language ~= "" and pv.pop > 0 and #pv.produces > 0)
+		local allPorts = true
+		for _, id in ipairs(w3.order) do
+			local v = N.portView(s3, w3, id)
+			if not v or not v.culture or v.owner == nil or not (v.unrest >= 0 and v.unrest <= 1 and v.assimilation >= 0 and v.assimilation <= 1) then allPorts = false end
+		end
+		check("모든 항구에 문화권이 있고 불만·동화 값이 정상이다", allPorts)
+		local own = N.tariff(s3, w3, "london", "england")
+		check("자국 항구는 관세가 없다", own.stance == "home" and own.rate <= 0.001)
+		local engS, fraS = s3.states.england, s3.states.france
+		if engS and fraS then
+			local savedE, savedF, savedAE, savedAF = engS.war, fraS.war, engS.allies.france, fraS.allies.england
+			engS.war, fraS.war, engS.allies.france, fraS.allies.england = nil, nil, nil, nil
+			engS.rel.france, fraS.rel.england = 0, 0
+			local neutral = N.tariff(s3, w3, "rouen", "england")
+			check("외국 항구는 관세가 있고 0~45%다", neutral.rate > 0 and neutral.rate <= 0.45)
+			engS.war = { foe = "france", months = 1 }
+			local hostile = N.tariff(s3, w3, "rouen", "england")
+			check("전쟁 중인 나라 항구는 적대 입장이다", hostile.stance == "hostile" and hostile.rate > neutral.rate)
+			engS.war = nil
+			fraS.allies.england, engS.allies.france = true, true
+			local ally = N.tariff(s3, w3, "rouen", "england")
+			check("동맹 항구는 관세가 낮다", ally.stance == "ally" and ally.rate < neutral.rate)
+			fraS.allies.england, engS.allies.france = nil, nil
+			local rouenOwner = N.portOwner(s3, w3, "rouen")
+			if rouenOwner == "france" then
+				local polN = N.tariffPolicy(s3, w3, "rouen", "england")
+				local savedWar = fraS.war
+				engS.war, engS.rel.france = { foe = "france", months = 1 }, -80
+				fraS.war, fraS.rel.england = { foe = "england", months = 1 }, -80
+				local polH = N.tariffPolicy(s3, w3, "rouen", "england")
+				engS.war, fraS.war = nil, savedWar
+				local expectN = if polN.colony then 1.25 else 1
+				check("관세 정책: 중립 배율, 적대+전쟁이면 배율이 높고 금수", math.abs(polN.mult - expectN) < 1e-9 and polN.closed == false and polH.mult > polN.mult and polH.closed == true)
+			else
+				engS.war = nil
+				check("관세 정책: 루앙 소유가 바뀐 세계에서도 정책 값이 정상", N.tariffPolicy(s3, w3, "rouen", "england").mult >= 0)
+			end
+			check("관세 정책: 자국 항구는 0배", N.tariffPolicy(s3, w3, "london", "england").mult == 0)
+			fraS.allies.england, engS.allies.france = nil, nil
+			-- 종전 협상
+			engS.war = { foe = "france", months = 10, score = 9 }
+			fraS.war = { foe = "england", months = 10, score = -9 }
+			local before = fraS.fin.debt
+			local kind = N.treaty(s3, w3, engS, fraS)
+			check("압승하면 배상금을 받아낸다", kind == "win" and fraS.fin.debt > before)
+			check("종전 기록이 남는다", s3.log[#s3.log].kind == "treaty")
+			engS.war, fraS.war = savedE, savedF
+			engS.allies.france, fraS.allies.england = savedAE, savedAF
+		end
+		local ws = N.worldSummary(s3, 8)
+		check("세계 정세 표가 순위순으로 나온다", #ws >= 5 and ws[1].rank == 1 and ws[2].rank == 2 and ws[1].leader ~= "" and ws[1].army >= 0)
+		local sum = N.summary(s3, w3, "london", "england")
+		check("항구 화면용 요약이 나온다", sum ~= nil and #sum.lines >= 7 and sum.owner ~= nil)
+		local sumLine = table.concat(sum.lines, "\n")
+		check("요약에 지도자·편제·발견·문화권·관세가 모두 들어간다", string.find(sumLine, "육군", 1, true) ~= nil and string.find(sumLine, "해군", 1, true) ~= nil
+			and string.find(sumLine, "발견", 1, true) ~= nil and string.find(sumLine, "항구:", 1, true) ~= nil and string.find(sumLine, "관세", 1, true) ~= nil)
+		-- 3단계: 항로·첩보·인재·조약·개입
+		local okShip, okSpy, talentTotal, pactsOk = true, true, 0, true
+		for id, S in pairs(s3.states) do
+			if not (S.ship.danger >= 0 and S.ship.danger <= 1 and S.ship.lossFrac >= 0 and S.ship.lossFrac <= 1 and S.ship.lost >= 0) then okShip = false end
+			if not (S.spy.net >= 0 and S.spy.net <= 1 and S.honor >= 0 and S.honor <= 1) then okSpy = false end
+			talentTotal += #S.talents
+			if #S.talents > 4 then okSpy = false end
+			for other, pact in pairs(S.pacts) do
+				if not s3.states[other] or not s3.states[other].pacts[id] or not N.PACT_NAMES[pact.kind] then pactsOk = false end
+			end
+		end
+		check("항로 위험·손실 값이 정상 범위다", okShip)
+		check("첩보망·신용·인재 수가 정상 범위다", okSpy)
+		check("60년 안에 인재가 나타난다", talentTotal > 0)
+		check("조약은 양쪽에 기록된다", pactsOk)
+		check("항로 위험 조회가 0~1이다", N.seaDanger(s3, w3, "london") >= 0 and N.seaDanger(s3, w3, "london") <= 1)
+		do
+			local E1, F1 = s3.states.england, s3.states.france
+			local sv1, sv2 = E1.war, F1.war
+			E1.war, F1.war = { foe = "france", months = 1, score = 0 }, { foe = "england", months = 1, score = 0 }
+			local okA, textA = N.aid(s3, w3, "france", "supply", "england", E1.fin.income * 2)
+			check("군수 납품은 전쟁 점수를 올린다", okA == true and E1.war.score > 0 and textA ~= "")
+			local okM, textM = N.aid(s3, w3, "france", "mercenary", "england", 800)
+			check("용병 해군을 빌려줄 수 있다", okM == true and E1.merc ~= nil and E1.merc.ships >= 0.5)
+			local noWar, _ = N.aid(s3, w3, "france", "supply", "venice", 100)
+			local venWar = s3.states.venice.war
+			check("전쟁 중이 아니면 군수 납품이 거절된다", venWar ~= nil or noWar == false)
+			local okMed = N.aid(s3, w3, "france", "mediate", "england", E1.fin.income * 100)
+			check("중재는 성공하면 전쟁이 끝난다", okMed == false or (E1.war == nil and F1.war == nil))
+			E1.war, F1.war = sv1, sv2
+			E1.merc = nil
+		end
+		-- 할양 항구 소유, 위기, 손상 복구를 한 번의 저장·복원으로 확인
+		s3.owner["rouen"] = "england"
+		check("식민지가 된 항구는 식민지 표시", N.portView(s3, w3, "rouen").colony == true and N.tariff(s3, w3, "rouen", "france").colony == true)
+		s3.states.england.crisis = { kind = "plague", untilDay = w3.day + 240 }
+		check("국가 조회에 위기 이름이 나온다", N.view(s3, "england").crisis == "역병")
+		local snap3 = E.snapshot(w3)
+		local back3: any = E.restoreWorld(snap3)
+		check("편제·발견·소유·위기가 저장·복원된다", back3 ~= nil
+			and math.abs(back3.nations.states.england.forces.inf - s3.states.england.forces.inf) < 1e-6
+			and back3.nations.states.england.tech.count == s3.states.england.tech.count
+			and back3.nations.owner["rouen"] == "england" and back3.nations.states.england.crisis ~= nil
+			and back3.nations.hegemon == s3.hegemon and #back3.nations.states.england.talents == #s3.states.england.talents)
+		local badSnap = E.snapshot(w3)
+		badSnap.nations.states.england.tech.known.fake_tech = 1650
+		badSnap.nations.states.england.tech.cur = "없는발견"
+		badSnap.nations.states.england.crisis = { kind = "없는위기", untilDay = 5 }
+		local fixed2: any = E.restoreWorld(badSnap)
+		check("손상된 발견·위기 저장값을 고쳐서 복원한다", fixed2 ~= nil and fixed2.nations.states.england.tech.known.fake_tech == nil
+			and fixed2.nations.states.england.crisis == nil)
+		s3.states.england.crisis = { kind = "famine", untilDay = w3.day + 1 }
+		for _ = 1, 31 do E.step(w3) end
+		check("위기는 기한이 지나면 끝난다", s3.states.england.crisis == nil or s3.states.england.crisis.untilDay > w3.day)
+	end
+end
+testNations()
+
 testEconomyAndPorts()
 
 -- [로직 회귀검사 분리] 동일한 검증·호출 순서를 유지하고 Luau 타입 추론 범위를 구획한다.
@@ -3463,6 +3817,28 @@ do
 	check("collection survives save", back.collected["Botany:1"] == true and back.collected["ALL:5"] == true)
 	local evil = S.State.sanitize({ nationId = "england", startYear = 1700, collected = { ["Botany:1"] = true, ["bad key"] = true, ["x:1"] = "yes" } })
 	check("collection sanitized", evil.collected["Botany:1"] == true and evil.collected["bad key"] == nil and evil.collected["x:1"] == nil)
+	-- 백과 읽기 퀴즈: 발견한 카드만, 전부 맞혀야, 카드당 한 번만 보상 (서버 판정)
+	do
+		local sq = newState("england")
+		local qid = "nav_portolan"
+		local wiki = D.Cards.Wiki[qid]
+		local right = {}
+		for i, q in wiki.quiz do right[i] = q.answer end
+		check("quiz needs discovery", not act(sq, "WikiQuiz", { id = qid, answers = right }))
+		sq.discovered[qid] = true
+		local c0, f0 = sq.coins, sq.fame
+		check("quiz rejects bad id", not act(sq, "WikiQuiz", { id = "nope", answers = right }))
+		check("quiz rejects missing answers", not act(sq, "WikiQuiz", { id = qid, answers = { 1 } }))
+		check("quiz rejects out of range", not act(sq, "WikiQuiz", { id = qid, answers = { 9, 9, 9 } }))
+		local wrong = { right[1] % #wiki.quiz[1].options + 1, right[2], right[3] }
+		check("quiz wrong answer no reward", not act(sq, "WikiQuiz", { id = qid, answers = wrong }) and sq.coins == c0 and sq.fame == f0)
+		check("quiz pass", act(sq, "WikiQuiz", { id = qid, answers = right }) and sq.coins == c0 + D.Cards.QuizReward.coins and sq.fame == f0 + D.Cards.QuizReward.fame)
+		check("quiz once only", not act(sq, "WikiQuiz", { id = qid, answers = right }) and sq.coins == c0 + D.Cards.QuizReward.coins)
+		local bq = S.State.sanitize(S.State.serialize(sq))
+		check("quiz survives save", bq.wikiQuiz[qid] == true)
+		local evilq = S.State.sanitize({ nationId = "england", startYear = 1700, wikiQuiz = { [qid] = true, nope = true, nav_dead_reckoning = "yes" } })
+		check("quiz save sanitized", evilq.wikiQuiz.nope == nil and evilq.wikiQuiz.nav_dead_reckoning == nil)
+	end
 	-- 카드 강화 (2단계부터 움직이는 삽화)
 	do
 		local s2 = newState("england")
@@ -3815,6 +4191,37 @@ do
 	local backP = S.State.sanitize(S.State.serialize(stP))
 	check("건물계통: 저장/불러오기", backP.portStages.london.trade == 4)
 	check("건물계통: 잘못된 계통 거부", select(1, act(stP, "BuildStage", { chain = "castle" })) == false)
+	-- [건축 시뮬] 공사 기간·진행·완공 알림(효과는 즉시)
+	do
+		local Proj: any = D.PortBuildings.Projects
+		local list: any = Proj.list(stP)
+		check("건축 시뮬: 지으면 공사 기록이 남는다", #list >= 1 and list[#list].done > list[#list].start)
+		local act0: any = Proj.active(stP, "london")
+		check("건축 시뮬: 공사 중 목록과 진행률", #act0 >= 1 and act0[1].progress >= 0 and act0[1].progress < 1)
+		stP.day += 30
+		local fin: any = Proj.popFinished(stP)
+		check("건축 시뮬: 기간이 지나면 완공 알림 한 번", fin ~= nil and Proj.popFinished(stP) ~= fin)
+		local back: any = S.State.sanitize(S.State.serialize(stP))
+		check("건축 시뮬: 공사 기록 저장·복원", type(back.stats.buildProjects) == "table" and #back.stats.buildProjects >= 1)
+		check("건축 시뮬: 공사 기간 2~20일", Proj.daysFor(0) == 2 and Proj.daysFor(100000) == 20)
+		local stI: any = { day = 0, stats = {} }
+		Proj.start(stI, "london", "trade", "시험 건물", 9000)
+		local before = Proj.list(stI)[1].done
+		local sped = Proj.boost(stI, "london", 900)
+		check("건축·경제: 투자 300코인당 공사 1일 단축", sped == 3 and Proj.list(stI)[1].done == before - 3)
+		check("건축·경제: 최소 1일은 남긴다", Proj.boost(stI, "london", 100000) >= 0 and Proj.list(stI)[1].done >= 1)
+		local stH: any = { day = 0, stats = {} }
+		Proj.start(stH, "london", "trade", "흉년 시험", 4500)
+		local d0 = Proj.list(stH)[1].done
+		Proj.update(stH, "london", nil)
+		stH.day = 3
+		Proj.update(stH, "london", "흉년")
+		check("건축·경제: 흉년 동안 공사가 멈춘다(완공일 연기)", Proj.list(stH)[1].done == d0 + 3 and Proj.active(stH, "london")[1].paused ~= nil)
+		stH.day = Proj.list(stH)[1].done + 1
+		check("건축 시뮬: 완공 직후 축하 표시", Proj.recentDone(stH, "london") ~= nil)
+		stH.day += 10
+		check("건축 시뮬: 축하는 3일 뒤 끝", Proj.recentDone(stH, "london") == nil)
+	end
 	local chron = S.View.build(newState("england"), ctx).history.chronicle
 	check("역사서: 연대기에 모든 사건이 연도순", #chron == #HE.Events and chron[1].year <= chron[#chron].year)
 	local futureHidden = false
@@ -4238,11 +4645,14 @@ do
 		local me = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "east_asia", "europe")
 		check("동아시아: 첫 판 선공", me.turn == "me")
 		-- 미지의 땅: 잃어버린 문명 + 전설 생물 30장, 판을 지면 두 장 더 뽑는다
-		check("미지의 땅: 카드 30장이 모두 정의돼 있다", (function()
+		check("미지의 땅: 기본·확장·중립 카드가 모두 정의돼 있다", (function()
+			local seen = {}
 			for _, id in BC.Factions.lost.roster do
-				if not (BC.Units[id] or BC.Specials[id]) then return false end
+				if seen[id] or not (BC.Units[id] or BC.Specials[id]) then return false end
+				seen[id] = true
 			end
-			return #BC.Factions.lost.roster == 30
+			return #BC.Factions.lost.roster >= 62 and seen.lo_01 and seen.lo_30
+				and seen.lo_46 and seen.lo_59 and seen.eu_46 and seen.af_37
 		end)())
 		check("미지의 땅: 아틀란티스·크라켄·용·불사조는 영웅이다", BC.Units.lo_01.hero and BC.Units.lo_14.hero and BC.Units.lo_15.hero and BC.Units.lo_16.hero)
 		local ml = BC.newMatch({}, "draw", {}, "draw", function() return 0.9 end, "lost", "europe")
@@ -4266,7 +4676,16 @@ do
 		for _, factionId in BC.FactionOrder do
 			local faction = BC.Factions[factionId]
 			local starter = CBk.new(factionId)
-			check("수집책: 시작 카드 소유·검사 " .. factionId, #faction.roster == (if factionId == "europe" then 45 elseif factionId == "southeast_asia" then 33 elseif factionId == "lost" then 30 else 34) and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
+			local minRoster = { europe = 48, east_asia = 43, new_world = 41,
+				middle_east = 41, southeast_asia = 41, africa = 40, lost = 62 }
+			local unique, valid = {}, true
+			for _, id in faction.roster do
+				if unique[id] or not (BC.Units[id] or BC.Specials[id]) then valid = false; break end
+				unique[id] = true
+			end
+			check("수집책: 시작 카드 소유·검사 " .. factionId,
+				valid and #faction.roster >= minRoster[factionId]
+				and (factionId == "lost" or CBk.validateDeck(starter, CBk.deckIds(starter, factionId))))
 		end
 		-- 새 덱 규칙: 25장 이상·같은 카드 3장·보급 한도·미지의 땅 10장·다른 대륙 카드 금지
 		do
@@ -4553,9 +4972,14 @@ do
 	local englishCount = 0
 	for key in BC.CardEnglish do
 		englishCount += 1
-		if not BC.Units[key] and not BC.Specials[key] then broken += 1 end
+		if not BC.Units[key] and not BC.Specials[key] then
+			-- [카드 다국어] 소환 전용 환영은 덱 카드가 아니므로 영문 명칭만 관리한다.
+			if key ~= "apparition" or BC.CardEnglish[key].name ~= "Prophetic Apparition" then
+				broken += 1
+			end
+		end
 	end
-	check("244장 영어판·한국어판 카드 연결 보존", total == 244 and englishCount == 244 and broken == 0,
+	check("244장 원본과 확장 카드 영문 연결 보존", total == 244 and englishCount >= 316 and broken == 0,
 		tostring(total) .. "/" .. tostring(englishCount) .. "/" .. tostring(broken))
 end
 end
@@ -4589,31 +5013,32 @@ do
 		table.insert(m.hand[side], c)
 		return #m.hand[side]
 	end
-	-- 연쇄: 백년전쟁 → 잔 다르크
+	-- [인과 검증] 실제 발동 가능한 기술→사건 연쇄와 분류별 봉쇄.
+	-- 잔 다르크는 출전 직후 능력이 발동하고 소멸하므로 연쇄 검사용 상주 유닛으로 쓰지 않는다.
 	local m = fresh()
-	local base = BC.Units.eu_36.power
-	BC.play(m, "me", give(m, "me", "eu_36"))
-	local alone = BC.cardPower(m, "me", "melee", 1)
+	local base = BC.Units.eu_32.power
+	BC.play(m, "me", give(m, "me", "eu_32"))
+	local alone = BC.cardPower(m, "me", "ranged", 1)
 	check("연쇄: 원인이 없으면 보너스 없음", alone == base, alone)
 	m = fresh()
-	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
-	BC.play(m, "me", give(m, "me", "eu_36"))
+	BC.play(m, "me", give(m, "me", "eu_35")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_32"))
 	local chained
-	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	for i, c in m.rows.me.ranged do if c.id == "eu_32" then chained = BC.cardPower(m, "me", "ranged", i) end end
 	check("연쇄: 원인이 있으면 +2", chained == base + 2, chained)
-	-- 반증: 사건을 끊으면 연쇄가 꺼진다
+	-- 기술에서 시작된 연쇄는 실제 기술 봉쇄 카드로 끊긴다.
 	m.turn = "foe"
-	BC.play(m, "foe", give(m, "foe", "eu_41"))
-	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
+	BC.play(m, "foe", give(m, "foe", "eu_43"))
+	for i, c in m.rows.me.ranged do if c.id == "eu_32" then chained = BC.cardPower(m, "me", "ranged", i) end end
 	check("반증: 사건 연쇄가 끊긴다", chained == base, chained)
-	-- 반증은 다른 분류 연쇄에는 안 통한다 (암살은 인물만)
+	-- 사건에서 이어진 연쇄는 기술 봉쇄의 영향을 받지 않는다.
 	m = fresh()
-	BC.play(m, "me", give(m, "me", "eu_31")); m.turn = "me"
-	BC.play(m, "me", give(m, "me", "eu_36"))
+	BC.play(m, "me", give(m, "me", "eu_32")); m.turn = "me"
+	BC.play(m, "me", give(m, "me", "eu_37"))
 	m.turn = "foe"
-	BC.play(m, "foe", give(m, "foe", "eu_42"))
-	for i, c in m.rows.me.melee do if c.id == "eu_36" then chained = BC.cardPower(m, "me", "melee", i) end end
-	check("반증: 분류가 다르면 연쇄가 그대로", chained == base + 2, chained)
+	BC.play(m, "foe", give(m, "foe", "eu_43"))
+	for i, c in m.rows.me.ranged do if c.id == "eu_37" then chained = BC.cardPower(m, "me", "ranged", i) end end
+	check("반증: 분류가 다르면 연쇄가 그대로", chained == BC.Units.eu_37.power + 2, chained)
 	-- 합치기: 화약 + 창병 방진 → 머스킷 부대
 	m = fresh()
 	BC.play(m, "me", give(m, "me", "eu_34")); m.turn = "me"
@@ -4690,10 +5115,12 @@ do
 	BC.useLeader(m, "me")
 	check("샤를마뉴: 끊긴 연쇄를 되살린다", next(m.refuted.me) == nil)
 	m = match("elizabeth")
-	m.weather.ranged = true
-	table.insert(m.rows.me.ranged, table.clone(BC.Units.gunner))
-	BC.useLeader(m, "me")
-	check("엘리자베스: 날씨를 걷고 후열 +1", m.weather.ranged == false and BC.total(m, "me") == BC.Units.gunner.power + 1)
+	table.insert(m.rows.me.ranged, table.clone(BC.Units.eu_01))
+	table.insert(m.rows.foe.ranged, table.clone(BC.Units.gunner))
+	local beforeVolley = BC.cardPower(m, "foe", "ranged", 1)
+	local okVolley = BC.useLeader(m, "me")
+	check("엘리자베스: 함대 연쇄포격으로 상대 후열 −2", okVolley == true
+		and m.leaderUsed.me and BC.cardPower(m, "foe", "ranged", 1) == math.max(0, beforeVolley - 2))
 	local ok2 = BC.useLeader(m, "me")
 	check("지도자는 한 판에 한 번만", ok2 == false)
 	local book = CBk.new("europe")
@@ -4721,6 +5148,17 @@ do
 			table.insert(m.rows.foe.melee, table.clone(BC.Units.swordsman))
 			table.insert(m.deck.me, table.clone(BC.Units.swordsman)); table.insert(m.deck.me, table.clone(BC.Units.swordsman))
 			table.insert(m.hand.me, table.clone(BC.Units.swordsman))
+			-- [지도자 실제 발동 조건] 자비·귀환 허용·함대 포격에는 유효 대상이 필요하다.
+			if lid == "saladin" then
+				table.insert(m.grave.me, table.clone(BC.Units.swordsman))
+			elseif lid == "cyrus" then
+				local anchored = table.clone(BC.Units.swordsman)
+				anchored.anchored = true
+				table.insert(m.rows.me.melee, anchored)
+			elseif lid == "elizabeth" then
+				table.insert(m.rows.me.ranged, table.clone(BC.Units.eu_01))
+				table.insert(m.rows.foe.ranged, table.clone(BC.Units.gunner))
+			end
 			local okUse = BC.useLeader(m, "me")
 			check("지도자 능력 사용: " .. lid, okUse == true and m.leaderUsed.me == true)
 		end
@@ -4728,7 +5166,7 @@ do
 end
 
 
--- [멀리건] 첫 판에서 카드를 내기 전에 손패를 3장까지 바꾼다
+-- [멀리건] 첫 판 3장, 다음 판부터 1장씩 추가(최대 3). 카드를 내기 전에만 바꾼다
 do
 	local BC = D.BoardingCards
 	local function fresh()
@@ -4754,9 +5192,20 @@ do
 	m.turn = "me"
 	local okLate = BC.mulligan(m, "me", 1)
 	check("멀리건: 카드를 낸 뒤에는 못 바꾼다", okLate == false)
+	-- 궨트식: 다음 판마다 교체 1장 추가(최대 3). 남은 교체가 없으면 2판에서도 못 바꾼다.
 	m = fresh()
 	m.round = 2
-	check("멀리건: 첫 판에서만 가능하다", BC.mulligan(m, "me", 1) == false)
+	m.mulligan.me = 0
+	check("멀리건: 남은 교체가 없으면 다음 판에도 못 바꾼다", BC.mulligan(m, "me", 1) == false)
+	m = fresh()
+	for i = 1, 6 do table.insert(m.deck.me, 1, table.clone(BC.Units.pikeman)) end
+	BC.mulligan(m, "me", 1); BC.mulligan(m, "me", 1); BC.mulligan(m, "me", 1)
+	BC.pass(m, "me")
+	BC.pass(m, "foe")
+	check("멀리건: 새 판에 교체 1장이 추가된다", m.round == 2 and m.mulligan.me == 1)
+	m.turn = "me"
+	local okNext = BC.mulligan(m, "me", 1)
+	check("멀리건: 2판에서 카드를 내기 전에는 1장 바꿀 수 있다", okNext == true and m.mulligan.me == 0)
 	check("멀리건: 없는 카드 번호는 거절", BC.mulligan(fresh(), "me", 99) == false)
 	-- 기록(replay)에 멀리건이 들어가도 서버가 같은 결과로 다시 돌린다
 	local r = BC.replay("boarding", 11, { faction = "europe" }, {}, { { "m", 1 }, { "s" } })
@@ -4858,6 +5307,72 @@ do -- 전투 보상 지역 카드: 6개 해역 모두 후보 카드가 있고 �
 end
 end
 testCardsAndArt()
+
+-- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물
+local function testTradeFun()
+
+-- [발견물 외형] 백과 실물 카드는 모두 대표 모양을 갖는다
+local function testDiscoveryForms()
+	local check: any = check
+	local DFm: any = require("./Shared/DiscoveryForms")
+	local KC: any = require("./Shared/KnowledgeCards")
+	local none, total = {}, 0
+	for _, c in KC.Cards do
+		if c.field == "Botany" or c.field == "Zoology" or c.field == "Mineral" or c.field == "Relic" or c.field == "Site" then
+			total += 1
+			if not DFm.form(c) then table.insert(none, c.id) end
+		end
+	end
+	check("발견물: 실물 카드 전부 대표 모양 있음", #none == 0 and total > 400, table.concat(none, ","))
+	check("발견물: 코끼리는 실물 모델", DFm.form(KC.ById.zoo_elephant).models[1][2] == "elephant")
+	check("발견물: 다른 종 대체 금지(들소≠소)", KC.ById.am_bison == nil or DFm.form(KC.ById.am_bison).missing == true)
+	check("발견물: 힌트 문구", type(DFm.hint(KC.ById.zoo_elephant)) == "string")
+end
+testDiscoveryForms()
+	local S: any = Registry.S
+	local D: any = D
+	local check: any = check
+	local act: any = act
+	local TF: any = D.TradeFun
+	local st: any = newState("england")
+	st.portId = "london"
+	check("교역재미: 등급 처음은 행상", TF.rank(st).name == "행상" and TF.tariffMult(st) == 1)
+	TF.get(st).profit = 30000
+	check("교역재미: 이익 누적 등급", TF.rank(st).name == "상회" and math.abs(TF.tariffMult(st) - 0.8) < 1e-9)
+	local f = TF.festival(D.Ports, "lisbon", 10)
+	check("교역재미: 축제 계산", f ~= nil and f.endDay - f.startDay == TF.FESTIVAL_DAYS - 1 and table.find(D.Ports.Ports.lisbon.demands, f.goodId) ~= nil)
+	local rv = TF.rival(D.Ports, D.Regions, "europe", 20)
+	check("교역재미: 라이벌 같은 해역", rv ~= nil and D.Regions.of(D.Ports.Ports[rv.portId]).id == "europe")
+	-- 최초 수입 보너스는 한 번만
+	local info = TF.sellBonus(st, D.Ports, D.Regions, "london", "spice", 5, 1000)
+	check("교역재미: 최초 수입 +25%", info.first == true and info.bonus >= 250)
+	TF.commitSell(st, info, 100, "spice", 5)
+	local again = TF.sellBonus(st, D.Ports, D.Regions, "london", "spice", 5, 1000)
+	check("교역재미: 다음엔 열풍만", again.first == false and #again.lines >= 1)
+	-- 희귀 화물: 어느 항구·날짜엔가 뜨고, 사면 화물에 실린다
+	local lotPort, lotDay
+	for _, id in { "london", "lisbon", "amsterdam", "seville", "venice", "genoa", "marseille", "hamburg" } do
+		for day = 0, 240, 12 do
+			if D.Ports.Ports[id] and TF.rareLot(D.Ports, D.Regions, id, day) then lotPort, lotDay = id, day; break end
+		end
+		if lotPort then break end
+	end
+	check("교역재미: 희귀 화물 등장", lotPort ~= nil)
+	if lotPort then
+		local s2: any = newState("england")
+		s2.portId, s2.day, s2.coins = lotPort, lotDay, 1e7
+		local lot = TF.rareLot(D.Ports, D.Regions, lotPort, lotDay)
+		local ok = act(s2, "BuyRareLot", {})
+		check("교역재미: 희귀 화물 구매", ok == true and (s2.cargo[lot.goodId] or 0) >= lot.qty)
+		check("교역재미: 같은 화물 두 번 못 삼", act(s2, "BuyRareLot", {}) == false)
+		local bonus = TF.sellBonus(s2, D.Ports, D.Regions, lot.targets[1], lot.goodId, 2, 400)
+		check("교역재미: 지정 항구 희귀 배수", bonus.rareUnits == 2 and bonus.bonus >= 400)
+		local back = S.State.sanitize(S.State.serialize(s2))
+		check("교역재미: 저장/불러오기", back.stats.tradeFun ~= nil and back.stats.tradeFun.rare[lot.goodId] ~= nil)
+		check("교역재미: 화면 요약", S.View.build(s2, ctx).tradeFun ~= nil)
+	end
+end
+testTradeFun()
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then

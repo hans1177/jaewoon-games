@@ -1,0 +1,656 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('MareShot') end) RS:BindToRenderStep('MareShot',Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute('ShotCF') if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute('ShotFov') or 65 end end) return 'bound'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local lib=game:GetService(\"ReplicatedStorage\"):FindFirstChild(\"MareAssets\") assert(lib,\"NO_LIB\")\nlocal town=lib:FindFirstChild(\"Town\") assert(town,\"NO_TOWN\")\nlocal old=workspace:FindFirstChild(\"KitMeasure\") if old then old:Destroy() end\nlocal g=Instance.new(\"Folder\") g.Name=\"KitMeasure\" g.Parent=workspace\nlocal out={} local x=-1400\nfor _,n in {\"kenney_grey_wall_01\",\"kenney_grey_window_square_01\",\"kenney_grey_window_round_long_01\",\"kenney_grey_door_round_01\",\"kenney_grey_corner_01\",\"kenney_grey_arch_01\",\"kenney_grey_pole_01\",\"kenney_wood_wall_01\",\"kenney_wood_window_square_01\",\"kenney_wood_door_01\",\"kenney_wood_corner_01\",\"kenney_wood_pole_01\",\"kenney_roof_straight_red_01\",\"kenney_roof_corner_red_01\",\"kenney_roof_point_red_01\",\"kenney_roof_slant_red_01\",\"kenney_roof_straight_green_01\",\"kenney_roof_corner_green_01\",\"kenney_stairs_stone_01\",\"quaternius_large_square_tower\",\"quaternius_wall_entrance\",\"quaternius_tall_wall\",\"quaternius_window_gothic\",\"wall-arch\",\"wall-window-shutters\",\"roof-gable\",\"roof-high-window\",\"balcony-wall\",\"pillar-stone\"} do\n local t=town:FindFirstChild(n)\n if t and t:IsA(\"Model\") then\n  local m=t:Clone()\n  for _,d in m:GetDescendants() do if d:IsA(\"BasePart\") then d.Anchored=true d.CanCollide=false end end\n  local cf,sz=m:GetBoundingBox()\n  local piv=m:GetPivot()\n  local rel=cf:PointToObjectSpace(piv.Position)\n  m:PivotTo(piv+(Vector3.new(x,0,-900)-Vector3.new(cf.Position.X,cf.Position.Y-sz.Y/2,cf.Position.Z)))\n  m.Parent=g\n  table.insert(out,string.format(\"%s=%.2fx%.2fx%.2f piv(%.2f,%.2f,%.2f) look(%.1f,%.1f)\",n,sz.X,sz.Y,sz.Z,rel.X,rel.Y,rel.Z,piv.LookVector.X,piv.LookVector.Z))\n  x+=math.max(sz.X,sz.Z)+6\n else table.insert(out,n..\"=MISSING\") end\nend\nworkspace:SetAttribute(\"ShotFov\",50) workspace:SetAttribute(\"ShotCF\",CFrame.lookAt(Vector3.new(-1400+(x+1400)/2,40,-840),Vector3.new(-1400+(x+1400)/2,4,-900),Vector3.new(0,1,0)))\nreturn \"KENNEY_KIT \"..table.concat(out,\" | \")"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "kit_kenney"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='london',portName='london',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"london\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_london_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_london_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_london_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_london_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_london_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='lisbon',portName='lisbon',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"lisbon\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_lisbon_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_lisbon_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_lisbon_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_lisbon_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_lisbon_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='venice',portName='venice',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"venice\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_venice_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_venice_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_venice_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_venice_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_venice_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='istanbul',portName='istanbul',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"istanbul\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_istanbul_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_istanbul_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_istanbul_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_istanbul_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_istanbul_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='busan',portName='busan',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"busan\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_busan_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_busan_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_busan_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_busan_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_busan_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='nagasaki',portName='nagasaki',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"nagasaki\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_nagasaki_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_nagasaki_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_nagasaki_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_nagasaki_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_nagasaki_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='canton',portName='canton',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"canton\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_canton_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_canton_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_canton_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_canton_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_canton_roof"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='calicut',portName='calicut',level=5,shipId='galleon',hasShipyard=true,facilities={'palace','bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) workspace:SetAttribute('ShotFov',55) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 9000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild(\"PortScene\") assert(f,\"PALACE_SCENE_MISSING\")\nlocal main=f:FindFirstChild(\"RoyalPalace\") assert(main,\"PALACE_MISSING\")\nlocal prim,models,meshes=0,0,0\nfor _,o in f:GetChildren() do\n local p=o:IsA(\"Model\") and o:GetPivot().Position or (o:IsA(\"BasePart\") and o.Position)\n if p and p.X<-240 and p.X>-640 and math.abs(p.Z)<300 then\n  if o:IsA(\"Model\") then models+=1 for _,d in o:GetDescendants() do if d:IsA(\"MeshPart\") then meshes+=1 end end\n  elseif o:IsA(\"BasePart\") and o.Transparency<0.5 and not o:IsA(\"MeshPart\") and o.Size.Y>1.5 then prim+=1 end\n end\nend\n-- [부속 건물 실물 확인] house()는 모델·모델 안 BasePart·기본 Part 상자 중 하나를 반환한다.\n-- 모델 안 BasePart면 그 원본 모델 전체를, 폴더에 바로 놓인 Part면 기본 파츠 건물로 집계한다(이웃 건물 미포함).\nlocal ann={}\nfor _,n in {\"RoyalStable\",\"RoyalGuardHouse\",\"RoyalLibrary\",\"RoyalAdministration\",\"RoyalTower\"} do\n local o=f:FindFirstChild(n,true)\n if not o then table.insert(ann,n..\"=none\") else\n  local root,kind=o,\"part-box\"\n  if o:IsA(\"Model\") then kind=\"model\" elseif o.Parent and o.Parent~=f and o.Parent:IsA(\"Model\") then root,kind=o.Parent,\"model-part\" end\n  local mp,bp,ids=0,0,{}\n  local list=root:GetDescendants() if root:IsA(\"BasePart\") then table.insert(list,root) end\n  for _,d in list do\n   if d:IsA(\"MeshPart\") then mp+=1 local id=tostring(d.MeshId):match(\"%d+\") if id and #ids<2 and not table.find(ids,id) then table.insert(ids,id) end\n   elseif d:IsA(\"BasePart\") then bp+=1 end\n  end\n  table.insert(ann,string.format(\"%s=%s:%s mesh%d part%d [%s]\",n,kind,root.Name,mp,bp,table.concat(ids,\",\")))\n end\nend\nlocal towers=0 for _,o in f:GetChildren() do if o.Name==\"RoyalTower\" then towers+=1 end end\nreturn string.format(\"PALACE_AUDIT port=%s style=%s culture=%s tier=%s primitiveParts=%d models=%d meshParts=%d towers=%d | %s\",\"calicut\",tostring(main:GetAttribute(\"RoyalStyle\")),tostring(main:GetAttribute(\"RoyalCulture\")),tostring(main:GetAttribute(\"RoyalTier\")),prim,models,meshes,towers,table.concat(ann,\"; \"))"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-170,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam front'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_calicut_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam right'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_calicut_right"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-680,70,0),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam back'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_calicut_back"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-425,70,-260),Vector3.new(-425,22,0),Vector3.new(0,1,0))) return 'cam left'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_calicut_left"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-330,120,90),Vector3.new(-425,40,0),Vector3.new(0,1,0))) return 'cam roof'"
+ },
+ {
+  "type": "wait",
+  "ms": 1500
+ },
+ {
+  "type": "capture",
+  "name": "palace_calicut_roof"
+ }
+]

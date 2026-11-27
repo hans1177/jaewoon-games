@@ -85,6 +85,35 @@ test('부족 계산과 후보 선택: 부족한 분야만, CC0·자동허용·�
   assert.equal(plan({registry:reg,repoRoot:repo,libDir:path.join(repo,'lib'),minPerFamily:{PROP:1}}).picks.length,0); // 충분하면 계획 없음
 });
 
+
+test('전체 지원 분야: 원화 제외, 수동 주소보다 실제 자동 주소 우선, 승인된 음향·모션·효과 해시만 보유량에 반영', () => {
+  const repo=tmp(),lib=tmp();
+  const reg={assets:[],externalSources:[
+    src({id:'manual-motion',category:'MOTION',sourceUrl:'https://example.com/motion'}),
+    src({id:'free-motion',category:'MOTION',sourceUrl:'https://example.com/motion',downloadUrl:'https://example.com/motion.zip'}),
+    src({id:'card-art-pack',category:'UI'}),src({id:'other-art',category:'UI',categories:['CARD_ART']}),
+    src({id:'concept',category:'CONCEPT_ART'})]};
+  const p=plan({registry:reg,repoRoot:repo,libDir:lib,max:1,minPerFamily:{MOTION:1,UI:1,CONCEPT_ART:1}});
+  assert.deepEqual(p.picks.map(x=>x.src.id),['free-motion']);
+  const design=[{id:'fight',kind:'Motion',localAcquisition:[{sourceId:'free-motion'}]},{id:'art',kind:'Portraits',localAcquisition:[{sourceId:'card-art-pack'}]}];
+  const wanted={game:'g',wanted:[{id:'fight',kind:'Motion',status:'missing'},{id:'art',kind:'Portraits',status:'missing'}]};
+  assert.deepEqual(plan({registry:reg,repoRoot:repo,libDir:lib,design,wanted}).picks.map(x=>x.src.id),['free-motion']);
+  wanted.wanted[0].status='registered-models-runtime-qa-pending';
+  assert.equal(plan({registry:reg,repoRoot:repo,libDir:lib,design,wanted}).picks.length,0);
+  assert.equal(plan({registry:reg,repoRoot:repo,libDir:lib,design:[],wanted}).picks.length,0);
+  assert.throws(()=>plan({registry:reg,repoRoot:repo,libDir:lib,design,wanted:null}),/DESIGN_DEMAND_UNVERIFIED/);
+  assert.throws(()=>plan({registry:reg,repoRoot:repo,libDir:lib,sourceId:'card-art-pack'}),/SOURCE_POLICY_REJECTED/);
+  for(const [family,file] of [['AUDIO','hit.ogg'],['MOTION','walk.fbx'],['VFX','spark.png']]){
+    mk(lib,{[family+'/provenance.json']:JSON.stringify({license:'CC0',licenseEvidenceUrl:'https://example.com/lic',family}),[family+'/'+file]:'original'});
+    assert.equal(countByFamily(reg,repo,lib)[family],undefined);
+    approvePack(lib,family,'tester');
+    assert.equal(countByFamily(reg,repo,lib)[family],1);
+  }
+  assert.deepEqual(approvedLibraryParents(lib),[]);
+  fs.appendFileSync(path.join(lib,'AUDIO','hit.ogg'),'changed');
+  assert.equal(countByFamily(reg,repo,lib).AUDIO,undefined);
+});
+
 test('받는 방법 분류: GitHub만 git, downloadUrl만 zip, 나머지는 수동 inbox', () => {
   assert.equal(methodFor(src()),'git');
   assert.equal(methodFor(src({sourceUrl:'https://kenney.nl/assets/x'})),'manual');
@@ -132,6 +161,34 @@ test('자동 확보(zip): 해시가 맞으면 받고, 틀리면 거절·삭제, 
     assert.equal((await acquire(src({id:'z2',sourceUrl:'https://kenney.nl/x',downloadUrl:url,downloadSha256:'0'.repeat(64)}),lib2,{allowLocal:true})).status,'HASH_MISMATCH');
     assert.ok(!fs.existsSync(path.join(lib2,'z2')));
     assert.equal((await acquire(src({id:'z3',sourceUrl:'https://kenney.nl/x',downloadUrl:url}),tmp(),{allowLocal:true,maxBytes:10})).status,'DOWNLOAD_TOO_LARGE');
+  }finally{server.close()}
+});
+
+test('직접 GLB: 명시 선택, 파일 크기·해시·구조 검증, 승인 분리와 중복 방지', async () => {
+  const doc={asset:{version:'2.0'},meshes:[{primitives:[{attributes:{POSITION:0}}]}],buffers:[{byteLength:12}],bufferViews:[{buffer:0,byteLength:12}],accessors:[{bufferView:0,componentType:5126,count:1,type:'VEC3'}]};
+  const json=Buffer.from(JSON.stringify(doc).padEnd(Math.ceil(JSON.stringify(doc).length/4)*4,' '));
+  const bytes=Buffer.alloc(28+json.length+12);bytes.write('glTF');bytes.writeUInt32LE(2,4);bytes.writeUInt32LE(bytes.length,8);
+  bytes.writeUInt32LE(json.length,12);bytes.writeUInt32LE(0x4e4f534a,16);json.copy(bytes,20);bytes.writeUInt32LE(12,20+json.length);bytes.writeUInt32LE(0x004e4942,24+json.length);
+  const sha=(await import('node:crypto')).createHash('sha256').update(bytes).digest('hex');
+  const server=http.createServer((q,r)=>{r.writeHead(200);r.end(q.url==='/bad.glb'?Buffer.from('not a model'):bytes)});
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const url='http://127.0.0.1:'+server.address().port;
+  const selected=src({id:'hippo',category:'CREATURE',sourceUrl:'https://example.com/model',downloadUrl:url+'/model.glb',downloadSha256:sha});
+  try{
+    assert.equal(methodFor(selected),'manual');
+    assert.equal(methodFor(selected,{allowLocal:true}),'glb');
+    const lib=tmp(),registry={assets:[],externalSources:[selected]};
+    assert.equal(plan({registry,repoRoot:lib,libDir:lib,sourceId:'hippo',minPerFamily:{},allowLocal:true}).picks.length,1);
+    assert.equal((await acquire(selected,lib,{allowLocal:true})).status,'ACQUIRED_NEEDS_OWNER_APPROVAL');
+    const prov=JSON.parse(fs.readFileSync(path.join(lib,'hippo','provenance.json'),'utf8'));
+    assert.equal(prov.sourceSha256,sha);assert.equal(prov.approved,false);assert.equal(prov.runtimeVerified,false);
+    assert.equal(plan({registry,repoRoot:lib,libDir:lib,sourceId:'hippo',minPerFamily:{},allowLocal:true}).picks.length,0);
+    assert.equal((await acquire({...selected,id:'bad',downloadUrl:url+'/bad.glb',downloadSha256:null},lib,{allowLocal:true})).status,'INVALID_GLB');
+    assert.equal((await acquire({...selected,id:'hash',downloadSha256:'0'.repeat(64)},lib,{allowLocal:true})).status,'HASH_MISMATCH');
+    assert.equal((await acquire({...selected,id:'large'},lib,{allowLocal:true,maxBytes:10})).status,'DOWNLOAD_TOO_LARGE');
+    assert.equal((await acquire({...selected,id:'paid',license:'CC-BY'},lib,{allowLocal:true})).status,'SOURCE_POLICY_REJECTED');
+    assert.deepEqual(readApprovals(lib).packs,{});
+    assert.equal(scanLibrary(lib).packs.length,1);
   }finally{server.close()}
 });
 

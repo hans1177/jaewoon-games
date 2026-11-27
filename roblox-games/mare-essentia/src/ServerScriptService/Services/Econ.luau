@@ -61,6 +61,56 @@ return function(D, S)
 		return n
 	end
 
+	-- 항구 주인 나라의 지도자·군사·발견·문화권 요약 (표시 전용). 실패해도 경제 화면은 그대로 나온다.
+	function X.nationSummary(state: any, w: any, portId: any): any
+		local ok, result = pcall(function()
+			if not w.nations then return nil end
+			local N = E.Nations
+			local home = D.Specialties and D.Specialties.NationPower and D.Specialties.NationPower[state.nationId] or nil
+			return N.summary(w.nations, w, portId, home)
+		end)
+		if ok then return result end
+		return nil
+	end
+
+	-- 플레이어의 외교 개입(군수 납품·중재·용병 해군). 반환: ok, 설명. 재화 차감은 호출한 쪽이 처리한다.
+	function X.aid(state: any, kind: any, targetNation: any, amount: any): (boolean, string)
+		local ok, success, text = pcall(function()
+			local w = ensure(state)
+			if not w or not w.nations then return false, "세계 정보가 아직 없어요" end
+			local home = D.Specialties and D.Specialties.NationPower and D.Specialties.NationPower[state.nationId] or nil
+			local okA, msg = E.Nations.aid(w.nations, w, home, kind, targetNation, amount)
+			if okA then worldDirty = true end
+			return okA, msg
+		end)
+		if ok then return success, text end
+		return false, "지금은 개입할 수 없어요"
+	end
+
+	-- 거래 관세 정책 (배율·금수). 세계나 국가 정보가 없거나 오류면 nil → 기존 관세 그대로.
+	function X.tariffPolicy(state: any, portId: any): any
+		local ok, result = pcall(function()
+			local w = ensure(state)
+			if not w or not w.nations then return nil end
+			local home = D.Specialties and D.Specialties.NationPower and D.Specialties.NationPower[state.nationId] or nil
+			if not home then return nil end
+			return E.Nations.tariffPolicy(w.nations, w, portId, home)
+		end)
+		if ok then return result end
+		return nil
+	end
+
+	-- 외교 탭용 세계 정세 표 (국력 순위). 실패하면 nil.
+	function X.worldSummary(state)
+		local ok, result = pcall(function()
+			local w = ensure(state)
+			if not w or not w.nations then return nil end
+			return E.Nations.worldSummary(w.nations, 8)
+		end)
+		if ok then return result end
+		return nil
+	end
+
 	-- 항구 하나의 경제 요약 (View 와 마을 장면이 쓴다). 시뮬이 없으면 nil.
 	function X.town(state, portId)
 		local w = ensure(state)
@@ -114,10 +164,21 @@ return function(D, S)
 			buildings = bld, housing = { cap = math.floor(E.housingCap(t)), ratio = math.floor(t.housingRatio * 100 + 0.5) },
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc, construction = construction,
+			nation = X.nationSummary(state, w, portId),
 		}
 	end
 
 	-- 교역품 수급 표시: 시뮬 가격이 기준보다 크게 높으면 품귀, 낮으면 풍부 (표시 전용)
+	-- [건축·경제 연동] 이 항구가 위기인가: 흉작 충격(식량 효과 < 0.9) 또는 치안 붕괴(안정도 < 0.3)
+	function X.crisis(state: any, portId: any): any
+		local w = ensure(state)
+		local t = w and w.towns[portId]
+		if not t then return nil end
+		if t.fx and type(t.fx.food) == "number" and t.fx.food < 0.9 then return "흉년" end
+		if type(t.stability) == "number" and t.stability < 0.3 then return "치안 붕괴" end
+		return nil
+	end
+
 	function X.scarcity(state, portId, goodId)
 		local w = ensure(state)
 		local t = w and w.towns[portId]

@@ -16,6 +16,7 @@ on:
 permissions:
   contents: write
   actions: write
+  issues: write
 concurrency:
   group: vibe-autopilot
   cancel-in-progress: false
@@ -73,6 +74,50 @@ jobs:
             q=$((q + n))
           done
           echo "QUEUED=$q" >> "$GITHUB_ENV"
+      # [스튜디오 자체 복구] 등록된 Windows Studio 실행기가 오프라인이면 기존 정본 복구 작업만 호출한다.
+      # GitHub 토큰으로 상태 조회가 거부되면 오프라인으로 추정하지 않는다.
+      - name: Recover offline authenticated Studio runner through existing bootstrap
+        if: env.AUTOPILOT_SKIP != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # [권한 제한 복구] GITHUB_TOKEN은 러너 목록 조회가 거부될 수 있다.
+          # 이 경우 기존 Studio 실행 대기열이 15분 이상 멈췄고 실행 중인 작업이 없을 때만 복구한다.
+          status=unverified
+          if runners=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runners?per_page=100" 2>/dev/null); then
+            status=$(jq -r '[.runners[] | select(.labels | any(.name == "roblox-studio-authenticated")) | .status] | if length == 0 then "unregistered" elif any(. == "online") then "online" else "offline" end' <<<"$runners")
+          else
+            echo 'VIBE_STUDIO_RUNNER=UNVERIFIED_API_ACCESS'
+          fi
+          echo "VIBE_STUDIO_RUNNER=$status"
+          if [[ "$status" == "unverified" ]]; then
+            studio=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/devloop-studio.yml/runs?per_page=30" 2>/dev/null) || {
+              echo 'VIBE_STUDIO_RECOVERY=BLOCKED_QUEUE_UNVERIFIED'
+              exit 0
+            }
+            if ! jq -e --argjson now "$(date +%s)" '
+              ([.workflow_runs[] | select(.status == "in_progress")] | length) == 0 and
+              ([.workflow_runs[] | select((.status == "queued" or .status == "pending") and ((.created_at | fromdateiso8601) <= ($now - 900)))] | length) > 0
+            ' <<<"$studio" >/dev/null; then
+              echo 'VIBE_STUDIO_RECOVERY=NO_STALE_QUEUE_OR_STUDIO_RUNNING'
+              exit 0
+            fi
+            echo 'VIBE_STUDIO_RECOVERY=STALE_QUEUE_CONFIRMED'
+          elif [[ "$status" != "offline" ]]; then
+            exit 0
+          fi
+          # 이미 복구 작업이 실행 중이거나 최근 30분 안에 시작됐다면 중복 호출하지 않는다.
+          recent=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/company-roblox-runner-pwsh-bootstrap.yml/runs?per_page=10" 2>/dev/null) || {
+            echo 'VIBE_STUDIO_RECOVERY=BLOCKED_HISTORY_UNVERIFIED'
+            exit 0
+          }
+          if jq -e --argjson now "$(date +%s)" '[.workflow_runs[] | select(.status != "completed" or ((.created_at | fromdateiso8601) > ($now - 1800)))] | length > 0' <<<"$recent" >/dev/null; then
+            echo 'VIBE_STUDIO_RECOVERY=ALREADY_RUNNING_OR_COOLDOWN'
+            exit 0
+          fi
+          gh workflow run company-roblox-runner-pwsh-bootstrap.yml --ref main
+          echo 'VIBE_STUDIO_RECOVERY=EXISTING_BOOTSTRAP_DISPATCHED'
       - name: Decide and request the next check
         if: env.AUTOPILOT_SKIP != 'true'
         env:
@@ -92,3 +137,26 @@ jobs:
           }
           put build/autopilot-ledger.json autopilot-ledger.json
           put build/autopilot-orders.json autopilot-orders.json
+      # [오류 보고] 기존 GitHub Issues에 동일 오류를 한 건만 유지한다.
+      # 실행 실패가 확인될 때만 보고하며, 중복 실행마다 알림을 생성하지 않는다.
+      - name: Report autopilot execution failure
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="[자동점검] Vibe Autopilot 실행 오류"
+          url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          {
+            echo "## 자동점검 실패"
+            echo "실행: ${url}"
+            echo "브랜치: ${GITHUB_REF_NAME}"
+            echo "확인: Actions 실행 로그의 실패 단계와 원인을 확인해야 함"
+          } >> "${GITHUB_STEP_SUMMARY}"
+          existing=$(gh issue list --state open --limit 100 --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -1)
+          if [[ -n "$existing" ]]; then
+            echo "AUTOPILOT_ERROR_REPORT=EXISTING_ISSUE #$existing"
+          else
+            gh issue create --title "$title" --body "자동점검 실행 실패. 최신 실행 로그: $url" >/dev/null
+            echo "AUTOPILOT_ERROR_REPORT=NEW_ISSUE"
+          fi

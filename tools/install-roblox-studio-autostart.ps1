@@ -10,7 +10,8 @@ param(
   [string]$UniverseId = '',
   [switch]$CheckOnly,
   [switch]$Uninstall,
-  [switch]$KeepStudioOpen
+  [switch]$KeepStudioOpen,
+  [switch]$DisableStudioAutostart
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -90,7 +91,28 @@ if (-not $existingRunnerStartup -and $startup) {
     }
   }
 }
-$startStudio = [bool]$KeepStudioOpen
+# [기본 복구] 새 설치·재설치 시 스튜디오 자동 감시를 켠다. 명시적 중지는 유지한다.
+if ($KeepStudioOpen -and $DisableStudioAutostart) { throw 'STUDIO_AUTOSTART_CONFLICTING_OPTIONS' }
+# [기존 설치 보존] 재설치가 명시적으로 꺼둔 Studio 자동실행과 Place 정보를 되돌리지 않는다.
+$previous = $null
+if (Test-Path -LiteralPath $configPath -PathType Leaf) {
+  try { $previous = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json }
+  catch { throw 'STUDIO_AUTOSTART_EXISTING_CONFIG_UNREADABLE' }
+}
+if ($previous) {
+  if (-not $PSBoundParameters.ContainsKey('PlaceId') -and $null -ne $previous.PSObject.Properties['placeId']) {
+    $PlaceId = [string]$previous.placeId
+  }
+  if (-not $PSBoundParameters.ContainsKey('UniverseId') -and $null -ne $previous.PSObject.Properties['universeId']) {
+    $UniverseId = [string]$previous.universeId
+  }
+}
+$startStudio = $true
+if ($previous -and $null -ne $previous.PSObject.Properties['startStudio']) {
+  $startStudio = [bool]$previous.startStudio
+}
+if ($KeepStudioOpen) { $startStudio = $true }
+if ($DisableStudioAutostart) { $startStudio = $false }
 $startRunner = -not $existingRunnerStartup
 Write-Host ('STUDIO_AUTOSTART_STUDIO_ON_LOGIN=' + $startStudio)
 Write-Host ('STUDIO_AUTOSTART_RUNNER_OWNED_BY_SUPERVISOR=' + $startRunner)
@@ -116,8 +138,14 @@ $principal = New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -Ru
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable `
   -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($logon, $repeat) -Principal $principal -Settings $settings -Force | Out-Null
+# [실행 중 코드 반영] Studio/게임이 아닌 기존 감독 작업만 갱신한다.
+$existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction Stop
+if ($existingTask.State -eq 'Running') {
+  Stop-ScheduledTask -TaskName $taskName -ErrorAction Stop
+  Write-Host 'STUDIO_AUTOSTART_SUPERVISOR_TASK_RESTART=REQUESTED'
+}
 Start-ScheduledTask -TaskName $taskName
 Write-Host 'STUDIO_AUTOSTART=INSTALLED'
 Write-Host ('STUDIO_AUTOSTART_LOG=' + (Join-Path $stateDir 'supervisor.log'))
-Write-Host '재부팅 뒤 Windows 로그인(자동 로그인 포함)만 되면 Studio 와 러너가 자동으로 켜진다. 자동 로그인은 이 도구가 설정하지 않는다.'
+Write-Host 'Windows 로그인 후 설정에 따라 Studio 와 러너를 복구한다. 기존 설치는 이 도구를 다시 실행해야 변경된 감시기가 반영된다. 자동 로그인은 설정하지 않는다.'
 Write-Host 'Studio 의 Assistant > Manage MCP Servers > Enable Studio as MCP server 는 한 번 직접 켜 두어야 한다.'

@@ -28,8 +28,8 @@ MOTION = {"fire": "불꽃이 번쩍이는", "storm": "폭풍·물보라가 이�
           "scout": "먼 곳을 살피는", "clear": "구름이 걷히는", "guard": "방어하는", "slash": "베는", "thrust": "찌르는",
           "gallop": "달리는", "pounce": "덮치는", "heal": "치유하는", "retreat": "물러나는", "fog": "안개가 흐르는",
           "command": "명령을 내리는", "aim": "겨누는"}
-STYLE = ("17세기 동판화 도판 느낌의 세피아 톤 그림, 낡은 양피지 질감, 가는 선 음영, 4:3 가로 구도, "
-         "대상 하나를 중앙에 크게, 글자·숫자·서명·워터마크·테두리 절대 없음, 현대 물건·상표 없음")
+STYLE = ("기존 등록 대륙 카드 원화와 같은 고해상도 컬러 역사 회화풍, 사실적인 재질과 자연광, 깊은 푸른 바다와 시대·지역에 맞는 풍경, 세로 7:10 구도, 권장 1400×2000 PNG, 인물·선박·동물·건물의 주요 부분이 잘리지 않도록 여백을 둔 "
+         "대상 하나를 중앙에 크게, 배·인물·유물별 구별되는 원화 한 장만, 카드 테두리·프레임·분할 콜라주·글자·숫자·서명·워터마크 절대 없음, 현대 물건·상표 없음")
 
 rows = []
 for kind in ("Units", "Specials"):
@@ -53,8 +53,8 @@ with out.open("w", newline="", encoding="utf-8") as f:
 print(out, len(rows), "cards;", sum(1 for r in rows if r[3].startswith("없음")), "need art")
 
 leaders = re.findall(r'id = "(\w+)", name = "([^"]+)", text = "([^"]*)"[^}]*?(?:faction = "(\w+)", era = "([^"]+)")', src)
-LSTYLE = ("17세기 동판화 도판 느낌의 세피아 톤, 낡은 양피지 질감, 가는 선 음영, 세로 3:4, 전신, 역동적인 자세, "
-          "글자·서명·워터마크·테두리 없음. 그 시대 복식과 무기를 역사적으로 정확하게")
+LSTYLE = ("기존 등록 대륙 카드와 통일된 컬러 역사 회화풍, 실제 복식·무기·피부·천 질감과 자연광, 세로 7:10, 권장 1400×2000 PNG, 전신, 역동적인 자세, "
+          "글자·서명·워터마크·테두리·여러 카드 모음 금지. 그 시대 복식과 무기를 역사적으로 정확하게")
 FAC = {"europe": "유럽", "east_asia": "동아시아", "middle_east": "중동", "new_world": "신대륙", "africa": "아프리카", "southeast_asia": "동남아"}
 lo = ROOT / "docs/leader_art_prompts.csv"
 with lo.open("w", newline="", encoding="utf-8") as f:
@@ -71,7 +71,7 @@ for r in rows:
     by[r[2]].append(r)
 CONT = {"eu": "유럽", "ea": "동아시아", "me": "중동", "nw": "신대륙", "af": "아프리카", "sa": "동남아", "lo": "미지의 땅"}
 md = ["# 대륙 카드 그림 — 분류별 제작 목록", "", "자동 생성 (`python3 tools/gen_continent_card_prompts.py`). 프롬프트 전문은 `continent_card_art_prompts.csv`.",
-      "한 분류는 한 번에 몰아서 만든다 (같은 분류는 같은 느낌으로 통일). 그림은 가만히 있는 한 장이면 되고 움직임은 게임이 입힌다.", ""]
+      "한 분류는 한 번에 몰아서 만든다 (같은 분류는 같은 느낌으로 통일). 대륙 카드만 실제 등록 원화와 일치하는 **컬러 회화풍·세로 7:10 (1400×2000)**으로 제작한다. 한 파일은 한 카드만 포함하며 글자·금테·모음 시트는 제외한다. 움직임은 게임이 입힌다.", ""]
 for cat, lst in by.items():
     need = [r for r in lst if r[3].startswith("없음")]
     md.append(f"## {cat} — {len(lst)}장 (그림 필요 {len(need)}장)")

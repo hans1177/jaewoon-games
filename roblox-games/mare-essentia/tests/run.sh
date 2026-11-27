@@ -15,8 +15,8 @@ mkdir -p "$TMP/Shared" "$TMP/Services"
 cp "$ROOT"/src/ReplicatedStorage/Shared/*.luau "$TMP/Shared/"
 cp "$ROOT"/src/ServerScriptService/Services/*.luau "$TMP/Services/"
 cp "$ROOT"/tests/*.luau "$TMP/"
-# Roblox 엔진 전용(3D 장면)은 CLI 로 분석·실행할 수 없어 제외한다
-rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/CommonVFX.luau "$TMP"/Shared/CommonMotion.luau "$TMP"/Shared/FieldMotion.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/CardGallery.luau "$TMP"/Shared/DeckBuilder.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/PortCultures.luau
+# Roblox 엔진 전용 장면과 카드 UI는 CLI 타입 검사 대상에서 제외한다.
+rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/CommonVFX.luau "$TMP"/Shared/CommonMotion.luau "$TMP"/Shared/FieldMotion.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/CardGallery.luau "$TMP"/Shared/DeckBuilder.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/CardSymbols.luau "$TMP"/Shared/CardTheme.luau "$TMP"/Shared/DiscoveryStage.luau
 
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
 
@@ -46,6 +46,94 @@ fi
 echo "== 에셋 등록 검사 =="
 python3 "$ROOT/tools/devloop/asset_check.py" "$ROOT"
 
+# [런던 등록 회귀] 실제 기존 등록기 실행으로 정상 모델, 손상 증빙, 중복을 검사한다.
+echo "== 런던 GLB 등록 검사 회귀 =="
+python3 - "$ROOT/../../tools/devloop/register_asset.py" <<'PY'
+import hashlib, json, pathlib, struct, subprocess, sys, tempfile
+registrar = pathlib.Path(sys.argv[1]).resolve()
+with tempfile.TemporaryDirectory() as tmp:
+    base = pathlib.Path(tmp)
+    root = base / "game"
+    inbox = root / "assets/inbox/Town"
+    town = root / "assets/town"
+    inbox.mkdir(parents=True)
+    town.mkdir()
+    policy = base / "company-learning"
+    policy.mkdir()
+    (policy / "platform-release-roadmap.json").write_text(json.dumps({
+        "livingMotionVisualQualityContract": {"assetAdaptation": {"contentSafety": {"blockedAssets": []}}}
+    }))
+    original = town / "original.glb"
+    original.write_bytes(b"original-source-fixture")
+    source = str(original)
+    digest = lambda b: hashlib.sha256(b).hexdigest()
+    blob = lambda b: hashlib.sha1(("blob %d\0" % len(b)).encode() + b).hexdigest()
+    (root / "assets-registered.json").write_text(json.dumps({"assets": {
+        "Town/original": {"source": source, "license": "CC0-1.0", "usePermissionGranted": True}
+    }}))
+    (root / "assets/SOURCES.md").touch()
+    model = inbox / "london_test.glb"
+    proof = model.with_suffix(".glb.license.json")
+    def make_model(count=3):
+        document = {"nodes": [{"mesh": 0}], "meshes": [{"primitives": [{"indices": 0}]}],
+                    "accessors": [{"count": count}]}
+        chunk = json.dumps(document).encode()
+        chunk += b" " * (-len(chunk) % 4)
+        binary = struct.pack("<II", 4, 0x004e4942) + b"\0" * 4
+        return struct.pack("<4sIIII", b"glTF", 2, 20 + len(chunk) + len(binary), len(chunk), 0x4e4f534a) + chunk + binary
+    data = make_model()
+    model.write_bytes(data)
+    meta = {"license": "CC0-1.0", "author": "fixture", "source": "https://example.com/source",
+            "sha256": digest(data), "bytes": len(data), "triangles": 1, "derived": True,
+            "modification": "fixture", "originalFiles": [{"repositoryPath": source,
+            "license": "CC0-1.0", "originalUrl": "https://example.com/source",
+            "sha256": digest(original.read_bytes()), "gitBlobSha1": blob(original.read_bytes())}]}
+    def run(expected, marker=None, dry=True, partial=False):
+        args = [sys.executable, "-O", str(registrar), str(root), "--kind=Town", "--prefix=london_"]
+        if dry: args.append("--dry-run")
+        if partial: args.append("--allow-partial")
+        result = subprocess.run(args, cwd=base, capture_output=True, text=True)
+        if result.returncode != expected or (marker and marker not in result.stdout):
+            raise SystemExit("MARE_LONDON_REGISTRATION_REGRESSION: " + result.stdout + result.stderr)
+        if dry and not model.exists():
+            raise SystemExit("MARE_LONDON_DRY_RUN_MUTATED_SOURCE")
+    proof.write_text(json.dumps(meta))
+    run(0)
+    proof.write_text(json.dumps(dict(meta, triangles=2)))
+    run(1, "ASSET_TRIANGLE_COUNT_MISMATCH")
+    proof.write_text("{")
+    run(1, "라이선스 증빙 읽기 실패")
+    bad = make_model(4)
+    model.write_bytes(bad)
+    proof.write_text(json.dumps(dict(meta, sha256=digest(bad), bytes=len(bad))))
+    run(1, "ASSET_TRIANGLE_LAYOUT_INVALID")
+    model.write_bytes(data)
+    proof.write_text(json.dumps(dict(meta, sha256="0" * 64)))
+    run(1, "ASSET_BINARY_HASH_OR_SIZE_MISMATCH")
+    proof.write_text(json.dumps(meta))
+    duplicate = town / "duplicate.glb"
+    duplicate.write_bytes(data)
+    run(1, "중복")
+    duplicate.unlink()
+    # 한 건이 실패해도 합격 원본만 이동하고 거부 원본·증빙은 그대로 둔다.
+    rejected = inbox / "london_rejected.glb"
+    rejected_data = make_model(6)
+    rejected.write_bytes(rejected_data)
+    rejected_proof = rejected.with_suffix(".glb.license.json")
+    rejected_meta = dict(meta, sha256=digest(rejected_data), bytes=len(rejected_data), triangles=3)
+    rejected_proof.write_text(json.dumps(rejected_meta))
+    run(1, "ASSET_TRIANGLE_COUNT_MISMATCH", dry=False)
+    if not model.exists(): raise SystemExit("MARE_LONDON_STRICT_GATE_MUTATED_SOURCE")
+    run(0, "MARE_LONDON_STAGING_PARTIAL: ready=1 rejected=1", dry=False, partial=True)
+    if rejected.read_bytes() != rejected_data or json.loads(rejected_proof.read_text()) != rejected_meta or (town / rejected.name).exists():
+        raise SystemExit("MARE_LONDON_REJECTED_SOURCE_NOT_PRESERVED")
+    if (root / "assets/SOURCES.md").read_text():
+        raise SystemExit("MARE_LONDON_UNREGISTERED_SOURCE_LEDGER_WRITE")
+    if model.exists() or proof.exists() or (town / model.name).read_bytes() != data or not (town / proof.name).exists():
+        raise SystemExit("MARE_LONDON_VALIDATED_SOURCE_NOT_STAGED")
+print("MARE_LONDON_REGISTRATION_REGRESSION=PASS")
+PY
+
 # [전투 화면 회귀] Roblox 전용 3D 장면은 엔진 실행 대신 원본 Luau 문법을 컴파일 검증한다.
 # 원래 클라이언트 검사·병합 충돌 검사 유지, 새 우회 실행기 없이 기존 테스트에서 직접 확인.
 COMPILE="${LUAU_DIR:+$LUAU_DIR/}luau-compile"
@@ -56,12 +144,89 @@ if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
   echo "== 클라이언트·전투 장면 컴파일 검사 =="
   "$COMPILE" --null "$ROOT/src/StarterPlayer/Game.client.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/FieldScene.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/PortScene.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/Pose.luau" >/dev/null
   "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/NavalBattle.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardSymbols.luau" >/dev/null
+  "$COMPILE" --null "$ROOT/src/ReplicatedStorage/Shared/CardTheme.luau" >/dev/null
 fi
+
+echo "== 항해 중 항구 3D 연출 중단 회귀 검사 =="
+python3 - "$ROOT/src/ReplicatedStorage/Shared/PortScene.luau" <<'PY'
+from pathlib import Path
+import sys
+source = Path(sys.argv[1]).read_text(encoding="utf-8")
+walk = source.index('local walkConn = RunService.PreSimulation:Connect(function(deltaTime)')
+ship = source.index('local conn = RunService.Heartbeat:Connect(function()', walk)
+walker_block = source[walk:source.index('local now = os.clock()', walk)]
+ship_block = source[ship:source.index('local t = os.clock() - t0', ship)]
+if 'if not folder.Parent or workspace:GetAttribute("VoyageActive") then return end' not in walker_block:
+    raise SystemExit("MARE_PORT_OFFSCREEN_NPC_GUARD_MISSING")
+if 'if not folder.Parent then return end' not in ship_block:
+    raise SystemExit("MARE_PORT_DESTROYED_VISUAL_GUARD_MISSING")
+if 'if workspace:GetAttribute("VoyageActive") then\n\t\t\tif not wasVoyageActive then\n\t\t\t\tsetFoam(0)\n\t\t\t\twasVoyageActive = true\n\t\t\tend\n\t\t\treturn\n\t\tend' not in ship_block:
+    raise SystemExit("MARE_PORT_OFFSCREEN_SHIP_WAKE_NOT_STOPPED")
+if 'wasVoyageActive = false' not in source:
+    raise SystemExit("MARE_PORT_WAKE_MUST_RESET_AFTER_VOYAGE")
+if 'folder.Destroying:Connect(function()\n\t\twalkConn:Disconnect()' not in source:
+    raise SystemExit("MARE_PORT_NPC_CONNECTION_CLEANUP_MISSING")
+if 'folder.Destroying:Connect(function()\n\t\tconn:Disconnect()' not in source:
+    raise SystemExit("MARE_PORT_SHIP_CONNECTION_CLEANUP_MISSING")
+# [항구 조명] 원래 주야 변화와 창문 조명은 유지하되 파괴/이탈된 조명 참조만 제거한다.
+climate = source.index('local climateConn = RunService.Heartbeat:Connect(function()')
+window = source[climate:source.index('if snow then', source.index('if rays then rays.Intensity', climate))]
+if 'for index = #lights, 1, -1 do' not in window:
+    raise SystemExit("MARE_PORT_REMOVED_LIGHT_PRUNE_LOOP_MISSING")
+if 'if not entry.light:IsDescendantOf(folder) then\n\t\t\t\ttable.remove(lights, index)' not in window:
+    raise SystemExit("MARE_PORT_REMOVED_LIGHT_REFERENCE_NOT_RELEASED")
+if 'entry.light.Brightness = entry.brightness * (0.16 + 2.15 * night)' not in window:
+    raise SystemExit("MARE_PORT_DAY_NIGHT_LIGHT_CYCLE_CHANGED")
+if 'window.Transparency = math.clamp(0.92 - night * 0.78, 0.14, 0.92)' not in window:
+    raise SystemExit("MARE_PORT_WINDOW_NIGHT_GLOW_CHANGED")
+# [승인된 모델] 원래 Loader에서 실측 3축 크기·NaN·무한값을 감사하고 원본 모델은 교체하지 않는다.
+root = Path(sys.argv[1]).parents[3]
+loader = (root / "src/ServerScriptService/AssetLoader.server.luau").read_text(encoding="utf-8")
+if 'pcall(model.GetBoundingBox, model)' not in loader:
+    raise SystemExit("MARE_MODEL_REAL_BOUNDS_AUDIT_MISSING")
+if 'bounds.X > 0.0001 and bounds.Y > 0.0001 and bounds.Z > 0.0001' not in loader:
+    raise SystemExit("MARE_MODEL_EMPTY_GEOMETRY_CHECK_MISSING")
+if 'bounds.X < math.huge and bounds.Y < math.huge and bounds.Z < math.huge' not in loader:
+    raise SystemExit("MARE_MODEL_INVALID_GEOMETRY_CHECK_MISSING")
+if 'if studioAudit then\n\t\t\t\t\t\tgeometryChecked += 1' not in loader:
+    raise SystemExit("MARE_MODEL_AUDIT_MUST_NOT_ALTER_LIVE_GAME")
+if 'MareModelGeometryAuditState' not in loader or 'MareModelGeometryAudit' not in loader:
+    raise SystemExit("MARE_MODEL_GEOMETRY_AUDIT_RESULT_MISSING")
+# [R15 보정] 기존 관절을 중복 생성하지 않으면서 부족한 관절과 180도 뒤집힌 팔을 복구한다.
+pose = (root / "src/ReplicatedStorage/Shared/Pose.luau").read_text(encoding="utf-8")
+if 'if joints < 15 and humanoid then' not in pose:
+    raise SystemExit("MARE_R15_INCOMPLETE_JOINT_REPAIR_REQUIRED")
+if 'and not p1:FindFirstChild(link[1]) then' not in pose:
+    raise SystemExit("MARE_R15_EXISTING_JOINT_MUST_BE_PRESERVED")
+if 'if axis.Magnitude < 1e-4 then\n\t\taxis = Vector3.new(1, 0, 0)' not in pose:
+    raise SystemExit("MARE_R15_OPPOSITE_ARM_AXIS_REPAIR_REQUIRED")
+if 'if angle < 0.15 then' not in pose:
+    raise SystemExit("MARE_R15_NEUTRAL_ARM_POSE_MUST_BE_PRESERVED")
+print("MARE_PORT_OFFSCREEN_VISUAL_GATE=PASS")
+print("MARE_PORT_LIGHT_LIFECYCLE=PASS")
+print("MARE_MODEL_GEOMETRY_AND_R15_REPAIR=PASS")
+PY
 
 echo "== 무기 연타·아이콘 스킬·저장 회귀 검사 =="
 (cd "$ROOT/../.." && node --test qa/mare-essentia-datastore-name.test.mjs)
 
+echo "== 최상위 local 한도(레지스터 200) =="
+# 클라이언트 진입 스크립트는 최상위 local 이 200을 넘으면 컴파일 자체가 실패한다(게임 화면이 안 뜸).
+# 여유가 3 미만이면 실패: python3 tools/luau_local_budget.py fix <파일> 로 자동 조절하거나 새 변수는 do 블록/H 테이블에.
+if command -v "$COMPILE" >/dev/null 2>&1 || [ -x "$COMPILE" ]; then
+  LUAU_COMPILE="$(command -v "$COMPILE" || echo "$COMPILE")" python3 "$ROOT/tools/luau_local_budget.py" check "$ROOT/src/StarterPlayer/Game.client.luau" --min 3
+fi
+echo "== 256색 자산 금지 =="
+# 2026-11-24 오너 지시: 256색(팔레트·감색) 원화·UI 자산 등록 금지. 옛 자산은 docs/assets/legacy_256color.txt 교체 대상.
+if python3 -c "import PIL" >/dev/null 2>&1; then
+  python3 "$ROOT/../../tools/devloop/asset_color_check.py" "$ROOT"
+else
+  echo "PIL 없음: 256색 검사 건너뜀"
+fi
 echo "== 타입 검사 =="
 "$ANALYZE" "$TMP"/Shared/*.luau "$TMP"/Services/*.luau "$TMP/logic.test.luau" "$TMP/knowledge_battle.test.luau" "$TMP/action_combat.test.luau" "$TMP/economy.test.luau" "$TMP/jobskills.test.luau" "$TMP/weapons.test.luau"
 echo "OK"
@@ -90,6 +255,7 @@ echo "== 문화권 표 검사 =="
 echo "== 항구 스모크 빌드 =="
 SM="$TMP/smoke"; mkdir -p "$SM"
 cp "$ROOT"/src/ReplicatedStorage/Shared/{Ports,AssetIds,PortBuildings,Voyage,Ships,ProductionChains}.luau "$SM/"
+{ cat "$ROOT/tests/smoke_prelude.luau"; sed 1d "$ROOT"/src/ReplicatedStorage/Shared/PortIdentity.luau; } > "$SM/PortIdentity.luau"
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$SM"/Ports.luau
 cp "$ROOT"/tests/mockstate.luau "$ROOT"/tests/smoke_portscene.luau "$SM/"
 { cat "$ROOT/tests/smoke_prelude.luau"; sed 1d "$ROOT"/src/ReplicatedStorage/Shared/PortCultures.luau; } > "$SM/PortCultures.luau"

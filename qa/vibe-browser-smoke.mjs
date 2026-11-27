@@ -65,6 +65,141 @@ try{
    }
   }finally{await identityPage.close();}
  }
+ // 카드워즈 10스테이지: 기존 공개판 크로미움에서 턴·소환·스킬·저장·모바일 조작을 실제로 검증한다.
+ if(liveBase){
+  activeGameId='card-grid-duel';
+  const game=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const exceptions=[];
+  game.on('pageerror',error=>exceptions.push(error.message));
+  const saveKey='card-grid-duel-progress-v1';
+  const unit=(id,card,side,r,c,hp,extras={})=>({
+   id,card,side,r,c,hp,moved:false,attacked:false,freeze:0,attackLock:0,
+   frozenNow:false,attackLockedNow:false,hammerTarget:'',...extras
+  });
+  try{
+   const response=await game.goto(liveBase+'card-grid-duel/',{waitUntil:'domcontentloaded',timeout:30000});
+   assert.equal(response?.status(),200,'CARD_WARS_10_LIVE_HTTP');
+   await game.locator('#playBtn').click({timeout:10000});
+   await game.evaluate(key=>{
+    const saved=JSON.parse(localStorage.getItem(key));
+    if(saved?.stage!==1)throw Error('CARD_WARS_BASE_SAVE_MISSING');
+    saved.stage=9;saved.winner='BLUE';saved.phase='BATTLE';saved.current='BLUE';saved.turn=1;
+    localStorage.setItem(key,JSON.stringify(saved));
+   },saveKey);
+   await game.reload({waitUntil:'domcontentloaded'});
+   await game.locator('#endingNext').click({timeout:10000});
+   const initial=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+   assert.equal(initial.stage,10,'CARD_WARS_STAGE_10_ENTRY');
+   assert.equal(initial.units.filter(u=>u.card==='BANDIT').length,7,'CARD_WARS_INITIAL_BANDITS');
+   assert.equal(initial.units.filter(u=>u.card==='BANDIT_LEADER').length,1,'CARD_WARS_INITIAL_BOSS');
+   assert.equal(initial.chests.length,4,'CARD_WARS_INITIAL_CHESTS');
+   const waves=new Map([
+    [5,{HYENA:3,BLACK_SLIME:1}],
+    [9,{CHARGE_ORC:2,RAGE_SKELETON:1}],
+    [16,{BLACK_SLIME:2,ORC_MAGE:2,CHARGE_ORC:4,RAGE_SKELETON:1}],
+    [23,{WILD_BOAR:1,MOUNTED_ORC:2,BEAR:1}],
+    [30,{RAGE_SKELETON:2,BEAR:3,MOUNTED_ORC:5}]
+   ]);
+   for(let round=2;round<=30;round++){
+    await game.locator('#endTurn').click({timeout:12000});
+    await game.waitForFunction(n=>{
+     const saved=JSON.parse(localStorage.getItem('card-grid-duel-progress-v1')||'null');
+     return saved?.stage===10&&saved.current==='BLUE'&&saved.turn===2*n-1;
+    },round,{timeout:20000});
+    const expected=waves.get(round);
+    if(expected){
+     const snapshot=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+     for(const [card,count] of Object.entries(expected)){
+      assert.equal(snapshot.units.filter(u=>u.card===card).length,count,
+       'CARD_WARS_WAVE_'+round+'_'+card);
+     }
+     const occupied=new Set();
+     for(const u of snapshot.units){
+      const spot=u.r+','+u.c;
+      assert.equal(occupied.has(spot),false,'CARD_WARS_WAVE_OVERLAP_'+round+'_'+spot);
+      occupied.add(spot);
+     }
+     assert.equal(snapshot.lastWaveRound,round,'CARD_WARS_WAVE_RECORDED_'+round);
+    }
+    if(round===16){
+     await game.reload({waitUntil:'domcontentloaded'});
+     const saved=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+     assert.equal(saved.stage,10,'CARD_WARS_SAVED_STAGE');
+     assert.equal(saved.turn,31,'CARD_WARS_SAVED_TURN');
+    }
+   }
+   const finalWave=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+   assert.equal(finalWave.summons.RED,30,'CARD_WARS_WAVES_TOTAL_30');
+
+   // 잠식: 가장 가까운 아군이 즉사하고 같은 칸에 잠식 슬라임이 생성된다.
+   await game.evaluate(([key,allies,enemies])=>{
+    const saved=JSON.parse(localStorage.getItem(key));
+    Object.assign(saved,{current:'BLUE',turn:1,winner:'',phase:'BATTLE',
+     lastWaveRound:0,enemyTurns:0,summons:{BLUE:1,RED:1},gold:{BLUE:250,RED:0},
+     units:[...allies,...enemies]});
+    localStorage.setItem(key,JSON.stringify(saved));
+   },[saveKey,[unit('qa-blue','SWORDSMAN','BLUE',5,4,100)],
+     [unit('qa-black','BLACK_SLIME','RED',4,4,270)]]);
+   await game.reload({waitUntil:'domcontentloaded'});
+   await game.evaluate(()=>{Math.random=()=>0});
+   await game.locator('#endTurn').click({timeout:12000});
+   await game.waitForFunction(()=>{
+    const s=JSON.parse(localStorage.getItem('card-grid-duel-progress-v1')||'null');
+    return s?.current==='BLUE'&&s.turn===3;
+   },null,{timeout:20000});
+   const corrupted=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+   assert.equal(corrupted.units.some(u=>u.side==='BLUE'),false,'CARD_WARS_CORRUPTION_INSTANT_KILL');
+   assert.equal(corrupted.units.filter(u=>u.card==='CORRUPTED_SLIME'&&u.r===5&&u.c===4).length,1,
+    'CARD_WARS_CORRUPTION_SPAWN');
+
+   // 블랙 슬라임 처치 후 같은 자리에서 미니 블랙 슬라임 1마리만 생성된다.
+   await game.evaluate(([key,allies,enemies])=>{
+    const saved=JSON.parse(localStorage.getItem(key));
+    Object.assign(saved,{current:'BLUE',turn:1,winner:'',phase:'BATTLE',
+     lastWaveRound:0,enemyTurns:0,summons:{BLUE:1,RED:1},gold:{BLUE:250,RED:0},
+     units:[...allies,...enemies]});
+    localStorage.setItem(key,JSON.stringify(saved));
+   },[saveKey,[unit('qa-blue','SWORDSMAN','BLUE',5,4,100)],
+     [unit('qa-black','BLACK_SLIME','RED',4,4,1)]]);
+   await game.reload({waitUntil:'domcontentloaded'});
+   await game.locator('#board .cell').nth(43).click({timeout:12000});
+   await game.locator('#board .cell').nth(33).click({timeout:12000});
+   const split=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+   assert.equal(split.units.some(u=>u.card==='BLACK_SLIME'),false,'CARD_WARS_BLACK_SLIME_DEATH');
+   assert.equal(split.units.filter(u=>u.card==='MINI_BLACK_SLIME'&&u.r===4&&u.c===4).length,1,
+    'CARD_WARS_MINI_SLIME_ONE_SPAWN');
+
+   // 사슬 2턴 주기·고정 30 피해·1턴 행동불가, 야생의 포효 3턴 주기·2턴 강화.
+   await game.evaluate(([key,allies,enemies])=>{
+    const saved=JSON.parse(localStorage.getItem(key));
+    Object.assign(saved,{current:'BLUE',turn:1,winner:'',phase:'BATTLE',
+     lastWaveRound:0,enemyTurns:0,summons:{BLUE:1,RED:3},gold:{BLUE:250,RED:0},
+     units:[...allies,...enemies]});
+    localStorage.setItem(key,JSON.stringify(saved));
+   },[saveKey,[unit('qa-blue','SWORDSMAN','BLUE',5,4,100)],
+     [unit('qa-rage','RAGE_SKELETON','RED',8,4,444,{specialEnemyTurns:1}),
+      unit('qa-boar','WILD_BOAR','RED',8,5,193,{specialEnemyTurns:2}),
+      unit('qa-bear','BEAR','RED',9,4,100)]]);
+   await game.reload({waitUntil:'domcontentloaded'});
+   await game.evaluate(()=>{Math.random=()=>0});
+   await game.locator('#endTurn').click({timeout:12000});
+   await game.waitForFunction(()=>{
+    const s=JSON.parse(localStorage.getItem('card-grid-duel-progress-v1')||'null');
+    return s?.current==='BLUE'&&s.turn===3;
+   },null,{timeout:20000});
+   const skills=await game.evaluate(key=>JSON.parse(localStorage.getItem(key)),saveKey);
+   const ally=skills.units.find(u=>u.id==='qa-blue');
+   const bear=skills.units.find(u=>u.id==='qa-bear');
+   assert.equal(ally?.hp,70,'CARD_WARS_CHAIN_30_DAMAGE');
+   assert.equal(ally?.frozenNow,true,'CARD_WARS_CHAIN_ACTION_LOCK');
+   assert.equal(bear?.hp,150,'CARD_WARS_ROAR_HEAL_20_PERCENT');
+   assert.equal(bear?.wildBuffTurns,2,'CARD_WARS_ROAR_TWO_TURNS');
+   assert.deepEqual(exceptions,[],'CARD_WARS_10_JS_RUNTIME_ERRORS');
+   observedGames.add('card-grid-duel');
+   console.log('CARD_WARS_STAGE10_MOBILE_30_TURNS_FIVE_WAVES_SAVE_CORRUPTION_CHAIN_ROAR=PASS');
+   activeGameId=null;
+  }finally{await game.close();}
+ }
  // 휴먼 GO: 기존 공개판에서 모바일 첫 전투·보상·진행을 실제 클릭으로 확인한다.
  if(liveBase){
   const human=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});

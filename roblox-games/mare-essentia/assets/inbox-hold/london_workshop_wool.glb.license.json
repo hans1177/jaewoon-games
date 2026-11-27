@@ -1,0 +1,97 @@
+{
+  "license": "CC0-1.0",
+  "author": "Quaternius; Kay Lousberg; Kenney",
+  "source": "https://quaternius.com/packs/medievalvillage.html",
+  "sourceLicense": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "derived": true,
+  "originalFiles": [
+    {
+      "name": "village-house-1.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/town/village-house-1.glb",
+      "originalUrl": "https://quaternius.com/packs/medievalvillage.html",
+      "author": "Quaternius",
+      "license": "CC0-1.0",
+      "sha256": "74d4c91022414875ec61ab80835705a9c0e9415aa0dd413fc8e83cbfd861a5c9",
+      "gitBlobSha1": "b2733641f276a98615436b998d8f0d1c5e68a441",
+      "registeredAssetId": "84666050309773"
+    },
+    {
+      "name": "wood-plank-a.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/wood-plank-a.glb",
+      "originalUrl": "https://kaylousberg.itch.io/resource-bits",
+      "author": "Kay Lousberg",
+      "license": "CC0-1.0",
+      "sha256": "cf6f3f72f0359bb926b6d7c060dae2cfbcf772f0ac0551963d64cf97736cbc52",
+      "gitBlobSha1": "8f73d4ea384131b986ef1c5b9143e9b843bc9ecd",
+      "registeredAssetId": "79087208324933"
+    },
+    {
+      "name": "wood-support.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/terrain/wood-support.glb",
+      "originalUrl": "https://kenney.nl/assets/mini-dungeon",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "9735088f960a9920cf139e25e6b07d5ddbae356ae85886a89ed40bd71a0e74dc",
+      "gitBlobSha1": "04ea1715b727af2f29d2ae8e55aeda8d6c24d62c",
+      "registeredAssetId": "108259457061538"
+    },
+    {
+      "name": "bucket.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/bucket.glb",
+      "originalUrl": "https://kenney.nl/assets/survival-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "5b447c790783bb1f159a8fc2ae8344864dca4977770080b2626f02c651f919b9",
+      "gitBlobSha1": "e6feb1a202f2b996bdee01f2a5b4c35b66dc4c54",
+      "registeredAssetId": "72822874966332"
+    },
+    {
+      "name": "bag-flat.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/bag-flat.glb",
+      "originalUrl": "https://kenney.nl/assets/survival-kit",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "sha256": "aa324fb3e9b9deac7762ac1fc9d3c1438d4bad7ff7baad0eaaaae29ae470abbd",
+      "gitBlobSha1": "d12f4823498076ba9f58dba8ec8484ed3f428e39",
+      "registeredAssetId": "130904686615018"
+    },
+    {
+      "name": "textiles-stack-small.glb",
+      "repositoryPath": "roblox-games/mare-essentia/assets/cargo/textiles-stack-small.glb",
+      "originalUrl": "https://kaylousberg.itch.io/resource-bits",
+      "author": "Kay Lousberg",
+      "license": "CC0-1.0",
+      "sha256": "ec57565a62acf4b1d76902561f39500425f9e9d5acdbd2857a061a3d205fd616",
+      "gitBlobSha1": "6203c21fbdc029e2683027f8c067fe2088f03570",
+      "registeredAssetId": "135901636584357"
+    }
+  ],
+  "modification": "London wool workshop candidate: timber house, freestanding wooden frame loom with reed slats and rollers, textile inspection bench, three dye vat candidates, three bale sacks and folded textile. Original mesh buffers, UVs and source transforms retained; no claim of functional loom, actual dye liquid, historical finish or native visual QA.; structural correction: four loom posts grounded, eight reed slats extended into two supporting cross rails using the exact existing registered plank mesh, folded cloth seated on bench. No new meshes/materials/UV or binary buffer changes. Native collision, yarn/loom motion and dye liquid remain unverified. Added three dye surfaces derived from six existing upward-facing bucket base triangles per vat, scaled to fit below rim, new nonmetallic dye materials. Added source GLB reed demonstration cycle, ten existing reed/support nodes move together with five translation keys each; no claim of native Roblox animation playback, working yarn, or collision. Existing binary prefix, geometry, UVs and materials preserved.",
+  "sha256": "36b5dd187f7a95df0bc267e7616958359bc05535de073524d66ce633874a4e14",
+  "bytes": 599160,
+  "triangles": 9106,
+  "sceneTriangles": 9106,
+  "sourceRevision": "a1ef601d643b42c57a22374a37fb8e1b3e038cb3",
+  "productionVerified": false,
+  "registration": "HOLD_NATIVE_VISUAL_COLLISION_AND_LOOM_DETAIL_QA",
+  "validation": "SOURCE_SHA256_ORIGINAL_BINARY_PREFIX_AND_BUCKET_FACE_REUSE_VERIFIED",
+  "previousDerivedSha256": "1b94ffa5412a49207b76c4da11cf66b67eab3faef67be37ef3fbd7f927e360a0",
+  "dyeSurfaceGeometry": {
+    "source": "bucket.glb",
+    "trianglesPerVat": 6,
+    "vats": 3,
+    "fillHeight": 0.5928,
+    "sourceRadius": 0.06,
+    "scaleXZ": 10.65,
+    "originalBinPrefixSha256": "27d686551ba3b29c7d4c8f81bebe0437b4a565e4684729c7ab7efe3c3793efc2",
+    "nativeVisualVerified": false
+  },
+  "loomSourceAnimation": {
+    "clip": "Loom reed demonstration cycle",
+    "durationSeconds": 1.6,
+    "channels": 10,
+    "keysPerChannel": 5,
+    "travel": 0.18,
+    "nativePlaybackVerified": false
+  }
+}

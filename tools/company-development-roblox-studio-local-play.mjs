@@ -2698,7 +2698,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
   fs.mkdirSync(outDir,{recursive:true});
   const report={
     sourceRevision:clean(sourceRevision),
-    log:[],errors:[],consoleCapture:{captured:false},
+    log:[],errors:[],stepTimings:[],consoleCapture:{captured:false},
     summary:{
       plannedSteps:steps.length,
       completedSteps:0,
@@ -2752,6 +2752,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
     started=true;
     for(let n=0;n<steps.length;n++){
       const st=steps[n];
+      const stepStarted=Date.now();
       console.log('STUDIO_SCRIPT_PROGRESS='+n+'/'+steps.length+':'+st.type);
       try{
         if(st.type==='wait'){
@@ -2800,8 +2801,33 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
             client.timeoutMs=Math.min(90000,Math.floor(requestedTimeoutMs));
           let out;
           try{out=await luau(st.ctx||'Client',st.code);}
+          catch(error){
+            // [플레이 클라이언트 일시 무응답] 같은 Studio 세션에서 클라이언트가 다시 응답하는지 확인한 뒤
+            // 이 Luau 단계만 한 번 다시 실행한다. 클릭 단계는 중복 클릭 위험이 있어 재시도하지 않는다.
+            // 클라이언트가 돌아오지 않으면 원래 오류로 실패 처리하고 증거를 보존한다.
+            if(!/Target is not reachable/.test(String(error?.message||error))||(st.ctx||'Client')!=='Client')throw error;
+            // 한 회차에서 2번을 넘으면 일시 장애가 아니라 구조적 문제로 보고 더 재시도하지 않는다.
+            if((report.recoveries||[]).length>=2)throw error;
+            const recovery={step:n,kind:'STUDIO_MCP_PLAYCLIENT_UNREACHABLE',reconnected:false,retry:'NOT_RUN',waitedMs:0};
+            report.recoveries=report.recoveries||[];
+            report.recoveries.push(recovery);
+            const recoveryStarted=Date.now();
+            for(let probe=0;probe<10&&!recovery.reconnected;probe++){
+              await wait(3000);
+              try{
+                const alive=await luau('Client',"return game:GetService('RunService'):IsClient() and 'STUDIO_CONTEXT_CLIENT' or 'X'");
+                recovery.reconnected=alive.includes('STUDIO_CONTEXT_CLIENT');
+              }catch{}
+            }
+            recovery.waitedMs=Date.now()-recoveryStarted;
+            console.log('STUDIO_MCP_PLAYCLIENT_RECONNECT='+(recovery.reconnected?'YES':'NO')+':step'+n+':'+recovery.waitedMs+'ms');
+            if(!recovery.reconnected){client.timeoutMs=originalTimeoutMs;throw error;}
+            try{out=await luau('Client',st.code);recovery.retry='PASS';}
+            catch(retryError){recovery.retry='FAIL';client.timeoutMs=originalTimeoutMs;throw retryError;}
+            finally{console.log('STUDIO_MCP_PLAYCLIENT_RETRY='+recovery.retry+':step'+n);}
+          }
           finally{client.timeoutMs=originalTimeoutMs;}
-          report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000)});
+          report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000),...(report.recoveries?.at(-1)?.step===n?{recoveredAfterPlayClientUnreachable:true}:{})});
         }else if(st.type==='click_text'||st.type==='click_from_luau'){
           const code=st.type==='click_text'
             ?'local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format("%d,%d",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out'
@@ -2893,11 +2919,33 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         }
         report.summary.completedSteps=n+1;
       }catch(e){
-        report.errors.push('step'+n+':'+clean(e?.message||e).slice(0,300));
+        // [스튜디오 실패 증거] 스택 경로가 앞부분을 채워 실제 Lua 오류가 잘리는 문제를 바로잡는다.
+        // 오류일 때 한 번만 상세 원인을 기록하며 통과 판정이나 재시도 흐름은 바꾸지 않는다.
+        const failureText=clean(e?.message||e);
+        report.errors.push('step'+n+':'+(failureText.length>300
+          ?failureText.slice(0,110)+' [중간 생략] '+failureText.slice(-165):failureText));
         report.summary.completedSteps=n+1;
         report.summary.abortedEarly=true;
         console.log('STUDIO_SCRIPT_ABORT_STEP='+n+':'+st.type);
+        console.log('STUDIO_SCRIPT_FAILURE_DETAIL='+n+':'+failureText.slice(-520));
+        const failedElapsedMs=Date.now()-stepStarted;
+        const lastFrame=report.log.findLast(row=>row.capture&&row.files>0);
+        const lastClick=report.log.findLast(row=>row.click);
+        report.abortDiagnostics={
+          step:n,type:st.type,elapsedMs:failedElapsedMs,context:st.ctx||st.context||null,
+          lastScreenshot:lastFrame?.capture||null,lastClick:lastClick?.click||null,probes:{}
+        };
+        for(const context of ['Client','Server']){
+          try{
+            const output=await luau(context,"local r=game:GetService('RunService') return r:IsClient() and 'STUDIO_CONTEXT_CLIENT' or 'STUDIO_CONTEXT_SERVER'");
+            report.abortDiagnostics.probes[context]={reachable:output.includes('STUDIO_CONTEXT_'+context.toUpperCase()),output:output.slice(0,300)};
+          }catch(probeError){
+            report.abortDiagnostics.probes[context]={reachable:false,error:clean(probeError?.message||probeError).slice(0,300)};
+          }
+        }
         break;
+      }finally{
+        report.stepTimings.push({step:n,type:st.type,elapsedMs:Date.now()-stepStarted});
       }
     }
     // [Mare 실증] 185개 클릭/캡처와 별개로 Studio 전용 모델·이미지/음원·기능 전수검사까지 확인한다.
@@ -2997,7 +3045,7 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
         const effectiveIds=new Map([...idSource.matchAll(/\["([^"]+)"\]\s*=\s*(\d+)/g)]
           .map(match=>[match[1],match[2]]));
         const imageRows=Object.entries(registered)
-          .filter(([key])=>/^(?:Goods|Menu|Portraits|CardArt)\/[A-Za-z0-9._-]+$/.test(key))
+          .filter(([key])=>/^(?:Goods|Menu|Portraits|CardArt|Materials)\/[A-Za-z0-9._-]+$/.test(key))
           .sort(([a],[b])=>a.localeCompare(b))
           .map(([key,asset])=>{
             if(asset?.assetType!=='Image'||asset.usePermissionGranted!==true
@@ -3084,13 +3132,19 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           proof.batches++;
         }
         const missingCount=proof.missing.length+proof.soundMissing.length;
-        if(missingCount>0&&missingCount<=8){
+        // [누락 재검사] 최대 24개를 12개씩 재확인한다. 전체 장애는 기존 실패를 유지한다.
+        if(missingCount>0&&missingCount<=24){
           const imageMissing=new Set(proof.missing),soundMissing=new Set(proof.soundMissing);
           const pendingRows=allRows.filter(row=>row.kind==='Image'?imageMissing.has(row.key):soundMissing.has(row.key));
-          const retry=await auditBatch(pendingRows);
-          proof.firstPassMissing={images:proof.missing,sounds:proof.soundMissing};
-          proof.missing=retry.missing;
-          proof.soundMissing=retry.soundMissing;
+          proof.firstPassMissing={images:[...proof.missing],sounds:[...proof.soundMissing]};
+          const retryMissing=[],retrySoundMissing=[];
+          for(let offset=0;offset<pendingRows.length;offset+=12){
+            const retry=await auditBatch(pendingRows.slice(offset,offset+12));
+            retryMissing.push(...retry.missing);
+            retrySoundMissing.push(...retry.soundMissing);
+          }
+          proof.missing=retryMissing;
+          proof.soundMissing=retrySoundMissing;
           proof.retryVerified=true;
         }
         proof.loaded=proof.expected-proof.missing.length;

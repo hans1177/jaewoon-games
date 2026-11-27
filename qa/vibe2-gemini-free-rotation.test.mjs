@@ -215,17 +215,22 @@ test('Gemini 429 failover reaches only a pinned OpenRouter free model',async()=>
   });
 });
 
-test('Groq route requires an explicitly confirmed free plan; never infers it from API key',async()=>{
+test('Groq is never called with only an API key when the free plan is not verified',async()=>{
   await withExternalFixture(async()=>{
     process.env.GROQ_API_KEY='groq-test-secret';
     process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='NO';
     const {requestGeminiFreePair:isolated}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=groq-unverified-'+Date.now());
     const calls=[];
-    await assert.rejects(isolated({apiKey:'test',contents:[],fetchImpl:async url=>{
-      calls.push(String(url));
-      return{ok:false,status:429,headers:{get:()=> '30'}};
-    }}),/GEMINI_FREE_TWO_MODEL_POOL_UNAVAILABLE/);
-    assert.equal(calls.length,2,'no unverified Groq free-plan request may leave the worker');
+    await assert.rejects(isolated({apiKey:'test',
+      contents:[{role:'user',parts:[{text:'free code task'}]}],
+      fetchImpl:async(url,options)=>{
+        calls.push({url:String(url),options});
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '30'}};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"ok":true}'}}]})};
+      }
+    }));
+    assert.ok(!calls.some(c=>c.url.includes('groq.com')),'무료 요금제 미확인 Groq 호출 금지');
   });
 });
 
@@ -544,7 +549,7 @@ test('Vibe59 specialist routing assigns actual free model by domain',async()=>{
     '검증된 무료 잔량 0 슬롯은 다음 배정에서 제외');
   assert.ok(!selectVibe59FreeExperts({department:'DEVELOPMENT',
     env:{...env,VIBE2_GROQ_FREE_PLAN_VERIFIED:'NO'}}).expertCandidates
-    .some(row=>row.provider==='GROQ'),'그록 무료 요금제 확인 없이 호출 금지');
+    .some(row=>row.provider==='GROQ'),'무료 요금제 미확인 Groq는 배정하지 않는다(오너 결정 2026-11-22)');
   await withExternalFixture(async()=>{
     process.env.GROQ_API_KEY='groq-fixture';
     process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
@@ -677,17 +682,17 @@ test('Gemini-free verified specialists run actual source and department requests
       '제미나이 인증정보가 없을 때 제미나이 API를 호출하지 않는다');
   });
 });
-test('Gemini-free rotation refuses unverified alternate provider and never opens paid path',async()=>{
+test('Gemini-free rotation refuses missing credentials and never opens paid path',async()=>{
   await withExternalFixture(async()=>{
     delete process.env.GEMINI_API_KEY;
-    process.env.GROQ_API_KEY='unverified-plan';
+    delete process.env.GROQ_API_KEY;
     process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
     const {requestGeminiFreePair:isolated}=await import(
       '../tools/vibe2-gemini-free-rotation.mjs?no-paid-bypass='+Date.now());
     let calls=0;
     await assert.rejects(isolated({apiKey:'',specialistDepartment:'DEVELOPMENT',
       contents:[{role:'user',parts:[{text:'repair'}]}],
-      fetchImpl:async()=>{calls++;throw Error('unverified API called');}
+      fetchImpl:async()=>{calls++;throw Error('missing-key request escaped');}
     }),/GEMINI_API_KEY_MISSING_NO_LOCAL_FALLBACK/);
     assert.equal(calls,0);
     await assert.rejects(requestLocalModel('game source',{specialistDepartment:'AUTO',
@@ -738,4 +743,118 @@ test('Vibe59 specialist classification ignores misleading embedded English words
   assert.equal(domain('항구 조명과 재질 개선',['src/Harbor.server.luau']),'WORLD');
   assert.equal(domain('건물 배치 로직 오류 수정',['src/Building.server.luau']),'DEVELOPMENT');
   assert.equal(domain('게임 규칙 수정',['src/interface.server.luau']),'DEVELOPMENT');
+});
+
+
+// [실호출 복구 회귀] 한 무료 모델의 400/401은 다른 공급자 사용을 막지 않는다.
+// 402 결제 요청과 403 권한/안전 차단은 기존 정책처럼 중단한다.
+test('Gemini request format 400 rotates to next pinned free model, without retry storm', async () => {
+  await withExternalFixture(async () => {
+    const {requestGeminiFreePair:isolated} = await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?gemini-bad-request='+Date.now());
+    const called = [];
+    const fetchImpl = async (url) => {
+      called.push(String(url));
+      if (called.length === 1) return {ok:false,status:400,
+        json:async()=>({error:{status:'INVALID_ARGUMENT',message:'unsupported output argument'}})};
+      return fixtureResponse('{"edits":[]}');
+    };
+    const first = await isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'source code'}]}],fetchImpl});
+    assert.equal(first.provider, 'GEMINI');
+    assert.equal(first.model, GEMINI_FREE_MODELS[1]);
+    assert.equal(called.length, 2);
+    const second = await isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'next source'}]}],fetchImpl});
+    assert.equal(second.provider, 'GEMINI');
+    assert.equal(called.length, 3, '400 모델은 쿨다운되어 다시 호출하지 않는다');
+  });
+});
+
+test('one free provider 401 rotates to independent free provider; 402 and safety 400 never bypass',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.GROQ_API_KEY='fixture-groq';
+    process.env.OPENROUTER_API_KEY='fixture-router';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    process.env.VIBE2_GROQ_FREE_PLAN_VERIFIED='YES';
+    const {requestGeminiFreePair:isolated}=await import(
+      '../tools/vibe2-gemini-free-rotation.mjs?provider-auth-'+Date.now());
+    const called=[];
+    const result=await isolated({
+      apiKey:'test',specialistDepartment:'DEVELOPMENT',specialistTask:'code review',
+      contents:[{role:'user',parts:[{text:'repair only'}]}],
+      fetchImpl:async url=>{
+        const dest=String(url);called.push(dest);
+        if(dest.includes('api.groq.com'))return{ok:false,status:401};
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],
+          candidates:[{content:{parts:[{text:'{"edits":[]}'}]}}],
+          usage:{cost:0}})};
+      }
+    });
+    assert.notEqual(result.provider,'GROQ');
+    assert.equal(called.filter(x=>x.includes('api.groq.com')).length,1);
+    const second=await isolated({
+      apiKey:'test',specialistDepartment:'DEVELOPMENT',specialistTask:'code review again',
+      contents:[{role:'user',parts:[{text:'other change'}]}],
+      fetchImpl:async url=>{
+        called.push(String(url));
+        return{ok:true,json:async()=>({choices:[{message:{content:'{"edits":[]}'}}],
+          candidates:[{content:{parts:[{text:'{"edits":[]}'}]}}]})};
+      }
+    });
+    assert.notEqual(second.provider,'GROQ');
+    assert.equal(called.filter(x=>x.includes('api.groq.com')).length,1,
+      '401 공급자를 다음 호출에 다시 쓰지 않는다');
+  });
+});
+
+test('free provider HTTP 400 is classified with provider detail instead of a bare rotate',async()=>{
+  await withExternalFixture(async()=>{
+    process.env.OPENROUTER_API_KEY='openrouter-test-secret';
+    process.env.VIBE2_EXTERNAL_FREE_ROTATION='YES';
+    const {requestGeminiFreePair:isolated,classifyHttp400}=await import('../tools/vibe2-gemini-free-rotation.mjs?test=http400-'+Date.now());
+    const logs=[];const orig=console.log;console.log=(...a)=>{logs.push(a.join(' '));};
+    try{
+      await assert.rejects(isolated({apiKey:'test',contents:[{role:'user',parts:[{text:'x'}]}],fetchImpl:async url=>{
+        if(String(url).includes('googleapis.com'))return{ok:false,status:429,headers:{get:()=> '30'}};
+        return{ok:false,status:400,headers:{get:()=>null},json:async()=>({error:{code:400,message:'No endpoints found for google/gemma-4-31b-it:free'}})};
+      }}),/OPENROUTER:[^,]*:HTTP_400/);
+    }finally{console.log=orig;}
+    assert.ok(logs.some(l=>/VIBE2_EXTERNAL_FREE_HTTP400=OPENROUTER:.*:MODEL_UNAVAILABLE:.*No endpoints found/.test(l)));
+    assert.equal(classifyHttp400('Unrecognized request argument supplied: service_tier'),'UNSUPPORTED_PARAMETER');
+    assert.equal(classifyHttp400(''),'NO_DETAIL');
+  });
+});
+
+test('free model cooldown is shared across runs through the persisted file and merges by latest time',async()=>{
+  const os=await import('node:os');const path=await import('node:path');
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-cooldown-'));
+  const file=path.join(dir,'cooldown.json');
+  const prev=process.env.VIBE2_FREE_AI_COOLDOWN_FILE;
+  process.env.VIBE2_FREE_AI_COOLDOWN_FILE=file;
+  try{
+    // 실행 1: 두 Gemini 모델 429 → 파일에 복구 시각 기록
+    const run1=await import('../tools/vibe2-gemini-free-rotation.mjs?test=share1-'+Date.now());
+    await assert.rejects(run1.requestGeminiFreePair({apiKey:'k',contents:[{role:'user',parts:[{text:'x'}]}],
+      fetchImpl:async()=>({ok:false,status:429,headers:{get:name=>String(name).toLowerCase()==='retry-after'?'600':null}})}));
+    const saved=JSON.parse(fs.readFileSync(file,'utf8')).slots;
+    assert.ok(Object.keys(saved).length>=2,'모델별 기록');
+    assert.ok(!JSON.stringify(saved).includes('"k"'),'키 미저장');
+    // 실행 2(새 프로세스와 같은 새 모듈): 쿨다운 중인 모델은 호출하지 않는다
+    const run2=await import('../tools/vibe2-gemini-free-rotation.mjs?test=share2-'+Date.now());
+    let calls=0;
+    await assert.rejects(run2.requestGeminiFreePair({apiKey:'k',contents:[{role:'user',parts:[{text:'x'}]}],
+      fetchImpl:async()=>{calls++;return{ok:true,json:async()=>({candidates:[{content:{parts:[{text:'{}'}]}}]})};}}));
+    assert.equal(calls,0,'다음 실행에서 한도 끝난 모델 재호출 금지');
+    // 동시 워커가 더 이른 시각을 써도 늦은 시각이 유지된다
+    const slot=Object.keys(saved)[0];
+    const later=saved[slot].until;
+    const stale={version:1,slots:{...saved,[slot]:{...saved[slot],until:Date.now()+1000}}};
+    fs.writeFileSync(file,JSON.stringify(stale));
+    const run3=await import('../tools/vibe2-gemini-free-rotation.mjs?test=share3-'+Date.now());
+    run3.sharedCooldownSnapshot();
+    await assert.rejects(run3.requestGeminiFreePair({apiKey:'k',contents:[{role:'user',parts:[{text:'x'}]}],
+      geminiRetryAt:new Date(later).toISOString(),fetchImpl:async()=>{throw new Error('should not call');}}));
+    assert.ok(JSON.parse(fs.readFileSync(file,'utf8')).slots[slot].until>=later-5,'늦은 시각 보존');
+  }finally{
+    if(prev===undefined)delete process.env.VIBE2_FREE_AI_COOLDOWN_FILE;else process.env.VIBE2_FREE_AI_COOLDOWN_FILE=prev;
+  }
 });

@@ -137,7 +137,7 @@ def is_external_black_box_qa(row, qa):
     )
 
 
-def validate_manifest(args, manifest, train_rows, eval_rows):
+def validate_manifest(args, manifest, train_rows, eval_rows, holdout_rows=()):
     if int(manifest.get("version", 0)) < 3:
         raise RuntimeError("dataset manifest v3 or newer is required")
     if manifest.get("readyForTraining") is not True:
@@ -182,7 +182,34 @@ def validate_manifest(args, manifest, train_rows, eval_rows):
     if args.seed != int(manifest.get("seed", args.seed)):
         raise RuntimeError("trainer seed must match dataset manifest seed")
 
-    for row in train_rows + eval_rows:
+    # [정식 보류셋] 학습/평가와 별도인 데이터도 동일한 증거 기준을 검사한다.
+    # 데이터 파일과 manifest 해시가 함께 변조돼도 샘플 중복 또는 QA 미통과를 통과시키지 않는다.
+    official_training = manifest.get("authority") != "PRACTICE_ONLY"
+    if official_training:
+        if not holdout_rows or len(holdout_rows) != int(stats.get("holdout", -1)):
+            raise RuntimeError("official holdout missing or row count mismatch")
+        if dataset_hash(holdout_rows) != manifest.get("holdoutSha256"):
+            raise RuntimeError("official holdout SHA256 mismatch")
+        observed_ids = set()
+        for split_rows in (train_rows, eval_rows, holdout_rows):
+            for sample in split_rows:
+                sample_id = sample.get("sampleId")
+                if not isinstance(sample_id, str) or len(sample_id) != 64 or any(
+                    char not in "0123456789abcdef" for char in sample_id.lower()
+                ):
+                    raise RuntimeError("official dataset sample identity missing")
+                if sample_id in observed_ids:
+                    raise RuntimeError("official train/eval/holdout sample identity overlap")
+                # [샘플 무결성] 기존 JS 데이터셋 생성기가 발급한 식별자를
+                # 로컬 학습기에서 다시 계산해 입력 내용 바꿔치기를 차단한다.
+                sample_identity = hashlib.sha256(stable_row({
+                    key: value for key, value in sample.items() if key != "sampleId"
+                }).encode("utf-8")).hexdigest()
+                if sample_id != sample_identity:
+                    raise RuntimeError("official sample identity digest mismatch")
+                observed_ids.add(sample_id)
+
+    for row in train_rows + eval_rows + (list(holdout_rows) if official_training else []):
         qa = row.get("qa") or {}
         row_task_type = str(row.get("taskType") or "").lower()
         external_black_box = is_external_black_box_qa(row, qa)
@@ -270,11 +297,16 @@ def main():
     random.seed(args.seed)
     train_rows = load_jsonl(args.train)
     eval_rows = load_jsonl(args.eval)
-    holdout_rows = load_jsonl(args.holdout) if args.holdout else []
     if not train_rows or not eval_rows:
         raise RuntimeError("train and eval datasets must both contain verified samples")
     manifest = json.loads(Path(args.dataset_manifest).read_text(encoding="utf-8"))
-    validate_manifest(args, manifest, train_rows, eval_rows)
+    # [보류셋] 기존 공식 데이터셋의 분리된 보류 자료를 학습이 끝난 후에만 사용한다.
+    official_training = manifest.get("authority") != "PRACTICE_ONLY"
+    holdout_path = args.holdout or (
+        str(Path(args.train).with_name("holdout.jsonl")) if official_training else ""
+    )
+    holdout_rows = load_jsonl(holdout_path) if holdout_path and Path(holdout_path).is_file() else []
+    validate_manifest(args, manifest, train_rows, eval_rows, holdout_rows)
 
     import torch
     from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
@@ -389,6 +421,30 @@ def main():
     # never an independent holdout, native-runtime pass, or promotion authority.
     practice_eval_comparison = None
     practice_holdout_comparison = None
+    official_holdout_comparison = None
+    if official_training:
+        # [정식 모델 비교] 학습 전·중에는 보류셋을 사용하지 않는다.
+        # 이는 같은 모델·보류셋의 내부 손실 비교이며 독립 QA·카나리 승격은 아니다.
+        official_holdout_dataset = JsonlDataset(holdout_rows)
+        adapted_holdout = trainer.evaluate(eval_dataset=official_holdout_dataset)
+        with model.disable_adapter():
+            baseline_holdout = trainer.evaluate(eval_dataset=official_holdout_dataset)
+        baseline_loss = float(baseline_holdout.get("eval_loss", float("nan")))
+        adapted_loss = float(adapted_holdout.get("eval_loss", float("nan")))
+        official_holdout_comparison = {
+            "scope": "FROZEN_POST_TRAIN_INTERNAL_DIAGNOSTIC_ONLY",
+            "holdoutSha256": manifest.get("holdoutSha256"),
+            "sampleCount": len(holdout_rows),
+            "baselineEvalLoss": baseline_loss,
+            "adaptedEvalLoss": adapted_loss,
+            "lossReduction": baseline_loss - adapted_loss,
+            "lowerEvalLoss": adapted_loss < baseline_loss,
+            "trainingUsedHoldout": False,
+            "independentRuntimeQaVerified": False,
+            "canaryPassed": False,
+            "runtimePromotionAllowed": False,
+            "nextGate": "FIXED_HOLDOUT_AB_AND_CANARY",
+        }
     if args.task_type == "roblox" and manifest.get("authority") == "PRACTICE_ONLY":
         # Separate diagnostic: code-implementation rows only, from the existing
         # disjoint evaluation set; never treat its small size as a fixed holdout.
@@ -457,6 +513,9 @@ def main():
             "runtimePromotionAllowed": False,
         }
     losses = [float(train_result.metrics.get("train_loss", 0)), float(eval_result.get("eval_loss", 0))]
+    if official_holdout_comparison is not None:
+        losses.extend([official_holdout_comparison["baselineEvalLoss"],
+                       official_holdout_comparison["adaptedEvalLoss"]])
     if args.task_type == "roblox" and manifest.get("version", 0) >= 6:
         if practice_holdout_comparison is None:
             raise RuntimeError("Roblox practice v6 holdout A/B comparison is missing")
@@ -490,6 +549,7 @@ def main():
         "codeImplementationEvalSamples": sum(row.get('sampleKind') == 'CODE_IMPLEMENTATION' for row in eval_rows),
         "practiceEvalComparison": practice_eval_comparison,
         "practiceHoldoutComparison": practice_holdout_comparison,
+        "officialPostTrainHoldoutComparison": official_holdout_comparison,
         "codeImplementationHoldoutSamples": sum(row.get("sampleKind") == "CODE_IMPLEMENTATION" for row in holdout_rows),
         "adapterVersion": args.adapter_version,
         "taskType": args.task_type,

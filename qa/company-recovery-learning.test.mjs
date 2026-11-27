@@ -1124,6 +1124,38 @@ test('Studio asset audit binds only the unique existing game Studio task and kee
   assert.equal(forged.owner,'SYSTEM_AI');
 });
 
+// [실제 실행기 오류] E: 용량 부족은 게임 소스 변경이 아니라 기존 Studio 실행기 복구로 보낸다.
+test('Studio checkout disk exhaustion is classified as infrastructure without game source mutation',async()=>{
+  const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
+  const sha='a'.repeat(40);
+  const label='Devloop Studio Capture · mare-essentia · '+sha;
+  const run={name:label,display_title:label,path:'.github/workflows/devloop-studio.yml',
+    conclusion:'failure',id:44879935104,run_attempt:1,head_sha:sha,head_branch:'main',
+    head_repository:{full_name:'hans1177/jaewoon-games'}};
+  const jobs={jobs:[{name:'capture',conclusion:'failure',steps:[
+    {name:'Free runner E drive space',conclusion:'success'},
+    {name:'Run actions/checkout@v4',conclusion:'failure'}
+  ]}],studioMarkers:[
+    'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION',
+    'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_RUNNER_DISK_EXHAUSTED'
+  ]};
+  const result=escalateDeploymentFailure({event:{workflow_run:run},jobsInput:jobs,catalogInput:{games:[]}});
+  assert.equal(result.owner,'SYSTEM_AI');
+  assert.equal(result.queue.tasks[0].failureStage,'STUDIO_EXECUTION');
+  assert.equal(result.queue.tasks[0].failureSignature,'STUDIO_RUNNER_DISK_EXHAUSTED');
+  assert.deepEqual(result.queue.tasks[0].responsibleFiles,['.github/workflows/devloop-studio.yml']);
+  assert.match(result.queue.tasks[0].goal,/at least 2 GB free on E/);
+  assert.deepEqual(result.queue.tasks[0].relatedTaskIds,[]);
+  const unconfirmed=escalateDeploymentFailure({event:{workflow_run:run},
+    jobsInput:{jobs:jobs.jobs},catalogInput:{games:[]}});
+  assert.notEqual(unconfirmed.queue.tasks[0].failureSignature,'STUDIO_RUNNER_DISK_EXHAUSTED');
+  const capture=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const recovery=fs.readFileSync('.github/workflows/vibe2-recovery-fast.yml','utf8');
+  assert.match(capture,/STUDIO_QA_FAILURE_SIGNATURE=STUDIO_RUNNER_DISK_EXHAUSTED/);
+  assert.match(recovery,/studioCheckout/);
+  assert.match(recovery,/fatal: write error: No space left on device/);
+});
+
 test('Studio MCP PlayClient unreachable cannot become a game source repair',async()=>{
   const {escalateDeploymentFailure}=await import('../tools/company-recovery-escalation.mjs');
   const run={name:'Devloop Studio Capture',path:'.github/workflows/devloop-studio.yml',

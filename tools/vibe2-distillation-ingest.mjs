@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { buildVerifiedTrainingSample, qaEvidencePasses, TRAINING_SAMPLE_VERSION, EXTERNAL_BLACK_BOX_QA_MARKER, AUTHORIZED_SOURCE_QA_MARKER } from './vibe2-training-sample.mjs';
 import { validateFormalWebLearningEvidence } from './vibe2-web-experience-ingest.mjs';
+import { isVerifiedPass } from './vibe2-weight-learning.mjs';
 
 const SAFE_ID = /^[A-Za-z0-9._-]+$/;
 const SHA = /^[0-9a-f]{7,40}$/i;
@@ -165,6 +166,56 @@ export function ingestVerifiedWebFinals({ mainRef = 'origin/main', companyRuntim
 
 function readJsonFile(file) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return null; }
+}
+
+// [기존 학습 체인 복원] main의 신규 검증 자료와 영구 학습 브랜치의 축적 자료를 함께 보존한다.
+// 동일 이름의 서로 다른 검증 답안은 최신이라고 추측해 덮어쓰지 않고 충돌로 보고한다.
+export function chooseDurableTrainingSample(existing, durable) {
+  if (!durable || typeof durable !== 'object') return 'REJECT_INVALID_DURABLE';
+  if (!existing) return 'RESTORE_MISSING';
+  if (JSON.stringify(existing) === JSON.stringify(durable)) return 'KEEP_IDENTICAL';
+  const positive = (record) => record && record.practiceOnly !== true && record.synthetic !== true
+    && typeof record.instruction === 'string' && record.instruction.trim()
+    && typeof record.output === 'string' && record.output.trim()
+    && Boolean(record.provenance?.sourceRevision || record.sourceRevision || record.sourceCommit)
+    && isVerifiedPass(record);
+  const mainVerified = Boolean(positive(existing));
+  const durableVerified = Boolean(positive(durable));
+  if (durableVerified && !mainVerified) return 'RESTORE_VERIFIED';
+  if (mainVerified && !durableVerified) return 'KEEP_VERIFIED_MAIN';
+  if (mainVerified && durableVerified) return 'REVIEW_CONFLICTING_VERIFIED';
+  return 'REVIEW_CONFLICTING_UNVERIFIED';
+}
+
+export function restoreDurableTrainingSamples({
+  durableRef = 'origin/vibe2-learning-runtime',
+  outDir = 'company-learning/training-samples',
+} = {}) {
+  const result = { examined: 0, restored: [], protectedMain: [], conflictingVerified: [], conflictingUnverified: [], rejected: [] };
+  const prefix = outDir.replaceAll('\\', '/').replace(/\\/g, '/').replace(/\/+$/, '');
+  if (prefix !== 'company-learning/training-samples') throw new Error('CANONICAL_TRAINING_DIRECTORY_REQUIRED');
+  const files = gitText(['ls-tree', '-r', '--name-only', durableRef, '--', prefix], { allowFailure: true })
+    .split(/\r?\n/).filter(file => /^company-learning\/training-samples\/[A-Za-z0-9._-]+\.json$/.test(file));
+  for (const file of files) {
+    result.examined += 1;
+    const durable = readJsonAt(durableRef, file);
+    const existing = readJsonFile(file);
+    const decision = chooseDurableTrainingSample(existing, durable);
+    if (decision === 'RESTORE_MISSING' || decision === 'RESTORE_VERIFIED') {
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, `${JSON.stringify(durable, null, 2)}\n`);
+      result.restored.push({ file, decision });
+    } else if (decision === 'REVIEW_CONFLICTING_VERIFIED') {
+      result.conflictingVerified.push(file);
+    } else if (decision === 'REVIEW_CONFLICTING_UNVERIFIED') {
+      result.conflictingUnverified.push(file);
+    } else if (decision === 'REJECT_INVALID_DURABLE') {
+      result.rejected.push(file);
+    } else if (decision !== 'KEEP_IDENTICAL') {
+      result.protectedMain.push({ file, decision });
+    }
+  }
+  return result;
 }
 
 function upper(value) { return String(value ?? '').trim().toUpperCase(); }

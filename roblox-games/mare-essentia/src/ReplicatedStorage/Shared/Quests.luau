@@ -26,6 +26,22 @@ export type Quest = {
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
 	strand: string?, -- 스토리 갈래: main(서막) | companion(동료) | history(역사) | person(인물)
 	story: string?, -- 왜 이 일을 하는가 (이야기)
+	routeId: string?, -- 10대 이야기 항로의 안정된 식별자
+	routeName: string?, -- 지역별 연속 탐험 갈래
+	leadSource: string?, -- 소문·발견·사건·기록 등 단서가 전해진 형태
+	-- [이야기 퀘스트 시스템] 내용은 나중에 채운다. 모두 선택 필드.
+	warId: string?, -- kind "war_clear": 이 함대전 id 완수 횟수
+	leaderId: string?, -- kind "duel_leader": 이 지도자 덱을 카드 대결에서 이긴 횟수
+	duelFaction: string?, -- kind "duel_leader": 상대 진영(없으면 지도자 진영)
+	choiceKey: string?, -- kind "choice": 선택 결과 저장 키(없으면 퀘스트 id)
+	choices: { { value: string, label: string, result: string? } }?, -- kind "choice": 고를 수 있는 선택지
+	needChoice: string?, -- "key=value": 이 선택을 한 플레이어에게만 보인다(분기)
+	loreCardId: string?, -- 완료하면 이 카드 상세에 이야기 단락이 열린다
+	loreText: string?,
+	speaker: string?, -- 진행 중이면 이 인물이 동료 말풍선으로 line 을 말한다
+	speakerRole: string?,
+	line: string?,
+	regionId: string?, -- kind "war_clear": 이 해역(Regions id)의 함대전 완수 횟수 (없으면 전체)
 	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
 }
 
@@ -100,6 +116,13 @@ local Quests: { Quest } = {
 	{ id = "q_collector_2", name = "대수집가", summary = "도감 카드 40장 발견", kind = "discover", amount = 40, rewardCoins = 6000, rewardFame = 150, rewardCareer = "adventure", rewardXp = 700 },
 	{ id = "q_collector_3", name = "백과의 주인", summary = "도감 카드 80장 발견", kind = "discover", amount = 80, rewardCoins = 15000, rewardFame = 300, rewardCareer = "adventure", rewardXp = 1500 },
 	{ id = "q_sea_wolf_2", name = "북해의 지배자", summary = "해전에서 20번 승리", kind = "win", amount = 20, rewardCoins = 4500, rewardFame = 100, rewardCareer = "battle", rewardXp = 500, rewardCardId = "nav_portolan" },
+	-- [해상 연속 퀘스트] 해역별 함대전을 완수하면 이어서 열린다. 해역마다 이야기와 보상이 다르다.
+	{ id = "q_war_europe", name = "지중해의 방패", summary = "지중해 해상 봉쇄전을 1번 완수", kind = "war_clear", regionId = "europe", amount = 1, rewardCoins = 1200, rewardFame = 20, rewardCareer = "battle", rewardXp = 300, story = "사략 함대가 항로를 막으면 상인들이 먼저 쓰러진다. 함대로 길을 열어 주면 항구가 숨을 쉰다." },
+	{ id = "q_war_w_africa", name = "대서양 항로 감시", summary = "서아프리카 노예선단 차단을 1번 완수", kind = "war_clear", regionId = "w_africa", amount = 1, after = "q_war_europe", rewardCoins = 2000, rewardFame = 30, rewardCareer = "battle", rewardXp = 500, story = "대서양 섬들을 잇는 항로는 길고 외롭다. 이곳을 지키는 함대가 있어야 먼바다로 나갈 수 있다." },
+	{ id = "q_war_new_world", name = "카리브의 파수꾼", summary = "카리브 보물선단 습격을 1번 완수", kind = "war_clear", regionId = "new_world", amount = 1, after = "q_war_w_africa", rewardCoins = 3500, rewardFame = 45, rewardCareer = "battle", rewardXp = 800, story = "은과 설탕이 오가는 카리브는 해적과 함대가 맞서는 바다다. 이기는 쪽이 항로를 얻는다." },
+	{ id = "q_war_indian", name = "몬순 항로의 수호자", summary = "인도양 향신료 항로 수호를 1번 완수", kind = "war_clear", regionId = "indian", amount = 1, after = "q_war_new_world", rewardCoins = 5000, rewardFame = 60, rewardCareer = "battle", rewardXp = 1100, story = "몬순을 타고 향신료 배가 오간다. 바람이 바뀌기 전에 항로를 지켜야 한다." },
+	{ id = "q_war_far_east", name = "해협의 질서", summary = "동남아 해협 수비전을 1번 완수", kind = "war_clear", regionId = "far_east", amount = 1, after = "q_war_indian", rewardCoins = 7500, rewardFame = 85, rewardCareer = "battle", rewardXp = 1700, story = "좁은 해협을 쥔 쪽이 동서 교역을 쥔다. 해적 연합을 꺾으면 항로가 열린다." },
+	{ id = "q_war_pacific", name = "먼바다의 제독", summary = "태평양 원정 함대전을 1번 완수", kind = "war_clear", regionId = "pacific", amount = 1, after = "q_war_far_east", rewardCoins = 12000, rewardFame = 130, rewardCareer = "battle", rewardXp = 2600, story = "육지가 보이지 않는 바다에서 함대를 이끈다. 모든 해역의 함대전을 이긴 제독만 설 수 있는 자리다." },
 	{ id = "q_sea_wolf_3", name = "전설의 제독", summary = "해전에서 40번 승리", kind = "win", amount = 40, rewardCoins = 10000, rewardFame = 200, rewardCareer = "battle", rewardXp = 1000, rewardCardId = "nav_star_compass" },
 	{ id = "q_grand_tour_3", name = "북·서유럽 완전 일주", summary = "서로 다른 항구 18곳 방문", kind = "visit", amount = 18, rewardCoins = 3500, rewardFame = 100, rewardCareer = "adventure", rewardXp = 400 },
 	-- 스토리 퀘스트: 동료 이야기 / 역사 참여 / 인물과 연구
@@ -453,8 +476,38 @@ end
 
 -- [지역 현장 탐험 1~5단] 기존 지점·카드·서버 보상/저장 규칙을 그대로 사용한다.
 -- 각 단계는 해당 항구에서만 열리고, 이전 단계의 기록을 완료해야 다음 항구 의뢰가 열린다.
+-- [항로별 역사 단서] 10개 이야기 항로는 기존 6개 해역 해금 규칙과 별도로 분류한다.
+-- 같은 지역에서도 소문·발견·인물 증언·기록·역사 사건이 서로 다른 진입점이 된다.
+local RouteLeads: { [string]: { string } } = {
+	north_sea = { "선술집 소문", "고대 유적 발견", "항구 기록", "지역 증언", "항해 일지" },
+	baltic = { "교역소 소식", "선원의 구술", "광산 장부", "천문 관측", "현장 발견" },
+	red_sea = { "항구 소문", "고대 화폐 발견", "낡은 해도", "선원의 증언", "역사 유적" },
+	west_africa = { "계절풍 관측", "생태 조사", "역사 기록", "항구 사건", "내륙 탐험" },
+	east_africa = { "어민 제보", "현지 구술", "고문서", "박물학자의 요청", "항해 지도" },
+	south_asia = { "장인의 증언", "향신료 거래 소식", "사원 기록", "보석상 제보", "내륙 여행기" },
+	southeast_asia = { "항구 사건", "장인의 기록", "종교 유적", "상인 소문", "현장 목격" },
+	east_asia = { "갯벌 관찰", "교역소 소식", "외교 교류 기록", "측량 일지", "기상 경보" },
+	americas = { "선원의 증언", "식물 표본", "고대 문명 기록", "항해 지도", "탐험가의 일지" },
+	pacific = { "항구 소문", "원주민의 전승", "식물학 발견", "포경선 소식", "원정대의 기록" },
+}
 local RegionalFieldQuests: { { any } } = {
-	{ "red_sea", "홍해·북아프리카", {
+-- [북해·브리튼] 바다의 소문이 고대 유적·조수 관측·로마 방벽 조사로 이어진다.
+	{ "north_sea", "북해·브리튼", {
+		{ "포스 만의 증언", "edinburgh_coast", "edinburgh", "zoo_seal", "포스 만 해안", "물범", "에든버러 부두에 어부가 나타나 물범이 사라진 물길을 묻는다. 실제로 해안을 살펴 해류와 생태의 첫 증거를 기록해." },
+		{ "솔즈베리의 돌", "salisbury_plain", "london", "site_stonehenge", "솔즈베리 평원", "스톤헨지", "바다에서 모은 기록을 확인하던 중 고대 돌기둥의 방향을 표시한 지도가 발견된다. 런던에서 내륙으로 들어가 배치와 전승을 구별해 조사해." },
+		{ "조수의 계산", "auto_geography_london_low", "london", "geo_tides", "런던 해안 관찰", "조수", "유적의 방향을 두고 논쟁이 벌어진다. 런던의 조수 기록과 관측값을 모아 실제 바다의 주기를 먼저 확인해." },
+		{ "방벽 뒤의 이름", "hadrian_hills", "edinburgh", "site_hadrian_wall", "북쪽 로마 방벽", "하드리아누스 방벽", "북쪽 경계에 남은 로마의 돌과 항해 기록이 같은 지도를 가리킨다. 권력의 흔적과 유적의 실제 역사를 조사해." },
+		{ "바다를 재는 도구", "auto_relic_london_low", "london", "relic_sextant", "런던 유물 조사", "육분의", "서로 다른 시대의 해안 기록을 맞춰 보려면 도구 자체의 원리를 확인해야 한다. 런던에서 측량 기구를 조사해 항로의 마지막 빈칸을 채워." },
+	} },
+	-- [발트·스칸디나비아] 교역 소문에서 바이킹 유산과 광산·천문 관측으로 확대된다.
+	{ "baltic", "발트·스칸디나비아", {
+		{ "호박이 흘러온 곳", "copenhagen_shore", "copenhagen", "min_amber", "외레순 해안", "호박", "코펜하겐 교역소의 호박 장부에 원산지가 빠져 있다. 해안에서 실제 표본을 찾아 바닷길의 출발점을 기록해." },
+		{ "바이킹의 뱃머리", "viking_harbor", "bergen", "relic_viking_ship", "옛 바이킹 항구", "바이킹 배", "호박 운송 이야기를 따라간 선원이 오래된 북쪽 항구의 배를 증언한다. 베르겐에서 선박 구조와 역사 기록을 비교해." },
+		{ "철의 가격표", "stockholm_mine", "stockholm", "min_swedish_iron", "스톡홀름 철광", "스웨덴 철", "선박 장인의 증언은 철 공급과 연결된다. 스톡홀름 광산을 조사해 무역의 변화가 실제 기술에 미친 영향을 기록해." },
+		{ "북쪽 밤의 별", "auto_astronomy_copenhagen_low", "copenhagen", "ast_orion", "코펜하겐 천문 관측", "오리온자리", "장거리 항로를 설명하려면 광산과 바닷길뿐 아니라 밤하늘의 기준이 필요하다. 별을 관측하고 이전 항해 일지를 대조해." },
+		{ "붉은 광산의 증거", "falun_mine", "stockholm", "min_falun_copper", "팔룬 광산", "팔룬 구리", "상인에게서 오래된 광산 장부가 도착한다. 팔룬에서 구리의 흔적을 확인하고 북쪽 세계의 교역·자원·항해 기록을 완성해." },
+	} },
+		{ "red_sea", "홍해·북아프리카", {
 		{ "절벽의 홍학", "oran_cliffs", "oran", "zoo_flamingo", "오랑 해안 절벽", "홍학", "오랑 해안에서 물새 무리의 이동과 먹이활동을 조사해." },
 		{ "카르타고 항구의 동전", "tunis_ruins2", "tunis", "relic_carthage_coin", "카르타고 항구 터", "카르타고 동전", "카르타고 옛 항구에 남은 동전의 무늬와 거래 흔적을 기록해." },
 		{ "홍해의 물길", "aden_crater", "aden", "geo_red_sea", "아덴 분화구 저수지", "홍해", "아덴의 화산 지형을 따라 인도양과 이어지는 바닷길을 확인해." },
@@ -517,6 +570,8 @@ for _, route in RegionalFieldQuests do
 		local id = "q_field_" .. route[1] .. "_" .. tostring(stage)
 		local quest: Quest = {
 			id = id, name = route[2] .. " · " .. mission[1],
+			routeId = route[1], routeName = route[2],
+			leadSource = (RouteLeads[route[1]] or {})[stage] or "탐험 소식",
 			kind = "discover_card", exploreSite = mission[2], portId = mission[3], cardId = mission[4],
 			amount = 1, after = prev, difficulty = stage, strand = "history",
 			summary = string.format("지역 현장 %d/5 · %s에서 %s 발견", stage, mission[5], mission[6]),
@@ -800,9 +855,13 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 	return hook, (if hand then hand[2] else fill(t[2], vars))
 end
 
+local Kit = require(script.Parent.StoryKit) :: any
+Kit.LORE = Kit.loreIndex(Quests)
+
 return {
 	Quests = Quests,
 	ById = ById,
 	Grade = Grade,
 	Story = Story,
+	Kit = Kit, -- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전·카드 이야기·인물 말풍선
 }

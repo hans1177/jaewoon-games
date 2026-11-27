@@ -7,7 +7,18 @@ return function(D, S)
 	local MAX_ACTIVE = 5
 
 	-- 발견·방문·연구처럼 플레이어 상태만으로 진행도가 정해지는 퀘스트는 수락하지 않아도 자동으로 보고된다.
-	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true }
+	local AUTO_KINDS = { discover_card = true, discover = true, field = true, visit = true, research = true, understand = true, understand_card = true, present = true, expo = true, joint = true, port_tech = true, landmark = true, launch = true, era = true, stock = true, dividend = true, history = true, people = true, people_talk = true, order_patrol = true, war_clear = true, duel_leader = true }
+
+	-- [연출씬] 장면 분위기·길이·목적지 정보(클라이언트 연출 전용, 저장 안 함)
+	local MOOD = { win = "war", war_clear = "war", duel_leader = "war", order_patrol = "war",
+		research = "scholar", understand = "scholar", understand_card = "scholar", field = "scholar", present = "scholar", expo = "scholar", discover_card = "scholar",
+		deliver = "commerce", stock = "commerce", dividend = "commerce", joint = "commerce" }
+	local function sceneMeta(scene, quest)
+		scene.portId = quest.portId
+		scene.mood = MOOD[quest.kind] or "voyage"
+		scene.long = quest.after ~= nil or quest.routeId ~= nil or quest.strand == "main" or quest.strand == "history" or (quest.difficulty or 0) >= 4
+		return scene
+	end
 
 	local function isAuto(quest)
 		return AUTO_KINDS[quest.kind] == true
@@ -26,6 +37,9 @@ return function(D, S)
 			return if quest.cardId and state.discovered[quest.cardId] then 1 else 0
 		elseif quest.kind == "win" then
 			return state.stats.battlesWon - a.baseWins
+		elseif quest.kind == "war_clear" or quest.kind == "duel_leader" or quest.kind == "choice" then
+			-- [이야기 퀘스트 시스템] 함대전 완수·지도자 대결·선택 분기 (판정은 StoryKit)
+			return D.Quests.Kit.progress(state, quest) or 0
 		elseif quest.kind == "visit" then
 			return S.State.countVisited(state)
 		elseif quest.kind == "field" then
@@ -135,6 +149,9 @@ return function(D, S)
 		if quest.after and not state.quests.done[quest.after] then
 			return false
 		end
+		if quest.needChoice and not D.Quests.Kit.choiceMet(state, quest.needChoice) then
+			return false -- 이야기 분기: 다른 선택을 한 플레이어에게는 안 보인다
+		end
 		if quest.nation and quest.nation ~= state.nationId then
 			return false -- 서막은 시작 국가의 이야기만 보인다
 		end
@@ -200,15 +217,22 @@ return function(D, S)
 		table.insert(msgs, string.format("%s: %s (+%d코인, 명성 +%d)", label, quest.name, quest.rewardCoins, quest.rewardFame))
 		local _, ending = storyOf(quest)
 		table.insert(msgs, "「" .. quest.name .. "」 " .. ending)
-		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "end", name = quest.name, text = ending })
+		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
+		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
+		-- 플레이어가 수동으로 수행한 일반 의뢰 완료 장면은 종전처럼 모두 재생한다.
+		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
+			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
+			state._scenes = state._scenes or {}
+			table.insert(state._scenes, sceneMeta({ kind = "end", name = quest.name, text = ending }, quest))
+			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
+		end
 		if quest.rewardCareer then
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
 		end
 		if quest.rewardCardId then
-			S.Discovery.grantCard(state, quest.rewardCardId, msgs)
+			S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
 		end
-		S.Cardbook.reward(state, "quest", msgs)
+		S.Cardbook.reward(state, "quest", msgs, nil, nil, quest.id)
 		-- 어려운 기술 퀘스트(연속 퀘스트·지식 이해)를 해내면 역사가 앞당겨진다
 		if quest.after or quest.kind == "understand_card" or quest.kind == "understand" then
 			S.Pace.addMsg(state, 5 + math.floor(quest.rewardFame / 10), msgs, "퀘스트 완수")
@@ -277,7 +301,7 @@ return function(D, S)
 		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
 		local hook = storyOf(pick)
 		state._scenes = state._scenes or {}
-		table.insert(state._scenes, { kind = "start", name = pick.name, text = hook, summary = pick.summary })
+		table.insert(state._scenes, sceneMeta({ kind = "start", name = pick.name, text = hook, summary = pick.summary }, pick))
 		table.insert(msgs, string.format("%s — 일지에 새 이야기가 적혔다: 「%s」\n%s\n(%s)", how, pick.name, hook, pick.summary))
 		return pick
 	end
@@ -289,22 +313,56 @@ return function(D, S)
 		end
 		local first = state._hookPort == nil
 		state._hookPort = state.portId
+		-- [방문 주기] 항구가 바뀐 경우에만 자동 연출 한도를 초기화한다.
+		-- 잠시 떠났다가 같은 항구로 돌아오는 정상 방문도 새 방문으로 처리한다.
+		state._autoEventPort = nil
 		if first then
 			return
 		end
-		-- 항구와 날짜로 정해지는 결정적 확률(70%): 같은 도착이면 같은 소문
+		-- [도시 자동 사건] 역사 사건·우연한 의뢰·관찰·인물 방문 중 이번 항구에서 하나만 자연 발동한다.
+		-- 이야기 듣기·의뢰 수락처럼 플레이어가 직접 누른 액션은 기존 흐름을 유지한다.
+		-- 기록/보상은 선택된 사건의 기존 함수만 처리하며, 밀린 사건을 완료 처리하지 않는다.
+		if S.History and S.History.tick(state) then
+			return
+		end
+		-- [10대 항로] 해당 항구에서 첫 번째로 마주친 중요한 지역 단서만 이야기 장면을 연다.
+		-- 별도 보상/진행도는 만들지 않으며, 기존 storySeen 저장으로 중복 연출을 막는다.
+		for _, quest in D.Quests.Quests do
+			if quest.routeId and quest.portId == state.portId and not state.quests.done[quest.id]
+				and (not quest.after or state.quests.done[quest.after])
+				and not state.storySeen["route_clue:" .. quest.id] then
+				state.storySeen["route_clue:" .. quest.id] = true
+				state._scenes = state._scenes or {}
+				local source = quest.leadSource or "현지 제보"
+				local detail = quest.story or quest.summary
+				table.insert(state._scenes, sceneMeta({
+					kind = "start", name = quest.name .. " · " .. source,
+					text = source .. ": " .. detail, summary = quest.summary,
+				}, quest))
+				table.insert(msgs, string.format("%s에서 %s 단서를 확인했다: %s", D.Ports.Ports[state.portId].name, source, quest.name))
+				state._autoEventPort = state.portId
+				return
+			end
+		end
+		-- 항구와 날짜로 정해지는 기존 확률(70%): 같은 도착이면 같은 소문
 		local h = 0
 		for i = 1, #state.portId do
 			h += string.byte(state.portId, i) * i
 		end
 		if (h + state.day * 7) % 10 < 7 then
-			offer(state, msgs, "주점에서 소문을 들었다")
+			local offered = offer(state, msgs, "주점에서 소문을 들었다")
+			if offered then
+				state._autoEventPort = state.portId
+				return
+			end
 		end
-		if S.Chronicle then
-			S.Chronicle.arrive(state, msgs)
+		if S.Chronicle and S.Chronicle.arrive(state, msgs) then
+			state._autoEventPort = state.portId
+			return
 		end
 		if S.Story and S.Story.autoTrigger then
 			S.Story.autoTrigger(state, msgs)
+			if state.autoStory then state._autoEventPort = state.portId end
 		end
 	end
 
@@ -329,6 +387,12 @@ return function(D, S)
 				table.insert(msgs, "일지: 조건을 채웠다 — " .. quest.name)
 			end
 		end
+	end
+
+	-- [이야기 선택] kind "choice" 퀘스트에서 선택지를 고른다. 완료·보상은 기존 자동 정산이 처리한다.
+	function handlers.StoryChoose(state: any, p: any): (boolean, string)
+		local quest = type(p) == "table" and type(p.questId) == "string" and D.Quests.ById[p.questId]
+		return D.Quests.Kit.choose(state, quest, type(p) == "table" and p.value or nil)
 	end
 
 	return { handlers = handlers, storyOf = storyOf, offer = offer, progress = progress, visible = visible, autoDeliver = autoDeliver, autoReport = autoReport, isAuto = isAuto, progressAny = progressAny }

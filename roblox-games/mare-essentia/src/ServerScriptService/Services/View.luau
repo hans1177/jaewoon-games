@@ -634,6 +634,7 @@ return function(D, S)
 		view.pace = S.Pace.viewOf(state)
 		view.world = S.World.viewOf(state)
 		view.diplo = S.Diplomacy.viewOf(state)
+		view.worldNations = S.Econ and S.Econ.worldSummary and S.Econ.worldSummary(state) or nil
 		view.autoStory = state.autoStory
 	view.order = S.Order.viewOf(state)
 	view.room = S.Room.viewOf(state)
@@ -683,6 +684,7 @@ return function(D, S)
 					amount = q.amount,
 					rewardCoins = q.rewardCoins,
 					rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil,
+					story2 = D.Quests.Kit.questExtras(state, q), -- [이야기 퀘스트 시스템] 선택지·대결 상대·인물 대사
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
@@ -695,19 +697,24 @@ return function(D, S)
 			end
 		end
 
-		-- [세계 현장 탐험] 어느 항구에서든 8개 권역의 다음 목적지를 알 수 있게 한다.
+		-- [세계 현장 탐험] 10대 지역별 이야기 항로의 다음 목적지와 단서 유형을 표시한다.
 		-- 서버가 기존 완료 기록과 선행 단계로 계산하므로 새로운 저장 상태는 필요하지 않다.
 		view.quests.fieldRoutes = {}
+		local routeIds = {}
 		for _, q in D.Quests.Quests do
+			if q.routeId then routeIds[q.routeId] = true end
 			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after]) then
 				local destination = D.Ports.Ports[q.portId]
 				table.insert(view.quests.fieldRoutes, {
 					name = q.name, grade = D.Quests.Grade(q),
 					port = destination and destination.name or q.portId,
 					summary = q.summary, here = q.portId == state.portId,
+					routeId = q.routeId, routeName = q.routeName, leadSource = q.leadSource,
 				})
 			end
 		end
+		view.quests.routeCount = 0
+		for _ in routeIds do view.quests.routeCount += 1 end
 		table.sort(view.quests.fieldRoutes, function(a, b)
 			if a.here ~= b.here then return a.here end
 			return a.name < b.name
@@ -715,6 +722,8 @@ return function(D, S)
 
 		-- 도감
 		view.codex = { maxLevel = S.Codex.MAX_LEVEL, animLevel = S.Codex.ANIM_LEVEL, total = #D.Cards.Cards, found = S.State.countDiscovered(state), cards = {}, fields = {}, methods = {}, kinds = {}, rarities = {}, resources = {}, resourceCounts = {}, worldCounts = {}, topicCounts = {}, evidenceCounts = {} }
+		-- [독서 기록] 서버에서 검증된 현재 책갈피만 클라이언트에 전달한다.
+		view.codex.bookmarkId = if state.encyclopediaBookmarkId and state.discovered[state.encyclopediaBookmarkId] then state.encyclopediaBookmarkId else nil
 		local fieldDiscipline = {}
 		for _, disc in D.KnowledgeTree.Disciplines do
 			fieldDiscipline[disc.field] = disc
@@ -725,6 +734,22 @@ return function(D, S)
 		-- [자동 개체 그래프] 기존 정규 원천(탐험지 카드풀, 실물 상품→지식, 연구 선행 노드)에서 직접 연결한다.
 		-- 새 카드/유적/교역품을 기존 표에 추가하면 관계도 자동 늘어나며 중복 저장/외부 서버 요청이 없다.
 		local linkedSites, resourceLinks, explorationLinks = {}, {}, {}
+		local scholarNames = {}
+		for _, scholar in D.Scholars.Scholars do scholarNames[scholar.id] = scholar.name end
+		-- [지식→다음 이야기] 방금 완수한 지역 카드가 다음 퀘스트를 여는 원인을 역산한다.
+		-- 저장을 늘리거나 보상을 재발급하지 않고 기존 after·done 관계만 사용한다.
+		local nextRouteByQuest, nextRouteByCard = {}, {}
+		for _, q in D.Quests.Quests do
+			if q.routeId and q.after then nextRouteByQuest[q.after] = q end
+		end
+		for _, q in D.Quests.Quests do
+			if q.routeId and q.cardId and state.quests.done[q.id] then
+				local nextQuest = nextRouteByQuest[q.id]
+				if nextQuest and not state.quests.done[nextQuest.id] then
+					nextRouteByCard[q.cardId] = nextQuest
+				end
+			end
+		end
 		for _, site in D.Sites.Sites do
 			linkedSites[site.id] = site.name
 			for _, cardId in site.pool do
@@ -811,6 +836,11 @@ return function(D, S)
 			-- [근거 분류] 미발견 카드는 근거 유형을 공개하지 않고, 완료된 카드만 집계.
 			if found then view.codex.evidenceCounts[evidenceId] = (view.codex.evidenceCounts[evidenceId] or 0) + 1 end
 			local art = D.CardArt.Art[c.id]
+			local origin = found and state.cardOrigins and state.cardOrigins[c.id] or nil
+			local originPort = origin and origin.portId and D.Ports.Ports[origin.portId] or nil
+			local originQuest = origin and origin.questId and D.Quests.ById[origin.questId] or nil
+			local originEvent = origin and origin.eventId and (D.Story.ById[origin.eventId] or D.HistoryEvents.ById[origin.eventId]) or nil
+			local originNames = { explore = "현장 탐험", learn = "인물 전수", quest = "퀘스트 완료", visit = "항구 발견", research = "문헌 연구", event = "이야기 사건", discover = "발견", card = "카드 보상" }
 			table.insert(view.codex.cards, {
 				id = c.id,
 				field = c.field,
@@ -835,6 +865,21 @@ return function(D, S)
 				-- 존재 형태·시대·지역·선행 지식은 카드 종류와 독립적으로 도감에 전달한다.
 				era = c.meta and c.meta.era or nil,
 				region = c.meta and c.meta.region and D.Ports.Ports[c.meta.region] and D.Ports.Ports[c.meta.region].name or (c.visitPort and D.Ports.Ports[c.visitPort] and D.Ports.Ports[c.visitPort].name) or nil,
+				-- [개인 백과] 자료의 대표 지역과 실제 플레이어 최초 습득 장소를 구별한다.
+				nextClue = if found and nextRouteByCard[c.id] then {
+					quest = nextRouteByCard[c.id].name,
+					port = D.Ports.Ports[nextRouteByCard[c.id].portId] and D.Ports.Ports[nextRouteByCard[c.id].portId].name or nil,
+					source = nextRouteByCard[c.id].leadSource,
+				} else nil,
+				provenance = if origin then {
+					port = originPort and originPort.name or "위치 미상",
+					day = origin.day,
+					method = originNames[origin.method] or "발견",
+					person = origin.scholarId and scholarNames[origin.scholarId] or nil,
+					quest = originQuest and originQuest.name or nil,
+					site = origin.siteId and linkedSites[origin.siteId] or nil,
+					event = originEvent and originEvent.title or nil,
+				} else nil,
 				prerequisites = cardNode and cardNode.needs or {},
 				domain = domain and D.KnowledgeTree.DomainById[domain] and D.KnowledgeTree.DomainById[domain].name or "기타",
 				rarityGuide = S.Discovery.rarityGuide(c),
@@ -853,6 +898,8 @@ return function(D, S)
 				image = if found and art then art.image else nil,
 				credit = if found and art then art.credit else nil,
 				level = if found then (state.codexLevel[c.id] or 0) else nil,
+				lore = if found then D.Quests.Kit.loreFor(state, D.Quests.Kit.LORE, c.id) else nil, -- [이야기 카드] 완료한 이야기 단락
+				quizDone = found and (state :: any).wikiQuiz ~= nil and (state :: any).wikiQuiz[c.id] == true, -- [백과 읽기 퀴즈] 보상 수령 여부
 				upCost = if found and (state.codexLevel[c.id] or 0) < S.Codex.MAX_LEVEL then S.Codex.upgradeCost(c, state.codexLevel[c.id] or 0) else nil,
 			})
 		end
@@ -1280,7 +1327,14 @@ return function(D, S)
 				local ns = S.Cardbook.navalSupport(state)
 				view.navalSupport, view.navalEffects = ns.lines, ns.entries
 			end
-			view.cardbook = { faction = faction, leader = spec.leader, bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, practiceIds = S.Cardbook.practiceBook(state).ids, practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400), duelSeed = S.Cardbook.get(state).duelSeed, duelLeft = math.max(0, 3 - (if S.Cardbook.get(state).duelDay == math.floor(os.time() / 86400) then (S.Cardbook.get(state).duelWins or 0) else 0)) }
+			-- [건축 시뮬] 이 항구 공사 진행. 곡물 품귀(흉년)면 공사가 멈춘다.
+			local crisis = if S.Econ and S.Econ.crisis then S.Econ.crisis(state, state.portId) else nil
+			D.PortBuildings.Projects.update(state, state.portId, crisis)
+			view.buildProjects = D.PortBuildings.Projects.active(state, state.portId)
+			-- [교역 재미] 상회 등급·축제 예고·라이벌 상단·희귀 화물
+			view.tradeFun = if D.TradeFun then D.TradeFun.view(state, D.Ports, D.Regions) else nil
+			view.buildCelebrate = D.PortBuildings.Projects.recentDone(state, state.portId)
+			view.cardbook = { faction = faction, leader = spec.leader, bonus = spec.bonus, knowledgeCount = select(2, D.CardBook.knowledgeBonus(state.discovered, D.Cards.ById)), owned = S.Cardbook.get(state).owned, tier = spec.tier, deck = S.Cardbook.get(state).deck, ids = spec.ids, slots = S.Cardbook.get(state).slots, pick = S.Cardbook.get(state).pick and S.Cardbook.get(state).pick.ids, practiceIds = S.Cardbook.practiceBook(state).ids, practiceDone = S.Cardbook.get(state).practiceDone == true, day = math.floor(os.time() / 86400), duelSeed = S.Cardbook.get(state).duelSeed, duelFoe = (S.Cardbook.get(state) :: any).duelFoe, duelLeft = math.max(0, 3 - (if S.Cardbook.get(state).duelDay == math.floor(os.time() / 86400) then (S.Cardbook.get(state).duelWins or 0) else 0)) }
 			if S.Battle and S.Battle.deckCache then
 				S.Battle.deckCache[state] = cards
 				S.Battle.deckFaction[state] = faction

@@ -50,6 +50,158 @@ export const GRAPHICS_PRODUCTION_STAGES=Object.freeze([
   'PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN'
 ]);
 
+// [바이브 엔진 8개 전문팀] 하나의 GitHub main을 공유하고 기존 바이브 담당 흐름만 사용한다.
+// 팀별 GitHub Organization/개별 main/새 CI·큐·승인 파이프라인을 추가하지 않는다.
+export const VIBE_ENGINE_TEAMS=Object.freeze([
+  Object.freeze({id:'vibe-core',name:'바이브 엔진·자동 코딩',specialists:Object.freeze([]),owner:'VIBE2_VIBE3',existingScope:'NATIVE_ENGINE_AND_SOURCE_REFACTOR',module:'tools/vibe2-v59-autonomy.mjs',learningDomains:Object.freeze(["DEBUGGING","PERFORMANCE","SECURITY"]),practiceChecks:Object.freeze(["EXACT_SOURCE_CONTRACT","SOURCE_PRESERVING_FUNCTION_REWRITE","COUNTEREXAMPLE_REPLAY","SAVE_AND_NETWORK_REGRESSION"]),requiredProof:Object.freeze(["SOURCE_SHA","DIFF_REVIEW","EXACT_CANDIDATE_TEST","INDEPENDENT_QA"])}),
+  Object.freeze({id:'vibe-graphics',name:'캐릭터·의상·아이콘·재질',specialists:Object.freeze(["GRAPHICS","CREATURE","ICON","UI","MATERIAL"]),owner:'GRAPHICS',existingScope:'GRAPHICS_PRODUCTION_ROOT',module:'assets/vibe-visual-autopilot.js',learningDomains:Object.freeze(["VISUAL_IDENTITY","ASSET_ADAPTATION","UI_STATE"]),practiceChecks:Object.freeze(["SILHOUETTE_AND_TEXTURE_COMPARE","ICON_AND_HUD_TOUCH_READABILITY","MATERIAL_STORY_AND_LOD","SAME_CAMERA_BEFORE_AFTER"]),requiredProof:Object.freeze(["LICENSE_AND_SOURCE_HASH","NATIVE_RENDER_CAPTURE","MOBILE_LAYOUT","FRAME_BUDGET"])}),
+  Object.freeze({id:'vibe-world',name:'건축·시설·배경·지형',specialists:Object.freeze(["BUILDING","ENVIRONMENT"]),owner:'GRAPHICS',existingScope:'ENVIRONMENT_AND_WORLD_DIRECTOR',module:'assets/vibe-environment-director.js',learningDomains:Object.freeze(["ENVIRONMENT_COMPOSITION","WORLD_GENERATION","STREAMING_OPTIMIZATION"]),practiceChecks:Object.freeze(["LANDMARK_STRUCTURE_AND_COLLISION","BIOME_AND_SET_DRESSING","STREAMING_AND_LOD_BUDGET","NAVIGATION_TRAVERSAL_CHECK"]),requiredProof:Object.freeze(["SOURCE_SCENE_REVISION","WORLD_SCREENSHOT","COLLISION_AND_NAVIGATION","MOBILE_FRAME_BUDGET"])}),
+  Object.freeze({id:'vibe-motion',name:'리그·모션·애니메이션',specialists:Object.freeze(["MOTION","ANIMATION"]),owner:'GRAPHICS',existingScope:'MOTION_DIRECTOR',module:'assets/vibe-motion-director.js',learningDomains:Object.freeze(["LIVING_MOTION","ANIMATION_FEEL","CHARACTER_BEHAVIOR"]),practiceChecks:Object.freeze(["REAL_RIG_AND_BONE_COMPATIBILITY","ROOT_AND_FOOT_PLANT","STATE_BLEND_AND_LOOP_SEAM","HIT_CONTACT_TIMING"]),requiredProof:Object.freeze(["REAL_RIG_MAPPING","MOTION_RUNTIME_CAPTURE","CONTACT_AND_LOOP_CHECK","UNCHANGED_DAMAGE_AUTHORITY"])}),
+  Object.freeze({id:'vibe-effects',name:'이펙트·음악·효과음',specialists:Object.freeze(["VFX","MUSIC","SFX"]),owner:'GRAPHICS_AND_AUDIO',existingScope:'PRESENTATION_AND_AUDIO',module:'assets/vibe-motion-effects-director.js',learningDomains:Object.freeze(["VFX","AUDIO_FEEL","CAMERA_LANGUAGE"]),practiceChecks:Object.freeze(["EVENT_LINKED_MISS_SPLASH_AND_IMPACT","MOBILE_PARTICLE_AND_POOL_LIMIT","AUDIO_MIX_AND_LOOP_TRANSITION","VISIBLE_AUDIO_ACTION_SYNC"]),requiredProof:Object.freeze(["EFFECT_EVENT_CAPTURE","AUDIO_SOURCE_RIGHTS","MOBILE_PERFORMANCE","NO_GAMEPLAY_MUTATION"])}),
+  Object.freeze({id:'vibe-story',name:'스토리·세계관·캐릭터 설정',specialists:Object.freeze(["STORY"]),owner:'DESIGN',existingScope:'NARRATIVE_DIRECTION',module:'assets/vibe-character-identity-director.js',learningDomains:Object.freeze(["STORYTELLING","QUEST_DESIGN","CHARACTER_PERSONA"]),practiceChecks:Object.freeze(["WORLD_LORE_CONSISTENCY","NPC_AND_CHARACTER_IDENTITY","QUEST_CAUSAL_CHAIN","SAVE_COMPATIBLE_NARRATIVE_PROGRESSION"]),requiredProof:Object.freeze(["APPROVED_WORLD_DNA","QUEST_STATE_DIFF","DIALOGUE_REVIEW","SAVE_MIGRATION_IF_REQUIRED"])}),
+  Object.freeze({id:'vibe-assets',name:'무료 자산 수급·재가공·로블록스 등록',specialists:Object.freeze([]),owner:'GRAPHICS_AND_ROBLOX_ASSET_UPLOAD',existingScope:'ASSET_PRODUCTION_AND_VERIFIED_OPEN_CLOUD',module:'tools/vibe2-asset-production-plan.mjs',learningDomains:Object.freeze(["ASSET_PRODUCTION","ASSET_ADAPTATION","ROBLOX_STUDIO"]),practiceChecks:Object.freeze(["EXISTING_LIBRARY_FIRST","CC0_RIGHTS_ORIGINAL_BINARY_SHA256","NONDESTRUCTIVE_PLATFORM_REAUTHORING","EXISTING_OPEN_CLOUD_UPLOAD_AND_UNIVERSE_USE_GRANT"]),requiredProof:Object.freeze(["LICENSE_SOURCE_AND_HASH","NATIVE_ASSET_ID_RECEIPT","UNIVERSE_USE_PERMISSION","ACTUAL_GAME_BINDING_AND_RUNTIME_QA"])}),
+  Object.freeze({id:'vibe-research',name:'외부 코드·엔진 연구·검증 학습',specialists:Object.freeze([]),owner:'CANONICAL_LEARNING_AND_QA',existingScope:'VERIFIED_LEARNING_MOTOR',module:'tools/vibe2-learning-motor.mjs',learningDomains:Object.freeze(["DEBUGGING","SECURITY","PERFORMANCE"]),practiceChecks:Object.freeze(["FREE_LICENSED_SOURCE_TECHNIQUE_RESEARCH","SANDBOX_ISOLATION_AND_REPLAY","HOLDOUT_AB_AND_CANARY","VERIFIED_TEACHING_SAMPLE_DISTILLATION"]),requiredProof:Object.freeze(["SOURCE_PROVENANCE_AND_LICENSE","SANDBOX_SECURITY_AUDIT","INDEPENDENT_HOLDOUT","CANONICAL_LEARNING_GATE"])})
+]);
+
+// [바이브 엔진 전문팀] 기존 그래픽 제작기 내부의 책임을 세분화한다. 독립 큐/승인권 없음.
+export const VIBE_ENGINE_SPECIALISTS=Object.freeze([
+  Object.freeze({id:'GRAPHICS',name:'캐릭터·그래픽',family:'CHARACTER',keywords:Object.freeze(["캐릭터","그래픽","초상화","의상","character"]),stage:'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS',owner:'GRAPHICS',details:Object.freeze(["SILHOUETTE","FACE","GARMENT","LOD"])}),
+  Object.freeze({id:'CREATURE',name:'몬스터·생물',family:'CREATURE',keywords:Object.freeze(["몬스터","보스","동물","creature","monster"]),stage:'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS',owner:'GRAPHICS',details:Object.freeze(["SPECIES","BODY_PLAN","RIG","HIT_DEATH"])}),
+  Object.freeze({id:'BUILDING',name:'건축·시설',family:'BUILDING',keywords:Object.freeze(["건축","건물","시설","집","마을","building"]),stage:'ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING',owner:'GRAPHICS',details:Object.freeze(["STRUCTURE","INTERIOR","NAVIGATION","COLLISION"])}),
+  Object.freeze({id:'ENVIRONMENT',name:'배경·지형',family:'ENVIRONMENT',keywords:Object.freeze(["배경","지형","환경","빈땅","바다","environment","terrain"]),stage:'ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING',owner:'GRAPHICS',details:Object.freeze(["BIOME_DNA","LANDMARK","DEPTH","SET_DRESSING","LOD"])}),
+  Object.freeze({id:'ICON',name:'아이콘',family:'UI',keywords:Object.freeze(["아이콘","상징","문장","icon"]),stage:'VFX_UI_AND_PRESENTATION_BINDING',owner:'GRAPHICS',details:Object.freeze(["SILHOUETTE","CONTRAST","MOBILE_READABILITY"])}),
+  Object.freeze({id:'UI',name:'화면·메뉴',family:'UI',keywords:Object.freeze(["메뉴","화면","인터페이스","hud","ui","ux"]),stage:'VFX_UI_AND_PRESENTATION_BINDING',owner:'GRAPHICS',details:Object.freeze(["TOUCH","SAFE_AREA","READABILITY","STATE"])}),
+  Object.freeze({id:'VFX',name:'이펙트',family:'VFX',keywords:Object.freeze(["이펙트","폭발","물보라","파티클","vfx","effect"]),stage:'VFX_UI_AND_PRESENTATION_BINDING',owner:'GRAPHICS',details:Object.freeze(["CONTACT_SYNC","DEPTH","BUDGET"])}),
+  Object.freeze({id:'MOTION',name:'모션·리그',family:'MOTION',keywords:Object.freeze(["모션","리그","걷기","동작","motion","retarget"]),stage:'ANIMATION_AND_MOTION_IDENTITY',owner:'GRAPHICS',details:Object.freeze(["RIG","FOOT_PLANT","ROOT_MOTION","CONTACT"])}),
+  Object.freeze({id:'ANIMATION',name:'애니메이션',family:'ANIMATION',keywords:Object.freeze(["애니","움직임","animation"]),stage:'ANIMATION_AND_MOTION_IDENTITY',owner:'GRAPHICS',details:Object.freeze(["KEY_POSE","BLEND","LOOP","SECONDARY"])}),
+  Object.freeze({id:'MUSIC',name:'음악',family:'AUDIO',keywords:Object.freeze(["음악","브금","bgm","music"]),stage:'VFX_UI_AND_PRESENTATION_BINDING',owner:'AUDIO',details:Object.freeze(["MOOD","LOOP","MIX","RIGHTS"])}),
+  Object.freeze({id:'SFX',name:'효과음',family:'AUDIO',keywords:Object.freeze(["효과음","음향","소리","sfx","audio"]),stage:'VFX_UI_AND_PRESENTATION_BINDING',owner:'AUDIO',details:Object.freeze(["EVENT_SYNC","SPATIAL","VOICES"])}),
+  Object.freeze({id:'STORY',name:'스토리·세계관',family:'ENVIRONMENT',keywords:Object.freeze(["스토리","세계관","서사","story","lore"]),stage:'ART_DIRECTION_AND_VISUAL_TARGET_LOCK',owner:'DESIGN',details:Object.freeze(["WORLD_DNA","STORYTELLING","NPC_IDENTITY"])}),
+  Object.freeze({id:'MATERIAL',name:'재질·조명',family:'MATERIAL',keywords:Object.freeze(["재질","조명","텍스처","lighting","material"]),stage:'MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING',owner:'GRAPHICS',details:Object.freeze(["ROUGHNESS","SHADOW","LOD"])})
+]);
+
+// [에셋 엔진 개선] 실제 게임 수요·출처·무료 라이선스·해시를 먼저 확인한다.
+// 확인된 외부 후보도 적용 전까지 미검증 상태이며 기존 F0~F9 통과를 대신하지 않는다.
+export function createVibeEngineSpecialistPlan({gameId='',request='',target='ROBLOX',assetGaps=[],externalCandidates=[],runtimeEvidence=null,departmentEvidence=[]}={}){
+  const platform=clean(target).toUpperCase(),goal=clean(request).toLowerCase();
+  const gaps=Array.isArray(assetGaps)?assetGaps:[],sources=Array.isArray(externalCandidates)?externalCandidates:[];
+  const full=/(?:모두|전체|전부|전 분야|부서별|역량.?강화|자가.?발전|엔진|engine|고도화)/i.test(goal);
+  const active=VIBE_ENGINE_SPECIALISTS.filter(role=>full||role.keywords.some(key=>goal.includes(key.toLowerCase()))
+    ||gaps.some(row=>clean(row?.family||row?.category||row).toUpperCase()===role.family));
+  const teams=active.map(role=>{
+    const needs=gaps.filter(row=>clean(row?.family||row?.category||row).toUpperCase()===role.family);
+    const pool=sources.filter(row=>clean(row?.family||row?.category).toUpperCase()===role.family);
+    const accepted=pool.filter(row=>['CC0','CC0-1.0','CC0 1.0 UNIVERSAL'].includes(clean(row?.license).toUpperCase())
+      && /^[a-f0-9]{64}$/i.test(clean(row?.sha256||row?.sourceHash))
+      && Boolean(clean(row?.source||row?.sourceUrl||row?.sourcePath))
+      && row?.licenseVerified===true&&row?.commercialUseVerified===true
+      && row?.quarantined!==true&&row?.securityBlocked!==true);
+    return Object.freeze({id:role.id,name:role.name,family:role.family,owner:role.owner,
+      existingStage:role.stage,detailRequirements:role.details,gapCount:needs.length,
+      teamId:VIBE_ENGINE_TEAMS.find(team=>team.specialists.includes(role.id))?.id||null,
+      acquisitionOrder:VIBE_ASSET_ACQUISITION_ORDER,
+      externalSources:Object.freeze(accepted.map(row=>Object.freeze({
+        id:clean(row.id),sourceHash:clean(row.sha256||row.sourceHash),
+        source:clean(row.source||row.sourceUrl||row.sourcePath),license:clean(row.license),
+        status:'VERIFIED_SOURCE_NOT_APPLIED'}))),
+      unsafeOrUnverifiedSourceCount:pool.length-accepted.length,
+      productionSteps:Object.freeze(['CHECK_EXISTING_COMPANY_LIBRARY','CHECK_REPOSITORY_SOURCE',
+        'CHECK_CC0_EXTERNAL_LICENSE_AND_HASH','REAUTHOR_IN_EXISTING_GRAPHICS_STAGE',
+        'BIND_BY_EXISTING_VIBE_GAME_SOURCE_OWNER','SAME_SHA_MOBILE_RUNTIME_BEFORE_AFTER_QA']),
+      state:accepted.length?'SOURCE_VERIFIED_APPLICATION_PENDING':
+        needs.length?'SOURCE_OR_DETAIL_GAP':'INSPECTION_PENDING',
+      gameplayAuthority:false,qaAuthority:false,preparedIsNotApplied:true});
+  });
+  return Object.freeze({version:2,kind:'VIBE_ENGINE_SPECIALIST_IMPROVEMENT',
+    gameId:clean(gameId)||null,platform,teams:Object.freeze(teams),
+    // [부서별 역량 강화] 기존 제작/학습 엔진에만 훈련·증거 요구를 연결한다.
+    // 외부 후보 또는 자체 신고 증거는 PASS/학습 샘플로 자동 승격하지 않는다.
+    departments:Object.freeze(VIBE_ENGINE_TEAMS.map(team=>{
+      const assigned=teams.filter(role=>role.teamId===team.id);
+      const requested=full||assigned.length>0
+        ||team.id==='vibe-core'&&/(?:엔진|자동.?코딩|vibe.?5|코드 개선)/i.test(goal)
+        ||team.id==='vibe-research'&&/(?:학습|연구|외부.?코드|검증)/i.test(goal)
+        ||team.id==='vibe-assets'&&(gaps.length>0||sources.length>0||/(?:자산|에셋|수급|등록)/i.test(goal));
+      const sourceGaps=assigned.reduce((count,row)=>count+row.gapCount,0);
+      const blockers=assigned.reduce((count,row)=>count+row.unsafeOrUnverifiedSourceCount,0);
+      const proofRows=(Array.isArray(departmentEvidence)?departmentEvidence:[])
+        .filter(row=>clean(row?.teamId)===team.id);
+      const pinnedProof=proofRows.filter(row=>
+        clean(row?.gameId)===clean(gameId)&&clean(row?.platform).toUpperCase()===platform
+        &&/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
+        &&/^[a-f0-9]{64}$/i.test(clean(row?.artifactSha256))
+        &&row?.observed===true&&row?.independentQaPassed===true
+        &&row?.securityBlocked!==true);
+      // [부서 학습] 동일 원본·실행 캡처에 묶인 독립 QA 전후 점수만 연습 우선순위에 사용한다.
+      // QA가 승인된 증거라도 공식 학습 게이트·네이티브 승격을 대신하지 않는다.
+      const seenPractice=new Set();
+      const measured=pinnedProof.filter(row=>{
+        const technique=clean(row?.technique).toUpperCase();
+        const before=Number(row?.beforeScore),after=Number(row?.afterScore);
+        if(!team.practiceChecks.includes(technique)
+          ||row?.nativeRuntimeVerified!==true||row?.runtimeObserved!==true
+          ||row?.sourceAndOutputHashesVerified!==true
+          ||!/^[a-f0-9]{64}$/i.test(clean(row?.runtimeCaptureSha256))
+          ||row?.beforeScore==null||row?.afterScore==null
+          ||!Number.isFinite(before)||!Number.isFinite(after)
+          ||before<0||before>100||after<0||after>100)return false;
+        const key=[technique,clean(row.sourceRevision),clean(row.artifactSha256)].join('|');
+        if(seenPractice.has(key))return false;
+        seenPractice.add(key);return true;
+      });
+      const practicePlan=Object.freeze((requested?team.practiceChecks:[]).map((check,index)=>{
+        const records=measured.filter(row=>clean(row.technique).toUpperCase()===check);
+        const delta=records.reduce((sum,row)=>sum+Number(row.afterScore)-Number(row.beforeScore),0);
+        const regressions=records.filter(row=>Number(row.afterScore)<Number(row.beforeScore)).length;
+        const improved=records.filter(row=>Number(row.afterScore)>Number(row.beforeScore)).length;
+        const averageDelta=records.length?Number((delta/records.length).toFixed(2)):null;
+        const priorityScore=regressions?90+regressions*5:
+          !records.length?70:averageDelta<=0?80:Math.max(10,40-averageDelta);
+        const status=regressions?'REPAIR_REGRESSION_AND_REVERIFY':
+          !records.length?'PRACTICE_AND_RUNTIME_EVIDENCE_PENDING':
+          averageDelta<=0?'REPLAN_AND_REVERIFY':'COMPARISON_REVIEWABLE_CANONICAL_LEARNING_PENDING';
+        return Object.freeze({
+          id:team.id+':'+(index+1),technique:check,status,
+          existingModule:team.module,independentQaRequired:true,
+          scoredRuntimeObservations:records.length,improvedObservations:improved,
+          regressionObservations:regressions,averageQualityDelta:averageDelta,
+          priorityScore,canonicalLearningAccepted:false
+        });
+      }));
+      const nextPractice=[...practicePlan].sort((a,b)=>
+        b.priorityScore-a.priorityScore||a.id.localeCompare(b.id))[0]||null;
+      return Object.freeze({
+        id:team.id,name:team.name,owner:team.owner,existingScope:team.existingScope,
+        existingModule:team.module,specialistIds:team.specialists,
+        activeSpecialists:Object.freeze(assigned.map(role=>role.id)),
+        activeForCurrentRequest:Boolean(requested),
+        trainingDomains:team.learningDomains,
+        practicePlan,
+        requiredEvidence:team.requiredProof,
+        nextPractice:nextPractice?Object.freeze({technique:nextPractice.technique,priorityScore:nextPractice.priorityScore,reason:nextPractice.status}):null,
+        scoredRuntimeObservationCount:measured.length,
+        unscoredReviewableEvidenceCount:pinnedProof.length-measured.length,
+        sourceGapCount:sourceGaps,unverifiedExternalCount:blockers,
+        sourceAcquisitionNeeded:team.id==='vibe-assets'&&sources.length>0,
+        reviewableEvidenceCount:pinnedProof.length,
+        rejectedOrUnanchoredEvidenceCount:proofRows.length-pinnedProof.length,
+        status:requested?'DEPARTMENT_CAPABILITY_WORK_PENDING':'NO_DEPARTMENT_WORK_REQUESTED',
+        priority:sourceGaps||blockers?'SOURCE_OR_RIGHTS_REPAIR_FIRST':'EXISTING_ENGINE_CAPABILITY_REVIEW',
+        learningRoute:'EXISTING_CANONICAL_VERIFIED_LEARNING_ONLY',
+        verifiedTrainingSampleGranted:false,externalAssetUploadAuthorized:false,
+        sourceWriteAuthority:'EXISTING_CANONICAL_VIBE_OWNER_ONLY',
+        independentMain:false,newGitHubOrganization:false,
+        separateVerifiedWorkBranch:true,gameplaySaveAndBalancePreserved:true
+      });
+    })),
+    canonicalRepository:'hans1177/jaewoon-games',canonicalMain:'main',
+    status:teams.length?'PLAN_UNVERIFIED':'NO_SPECIALIST_SIGNAL',singleGraphicsRoot:true,
+    independentPipelineForbidden:true,newQueueForbidden:true,webGameAuthoring:false,
+    freeCc0Only:true,originalAssetImmutable:true,gameplayAndSavePreserved:true,
+    runtimeEvidenceObserved:runtimeEvidence?.pass===true,runtimeQaStillRequired:true,releaseAuthority:false,
+    departmentImprovementUsesPinnedRuntimeComparisons:true,canonicalLearningGateUnchanged:true});
+}
+
 export const VIBE_ASSET_ACQUISITION_ORDER = Object.freeze([
   'VERIFIED_COMPANY_ASSET_AND_RIG_LIBRARY',
   'LICENSE_VERIFIED_EXISTING_REPOSITORY_ASSET',
@@ -245,6 +397,176 @@ function derivedPathFor(asset, profileId, index) {
   const base = dot > 0 ? file.slice(0, dot) : file;
   const ext = dot > 0 ? file.slice(dot) : '';
   return `${dir}/derived/${base}--v3-${profileId}-${index + 1}${ext}`;
+}
+
+// [바이브5.9 재창조 엔진] 기존 변형/모션/오디오 제작 책임을 재사용하는 분해·교환·재조합 계약.
+// 완성 메시·오디오·애니메이션 파일을 여기서 꾸며내지 않으며, 검증 불가능한 출처는 차단한다.
+export const VIBE_RECOMPOSITION_FAMILIES=Object.freeze({
+  CHARACTER:Object.freeze({operations:['PART_SWAP','MATERIAL_REAUTHOR','RIG_REBIND'],production:'tools/vibe-variation-gym.mjs'}),
+  CREATURE:Object.freeze({operations:['PART_SWAP','SILHOUETTE_KITBASH','RIG_REBIND'],production:'tools/vibe-variation-gym.mjs'}),
+  BUILDING:Object.freeze({operations:['PART_SWAP','SET_DRESSING','KITBASH'],production:'tools/vibe-variation-gym.mjs'}),
+  ENVIRONMENT:Object.freeze({operations:['LANDMARK_KITBASH','BIOME_BLEND','LOD_REAUTHOR'],production:'assets/vibe-environment-director.js'}),
+  PROP:Object.freeze({operations:['PART_SWAP','KITBASH','MATERIAL_REAUTHOR'],production:'tools/vibe-variation-gym.mjs'}),
+  MATERIAL:Object.freeze({operations:['LAYER_SWAP','SURFACE_REAUTHOR'],production:'assets/vibe-art-pipeline.js'}),
+  UI:Object.freeze({operations:['ICON_LAYER_SWAP','STATE_COMPOSITE'],production:'assets/vibe-presentation-director.js'}),
+  ICON:Object.freeze({operations:['ICON_LAYER_SWAP','STATE_COMPOSITE'],production:'assets/vibe-presentation-director.js'}),
+  VFX:Object.freeze({operations:['EMITTER_REASSEMBLE','EVENT_SYNC'],production:'assets/vibe-motion-effects-director.js'}),
+  MOTION:Object.freeze({operations:['RIG_RETARGET','POSE_LAYER_SWAP','ROOT_MOTION_MATCH'],production:'assets/vibe-motion-director.js'}),
+  ANIMATION:Object.freeze({operations:['RIG_RETARGET','STATE_BLEND','LOOP_STITCH'],production:'assets/vibe-motion-director.js'}),
+  AUDIO:Object.freeze({operations:['STEM_LAYER_SWAP','LOOP_STITCH','SPATIAL_MIX'],production:'assets/vibe-presentation-director.js'}),
+  MUSIC:Object.freeze({operations:['STEM_LAYER_SWAP','LOOP_STITCH','TRANSITION_BLEND'],production:'assets/vibe-presentation-director.js'}),
+  SFX:Object.freeze({operations:['TRANSIENT_LAYER_SWAP','SPATIAL_MIX'],production:'assets/vibe-presentation-director.js'})
+});
+
+// [분해·조립] 사용자가 제공한 ChatGPT 제작물/내부 자산도 원본 권리·실제 바이너리 SHA 증거가 있어야 후보가 된다.
+// 후보 파일 생성과 게임 업로드는 원래의 Blender·네이티브 제작 워커 및 독립 QA가 수행한다.
+export function createVibeAssetRecompositionPlan({
+  gameId='',target='ROBLOX',sourceAssets=[],request='',maxRecipes=8,verifiedObservations=[]
+}={}){
+  const platform=clean(target).toUpperCase();
+  const approved=[],rejected=[],assets=Array.isArray(sourceAssets)?sourceAssets.slice(0,32):[];
+  for(const source of assets){
+    const family=clean(source?.family||source?.category).toUpperCase();
+    const id=clean(source?.id),sha256=clean(source?.sha256||source?.sourceSha256||source?.sourceHash).toLowerCase();
+    const origin=clean(source?.origin).toUpperCase();
+    const license=clean(source?.license).toUpperCase();
+    const rights=license==='CC0'||license==='CC0-1.0'
+      ||['PROJECT-ORIGINAL','CREATED-IN-PROJECT','COMPANY-OWNED'].includes(license)&&source?.ownerRightsVerified===true;
+    const parentSafety=source?.securityBlocked!==true&&source?.quarantined!==true
+      &&source?.gameUseForbidden!==true&&source?.derivativesAllowed!==false;
+    const verified=source?.licenseVerified===true&&source?.commercialUseVerified===true
+      &&source?.sourceBytesVerified===true&&source?.sourceHashVerified===true;
+    const components=Array.isArray(source?.components)?source.components.slice(0,24):[];
+    const parts=components.filter(part=>clean(part?.id)&&clean(part?.slot)
+      &&/^[a-f0-9]{64}$/i.test(clean(part?.sha256||part?.sourceHash))
+      &&part?.sourceBytesVerified===true&&part?.safeForReuse===true);
+    const reasons=[];
+    if(!id||!Object.hasOwn(VIBE_RECOMPOSITION_FAMILIES,family))reasons.push('ASSET_ID_OR_FAMILY_INVALID');
+    if(!/^[a-f0-9]{64}$/.test(sha256))reasons.push('ORIGINAL_SHA256_REQUIRED');
+    if(!rights||!verified)reasons.push('SOURCE_RIGHTS_AND_BINARY_PROOF_REQUIRED');
+    if(!parentSafety)reasons.push('SOURCE_QUARANTINED_OR_MUTATION_FORBIDDEN');
+    if(!parts.length)reasons.push('VERIFIED_DECOMPOSED_PART_REQUIRED');
+    if(origin==='CHATGPT_GENERATED'&&source?.ownerRightsVerified!==true)
+      reasons.push('CHATGPT_OUTPUT_OWNER_RIGHTS_REVIEW_REQUIRED');
+    if(reasons.length){
+      rejected.push(Object.freeze({id:id||null,family:family||null,reasons:Object.freeze(reasons)}));
+      continue;
+    }
+    approved.push(Object.freeze({
+      id,family,sha256,origin,license,
+      parts:Object.freeze(parts.map(part=>Object.freeze({
+        id:clean(part.id),slot:clean(part.slot).toUpperCase(),
+        sha256:clean(part.sha256||part.sourceHash).toLowerCase(),
+        rigProfile:clean(part.rigProfile).toUpperCase()||null,
+        compatibilityGroup:clean(part.compatibilityGroup).toUpperCase()||null
+      }))),
+      production:VIBE_RECOMPOSITION_FAMILIES[family].production,
+      operators:VIBE_RECOMPOSITION_FAMILIES[family].operations
+    }));
+  }
+  const recipes=[],limit=Math.max(0,Math.min(16,Math.floor(Number(maxRecipes)||8)));
+  const requestedText=clean(request).toLowerCase();
+  for(const base of approved){
+    for(const donor of approved){
+      if(base.id===donor.id||base.sha256===donor.sha256)continue;
+      for(const basePart of base.parts){
+        for(const donatedPart of donor.parts){
+          if(recipes.length>=limit)break;
+          if(basePart.slot!==donatedPart.slot)continue;
+          if(base.family!==donor.family)continue;
+          if(basePart.compatibilityGroup&&donatedPart.compatibilityGroup&&
+            basePart.compatibilityGroup!==donatedPart.compatibilityGroup)continue;
+          if(basePart.rigProfile!==donatedPart.rigProfile &&
+            (basePart.rigProfile||donatedPart.rigProfile))continue;
+          const operation=base.operators[0],recipeId='recompose-'+stableHash([
+            base.sha256,donor.sha256,basePart.sha256,donatedPart.sha256,operation,platform
+          ].join('|'));
+          if(recipes.some(row=>row.id===recipeId))continue;
+          recipes.push(Object.freeze({
+            id:recipeId,gameId:clean(gameId)||null,platform,
+            baseAssetId:base.id,donorAssetId:donor.id,
+            parentHashes:Object.freeze([base.sha256,donor.sha256]),
+            replacedPart:Object.freeze({id:basePart.id,slot:basePart.slot,sha256:basePart.sha256}),
+            donorPart:Object.freeze({id:donatedPart.id,slot:donatedPart.slot,sha256:donatedPart.sha256}),
+            operation,compatibleRig:basePart.rigProfile||null,
+            production:base.production,
+            sourceMutation:false,originalParentsImmutable:true,
+            status:'COMPOSITION_RECIPE_NEEDS_NATIVE_AUTHORING_AND_RUNTIME_QA',
+            externalModelMaySuggestParameters:true,externalModelMaySelfApprove:false,
+            nativeOutputProduced:false,gameSourceApplied:false,robloxUploaded:false,
+            authority:'EXISTING_GRAPHICS_AND_NATIVE_GAME_OWNER'
+          }));
+        }
+      }
+    }
+  }
+  const observations=Array.isArray(verifiedObservations)?verifiedObservations:[];
+  // [재조합 학습] 정확한 레시피·부모·도너·플랫폼·해시를 검증하고 재전송 중복을 제거한다.
+  // 기존 원본의 성공·실패 전후 비교는 다음 연습 순서만 바꾼다. 파일 생성/승격 판정에는 사용하지 않는다.
+  const observedKeys=new Set();
+  const evidence=observations.filter(row=>{
+    const recipe=recipes.find(candidate=>candidate.id===clean(row?.recipeId)
+      &&candidate.baseAssetId===clean(row?.parentAssetId));
+    if(!recipe||row?.independentQaPassed!==true||row?.runtimeObserved!==true
+      ||row?.rightsVerified!==true||row?.sourceAndOutputHashesVerified!==true
+      ||!/^[a-f0-9]{40}$/i.test(clean(row?.sourceRevision))
+      ||!/^[a-f0-9]{64}$/i.test(clean(row?.outputSha256)))return false;
+    if(row?.gameId!=null&&clean(row.gameId)!==clean(gameId))return false;
+    if(row?.platform!=null&&clean(row.platform).toUpperCase()!==platform)return false;
+    if(row?.donorAssetId!=null&&clean(row.donorAssetId)!==recipe.donorAssetId)return false;
+    if(row?.baseSourceSha256!=null&&clean(row.baseSourceSha256).toLowerCase()!==recipe.parentHashes[0])return false;
+    if(row?.donorSourceSha256!=null&&clean(row.donorSourceSha256).toLowerCase()!==recipe.parentHashes[1])return false;
+    const key=[recipe.id,clean(row.sourceRevision),clean(row.outputSha256)].join('|');
+    if(observedKeys.has(key))return false;
+    observedKeys.add(key);return true;
+  });
+  const recipeFeedback=Object.freeze(recipes.map(recipe=>{
+    const records=evidence.filter(row=>clean(row.recipeId)===recipe.id);
+    const passed=records.filter(row=>clean(row.outcome).toUpperCase()==='PASS'&&row?.nativeRuntimeVerified===true).length;
+    const failed=records.filter(row=>clean(row.outcome).toUpperCase()==='FAIL').length;
+    const scored=records.filter(row=>row?.beforeScore!=null&&row?.afterScore!=null
+      &&Number.isFinite(Number(row.beforeScore))&&Number.isFinite(Number(row.afterScore))
+      &&Number(row.beforeScore)>=0&&Number(row.beforeScore)<=100
+      &&Number(row.afterScore)>=0&&Number(row.afterScore)<=100);
+    const delta=scored.length?Number((scored.reduce((sum,row)=>
+      sum+Number(row.afterScore)-Number(row.beforeScore),0)/scored.length).toFixed(2)):null;
+    // 검증된 실패 회피 + 우수한 후보 재검증을 우선한다. 0개인 후보도 계속 탐색 대상으로 둔다.
+    const priorityScore=Number((records.length?35:60)+(passed*15)-(failed*30)
+      +(delta??0)).toFixed(2);
+    return Object.freeze({recipeId:recipe.id,observations:records.length,
+      runtimePassReferences:passed,verifiedFailureReferences:failed,
+      scoredComparisons:scored.length,meanQualityDelta:delta,priorityScore,
+      productionFileVerified:false,canonicalLearningAccepted:false});
+  }));
+  const rankedRecipeIds=Object.freeze([...recipeFeedback].sort((a,b)=>
+    b.priorityScore-a.priorityScore||a.recipeId.localeCompare(b.recipeId)).map(row=>row.recipeId));
+  return Object.freeze({
+    version:2,kind:'VIBE_ASSET_COMPONENT_RECOMPOSITION',gameId:clean(gameId)||null,
+    platform,request:requestedText.slice(0,180),families:Object.freeze(Object.keys(VIBE_RECOMPOSITION_FAMILIES)),
+    inspectedCount:assets.length,approvedCount:approved.length,rejectedCount:rejected.length,
+    approvedParents:Object.freeze(approved),rejectedParents:Object.freeze(rejected),
+    recipes:Object.freeze(recipes),recipeFeedback,rankedRecipeIds,
+    nextPracticeRecipeId:rankedRecipeIds[0]||null,
+    verifiedObservations:Object.freeze(evidence.map(row=>Object.freeze({
+      recipeId:clean(row.recipeId),outputSha256:clean(row.outputSha256),
+      sourceRevision:clean(row.sourceRevision),
+      outcome:['PASS','FAIL'].includes(clean(row.outcome).toUpperCase())?clean(row.outcome).toUpperCase():'OBSERVED_ONLY'
+    }))),
+    rejectedOrUnanchoredObservations:observations.length-evidence.length,
+    incumbentAlgorithms:Object.freeze(['EXISTING_BLENDER_KITBASH','EXISTING_MOTION_RETARGET',
+      'EXISTING_V3_VARIANT_TOURNAMENT','EXISTING_EPSILON_GREEDY_VARIATION_GYM']),
+    externalFreeModelRouter:'tools/vibe2-gemini-free-rotation.mjs#selectVibe59FreeExperts',
+    verifiedLearningOwner:'tools/department-learning-memory.mjs',
+    externalDistillationOwner:'tools/vibe2-external-ai-distillation.mjs',
+    noNewQueueOrPipeline:true,
+    noOriginalOverwrite:true,gameplayAndSavePreserved:true,
+    verifiedObservationIsNotModelTraining:true,feedbackChangesPracticeOrderOnly:true,
+    automaticModelWeightUpdate:false,
+    runtimeQaAndOwnerReviewStillRequired:true,
+    status:recipes.length?'RECIPES_PENDING_NATIVE_AUTHORING_AND_RUNTIME_QA':
+      rejected.length?'SOURCE_OR_PART_VERIFICATION_REQUIRED':'NO_COMPATIBLE_VERIFIED_PARTS',
+    authority:'GRAPHICS_PRODUCTION_RESEARCH_ADVISORY_ONLY'
+  });
 }
 
 export function createVibeAssetVariantPlan({ asset = {}, requestedTransforms = ASSET_TRANSFORMS, variantCount = 3 } = {}) {
@@ -570,6 +892,9 @@ export function createVibeGraphicsProduction({
   graph=null,
   events=[],
   assetProductionPlan=null,
+  reconstructionSources=[],
+  reconstructionObservations=[],
+  departmentEvidence=[],
   runtimeEvidence=null,
   candidateRevision='',
   sourceRevision='',
@@ -590,6 +915,16 @@ export function createVibeGraphicsProduction({
 }={}){
   const platforms=graphicsProductionPlatforms(target);
   const changeRequestStability=createVibeOwnerChangeRequestStability({request,previousRequests:previousOwnerRequests,affectedScopes});
+  const assetRecomposition=createVibeAssetRecompositionPlan({
+    gameId,target:platforms.length===1?platforms[0]:'ROBLOX',
+    request,sourceAssets:reconstructionSources,verifiedObservations:reconstructionObservations
+  });
+  const engineImprovement=createVibeEngineSpecialistPlan({
+    gameId,request,target:platforms.length===1?platforms[0]:'ROBLOX',
+    assetGaps:assetProductionPlan?.familyAssetOptimization?.familyTasks?.filter(row=>row?.requested===true)||[],
+    externalCandidates:assetProductionPlan?.externalAcquisition?.candidates||[],
+    runtimeEvidence,departmentEvidence
+  });
   const artSpec=createVibeArtPipeline({request,target:platforms.length===2?'native':String(platforms[0]||target).toLowerCase(),quality,style});
   const visualDirection=planVibeStyleAwareGraphicsAutopilot({game,world,characters,platform:platforms.length===2?'mobile':String(platforms[0]||'mobile').toLowerCase()});
   const visualWork=planVibeVisualAutopilot({files,graph,request});
@@ -603,7 +938,11 @@ export function createVibeGraphicsProduction({
   const presentation=planVibePresentationAutopilot({
     files,events,request,changeRequest:changeRequestStability,game,world,
     performanceTelemetry:verifiedFrameSample
-      ? {actualRuntime:true,frameMs:Number(engineMeasurementCapture.frameMs)}
+      ? {actualRuntime:true,frameMs:Number(engineMeasurementCapture.frameMs),
+        captureHash:clean(engineMeasurementCapture.captureHash).toLowerCase(),
+        frameSamplesMs:Array.isArray(engineMeasurementCapture.frameSamplesMs)
+          ?engineMeasurementCapture.frameSamplesMs:undefined,
+        resources:engineMeasurementCapture.resources||null}
       : null,
     uiSurfaces:(Array.isArray(game?.interfaceComposition)?game.interfaceComposition:Array.isArray(game?.uiSurfaces)?game.uiSurfaces:[]).filter(row=>row&&typeof row==='object')
   });
@@ -725,8 +1064,21 @@ export function createVibeGraphicsProduction({
   const sceneSource=(sceneObjectRequirements||[]).length?sceneObjectRequirements:(world?.requiredObjects||game?.requiredSceneObjects||[]);
   const sceneRequirements=Object.freeze((sceneSource||[]).map(row=>typeof row==='string'?Object.freeze({id:row,required:true}):Object.freeze({...row})).filter(row=>clean(row?.id)));
   const runtimeEvidenceBase=runtimeEvidence&&typeof runtimeEvidence==='object'?runtimeEvidence:{};
-  const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence)?{
+  // [신규 네이티브 파생 자산] 실제 소스에 반영되기 전이라도 같은 그래픽 루트에서
+  // 각 GLB의 실게임 모바일 캡처·측정값이 없으면 GRAPHICS_PASS를 봉쇄한다.
+  const nativeImportTargets=Object.freeze((assetPlanBound
+    ?assetProductionPlan?.automaticAssetBindingWork?.targets||[]:[])
+    .filter(row=>row?.status==='NATIVE_IMPORT_AND_RUNTIME_QA_REQUIRED'));
+  const nativeImportHashes=Object.freeze(unique(nativeImportTargets
+    .map(row=>clean(row?.artifactHash).toLowerCase())
+    .filter(hash=>/^[a-f0-9]{64}$/.test(hash))));
+  const nativeImportIncompleteHash=nativeImportTargets.some(row=>
+    !/^[a-f0-9]{64}$/.test(clean(row?.artifactHash).toLowerCase()));
+  const nativeMobileQaRequired=nativeImportTargets.length>0||runtimeEvidenceBase.mobileAssetPerformanceRequired===true;
+  const runtimeEvidenceBound=(Object.keys(runtimeEvidenceBase).length||requiredInterfaceSurfaces.length||sceneRequirements.length||runtimeBeforeAfterEvidence||nativeMobileQaRequired)?{
     ...runtimeEvidenceBase,
+    ...(nativeMobileQaRequired?{mobileAssetPerformanceRequired:true}:{}),
+    ...(nativeImportHashes.length?{mobileAssetHashesRequired:nativeImportHashes}:{}),
     ...(requiredInterfaceSurfaces.length?{requiredInterfaceSurfaces}:{}),
     ...(sceneRequirements.length?{sceneObjectCoverage:{...(runtimeEvidenceBase.sceneObjectCoverage||{}),requirements:sceneRequirements}}:{}),
     ...(runtimeBeforeAfterEvidence?{visualRegression:runtimeBeforeAfterEvidence}:{})
@@ -790,13 +1142,33 @@ export function createVibeGraphicsProduction({
       status:issues.length?'3D_BINDING_REPAIR_REQUIRED':'3D_RUNTIME_EVIDENCE_LINKED',
       issues:Object.freeze(issues),gameplayAuthority:false,saveAuthority:false});
   }));
+  // [네이티브 에셋 연결 실증] 모바일 프레임만 잘 나와도 새 GLB가 적용됐다는 뜻은 아니다.
+  // 기존 게임 소스에 실제 연결된 개체와 동일한 GLB의 런타임 캡처가 있어야 한다.
+  const nativeImportBinding=Object.freeze(nativeImportTargets.map(row=>{
+    const id=clean(row?.assetId),hash=clean(row?.artifactHash).toLowerCase();
+    const observed=spatial3dItems.filter(item=>item.id===id&&item.sourceHash===hash);
+    const issues=[];
+    if(!id||!['ROBLOX','UNITY','WEB'].includes(clean(target).toUpperCase())
+      ||!hash||!(/^[a-f0-9]{64}$/.test(hash)))
+      issues.push('PREPARED_NATIVE_ASSET_ID_OR_HASH_INVALID');
+    if(row?.sourceBound!==true)
+      issues.push('PREPARED_NATIVE_GAME_SOURCE_BINDING_REQUIRED');
+    if(observed.length!==1||observed[0].status!=='3D_RUNTIME_EVIDENCE_LINKED')
+      issues.push('PREPARED_NATIVE_ASSET_EXACT_RUNTIME_MODEL_NOT_OBSERVED');
+    return Object.freeze({id,artifactHash:hash,issues:Object.freeze(issues),
+      nativeRuntimeBound:issues.length===0,gameplayAuthority:false});
+  }));
+  const nativeImportRepairTargets=Object.freeze(nativeImportBinding.filter(row=>row.issues.length)
+    .map(row=>Object.freeze({surface:'NATIVE_ASSET_BINDING',id:row.id,artifactHash:row.artifactHash,
+      findings:row.issues,responsibleExistingStage:'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS',
+      scope:'EXISTING_GAME_SOURCE_AND_VISUAL_ONLY',preserveGameplayAndSave:true})));
   const spatial3dApplication=Object.freeze({
     required:spatial3dItems.length>0,
     requiredCount:spatial3dItems.length,
     runtimeLinkedCount:spatial3dItems.filter(row=>!row.issues.length).length,
     status:spatial3dItems.some(row=>row.issues.length)?'3D_BINDING_REPAIR_REQUIRED':
       spatial3dItems.length?'3D_RUNTIME_EVIDENCE_LINKED':'NO_EXPLICIT_3D_ASSET_DECLARATIONS',
-    items:spatial3dItems,sourceFilesModified:false,
+    items:spatial3dItems,nativeImportBinding,nativeImportIncompleteHash,sourceFilesModified:false,
     applicationOwner:'EXISTING_VIBE_GAME_SOURCE_WORKER',
     verifier:'EXISTING_NATIVE_OR_WEB_RUNTIME_QA',
     cannotClaim3dRuntimePassFromMetadataAlone:true
@@ -815,8 +1187,8 @@ export function createVibeGraphicsProduction({
   })));
   const verifiedReferenceStructure=Object.freeze(referenceImageStudies.filter(row=>row.observation?.verifiedAgainstSource===true).map(row=>Object.freeze({sourceId:row.request.sourceId,structuralEvidence:row.observation.features,directSceneCopyAllowed:false})));
   const runtimeRepairLoop=runtimeAudit?Object.freeze({
-    status:runtimeAudit.pass&&spatialRepairTargets.length===0?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
-    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),...spatialRepairTargets]),
+    status:runtimeAudit.pass&&spatialRepairTargets.length===0&&nativeImportRepairTargets.length===0&&!nativeImportIncompleteHash?'VERIFIED_CHECKPOINT':'RUNTIME_VISUAL_REPAIR_REQUIRED',
+    defects:Object.freeze([...(runtimeAudit.repairTargets||[]),...spatialRepairTargets,...nativeImportRepairTargets]),
     beforeAfter:beforeAfterAudit,
     artDirectionReview,
     preciseArtDirectionRepairTargets:Object.freeze((artDirectionReview?.repairTargets||[]).filter(row=>row.sourcePath&&row.targetId&&row.property)),
@@ -826,7 +1198,55 @@ export function createVibeGraphicsProduction({
     gameplaySaveBalanceMutationForbidden:true,
     recaptureAfterEveryRepair:true,
     closeOnlyAfterRuntimeReobservation:true
-  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:spatialRepairTargets,sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
+  }):Object.freeze({status:'RUNTIME_EVIDENCE_PENDING',defects:Object.freeze([...spatialRepairTargets,...nativeImportRepairTargets]),sameCaptureConditionsRequired:true,recaptureAfterEveryRepair:true,closeOnlyAfterRuntimeReobservation:true});
+  // [바이브 5.9 상용 그래픽 감독] 기존 GRAPHICS_PRODUCTION 안에서 관찰된 결함을
+  // 조형·PBR·모션·조명·VFX·카메라·UI·모바일 책임 단계로 직접 되돌린다.
+  // 계획만 작성해 PASS로 승격하지 않고 동일 소스/화면 재촬영으로 닫는다.
+  const professionalStageFor=defect=>{
+    const key=clean(defect?.axis||defect?.surface||'').toUpperCase();
+    if(/MOBILE|PERFORMANCE|LOD|FRAME/.test(key))return 'PLATFORM_PERFORMANCE_AND_COHESION_FAN_IN';
+    if(/MOTION|ANIMATION|RIG|CONTACT|CHARACTER_NPC_CREATURE/.test(key))return 'ANIMATION_AND_MOTION_IDENTITY';
+    if(/MATERIAL|PBR|LIGHT|COHESION/.test(key))return 'MATERIAL_LIGHTING_AND_PLATFORM_REAUTHORING';
+    if(/VFX|UI|INTERFACE|CAMERA|PRESENTATION|HUD/.test(key))return 'VFX_UI_AND_PRESENTATION_BINDING';
+    if(/ENVIRONMENT|BACKGROUND|LANDMARK|SCENE_OBJECT/.test(key))return 'ENVIRONMENT_BACKGROUND_LANDMARK_AND_SET_DRESSING';
+    if(/SPATIAL_3D|MODEL|MESH|SILHOUETTE|HERO|CHARACTER/.test(key))return 'HERO_CHARACTER_CREATURE_AND_SIGNATURE_ASSETS';
+    return 'RUNTIME_VISUAL_QA_AND_BEFORE_AFTER_REGRESSION';
+  };
+  const repairSourceRows=runtimeRepairLoop.defects.map((defect,index)=>Object.freeze({
+    id:clean(defect?.id)||'visual-defect-'+index,
+    surface:clean(defect?.surface)||'VISUAL_REGRESSION',
+    stage:professionalStageFor(defect),
+    sourcePath:clean(defect?.sourcePath)||null,
+    property:clean(defect?.property)||null,
+    region:defect?.region||null,
+    issue:clean(defect?.issue)||null,
+    findings:Object.freeze(Array.isArray(defect?.findings)?[...defect.findings]:[]),
+    evidenceRequired:clean(defect?.evidenceRequired)||'CURRENT_RUNTIME_SCREENSHOT_AND_RECAPTURE',
+    directExistingSourceEditOnly:true,
+    originalMeshMaterialRigAndGameplayPreserved:true,
+    applicationVerified:false
+  }));
+  const stageOrder=new Map(GRAPHICS_PRODUCTION_STAGES.map((stage,index)=>[stage,index]));
+  repairSourceRows.sort((a,b)=>(stageOrder.get(a.stage)??99)-(stageOrder.get(b.stage)??99)
+    ||a.sourcePath?.localeCompare(b.sourcePath||'')||a.id.localeCompare(b.id));
+  const professionalGraphics=Object.freeze({
+    version:1,
+    owner:'GRAPHICS_PRODUCTION',
+    visualStyleLock:visualDirection?.highEnd?.artBible||null,
+    work:Object.freeze(repairSourceRows),
+    defectCount:repairSourceRows.length,
+    status:runtimeAudit?.pass===true&&runtimeRepairLoop.status==='VERIFIED_CHECKPOINT'
+      ?'RUNTIME_CHECKPOINT_VERIFIED':repairSourceRows.length?'SOURCE_BOUND_REPAIR_REQUIRED':'RUNTIME_CAPTURE_REQUIRED',
+    disciplines:Object.freeze(['MODEL_UV','PBR_MATERIAL','CHARACTER_MOTION','LIGHTING_AND_CAMERA',
+      'VFX_AND_AUDIO_SYNC','UI_AND_READABILITY','MOBILE_RUNTIME_PERFORMANCE']),
+    measuredPresentationBudget:presentation.presentationBudget,
+    screenshotBoundBeforeAfter:beforeAfterAudit||null,
+    artDirectionReview:artDirectionReview||null,
+    actualSourceEditPerformed:false,
+    actualNativeRuntimeVerification:runtimeAudit?.pass===true,
+    noNewQueueOrPipeline:true,
+    preserveGameplaySaveAndOriginalAssets:true
+  });
   const measurementCapture=Object.freeze({
     required:Boolean(artSpec.animation?.required||artSpec.highEndVisual?.required),
     provided:Boolean(engineMeasurementCapture&&typeof engineMeasurementCapture==='object'&&Object.keys(engineMeasurementCapture).length),
@@ -839,6 +1259,7 @@ export function createVibeGraphicsProduction({
     captureDeclarationAloneCannotCloseDefect:true
   });
   const status=runtimeAudit?(runtimeAudit.pass&&spatial3dApplication.status!=='3D_BINDING_REPAIR_REQUIRED'
+    &&nativeImportRepairTargets.length===0&&!nativeImportIncompleteHash
     ?'GRAPHICS_PASS':'RUNTIME_VISUAL_REPAIR_REQUIRED'):'GRAPHICS_PRODUCTION_ACTIVE';
   const evidence=createVibeGraphicsProductionEvidenceRoot({
     gameId,candidateRevision,sourceRevision,platformEvidenceRefs,assetProvenanceRefs,artBibleRef,visualTargetFramesRef,runtimeAudit
@@ -854,6 +1275,8 @@ export function createVibeGraphicsProduction({
     topLevelWorkUnitCount:1,
     soleCoordinator:GRAPHICS_PRODUCTION_INTERNAL_MODULES.coordinator,
     inputPlanner:GRAPHICS_PRODUCTION_INTERNAL_MODULES.inputPlanner,
+    engineImprovement,
+    assetRecomposition,
     internalModules:GRAPHICS_PRODUCTION_INTERNAL_MODULES,
     stages:GRAPHICS_PRODUCTION_STAGES,
     assetProductionPlanBound:assetPlanBound,
@@ -876,7 +1299,11 @@ export function createVibeGraphicsProduction({
     changeRequestStability,
     continuousEvolution:Object.freeze({enabled:true,graphicsPassIsCheckpointNotTerminal:true,continuesAfterInternalRelease:true,continuesAfterPublicRelease:true,highEndCompletionIsReleaseGate:false}),
     runtimeAudit,
+    nativeMobileQaRequired,
+    pendingNativeAssetHashes:nativeImportHashes,
+    nativeImportRepairTargets,
     runtimeRepairLoop,
+    professionalGraphics,
     engineMeasurementCapture:measurementCapture,
     interfaceRequirements:requiredInterfaceSurfaces,
     sceneObjectRequirements:sceneRequirements,
@@ -905,6 +1332,7 @@ export function createVibeGraphicsProduction({
       platformSpecificReauthoring:true,
       beforeAfterVisualRegression:true,
       platformPerformanceEvidence:true,
+      preparedNativeAssetRequiresExactMobileTelemetry:true,
       oneRootEvidenceRecord:true,
       shadowGraphicsPipelineForbidden:true,
       continuousPresentationEvolution:true,

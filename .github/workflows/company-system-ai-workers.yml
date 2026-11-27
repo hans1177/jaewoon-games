@@ -147,7 +147,7 @@ jobs:
           node --check tools/company-recovery-escalation.mjs
           node --check tools/company-recovery-queue.mjs
           node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-evolution.test.mjs qa/company-system-ai-learning.test.mjs qa/company-system-ai-external-learning-feed.test.mjs qa/company-system-ai-supervision-loop.test.mjs qa/company-security-recovery-e2e.test.mjs qa/company-recovery-learning.test.mjs qa/vibe2-external-ai-distillation.test.mjs
-          node --input-type=commonjs -e 'const fs=require("fs");const canonical="company-learning/platform-release-roadmap.json";const roadmap=JSON.parse(fs.readFileSync(canonical,"utf8"));if(roadmap.status!=="OWNER_DIRECT_LOCKED"||roadmap.finalDevelopmentLock?.status!=="LOCKED")throw Error("EXTERNAL_AI_CENTRAL_POLICY_NOT_LOCKED");const docs=[["company-learning/company-log-map.json","MACHINE_EXECUTION_LOG_MAP"],["company-learning/company-architecture-map.json","MACHINE_EXECUTION_ARCHITECTURE_MAP"],["company-learning/security-immune-system.json","OWNER_DIRECTIVE_2026-09-19"]];for(const [p,authority] of docs){const d=JSON.parse(fs.readFileSync(p,"utf8"));if(!Number.isInteger(d.version)||d.authority!==authority)throw Error("EXTERNAL_AI_REFERENCE_DOC_INVALID:"+p);if(p.includes("security-immune")){if(d.policyFile!==p||d.defaultTrust!=="DENY_OR_QUARANTINE_UNTIL_VERIFIED"||d.centralRoadmapBinding?.centralPolicy!==canonical)throw Error("EXTERNAL_AI_SECURITY_DOCUMENT_INVALID:"+p)}else if(d.sourceOfTruth!==p||d.centralPolicy!==canonical)throw Error("EXTERNAL_AI_REFERENCE_DOCUMENT_BINDING_INVALID:"+p)}const directive=JSON.parse(fs.readFileSync("company-directive.json","utf8"));if(!directive.version||directive.policyDocument!==canonical)throw Error("EXTERNAL_AI_DIRECTIVE_INVALID");console.log("EXTERNAL_AI_DOCUMENT_FORMAT=VALID");'
+          node tools/company-shared-context.mjs
 
       - name: Reserve disjoint supervised assignments
         id: matrix
@@ -472,11 +472,21 @@ jobs:
           done < /tmp/system-ai-preverify-commands.txt
           echo 'COMPANY_SYSTEM_AI_PREVERIFY_SATISFIED=YES'
 
+      # [무료 AI 쿨다운 공유] 다른 실행·워커가 남긴 모델별 복구 시각을 기존 actions/cache로 복원한다.
+      - name: Restore shared free AI cooldown (execute-external-ai-assignment)
+        if: steps.preflight.outcome == 'success' && steps.preverify.outcome != 'success'
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
+          key: vibe2-free-ai-cooldown-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}-execute-external-ai-assignment
+          restore-keys: vibe2-free-ai-cooldown-
       - name: Execute external AI assignment
         id: implement
         if: steps.preflight.outcome == 'success' && steps.preverify.outcome != 'success'
         continue-on-error: true
         env:
+          VIBE2_FREE_AI_COOLDOWN_FILE: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
           # [무료 복구] 기존 Gemini 두 슬롯이 제한되면 검증된 무료 공급자만 순서대로 사용한다.
           # API 키만으로 Groq 무료 요금제를 추정하지 않고, 유료 자동 라우팅은 사용하지 않는다.
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -486,10 +496,17 @@ jobs:
           VIBE2_EXTERNAL_FREE_ROTATION: 'YES'
         shell: bash
         run: |
-          set -o pipefail
-          node --input-type=commonjs -e 'const fs=require("fs");const canonical="company-learning/platform-release-roadmap.json";const roadmap=JSON.parse(fs.readFileSync(canonical,"utf8"));if(roadmap.status!=="OWNER_DIRECT_LOCKED"||roadmap.finalDevelopmentLock?.status!=="LOCKED")throw Error("EXTERNAL_AI_CENTRAL_POLICY_NOT_LOCKED");const docs=[["company-learning/company-log-map.json","MACHINE_EXECUTION_LOG_MAP"],["company-learning/company-architecture-map.json","MACHINE_EXECUTION_ARCHITECTURE_MAP"],["company-learning/security-immune-system.json","OWNER_DIRECTIVE_2026-09-19"]];for(const [p,authority] of docs){const d=JSON.parse(fs.readFileSync(p,"utf8"));if(!Number.isInteger(d.version)||d.authority!==authority)throw Error("EXTERNAL_AI_REFERENCE_DOC_INVALID:"+p);if(p.includes("security-immune")){if(d.policyFile!==p||d.defaultTrust!=="DENY_OR_QUARANTINE_UNTIL_VERIFIED"||d.centralRoadmapBinding?.centralPolicy!==canonical)throw Error("EXTERNAL_AI_SECURITY_DOCUMENT_INVALID:"+p)}else if(d.sourceOfTruth!==p||d.centralPolicy!==canonical)throw Error("EXTERNAL_AI_REFERENCE_DOCUMENT_BINDING_INVALID:"+p)}const directive=JSON.parse(fs.readFileSync("company-directive.json","utf8"));if(!directive.version||directive.policyDocument!==canonical)throw Error("EXTERNAL_AI_DIRECTIVE_INVALID");console.log("EXTERNAL_AI_DOCUMENT_FORMAT=VALID");'
+          set -euo pipefail
+          node tools/company-shared-context.mjs
           node tools/company-system-ai-worker.mjs             --task=/tmp/system-ai-task.json             --learning-context=/tmp/system-ai-learning-context.json             --output=/tmp/system-ai-worker-result.json 2>&1 | tee /tmp/system-ai-worker.log
 
+      - name: Save shared free AI cooldown (execute-external-ai-assignment)
+        if: always() && (steps.preflight.outcome == 'success' && steps.preverify.outcome != 'success')
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/vibe2-free-ai-cooldown.json
+          key: vibe2-free-ai-cooldown-${{ github.run_id }}-${{ github.run_attempt }}-${{ strategy.job-index }}-execute-external-ai-assignment-save
       - name: Verify no-change assignment against current main
         id: current_main
         if: steps.implement.outcome == 'failure' && env.SOURCE_MUTATION_REQUIRED != 'true'

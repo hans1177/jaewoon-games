@@ -13,7 +13,7 @@ function fixture(){
   fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({
     status:'OWNER_DIRECT_LOCKED',developmentAccess:{WEB:'ALWAYS_ALLOWED'},
     ownerActiveDevelopmentScope20261009:{status:'ACTIVE',activeTargets:['WEB']},
-    localVibeWebChat:{enabled:true,platform:'WEB'},
+    localVibeWebChat:{enabled:true,platform:'WEB',webGameAuthoringEnabled:true},
     finalDevelopmentLock:{sequenceLock:{status:'LOCKED'}}
   }));
   return {root,catalog:{games:[{id:'insect-survival',name:'곤충 생존기',webPath:'/web-games/insect-survival/'}]},status:{projects:[]}};
@@ -234,4 +234,18 @@ test('WEB autonomous evolution stays review-only until exact merged PR browser a
  assert.match(recovery,/web-playtest-report\.json/);
  assert.match(recovery,/report\.exactPublishedRevision!==true/);
  assert.match(recovery,/g\.sourceRevision===sha/);
+});
+
+test('오너 웹게임 제작 중지 정책은 신규 웹 큐 입력을 차단하고 기존 작업 기록은 보존',t=>{
+  const f=fixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
+  const file=path.join(f.root,'company-learning','platform-release-roadmap.json');
+  const policy=JSON.parse(fs.readFileSync(file,'utf8'));
+  policy.localVibeWebChat.webGameAuthoringEnabled=false;
+  fs.writeFileSync(file,JSON.stringify(policy));
+  const previous={...emptyWebVibeQueue(),tasks:[]};
+  assert.throws(()=>ingestWebVibeTask({
+    task:{id:uuid,game_id:'insect-survival',platform:'web',body:'웹 개발'},
+    queue:previous,catalog:f.catalog,status:f.status,repoRoot:f.root
+  }),/WEB_VIBE_OWNER_WEB_GAME_AUTHORING_STOPPED/);
+  assert.equal(previous.tasks.length,0);
 });
