@@ -251,6 +251,77 @@ end)
 
 local cursor = 1
 local pending, loaded, failed = #queue, 0, 0
+
+-- [현재 항구 우선] 기존 서버 전용 세션 속성으로 아직 요청하지 않은 모델의 순서만 조정한다.
+-- 플레이어 여러 명의 항구를 함께 반영하며, 시작 필수 모델과 이미 실행 중인 요청은 건드리지 않는다.
+local portPriorityConnection
+local core = script.Parent:FindFirstChild("Core")
+if core and #queue > 0 then
+	local shared = ReplicatedStorage:FindFirstChild("Shared")
+	local portOk, portData, regions = pcall(function()
+		return require(shared.Ports), require(shared.Regions)
+	end)
+	if portOk then
+		local portTiers = {}
+		for portId, port in portData.Ports do
+			portTiers[portId] = regions.tierOf(portId, port.lat, port.lon)
+		end
+		-- 실제 항해 장면에서 사용하는 등록 소품만 공용 해상 우선 대상으로 삼는다.
+		local seaModels = {
+			["Naval/ship-medium"] = true, ["Naval/ship-large"] = true, ["Naval/boat-sail-a"] = true,
+			["Naval/buoy"] = true, ["Naval/boat-row-small"] = true, ["Naval/palm-detailed-straight"] = true,
+			["Naval/ship-ghost"] = true, ["Naval/flag-high"] = true, ["Town/rock-wide"] = true,
+			["Terrain/cliff-rock"] = true, ["Terrain/campfire-stones"] = true,
+			["Terrain/log-stack"] = true, ["Terrain/canoe"] = true,
+			["People/Worker_Male"] = true, ["Cargo/fish-large"] = true,
+		}
+		for index, item in queue do
+			item.originalOrder = index
+			if item.kind == "Town" then
+				-- 긴 항구 식별자(예: cape_town)와 원본 파일의 하이픈을 모두 지원한다.
+				local prefix = item.name
+				while prefix and not portTiers[prefix] do
+					prefix = string.match(prefix, "^(.+)[_-][^_-]+$")
+				end
+				item.portId = prefix
+			end
+		end
+		local function reorderPending()
+			if cursor > #queue then return end
+			local activePorts, activeTiers = {}, {}
+			for key, portId in core:GetAttributes() do
+				if string.sub(key, 1, 14) == "MareAssetPort_" and type(portId) == "string" and portTiers[portId] then
+					activePorts[portId] = true
+					activeTiers[portTiers[portId]] = true
+				end
+			end
+			local active = next(activePorts) ~= nil
+			local tail = {}
+			for index = cursor, #queue do
+				local item = queue[index]
+				item.priority = if item.startup then 0
+					elseif not active then 1
+					elseif item.portId and activePorts[item.portId] then 1
+					elseif seaModels[item.key] then 2
+					elseif item.portId and activeTiers[portTiers[item.portId]] then 3
+					elseif not item.portId then 4
+					else 5 + portTiers[item.portId]
+				table.insert(tail, item)
+			end
+			table.sort(tail, function(a, b)
+				if a.priority ~= b.priority then return a.priority < b.priority end
+				return a.originalOrder < b.originalOrder
+			end)
+			for offset, item in tail do queue[cursor + offset - 1] = item end
+		end
+		portPriorityConnection = core.AttributeChanged:Connect(function(key)
+			if string.sub(key, 1, 14) == "MareAssetPort_" then reorderPending() end
+		end)
+		reorderPending()
+	else
+		warn("[MareEssentia] 항구 우선순위 자료 확인 실패, 기존 모델 순서 유지")
+	end
+end
 local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 0, 0, 0
 -- [스튜디오 실물 재질 점검] 등록 원본 9종을 한 번만 집계한다. 게임 저장/선적/재질은 건드리지 않는다.
 local outfitModels, outfitParts, outfitWhite, outfitMapped, outfitMaterialized = 0, 0, 0, 0, 0
@@ -433,6 +504,7 @@ for _ = 1, 12 do
 			end
 			if pending == 0 then
 				ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
+				if portPriorityConnection then portPriorityConnection:Disconnect(); portPriorityConnection = nil end
 				local wearablesReady = r15GarmentExpected > 0 and r15AccessoryExpected > 0
 					and r15GarmentLoaded == r15GarmentExpected and r15AccessoryLoaded == r15AccessoryExpected
 				ReplicatedStorage:SetAttribute("MareR15WearablesState",
