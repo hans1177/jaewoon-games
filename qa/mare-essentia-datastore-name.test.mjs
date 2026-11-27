@@ -4400,6 +4400,24 @@ test('Mare naval support and music retries release ended scene references',()=>{
   for(const token of ['if musicRetry then task.cancel(musicRetry); musicRetry = nil end','musicRetry = task.delay(22, function()','musicRetry = task.delay(retryAfter, function()']) assert.ok(audio.includes(token),token);
 });
 
+test('Mare naval scene cancels skill and mast timers and releases active projectile connections',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const cleanup=naval.slice(naval.indexOf('folder.Destroying:Connect(function()',naval.indexOf('local FX =')),naval.indexOf('local C_SMOKE'));
+  assert.ok(cleanup.includes('for _, timer in FX.sceneTimers do task.cancel(timer) end'));
+  assert.ok(cleanup.includes('table.clear(FX.sceneTimers)'));
+  const skill=naval.slice(naval.indexOf('function FX.skill('),naval.indexOf('function FX.shipFire('));
+  assert.match(skill,/FX\.sceneTimers\[at\] = task\.delay\(dur, function\(\)\s+FX\.sceneTimers\[at\] = nil/);
+  assert.match(skill,/FX\.sceneTimers\[at\] = task\.delay\(2, function\(\)\s+FX\.sceneTimers\[at\] = nil/);
+  const mast=naval.slice(naval.indexOf('local function dismast('),naval.indexOf('local function shoot('));
+  assert.match(mast,/FX\.sceneTimers\[pole\] = task\.delay\(2\.5, function\(\)\s+FX\.sceneTimers\[pole\] = nil/);
+  const shot=naval.slice(naval.indexOf('local function shoot('),naval.indexOf('local function forward(theta)'));
+  for(const block of [mast,shot]){
+    assert.match(block,/conns\[conn\] = conn/);
+    assert.equal([...block.matchAll(/conn:Disconnect\(\)\s+conns\[conn\] = nil/g)].length,2);
+  }
+  assert.ok(shot.includes('if hit then\n\t\t\t\t\tfx()'));
+});
+
 test('Mare naval finish releases connection references and cancels pending timeout without cancelling itself',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
