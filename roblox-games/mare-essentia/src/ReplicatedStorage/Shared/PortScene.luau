@@ -1664,7 +1664,7 @@ local function roadMat()
 	-- 발전도별 바닥: 흙 → 자갈 → 포석 → 화강암 → 대리석
 	return if sceneLevel <= 1 then Enum.Material.Sand
 		elseif sceneLevel == 2 then Enum.Material.Pebble
-		elseif sceneLevel == 3 then Enum.Material.Cobblestone
+		elseif sceneLevel == 3 then Enum.Material.Slate
 		elseif sceneLevel == 4 then Enum.Material.Granite
 		else Enum.Material.Marble
 end
@@ -7066,7 +7066,7 @@ function PortScene.build(info, onFacility)
 		for i = 0, shipFrames do
 			part(folder, Vector3.new(0.8, 8, 0.8), CFrame.new(14 + i * 3, 4.5, -48) * CFrame.Angles(math.rad(90), 0, 0) * CFrame.Angles(0, 0, 0), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
 		end
-		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Wood)
+		part(folder, Vector3.new(22, 1, 1), CFrame.new(23, 1.6, -48), Color3.fromRGB(110, 76, 44), Enum.Material.Slate)
 		local shed = house(folder, Vector3.new(-4, 0, -88), 14 * 1.2, 12 * 1.2, 2, style, rng, Color3.fromRGB(150, 118, 84))
 		sign(folder, shed, "조선소", Color3.fromRGB(90, 60, 30), 12)
 		prompt(folder, Vector3.new(8, 3, -79), "조선소", "들어가기", "yard", onFacility)
