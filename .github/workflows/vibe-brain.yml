@@ -22,6 +22,7 @@ permissions:
   contents: write
   pull-requests: write
   models: read
+  actions: read
 concurrency:
   group: vibe-brain
   cancel-in-progress: false
@@ -76,8 +77,18 @@ jobs:
             source_tree=$(git rev-parse "$source_sha:roblox-games/mare-essentia" 2>/dev/null || true)
             head_tree=$(git rev-parse "HEAD:roblox-games/mare-essentia" 2>/dev/null || true)
             if [[ -n "$source_tree" && "$source_tree" == "$head_tree" ]]; then
-              # [실물 근거] 사진이 없으면 선택하지 않고, 동일 사진 커밋만 분석에 전달한다.
-              if ! git ls-tree --name-only "$frames_sha" | grep -Eq -- '-0\.(png|jpg)$'; then
+              # [실물 근거] 정확한 회차의 1일 결과물만 읽고 만료·누락이면 분석하지 않는다.
+              capture_run=$(git show "$frames_sha:checks.json" 2>/dev/null | jq -r '.captureArtifact.runId // empty' || true)
+              if [[ ! "$capture_run" =~ ^[0-9]{5,}$ ]]; then
+                echo "STUDIO_SCREENSHOT_IMAGES_MISSING=$frames_branch"
+                continue
+              fi
+              rm -rf build/studio-photos
+              if ! gh run download "$capture_run" --repo "$GITHUB_REPOSITORY" --name "studio-frames-$capture_run" --dir build/studio-photos; then
+                echo "STUDIO_SCREENSHOT_ARTIFACT_EXPIRED_OR_UNAVAILABLE=$capture_run"
+                continue
+              fi
+              if ! find build/studio-photos -maxdepth 1 -type f | grep -Eq -- '-0\.(png|jpg)$'; then
                 echo "STUDIO_SCREENSHOT_IMAGES_MISSING=$frames_branch"
                 continue
               fi
@@ -103,7 +114,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
-        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
+        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --studio-dir build/studio-photos --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
         id: verify
         run: |

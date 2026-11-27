@@ -5767,6 +5767,7 @@ end
 function playStory(ev)
 	local overlay = Instance.new("Frame")
 	overlay.Name = "StoryScene"
+	if game:GetService("RunService"):IsStudio() then overlay:SetAttribute("StudioStoryId", tostring(ev.id)) end
 	overlay.Size = UDim2.fromScale(1, 1)
 	overlay.BackgroundColor3 = Color3.new(0, 0, 0)
 	overlay.BorderSizePixel = 0
@@ -6028,6 +6029,7 @@ function playStory(ev)
 		local lay = Instance.new("UIListLayout")
 		lay.Padding = UDim.new(0, 5)
 		lay.Parent = list
+		if game:GetService("RunService"):IsStudio() then overlay:SetAttribute("StudioStoryChoices", #ev.choices) end
 		for _, ch in ev.choices do
 			local label = ch.text
 			local b = mkButton(list, label, COLORS.blue, UDim2.new(1, 0, 0, 46), function()
@@ -10679,12 +10681,19 @@ end
 
 -- 개발 확인용: workspace 속성 DevStory 에 이벤트 id 를 넣으면 그 이야기 장면을 바로 보여 준다(선택해도 저장되지 않는 미리보기)
 workspace:GetAttributeChangedSignal("DevStory"):Connect(function()
+	if not game:GetService("RunService"):IsStudio() then return end
 	local id = workspace:GetAttribute("DevStory")
 	if type(id) == "string" and id ~= "" and view then
 		task.spawn(function()
 			local ev = require(Shared:WaitForChild("Story")).ById[id]
 			if ev then
-				pcall(playStory, ev)
+				-- [Studio 이야기 촬영] 원본 장면·선택지는 유지하고 미리보기에서 서버 선택/보상 호출만 차단한다.
+				local preview = table.clone(ev)
+				preview.submit = function()
+					return { ok = false, message = "촬영 미리보기: 선택은 저장하지 않아요." }
+				end
+				local ok, err = pcall(playStory, preview)
+				if not ok then warn("[Game] 이야기 촬영 오류:", err) end
 			end
 		end)
 	end

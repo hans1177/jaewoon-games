@@ -302,7 +302,7 @@ test('무료 외부 AI는 10분마다 다른 Studio 스크린샷을 분석하고
   const source = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
   const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml', 'utf8');
   for (const needle of [
-    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage)",
+    "readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage, arg('studio-dir'))",
     'coverage.sourceRevision === revision',
     'reviewed.has(label)',
     'STUDIO_VISUAL_REVIEWED=',
@@ -380,7 +380,8 @@ test('Studio 사진 참조는 뒤이은 원본 fetch 에 의해 바뀌지 않는
   assert.ok(capture >= 0 && sourceFetch > capture && pin > sourceFetch,
     'Studio 증거 SHA 를 코드 SHA 재조회 전에 고정해야 한다');
   assert.match(workflow, /git show "\$frames_sha:report\.json"/);
-  assert.match(workflow, /git ls-tree --name-only "\$frames_sha" \| grep -Eq/);
+  assert.match(workflow, /gh run download "\$capture_run"/);
+  assert.match(workflow, /captureArtifact\.runId/);
   assert.match(workflow, /STUDIO_SCREENSHOT_EVIDENCE_COMMIT=/);
   assert.doesNotMatch(workflow, /git update-ref refs\/vibe\/brain-studio-report FETCH_HEAD/);
 });
@@ -480,4 +481,100 @@ test('촬영본 분석 수정은 실제 화면 속성을 바꿀 때만 채택한
   assert.equal(visualDelta('frame.Size = UDim2.fromOffset(200, 40)', 'frame.Size = UDim2.fromOffset(240, 48)'), true);
   assert.equal(visualDelta('label.TextSize = 14', 'label.TextSize = 18'), true);
   assert.equal(visualDelta('local n = count + 1', 'local n = (count or 0) + 1'), false);
+});
+
+// [실물 화면 보관] 원본은 Git 기록에 추가하지 않고 1일 결과물로만 전달한다.
+test('Studio screenshot artifact expires in one day and visual review verifies exact hashes', () => {
+  const studio = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const brain = fs.readFileSync('tools/vibe-brain.mjs', 'utf8');
+  assert.match(studio, /retention-days: 1/);
+  assert.match(studio, /filter: file => !imageExt\.test\(file\)/);
+  assert.match(studio, /entry\.isFile\(\) && !imageExt\.test\(entry\.name\)/);
+  assert.match(studio, /steps\.studio_photo_artifact\.outcome == 'success'/);
+  assert.doesNotMatch(studio, /residentReviewFrames/);
+  assert.match(brain, /checks\.sourceRevision !== revision/);
+  assert.match(brain, /digest\('hex'\) !== hashes\.get\(file\)/);
+});
+
+// [항구 촬영] 정본 181곳을 10개씩 나누고 11개 구도를 모두 기록한다.
+test('Mare port survey covers 181 unique ports without replacing primary QA reports', () => {
+  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const root = 'roblox-games/mare-essentia/tools/devloop/studio-scripts/';
+  const qa = JSON.parse(fs.readFileSync(root + 'mare-qa-click.json', 'utf8'));
+  const town = JSON.parse(fs.readFileSync(root + 'mare-town.json', 'utf8'));
+  const ports = qa.map(row => row.code?.match(/^-- \[항구 위치\] ([a-z0-9_]+)/)?.[1]).filter(Boolean);
+  assert.equal(ports.length, 181);
+  assert.equal(new Set(ports).size, 181);
+  const names = ['01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall','09_rural','10_economy','11_npc_front','12_npc_hair'];
+  for (const name of names) {
+    const i = town.findIndex(row => row.type === 'capture' && row.name === name);
+    assert.ok(i >= 2);
+    assert.equal(town[i-2].type, 'luau');
+    assert.equal(town[i-1].type, 'wait');
+  }
+  assert.match(workflow, /ports\.slice\(\(batch - 1\) \* 10, batch \* 10\)/);
+  assert.match(workflow, /CityPortVisualIdentity/);
+  assert.match(workflow, /if \(!portBatch\)/);
+  assert.match(workflow, /STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED/);
+  assert.match(workflow, /retention-days: 1/);
+});
+
+// [전체 지형] 원본 592 탐험과 27 해역을 기존 실제 장면으로 촬영한다.
+test('Mare world survey binds exact site and sea identities and preserves manual controls', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const base='roblox-games/mare-essentia/';
+  const sites=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Sites.luau','utf8');
+  const ids=[...sites.matchAll(/^\s*\{\s*id\s*=\s*"([a-z0-9_]+)",\s*name\s*=\s*"[^"]+",\s*portId\s*=\s*"([a-z0-9_]+)"/gm)];
+  assert.equal(ids.length,592);
+  assert.equal(new Set(ids.map(m=>m[1])).size,592);
+  const seaDocs=fs.readdirSync(base+'docs/battle_backdrops/naval').filter(n=>n.endsWith('.md'));
+  assert.equal(seaDocs.length,27);
+  const manual=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-voyage-manual.json','utf8'));
+  assert.ok(manual.some(row=>row.code?.includes('rings=true,firstVisit=true')));
+  assert.ok(manual.some(row=>row.code?.includes('MANUAL_MODE_WRONG')));
+  assert.match(workflow,/FIELD_SURVEY_WRONG_SCENE/);
+  assert.match(workflow,/NAVAL_SURVEY_WRONG_SEA/);
+  assert.match(workflow,/MareNavalSurveyExit/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED/);
+});
+
+// [항구 변형 촬영] 게임 정본의 발전 단계와 반구별 계절을 실제 장면 속성으로 검증한다.
+test('Mare port variant survey checks display tier, season and weather without changing saves', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/const variantStart = 107 \+ scenarios\.length/);
+  assert.match(workflow,/Array\.from\(\{length:6\}/);
+  assert.match(workflow,/PORT_SURVEY_SOURCE_TIER/);
+  assert.match(workflow,/PORT_SURVEY_WRONG_SEASON/);
+  assert.match(workflow,/PORT_SURVEY_WRONG_WEATHER/);
+  assert.match(workflow,/PORT_SURVEY_SEASON_DAY/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=525/);
+});
+
+test('Mare field climate survey uses real seasonal weather and lighting in Studio only', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.match(field,/local month = os\.date\("!\*t"\)\.month/);
+  assert.match(field,/RunService:IsStudio\(\) and type\(opts\.studioCaptureMonth\)/);
+  assert.match(field,/if RunService:IsStudio\(\) then\s+if type\(opts\.studioCaptureWeather\)/);
+  assert.match(field,/table\.find\(weatherOptions, wanted\)/);
+  assert.match(field,/biome\.clock = opts\.studioCaptureHour/);
+  assert.match(field,/local clock = \(biome\.clock \+ \(now - clockStart\)/);
+  assert.match(workflow,/FIELD_SURVEY_WRONG_MONTH/);
+  assert.match(workflow,/FIELD_SURVEY_WRONG_PHASE/);
+  assert.match(workflow,/FIELD_SURVEY_PRECIPITATION_WRONG/);
+  assert.match(workflow,/FIELD_SURVEY_CLOCK_MISMATCH/);
+});
+
+test('Mare voyage weather and story survey use existing scenes without choosing or rewarding', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const base='roblox-games/mare-essentia/src/';
+  const game=fs.readFileSync(base+'StarterPlayer/Game.client.luau','utf8');
+  const voyage=fs.readFileSync(base+'ReplicatedStorage/Shared/VoyageScene.luau','utf8');
+  assert.match(game,/if not game:GetService\("RunService"\):IsStudio\(\) then return end\n\tlocal id = workspace:GetAttribute\("DevStory"\)/);
+  assert.match(game,/preview\.submit = function\(\)/);
+  assert.match(game,/StudioStoryChoices/);
+  assert.match(voyage,/precip\.Name = "VoyagePrecipitation"/);
+  assert.match(workflow,/VOYAGE_SURVEY_WEATHER_NOT_RENDERED/);
+  assert.match(workflow,/STORY_SURVEY_RUNTIME_COUNT/);
+  assert.match(workflow,/STORY_SURVEY_CLOSED_NO_CHOICE/);
 });

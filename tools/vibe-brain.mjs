@@ -386,7 +386,7 @@ export function captureSource(root, label) {
   return null;
 }
 
-export function readStudioVisualOrder(ref, coverage = {}) {
+export function readStudioVisualOrder(ref, coverage = {}, photoDir = '') {
   const game = 'mare-essentia';
   const git = (...args) => execFileSync('git', args, { stdio: ['ignore', 'pipe', 'ignore'] });
   try {
@@ -398,7 +398,11 @@ export function readStudioVisualOrder(ref, coverage = {}) {
     const reviewed = new Set(coverage.sourceRevision === revision && Array.isArray(coverage.labels) ? coverage.labels : []);
     const source = ':roblox-games/' + game;
     if (!git('rev-parse', revision + source).equals(git('rev-parse', 'HEAD' + source))) return null;
-    const files = new Set(git('ls-tree', '--name-only', '-z', commit).toString().split('\0'));
+    if (!photoDir || !fs.existsSync(photoDir)) return null;
+    const checks = JSON.parse(git('show', commit + ':checks.json').toString());
+    if (checks.sourceRevision !== revision || !checks.captureArtifact || checks.captureArtifact.retentionDays !== 1) return null;
+    const hashes = new Map((checks.screenshotComparison || []).map(row => [row.name, row.sha256]));
+    const files = new Set(fs.readdirSync(photoDir));
     const images = [];
     const labels = [];
     const digest = crypto.createHash('sha256');
@@ -411,8 +415,12 @@ export function readStudioVisualOrder(ref, coverage = {}) {
       // 책임 함수를 찾지 못한 장면은 보내지 않는다(어느 코드를 고칠지 모르는 시각 지시 방지).
       if (!src || (bound && src.sourceFile !== bound.sourceFile)) continue;
       const file = ['png', 'jpg'].map(ext => label + '-0.' + ext).find(name => files.has(name));
-      if (!file || Number(git('cat-file', '-s', commit + ':' + file)) > 2 * 1024 * 1024) continue;
-      const bytes = git('show', commit + ':' + file);
+      if (!file || !hashes.has(file)) continue;
+      const imagePath = path.join(photoDir, file);
+      const stat = fs.lstatSync(imagePath);
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 2 * 1024 * 1024) continue;
+      const bytes = fs.readFileSync(imagePath);
+      if (crypto.createHash('sha256').update(bytes).digest('hex') !== hashes.get(file)) continue;
       const png = file.endsWith('.png');
       if (png ? !bytes.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex')) : !bytes.subarray(0, 3).equals(Buffer.from('ffd8ff', 'hex'))) continue;
       if (!bound && src) bound = src;
@@ -489,7 +497,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const providers = await buildProviders({ allowGemini: process.env.BRAIN_ALLOW_GEMINI !== 'no', log: m => console.log(m) });
   const ranked = rankProviders(providers, ledger.providers);
   console.log('모델 순서:', ranked.map(p => p.name).join(' → ') || '(없음)', providers.length - ranked.length ? `(한도로 쉬는 모델 ${providers.length - ranked.length}개)` : '');
-  const visual = ranked.some(p => p.acceptsImages) && arg('studio-ref') ? readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage) : null;
+  const visual = ranked.some(p => p.acceptsImages) && arg('studio-ref') ? readStudioVisualOrder(arg('studio-ref'), ledger.visualCoverage, arg('studio-dir')) : null;
   const llm = (prompt, images, { role = 'CODE', retryAfterInvalid = '' } = {}) => {
     const assigned = rankProviders(providers, ledger.providers, Date.now(), role, retryAfterInvalid);
     console.log('VIBE59_FREE_AI_ROLE=' + role + ' MODEL=' + (assigned[0]?.name || 'NONE') +

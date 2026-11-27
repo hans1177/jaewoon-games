@@ -681,6 +681,11 @@ function FieldScene.start(opts)
 		folder:SetAttribute("FieldVisualSeed", portVisualSeed)
 	end
 	local month = os.date("!*t").month
+	-- [Studio 촬영] 기존 계절 계산만 검증한다. 실제 서버·클라이언트의 달력은 변경하지 않는다.
+	if RunService:IsStudio() and type(opts.studioCaptureMonth) == "number" and opts.studioCaptureMonth % 1 == 0
+		and opts.studioCaptureMonth >= 1 and opts.studioCaptureMonth <= 12 then
+		month = opts.studioCaptureMonth
+	end
 	do
 		local port = opts.portId and Ports.Ports[opts.portId]
 		if port and port.lat < -10 then month = (month + 5) % 12 + 1 end
@@ -4182,6 +4187,20 @@ function FieldScene.start(opts)
 			elseif season == "봄" then { "맑음", "흐림", "비", "옅은 안개", "비" }
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		-- [Studio 기후 촬영] 해당 지형에서 실제 허용되는 기상만 선택한다. 실제 플레이의 난수·시간·보상은 유지.
+		if RunService:IsStudio() then
+			if type(opts.studioCaptureWeather) == "table" then
+				for _, wanted in opts.studioCaptureWeather do
+					if table.find(weatherOptions, wanted) then
+						weather = wanted
+						break
+					end
+				end
+			end
+			if type(opts.studioCaptureHour) == "number" and opts.studioCaptureHour >= 0 and opts.studioCaptureHour < 24 then
+				biome.clock = opts.studioCaptureHour
+			end
+		end
 		folder:SetAttribute("FieldWeather", weather) -- [발견물 조건] 비 온 뒤에만 보이는 실물
 		local clockStart = os.clock()
 		local weatherNext = clockStart + climateRng:NextNumber(55, 90)
