@@ -13386,8 +13386,11 @@ syncScene = function()
 			task.delay(secs, function()
 				H.buildDue[pid] = nil
 				H.shownLv[pid] = nil -- 다음 동기화에서 현재 단계로 확정
-				sceneKey = nil
-				if syncScene then pcall(syncScene) end
+				-- [항구 중복 생성 방지] 다른 항구의 공사 완료는 그 항구를 다시 방문할 때 반영한다.
+				if view and view.player and view.player.portId == pid then
+					sceneKey = nil
+					if syncScene then pcall(syncScene) end
+				end
 			end)
 		end
 		portLevel = shownLv
@@ -13429,17 +13432,17 @@ syncScene = function()
 	end
 	local econBucket = tostring(math.floor((eco.index or 100) / 25)) .. "u" .. tostring(math.floor((eco.unemployment or 12) / 5)) .. table.concat(boostIds, "+")
 	local key = p.portId .. "|Y" .. tostring(p.year) .. "|E" .. econKind .. econBucket .. "|L" .. portLevel .. "|S" .. tostring(sim and (sim.stage .. "_" .. math.floor(sim.residents / 4) .. "_T" .. techStamp .. "_I" .. industryStamp .. "_B" .. buildStamp) or "-") .. "|V" .. siteStamp .. (if construction then "|C" else "") .. "|" .. ship.id .. "|" .. table.concat(view.facilities or {}, ",") .. "|" .. tostring(p.hasShipyard) .. "|" .. tostring(#(view.story or {}) > 0) .. "|" .. table.concat(crewIds, ",") .. "|v" .. #((view.diplo and view.diplo.voyagers) or {})
+	-- [분할 생성 재진입 방지] 기존 키와 같더라도 생성 중에는 최신 상태 확인을 예약한다.
+	-- A→B 생성 중 다시 A로 돌아오면 이전 A의 키만 보고 갱신을 누락하지 않는다.
+	if H.portBuilding then
+		H.portBuildPending = true
+		return
+	end
 	if key == sceneKey then
 		if sceneCtl and sceneCtl.setDay then sceneCtl.setDay(p.day) end
 		return
 	end
 	workspace:SetAttribute("PortMood", sim and sim.mood or "steady")
-	-- [분할 생성 재진입 방지] 항구가 여러 프레임에 걸쳐 만들어지는 동안 다시 호출되면 새로 짓지 않고
-	-- 끝난 뒤 최신 상태로 한 번만 다시 확인한다(중복 생성·반쯤 지은 장면 교체 방지).
-	if H.portBuilding then
-		H.portBuildPending = true
-		return
-	end
 	H.portBuilding = true
 	H.portBuildPending = false
 	-- [상태 갱신과 장면 생성 분리] 분할 생성(약 6.5초)을 호출한 쪽이 끝까지 기다리면 State 갱신·탭 전환 같은
