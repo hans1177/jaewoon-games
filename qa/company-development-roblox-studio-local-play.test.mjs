@@ -4341,6 +4341,24 @@ test('Mare nine weapon families have distinct authored normal and skill R15 game
   assert.ok(runner.includes('      script:')&&runner.includes('|| inputs.script }}'),'dedicated weapon and town suites must remain directly executable');
 });
 
+test('Mare active port priority reorders only pending registered models using server-owned state',()=>{
+  const root='roblox-games/mare-essentia/src/ServerScriptService/';
+  const model=fs.readFileSync(root+'AssetLoader.server.luau','utf8');
+  const core=fs.readFileSync(root+'Core.server.luau','utf8');
+  assert.match(core,/script:SetAttribute\("MareAssetPort_" \.\. player\.UserId, session\.state and session\.state\.portId or nil\)/);
+  assert.match(core,/script:SetAttribute\("MareAssetPort_" \.\. player\.UserId, newState\.portId\)/);
+  assert.match(core,/script:SetAttribute\(portAttribute, state\.portId\)/);
+  assert.match(core,/script:SetAttribute\("MareAssetPort_" \.\. player\.UserId, nil\)/);
+  assert.match(model,/for index = cursor, #queue do/);
+  assert.match(model,/item\.priority = if item\.startup then 0/);
+  assert.match(model,/elseif item\.portId and activePorts\[item\.portId\] then 1/);
+  assert.match(model,/elseif seaModels\[item\.key\] then 2/);
+  assert.match(model,/elseif item\.portId and activeTiers\[portTiers\[item\.portId\]\] then 3/);
+  assert.match(model,/return a\.originalOrder < b\.originalOrder/);
+  assert.match(model,/queue\[cursor \+ offset - 1\] = item/);
+  assert.match(model,/portPriorityConnection:Disconnect\(\)/);
+});
+
 test('Mare official Studio QA records complete registered media, model loading and feature verification',()=>{
   const model=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau','utf8');
   const qa=fs.readFileSync('roblox-games/mare-essentia/src/ServerScriptService/StudioQA.server.luau','utf8');
