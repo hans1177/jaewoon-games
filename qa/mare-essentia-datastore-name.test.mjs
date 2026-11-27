@@ -484,7 +484,9 @@ test('적 무기 모션과 비전투 파티 표시는 R15 전투 및 원본 PBR�
   // [완벽 회피 매트릭스] 적 모션만 둔화하고 주인공/스킬 쿨타임은 정상 시간으로 유지한다.
   assert.match(field,/local enemyDt = dtc \* \(if now < \(pl\.matrixSlowUntil or 0\) then 0\.24 else 1\)/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt,/);
-  assert.match(field,/FM\.actor\(e\.fm, st, ph, enemyDt, e\.boss/);
+  assert.match(field,/e\.visualElapsed = math\.min\(0\.15, \(e\.visualElapsed or 0\) \+ enemyDt\)/);
+  assert.match(field,/local visualDt = if farVisual and not visualChanged then e\.visualElapsed else enemyDt/);
+  assert.match(field,/FM\.actor\(e\.fm, st, ph, visualDt, e\.boss/);
   // [파티 전용 회귀] 기존 영입·초상·직업 데이터는 표시하고, 필드 동료 공격·치유·3D 소환은 모두 제외한다.
   const party = field.slice(field.indexOf('-- [비전투 파티]'),field.indexOf('-- 폰: 기본 터치'));
   assert.ok(party.length>1000,'파티 UI 코드 누락');
@@ -4415,6 +4417,19 @@ test('마레 지상 동물은 실제 전방과 종별 보폭으로 움직이며 
   assert.ok(wild.includes('a.homeFloor + a.groundOffset - low'));
   assert.ok(!wild.includes('PivotTo(upright'));
   assert.ok(!wild.includes('CFrame.new(0, 0, -a.travel)'));
+});
+
+test('Mare limits only distant idle and chase joint sampling under frame pressure',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const loop=field.slice(field.indexOf('[적 R15 관절·전술 통합 루프]'),field.indexOf('[비전투 파티]'));
+  const visual=loop.slice(loop.indexOf('local constrainedVisual'),loop.indexOf('FM.actor(e.fm'));
+  assert.ok(loop.indexOf('AC.stepEnemy(e.ac, enemyDt')<loop.indexOf('local constrainedVisual'));
+  assert.ok(loop.indexOf('e.model:PivotTo(CFrame.new(nextPos) * rot)')<loop.indexOf('local constrainedVisual'));
+  for(const token of ['not e.boss','e.ac.state == "idle" or e.ac.state == "chase"','e.hurtAt','e.knockUntil','e.riseUntil','e.guardUntil','e.parryUntil','e.dodgeUntil','not farVisual or visualChanged','math.min(0.15','e.visualElapsed = 0']) assert.ok(visual.includes(token),token);
+  assert.ok(loop.includes('FM.actor(e.fm, st, ph, visualDt, e.boss'));
+  assert.ok(field.includes('if staminaNumber.Text ~= staminaText'));
+  assert.ok(field.includes('if magicAmount.Text ~= magicText'));
+  assert.ok(field.includes('if sb.btn:GetAttribute("CooldownRemaining") ~= remaining'));
 });
 
 test('Mare port construction audit records shared imported assets and separates attempted scenery failures',()=>{

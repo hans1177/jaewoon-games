@@ -9496,18 +9496,20 @@ function FieldScene.start(opts)
 			end
 		end
 		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
-		staminaNumber.Text = string.format("기력 %d", math.floor(pl.stamina + 0.5))
+		local staminaText = string.format("기력 %d", math.floor(pl.stamina + 0.5))
+		if staminaNumber.Text ~= staminaText then staminaNumber.Text = staminaText end
 		if magicFill then
 			magicValue = math.min(100, magicValue + math.min(dt, 0.1) * 5)
 			magicFill.Size = UDim2.fromScale(magicValue / 100, 1)
-			magicAmount.Text = string.format("마력 %d", math.floor(magicValue + 0.5))
+			local magicText = string.format("마력 %d", math.floor(magicValue + 0.5))
+			if magicAmount.Text ~= magicText then magicAmount.Text = magicText end
 		end
 		for key, sb in combatBtns do
 			if key == "heavy" or key == "sweep" then
 				local style = Weapons.actionDesign(wpn)
 				local detailed = if key == "heavy" then style.heavyName else style.sweepName
 				sb.label = if key == "heavy" then style.heavy else style.sweep
-				sb.btn:SetAttribute("SkillFullName", detailed)
+				if sb.btn:GetAttribute("SkillFullName") ~= detailed then sb.btn:SetAttribute("SkillFullName", detailed) end
 				-- 무기 교체 시 기존 아이콘 이미지도 바로 해당 무기 계열로 전환한다.
 				local iconKey = if wpn.family == "fist" then "Menu/cc0_glove"
 					elseif wpn.ranged then "Menu/cc0_crossbow"
@@ -9612,7 +9614,8 @@ function FieldScene.start(opts)
 					end
 				end
 			end
-			sb.btn:SetAttribute("CooldownRemaining", math.max(0, left))
+			local remaining = math.max(0, left)
+			if sb.btn:GetAttribute("CooldownRemaining") ~= remaining then sb.btn:SetAttribute("CooldownRemaining", remaining) end
 		end
 	end))
 	-- [모바일 오입력 방지] 탐험 화면 탭은 공격으로 처리하지 않고 공격 버튼만 받는다.
@@ -10119,7 +10122,9 @@ function FieldScene.start(opts)
 				local band = math.clamp((flat.Magnitude - ring) / 6, -0.85, 0.75)
 				local tangent = flat.Unit:Cross(Vector3.yAxis) * e.circleDir
 				desired = (tangent * 0.44 + flat.Unit * band) * e.ac.def.speed * 0.70
-				e.model:SetAttribute("FieldTacticalIntent", "guard-circle")
+				if e.model:GetAttribute("FieldTacticalIntent") ~= "guard-circle" then
+					e.model:SetAttribute("FieldTacticalIntent", "guard-circle")
+				end
 			elseif e.ac.def.keepAway and e.ac.state == "chase" and not frozen
 				and e.tacticGoal and (e.tacticIntent == "retreat" or wish == 0) then
 				-- 궁수/총병은 조준 전 후방 재배치·수평 견제. 공격 예고/발사 시에는 기존 정지 규칙이 우선.
@@ -10192,14 +10197,21 @@ function FieldScene.start(opts)
 				-- [원거리 관절 경량화] 전술·이동·피해·공격권은 위의 기존 매 프레임 루프 그대로 유지한다.
 				-- 화면에서 먼 일반 적의 R15 관절 샘플링만 저빈도로 갱신해 모바일 CPU 부하를 낮춘다.
 				-- 공격 준비/타격/회복, 피격, 방어, 다운·기상, 두목은 매 프레임 즉시 반영한다.
-				local farVisual = not e.boss and flat.Magnitude > (if visualMobile then 65 else 90)
-					and e.ac.state ~= "windup" and e.ac.state ~= "active" and e.ac.state ~= "recover"
+				local constrainedVisual = visualMobile or dt > 1 / 35
+				local farVisual = not e.boss and flat.Magnitude > (if constrainedVisual then 48 else 90)
+					and (e.ac.state == "idle" or e.ac.state == "chase")
 					and now >= (e.hurtAt or -100) + 0.3
 					and now >= (e.knockUntil or 0) and now >= (e.riseUntil or 0)
 					and now >= (e.guardUntil or 0) and now >= (e.parryUntil or 0)
 					and now >= (e.dodgeUntil or 0)
-				if not farVisual or now >= (e.nextVisualTickAt or 0) then
-					e.nextVisualTickAt = if farVisual then now + (if visualMobile then 0.13 else 0.09) else 0
+				-- [프레임 예산] 먼 대기/추적의 관절 합성만 제한한다. 상태 전환은 즉시 반영.
+				local visualChanged = e.lastVisualCombatState ~= e.ac.state
+				e.visualElapsed = math.min(0.15, (e.visualElapsed or 0) + enemyDt)
+				if not farVisual or visualChanged or now >= (e.nextVisualTickAt or 0) then
+					e.lastVisualCombatState = e.ac.state
+					e.nextVisualTickAt = if farVisual then now + (if constrainedVisual then 0.24 else 0.09) else 0
+					local visualDt = if farVisual and not visualChanged then e.visualElapsed else enemyDt
+					e.visualElapsed = 0
 				local st, ph = "IDLE", (now / 2.4 + e.motionPhase) % 1
 				local acs = e.ac.state
 				if now < (e.knockUntil or 0) then
@@ -10295,7 +10307,7 @@ function FieldScene.start(opts)
 						bob, lean = 0.22 * (1 - math.clamp((ph - 0.25) / 0.2, 0, 1)), -0.55
 					end
 				end
-				FM.actor(e.fm, st, ph, enemyDt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
+				FM.actor(e.fm, st, ph, visualDt, e.boss, if e.boss then 1.45 else 1.35, CFrame.new(0, bob, 0) * CFrame.Angles(lean, 0, roll),
 					(kindId == "archer" or e.throwAsset ~= nil) and wish < 0, nil,
 					if e.throwAsset then nil else (e.weapon and e.weapon.motion),
 					math.clamp(traveled / math.max(dtc, 0.016) / math.max(e.ac.def.speed, 1), 0.18, 1.25),
