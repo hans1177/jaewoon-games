@@ -2070,7 +2070,55 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "0d95d90b08ad9cc8-0d95d90b08ad9cc8",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "triangles": 404,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "8c9f4845a790893af9a1bd47878f139b79fc1478276c919020716407480752f5",
+       "bytes": 231911
+      },
+      {
+       "name": "rear.png",
+       "sha256": "c07fa46d4bb9573510e9c58f3f982b0f9e1acee74ec9a05e3e495e56ebc16eb6",
+       "bytes": 235602
+      },
+      {
+       "name": "side.png",
+       "sha256": "73a62dd9e5343bac6c7881d2fea7263732535bd1e8ca4fde3720d89d2f3390be",
+       "bytes": 231779
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "1531564b6419524c106103aa7ff469d4d6e5551d",
+     "sourceMemberSha256": "0d95d90b08ad9cc88dbe90556044d76a2c339a9269e878013ebf6fcbc2c51d36",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "goat",
@@ -2107,7 +2155,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "7b28a07e550edf9bbefbc3e3f2a67cc4e27bd094",
+     "sourceRevision": "1531564b6419524c106103aa7ff469d4d6e5551d",
      "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2116,7 +2164,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
+     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
+     "triangles": 396,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "7d48589dc1300de78c1a110e18c9a5ffede0bbde27deee5ca18c54c92860a04e",
+       "bytes": 245569
+      },
+      {
+       "name": "rear.png",
+       "sha256": "fff4a0d43ccc06d8b3d7c0d98be5d888bd9bab13b592d43a163a00ed86f8dd3b",
+       "bytes": 239321
+      },
+      {
+       "name": "side.png",
+       "sha256": "74ebe46ea09d23995af50be39a4e2e8c3dc31e1931cc303e90177efd686d0d5d",
+       "bytes": 239464
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "hummingbird",
@@ -2153,7 +2229,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "7b28a07e550edf9bbefbc3e3f2a67cc4e27bd094",
+     "sourceRevision": "1531564b6419524c106103aa7ff469d4d6e5551d",
      "sourceMemberSha256": "c080be83036f5ee91d22ea523e683a72ee994d57090534412bb13e1b46753e01",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2162,7 +2238,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "c080be83036f5ee9-c080be83036f5ee9",
+     "sourceMemberSha256": "c080be83036f5ee91d22ea523e683a72ee994d57090534412bb13e1b46753e01",
+     "triangles": 256,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "675b59c7efe20a33706e21209ef7963e23d3042097d353793564f18e04451038",
+       "bytes": 227457
+      },
+      {
+       "name": "rear.png",
+       "sha256": "fbb2239150ad7705e3528fa2179a115dbcf55266fa28bf3a4feaa5045e7d302a",
+       "bytes": 228995
+      },
+      {
+       "name": "side.png",
+       "sha256": "541a825d4274a6e1864d8a4ab8d6369e6f64b074a41fe908023dbb16b00bf2af",
+       "bytes": 226598
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "kiwi",
@@ -3018,7 +3122,14 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
    },
    {
     "name": "oryx",
@@ -3172,7 +3283,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -15414,8 +15525,11 @@
     }
    ]
   },
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "45917526645",
+   "runId": "45919895002",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
@@ -15436,6 +15550,7 @@
    "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
  }
 }
