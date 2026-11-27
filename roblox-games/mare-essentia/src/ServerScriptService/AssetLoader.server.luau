@@ -286,9 +286,20 @@ if studioAudit and #queue == 0 then
 	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "FAIL")
 	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "FAIL")
 end
+-- [초기 경합 제한] 기존 클라이언트의 5초 대기 구간에서만 필수 모델에 수입 슬롯을 양보한다.
+-- 느린 필수 모델 하나가 전체 큐를 막지 않도록 5초 이후에는 기존 12개 동시 로딩을 재개한다.
+local loadStarted = os.clock()
+local priorityWindowEnd = loadStarted + 5
+local startupTotal = priorityPending
 for _ = 1, 12 do
 	task.spawn(function()
 		while cursor <= #queue do
+			while priorityPending > 0 and cursor <= #queue and not queue[cursor].startup
+				and os.clock() < priorityWindowEnd do
+				task.wait(0.1)
+			end
+			-- 대기 중 다른 작업자가 마지막 항목을 가져갔을 수 있다.
+			if cursor > #queue then break end
 			local item = queue[cursor]
 			cursor += 1
 			local good, container = pcall(InsertService.LoadAsset, InsertService, item.id)
@@ -425,6 +436,8 @@ for _ = 1, 12 do
 			end
 			if pending == 0 then
 				ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
+				print(string.format("[MareEssentia] 모델 전체 로드 %d/%d개, 실패 %d개, 경과 %.2f초",
+					loaded, #queue, failed, os.clock() - loadStarted))
 				local wearablesReady = r15GarmentExpected > 0 and r15AccessoryExpected > 0
 					and r15GarmentLoaded == r15GarmentExpected and r15AccessoryLoaded == r15AccessoryExpected
 				ReplicatedStorage:SetAttribute("MareR15WearablesState",
@@ -481,13 +494,14 @@ for _ = 1, 12 do
 	end)
 end
 
-local deadline = os.clock() + 30
+local deadline = loadStarted + 30
 while priorityPending > 0 and os.clock() < deadline do
 	task.wait(0.25)
 end
 if priorityPending > 0 then
 	warn("[MareEssentia] 우선 모델 불러오기 제한시간 도달", priorityPending)
 end
-print(string.format("[MareEssentia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개", loaded, failed, pending))
+print(string.format("[MareEssentia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개, 필수 요청 종료 %d/%d, 경과 %.2f초",
+	loaded, failed, pending, startupTotal - priorityPending, startupTotal, os.clock() - loadStarted))
 ReplicatedStorage:SetAttribute("MareAssetsReady", true)
 
