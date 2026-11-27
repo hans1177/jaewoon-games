@@ -2315,6 +2315,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local g = Instance.new("ScreenGui")
 		g.Name = "BoardingGui"
 		local cardTimers = {}
+		local cardAiThread
 		g.ResetOnSpawn = false
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
@@ -2844,6 +2845,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if scorePulse then scorePulse:Cancel(); scorePulse = nil end
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
+			-- [카드 인공지능 종료] 결과 전달 중인 현재 스레드는 취소하지 않는다.
+			if cardAiThread and cardAiThread ~= coroutine.running() and coroutine.status(cardAiThread) ~= "dead" then
+				task.cancel(cardAiThread)
+			end
+			cardAiThread = nil
 		end)
 		local rowTargets = { me = {}, foe = {} }
 		-- 카드를 고르면 그 카드가 놓일 줄(특수 카드는 판 전체)이 금빛으로 깜빡여 어디에 놓이는지 바로 보이게 한다.
@@ -4729,17 +4735,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if #names > 0 then info.Text = t("연습전 첫 손패 조합 · ", "Practice opening combo · ") .. table.concat(names, " → ") end
 		end
 
-		task.spawn(function()
+		cardAiThread = task.spawn(function()
 			task.wait(1.0)
 			local guard = 0 -- 실제로 낸 수만 센다 (생각하는 시간은 세지 않는다: 예전엔 60초가 지나면 판이 갑자기 끝났다)
 			-- 연습전은 시간제한 없음. 그 밖의 대결은 한 판 10분을 넘기면 "물러남"으로 끝낸다.
 			local deadline = if opts.enemyName == "연습전" then math.huge else os.clock() + 600
-			while not m.over and not finished and guard < 400 and os.clock() < deadline do
+			while not m.over and not finished and g.Parent and guard < 400 and os.clock() < deadline do
 				if playing then
 					task.wait(0.1)
 				elseif m.turn == "foe" then
 					task.wait(0.9)
-					if finished then break end
+					if finished or not g.Parent then break end
+					if playing or m.turn ~= "foe" or m.over then continue end
 					local ok, msg, res, _, playedCard = BC.ai(m, "foe")
 					guard += 1
 					if ok then
@@ -4747,7 +4754,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					end
 				elseif auto then
 					task.wait(0.5)
-					if finished or playing or m.turn ~= "me" or m.over then continue end
+					if finished or not g.Parent then break end
+					if not auto or playing or m.turn ~= "me" or m.over then continue end
 					local ok, msg, res, act, playedCard = BC.ai(m, "me")
 					guard += 1
 					if ok then
@@ -4758,7 +4766,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					task.wait(0.1)
 				end
 			end
-			if finished then
+			if finished or not g.Parent then
+				cardAiThread = nil
 				return
 			end
 			local wonMatch = m.winner == "me"
@@ -4779,6 +4788,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
 			task.wait(0.5)
 			if finished or not g.Parent then return end
+			cardAiThread = nil
 			g:Destroy()
 			boardingOn = false
 			onEnd(m, actions)
