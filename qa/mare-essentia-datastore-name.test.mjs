@@ -4621,6 +4621,30 @@ test('Mare port construction audit records shared imported assets and separates 
   assert.match(source,/CityPortMissingLandmark/);
 });
 
+test('Mare voyage camera stays outside the scaled ship envelope without changing navigation',()=>{
+  const voyage=read('ReplicatedStorage/Shared/VoyageScene.luau');
+  const fit=voyage.slice(voyage.indexOf('local cameraFit'),voyage.indexOf('local heel = 0'));
+  assert.match(fit,/local boundsCF, boundsSize = ship:GetBoundingBox\(\)/);
+  assert.match(fit,/local radius = \(boundsCF\.Position - shipBase\.Position\)\.Magnitude \+ boundsSize\.Magnitude \* 0\.5/);
+  assert.match(fit,/back = math\.max\(36, radius \+ 12\)/);
+  assert.match(fit,/height = math\.max\(13, baseY \+ radius \+ 10\)/);
+  assert.match(fit,/ahead = math\.max\(46, radius \* 2\.5\)/);
+  assert.ok(voyage.indexOf('ship:ScaleTo(1.7)') < voyage.indexOf('local cameraFit'));
+  assert.ok(voyage.indexOf('local cameraFit') < voyage.indexOf('while not skipped and dist < total'));
+  const camera=voyage.slice(voyage.indexOf('-- [항해 카메라] 실제 선박 경계 밖'),voyage.indexOf('ui(k, t)',voyage.indexOf('-- [항해 카메라] 실제 선박 경계 밖')));
+  assert.match(camera,/CFrame\.new\(-cameraFit\.back, cameraFit\.height, 0\)/);
+  assert.match(camera,/CFrame\.new\(cameraFit\.ahead, 6 \+/);
+  assert.match(camera,/CFrame\.lookAt\(back\.Position \+ shakeOff/);
+  assert.match(camera,/bankRoll \* 0\.55/);
+  assert.match(voyage,/Rings\.hit\(r, lat\)/);
+  // 실제 메시가 아닌 보수적인 가상 경계로 수학적 안전 여유를 검사한다.
+  for(const [length,width,height,offset] of [[20,8,15,0],[80,24,65,4],[180,60,110,15],[400,120,260,35]]){
+    const radius=Math.hypot(length,width,height)*0.5+offset;
+    const back=Math.max(36,radius+12);
+    assert.ok(back-2.2>radius+8,'선박 회전 및 최대 흔들림 후에도 선체 경계 밖');
+  }
+});
+
 test('Mare voyage avoids repeated emitter and parent writes and destroys detached gulls',()=>{
   const voyage=read('ReplicatedStorage/Shared/VoyageScene.luau');
   for(const [property,value] of [['jet.emitter.Rate','jetRate'],['sternEm.Rate','sternRate'],['wake.trail.Enabled','trailEnabled'],['g.model.Parent','gullParent'],['precip.Rate','precipRate'],['hailBurst.Rate','hailRate']]){
