@@ -805,11 +805,13 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				piece.part.CFrame = piece.final + Vector3.new(0, -drop, 0)
 			end
 			m:SetAttribute("BuildVisualState", "installing")
-			task.delay(buildDelay, function()
+			-- [설치 타이머] 모델이 제거되면 대기 중인 설치 작업도 즉시 정리한다.
+			local installCleanup
+			local installThread = task.delay(buildDelay, function()
 				-- 장면이 Workspace에 배치되기 전에 설치 모션이 사라지지 않도록 부착 완료를 기다린다.
 				local deadline = os.clock() + 25
 				while m.Parent and not parent.Parent and os.clock() < deadline do task.wait(0.12) end
-				if not m.Parent then return end
+				if not m.Parent then installCleanup:Disconnect() return end
 				if not parent.Parent then
 					-- 타임아웃에는 숨김·위치·원래 충돌을 복원해 완성 자산이 사라지지 않게 한다.
 					for _, piece in pieces do
@@ -818,6 +820,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						end
 					end
 					m:SetAttribute("BuildVisualState", "complete")
+					installCleanup:Disconnect()
 					return
 				end
 				local timing = TweenInfo.new(0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -826,13 +829,17 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						TweenService:Create(piece.part, timing, { CFrame = piece.final, Transparency = piece.alpha }):Play()
 					end
 				end
-				task.delay(0.76, function()
-					if not m.Parent or not parent.Parent then return end
+				task.wait(0.76)
+				if m.Parent and parent.Parent then
 					for _, piece in pieces do
 						if piece.part.Parent then piece.part.CanCollide = piece.solid end
 					end
 					m:SetAttribute("BuildVisualState", "complete")
-				end)
+				end
+				installCleanup:Disconnect()
+			end)
+			installCleanup = m.Destroying:Once(function()
+				if coroutine.status(installThread) == "suspended" then task.cancel(installThread) end
 			end)
 		else
 			m:SetAttribute("BuildVisualState", "complete")
@@ -3415,7 +3422,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				end
 			end
 		end
-		task.spawn(function()
+		local crewCleanup
+		local crewThread = task.defer(function()
 			-- [항구 로딩 보호] Workspace 부착 전에는 작업 시간을 소모하지 않는다.
 			local deadline = os.clock() + 25
 			while item.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
@@ -3425,6 +3433,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				for _, member in crew do
 					if member.model.Parent then member.model:Destroy() end
 				end
+				crewCleanup:Disconnect()
 				return
 			end
 			-- [시공 연출] 비계는 공정 완료까지 남고, 점검 후 모든 작업자가 철수한다.
@@ -3441,6 +3450,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			for _, member in crew do
 				if member.model.Parent then member.model:Destroy() end
 			end
+			crewCleanup:Disconnect()
+		end)
+		crewCleanup = folder.Destroying:Once(function()
+			if coroutine.status(crewThread) == "suspended" then task.cancel(crewThread) end
 		end)
 	end
 	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
