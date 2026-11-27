@@ -303,7 +303,20 @@ if (process.argv.includes('--animal-source-preflight')) {
       try {
         const result=JSON.parse(execFileSync('gh',['api','-X','GET','search/code','-f','q=filename:'+name+'.glb extension:glb','-f','per_page=5'],{encoding:'utf8',timeout:20000,maxBuffer:1000000,stdio:['ignore','pipe','pipe']}));
         console.log('MARE_ANIMAL_SOURCE_CANDIDATES_UNREVIEWED',name,JSON.stringify((result.items||[]).map(x=>({url:x.html_url,blob:x.sha}))));
-      } catch { console.log('MARE_ANIMAL_SOURCE_SEARCH_RETRY_NEXT_CYCLE',name); }
+      } catch (error) {
+        // [원본 검색 진단] 인증·제한 오류는 종별 실패가 아니다. 원문/토큰은 기록하지 않고 기존 출판자 검색은 계속 진행한다.
+        const diagnostic = String(error?.stderr || '') + ' ' + String(error?.message || '');
+        const status = /HTTP\s+(401|403|429|5[0-9]{2})\b/i.exec(diagnostic)?.[1] || '';
+        const limited = status === '429' || /rate limit|secondary rate limit/i.test(diagnostic);
+        const denied = !limited && (status === '401' || status === '403' || /requires authentication|resource not accessible by integration/i.test(diagnostic));
+        const reason = limited ? 'RATE_LIMIT' : denied ? 'AUTH_OR_PERMISSION'
+          : error?.code === 'ETIMEDOUT' ? 'TIMEOUT' : status.startsWith('5') ? 'UPSTREAM' : 'SEARCH_UNVERIFIED';
+        console.log('MARE_ANIMAL_SOURCE_SEARCH_RETRY_NEXT_CYCLE',name,reason);
+        if (limited || denied) {
+          console.log('MARE_ANIMAL_SOURCE_SEARCH_BATCH_DEFERRED',reason,'EXISTING_PUBLISHER_SEARCH_CONTINUES');
+          break;
+        }
+      }
     }
   }
   console.log('MARE_ANIMAL_APPROVED_PENDING',pending.length,'UNREVIEWED_SEARCH_TARGETS',missing.length);
