@@ -370,7 +370,7 @@ jobs:
           # 그 밖의 실패/대기/API 오류는 차단하고 GitHub 자체 병합 보호는 그대로 적용한다.
           if ! required_checks="$(gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required 2>&1)"; then
             printf '%s\n' "$required_checks"
-            if [[ "$required_checks" != "no checks reported on the '$CARD_BRANCH' branch" ]]; then
+            if [[ "$required_checks" != "no checks reported on the '$CARD_BRANCH' branch" && "$required_checks" != "no required checks reported on the '$CARD_BRANCH' branch" ]]; then
               exit 1
             fi
             echo "CARD_DROPBOX_REQUIRED_FILTER_EMPTY_EXACT_CHECK_RUNS_VERIFIED=$head"
