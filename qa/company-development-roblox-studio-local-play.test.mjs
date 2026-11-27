@@ -4744,6 +4744,29 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
 
 
 // [마을 주민 전방 검증] 기존 주민 모션 코드와 공식 Studio 실물 얼굴 검사만 확인한다.
+test('Mare resident capture retains six distinct subjects and frames their actual feet and head',()=>{
+  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json','utf8'));
+  const camera=steps.find(step=>step.code?.includes('VILLAGER_TRACKED_CAMERA_READY')).code;
+  assert.match(camera,/local bottom=math\.min\(left\.Position\.Y-left\.Size\.Y\*0\.5,rightFoot\.Position\.Y-rightFoot\.Size\.Y\*0\.5\)/);
+  assert.match(camera,/shotRay\.FilterDescendantsInstances=\{m\}/);
+  assert.match(camera,/workspace:Raycast\(focus,offset,shotRay\)/);
+  assert.match(camera,/offset=offset\.Unit\*safe/);
+  const roster=steps.filter(step=>step.code?.includes('VILLAGER_CAPTURE_ROSTER_TOO_SMALL'));
+  assert.equal(roster.length,6);
+  for(const [i,step] of roster.entries()){
+    assert.ok(step.code.includes('local k='+(i+1)+' '));
+    assert.ok(step.code.includes('if not _G.VRoster then'));
+    assert.ok(step.code.includes('local t=assert(_G.VRoster[k])'));
+  }
+  for(const n of [6,7,10,25,100]){
+    const indices=Array.from({length:6},(_,i)=>Math.floor(i*(n-1)/5));
+    assert.equal(new Set(indices).size,6);
+    assert.equal(indices[5],n-1);
+  }
+  assert.equal(steps.filter(step=>step.type==='capture').length,30);
+  assert.ok(steps.at(-1).code.includes('_G.VRoster=nil'));
+});
+
 test('Mare town villagers keep arm gestures in front and faces aligned with torso without changing NPC jobs',()=>{
   const root='roblox-games/mare-essentia/';
   const pose=fs.readFileSync(root+'src/ReplicatedStorage/Shared/Pose.luau','utf8');
