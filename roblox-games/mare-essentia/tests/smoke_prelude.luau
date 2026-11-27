@@ -5,7 +5,17 @@ local function proxy(name)
 	local p = {}
 	local mt = {}
 	mt.__index = function(_, k)
-		if k == "X" or k == "Y" or k == "Z" or k == "R" or k == "G" or k == "B" or k == "Magnitude" then return 10 end
+		-- [건축 접합 스모크] CFrame 기본 축과 벡터 내적은 숫자 성분을 반환한다.
+		if k == "X" or k == "Y" or k == "Z" then
+			if name == "RightVector" then return if k == "X" then 1 else 0 end
+			if name == "UpVector" then return if k == "Y" then 1 else 0 end
+			if name == "LookVector" then return if k == "Z" then -1 else 0 end
+			return 10
+		end
+		if k == "Dot" then return function(self, other)
+			return self.X * other.X + self.Y * other.Y + self.Z * other.Z
+		end end
+		if k == "R" or k == "G" or k == "B" or k == "Magnitude" then return 10 end
 		if k == "Name" or k == "ClassName" then return name end
 		if k == "Transparency" then return 0 end -- 실제 BasePart 기본값. 숫자 비교(< 1)가 가능해야 한다.
 		if k == "IsA" then return function() return true end end
@@ -45,6 +55,7 @@ local function vec(x, y, z)
 	return setmetatable(v, {
 		-- [스모크 벡터] 실제 Roblox Vector3의 정규화 방향을 모사한다.
 		__index = function(self, key)
+			if key == "Dot" then return function(a, b) return a.X * b.X + a.Y * b.Y + a.Z * b.Z end end
 			if key == "Unit" then
 				local length = self.Magnitude
 				if length <= 0 then return vec(0, 0, 0) end
@@ -100,6 +111,12 @@ Color3 = {
 	fromHSV = colorFromHSV,
 }
 CFrame = setmetatable({ new = function() return proxy("CFrame") end, lookAt = function() return proxy("CFrame") end, Angles = function() return proxy("CFrame") end, identity = proxy("CFrame") }, {})
+-- 접합 계산이 수치 내적을 사용하도록 실제 축의 부호와 직교성을 검증한다.
+assert(CFrame.identity.RightVector:Dot(Vector3.xAxis) == 1)
+assert(CFrame.identity.UpVector:Dot(Vector3.yAxis) == 1)
+assert(CFrame.identity.LookVector:Dot(Vector3.zAxis) == -1)
+assert(CFrame.identity.RightVector:Dot(Vector3.yAxis) == 0)
+assert(Vector3.new(2, 3, 4):Dot(Vector3.new(5, 6, 7)) == 56)
 UDim2 = setmetatable({}, { __index = function() return function() return proxy("UDim2") end end })
 UDim = UDim2
 Enum = setmetatable({}, { __index = function(_, k) return setmetatable({}, { __index = function(_, n) return k .. "." .. n end }) end })
