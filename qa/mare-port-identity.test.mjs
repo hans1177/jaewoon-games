@@ -653,3 +653,20 @@ test('건축 모델 설치와 시공 인력의 지연 작업은 제거 시 취�
   assert.match(scene, /crewCleanup = folder\.Destroying:Once\(function\(\)\s+if coroutine\.status\(crewThread\) == "suspended" then task\.cancel\(crewThread\) end/);
   assert.match(scene, /crewCleanup:Disconnect\(\)/);
 });
+
+test('간판·시설 작업자·비계·복장 갱신은 제거된 장면에 지연 작업을 남기지 않는다', () => {
+  for (const [cleanup, owner, thread] of [
+    ['signCleanup', 'bb', 'signThread'],
+    ['builderCleanup', 'builder', 'builderThread'],
+    ['scaffoldCleanup', 'scaffold', 'scaffoldThread'],
+  ]) {
+    assert.ok(scene.includes(cleanup + ' = ' + owner + '.Destroying:Once(function()'));
+    assert.ok(scene.includes('if coroutine.status(' + thread + ') == "suspended" then task.cancel(' + thread + ') end'));
+    assert.ok(scene.includes(cleanup + ':Disconnect()'));
+  }
+  assert.match(scene, /for _ = 1, 40 do\s+task\.wait\(1\)\s+if not bb\.Parent or not adornee\.Parent then break end\s+if tryShow\(\) then break end/);
+  assert.match(scene, /builderCleanup:Disconnect\(\)\s+if builder\.Parent then builder:Destroy\(\) end/);
+  assert.match(scene, /scaffoldCleanup:Disconnect\(\)\s+if scaffold\.Parent then scaffold:Destroy\(\) end/);
+  assert.match(scene, /outfitThread = task\.delay\(0\.08, function\(\)\s+outfitThread = nil/);
+  assert.match(scene, /if outfitThread and coroutine\.status\(outfitThread\) == "suspended" then task\.cancel\(outfitThread\) end\s+outfitThread = nil/);
+});
