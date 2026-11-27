@@ -1,16 +1,16 @@
 {
-  "runId": "46040093669",
+  "runId": "46042703791",
   "kind": "deep",
   "portBatch": null,
-  "sourceRevision": "d767f96ec5ee0a9ffcbf3f1f70ca06c0b5f601ac",
-  "result": "PASS",
+  "sourceRevision": "4e5f28de7eed0da8174c0a356ea53dcddbbaf211",
+  "result": "FAIL",
   "captureArtifact": {
-    "name": "studio-frames-46040093669",
+    "name": "studio-frames-46042703791",
     "retentionDays": 1,
-    "runId": "46040093669"
+    "runId": "46042703791"
   },
-  "failureStage": null,
-  "failureSignature": null,
+  "failureStage": "STUDIO_GAME_RUNTIME",
+  "failureSignature": "STUDIO_ASSET_AUDIT_FAILED",
   "summary": {
     "plannedSteps": 1000,
     "completedSteps": 1000,
@@ -21,10 +21,12 @@
     "capturedFrames": 70,
     "abortedEarly": false
   },
-  "errors": [],
+  "errors": [
+    "STUDIO_ASSET_AUDIT_FAILED"
+  ],
   "audits": {
     "models": "PASS",
-    "registered": "PASS",
+    "registered": "FAIL",
     "features": "PASS",
     "registry": "PASS"
   },
@@ -7173,423 +7175,423 @@
   "screenshotComparison": [
     {
       "name": "b1_start-0.jpg",
-      "sha256": "81ecbaec81f1052057e7f4363c2d8759e5f8cbdd9ba9724c70a525c8c52c37f2",
+      "sha256": "829df6f6dcdbb7f5563a2121c3a51d90ea1bc5e34f3160665e7a4fd044881881",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "b2_mid-0.jpg",
-      "sha256": "bf07a9a886143194807e99154424c1fb02ab92760fafa91efee984697f1f801d",
+      "sha256": "998aaadd1482a4a195bc2263a48dca4e32c32b3c09060212afdfe2b16c074a37",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "c00_start-0.jpg",
-      "sha256": "718d9051107db3de18682d37b653513d70849c0080b51ba44c4042aebbb0d3d0",
+      "sha256": "30053575a0685844bf38306f14e41f79c392a71e354f33df58ea8a6cac66fc96",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "cb0_deck-0.jpg",
       "sha256": "71b16b9d88c405b683457afc96c8f4199c640e9980f3abebddc6cd276bca204e",
       "comparison": "SAME_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "cb1-0.jpg",
-      "sha256": "875509856caed2b64d9d23c2fa8d162a4c52d4dd93474ccd6d3d4025447adf04",
+      "sha256": "bbd00f5968df10619a0347db03a7ba1d0bc46f2e243118d93111b67449ea907b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "cb2-0.jpg",
-      "sha256": "89d7135ae90df2f49a00071824031585c984901d04b61d04a8723199388ffe97",
+      "sha256": "0455ca13e69c9416f6192063891b259c549df69ba57c41246f9f069eeca1dcad",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_actor_after_motion-0.jpg",
-      "sha256": "484a4e7c0daf4356a96b213d4475dbd1795774277fc08071c037689e0b1fbecc",
+      "sha256": "4a6f09777aad386c1b48af9ab7772c517658640c949efd482b718ed92c38726b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_camera_normal-0.jpg",
-      "sha256": "4cac04967d75982c4e9c5fc1cb0e033ffe7b73b2d426afbc621d55807122a934",
+      "sha256": "3afaa5b9863c6e3bd4cfb4ebc53f30685314243a778c7e42d5b9799f6a858713",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_entry-0.jpg",
-      "sha256": "9f49b3752bba48c56c2f1fd97092e8e9e912dabc52c1140756b065917e7d244e",
+      "sha256": "4c5f9c3a23e739671c5688faa11214fdccc3ad8838f47303ed565ee84f168ee7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_ground_visible_extra-0.jpg",
-      "sha256": "df4ce3d7e346ee51a68562858f91a1d42f5c977270bf1e3d4869e7d44db9ed72",
+      "sha256": "a0b1ff729bfa6f7ee5d051de9edec37ad84b6bdd01934604f05aba045250816a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_hud_hitbox-0.jpg",
-      "sha256": "b6c662e3fc349634d44deb7bee469ec86b561c7cc625c29bedf624ca3b74971f",
+      "sha256": "662b23935921d83aa4d301660ccc00e8c89a906d5335c39744db786eea0f134b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_hud_touch_bounds-0.jpg",
-      "sha256": "1e18c1f7fa1a1447245aaf6f663b668ba313f068651f203842aa9d3270a32a64",
+      "sha256": "cd9da86ab6e9b7fea2deb152834908a10657829de652dc27c5dc05b2e1035d7b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_motion_smooth_icons-0.jpg",
-      "sha256": "a0a133caadab4cb0157ce9eeb25c331a2970ae87da1c5a818c2c1dfe697f4c11",
+      "sha256": "01c7b5f266f87f4ef975341abdd76864a3ac168e7dce77adaf350d4d8897220b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_notice_overlap-0.jpg",
-      "sha256": "4fdcc4fdcf6f51f9fb83c50ef80d84f4defcad9602266fcc0b291557f6b89454",
+      "sha256": "37d46d435991a4137becf54b1776d2d56e062cc6ca0a5e909ee0b656dee3ae8d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_npc_ally_mob-0.jpg",
-      "sha256": "0134df438706daf10c02080cb041b78488ada778b0ff4923f450c6392d4905b9",
+      "sha256": "bcd77eed4c9a766c994d48b7dbf61e71949424ac94a44d40fdb931b2dc87b0e8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_palette_variants-0.jpg",
-      "sha256": "03845ef50702545312e88c79c73ba35fd2a3166317757a1a57adbb72013f218b",
+      "sha256": "fc64be5b3feb4272cd962db7ae11607932d3264e590f1be6ab75de29081a37d0",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_registry_181-0.jpg",
-      "sha256": "86f2cb41f6d9c0894afad295c4d3a2cb108f80259b51726bd997270f54bdece3",
+      "sha256": "d32f56c49bde1843c584d6d788aa9e07106be8875d0cb60cf947891fdd75a809",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "field_runtime_fps_sample-0.jpg",
-      "sha256": "049504db0c5e795047cd9106b4a08f870af413e092cbfbf19d069b8742e663f4",
+      "sha256": "e3132cf04fbef21d04f1f7326135028e67c2a551aa3900fcea2079ad1e8f4738",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_attack-0.jpg",
-      "sha256": "7a8032090213b9641623cb9eb3d8dbf85a1d5578876da7d598ab70b25e9c84c8",
+      "sha256": "99cfb0544d126020004ced6828090a3e7cd9f086a4a9a1e650cfb1ba7a52e3cf",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_cheer-0.jpg",
-      "sha256": "954ab3823405314bb740ffb23e977f3c865cd1df66102a91a86f7551c0c0857a",
+      "sha256": "b437bcea27a5c0bb5d2bc11ea2b912410535aaec53f09ad9ba382e300eafc305",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_guard-0.jpg",
-      "sha256": "11babfc4c326e938499ce8c772c58567f4040f7ad70f22ea28724e342d8237b4",
+      "sha256": "b6954b23f68c7dee3bac31b96556d7178711afb41138f450a8c2fe5066019524",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_hurt-0.jpg",
-      "sha256": "4c651c9afb3d9025cbca3c0ea5cce498d49117ea48886b44816b3e8eb2d174b9",
+      "sha256": "2e5f832ac042151e5e5945035d6da58c02878f932d370bca21ce96579d8208ba",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_idle-0.jpg",
-      "sha256": "2280f106243516cb265e92e3e0d2f3fd68a5b04d6a1e7ab55f1199a7bd176ce1",
+      "sha256": "7125b6b1b3975944b1f9291821ba1bd72c0fca29bfd505f044cd32a88a7583dd",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_reload-0.jpg",
-      "sha256": "9c9aefc162dea2cf39e78a761ba6c2afcd511113556224d3fcf8e2034b21b45d",
+      "sha256": "a70e4bb36b22ca46a3d6cdf62ea30c5d12d21415425daf431a7e4e9957d86896",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_run-0.jpg",
-      "sha256": "35c7065a61a12bc2813ff47d09f02dd93bea880a9b957027d68f1e71cb5211c6",
+      "sha256": "dfe8518f1ebf39a09c4af0c9e94629eeae7af7d6a8ac973170b957d3c98b6396",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_shoot-0.jpg",
-      "sha256": "75569d0e62792b39da2eaf80d22c711141348c34fc1cb89d188e81ac9640805a",
+      "sha256": "7264f1432633c1447357417c231a553f6491420c794973fedf074cba4d76ccf7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_talk-0.jpg",
-      "sha256": "24c0b0f30d366aa8c01c1efa2c142e423340b98234d137d56f6e289397833b03",
+      "sha256": "4728d04ec2b5385974f3fb7c9708034681a022a90d34f79f2ad5f459cb3baa99",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_motion_walk-0.jpg",
-      "sha256": "740872a111b880d93f16da558ac8f7f4e2916b91541749c320e0afc4fc14a1f2",
+      "sha256": "1d505886f1d80eb33ed7e13b2c3e4e18bf0ccfdbe9da5ae77e41efd34ab44cc2",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_face_front-0.jpg",
-      "sha256": "fa8f1ddf615e8859fdbe53d4ce2f2f3a032f7dcb856e1a56e12cedc5979d5884",
+      "sha256": "4bc71b329fd99dc8fe8a5d90d80957b3d553b253edb6bc7ebbfa997c44852bce",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_01-0.jpg",
-      "sha256": "5470e8901ee7b0cdbf690e00962b9af2649f2f646b8111a7edce46a95806835a",
+      "sha256": "2b402ba451b0c84f1704d7b45b10098c4f61de8a3f4b6c327d07b16711063745",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_02-0.jpg",
-      "sha256": "9f89a3e5e7e1254cd3a4edd4248866443790adb2056572fd7adcfa26d43a532d",
+      "sha256": "889bd027c0c89978995a1a6b225429429843fc4e8531085717de6e6430d07ad8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_03-0.jpg",
-      "sha256": "7961e6e77f33c120a1ea08d0fd8dfd551daeae769d7179606929c7a95a6b9e85",
+      "sha256": "e379e9a50c9d2ff2fc748ccbfb604a5cc7bd0327a80baaa438985549116ed801",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_04-0.jpg",
-      "sha256": "43cc1d9377b0fc3d65eff276060e07e84e3b14837142ca153baee7f0faa6ebae",
+      "sha256": "56d3e6179b01e053f7fef83df75c8c146b19c5093b6a14ce4f1c8e8919e7e61b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_05-0.jpg",
-      "sha256": "7ef07787d04a8d85a9ebd6f9933743cdd06ed64a5a596d3895cb88fc589c8c0a",
+      "sha256": "0622cfdb704a5a1dbed197b95ff64253be2186f118dce3ac49bdbf78b8afff05",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_06-0.jpg",
-      "sha256": "a975984c47abe2d3dafdbbd792805d9a5a3f7e7197fd38f863b4862d47fc0961",
+      "sha256": "b1cbaa8feef14e04dc97eedbe9d852b61617a0776780844c90162d3573755279",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_07-0.jpg",
-      "sha256": "8ca44f4e5a384bd321de7a65943db010e1195d1eab98762c07bfb57586ad8b7b",
+      "sha256": "c5f36a007633ad2ffd5525b8918d91b94d40cc8520d931c69850beca31758ba2",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "harbor_npc_sparring_08-0.jpg",
-      "sha256": "e95e0cf9d8873b61b639cdae9a7fc6dec2b054f749599efafc45262c69a776d6",
+      "sha256": "9f0829a2d99805650df62d0a1fa58b0b11015369777f564c761b9d3b4998e170",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "intro_center_early-0.jpg",
-      "sha256": "96c330ccf93d3a1d56d02484152f114b2f287596235d610a2a1f1160ee799b27",
+      "sha256": "722e788c1b174b30cec4ec428870c63717bb257c7352c3c8de24f4c723acf110",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "intro_center_late-0.jpg",
-      "sha256": "e5011fc9498f7fbcc1f95224c66783eb8043977eaa9cdd674d556fcf20284a2c",
+      "sha256": "9612e49a202652ea5758adb7946b630a60a2b4f26391a8bd29f9099427e22d80",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "intro_center_next-0.jpg",
-      "sha256": "e35758484f7c1a284b890e250941e6feebc80876359d01979ba10863bbf9b9e0",
+      "sha256": "8d50b43f2f0ddf81ee3f72f937ee09acfd4ae3ae9bb3f1b8b477cf533ad354db",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "intro_done-0.jpg",
-      "sha256": "53e05f8deb8e3204bb1b4e11d4bbf87404b95ebf80b098321de5b538a294921d",
+      "sha256": "4d3a23a7d252a54b9cfca50ae5613d012aeb9644ecec930f546003c138b48737",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "qa_click_codex_to_tech-0.jpg",
-      "sha256": "62099a4f9547993527c2265f26980b0f9b01d3d82965864eadf44290165e46e1",
+      "sha256": "928bdd115e35b9ed8df4d48adb772bd02a24b0a43834a5ac9c0c6bbabca14bd3",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "qa_click_route_to_map-0.jpg",
-      "sha256": "d13d2c7838dc42c702dd7f2c5b68f3a069884c52e7b8b42d03dd6ebeae3139fc",
+      "sha256": "5094b979194bf3482d1f41fb0a5d86c82d050106f1dd5f0440a99cf5c4066e4d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "qa_click_status_to_crew-0.jpg",
-      "sha256": "6a7cfe9657ce7fec7059c016165d988dba8e80436ce8848549b17d7b3df6657e",
+      "sha256": "b3247282dfff758ab7cc76b584be886334cf27dbae94db603d124161e301fa3f",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "qa_click_trade_to_harbor-0.jpg",
-      "sha256": "db1a67929634549b4c44d90d4ec4efaa7552f005b38cb2c70ffc4daa10ab8995",
+      "sha256": "7475ce167db4a9bcde881b7274beed7fc62821a35552b1f0c252da06be0eb8a5",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "t01-0.jpg",
-      "sha256": "32b0fe3057fdf9096a7889d99a9cc31b10ba20a936e2c81f4b3e945d5dc01f40",
+      "sha256": "1c3f2a265ec927a8523f2ccd2e01035cde5c635957be5ac4107562c4c5da9560",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "t02-0.jpg",
-      "sha256": "1d5ef292494a33f8a4e193549dc775efba9d151c688951453b9a6fa3a8a1e13b",
+      "sha256": "b2c28218789a705e2642da21e6c7b63d8035dca01b8a8cad5b008f253a31eef6",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "t03-0.jpg",
-      "sha256": "e65c53514c87cc6b4ebfbd0ad8cfc0fdfa08faea139c8ad2c16b962168931b71",
+      "sha256": "6ba7d0cec6d359fd9389574100649af370208a32634b2a959a329456f88695a1",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_battle-0.jpg",
-      "sha256": "7896a19865234edbb55e9083715e9aebf3e4fddae2bdb912383fee4c9f8b12ed",
+      "sha256": "ddd8f100d3eb42c8682c7bd11217c0843d8129147f681b57490eba3b201ffd78",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_codex-0.jpg",
-      "sha256": "ab9ea927da3ccbcdc4308e803121d600dc9b984dc10997541089a789d1ce2265",
+      "sha256": "200b4ec31010c4ca853211db1ab57c345b2118e9d87e2542e58cee479cc0dae5",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_crew-0.jpg",
-      "sha256": "d899e450a17ce4f27707fa6287e2c876246f3bfa55bf0150d5b72a525b3dbd48",
+      "sha256": "c1faaf00590fbed41582144c4731fa37cd1f25c0024eb94e35bef81e4f310da5",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_explore-0.jpg",
-      "sha256": "7700eb636977a3d44c73373ded9c132b66f3ecb57696e62006a4e32b953bbbd7",
+      "sha256": "b7b4061ae132d9d7be8951d4d06289dc2313fff321877b70e16bd4620b5d4f91",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_harbor-0.jpg",
-      "sha256": "792cfc6df836a2c38de758e38b0d9f6d425fa3d59dd6fce60366f4b38add9b0d",
+      "sha256": "6b67294cc66cc02e55ac8ee82c63f0de9ce5e77c74d92fe64e615b4ded6cb68c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_map-0.jpg",
-      "sha256": "e26a9af8ef6dd57186c3fb0ed924b20bc5794c7ba38ef03967ad03d04b983456",
+      "sha256": "079791675ba5eb0c1316fdcf7c5988b9a2a295838f2f9c5b0eea277547478513",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_quest-0.jpg",
-      "sha256": "db27afe107356a87d631bdb0f1fe254ee7932a473e73f56e3da6f608b7838c49",
+      "sha256": "82781ed3499c6caeaa08113fc99db9635df4263a680ddc06da0b37d22021426a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_route-0.jpg",
-      "sha256": "e0f55e630f2abb17bebb81ffd011f3480237841cbfbd222ebe3304abdc4408ab",
+      "sha256": "6b13614e7ee0d30735cd3755a1a6e826810d27616b2535fca6cdb2e1e75337f7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_status-0.jpg",
-      "sha256": "893c1e9ed07691cc4c59985598d1522d12590c5c46103b5857c0198848b652f4",
+      "sha256": "7426960d8201099becbcb23be72a73253ca06e57e2e3552819f48fc7e580b4de",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_tech-0.jpg",
-      "sha256": "e534484831e3d95b31b2616b53a2fb9d1de1bd0efee4feb7b5041c89fa98128d",
+      "sha256": "ef7fa1a7a0287d7ce6f8aa6cebcfe4bd87d60ec9a86f9b9967e7d946c8764da8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_trade-0.jpg",
-      "sha256": "0082a960f367a62aadc7d522f151f465b13b40d4ba38291fc1ad00c5f1d1844b",
+      "sha256": "57e2a63c7506869ddff21bd46faf15f8ee8cdc92ff86605a4a38bdf874bb4721",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "tab_yard-0.jpg",
-      "sha256": "07dc5189e0080b3466c809141a2ad5194d0a11e30826f39a7778d419cbb62ba8",
+      "sha256": "55c4144013679a9ded046924089aace7503c989c092396d400754a95089a3f1d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "ui_battle_unified-0.jpg",
-      "sha256": "a127b2dc2af182b80f937756582ac69d693012a8f8f10346e6ea28c4b0c179c1",
+      "sha256": "7eb6fea0270c7c4a702e0bca2ae312aab65adf96393b8ef2954ee3c874407e65",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "ui_facility_book_closed-0.jpg",
-      "sha256": "8bc011a925ae2e06eb708e9d67490a55f01d57549753ec88b6bf269d3470c645",
+      "sha256": "a10316753494ee6a52a0370eaae09bcedf674b7260a32d646178637d3ca66aba",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "ui_main_menu_icons-0.jpg",
-      "sha256": "6fac80b4eddac5ebc95b8cf65576a35e3bd24da71b70a2df8ba087a16c3387bb",
+      "sha256": "623caf514d0fb4df6573124ebeb1068f1499fdf813358d62fae0e50d183f34b6",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "ui_mobile_tabs_topright-0.jpg",
-      "sha256": "9c8624f380808a614d1b79e48cf252bb87a4db5ba50846c1844dd327cb9de71d",
+      "sha256": "4fc2b8a035fbb8bf5deee23f162dbdebb9f7ee092c368397bee7139c5eb5ec34",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "ui_trade_inline-0.jpg",
-      "sha256": "f8a0601a4ad9ff716f0cc599e0e873b3540e5a2683275d95cdb6be66cb645424",
+      "sha256": "9f9e4a5577e5809d83dcc4ac3369a1790660865d1f9a33e5025be395653c8ecc",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "ui_yard_inline-0.jpg",
-      "sha256": "2a30721449d5b8cfd7f1fe8556418db79ef8c974f2e2958afa2215e647443810",
+      "sha256": "22c729160b1e8312a283269a820652ac3573942f41e58fda26bd4e7301f60cc9",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "v1_start-0.jpg",
-      "sha256": "2a0ef18175766fed7ff0e8858dfd958128623727481841140b4468ce55260441",
+      "sha256": "09a7504a88644a4752a1683baacd66952369d72bc9fc4e68889d9a5f0b8e076e",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "v2_event-0.jpg",
-      "sha256": "065a34d82dbda5a11158bc1c8e57082336c0ed1eca819d34b57b3605fc6f9514",
+      "sha256": "09b18d60350de2eb4808d8bccf86f1e7dcca24c1e10711093e94d0d418d748c7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "v3_event2-0.jpg",
-      "sha256": "bee08da141a057ac3cff03b575a8ba495151448bf9f150f62b04a44e8978890e",
+      "sha256": "444a49745668789e291483be25886d39c31a82ecfef4ece2a53b0b4551bdf628",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     },
     {
       "name": "v4_late-0.jpg",
-      "sha256": "444d5284a4db099ef8d8a62cc3c180e90cd2ca298c46b8ca6169df88c5eabf07",
+      "sha256": "add37a86441ea2a960df527722d84cdc78e2ceae8b8afb29e342f11fc74fc5b3",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46040093669"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46042703791"
     }
   ],
   "screenshotFrameAudit": {
@@ -7598,21 +7600,21 @@
     "images": [
       {
         "name": "b1_start-0.jpg",
-        "bytes": 135062,
+        "bytes": 136709,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "b2_mid-0.jpg",
-        "bytes": 83030,
+        "bytes": 84948,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "c00_start-0.jpg",
-        "bytes": 251297,
+        "bytes": 251375,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -7626,462 +7628,462 @@
       },
       {
         "name": "cb1-0.jpg",
-        "bytes": 192923,
+        "bytes": 192995,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "cb2-0.jpg",
-        "bytes": 201089,
+        "bytes": 201115,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_actor_after_motion-0.jpg",
-        "bytes": 237998,
+        "bytes": 238886,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_camera_normal-0.jpg",
-        "bytes": 239104,
+        "bytes": 240431,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_entry-0.jpg",
-        "bytes": 158270,
+        "bytes": 163782,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_ground_visible_extra-0.jpg",
-        "bytes": 238142,
+        "bytes": 237830,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_hud_hitbox-0.jpg",
-        "bytes": 243310,
+        "bytes": 242265,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_hud_touch_bounds-0.jpg",
-        "bytes": 242509,
+        "bytes": 249560,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_motion_smooth_icons-0.jpg",
-        "bytes": 238018,
+        "bytes": 237626,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_notice_overlap-0.jpg",
-        "bytes": 245178,
+        "bytes": 243264,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_npc_ally_mob-0.jpg",
-        "bytes": 229669,
+        "bytes": 241583,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_palette_variants-0.jpg",
-        "bytes": 237915,
+        "bytes": 238692,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_registry_181-0.jpg",
-        "bytes": 237865,
+        "bytes": 238710,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "field_runtime_fps_sample-0.jpg",
-        "bytes": 244350,
+        "bytes": 244289,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_attack-0.jpg",
-        "bytes": 111528,
+        "bytes": 110761,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_cheer-0.jpg",
-        "bytes": 116044,
+        "bytes": 113225,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_guard-0.jpg",
-        "bytes": 111414,
+        "bytes": 111604,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_hurt-0.jpg",
-        "bytes": 110462,
+        "bytes": 107716,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_idle-0.jpg",
-        "bytes": 108379,
+        "bytes": 108736,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_reload-0.jpg",
-        "bytes": 110579,
+        "bytes": 110365,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_run-0.jpg",
-        "bytes": 112724,
+        "bytes": 112240,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_shoot-0.jpg",
-        "bytes": 109775,
+        "bytes": 109808,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_talk-0.jpg",
-        "bytes": 111903,
+        "bytes": 111713,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_motion_walk-0.jpg",
-        "bytes": 111690,
+        "bytes": 109268,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_face_front-0.jpg",
-        "bytes": 106943,
+        "bytes": 109672,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_01-0.jpg",
-        "bytes": 111340,
+        "bytes": 111343,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_02-0.jpg",
-        "bytes": 111499,
+        "bytes": 111228,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_03-0.jpg",
-        "bytes": 110398,
+        "bytes": 111289,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_04-0.jpg",
-        "bytes": 110474,
+        "bytes": 109882,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_05-0.jpg",
-        "bytes": 111467,
+        "bytes": 112092,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_06-0.jpg",
-        "bytes": 111545,
+        "bytes": 111352,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_07-0.jpg",
-        "bytes": 110587,
+        "bytes": 111427,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "harbor_npc_sparring_08-0.jpg",
-        "bytes": 109564,
+        "bytes": 109491,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_early-0.jpg",
-        "bytes": 150213,
+        "bytes": 145213,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_late-0.jpg",
-        "bytes": 130024,
+        "bytes": 118890,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_next-0.jpg",
-        "bytes": 207143,
+        "bytes": 163302,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_done-0.jpg",
-        "bytes": 146135,
+        "bytes": 147986,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "qa_click_codex_to_tech-0.jpg",
-        "bytes": 135630,
+        "bytes": 165388,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "qa_click_route_to_map-0.jpg",
-        "bytes": 160783,
+        "bytes": 160957,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "qa_click_status_to_crew-0.jpg",
-        "bytes": 139599,
+        "bytes": 139318,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "qa_click_trade_to_harbor-0.jpg",
-        "bytes": 167500,
+        "bytes": 165346,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t01-0.jpg",
-        "bytes": 250702,
+        "bytes": 250729,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t02-0.jpg",
-        "bytes": 195339,
+        "bytes": 195211,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t03-0.jpg",
-        "bytes": 147147,
+        "bytes": 141850,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_battle-0.jpg",
-        "bytes": 158159,
+        "bytes": 157978,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_codex-0.jpg",
-        "bytes": 130339,
+        "bytes": 189634,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_crew-0.jpg",
-        "bytes": 139405,
+        "bytes": 156483,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_explore-0.jpg",
-        "bytes": 158121,
+        "bytes": 155653,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_harbor-0.jpg",
-        "bytes": 160376,
+        "bytes": 136229,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_map-0.jpg",
-        "bytes": 160636,
+        "bytes": 160787,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_quest-0.jpg",
-        "bytes": 158060,
+        "bytes": 158646,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_route-0.jpg",
-        "bytes": 161541,
+        "bytes": 155324,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_status-0.jpg",
-        "bytes": 146926,
+        "bytes": 146454,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_tech-0.jpg",
-        "bytes": 164710,
+        "bytes": 135271,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_trade-0.jpg",
-        "bytes": 186687,
+        "bytes": 185524,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_yard-0.jpg",
-        "bytes": 179893,
+        "bytes": 179796,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_battle_unified-0.jpg",
-        "bytes": 157979,
+        "bytes": 134283,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_facility_book_closed-0.jpg",
-        "bytes": 268622,
+        "bytes": 267540,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_main_menu_icons-0.jpg",
-        "bytes": 259884,
+        "bytes": 263763,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_mobile_tabs_topright-0.jpg",
-        "bytes": 194185,
+        "bytes": 200255,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_trade_inline-0.jpg",
-        "bytes": 185938,
+        "bytes": 186037,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "ui_yard_inline-0.jpg",
-        "bytes": 190898,
+        "bytes": 189981,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v1_start-0.jpg",
-        "bytes": 250105,
+        "bytes": 249000,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v2_event-0.jpg",
-        "bytes": 237480,
+        "bytes": 244037,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v3_event2-0.jpg",
-        "bytes": 264759,
+        "bytes": 232361,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "v4_late-0.jpg",
-        "bytes": 260910,
+        "bytes": 264111,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -8090,5 +8092,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "46036736135"
+  "previousRunId": "46040093669"
 }
