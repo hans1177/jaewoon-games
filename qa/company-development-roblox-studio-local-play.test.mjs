@@ -4065,7 +4065,9 @@ test('Mare enemy weapon motions use grounded shared combo and recoil in solo fie
   assert.ok(scene.includes('e.fm.weaponBeat = ((e.fm.weaponBeat or 0) % 3) + 1')&&
     !scene.includes('a.fm.weaponBeat = ((a.fm.weaponBeat or 0) % 3) + 1'),
     'enemy can vary authored weapon poses but allies do not accrue three-hit combo beats');
-  assert.ok(scene.includes('FM.actor(e.fm, st, ph, enemyDt')&&scene.includes('if e.throwAsset then nil else (e.weapon and e.weapon.motion)')&&
+  assert.ok(scene.includes('FM.actor(e.fm, st, ph, visualDt')&&
+    scene.includes('local visualDt = if farVisual and not visualChanged then e.visualElapsed else enemyDt')&&
+    scene.includes('and (e.ac.state == "idle" or e.ac.state == "chase")')&&scene.includes('if e.throwAsset then nil else (e.weapon and e.weapon.motion)')&&
     !scene.includes('FM.actor(a.fm,'),'enemy uses original full-body weapon path; no field ally animation');
   for(const marker of ['local gun = grip == "PISTOL" or grip == "RIFLE"',
     'elseif bow then','elseif crossbow then','elseif spear then','elseif dagger then',
@@ -4101,7 +4103,9 @@ test('Mare enemy weapon motion transition and foot contact are continuous',()=>{
   assert.ok(motion.includes('h.sideEffort = (h.sideEffort or side)')&&
     motion.includes('local inertia = if axe or blunt then 1'),
     'side steps must ease and weapon mass must drive torso recoil');
-  assert.ok(scene.includes('FM.actor(e.fm, st, ph, enemyDt')&&scene.includes('e.attackStep)')&&
+  assert.ok(scene.includes('FM.actor(e.fm, st, ph, visualDt')&&
+    scene.includes('local visualDt = if farVisual and not visualChanged then e.visualElapsed else enemyDt')&&
+    scene.includes('and (e.ac.state == "idle" or e.ac.state == "chase")')&&scene.includes('e.attackStep)')&&
     !scene.includes('FM.actor(a.fm,'),'enemy full-body phase and attack advance stay continuous; party has no combat animation');
   assert.ok(scene.includes('AC.stepEnemy(e.ac, enemyDt, dist')&&scene.includes('AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)')&&
     !scene.includes('a.nextAt = now + 1.3 / aw.speed')&&!scene.includes('strikeEnemy(tgt, 0.6 * aw.power'),
