@@ -5973,7 +5973,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	if #swayingFoliage > 0 then
 		local swayAt, swayConn = 0, nil
 		swayConn = RunService.Heartbeat:Connect(function()
-			if not folder.Parent then return end
+			if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 			local now = os.clock()
 			if now < swayAt or workspace:GetAttribute("VoyageActive") then return end
 			swayAt = now + 0.22
@@ -7482,6 +7482,7 @@ function PortScene.build(info, onFacility)
 		-- [모바일 최적화] 먼 바다에서 항해하는 동안 항구 주민/가축 관절을 계산하지 않는다.
 		-- NPC 시간표는 아래의 절대 시각으로 복귀 즉시 다시 계산하며 게임 상태는 변경하지 않는다.
 		if not folder.Parent or workspace:GetAttribute("VoyageActive") then return end
+		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		local now = os.clock()
 		local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
 		for _, w in walkers do
@@ -8097,10 +8098,8 @@ function PortScene.build(info, onFacility)
 	do
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
-			if not folder.Parent then
-				conn:Disconnect()
-				return
-			end
+			-- [항구 생명주기] 분할 생성 중에는 대기하고, 실제 제거 시에만 연결을 해제한다.
+			if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 			if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
 				return
 			end
@@ -8111,6 +8110,7 @@ function PortScene.build(info, onFacility)
 				char:PivotTo(CFrame.new(-6, 6, 10))
 			end
 		end)
+		folder.Destroying:Connect(function() conn:Disconnect() end)
 	end
 	-- 한낮의 열기, 새벽 해무, 황혼의 따뜻한 빛과 야간 등불을 같은 시간축에 맞춘다.
 	local latitude = (PortData.Ports[info.portId] or {}).lat or 0
@@ -8197,6 +8197,7 @@ function PortScene.build(info, onFacility)
 	local lightConn = folder.DescendantAdded:Connect(registerLight)
 	local updateAt, cloudUpdateAt = 0, 0
 	local climateConn = RunService.Heartbeat:Connect(function()
+		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		local now = os.clock()
 		if now < updateAt then return end
 		updateAt = now + 0.10
@@ -8485,6 +8486,7 @@ function PortScene.build(info, onFacility)
 		groundRay.RespectCanCollide = true
 		-- [동료 R15] 주민/전투와 동일한 공식 관절 적용 시점에서 보행·대기 모션을 갱신한다.
 		followConn = RunService.PreSimulation:Connect(function(deltaTime)
+			if folder:GetAttribute("PortSceneActive") ~= true then return end
 			local now = os.clock()
 			local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
 			-- [중복 소환 방지] 항구의 시각 동료는 탐험 중 추적을 멈춘다. 탐험용 FieldAlly만 전장에 존재한다.
@@ -8774,6 +8776,8 @@ function PortScene.build(info, onFacility)
 	-- [삭제 방식 원복] 강제 프레임 양보(500·1500개 단위) 시험은 프레임마다 엔진 해제 비용이 커서 전체 전환이
 	-- 길어져 정밀검사 233단계(4초 대기)를 넘겼다(44968230194, 44969891132). 기존 최상위 묶음 단위 삭제로 되돌린다.
 	if old and old.Parent then
+		-- [이전 항구 정리] 분할 삭제 중에는 이전 장면의 모션·조명·낙하 복구를 멈춘다.
+		old:SetAttribute("PortSceneActive", false)
 		local destroyedCount = #old:GetDescendants()
 		for _, child in old:GetChildren() do
 			child:Destroy()
@@ -8793,6 +8797,8 @@ function PortScene.build(info, onFacility)
 		sliceYield("parentToWorkspace")
 	end
 	holder:Destroy()
+	-- 모든 모델을 배치한 뒤 새 장면의 모션·조명·낙하 복구를 시작한다.
+	folder:SetAttribute("PortSceneActive", true)
 	sliceMark("parentToWorkspace")
 
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
@@ -8929,12 +8935,13 @@ function PortScene.build(info, onFacility)
 			local function refreshOutfits(includeReady)
 				-- [자산 지연 입고] 원래 완성된 주민도 승인된 신규 머리/장신구 도착 때 재선택한다.
 				-- 기존 0.08초 배치와 원본 R15 착용 함수를 재사용한다.
+				if folder:GetAttribute("PortSceneActive") ~= true then return end
 				if includeReady == true then refreshReady = true end
 				if queued then return end
 				queued = true
 				task.delay(0.08, function()
 					queued = false
-					if not folder.Parent then return end
+					if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 					local includeCompleted = refreshReady
 					refreshReady = false
 					for _, subject in folder:GetDescendants() do
@@ -9104,6 +9111,7 @@ function PortScene.build(info, onFacility)
 	local wasVoyageActive = false
 	local conn = RunService.Heartbeat:Connect(function()
 		if not folder.Parent then return end
+		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		if workspace:GetAttribute("VoyageActive") then
 			if not wasVoyageActive then
 				setFoam(0)
