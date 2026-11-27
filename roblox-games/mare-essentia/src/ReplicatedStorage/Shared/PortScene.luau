@@ -193,10 +193,20 @@ local SIGN_NEAR, SIGN_ACTIVE = 26, 140
 local function animateSign(rec)
 	table.insert(signAnims, rec)
 	if signLoop then return end
-	signLoop = RunService.Heartbeat:Connect(function()
+	-- [모바일 간판] 장식용 3D 뷰포트 갱신만 최대 30Hz로 제한한다. 실제 시설 입력은 그대로다.
+	local signElapsed, lastSignUpdate = 0, os.clock()
+	signLoop = RunService.Heartbeat:Connect(function(dt)
+		local mobile = UserInputService.TouchEnabled
+		if mobile then
+			signElapsed += dt
+			if signElapsed < 1 / 30 then return end
+			signElapsed %= 1 / 30
+		end
 		local camera = workspace.CurrentCamera
 		if not camera then return end
 		local t = os.clock()
+		local scaleBlend = if mobile then 1 - 0.88 ^ (math.max(0, t - lastSignUpdate) * 60) else 0.12
+		lastSignUpdate = t
 		local eye = camera.CFrame.Position
 		for i = #signAnims, 1, -1 do
 			local a = signAnims[i]
@@ -210,7 +220,7 @@ local function animateSign(rec)
 					a.cam.CFrame = CFrame.lookAt(a.center + dir * a.reach, a.center)
 					a.bb.StudsOffset = Vector3.new(0, a.height + math.sin(t * 1.8 + a.phase) * 0.35, 0)
 					local want = if d < SIGN_NEAR then 1.18 else 1
-					a.scale += (want - a.scale) * 0.12
+					a.scale += (want - a.scale) * scaleBlend
 					a.bb.Size = UDim2.fromScale(a.w * a.scale, a.h * a.scale)
 				end
 			end
@@ -9083,10 +9093,12 @@ function PortScene.build(info, onFacility)
 		if not f then
 			return
 		end
+		-- [입자 갱신] 정박 중 0 또는 동일한 정수 방출률을 매 프레임 다시 쓰지 않는다.
+		local jetRate, sternRate = math.floor(flow * 26), math.floor(flow * 18)
 		for _, em in f.jets do
-			em.Rate = math.floor(flow * 26)
+			if em.Rate ~= jetRate then em.Rate = jetRate end
 		end
-		f.stern.Rate = math.floor(flow * 18)
+		if f.stern.Rate ~= sternRate then f.stern.Rate = sternRate end
 	end
 	-- [모바일 항구 연출] 항해 진입 시에만 입자를 멈추며 항해 중 같은 Rate를 매 프레임 쓰지 않는다.
 	local wasVoyageActive = false
