@@ -1553,6 +1553,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local hairStyle = model:GetAttribute("NpcHairStyle")
 				local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65
 				hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y
+			elseif npcOutfit and assetName == "acc_sailor_headband" and boneName == "Head" then
+				-- 머리띠의 실제 아래 경계를 이마 위로 올려 눈과 얼굴 중앙을 가리지 않는다.
+				hairOffsetY = math.max(hairOffsetY, 0.30 + ext.Y * 0.5 / target.Size.Y)
 			end
 			-- [수염·소매·장화 부착 위치] 수염은 얼굴 앞면(-Z)과 턱 아래(-Y)에 맞춘다.
 			-- 실제 R15 Head 관절을 따라가는 용접은 유지하고 피부/얼굴 데칼을 가리지 않게 크기를 제한한다.
@@ -1855,14 +1858,6 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			elseif npcOutfit and (string.sub(assetName, 1, 4) == "acc_" or string.sub(assetName, 1, 4) == "cc0_") then
 				model:SetAttribute("NpcVisibleAccessoryMesh", assetName)
 			end
-			if npcOutfit and detailAllowed and assetName == "acc_feather_hat" then
-				-- [지역 복식] 정상 장착된 깃털모자만 기존 챙 중복을 숨기고 정수리 안감은 남긴다.
-				for _, piece in model:GetChildren() do
-					if piece:IsA("BasePart") and piece.Name == "Hat" then
-						piece.Transparency = if piece:GetAttribute("NpcHatCrown") == true then 0 else 1
-					end
-				end
-			end
 		else
 			-- [진단] 예전에는 어떤 런타임 오류든 fit_failed 한 단어로 숨겼다.
 			-- 검증 가능한 72자 오류만 기존 OutfitMissing에 기록하며 출력/새 테이블은 만들지 않는다.
@@ -1978,6 +1973,29 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			if worn:IsA("Model") and string.sub(worn.Name, 1, 13) == "R15Asset_cc0_" then
 				for _, mesh in worn:GetDescendants() do
 					if mesh:IsA("BasePart") then mesh.LocalTransparencyModifier = 1 end
+				end
+			end
+		end
+	end
+	-- [모자 표시 상태] 신규 복제·기존 슬롯 재사용·거리 복귀·장신구 교체 모두 실제 가시 상태로 판정한다.
+	-- 등록 깃털모자가 보이면 기존 챙만 숨기고 안감을 유지하며, 사라지면 원래 모자를 복구한다.
+	if npcOutfit then
+		local featherHat = model:FindFirstChild("R15Asset_acc_feather_hat_Head")
+		local featherVisible = false
+		if featherHat then
+			for _, mesh in featherHat:GetDescendants() do
+				if mesh:IsA("BasePart") and mesh.Transparency < 0.95 and mesh.LocalTransparencyModifier < 0.95 then
+					featherVisible = true
+					break
+				end
+			end
+		end
+		for _, piece in model:GetChildren() do
+			if piece:IsA("BasePart") and piece.Name == "Hat" then
+				if featherVisible then
+					piece.Transparency = if piece:GetAttribute("NpcHatCrown") == true then 0 else 1
+				else
+					piece.Transparency = 0
 				end
 			end
 		end
