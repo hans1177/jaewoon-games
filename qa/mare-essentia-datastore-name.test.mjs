@@ -4639,6 +4639,15 @@ test('Mare naval damage fire reuses per-ship emission values and preserves thres
   assert.ok(fire.indexOf('local brightness =') < fire.indexOf('for _, vent in state.vents do'));
 });
 
+test('Mare card placement glow and deferred board effects release their scene work',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const glow=naval.slice(naval.indexOf('local function dropHint(c)'),naval.indexOf('local boardCards, previousBoard'));
+  for(const token of ['TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)','st.Destroying:Once(function()','glowTween:Cancel()','glowTween:Destroy()','if dropGlow == st then dropGlow = nil end','glowTween:Play()','st.Thickness = 3','BC.lane(c)']) assert.ok(glow.includes(token),token);
+  const effects=naval.slice(naval.indexOf('local rendered = previousBoard'),naval.indexOf('local passArmedAt = 0'));
+  for(const token of ['cardTimers[task.defer(function()','cardTimers[coroutine.running()] = nil','if not finished and g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end','end)] = true']) assert.ok(effects.includes(token),token);
+  assert.ok(naval.includes('for timer in cardTimers do task.cancel(timer) end'));
+});
+ 
 test('Mare naval skill icons compose readiness glow once and skip identical writes',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const start=naval.indexOf('local art = b:FindFirstChild("NavalButtonArtwork")',naval.indexOf('-- [전투 HUD] 실제 표시'));
