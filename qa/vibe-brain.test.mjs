@@ -547,7 +547,7 @@ test('Mare port variant survey checks display tier, season and weather without c
   assert.match(workflow,/PORT_SURVEY_WRONG_SEASON/);
   assert.match(workflow,/PORT_SURVEY_WRONG_WEATHER/);
   assert.match(workflow,/PORT_SURVEY_SEASON_DAY/);
-  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=475/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=525/);
 });
 
 test('Mare field climate survey uses real seasonal weather and lighting in Studio only', () => {
@@ -562,4 +562,18 @@ test('Mare field climate survey uses real seasonal weather and lighting in Studi
   assert.match(workflow,/FIELD_SURVEY_WRONG_PHASE/);
   assert.match(workflow,/FIELD_SURVEY_PRECIPITATION_WRONG/);
   assert.match(workflow,/FIELD_SURVEY_CLOCK_MISMATCH/);
+});
+
+test('Mare voyage weather and story survey use existing scenes without choosing or rewarding', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const base='roblox-games/mare-essentia/src/';
+  const game=fs.readFileSync(base+'StarterPlayer/Game.client.luau','utf8');
+  const voyage=fs.readFileSync(base+'ReplicatedStorage/Shared/VoyageScene.luau','utf8');
+  assert.match(game,/if not game:GetService\("RunService"\):IsStudio\(\) then return end\n\tlocal id = workspace:GetAttribute\("DevStory"\)/);
+  assert.match(game,/preview\.submit = function\(\)/);
+  assert.match(game,/StudioStoryChoices/);
+  assert.match(voyage,/precip\.Name = "VoyagePrecipitation"/);
+  assert.match(workflow,/VOYAGE_SURVEY_WEATHER_NOT_RENDERED/);
+  assert.match(workflow,/STORY_SURVEY_RUNTIME_COUNT/);
+  assert.match(workflow,/STORY_SURVEY_CLOSED_NO_CHOICE/);
 });

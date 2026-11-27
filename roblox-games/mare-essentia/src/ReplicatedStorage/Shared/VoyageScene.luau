@@ -1468,8 +1468,10 @@ function VoyageScene.play(info)
 	if weather.kind then
 		local snow, hail = weather.kind == "snow", weather.kind == "hail"
 		precipAnchor = part(folder, Vector3.new(96, 0.25, 96), CFrame.new(ORIGIN), Color3.new(1, 1, 1))
+		precipAnchor.Name = "VoyagePrecipitationSource"
 		precipAnchor.Transparency = 1
 		precip = Instance.new("ParticleEmitter")
+		precip.Name = "VoyagePrecipitation"
 		precip.Texture = FOAM
 		precip.Rate = 0
 		precip.EmissionDirection = Enum.NormalId.Bottom

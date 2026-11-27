@@ -23,7 +23,7 @@ on:
         default: ''
         type: string
       port_batch:
-        description: 전수 촬영 (0=기존 검사, 1~19 항구, 20~79 탐험, 80~106 해역, 107~146 기능, 147~327 항구 변형, 328~475 지상 기후)
+        description: 전수 촬영 (0=기존 검사, 1~19 항구, 20~79 탐험, 80~106 해역, 107~146 기능, 147~327 항구 변형, 328~475 지상 기후, 476~502 해상 기상, 503~525 이야기)
         required: false
         default: '0'
         type: string
@@ -232,7 +232,7 @@ jobs:
           # [항구 전수] 기존 마을 시나리오와 QA 항구 목록에서 회차별 실제 촬영 절차를 생성한다.
           if ($env:PORT_BATCH_IN -notmatch '^(0|[1-9][0-9]{0,2})$') { throw 'STUDIO_PORT_BATCH_INVALID' }
           $portBatch = [int]$env:PORT_BATCH_IN
-          if ($portBatch -gt 475) { throw 'STUDIO_PORT_BATCH_INVALID' }
+          if ($portBatch -gt 525) { throw 'STUDIO_PORT_BATCH_INVALID' }
           if ($portBatch -gt 0) {
             if ($g -ne 'mare-essentia' -or $candidateRef -ne '' -or [string]$env:SCRIPT_IN -ne '') { throw 'STUDIO_PORT_BATCH_SCOPE_INVALID' }
             $revision = (& git -C main rev-parse HEAD).Trim()
@@ -247,12 +247,65 @@ jobs:
           const scenarios = ["mare-town","mare-regions","mare-field","mare-fieldcombat","mare-discovery-forms","mare-voyage-manual","mare-voyage-manual-helm","mare-voyage","mare-helm","mare-depart","mare-events","mare-navalrt","mare-navalfleet","mare-naval2","mare-navalcards","mare-questscene-live","mare-questscene-tradefun","mare-questscene-probe","mare-cardbattle","mare-cardgallery","mare-cardflow","mare-cardgain","mare-facilities","mare-tradehall","mare-menus","mare-ships","mare-villagers","mare-zoo","mare-knowledge","mare-title","mare-ui","mare-ui2","mare-palaces","mare-tavern","mare-recruit","mare-trade","mare-wallet","mare-weapons","mare-repair","mare-cards"];
           const variantStart = 107 + scenarios.length;
           const climateStart = variantStart + 181;
-          const maxBatch = climateStart + Math.ceil(592 / 4) - 1;
+          const voyageStart = climateStart + Math.ceil(592 / 4);
+          const storyStart = voyageStart + 27;
+          const maxBatch = storyStart + Math.ceil(228 / 10) - 1;
           if (!Number.isInteger(batch) || batch < 1 || batch > maxBatch) throw Error('STUDIO_SURVEY_BATCH_INVALID');
           const gameRoot = path.resolve(root, '../../..');
           const shared = path.join(gameRoot, 'src/ReplicatedStorage/Shared');
+          // [해상 기상] 기존 해역 지시서와 항로 정본에서 대표 항로를 선택한다. 실제 폭풍·해무 사건만 재생한다.
+          if (batch >= voyageStart && batch < storyStart) {
+            const navalSource=fs.readFileSync(path.join(shared,'NavalBattle.luau'),'utf8');
+            const block=navalSource.match(/local briefPorts = \{([\s\S]*?)\n\s*\}/)?.[1] || '';
+            const seas=[...block.matchAll(/^\s*([a-z_]+) = "([a-z0-9_]+(?: [a-z0-9_]+)*)",/gm)].map(m=>({id:m[1],ports:m[2].split(' ')})).sort((a,b)=>a.id.localeCompare(b.id));
+            const docs=fs.readdirSync(path.join(gameRoot,'docs/battle_backdrops/naval')).filter(n=>n.endsWith('.md')).map(n=>n.slice(0,-3)).sort();
+            if (seas.length!==27 || JSON.stringify(seas.map(row=>row.id))!==JSON.stringify(docs)) throw Error('STUDIO_VOYAGE_CATALOG_MISMATCH');
+            const sea=seas[batch-voyageStart], from=sea.ports[0], to=sea.ports[1]||'mozambique';
+            const voyage=JSON.parse(fs.readFileSync(path.join(root,'mare-voyage.json'),'utf8'));
+            const steps=[voyage[0]];
+            for (const [event,weather] of [['storm','뇌우'],['fog','해무']]) {
+              const tag='voyage_'+sea.id+'_'+event;
+              steps.push({type:'luau',ctx:'Client',code:
+                'assert(not workspace:FindFirstChild("VoyageScene"),"VOYAGE_SURVEY_PREVIOUS_SCENE") local RS=game:GetService("ReplicatedStorage") local P=require(RS.Shared.Ports).Ports local from=assert(P["'+from+'"]) local dest=assert(P["'+to+'"]) local route=require(RS.Shared.SeaRoutes).path(from.id,dest.id,P) assert(#route>=2,"VOYAGE_SURVEY_ROUTE") local PS=require(RS.Shared.PortScene) for _,g in game.Players.LocalPlayer.PlayerGui:GetChildren() do if g:IsA("ScreenGui") then g.Enabled=false end end workspace:SetAttribute("VoyageDone","RUNNING") task.spawn(function() local ok,err=pcall(require(RS.Shared.VoyageScene).play,{shipId="galleon",steam=false,days=30,path=route,fromName=from.name,toName=dest.name,makeShip=PS.makeShip,place=PS.placeModel,escorts=2,weatherId="clear",event={kind="'+event+'"}}) workspace:SetAttribute("VoyageDone",if ok then "PASS" else "FAIL:"..tostring(err)) end) return "VOYAGE_SURVEY_LAUNCHED:'+from+':'+to+':'+event+'"'},
+                {type:'luau',ctx:'Client',timeoutMs:90000,code:
+                  'local f,hud for i=1,160 do f=workspace:FindFirstChild("VoyageScene") hud=game.Players.LocalPlayer.PlayerGui:FindFirstChild("VoyageHud") if f and hud and f:FindFirstChild("VoyageShip") then break end task.wait(0.25) end assert(f and hud and f:FindFirstChild("VoyageShip"),"VOYAGE_SURVEY_SCENE_MISSING") return "VOYAGE_SURVEY_STARTED"'},
+                {type:'capture',name:tag+'_start'},
+                {type:'luau',ctx:'Client',timeoutMs:60000,code:
+                  'local f=assert(workspace:FindFirstChild("VoyageScene")) local hud=assert(game.Players.LocalPlayer.PlayerGui:FindFirstChild("VoyageHud")) local L=game:GetService("Lighting") local actual=false for i=1,160 do if not f.Parent then break end local text=false for _,n in hud:GetDescendants() do if n:IsA("TextLabel") and string.find(n.Text,"'+weather+'",1,true) then text=true break end end local e=f:FindFirstChild("VoyagePrecipitation",true) if text and L.FogEnd<1000 and '+(event==='storm'?'e and e.Rate>0':'not e')+' then actual=true break end task.wait(0.25) end assert(actual,"VOYAGE_SURVEY_WEATHER_NOT_RENDERED:'+event+'") return "VOYAGE_SURVEY_WEATHER:'+weather+':"..tostring(L.FogEnd)'},
+                {type:'capture',name:tag+'_weather'},
+                {type:'luau',ctx:'Client',timeoutMs:90000,code:'for i=1,240 do if workspace:GetAttribute("VoyageDone")~="RUNNING" then break end task.wait(0.25) end assert(workspace:GetAttribute("VoyageDone")=="PASS","VOYAGE_SURVEY_FAILED:"..tostring(workspace:GetAttribute("VoyageDone"))) assert(not workspace:FindFirstChild("VoyageScene") and not game.Players.LocalPlayer.PlayerGui:FindFirstChild("VoyageHud") and not workspace:GetAttribute("VoyageActive"),"VOYAGE_SURVEY_CLEANUP") return "VOYAGE_SURVEY_EXIT"'});
+            }
+            if (steps.filter(row=>row.type==='capture').length!==4) throw Error('STUDIO_VOYAGE_CAPTURE_COUNT');
+            fs.writeFileSync(out,JSON.stringify(steps));
+            console.log('STUDIO_VOYAGE_BATCH='+batch+' SEA='+sea.id+' FRAMES=4');
+            process.exit(0);
+          }
+          // [이야기 분기] 기존 Story.Events 정본에서 시작 화면과 실제 선택지를 촬영한다. 선택 버튼은 누르지 않는다.
+          if (batch >= storyStart) {
+            const source=fs.readFileSync(path.join(shared,'Story.luau'),'utf8');
+            const ids=[...source.matchAll(/^\s*id = "([a-z0-9_]+)", (?:chapter|title) = /gm)].map(m=>m[1]).concat([...source.matchAll(/^\s*\{ "([a-z0-9_]+)", "[a-z0-9_]+", "[a-z0-9_]+", "[^"]+", "[^"]+", \d+, \{/gm)].map(m=>m[1]));
+            if(ids.length!==228||new Set(ids).size!==228) throw Error('STUDIO_STORY_CATALOG_MISMATCH');
+            const selected=ids.slice((batch-storyStart)*10,(batch-storyStart+1)*10);
+            const init=JSON.parse(fs.readFileSync(path.join(root,'mare-questscene-live.json'),'utf8'));
+            const steps=init.slice(0,10);
+            steps.push({type:'luau',ctx:'Client',code:'local S=require(game:GetService("ReplicatedStorage").Shared.Story) local ids={'+ids.map(id=>JSON.stringify(id)).join(',')+'} assert(#S.Events==#ids,"STORY_SURVEY_RUNTIME_COUNT") for _,id in ids do assert(S.ById[id] and S.ById[id].id==id,"STORY_SURVEY_RUNTIME_ID:"..id) end return "STORY_SURVEY_CATALOG=228"'});
+            for(const id of selected) {
+              const find='local pg=game.Players.LocalPlayer.PlayerGui local scene=assert(pg:FindFirstChild("StoryScene",true),"STORY_SURVEY_SCENE_MISSING") assert(scene:GetAttribute("StudioStoryId")=="'+id+'","STORY_SURVEY_WRONG_ID") ';
+              steps.push({type:'luau',ctx:'Client',code:'assert(not game.Players.LocalPlayer.PlayerGui:FindFirstChild("StoryScene",true),"STORY_SURVEY_PREVIOUS_SCENE") workspace:SetAttribute("DevStory",nil) workspace:SetAttribute("DevStory","'+id+'") return "STORY_SURVEY_LAUNCHED:'+id+'"'},
+                {type:'luau',ctx:'Client',timeoutMs:60000,code:'local pg=game.Players.LocalPlayer.PlayerGui for i=1,120 do local s=pg:FindFirstChild("StoryScene",true) if s and s:GetAttribute("StudioStoryId")=="'+id+'" then return "STORY_SURVEY_READY" end task.wait(0.25) end error("STORY_SURVEY_TIMEOUT:'+id+'")'},
+                {type:'wait',ms:2500},{type:'capture',name:'story_'+id+'_opening'},
+                {type:'click_from_luau',ctx:'Client',label:'story_'+id+'_choices',code:find+'local btn=assert(scene:FindFirstChild("StorySkip",true),"STORY_SURVEY_SKIP_MISSING") assert(btn.Visible and btn.Active,"STORY_SURVEY_SKIP_DISABLED") return string.format("%d,%d CLICK=STORY_SURVEY_SKIP",math.floor(btn.AbsolutePosition.X+btn.AbsoluteSize.X/2),math.floor(btn.AbsolutePosition.Y+btn.AbsoluteSize.Y/2))'},
+                {type:'wait',ms:1000},{type:'luau',ctx:'Client',code:find+'local ev=assert(require(game:GetService("ReplicatedStorage").Shared.Story).ById["'+id+'"]) assert(scene:GetAttribute("StudioStoryChoices")==#ev.choices,"STORY_SURVEY_CHOICE_COUNT") for _,c in ev.choices do local found=false for _,b in scene:GetDescendants() do if b:IsA("TextButton") and b.Visible and b.Text==c.text then found=true break end end assert(found,"STORY_SURVEY_CHOICE_MISSING:"..c.text) end return "STORY_SURVEY_CHOICES="..#ev.choices'},
+                {type:'capture',name:'story_'+id+'_choices'},
+                {type:'luau',ctx:'Client',code:find+'scene:Destroy() workspace:SetAttribute("DevStory",nil) task.wait(0.8) assert(not pg:FindFirstChild("StoryScene",true),"STORY_SURVEY_EXIT") return "STORY_SURVEY_CLOSED_NO_CHOICE"'} );
+            }
+            if(steps.filter(row=>row.type==='capture').length!==selected.length*2) throw Error('STUDIO_STORY_CAPTURE_COUNT');
+            fs.writeFileSync(out,JSON.stringify(steps));
+            console.log('STUDIO_STORY_BATCH='+batch+' EVENTS='+selected.length+' FRAMES='+selected.length*2);
+            process.exit(0);
+          }
           // [지상 전수] 기존 지역 탐험의 정상 철수·카메라 구도를 그대로 사용한다. 지점 이름과 카드 풀은 런타임 정본에서 읽는다.
-          if ((batch >= 20 && batch <= 79) || batch >= climateStart) {
+          if ((batch >= 20 && batch <= 79) || (batch >= climateStart && batch < voyageStart)) {
             const climate = batch >= climateStart;
             const siteSource = fs.readFileSync(path.join(shared, 'Sites.luau'), 'utf8');
             const sites = [...siteSource.matchAll(/^\s*\{\s*id\s*=\s*"([a-z0-9_]+)",\s*name\s*=\s*"[^"]+",\s*portId\s*=\s*"([a-z0-9_]+)"/gm)].map(m => ({id:m[1],port:m[2]}));
@@ -837,7 +890,7 @@ jobs:
           const history = Array.isArray(prior.runs) ? prior.runs : [];
           const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
           const portBatch = Number(process.env.STUDIO_PORT_BATCH || 0);
-          const kind = portBatch ? (portBatch <= 19 ? 'port-survey' : portBatch <= 79 ? 'field-survey' : portBatch <= 106 ? 'naval-survey' : portBatch <= 146 ? 'feature-survey' : portBatch <= 327 ? 'port-variant-survey' : 'field-climate-survey') : deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const kind = portBatch ? (portBatch <= 19 ? 'port-survey' : portBatch <= 79 ? 'field-survey' : portBatch <= 106 ? 'naval-survey' : portBatch <= 146 ? 'feature-survey' : portBatch <= 327 ? 'port-variant-survey' : portBatch <= 475 ? 'field-climate-survey' : portBatch <= 502 ? 'voyage-weather-survey' : 'story-survey') : deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
           const previous = history.find(row => row.kind === kind && (!portBatch || row.portBatch === portBatch));
           const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
           const summary = report.summary || {};
@@ -954,7 +1007,7 @@ jobs:
           for (const row of merged) {
             if (Date.parse(row.at) >= cutoff &&
                 ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
-                 (String(row.kind).endsWith('-survey') && !kept.some(item => item.kind === row.kind && item.portBatch === row.portBatch) && kept.filter(item => String(item.kind).endsWith('-survey')).length < 475) ||
+                 (String(row.kind).endsWith('-survey') && !kept.some(item => item.kind === row.kind && item.portBatch === row.portBatch) && kept.filter(item => String(item.kind).endsWith('-survey')).length < 525) ||
                  (row.kind !== 'deep' && !String(row.kind).endsWith('-survey') && kept.filter(item => item.kind !== 'deep' && !String(item.kind).endsWith('-survey')).length < 6)))
               kept.push(row);
             else if (/^runs\/[0-9]+$/.test(row.path || ''))
@@ -962,7 +1015,7 @@ jobs:
           }
           fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: portBatch ? (prior.latest || null) : record,
             lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
-          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](' + link + ') | [checklist](checks.json) | [history](index.json)', 'Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs, others 6 runs, world survey 475 batches', '',
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](' + link + ') | [checklist](checks.json) | [history](index.json)', 'Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs, others 6 runs, world survey 525 batches', '',
             '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
             ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + (row.portBatch ? ':' + row.portBatch : '') + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
           fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
@@ -1301,8 +1354,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $batch = [int]$env:STUDIO_PORT_BATCH
-          if ($batch -lt 1 -or $batch -gt 475) { throw 'STUDIO_PORT_BATCH_INVALID' }
-          if ($batch -eq 475) { Write-Host 'STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=475'; exit 0 }
+          if ($batch -lt 1 -or $batch -gt 525) { throw 'STUDIO_PORT_BATCH_INVALID' }
+          if ($batch -eq 525) { Write-Host 'STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=525'; exit 0 }
           $mainSha = (& gh api "repos/$env:GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha').Trim()
           if ($LASTEXITCODE -ne 0 -or $mainSha -ne $env:STUDIO_PORT_REVISION) { throw 'STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED' }
           & gh workflow run devloop-studio.yml --repo $env:GITHUB_REPOSITORY --ref main -f game=mare-essentia -f "port_batch=$($batch + 1)" -f port_chain=true -f "port_revision=$mainSha"
