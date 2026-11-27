@@ -260,10 +260,10 @@ jobs:
             const selected = climate ? sites.slice((batch - climateStart) * 4, (batch - climateStart + 1) * 4) : sites.slice((batch - 20) * 10, (batch - 19) * 10);
             // [기후 전수] 계절·시간·허용 기상을 조합한 독립 대표 조건. 모든 교차 조합은 아니다.
             const conditions = climate ? [
-              {key:'winter_dawn',month:1,hour:6,phase:'새벽',weather:['눈','옅은 안개','흐림']},
-              {key:'spring_day',month:4,hour:12,phase:'낮',weather:['비','흐림','맑음']},
-              {key:'summer_dusk',month:7,hour:18,phase:'황혼',weather:['맑음','소나기','흐림']},
-              {key:'autumn_night',month:10,hour:22,phase:'밤',weather:['소나기','옅은 안개','흐림']}
+              {key:'month01_dawn',month:1,hour:6,phase:'새벽',weather:['눈','옅은 안개','흐림']},
+              {key:'month04_day',month:4,hour:12,phase:'낮',weather:['비','흐림','맑음']},
+              {key:'month07_dusk',month:7,hour:18,phase:'황혼',weather:['맑음','소나기','흐림']},
+              {key:'month10_night',month:10,hour:22,phase:'밤',weather:['소나기','옅은 안개','흐림']}
             ] : [{key:''}];
             const regions = JSON.parse(fs.readFileSync(path.join(root, 'mare-regions.json'), 'utf8'));
             const steps = [regions[0],regions[1],{type:'luau',ctx:'Client',code:
