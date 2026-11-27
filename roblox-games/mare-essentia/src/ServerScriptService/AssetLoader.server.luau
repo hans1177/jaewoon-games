@@ -359,7 +359,9 @@ if studioAudit and #queue == 0 then
 end
 -- [초기 로딩] 첫 장면 요청이 진행 중이면 후순위 요청은 입장 대기 범위(5초)까지만 양보한다.
 -- 지연된 초기 모델이 전체 큐를 막지 않으며 Studio 전체 검증·동시 작업자 수는 유지한다.
-local initialPriorityDeadline = os.clock() + 5
+local loadStarted = os.clock()
+local initialPriorityDeadline = loadStarted + 5
+local startupTotal = priorityPending
 for _ = 1, 12 do
 	task.spawn(function()
 		while cursor <= #queue do
@@ -504,6 +506,7 @@ for _ = 1, 12 do
 			end
 			if pending == 0 then
 				ReplicatedStorage:SetAttribute("MareAssetsSettled", true)
+				print(string.format("[MareEssentia] 모델 전체 로드 %d/%d개, 실패 %d개, 경과 %.2f초", loaded, #queue, failed, os.clock() - loadStarted))
 				if portPriorityConnection then portPriorityConnection:Disconnect(); portPriorityConnection = nil end
 				local wearablesReady = r15GarmentExpected > 0 and r15AccessoryExpected > 0
 					and r15GarmentLoaded == r15GarmentExpected and r15AccessoryLoaded == r15AccessoryExpected
@@ -561,13 +564,13 @@ for _ = 1, 12 do
 	end)
 end
 
-local deadline = os.clock() + 30
+local deadline = loadStarted + 30
 while priorityPending > 0 and os.clock() < deadline do
 	task.wait(0.25)
 end
 if priorityPending > 0 then
 	warn("[MareEssentia] 우선 모델 불러오기 제한시간 도달", priorityPending)
 end
-print(string.format("[MareEssentia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개", loaded, failed, pending))
+print(string.format("[MareEssentia] 모델 초기 로드 %d개, 실패 %d개, 대기 %d개, 필수 요청 종료 %d/%d, 경과 %.2f초", loaded, failed, pending, startupTotal - priorityPending, startupTotal, os.clock() - loadStarted))
 ReplicatedStorage:SetAttribute("MareAssetsReady", true)
 
