@@ -4434,6 +4434,9 @@ test('Mare limits only distant idle and chase joint sampling under frame pressur
   assert.ok(loop.includes('FM.actor(e.fm, st, ph, visualDt, e.boss'));
   assert.ok(field.includes('if staminaNumber.Text ~= staminaText'));
   assert.ok(field.includes('if magicAmount.Text ~= magicText'));
+  for(const token of ['if staminaFill.Size ~= staminaSize','if magicFill.Size ~= magicSize','if shade.Visible ~= shadeVisible','if shade.Size ~= shadeSize','if shade.BackgroundTransparency ~= shadeAlpha','if timer and timer.Visible','if track and track.Visible']) assert.ok(field.includes(token),token);
+  assert.ok(field.includes('local style = Weapons.actionDesign(wpn)\n\t\tfor key, sb in combatBtns do'));
+  assert.ok(field.includes('elseif sb.wasCooling then'));
   assert.ok(field.includes('if sb.btn:GetAttribute("CooldownRemaining") ~= remaining'));
 });
 
