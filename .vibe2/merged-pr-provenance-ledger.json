@@ -371917,11 +371917,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_605f71633c92608999d640ca",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15512",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "6db02dadb95f8562549beaa30503dbabc8b97656",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15512,
+        "baseBranch": "main",
+        "headBranch": "mare-voyage-render-1127",
+        "baseSha": "6db02dadb95f8562549beaa30503dbabc8b97656",
+        "headSha": "03c9075c8d953bc4a9ae799782ab5fe491fcacbb",
+        "mergeCommitSha": "b03b597d9ce31c4417baeef7ddfa3dc4572e9ef0",
+        "mergedAt": "2026-11-27T08:15:37Z",
+        "authorLogin": "hans1177",
+        "titleHash": "4b64a95d462eed8b24ebaa1265fc778f358a90c65f3c0a039d2d6e2e874b0360",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-voyage-render-1127",
+        "candidateSha": "03c9075c8d953bc4a9ae799782ab5fe491fcacbb"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 415,
+        "deletedLineCount": 215,
+        "changedFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15512",
+        "merge-commit:b03b597d9ce31c4417baeef7ddfa3dc4572e9ef0",
+        "base-main:6db02dadb95f8562549beaa30503dbabc8b97656"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2939
+    "total": 2940
   }
 }
