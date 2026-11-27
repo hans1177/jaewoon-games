@@ -4827,7 +4827,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- [전투 맵 아이템] 기존 등록 3D 보급 부표/화약폭탄 모델을 재사용한다. 미등록이면 생성하지 않는다.
 	local FX = { wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
 		sink = nil, outcomeReason = nil, items = {}, itemSerial = 0, nextItemAt = os.clock() + 6,
-		mineCharges = 0, burstTimers = {}, effectTimers = {} }
+		mineCharges = 0, burstTimers = {}, burstPool = {}, effectTimers = {} }
 	-- 지형에 붙인 순간 입자는 장면 폴더의 자손이 아니므로 종료 시 직접 해제한다.
 	folder.Destroying:Connect(function()
 		for anchor, timer in FX.burstTimers do
@@ -4835,6 +4835,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			anchor:Destroy()
 		end
 		table.clear(FX.burstTimers)
+		for _, node in FX.burstPool do node.anchor:Destroy() end
+		table.clear(FX.burstPool)
 		for _, timer in FX.effectTimers do task.cancel(timer) end
 		table.clear(FX.effectTimers)
 		-- [종전 상태 해제] 기존 카메라 보간과 침몰 연출의 참조만 정리한다.
@@ -4936,8 +4938,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		smoke = "rbxasset://textures/particles/smoke_main.dds",
 		spark = "rbxasset://textures/particles/sparkles_main.dds",
 	}
-	local function emitterOn(parent, e)
-		local pe = Instance.new("ParticleEmitter")
+	local function emitterOn(parent, e, existing)
+		local pe = existing or Instance.new("ParticleEmitter")
 		pe.Texture = TEX[e.tex] or TEX.smoke
 		pe.Color = ColorSequence.new(e.c0, e.c1 or e.c0)
 		pe.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, e.s0), NumberSequenceKeypoint.new(1, e.s1 or e.s0) })
@@ -4955,34 +4957,62 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		pe.LockedToPart = false
 		pe.Rate = e.rate or 0
 		pe.Enabled = (e.rate or 0) > 0
-		pe.Parent = parent
+		if pe.Parent ~= parent then pe.Parent = parent end
 		return pe
 	end
-	local function lightFlash(parent, color, bright, range, dur)
-		local l = Instance.new("PointLight")
+	local function lightFlash(parent, color, bright, range, dur, existing)
+		local l = existing or Instance.new("PointLight")
 		l.Color = color
 		l.Brightness = bright
 		l.Range = range
-		l.Parent = parent
-		TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 }):Play()
+		l.Enabled = true
+		if l.Parent ~= parent then l.Parent = parent end
+		local tween = TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 })
+		tween:Play()
+		return l, tween
 	end
 	function FX.burst(pos, dir, list, light)
 		if finished or not folder.Parent then return end
-		local anchor = Instance.new("Attachment") -- 보이는 부품 없이 지형에 붙여 입자만 터뜨린다
+		-- [순간 효과 재사용] 입자가 완전히 끝난 좌표·방출기만 재사용한다. 활성 효과를 빼앗지 않는다.
+		local node
+		for i = #FX.burstPool, 1, -1 do
+			if #FX.burstPool[i].emitters == #list then
+				node = table.remove(FX.burstPool, i)
+				break
+			end
+		end
+		if not node then
+			node = { anchor = Instance.new("Attachment"), emitters = {} }
+		end
+		local anchor = node.anchor
 		anchor.WorldCFrame = if dir then CFrame.lookAt(pos, pos + dir) else CFrame.new(pos)
 		anchor.Parent = workspace.Terrain
 		local longest = 1
-		for _, e in list do
-			local pe = emitterOn(anchor, e)
+		for i, e in list do
+			local pe = emitterOn(anchor, e, node.emitters[i])
+			node.emitters[i] = pe
 			pe:Emit(math.min(e.n or 8, if MOBILE_VFX then 12 else 26))
 			longest = math.max(longest, e.life + 0.2)
 		end
+		local lightTween
 		if light then
-			lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3)
+			node.light, lightTween = lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3, node.light)
 		end
 		FX.burstTimers[anchor] = task.delay(longest, function()
 			FX.burstTimers[anchor] = nil
-			anchor:Destroy()
+			if lightTween then lightTween:Cancel(); lightTween:Destroy() end
+			if finished or not folder.Parent or #FX.burstPool >= (if MOBILE_VFX then 8 else 16) then
+				anchor:Destroy()
+				return
+			end
+			for _, pe in node.emitters do
+				pe.Enabled = false
+				pe.Rate = 0
+				pe:Clear()
+			end
+			if node.light then node.light.Enabled = false; node.light.Brightness = 0 end
+			anchor.Parent = nil
+			table.insert(FX.burstPool, node)
 		end)
 	end
 	local ORANGE, YELLOW, RED = Color3.fromRGB(255, 150, 50), Color3.fromRGB(255, 226, 130), Color3.fromRGB(190, 52, 28)
