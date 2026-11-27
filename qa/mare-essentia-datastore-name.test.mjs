@@ -4725,3 +4725,16 @@ test('Mare naval fleet wake shares weather and alternation without changing part
   assert.ok(naval.includes('if sh.wake.WorldCFrame ~= wakeFrame then sh.wake.WorldCFrame = wakeFrame end'));
   assert.ok(naval.includes('sh.wakeNext = t + (if MOBILE_VFX then 0.20 else 0.11)'));
 });
+
+test('Mare card guidance and temporary advice share a reserved non-overlapping slot',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const cards=naval.slice(naval.indexOf('local function startBoarding('),naval.indexOf('-- 적 포탄 낙하 경고'));
+  for(const token of ['local guidanceSize = UDim2.new(0.96, if opts.cardOnly then (if compactCards then -100 else -116) else 0, 0.05, 0)','info.Size = guidanceSize','adviceTag.Position = info.Position','adviceTag.Size = guidanceSize','adviceTag.BackgroundTransparency = 0','adviceTag.Visible = false','seconds or 7','adviceToken == mine and adviceTag.Parent and info.Parent']) assert.ok(cards.includes(token),token);
+  assert.match(cards,/adviceTag\.Text = text\s+info\.Visible = false\s+adviceTag\.Visible = true/);
+  assert.match(cards,/adviceTag\.Visible = false\s+info\.Visible = true/);
+  for(const [width,button] of [[320,96],[360,96],[667,96],[720,112],[1280,112]]) {
+    const right=width*0.98-(button+4);
+    const menuLeft=width*0.98-button;
+    assert.ok(right<menuLeft && right>width*0.02);
+  }
+});
