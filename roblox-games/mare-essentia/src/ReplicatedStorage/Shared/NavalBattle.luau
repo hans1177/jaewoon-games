@@ -6940,16 +6940,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- 배 카드: 기함은 전체 막대를, 선단 배는 피해의 절반만 받은 것으로 보여 준다
 		for _, mc in myCards do
 			local v = 1 - (1 - meHp) * mc.share
-			mc.c.fill.Size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
-			mc.c.fill.BackgroundColor3 = if v < 0.35 then Color3.fromRGB(214, 82, 76) else mc.c.color
-			if loser == "me" and sinkStart and mc.share == 1 then
+			local size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
+			local color = if v < 0.35 then Color3.fromRGB(214, 82, 76) else mc.c.color
+			if mc.c.fill.Size ~= size then mc.c.fill.Size = size end
+			if mc.c.fill.BackgroundColor3 ~= color then mc.c.fill.BackgroundColor3 = color end
+			if loser == "me" and sinkStart and mc.share == 1 and mc.c.frame.BackgroundTransparency ~= 0.6 then
 				mc.c.frame.BackgroundTransparency = 0.6
 			end
 		end
 		for _, fc in foeCards do
 			local v = 1 - (1 - foeHp) * fc.share
-			fc.c.fill.Size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
-			if loser == "foe" and sinkStart and fc.share == 1 then
+			local size = UDim2.fromScale(math.clamp(v, 0, 1), 1)
+			if fc.c.fill.Size ~= size then fc.c.fill.Size = size end
+			if loser == "foe" and sinkStart and fc.share == 1 and fc.c.frame.BackgroundTransparency ~= 0.6 then
 				fc.c.frame.BackgroundTransparency = 0.6
 			end
 		end
@@ -6975,15 +6978,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			+ Vector3.new(0, math.min(72, 51 + dist * 0.09), 0)
 		if cardBusy then
 			local mid = (me.pos + foe.pos) / 2
-			local dir = foe.pos - me.pos
-			local perp = Vector3.new(-dir.Z, 0, dir.X)
+			local perp = Vector3.new(-sep.Z, 0, sep.X)
 			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
 			focus = ORIGIN + mid + Vector3.new(0, 2, 0)
 			camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
 		elseif FX.boardZoom > 0.01 then
 			local mid = (me.pos + foe.pos) / 2
-			local dir = foe.pos - me.pos
-			local perp = Vector3.new(-dir.Z, 0, dir.X)
+			local perp = Vector3.new(-sep.Z, 0, sep.X)
 			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
 			local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58) + Vector3.new(0, if MOBILE_VFX then 28 else 23, 0)
 			local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
@@ -7015,7 +7016,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			camPos += Vector3.new(0, math.sin(now * 1.15) * cameraSwell, 0)
 		end
 		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
-		FX.cam = if FX.cam then { pos = FX.cam.pos:Lerp(camPos, a), focus = FX.cam.focus:Lerp(focus, a) } else { pos = camPos, focus = focus }
+		-- 카메라 보간 상태를 재사용해 프레임마다 새 테이블을 만들지 않는다.
+		if FX.cam then
+			FX.cam.pos = FX.cam.pos:Lerp(camPos, a)
+			FX.cam.focus = FX.cam.focus:Lerp(focus, a)
+		else
+			FX.cam = { pos = camPos, focus = focus }
+		end
 		cam.CFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)
 	end))
 
