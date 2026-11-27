@@ -1,0 +1,158 @@
+{
+  "version": 3,
+  "provider": "GEMINI",
+  "gameId": "mare-essentia",
+  "sourceRevision": "d60005aeb5645ccc6569e79e84aefe2e036756bb",
+  "status": "CANDIDATE_EDITED",
+  "selectedRole": "MOTION",
+  "usageWindow": {
+    "day": "2026-11-27",
+    "calls": {
+      "NVIDIA": 12,
+      "GEMINI": 11,
+      "OPENROUTER": 14
+    },
+    "windowIds": {
+      "NVIDIA": "2026-11-27",
+      "GEMINI": "2026-11-27",
+      "OPENROUTER": "2026-11-27"
+    },
+    "firstCallAtByProvider": {
+      "NVIDIA": "2026-11-27T05:24:41.938Z",
+      "GEMINI": "2026-11-27T09:34:09.275Z",
+      "OPENROUTER": "2026-11-27T05:24:44.130Z"
+    }
+  },
+  "cooldowns": {
+    "GEMINI_FLASH": "2026-11-28T11:17:18.263Z",
+    "OPENROUTER_OMNI": "2026-11-27T20:27:33.453Z",
+    "NVIDIA_VL": "2026-11-27T20:57:28.294Z"
+  },
+  "quotaForecast": {
+    "NVIDIA": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 12,
+      "remainingLocal": 0,
+      "effectiveRemaining": 0,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 0,
+      "estimatedCallsPerHour": 0.73,
+      "estimatedHoursToLocalCap": 0,
+      "nextLocalWindowAt": "2026-11-28T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "GEMINI": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 12,
+      "localUsed": 11,
+      "remainingLocal": 1,
+      "effectiveRemaining": 1,
+      "regularWorkRemaining": 0,
+      "emergencyReserveRemaining": 1,
+      "estimatedCallsPerHour": 0.92,
+      "estimatedHoursToLocalCap": 1.1,
+      "nextLocalWindowAt": "2026-11-28T08:00:00.000Z",
+      "resetBasis": "PACIFIC_DAILY",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    },
+    "OPENROUTER": {
+      "scope": "STUDIO_VISUAL_ONLY",
+      "localDailyLimit": 30,
+      "localUsed": 14,
+      "remainingLocal": 16,
+      "effectiveRemaining": 16,
+      "regularWorkRemaining": 10,
+      "emergencyReserveRemaining": 6,
+      "estimatedCallsPerHour": 0.86,
+      "estimatedHoursToLocalCap": 18.6,
+      "nextLocalWindowAt": "2026-11-28T00:00:00.000Z",
+      "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
+      "accountWideBalanceVerified": false,
+      "accountWideFreeRemaining": null,
+      "accountFreeTierVerified": null,
+      "accountBalanceSource": "NOT_EXPOSED_BY_PROVIDER"
+    }
+  },
+  "accountQuota": null,
+  "attempts": [
+    {
+      "id": "OPENROUTER_OMNI",
+      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
+      "provider": "OPENROUTER",
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "OK",
+      "provider": "NVIDIA",
+      "model": "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    },
+    {
+      "id": "NVIDIA_VL",
+      "status": "REVIEW_INVALID",
+      "failureSignature": "Unterminated_string_in_JSON_at_position_9802__line_1_column_9803_"
+    },
+    {
+      "id": "GEMINI_LITE",
+      "status": "OK",
+      "provider": "GEMINI",
+      "model": "gemini-3.5-flash-lite"
+    }
+  ],
+  "frames": [
+    {
+      "name": "field_actor_after_motion-0.jpg",
+      "sha256": "d8c4a964887057aaa0c5d8999de94ab96fa10200aa92b92f09c88d5d58028134"
+    },
+    {
+      "name": "field_motion_smooth_icons-0.jpg",
+      "sha256": "2f76d23ea13f26c4d237101c4e0590a81d9edef1e5ffe55813dd6eea56f27626"
+    },
+    {
+      "name": "field_runtime_fps_sample-0.jpg",
+      "sha256": "7c47505c71b3b9e9117d349b8770cda8f138c90e2c39c1d6f110a3c11a26238f"
+    },
+    {
+      "name": "harbor_motion_attack-0.jpg",
+      "sha256": "9590613263b7b6b0c9221d6c4a7cdafcf82dda3f0fc55d46d4f17ed2e046f845"
+    }
+  ],
+  "model": "gemini-3.5-flash-lite",
+  "rawResponseSha256": "8d690c1e639c0c9234da0fc092dfb3a730366b3c820bd2842c3950da65176dd7",
+  "issues": [
+    {
+      "category": "lighting",
+      "severity": "medium",
+      "screenshot": "field_runtime_fps_sample-0.jpg",
+      "evidenceSha256": "8eb8aab687218134dd2791b2d5abed6be27056c5056c4d251d17eaf6fded8a11"
+    }
+  ],
+  "edits": [
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "category": "lighting",
+      "screenshot": "field_runtime_fps_sample-0.jpg",
+      "beforeSha256": "b7c83d53764d34941338e1c201ca96c4bd5743cf780b4f4aa88765e22f0e13ae",
+      "afterSha256": "f7d4bfe3a33ad6ae9ab10c81f083f18cbf65494d1f1e9298a62125403949344a"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "roblox-games/mare-essentia/src/StarterPlayer/TownMood.client.luau",
+      "beforeSha256": "ae54a8fd159d79fd9d5e70455c1fea3c498337fe24ca1c334cee46619d2108a1",
+      "afterSha256": "63a0f037a96e311e5a747da9c7ffaa6666eb0f50c0118ed6827ea3a29ca1e7b3"
+    }
+  ],
+  "candidateOnly": true,
+  "independentQaPassed": false,
+  "afterStudioPassed": false,
+  "releasePassed": false
+}
