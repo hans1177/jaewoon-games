@@ -611,8 +611,12 @@ test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광�
   assert.match(scene, /"CityLondonMarketDay", londonMarketDay/);
   assert.ok(scene.includes('for index, mineral in { "coal", "tin" } do'));
   assert.match(scene, /AssetIds\["Cargo\/" \.\. mineral\]/);
-  assert.match(scene, /info\.portId == "london" and lay\.freight and lay\.shipyardBuilt/);
-  assert.match(scene, /if rope then rope:SetAttribute\("LondonHarborRopeSupply", true\) end/);
+  // 공통 원본 밧줄 배치와 런던 전용 대체 원본·진단을 각각 검증한다.
+  const ropeBlock = scene.split('-- [런던 조선항]')[1].split('-- [지역 특산품 하역]')[0];
+  assert.match(ropeBlock, /if lay\.freight and lay\.shipyardBuilt then/);
+  assert.match(ropeBlock, /local ropeSource = info\.portId \.\. "-rope-twist-02-source"/);
+  assert.match(ropeBlock, /if not rope and info\.portId == "london" and AssetIds\["Relics\/rope-bundle-a"\] then\s+rope = one\("Relics", "rope-bundle-a",/);
+  assert.match(ropeBlock, /if rope and info\.portId == "london" then rope:SetAttribute\("LondonHarborRopeSupply", true\) end/);
   assert.ok(scene.includes('if stalls > 0 then GOOD_MESH[good] else nil'),
     '실제 시장 건물 없으면 특산품 미배치');
   assert.ok(scene.includes('if table.find((port and port.produces) or {}, mineral)'),
@@ -635,4 +639,17 @@ test('항구 분할 교체 중 이전 모션을 중단하고 새 장면의 낙�
     const start = scene.indexOf(loop);
     assert.ok(start >= 0 && scene.slice(start, start + 500).includes('folder:GetAttribute("PortSceneActive") ~= true'), loop);
   }
+});
+
+test('건축 모델 설치와 시공 인력의 지연 작업은 제거 시 취소하고 정상 완료 시 연결을 해제한다', () => {
+  const install = scene.split('-- [설치 타이머]')[1].split('return m')[0];
+  assert.match(install, /local installThread = task\.delay\(buildDelay, function\(\)/);
+  assert.match(install, /installCleanup = m\.Destroying:Once\(function\(\)\s+if coroutine\.status\(installThread\) == "suspended" then task\.cancel\(installThread\) end/);
+  assert.match(install, /task\.wait\(0\.76\)/);
+  assert.match(install, /piece\.part\.CanCollide = piece\.solid/);
+  assert.match(install, /installCleanup:Disconnect\(\)/);
+  assert.doesNotMatch(install, /task\.delay\(0\.76/);
+  assert.match(scene, /local crewThread = task\.defer\(function\(\)/);
+  assert.match(scene, /crewCleanup = folder\.Destroying:Once\(function\(\)\s+if coroutine\.status\(crewThread\) == "suspended" then task\.cancel\(crewThread\) end/);
+  assert.match(scene, /crewCleanup:Disconnect\(\)/);
 });
