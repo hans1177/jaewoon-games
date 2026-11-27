@@ -2976,6 +2976,9 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 	local locomotion = state == "walk" or state == "run"
 	local reaction = state == "attack" or state == "hurt" or state == "shoot"
 	local poseDt = math.clamp(turnDt, 0, 1 / 20)
+	-- [모바일 관절 보간] 같은 프레임·같은 속도의 지수 계산은 관절 간 재사용한다.
+	-- 실제 보간이 필요한 속도만 계산하고 공격·전환 중에는 기존 분기를 그대로 따른다.
+	local alphaHead, alphaBody, alphaArm, alphaOther
 	for _, joint in m do
 		if joint and (joint:IsA("Motor6D") or joint:IsA("AnimationConstraint")) then
 			local target = joint.Transform
@@ -2989,9 +2992,20 @@ function Pose.makeR15Action(model, state, progress, t, moveEffort)
 				if prev and not groundJoint then
 					local head = joint == m.neck
 					local body = joint == m.waist
-					local rate = if head then 10 elseif body then 12
-						elseif joint == m.leftArm or joint == m.rightArm then 19 else 17
-					local alpha = 1 - math.exp(-rate * poseDt)
+					local alpha
+					if head then
+						alphaHead = alphaHead or (1 - math.exp(-10 * poseDt))
+						alpha = alphaHead
+					elseif body then
+						alphaBody = alphaBody or (1 - math.exp(-12 * poseDt))
+						alpha = alphaBody
+					elseif joint == m.leftArm or joint == m.rightArm then
+						alphaArm = alphaArm or (1 - math.exp(-19 * poseDt))
+						alpha = alphaArm
+					else
+						alphaOther = alphaOther or (1 - math.exp(-17 * poseDt))
+						alpha = alphaOther
+					end
 					if head or body then
 						local _, angle = (prev:ToObjectSpace(target)):ToAxisAngle()
 						if math.abs(angle) > 0.0001 then
