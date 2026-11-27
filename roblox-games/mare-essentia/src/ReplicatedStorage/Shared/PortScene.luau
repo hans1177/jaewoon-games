@@ -653,7 +653,17 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				end
 				if not textured then
 					-- 벽/지붕/문틀/돌계단을 구별한다. 원본 무늬 메시와 문화권별 집 색은 보존한다.
+					-- [부위별 재질] 완성형 건물의 이름보다 실제 메시 부위명을 우선한다.
+					-- 예: 목조 주택의 석조 기단·벽돌 외벽, 지붕 자산의 목조 들보를 같은 재질로 덮지 않는다.
+					local role = p.Name:lower()
 					local name = (asset .. " " .. p.Name):lower()
+					if kind == "Town" then
+						for _, key in { "glass", "windowpane", "glazing", "hinge", "iron", "metal", "latch",
+							"awning", "canvas", "cloth", "roof", "tile", "gable", "shingle", "wood", "timber",
+							"beam", "door", "frame", "floor", "stone", "column", "wall", "brick", "plaster" } do
+							if role:find(key, 1, true) then name = role; break end
+						end
+					end
 					local material, paint = Enum.Material.Brick, wallColor
 					if sandy or mediterranean then material = Enum.Material.Plaster end
 					if name:find("glass", 1, true) or name:find("windowpane", 1, true)
@@ -3994,7 +4004,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							if surface:IsA("BasePart") and surface.Material ~= Enum.Material.Glass
 								and surface.Material ~= Enum.Material.Metal and surface.Material ~= Enum.Material.Neon then
 								local appearance = surface:FindFirstChildOfClass("SurfaceAppearance")
-								local painted = appearance ~= nil or (surface:IsA("MeshPart") and surface.TextureID ~= "")
+								local painted = appearance ~= nil or surface.MaterialVariant ~= ""
+									or (surface:IsA("MeshPart") and surface.TextureID ~= "")
 								for _, child in surface:GetChildren() do
 									if child:IsA("SpecialMesh") and child.TextureId ~= "" then painted = true break end
 								end
