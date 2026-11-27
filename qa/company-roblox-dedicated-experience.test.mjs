@@ -711,6 +711,13 @@ test('Mare trade 69-item 3D practice stays source-bound and feeds existing Vibe 
   assert.equal((fs.readFileSync('tools/devloop/assets_wanted.py','utf8').match(/time\.time\(\) \/\/ 300/g)||[]).length,2);
   assert.match(workflow,/id: animal_practice\s*\n\s*if: \$\{\{ env\.MARE_MODELS_ONLY == 'true' \}\}/);
   assert.match(workflow,/run: node tools\/mare-essentia-upload-assets\.mjs --animal-source-preflight/);
+  const sourceSearch=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8').split("if (process.argv.includes('--animal-source-preflight'))")[1].split('const key = process.env.ROBLOX_OPEN_CLOUD_API_KEY')[0];
+  assert.match(sourceSearch,/RATE_LIMIT/);
+  assert.match(sourceSearch,/AUTH_OR_PERMISSION/);
+  assert.match(sourceSearch,/MARE_ANIMAL_SOURCE_SEARCH_BATCH_DEFERRED/);
+  assert.match(sourceSearch,/if \(limited \|\| denied\) \{[\s\S]*?break;/);
+  assert.doesNotMatch(sourceSearch,/console\.log\([^\n]*diagnostic/);
+  assert.match(sourceSearch,/pending\.length\|\|reviewedSceneModels\.length/);
   assert.ok(workflow.indexOf('id: animal_practice') < workflow.indexOf('id: card_recovery'),'scheduled animal preflight precedes card recovery mode selection');
   assert.match(workflow,/old\.get\('sourceSha256'\)!=review\.get\('replacesSha256'\)/);
   assert.match(workflow,/hashlib\.sha256\(raw\)\.hexdigest\(\)!=digest/);
