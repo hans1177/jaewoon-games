@@ -335,8 +335,14 @@ jobs:
                   subprocess.run(['gh','workflow','run',filename,'--repo',repo,'--ref',branch,*args],check=True)
                   print('CARD_DROPBOX_QA_REQUESTED',name,head)
               raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING')
-          if any(r['status']!='completed' or r['conclusion']!='success' for r in latest.values()):
-              raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING_OR_FAILED')
+          # 병합 후에만 실행되는 두 작업의 정상 skipped만 제외한다. 필수 검사 및 다른 실패는 차단한다.
+          post_merge_only={'Roblox Changed Source Runtime Sync':'.github/workflows/company-roblox-source-drift-sync.yml', 'Vibe2 Merged PR Provenance':'.github/workflows/vibe2-merged-pr-provenance.yml'}
+          for name,run in latest.items():
+              if run['status']=='completed' and run['conclusion']=='success':
+                  continue
+              if name in post_merge_only and run['status']=='completed' and run['conclusion']=='skipped' and run.get('event')=='pull_request' and run.get('path')==post_merge_only[name]:
+                  continue
+              raise SystemExit('CARD_DROPBOX_PR_CHECKS_PENDING_OR_FAILED:'+name)
           # 수동 실행 검사도 정확한 head SHA의 실제 GitHub Actions check-run으로 확인한다.
           required_jobs={
               'All Games Development Sync':'discover-and-verify',
