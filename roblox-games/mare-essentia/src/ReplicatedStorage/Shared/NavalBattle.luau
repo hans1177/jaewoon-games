@@ -1327,7 +1327,7 @@ function NavalBattle.play(opts)
 	local lastTacticText, lastTacticColor = "", nil
 	-- [실전 사거리 나침반] 기존 사거리 원주 조각 재사용: 좌·우 선측포 영역, 회전 탐색광, 장전·포격·명중 펄스.
 	-- 판정값은 원래 cannon.range와 각도 그대로 사용하며 장식용 기본 파츠를 추가하지 않는다.
-	local rangeRing = { segments = {}, radials = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
+	local rangeRing = { segments = {}, radials = {}, angles = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
 	do
 		local count = if MOBILE_VFX then 28 else 40 -- [깨끗한 탐지 원] 모바일 포각 윤곽을 다듬되 고정 파츠만 재사용
 		local segmentLength = 2 * math.pi * cannon.range / count * 0.86
@@ -1338,6 +1338,7 @@ function NavalBattle.play(opts)
 			-- 고정 원주 방향은 생성 시 한 번만 계산한다.
 			local angle = (i - 1) * (math.pi * 2) / count
 			rangeRing.radials[i] = Vector3.new(math.cos(angle), 0, math.sin(angle))
+			rangeRing.angles[i] = angle
 		end
 		-- 기존 등록 선박 메시와 사거리 원주에 광선만 연결한다. 새 Part·선박·외부 에셋은 만들지 않는다.
 		local hullPart = me.model:FindFirstChildWhichIsA("BasePart", true)
@@ -6799,9 +6800,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		do
 			-- [해전 사거리 레이더] 실제 함선 위치/방위·실측 사거리로 반경이 움직인다.
 			-- 기존 원주 조각을 재활용해 좌현·우현 포격 호, 8초 회전 스캔, 장전 진행, 적선 방위와 명중 펄스를 표시한다.
-			local dd = (foe.pos - me.pos).Magnitude
-			local inRange = dd < cannon.range
 			local direction = foe.pos - me.pos
+			local dd = direction.Magnitude
+			local inRange = dd < cannon.range
 			local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 			local broadside = if dd > 0.1 then math.abs(heading:Cross(direction.Unit).Y) else 0
 			local aligned = broadside > 0.5
@@ -6822,13 +6823,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local hitFoe = now < rangeRing.impactUntil
 			local hitMe = now < rangeRing.hitUntil
 			rangeRing.fade = math.clamp(rangeRing.fade + (if phase == "duel" then dt * 3.5 else -dt * 3.5), 0, 1)
-			local enemyAngle = if dd > 0.1 then math.atan2(direction.Z, direction.X) else 0
+			local enemyAngle = if dd > 0.1 then enemyBearing else 0
+			-- [해전 원주] 위치와 사거리가 그대로면 고정 원주 좌표를 다시 계산하지 않는다.
+			local ringMoved = rangeRing.lastPos ~= me.pos or rangeRing.lastRange ~= cannon.range
+			local pulse = 0.5 + 0.5 * math.sin(now * 6)
 			for i, seg in rangeRing.segments do
-				local angle = (i - 1) * tau / #rangeRing.segments
+				local angle = rangeRing.angles[i]
 				local radial = rangeRing.radials[i]
-				local tangent = Vector3.new(-radial.Z, 0, radial.X)
-				local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
-				seg.CFrame = CFrame.lookAt(at, at + tangent)
+				if ringMoved then
+					local tangent = Vector3.new(-radial.Z, 0, radial.X)
+					local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
+					seg.CFrame = CFrame.lookAt(at, at + tangent)
+				end
 				-- 좌·우 선측: 실제 조준 기준인 교차곱 0.5 이상인 방향만 두껍고 밝게.
 				local sideY = heading:Cross(radial).Y
 				local sideArc = math.abs(sideY) > 0.5
@@ -6845,7 +6851,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					alpha = math.min(alpha, 0.83 - 0.63 * trail)
 				end
 				if onEnemy then
-					local pulse = 0.5 + 0.5 * math.sin(now * 6)
 					tint = if inRange and aligned then Color3.fromRGB(114, 255, 177) else Color3.fromRGB(255, 155, 115)
 					alpha = math.min(alpha, 0.3 - pulse * 0.19)
 				end
@@ -6869,8 +6874,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					alpha = if readyArc then 0.25 else 0.9
 				end
 				if seg.Color ~= tint then seg.Color = tint end
-				seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
+				local transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
+				if seg.Transparency ~= transparency then seg.Transparency = transparency end
 			end
+			rangeRing.lastPos, rangeRing.lastRange = me.pos, cannon.range
 			-- [회전 탐색광] 새 물체를 만들지 않고 기존 선박 메시·원주 Attachment 위치만 이동.
 			if rangeRing.radar then
 				local radar = rangeRing.radar
@@ -6906,9 +6913,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if aim then
 					local u = i / (#trajDots + 1)
 					dot.CFrame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
-					dot.Transparency = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
-					dot.Color = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
-				else
+					local alpha = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
+					local tint = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
+					if dot.Transparency ~= alpha then dot.Transparency = alpha end
+					if dot.Color ~= tint then dot.Color = tint end
+				elseif dot.Transparency ~= 1 then
 					dot.Transparency = 1
 				end
 			end
