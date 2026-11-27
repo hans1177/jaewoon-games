@@ -5331,13 +5331,19 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [항적·뱃머리 파도] 선박 이동 방향에 맞춰 선수 좌우 물보라와 V자형 포말을 생성한다.
 		-- 새로운 3D 물/기본 도형 없이 승인된 선박 모델과 기존 spark 입자만 사용한다.
 		local last = FX.wakeAt[key]
-		local profile = sh.fx or DEFAULT_FX
-		local theme = profile.theme or FX_THEMES.europe
 		local step = if MOBILE_VFX then 0.31 else 0.22
 		if last and now - last.t < step then return end
 		local moved = last and (sh.pos - last.pos).Magnitude or 0
-		FX.wakeAt[key] = { pos = sh.pos, t = now, frame = if last then (last.frame or 0) + 1 else 1 }
+		-- [항적 상태 재사용] 기존 선박별 기록을 갱신하고 샘플마다 새 표를 만들지 않는다.
+		if last then
+			last.pos, last.t, last.frame = sh.pos, now, (last.frame or 0) + 1
+		else
+			last = { pos = sh.pos, t = now, frame = 1 }
+			FX.wakeAt[key] = last
+		end
 		if moved <= 0.35 or (sh.speed or 0) <= 1.5 then return end
+		local profile = sh.fx or DEFAULT_FX
+		local theme = profile.theme or FX_THEMES.europe
 		local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		local right = Vector3.new(-heading.Z, 0, heading.X)
 		local rowing = profile.rowed == true
@@ -5356,7 +5362,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		-- [선수] 좌현·우현 물보라가 배 앞에서 갈라진다. 모바일은 반씩 번갈아 표시한다.
 		local bow = ORIGIN + sh.pos + heading * sh.length * 0.43 + Vector3.new(0, 0.33, 0)
 		for side = -1, 1, 2 do
-			if not MOBILE_VFX or side == (if FX.wakeAt[key].frame % 2 == 0 then 1 else -1) then
+			if not MOBILE_VFX or side == (if last.frame % 2 == 0 then 1 else -1) then
 				local sprayDir = right * side * 0.72 - heading * 0.35 + Vector3.new(0, 0.7, 0)
 				FX.burst(bow + right * side * sh.length * 0.075, sprayDir, {
 					{ tex = "spark", c0 = Color3.fromRGB(248, 255, 255), c1 = theme.foam,
@@ -5369,7 +5375,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end
 		-- [노선] 실제 노로 젓는 함선은 양쪽에서 짧은 흰 물줄기를 추가한다.
-		if rowing and not MOBILE_VFX and FX.wakeAt[key].frame % 2 == 0 then
+		if rowing and not MOBILE_VFX and last.frame % 2 == 0 then
 			for side = -1, 1, 2 do
 				local oar = ORIGIN + sh.pos - heading * sh.length * 0.15
 					+ right * side * sh.length * 0.22 + Vector3.new(0, 0.30, 0)
@@ -5871,7 +5877,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		return Vector3.new(math.cos(theta), 0, math.sin(theta))
 	end
 	-- sink: nil 또는 { k = 0~1 침몰 진행, side = ±1 기우는 쪽 }
-	local function poseShip(sh, t, sink)
+	local function poseShip(sh, t, sink, seaMood)
 		-- 방향을 틀면 바깥쪽으로 기울고(롤), 속도가 붙으면 선수가 살짝 든다. 피해가 쌓이면 한쪽으로 기울며 가라앉는다.
 		local dTheta = (sh.theta - (sh.lastTheta or sh.theta) + math.pi) % (math.pi * 2) - math.pi
 		sh.lastTheta = sh.theta
@@ -5921,16 +5927,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end
 		-- [다중 파도·함종별 부력] 서로 다른 파동의 위상과 선박 위치를 사용해 물결을 입체적으로 탄다.
 		-- 대형선은 작은 파도를 덜 타고, 소형선은 선수·선미가 더 크게 흔들린다. 물리 판정은 불변.
-		local seaMood = if opts.cardOnly then "card" else (folder:GetAttribute("NavalWeatherMode") or "clear")
 		local swell = if seaMood == "storm" then 1.48 elseif seaMood == "rain" then 0.86 else 0.52
 		local rate = if seaMood == "storm" then 1.85 elseif seaMood == "rain" then 1.5 else 1.28
 		local swellTime = t * rate + sh.pos.X * 0.016 + sh.pos.Z * 0.013 + sh.length * 0.24
 		local crossTime = t * rate * 0.67 - sh.pos.X * 0.011 + sh.pos.Z * 0.019 + sh.length * 0.11
 		local buoyancy = 1 - hullWeight * 0.43
+		local crossCos = if seaMood == "card" then 0 else math.cos(crossTime)
 		local heave = if seaMood == "card" then math.sin(t * 1.3 + sh.length) * 0.5
-			else (math.sin(swellTime) * 0.73 + math.cos(crossTime) * 0.27) * swell * buoyancy
+			else (math.sin(swellTime) * 0.73 + crossCos * 0.27) * swell * buoyancy
 		local seaRoll = if seaMood == "card" then 0
-			else (math.sin(swellTime * 0.64 + sh.theta) * 0.070 + math.cos(crossTime) * 0.038) * swell * buoyancy
+			else (math.sin(swellTime * 0.64 + sh.theta) * 0.070 + crossCos * 0.038) * swell * buoyancy
 		local seaPitch = if seaMood == "card" then 0
 			else (math.cos(swellTime * 0.82) * 0.080 + math.sin(crossTime) * 0.046) * swell * buoyancy
 		local bob = CFrame.new(0, heave + dip, 0)
@@ -6019,15 +6025,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 백병전 피해·승패·카드 상태에 간섭하지 않으며, 중복 소환은 막는다.
 	local function updateCrews(now)
 		-- [해전 백병전] 갑판에 별도 R15 인형을 만들지 않는다. 접현 연출과 카드 전용 선원만 유지한다.
+		if #crews.me == 0 and #crews.foe == 0 then return end
+		-- [선원 좌표 재사용] 양쪽 갑판이 이번 갱신의 선체 좌표를 공유한다.
+		local mePivot, foePivot = me.model:GetPivot(), foe.model:GetPivot()
 		for side, list in crews do
 			if #list == 0 then continue end
-			local sh = if side == "me" then me else foe
-			local other = if side == "me" then foe else me
 			local mode = crewMode[side]
 			local active = mode and now < mode.untilT
-			-- [선원 좌표 재사용] 같은 함선의 모든 선원은 이번 갱신의 동일한 선체 좌표를 사용한다.
-			local shipPivot = sh.model:GetPivot()
-			local otherPosition = other.model:GetPivot().Position
+			local shipPivot = if side == "me" then mePivot else foePivot
+			local otherPosition = if side == "me" then foePivot.Position else mePivot.Position
 			for _, c in list do
 				local pos = (shipPivot * c.off).Position
 				local look = Vector3.new(otherPosition.X, pos.Y, otherPosition.Z)
@@ -6787,14 +6793,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			-- 부유하는 임의 불덩이 대신 FX.damage에서 선체 고정 화재를 갱신한다.
 		end
-		poseShip(me, now, meSink)
-		poseShip(foe, now, foeSink)
-		updateCrews(now)
-		for _, e in escorts do
-			poseShip(e, now, nil)
-		end
-		for _, al in allies do
-			poseShip(al, now, nil)
+		do
+			-- [함대 파도] 같은 프레임의 해역 날씨를 모든 함선에 공유한다.
+			local seaMood = if opts.cardOnly then "card" else (folder:GetAttribute("NavalWeatherMode") or "clear")
+			poseShip(me, now, meSink, seaMood)
+			poseShip(foe, now, foeSink, seaMood)
+			updateCrews(now)
+			for _, e in escorts do
+				poseShip(e, now, nil, seaMood)
+			end
+			for _, al in allies do
+				poseShip(al, now, nil, seaMood)
+			end
 		end
 		do
 			-- [해전 사거리 레이더] 실제 함선 위치/방위·실측 사거리로 반경이 움직인다.
