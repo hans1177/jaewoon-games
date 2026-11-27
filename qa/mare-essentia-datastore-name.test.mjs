@@ -4630,6 +4630,18 @@ test('Mare naval skill icons compose readiness glow once and skip identical writ
 });
 
 
+test('Mare naval boarding transition and async crew creation respect scene lifetime',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const crew=naval.slice(naval.indexOf('local crews = { me = {}, foe = {} }'),naval.indexOf('local function crewAct('));
+  for(const token of ['folder.Destroying:Connect(function()','table.clear(crews.me)','table.clear(crews.foe)','table.clear(crewMode)','if finished or not folder.Parent or not sh.model.Parent then return end','for i = 1, (if MOBILE_VFX then 2 else 4) do','if ok and rig then rig:Destroy() end','Pose.createR15, folder, Vector3.zero, 0, coat, Random.new(seed), role, 5','table.insert(crews[side], { rig = rig, off = pivot:ToObjectSpace(CFrame.new(world)), idx = i })']) assert.ok(crew.includes(token),token);
+  const create=crew.indexOf('local ok, rig = pcall(Pose.createR15');
+  assert.ok(crew.indexOf('if finished or not folder.Parent then',create)>create);
+  const board=naval.slice(naval.indexOf('local boardingTimer = task.delay(1.0, function()'),naval.indexOf('conns[boardingTimer] = boardingTimer'));
+  for(const token of ['conns[coroutine.running()] = nil','if finished or not gui.Parent or not folder.Parent then return end','startBoarding(opts.card, function(m, acts)','pcall(opts.onCards, acts)','rewardCard and w == "a"','cardBusy, cardDone = false, true','crewAct(side, card)']) assert.ok(board.includes(token),token);
+  assert.ok(naval.includes('conns[boardingTimer] = boardingTimer'));
+  assert.ok(board.indexOf('conns[coroutine.running()] = nil')<board.indexOf('startBoarding(opts.card'));
+});
+
 test('Mare naval tracking reuses trajectory appearance and skips unchanged coordinates',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const tracking=naval.slice(naval.indexOf('-- [해전 사거리 레이더]'),naval.indexOf('-- [선체 숫자 선명도]'));
