@@ -1098,40 +1098,51 @@ jobs:
                       if ($baseCommit.sha -ne $candidateSource -or [string]$baseCommit.tree.sha -notmatch '^[0-9a-f]{40}$') {
                         throw 'NEMOTRON_CANDIDATE_BASE_IDENTITY_MISMATCH'
                       }
-                      $treeEntries = @()
-                      foreach ($file in $expectedFiles) {
-                        # 기존 정규 파일의 mode를 보존하고 바이트 그대로 서버 blob을 생성한다.
-                        $entry = & git ls-tree $candidateSource -- $file
-                        if ($LASTEXITCODE -ne 0 -or @($entry).Count -ne 1 -or
-                            [string]$entry -notmatch '^(100644|100755) blob [0-9a-f]{40}\t') { throw 'NEMOTRON_CANDIDATE_FILE_MODE_INVALID' }
-                        $mode = $Matches[1]
-                        $bytes = [IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $file).Path)
-                        $blobBody = @{ content = [Convert]::ToBase64String($bytes); encoding = 'base64' } | ConvertTo-Json -Compress
-                        $blobJson = $blobBody | & gh api --method POST "$api/blobs" --input -
-                        if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_BLOB_FAILED' }
-                        $blob = $blobJson | ConvertFrom-Json
-                        if ([string]$blob.sha -notmatch '^[0-9a-f]{40}$') { throw 'NEMOTRON_CANDIDATE_BLOB_ID_INVALID' }
-                        $treeEntries += @{ path = $file; mode = $mode; type = 'blob'; sha = [string]$blob.sha }
-                      }
-                      $treeBody = @{ base_tree = [string]$baseCommit.tree.sha; tree = $treeEntries } | ConvertTo-Json -Depth 8 -Compress
-                      $treeJson = $treeBody | & gh api --method POST "$api/trees" --input -
-                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_TREE_FAILED' }
-                      $candidateTree = $treeJson | ConvertFrom-Json
-                      if ([string]$candidateTree.sha -notmatch '^[0-9a-f]{40}$' -or $candidateTree.sha -eq $baseCommit.tree.sha) { throw 'NEMOTRON_CANDIDATE_TREE_INVALID' }
-                      $commitBody = @{ message = "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"; tree = [string]$candidateTree.sha; parents = @($candidateSource) } | ConvertTo-Json -Compress
-                      $commitJson = $commitBody | & gh api --method POST "$api/commits" --input -
-                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
-                      $candidateCommit = $commitJson | ConvertFrom-Json
-                      if ([string]$candidateCommit.sha -notmatch '^[0-9a-f]{40}$' -or
-                          $candidateCommit.tree.sha -ne $candidateTree.sha -or @($candidateCommit.parents).Count -ne 1 -or
-                          $candidateCommit.parents[0].sha -ne $candidateSource) { throw 'NEMOTRON_CANDIDATE_COMMIT_IDENTITY_MISMATCH' }
-                      # POST create ref는 이미 존재하는 ref를 덮어쓰지 않는다.
-                      $refBody = @{ ref = "refs/heads/$designBranch"; sha = [string]$candidateCommit.sha } | ConvertTo-Json -Compress
-                      $refJson = $refBody | & gh api --method POST "$api/refs" --input -
-                      if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
-                      $candidateRef = $refJson | ConvertFrom-Json
-                      if ($candidateRef.ref -ne "refs/heads/$designBranch" -or $candidateRef.object.sha -ne $candidateCommit.sha) {
-                        throw 'NEMOTRON_CANDIDATE_REF_IDENTITY_MISMATCH'
+                      # [JSON 전송] Windows PowerShell의 네이티브 표준입력 변환을 피하고 UTF-8 원문을 전달한다.
+                      $requestPath = [IO.Path]::GetTempFileName()
+                      $requestEncoding = [Text.UTF8Encoding]::new($false)
+                      try {
+                        $treeEntries = @()
+                        foreach ($file in $expectedFiles) {
+                          # 기존 정규 파일의 mode를 보존하고 바이트 그대로 서버 blob을 생성한다.
+                          $entry = & git ls-tree $candidateSource -- $file
+                          if ($LASTEXITCODE -ne 0 -or @($entry).Count -ne 1 -or
+                              [string]$entry -notmatch '^(100644|100755) blob [0-9a-f]{40}\t') { throw 'NEMOTRON_CANDIDATE_FILE_MODE_INVALID' }
+                          $mode = $Matches[1]
+                          $bytes = [IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $file).Path)
+                          $blobBody = @{ content = [Convert]::ToBase64String($bytes); encoding = 'base64' } | ConvertTo-Json -Compress
+                          [IO.File]::WriteAllText($requestPath, $blobBody, $requestEncoding)
+                          $blobJson = & gh api --method POST "$api/blobs" --input $requestPath
+                          if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_BLOB_FAILED' }
+                          $blob = $blobJson | ConvertFrom-Json
+                          if ([string]$blob.sha -notmatch '^[0-9a-f]{40}$') { throw 'NEMOTRON_CANDIDATE_BLOB_ID_INVALID' }
+                          $treeEntries += @{ path = $file; mode = $mode; type = 'blob'; sha = [string]$blob.sha }
+                        }
+                        $treeBody = @{ base_tree = [string]$baseCommit.tree.sha; tree = $treeEntries } | ConvertTo-Json -Depth 8 -Compress
+                        [IO.File]::WriteAllText($requestPath, $treeBody, $requestEncoding)
+                        $treeJson = & gh api --method POST "$api/trees" --input $requestPath
+                        if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_TREE_FAILED' }
+                        $candidateTree = $treeJson | ConvertFrom-Json
+                        if ([string]$candidateTree.sha -notmatch '^[0-9a-f]{40}$' -or $candidateTree.sha -eq $baseCommit.tree.sha) { throw 'NEMOTRON_CANDIDATE_TREE_INVALID' }
+                        $commitBody = @{ message = "design(mare): Nemotron visual candidate from Studio $env:GITHUB_RUN_ID"; tree = [string]$candidateTree.sha; parents = @($candidateSource) } | ConvertTo-Json -Compress
+                        [IO.File]::WriteAllText($requestPath, $commitBody, $requestEncoding)
+                        $commitJson = & gh api --method POST "$api/commits" --input $requestPath
+                        if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_COMMIT_FAILED' }
+                        $candidateCommit = $commitJson | ConvertFrom-Json
+                        if ([string]$candidateCommit.sha -notmatch '^[0-9a-f]{40}$' -or
+                            $candidateCommit.tree.sha -ne $candidateTree.sha -or @($candidateCommit.parents).Count -ne 1 -or
+                            $candidateCommit.parents[0].sha -ne $candidateSource) { throw 'NEMOTRON_CANDIDATE_COMMIT_IDENTITY_MISMATCH' }
+                        # POST create ref는 이미 존재하는 ref를 덮어쓰지 않는다.
+                        $refBody = @{ ref = "refs/heads/$designBranch"; sha = [string]$candidateCommit.sha } | ConvertTo-Json -Compress
+                        [IO.File]::WriteAllText($requestPath, $refBody, $requestEncoding)
+                        $refJson = & gh api --method POST "$api/refs" --input $requestPath
+                        if ($LASTEXITCODE -ne 0) { throw 'NEMOTRON_CANDIDATE_PUSH_FAILED' }
+                        $candidateRef = $refJson | ConvertFrom-Json
+                        if ($candidateRef.ref -ne "refs/heads/$designBranch" -or $candidateRef.object.sha -ne $candidateCommit.sha) {
+                          throw 'NEMOTRON_CANDIDATE_REF_IDENTITY_MISMATCH'
+                        }
+                      } finally {
+                        Remove-Item -LiteralPath $requestPath -Force -ErrorAction SilentlyContinue
                       }
                       Write-Host 'NEMOTRON_CANDIDATE_SERVER_TREE_PUBLISHED=1'
                       & gh pr create --base main --head $designBranch --title "design(mare): Free visual specialist candidate $env:GITHUB_RUN_ID" --body "Source-bound free visual specialists from exact Studio source $env:GITHUB_SHA. Exact visual expressions only. Node regression and Rojo build passed. Independent candidate Studio evidence and native security QA required before canonical main integration; F0-F9 and publish remain independent."
