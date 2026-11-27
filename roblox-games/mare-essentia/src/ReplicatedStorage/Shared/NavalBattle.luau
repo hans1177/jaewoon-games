@@ -7148,73 +7148,78 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end
 
-		-- [접현 시네마] 포격 중에는 2척을 넓게, 백병전 중에는 갑판 높이로 부드럽게 줌인한다.
-		-- 카드판과 침몰 연출은 종전 카메라 흐름을 유지한다. 화면 효과로만 쓰인다.
-		shake = math.max(0, shake - 3.6 * dt)
-		local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
-		kick *= 0.86 ^ (dt * 60)
-		local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
-		FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
-		-- [입체 해전 카메라] 비전투 카드판은 유지하고 해전만 선체 크기·거리감이 읽히는 화각으로 좁힌다.
-		cam.FieldOfView = (if opts.cardOnly then (if MOBILE_VFX then 73 else 75) else (if MOBILE_VFX then 69 else 71)) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
-		local f = forward(me.theta)
-		local sep = (foe.pos - me.pos)
-		local dist = sep.Magnitude
-		local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
-		-- [선박 3D 실루엣] 비스듬한 측면에서 선수·돛·함포가 동시에 보이도록 좌우 시차를 준다.
-		local side = Vector3.new(-f.Z, 0, f.X)
-		local cameraDistance = (if MOBILE_VFX then 133 else 145) + dist * (if MOBILE_VFX then 0.47 else 0.49)
-		local camPos = ORIGIN + me.pos - f * cameraDistance
-			+ (if opts.cardOnly then Vector3.zero else side * math.min(25, 13 + dist * 0.055))
-			+ Vector3.new(0, math.min(72, 51 + dist * 0.09), 0)
-		if cardBusy then
-			local mid = (me.pos + foe.pos) / 2
-			local perp = Vector3.new(-sep.Z, 0, sep.X)
-			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
-			focus = ORIGIN + mid + Vector3.new(0, 2, 0)
-			camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
-		elseif FX.boardZoom > 0.01 then
-			local mid = (me.pos + foe.pos) / 2
-			local perp = Vector3.new(-sep.Z, 0, sep.X)
-			perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
-			local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58) + Vector3.new(0, if MOBILE_VFX then 28 else 23, 0)
-			local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
-			camPos = camPos:Lerp(closePos, FX.boardZoom)
-			focus = focus:Lerp(closeFocus, FX.boardZoom)
+		do -- 카메라 임시 지역 변수는 이 블록에서만 유지한다.
+			-- [접현 시네마] 포격 중에는 2척을 넓게, 백병전 중에는 갑판 높이로 부드럽게 줌인한다.
+			-- 카드판과 침몰 연출은 종전 카메라 흐름을 유지한다. 화면 효과로만 쓰인다.
+			shake = math.max(0, shake - 3.6 * dt)
+			local killZoom = if sinkStart then -math.clamp((now - sinkStart) / 1.4, 0, 1) * 8 else 0
+			kick *= 0.86 ^ (dt * 60)
+			local boardingView = phase == "board" and not cardBusy and not opts.cardOnly and not (rt and rt.sunk) and not sinkStart
+			FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))
+			-- [입체 해전 카메라] 비전투 카드판은 유지하고 해전만 선체 크기·거리감이 읽히는 화각으로 좁힌다.
+			local cameraFov = (if opts.cardOnly then (if MOBILE_VFX then 73 else 75) else (if MOBILE_VFX then 69 else 71)) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)
+			local f = forward(me.theta)
+			local sep = (foe.pos - me.pos)
+			local dist = sep.Magnitude
+			local focus = ORIGIN + me.pos + sep * 0.5 + Vector3.new(0, 4, 0)
+			-- [선박 3D 실루엣] 비스듬한 측면에서 선수·돛·함포가 동시에 보이도록 좌우 시차를 준다.
+			local side = Vector3.new(-f.Z, 0, f.X)
+			local cameraDistance = (if MOBILE_VFX then 133 else 145) + dist * (if MOBILE_VFX then 0.47 else 0.49)
+			local camPos = ORIGIN + me.pos - f * cameraDistance
+				+ (if opts.cardOnly then Vector3.zero else side * math.min(25, 13 + dist * 0.055))
+				+ Vector3.new(0, math.min(72, 51 + dist * 0.09), 0)
+			if cardBusy then
+				local mid = (me.pos + foe.pos) / 2
+				local perp = Vector3.new(-sep.Z, 0, sep.X)
+				perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
+				focus = ORIGIN + mid + Vector3.new(0, 2, 0)
+				camPos = ORIGIN + mid + perp * 112 + Vector3.new(0, 40, 0)
+			elseif FX.boardZoom > 0.01 then
+				local mid = (me.pos + foe.pos) / 2
+				local perp = Vector3.new(-sep.Z, 0, sep.X)
+				perp = if perp.Magnitude > 0.1 then perp.Unit else Vector3.new(0, 0, 1)
+				local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58) + Vector3.new(0, if MOBILE_VFX then 28 else 23, 0)
+				local closeFocus = ORIGIN + mid + Vector3.new(0, 7, 0)
+				camPos = camPos:Lerp(closePos, FX.boardZoom)
+				focus = focus:Lerp(closeFocus, FX.boardZoom)
+			end
+			if phase == "end" and not opts.cardOnly and endAt then
+				-- [종전 시네마] 초반에는 침몰 함선, 후반에는 승리한 함대를 낮은 각도로 보여 준다.
+				-- 항복·접현 승리는 침몰을 연출하지 않고 두 함선을 보여 준다.
+				local damaged = if loser == "me" then me else foe
+				local winnerShip = if opts.winner == "a" then me elseif opts.winner == "b" then foe else me
+				-- [침몰 시네마] 배가 수면 밑으로 사라질 때까지 선체를 따라 내려보고 이후 승전함으로 전환한다.
+				local sinkingTime = if FX.sink then math.clamp((now - endAt) / FX.sink.duration, 0, 1) else 0
+				local showingSinking = FX.sink and sinkingTime < 0.91
+				local focusShip = if showingSinking then damaged else winnerShip
+				local shot = ORIGIN + focusShip.pos + Vector3.new(0,
+					if showingSinking then math.max(1, 7 - sinkingTime * 5) else 9, 0)
+				local retreat = forward(focusShip.theta)
+				local desired = shot - retreat * (if showingSinking then 95 - sinkingTime * 12 else 110)
+					+ Vector3.new(35, if showingSinking then 27 - sinkingTime * 8 else 36, 22)
+				focus = focus:Lerp(shot, 0.92)
+				camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
+				cameraFov = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
+			end
+			-- [카메라 화각] 종전 시네마까지 확정한 최종 화각만 한 번 기록한다.
+			if cam.FieldOfView ~= cameraFov then cam.FieldOfView = cameraFov end
+			-- [수면 시점] 수평선은 안정적으로 유지하고 근거리 카메라에만 작은 물결 시차를 적용한다.
+			if not opts.cardOnly and not cardBusy and phase == "duel" then
+				local mood = folder:GetAttribute("NavalWeatherMode")
+				local cameraSwell = if mood == "storm" then 0.65 elseif mood == "rain" then 0.38 else 0.20
+				camPos += Vector3.new(0, math.sin(now * 1.15) * cameraSwell, 0)
+			end
+			local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
+			-- 카메라 보간 상태를 재사용해 프레임마다 새 테이블을 만들지 않는다.
+			if FX.cam then
+				FX.cam.pos = FX.cam.pos:Lerp(camPos, a)
+				FX.cam.focus = FX.cam.focus:Lerp(focus, a)
+			else
+				FX.cam = { pos = camPos, focus = focus }
+			end
+			local cameraFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)
+			if cam.CFrame ~= cameraFrame then cam.CFrame = cameraFrame end
 		end
-		if phase == "end" and not opts.cardOnly and endAt then
-			-- [종전 시네마] 초반에는 침몰 함선, 후반에는 승리한 함대를 낮은 각도로 보여 준다.
-			-- 항복·접현 승리는 침몰을 연출하지 않고 두 함선을 보여 준다.
-			local damaged = if loser == "me" then me else foe
-			local winnerShip = if opts.winner == "a" then me elseif opts.winner == "b" then foe else me
-			-- [침몰 시네마] 배가 수면 밑으로 사라질 때까지 선체를 따라 내려보고 이후 승전함으로 전환한다.
-			local sinkingTime = if FX.sink then math.clamp((now - endAt) / FX.sink.duration, 0, 1) else 0
-			local showingSinking = FX.sink and sinkingTime < 0.91
-			local focusShip = if showingSinking then damaged else winnerShip
-			local shot = ORIGIN + focusShip.pos + Vector3.new(0,
-				if showingSinking then math.max(1, 7 - sinkingTime * 5) else 9, 0)
-			local retreat = forward(focusShip.theta)
-			local desired = shot - retreat * (if showingSinking then 95 - sinkingTime * 12 else 110)
-				+ Vector3.new(35, if showingSinking then 27 - sinkingTime * 8 else 36, 22)
-			focus = focus:Lerp(shot, 0.92)
-			camPos = camPos:Lerp(desired, if MOBILE_VFX then 0.78 else 0.91)
-			cam.FieldOfView = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)
-		end
-		-- [수면 시점] 수평선은 안정적으로 유지하고 근거리 카메라에만 작은 물결 시차를 적용한다.
-		if not opts.cardOnly and not cardBusy and phase == "duel" then
-			local mood = folder:GetAttribute("NavalWeatherMode")
-			local cameraSwell = if mood == "storm" then 0.65 elseif mood == "rain" then 0.38 else 0.20
-			camPos += Vector3.new(0, math.sin(now * 1.15) * cameraSwell, 0)
-		end
-		local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))
-		-- 카메라 보간 상태를 재사용해 프레임마다 새 테이블을 만들지 않는다.
-		if FX.cam then
-			FX.cam.pos = FX.cam.pos:Lerp(camPos, a)
-			FX.cam.focus = FX.cam.focus:Lerp(focus, a)
-		else
-			FX.cam = { pos = camPos, focus = focus }
-		end
-		cam.CFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)
 	end))
 
 	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
