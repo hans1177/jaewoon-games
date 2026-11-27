@@ -4133,8 +4133,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							end
 						end
 						local bounds, dimensions = staged:GetBoundingBox()
-						local measuredHalfX = math.abs(bounds.Position.X - pos.X) + dimensions.X * 0.5 + 2.5
-						local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + dimensions.Z * 0.5 + 2.5
+						-- 회전된 BoundingBox의 각 축을 월드 도로축에 투영한다. 90도 회전/비대칭 처마까지 포함한다.
+						local worldHalfX = (math.abs(bounds.RightVector.X) * dimensions.X
+							+ math.abs(bounds.UpVector.X) * dimensions.Y
+							+ math.abs(bounds.LookVector.X) * dimensions.Z) * 0.5
+						local worldHalfZ = (math.abs(bounds.RightVector.Z) * dimensions.X
+							+ math.abs(bounds.UpVector.Z) * dimensions.Y
+							+ math.abs(bounds.LookVector.Z) * dimensions.Z) * 0.5
+						local measuredHalfX = math.abs(bounds.Position.X - pos.X) + worldHalfX + 2.5
+						local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + worldHalfZ + 2.5
 						-- 이웃 필지는 기존 여유 폭을 보존하지만, 도로는 실제 처마 외곽으로만 판정한다.
 						-- 필지 예약 반경을 도로 판정에 중복 적용하면 모든 주택이 사라질 수 있다.
 						local actualHalfX = math.max(half, measuredHalfX)
@@ -4151,8 +4158,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						for _, direction in homeShifts do
 							local shift = Vector3.new(direction.X, 0, direction.Z * side)
 							local at = pos + shift
-							local clearRoad = math.abs(math.abs(at.Z) - laneNear) > measuredHalfZ + laneWidth * 0.5 + 1.5
-								and math.abs(math.abs(at.Z) - laneFar) > measuredHalfZ + laneWidth * 0.5 + 1.5
+							local signedZ = at.Z * side
+							local clearRoad = signedZ - measuredHalfZ > laneNear + laneWidth * 0.5 + 1.5
+								and signedZ + measuredHalfZ < laneFar - laneWidth * 0.5 - 1.5
 							if clearRoad and not onStreet(at.X, measuredHalfX)
 								and not reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
 								chosenShift = shift
@@ -4399,7 +4407,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local rowShift = if villageLayout == "terrace" and p % 2 == 1 then -4
 					elseif villageLayout == "organic" and p % 2 == 1 then 3 else 0
 				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260 + rowShift, side, p, 1)
-				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
+				local nextBend = if villageLayout == "organic" then (if (p + 1) % 2 == 0 then -3 else 3)
+					elseif villageLayout == "terrace" then (p + 1) * 2 else 0
+				local nextLaneZ = 152 + laneOffset + (p + 1) * laneL + nextBend
+				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
 			end
 		end
 	end
