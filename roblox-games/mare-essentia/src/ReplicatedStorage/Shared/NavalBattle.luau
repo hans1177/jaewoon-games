@@ -5223,21 +5223,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 로블록스 파티클을 선체의 기존 Part에 붙여 이동 중에도 불길이 떠다니지 않는다.
 	function FX.shipFire(sh, key, hp, now)
 		local state = FX.fireStates[key]
+		-- [화재 갱신] 생성 조건과 기존 갱신 주기를 먼저 확인한다.
+		if not state and hp >= 0.62 then return end
+		if state and now < state.next then return end
 		local profile = sh.fx or DEFAULT_FX
-		local theme = profile.theme or FX_THEMES.europe
 		local stage = math.clamp(profile.stage or 2, 1, 6)
 		if not state and hp < 0.62 then
+			local theme = profile.theme or FX_THEMES.europe
 			local root = sh.model.PrimaryPart or sh.model:FindFirstChildWhichIsA("BasePart", true)
 			if not root then return end
 			state = { next = 0, vents = {} }
 			FX.fireStates[key] = state
+			local along = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
+			local rootFrame = root.CFrame
 			for i = 1, (if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3) do
-				local along = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 				local offset = if i == 1 then -0.23 elseif i == 2 then 0.2 else 0
 				local origin = ORIGIN + sh.pos + along * (sh.length * offset) + Vector3.new(0, 7, 0)
 				local vent = Instance.new("Attachment")
 				vent.Name = "NavalDamageFire"
-				vent.Position = root.CFrame:PointToObjectSpace(origin)
+				vent.Position = rootFrame:PointToObjectSpace(origin)
 				vent.Parent = root
 				local fire = emitterOn(vent, {
 					tex = "fire", c0 = theme.flash,
@@ -5263,12 +5267,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if not state or now < state.next then return end
 		state.next = now + 0.14
 		local severity = math.clamp((0.62 - hp) / 0.62, 0, 1)
+		-- [화재 공통값] 같은 함선의 모든 배출구는 동일한 계산 결과를 공유한다.
+		local sootRate = math.floor(severity * (if MOBILE_VFX then 10 else (7 + stage * 3)))
+		local fireRate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 46 else (38 + stage * 9))) else 0
+		local sootEnabled, fireEnabled = sootRate > 0, fireRate > 0
+		local brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else (1.0 + stage * 0.2)) * (0.85 + 0.15 * math.sin(now * 13)) else 0
 		for _, vent in state.vents do
-			vent.soot.Rate = math.floor(severity * (if MOBILE_VFX then 10 else (7 + stage * 3)))
-			vent.fire.Rate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 46 else (38 + stage * 9))) else 0
-			vent.soot.Enabled = vent.soot.Rate > 0
-			vent.fire.Enabled = vent.fire.Rate > 0
-			vent.glow.Brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else (1.0 + stage * 0.2)) * (0.85 + 0.15 * math.sin(now * 13)) else 0
+			if vent.soot.Rate ~= sootRate then vent.soot.Rate = sootRate end
+			if vent.fire.Rate ~= fireRate then vent.fire.Rate = fireRate end
+			if vent.soot.Enabled ~= sootEnabled then vent.soot.Enabled = sootEnabled end
+			if vent.fire.Enabled ~= fireEnabled then vent.fire.Enabled = fireEnabled end
+			if vent.glow.Brightness ~= brightness then vent.glow.Brightness = brightness end
 		end
 	end
 	-- [접현 충돌] 사다리·닻줄이 맞닿는 순간의 물보라·목재 먼지·쇳조각, 시각 효과만 재생한다.
