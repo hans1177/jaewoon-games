@@ -697,3 +697,20 @@ test('원거리 주민은 위치와 보행 위상을 보존하고 관절 갱신�
   assert.match(walk, /local pivot = w\.base \* CFrame\.new\(0, w\.groundOffset \+ bob, d\) \* CFrame\.Angles\(0, w\.hd, 0\)\s+w\.model:PivotTo\(pivot\)/);
   assert.match(scene, /if math\.max\(sz\.X, sz\.Y, sz\.Z\) < 4 then\s+d\.CastShadow = false/);
 });
+
+
+test('건축 외벽색은 원본 지붕·창호를 덮지 않고 복원된 부위 재질을 유지한다', () => {
+  const start = scene.indexOf('local function importedModel(');
+  const end = scene.indexOf('-- 등불:', start);
+  const importer = scene.slice(start, end);
+  assert.match(importer, /if tint and not architecture and not preserveArchitectureTexture then/);
+  assert.match(importer, /if architecture and importedWhite/);
+  assert.match(importer, /if tint and asset:find\("roof", 1, true\) and not asset:find\("house", 1, true\) then/);
+  assert.match(importer, /material, paint = Enum\.Material\.Glass/);
+  assert.match(importer, /material, paint = Enum\.Material\.Metal/);
+  const uniform = scene.slice(scene.indexOf('local function uniformMaterial('), scene.indexOf('local vacancyRate'));
+  assert.match(uniform, /if not textured and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\s+and low >= 0\.78 and high - low <= 0\.14 then/);
+  assert.match(uniform, /local textured = sa ~= nil or p\.MaterialVariant ~= ""/);
+  assert.match(uniform, /ch:IsA\("SpecialMesh"\) and ch\.TextureId ~= ""/);
+  assert.match(uniform, /p\.Material = selected/);
+});
