@@ -2174,16 +2174,45 @@
     },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "1531564b6419524c106103aa7ff469d4d6e5551d",
+     "sourceRevision": "6c713afb70171d0fbc434f61089babd2a0c5ea9e",
      "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "failureReason": "FREE_QUOTA_LIMIT",
      "httpStatuses": [
-      429
+      429,
+      503
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "51f7399bb76ea517-51f7399bb76ea517",
+     "sourceMemberSha256": "51f7399bb76ea5175ac4d7c136c50b74f86250664c1f6b1acff48e5322f09ea0",
+     "triangles": 396,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "fd1ab52e95804c4ccca5672e8e63493379b46a859fe8efed6e963cb005ce1636",
+       "bytes": 245616
+      },
+      {
+       "name": "rear.png",
+       "sha256": "6ad2a0d16ba424a0789c9e5fcba724fcf39d89e8f3a7afd6bae1c143e6309696",
+       "bytes": 239317
+      },
+      {
+       "name": "side.png",
+       "sha256": "2d2e81cafa3c03ee031f8eb8f11cf7c803677a2068f84264dedfcd7034faa2ab",
+       "bytes": 239532
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "hummingbird",
@@ -2720,7 +2749,92 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "6a911f141482994f-6a911f141482994f",
+     "sourceMemberSha256": "6a911f141482994f890911429e0863353a10fb567822e553b91a273e0fb1d5bd",
+     "triangles": 382,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "f8d3030d73905e962b209e4b00f3526c0309330712598ee0b3e04d05a2495bac",
+       "bytes": 245283
+      },
+      {
+       "name": "rear.png",
+       "sha256": "369a7ccd5c80297a2873a0838352f08122e7b2c57de11cf1c0f81d2b387c78f2",
+       "bytes": 236018
+      },
+      {
+       "name": "side.png",
+       "sha256": "3ea903a95c4458c7b56f16a8795dbc64e7a15b979972404c6c640af2982741e2",
+       "bytes": 240071
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON",
+     "sourceMemberSha256": "6a911f141482994f890911429e0863353a10fb567822e553b91a273e0fb1d5bd",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "sha256": "a679fffbc4350a6956fc3fcfd8d47a1e2d9035d53cdfb84b8c383465f6881226",
+     "bytes": 165864,
+     "method": "CATMULL_CLARK_BUDGETED_ONE_LEVEL",
+     "trianglesBefore": 382,
+     "trianglesAfter": 2292,
+     "jointCount": 16,
+     "animationCount": 1,
+     "artifactDirectory": "6a911f141482994f-6a911f141482994f/quality",
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "98cee4b3ee0ee0bbcadd1a6a235fce3590b73ab166623544315e0cfe014aed01",
+       "bytes": 244244
+      },
+      {
+       "name": "rear.png",
+       "sha256": "21d9e82d24fbc63c5edc53c350ed0e185c5e5f19302fd46151f41f56dea0a33d",
+       "bytes": 236280
+      },
+      {
+       "name": "side.png",
+       "sha256": "ff953f3a046eb8156298dfebe378277f6a49d05668ce85eb6d0b1123027c49f0",
+       "bytes": 242695
+      }
+     ],
+     "comparison": {
+      "state": "QUALITY_COMPARISON_RETRY_REQUIRED",
+      "sourceRevision": "6c713afb70171d0fbc434f61089babd2a0c5ea9e",
+      "sourceMemberSha256": "6a911f141482994f890911429e0863353a10fb567822e553b91a273e0fb1d5bd",
+      "candidateSha256": "a679fffbc4350a6956fc3fcfd8d47a1e2d9035d53cdfb84b8c383465f6881226",
+      "registrationApproved": false,
+      "visualQualityApproved": false,
+      "nativeRuntimeVerified": false,
+      "failureReason": "FREE_QUOTA_LIMIT",
+      "httpStatuses": [
+       429
+      ]
+     }
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "6c713afb70171d0fbc434f61089babd2a0c5ea9e",
+     "sourceMemberSha256": "6a911f141482994f890911429e0863353a10fb567822e553b91a273e0fb1d5bd",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "koala",
@@ -2757,7 +2871,7 @@
     "state": "HELD_GLB_GEOMETRY_OUTSIDE_MOBILE_BUDGET",
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "e4eed2ad4612a4ae6730070071ffd70973d466ea",
+     "sourceRevision": "6c713afb70171d0fbc434f61089babd2a0c5ea9e",
      "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2766,7 +2880,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "41e008751c798c66-41e008751c798c66",
+     "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
+     "triangles": 732,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "9198a1dbf3650f51ace84896007ffede02e42c644a1466bb45177152826cf67e",
+       "bytes": 240107
+      },
+      {
+       "name": "rear.png",
+       "sha256": "ec889517fe6ced3cb177d4c67ef2d2ed33e623957a2b46ecd5fb04944b1cbe4f",
+       "bytes": 247597
+      },
+      {
+       "name": "side.png",
+       "sha256": "dfc88e5907ae216e0f9056fe4722cf2b0217ca0c10da3c3850d4f9481dc43bdc",
+       "bytes": 240950
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "narwhal",
@@ -3113,7 +3255,14 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+    "sourcePreview": {
+     "state": "RENDER_FAILED_RETRY",
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
    },
    {
     "name": "oryx",
@@ -3267,7 +3416,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -15509,8 +15658,11 @@
     }
    ]
   },
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "45919895002",
+   "runId": "45922178654",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
@@ -15531,6 +15683,7 @@
    "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
  }
 }
