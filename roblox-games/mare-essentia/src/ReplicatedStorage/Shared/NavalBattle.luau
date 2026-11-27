@@ -1547,9 +1547,12 @@ function NavalBattle.play(opts)
 				controls:Enable()
 			end)
 		end
+		-- [해전 종료 메모리] 한 연결 정리 실패가 다른 자산과 UI의 정리를 막지 않는다.
 		for _, c in conns do
-			c:Disconnect()
+			local ok, err = pcall(function() c:Disconnect() end)
+			if not ok then warn("[MareEssentia] 해전 연결 정리 오류", err) end
 		end
+		table.clear(conns)
 		gui:Destroy()
 		folder:Destroy()
 		if opts.onDone then
@@ -7011,14 +7014,22 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end))
 
 	-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다
-	task.delay(130, function()
-		while cardBusy and not finished do -- 카드 대결 중에는 시간을 재촉하지 않는다
-			task.wait(1)
-		end
-		if not finished then
-			finish()
-		end
-	end)
+	do
+		local timeout = task.delay(130, function()
+			while cardBusy and not finished do -- 카드 대결 중에는 시간을 재촉하지 않는다
+				task.wait(1)
+			end
+			if not finished then
+				finish()
+			end
+		end)
+		-- [종료된 장면 참조 해제] 자동 종료가 스스로 finish를 호출하면 현재 스레드는 취소하지 않는다.
+		table.insert(conns, { Disconnect = function()
+			if timeout ~= coroutine.running() and coroutine.status(timeout) ~= "dead" then
+				task.cancel(timeout)
+			end
+		end })
+	end
 
 	return { finish = finish }
 end
