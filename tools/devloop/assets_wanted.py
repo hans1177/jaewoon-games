@@ -1215,6 +1215,33 @@ def render_animal_review_candidates(report, out):
     for row in candidates:
         identity = (row["name"], row["sourceSha256"], tuple(m["sha256"] for m in row["modelMembers"]))
         old = prior.get(identity, {})
+        # 동일 원본의 최근 렌더·수리 결과는 이력으로만 보존한다.
+        # 현재 실행의 sourcePreview/qualityCandidate는 실제 신규 파일 검증에서만 채운다.
+        member_hashes = {m["sha256"] for m in row["modelMembers"]}
+        for live_key, history_key, valid_states in (
+                ("sourcePreview", "lastSourcePreview",
+                 ("RENDERED_AWAITING_VISUAL_REVIEW", "RENDER_FAILED_RETRY")),
+                ("qualityCandidate", "lastQualityCandidate",
+                 ("QUALITY_CANDIDATE_RETRY_REQUIRED", "QUALITY_CANDIDATE_RENDERED_AWAITING_COMPARISON"))):
+            latest = old.get(live_key, {})
+            historical = old.get(history_key, {})
+            for evidence, run_id in ((latest, previous_audit.get("lastPreviewRun", {}).get("runId", "")),
+                                     (historical, historical.get("runId", "") if isinstance(historical, dict) else "")):
+                if (not isinstance(evidence, dict) or evidence.get("state") not in valid_states
+                        or evidence.get("sourceMemberSha256") not in member_hashes
+                        or evidence.get("registrationApproved") is not False
+                        or evidence.get("visualQualityApproved") is not False
+                        or evidence.get("nativeRuntimeVerified", False) is not False
+                        or not isinstance(run_id, str) or not re.fullmatch(r"[0-9]{1,20}", run_id)):
+                    continue
+                # 기록당 한 건만 유지하며 임시 산출물 경로를 현재 파일로 참조하지 않는다.
+                record = {k: evidence[k] for k in ("state", "sourceMemberSha256", "triangles",
+                          "trianglesBefore", "trianglesAfter", "sha256", "bytes", "failureReason",
+                          "frames", "renderer", "originalPreserved") if k in evidence}
+                record.update(runId=run_id, historicalOnly=True, registrationApproved=False,
+                              visualQualityApproved=False, nativeRuntimeVerified=False)
+                row[history_key] = record
+                break
         observation = old.get("sourceVisualObservation", {})
         if (observation.get("state") in ("SOURCE_VISUAL_RETRY_REQUIRED", "SOURCE_VISUAL_OBSERVED_ONLY",
                 "VISUAL_OBSERVATION_UNCERTAIN", "VISUAL_CONTENT_BLOCKED", "VISUAL_IDENTITY_REPAIR_REQUIRED")

@@ -1079,6 +1079,46 @@ print('MARE_ALTERNATE_RETRY_FIXTURES=4')
   assert.match(workflow,/if \[\[ "\$MARE_ANIMAL_PREVIEW" == "true" \]\]; then/);
 });
 
+// [검수 이력] 비렌더 장부 갱신에서 동일 원본 이력만 보존하고 현재 승인·프레임으로 재사용하지 않는다.
+test('Mare animal ledger preserves bounded historical render evidence without treating it as current',()=>{
+  const fixture=String.raw`
+import ast,json,os,re,subprocess
+from pathlib import Path
+from unittest.mock import patch
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+tree=ast.parse(source)
+fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='render_animal_review_candidates')
+root='roblox-games/mare-essentia'
+exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+member='a'*64
+def row():
+    return {'name':'goat','sourceSha256':'b'*64,'modelMembers':[{'sha256':member}], 'geometry':{}}
+def run(old):
+    report={'candidates':[row()]}
+    prior={'animalSourcePractice':{'candidates':[old],'lastPreviewRun':{'runId':'123'}}}
+    with patch.object(subprocess,'check_output',return_value=json.dumps(prior).encode()):
+        render_animal_review_candidates(report,'')
+    return report['candidates'][0]
+old=row()
+old['sourcePreview']={'state':'RENDERED_AWAITING_VISUAL_REVIEW','sourceMemberSha256':member,'registrationApproved':False,'visualQualityApproved':False,'artifactDirectory':'old','frames':[{'name':'front.png','sha256':'c'*64}]}
+old['qualityCandidate']={'state':'QUALITY_CANDIDATE_RETRY_REQUIRED','sourceMemberSha256':member,'registrationApproved':False,'visualQualityApproved':False,'nativeRuntimeVerified':False,'failureReason':'ANIMAL_QUALITY_CANDIDATE_STRUCTURE'}
+first=run(old)
+assert 'sourcePreview' not in first and 'qualityCandidate' not in first
+assert first['lastSourcePreview']['historicalOnly'] is True
+assert first['lastSourcePreview']['runId']=='123'
+assert 'artifactDirectory' not in first['lastSourcePreview']
+assert first['lastQualityCandidate']['failureReason']=='ANIMAL_QUALITY_CANDIDATE_STRUCTURE'
+assert run(first)==first
+bad=row()
+bad['sourcePreview']=dict(old['sourcePreview'],sourceMemberSha256='d'*64)
+assert 'lastSourcePreview' not in run(bad)
+bad['sourcePreview']=dict(old['sourcePreview'],registrationApproved=True)
+assert 'lastSourcePreview' not in run(bad)
+print('MARE_HISTORICAL_RENDER_FIXTURES=PASS')
+`;
+  assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_HISTORICAL_RENDER_FIXTURES=PASS/);
+});
+
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`
