@@ -208,11 +208,12 @@ local function animateSign(rec)
 		local scaleBlend = if mobile then 1 - 0.88 ^ (math.max(0, t - lastSignUpdate) * 60) else 0.12
 		lastSignUpdate = t
 		local eye = camera.CFrame.Position
+		local sailing = workspace:GetAttribute("VoyageActive") == true
 		for i = #signAnims, 1, -1 do
 			local a = signAnims[i]
 			if not a.bb.Parent then
 				table.remove(signAnims, i)
-			else
+			elseif not sailing then
 				local d = (a.base - eye).Magnitude
 				if d < SIGN_ACTIVE then
 					local ang = t * 0.9 + a.phase
@@ -8231,15 +8232,15 @@ function PortScene.build(info, onFacility)
 		local now = os.clock()
 		if now < updateAt then return end
 		updateAt = now + 0.10
-		-- [원경 구름 움직임] 기존 구름 덮임만 2.5초마다 미세 변화시킨다.
-		if portClouds and portClouds.Parent and now >= cloudUpdateAt and not workspace:FindFirstChild("FieldScene") then
+		-- [날씨 소유권] 항해 장면은 같은 구름을 사용하므로 항구 구름 갱신보다 먼저 중단한다.
+		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") or workspace:FindFirstChild("FieldScene") then
+			if snow and snow.Rate ~= 0 then snow.Rate = 0 end
+			return
+		end
+		-- [원경 구름 움직임] 항구에서만 기존 구름 덮임을 2.5초마다 미세 변화시킨다.
+		if portClouds and portClouds.Parent and now >= cloudUpdateAt then
 			cloudUpdateAt = now + 2.5
 			portClouds.Cover = (if UserInputService.TouchEnabled then 0.16 else 0.26) + math.sin(now / 48) * 0.025
-		end
-		-- [조명 충돌 방지] 지상 탐험이 진행 중이면 항구의 주야 주기가 필드 조명을 덮어쓰지 않는다.
-		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") or workspace:FindFirstChild("FieldScene") then
-			if snow then snow.Rate = 0 end
-			return
 		end
 		local clock = (8.2 + (now - PORT_CLOCK_EPOCH) * 24 / 600) % 24
 		local daylight = if temperate then season.day else 12
@@ -8519,8 +8520,8 @@ function PortScene.build(info, onFacility)
 			if folder:GetAttribute("PortSceneActive") ~= true then return end
 			local now = os.clock()
 			local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
-			-- [중복 소환 방지] 항구의 시각 동료는 탐험 중 추적을 멈춘다. 탐험용 FieldAlly만 전장에 존재한다.
-			if workspace:FindFirstChild("FieldScene") then return end
+			-- [중복 소환 방지] 항해·탐험에서는 항구 동료의 지면 질의와 관절 계산을 멈춘다.
+			if workspace:GetAttribute("VoyageActive") or workspace:FindFirstChild("FieldScene") then return end
 			local char = Players.LocalPlayer and Players.LocalPlayer.Character
 			local root = char and char:FindFirstChild("HumanoidRootPart")
 			if not root then return end
