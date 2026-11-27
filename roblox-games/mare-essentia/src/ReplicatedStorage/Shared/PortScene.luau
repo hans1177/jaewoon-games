@@ -310,12 +310,18 @@ local function sign(parent, adornee, text, color, height, compact, iconModel)
 		return true
 	end
 	if not tryShow() then
-		task.spawn(function()
+		-- [간판 로딩] 제거된 간판의 재시도 스레드와 모델 참조를 즉시 정리한다.
+		local signCleanup
+		local signThread = task.defer(function()
 			for _ = 1, 40 do
 				task.wait(1)
-				if not bb.Parent then return end
-				if tryShow() then return end
+				if not bb.Parent or not adornee.Parent then break end
+				if tryShow() then break end
 			end
+			signCleanup:Disconnect()
+		end)
+		signCleanup = bb.Destroying:Once(function()
+			if coroutine.status(signThread) == "suspended" then task.cancel(signThread) end
 		end)
 	end
 	-- 작은 이름표 (아래쪽)
@@ -6918,27 +6924,38 @@ function PortScene.build(info, onFacility)
 									local duty = { model = builder, base = builder:GetPivot(), mode = "stay",
 										kind = taskKind, phase = rng:NextNumber(0, 5) }
 									table.insert(walkers, duty)
-									task.spawn(function()
+									-- [시설 공사] 작업자 삭제 시 대기 중인 공정 연출을 취소한다.
+									local builderCleanup
+									local builderThread = task.defer(function()
 										local deadline = os.clock() + 25
 										while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-										if not folder.Parent then return end
+										if not folder.Parent or not builder.Parent then builderCleanup:Disconnect() return end
 										task.wait(delay + 2.6)
 										if builder.Parent then
 											duty.kind = "inspect"
 											builder:SetAttribute("Activity", "inspect")
 											task.wait(1.2)
-											if builder.Parent then builder:Destroy() end
 										end
+										builderCleanup:Disconnect()
+										if builder.Parent then builder:Destroy() end
+									end)
+									builderCleanup = builder.Destroying:Once(function()
+										if coroutine.status(builderThread) == "suspended" then task.cancel(builderThread) end
 									end)
 								end
 							end
 						end
-						task.spawn(function()
+						local scaffoldCleanup
+						local scaffoldThread = task.defer(function()
 							local deadline = os.clock() + 25
 							while scaffold.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-							if not folder.Parent then return end
+							if not folder.Parent or not scaffold.Parent then scaffoldCleanup:Disconnect() return end
 							task.wait(delay + 3.2)
+							scaffoldCleanup:Disconnect()
 							if scaffold.Parent then scaffold:Destroy() end
+						end)
+						scaffoldCleanup = scaffold.Destroying:Once(function()
+							if coroutine.status(scaffoldThread) == "suspended" then task.cancel(scaffoldThread) end
 						end)
 					end
 				end
@@ -8945,6 +8962,7 @@ function PortScene.build(info, onFacility)
 		local people = shelf and shelf:FindFirstChild("People")
 		if people then
 			local queued, refreshReady = false, false
+			local outfitThread
 			local function refreshOutfits(includeReady)
 				-- [자산 지연 입고] 원래 완성된 주민도 승인된 신규 머리/장신구 도착 때 재선택한다.
 				-- 기존 0.08초 배치와 원본 R15 착용 함수를 재사용한다.
@@ -8952,7 +8970,8 @@ function PortScene.build(info, onFacility)
 				if includeReady == true then refreshReady = true end
 				if queued then return end
 				queued = true
-				task.delay(0.08, function()
+				outfitThread = task.delay(0.08, function()
+					outfitThread = nil
 					queued = false
 					if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 					local includeCompleted = refreshReady
@@ -8989,6 +9008,8 @@ function PortScene.build(info, onFacility)
 			-- 장면보다 먼저 모델 로드가 끝난 경우에도 누락/헤어 후보를 한 번 재검사한다.
 			if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits(true) end
 			folder.Destroying:Connect(function()
+				if outfitThread and coroutine.status(outfitThread) == "suspended" then task.cancel(outfitThread) end
+				outfitThread = nil
 				outfitConn:Disconnect()
 				readyConn:Disconnect()
 				for _, conn in gearConns do conn:Disconnect() end
