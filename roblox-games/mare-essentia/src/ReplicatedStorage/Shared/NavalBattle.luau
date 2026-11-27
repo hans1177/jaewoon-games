@@ -5544,7 +5544,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- 저장·카드 전투·자동 재현에는 적용하지 않고 기존 실제 등록 모델만 복제한다.
 	function FX.itemsStep(now)
 		if not RT or not rt or rt.ended or phase ~= "duel" or finished then
-			pickupCue.Visible = false
+			if pickupCue.Visible then pickupCue.Visible = false end
 			return
 		end
 		if now >= FX.nextItemAt then
@@ -5620,9 +5620,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 		end
+		-- [보급품 표시] 같은 프레임의 회수 반경과 부유 시간은 모든 아이템에서 공유한다.
+		local pickupRadius = math.max(12, me.length * 0.25)
+		local bobTime = now * 1.9
 		for i = #FX.items, 1, -1 do
 			local item = FX.items[i]
-			local picked = item.model.Parent and (me.pos - item.pos).Magnitude <= math.max(12, me.length * 0.25)
+			local picked = item.model.Parent and (me.pos - item.pos).Magnitude <= pickupRadius
 			if picked then
 				if item.kind == "energy" then
 					-- [기력] 포격/특화 재사용시간 각각 5초 단축. 기존 cd 값·지속시간은 보존한다.
@@ -5644,7 +5647,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					FX.shockRing(ORIGIN + item.pos, Color3.fromRGB(255, 214, 142), 11, 0.42)
 				end
 			elseif item.model.Parent and now < item.expires then
-				item.model:PivotTo(item.pivot * CFrame.new(0, math.sin(now * 1.9 + item.phase) * 0.42, 0)
+				item.model:PivotTo(item.pivot * CFrame.new(0, math.sin(bobTime + item.phase) * 0.42, 0)
 					* CFrame.Angles(0, math.sin(now + item.phase) * 0.10, 0))
 			end
 			if picked or not item.model.Parent or now >= item.expires then
@@ -5663,19 +5666,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if dist < nearestDist then closest, nearestDist = entry, dist end
 				end
 			end
-			pickupCue.Visible = closest ~= nil
+			local visible = closest ~= nil
+			if pickupCue.Visible ~= visible then pickupCue.Visible = visible end
 			if closest then
 				local course = closest.pos - me.pos
 				local heading = Vector3.new(math.cos(me.theta), 0, math.sin(me.theta))
 				local right = Vector3.new(-heading.Z, 0, heading.X)
-				local front = if nearestDist > 0.1 then course.Unit:Dot(heading) else 1
-				local side = if nearestDist > 0.1 then course.Unit:Dot(right) else 0
+				local courseUnit = if nearestDist > 0.1 then course.Unit else Vector3.zero
+				local front = if nearestDist > 0.1 then courseUnit:Dot(heading) else 1
+				local side = courseUnit:Dot(right)
 				local direction = if front > 0.55 then "앞" elseif front < -0.55 then "뒤"
 					elseif side >= 0 then "우현" else "좌현"
-				pickupCue.Text = string.format("%s · %s %dm", direction,
+				local text = string.format("%s · %s %dm", direction,
 					if closest.kind == "mine" then "기뢰" else "기력", math.floor(nearestDist + 0.5))
-				pickupCue.TextColor3 = if closest.kind == "mine" then Color3.fromRGB(255, 204, 137)
+				local color = if closest.kind == "mine" then Color3.fromRGB(255, 204, 137)
 					else Color3.fromRGB(146, 243, 247)
+				if pickupCue.Text ~= text then pickupCue.Text = text end
+				if pickupCue.TextColor3 ~= color then pickupCue.TextColor3 = color end
 			end
 		end
 	end
