@@ -4836,6 +4836,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		table.clear(FX.burstTimers)
 		for _, timer in FX.effectTimers do task.cancel(timer) end
 		table.clear(FX.effectTimers)
+		-- [종전 상태 해제] 기존 카메라 보간과 침몰 연출의 참조만 정리한다.
+		FX.cam, FX.sink = nil, nil
 	end)
 	local C_SMOKE, C_DARK, C_WATER = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245)
 	-- [해상전투 이펙트] 임의 원통·구·사각 파편과 매 프레임 크기 변경을 폐기한다.
@@ -6000,11 +6002,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local from, to = (if side == "me" then me else foe), (if side == "me" then foe else me)
 		if kind == "gun" or kind == "shoot" then
 			for k = 0, (if kind == "gun" then 2 else 0) do
-				task.delay(0.25 + k * 0.22, function()
+				local timer = task.delay(0.25 + k * 0.22, function()
+					FX.effectTimers[coroutine.running()] = nil
 					if not finished then
 						shoot(from.pos, to.pos, function() shake = 1.0 end)
 					end
 				end)
+				FX.effectTimers[timer] = timer
 			end
 		else
 			shake = 0.8
@@ -6473,6 +6477,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 								okCards, res, rewardId = pcall(opts.onCards, acts) -- 서버 호출이 실패해도 장면이 멈추지 않게
 								if not okCards then res = nil end
 							end
+							-- 서버 결과는 그대로 처리하되 종료된 장면에는 다시 접근하지 않는다.
+							if finished or not gui.Parent or not folder.Parent then return end
 							local w = res or (if m.winner == "me" then "a" elseif m.winner == "foe" then "b" else "draw")
 							if opts.cardOnly and not finished then
 								local korean = string.sub(string.lower(player.LocaleId), 1, 2) == "ko"
@@ -6607,11 +6613,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					shake = 1.4
 					-- 칼날 부딪히는 소리: 효과음 한 가지를 높낮이를 바꿔 겹쳐 백병전 소리로 쓴다
 					Sfx.play("sfx_hit", 0.9, 1.25 + math.random() * 0.35)
-					task.delay(0.14, function()
+					local timer = task.delay(0.14, function()
+						FX.effectTimers[coroutine.running()] = nil
 						if not finished then
 							Sfx.play("sfx_hit", 0.7, 1.55 + math.random() * 0.4)
 						end
 					end)
+					FX.effectTimers[timer] = timer
 					if melIdx % 2 == 0 then
 						Sfx.play("sfx_creak", 0.5, 1.2)
 					end
@@ -6652,9 +6660,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					banner.TextStrokeTransparency = 1
 					if opts.winner == "a" then
 						Sfx.play("sfx_fanfare", 0.74, 1.0, "sfx_quest_reward")
-						task.delay(0.28, function()
+						local timer = task.delay(0.28, function()
+							FX.effectTimers[coroutine.running()] = nil
 							if not finished then Sfx.play("sfx_horn", 0.42, 1.08) end
 						end)
+						FX.effectTimers[timer] = timer
 					elseif opts.winner == "b" then
 						Sfx.play("sfx_event_danger", 0.54, 0.87, "sfx_horn")
 						Sfx.play("sfx_creak", 0.50, 0.68)
