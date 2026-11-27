@@ -2128,7 +2128,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local q = if side == "foe" then 0.8 else 1
 		local function s(name, vol, speed, fb, wait)
 			if wait then
-				task.delay(wait, function() Sfx.play(name, vol * q, speed, fb) end)
+				task.delay(wait, function()
+					if not finished and folder.Parent then Sfx.play(name, vol * q, speed, fb) end
+				end)
 			else
 				Sfx.play(name, vol * q, speed, fb)
 			end
@@ -4770,7 +4772,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	-- [전투 맵 아이템] 기존 등록 3D 보급 부표/화약폭탄 모델을 재사용한다. 미등록이면 생성하지 않는다.
 	local FX = { wakeAt = {}, dmgAt = {}, fireStates = {}, boardZoom = 0, cam = nil,
 		sink = nil, outcomeReason = nil, items = {}, itemSerial = 0, nextItemAt = os.clock() + 6,
-		mineCharges = 0 }
+		mineCharges = 0, burstTimers = {} }
+	-- 지형에 붙인 순간 입자는 장면 폴더의 자손이 아니므로 종료 시 직접 해제한다.
+	folder.Destroying:Connect(function()
+		for anchor, timer in FX.burstTimers do
+			task.cancel(timer)
+			anchor:Destroy()
+		end
+		table.clear(FX.burstTimers)
+	end)
 	local C_SMOKE, C_DARK, C_WATER = Color3.fromRGB(215, 215, 220), Color3.fromRGB(62, 62, 68), Color3.fromRGB(200, 232, 245)
 	-- [해상전투 이펙트] 임의 원통·구·사각 파편과 매 프레임 크기 변경을 폐기한다.
 	-- 기존 ParticleEmitter/Attachment를 사용하며 포탄·판정·함선 모델은 건드리지 않는다.
@@ -4894,6 +4904,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		TweenService:Create(l, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Brightness = 0 }):Play()
 	end
 	function FX.burst(pos, dir, list, light)
+		if finished or not folder.Parent then return end
 		local anchor = Instance.new("Attachment") -- 보이는 부품 없이 지형에 붙여 입자만 터뜨린다
 		anchor.WorldCFrame = if dir then CFrame.lookAt(pos, pos + dir) else CFrame.new(pos)
 		anchor.Parent = workspace.Terrain
@@ -4906,7 +4917,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if light then
 			lightFlash(anchor, light.color, light.bright, light.range, light.dur or 0.3)
 		end
-		task.delay(longest, function() anchor:Destroy() end)
+		FX.burstTimers[anchor] = task.delay(longest, function()
+			FX.burstTimers[anchor] = nil
+			anchor:Destroy()
+		end)
 	end
 	local ORANGE, YELLOW, RED = Color3.fromRGB(255, 150, 50), Color3.fromRGB(255, 226, 130), Color3.fromRGB(190, 52, 28)
 	local GREY, SOOT = Color3.fromRGB(150, 150, 155), Color3.fromRGB(48, 46, 46)
@@ -5129,13 +5143,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			{ tex = if id == "rapid" then "fire" else "smoke", c0 = light.color, c1 = ringColor, s0 = 2.6, s1 = 5.2, life = 0.65, v0 = 3, v1 = 18, spread = 90, glow = 0.7, n = if MOBILE_VFX then 5 else 12, a0 = 0.22 },
 		}, { color = ringColor, bright = if MOBILE_VFX then 2 else 4, range = 30, dur = 0.33 })
 		task.delay(dur, function()
+			if finished or not at.Parent or not lt.Parent then return end
 			for _, pe in ems do
 				pe.Enabled = false
 			end
 			TweenService:Create(lt, TweenInfo.new(0.5), { Brightness = 0 }):Play()
 			task.delay(2, function()
-				at:Destroy()
-				lt:Destroy()
+				if at.Parent then at:Destroy() end
+				if lt.Parent then lt:Destroy() end
 			end)
 		end)
 	end
