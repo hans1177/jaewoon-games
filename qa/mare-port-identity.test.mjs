@@ -670,3 +670,17 @@ test('간판·시설 작업자·비계·복장 갱신은 제거된 장면에 지
   assert.match(scene, /outfitThread = task\.delay\(0\.08, function\(\)\s+outfitThread = nil/);
   assert.match(scene, /if outfitThread and coroutine\.status\(outfitThread\) == "suspended" then task\.cancel\(outfitThread\) end\s+outfitThread = nil/);
 });
+
+test('항해 중 항구 간판과 동료 연산을 중단하고 해상 날씨 소유권을 유지한다', () => {
+  const signs = scene.split('local function animateSign(rec)')[1].split('-- 방문시설 간판:')[0];
+  assert.match(signs, /local sailing = workspace:GetAttribute\("VoyageActive"\) == true/);
+  assert.match(signs, /if not a\.bb\.Parent then\s+table\.remove\(signAnims, i\)\s+elseif not sailing then/);
+  assert.match(signs, /if #signAnims == 0 then\s+signLoop:Disconnect\(\)/);
+  const followers = scene.split('followConn = RunService.PreSimulation:Connect')[1].split('followConn:Disconnect()')[0];
+  assert.match(followers, /if workspace:GetAttribute\("VoyageActive"\) or workspace:FindFirstChild\("FieldScene"\) then return end/);
+  assert.ok(followers.indexOf('workspace:GetAttribute("VoyageActive")') < followers.indexOf('workspace:Raycast('));
+  const climate = scene.split('local climateConn = RunService.Heartbeat:Connect')[1].split('climateConn:Disconnect()')[0];
+  assert.match(climate, /if workspace:GetAttribute\("VoyageActive"\) or workspace:GetAttribute\("ShotCF"\) or workspace:FindFirstChild\("FieldScene"\) then\s+if snow and snow\.Rate ~= 0 then snow\.Rate = 0 end\s+return\s+end/);
+  assert.ok(climate.indexOf('workspace:GetAttribute("VoyageActive")') < climate.indexOf('portClouds.Cover ='));
+  assert.match(climate, /snow\.Rate = if seasonIndex == 1 then 18 \+ dawn \* 9 else 0/);
+});
