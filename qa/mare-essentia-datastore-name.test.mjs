@@ -4559,6 +4559,21 @@ test('Mare voyage avoids repeated emitter and parent writes and destroys detache
   assert.match(voyage,/table\.clear\(helmConns\)\s+--[^\n]*\n\s+for _, g in gulls do\s+if not g\.model\.Parent then g\.model:Destroy\(\) end\s+end\s+folder:Destroy\(\)/);
 });
 
+test('Mare naval outro releases scene visual state and ignores late card result presentation',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const crew=naval.slice(naval.indexOf('local function crewAct'),naval.indexOf('local function updateCrews'));
+  const end=naval.slice(naval.indexOf('-- 백병전: 남은 기록을 차례로 보여 준다'),naval.indexOf('elseif phase == "end" then',naval.indexOf('-- 백병전: 남은 기록을 차례로 보여 준다')));
+  assert.equal(crew.split('FX.effectTimers[timer] = timer').length-1,1);
+  assert.equal(end.split('FX.effectTimers[timer] = timer').length-1,2);
+  assert.equal(end.split('FX.effectTimers[coroutine.running()] = nil').length-1,2);
+  assert.ok(crew.includes('FX.effectTimers[coroutine.running()] = nil'));
+  assert.ok(naval.includes('FX.cam, FX.sink = nil, nil'));
+  const reply=naval.slice(naval.indexOf('okCards, res, rewardId = pcall(opts.onCards'),naval.indexOf('if opts.cardOnly and not finished then',naval.indexOf('okCards, res, rewardId = pcall(opts.onCards')));
+  assert.ok(reply.includes('if finished or not gui.Parent or not folder.Parent then return end'));
+  assert.ok(naval.includes('duration = if sunk.length >= 48 then 6.6 elseif sunk.length >= 38 then 5.2 else 3.9'));
+  assert.ok(naval.includes('local showingSinking = FX.sink and sinkingTime < 0.91'));
+});
+
 test('Mare naval radar reuses fixed directions and unchanged visual state',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   for(const token of ["local count = if MOBILE_VFX then 28 else 40","local angle = (i - 1) * (math.pi * 2) / count","rangeRing.radials[i] = Vector3.new(math.cos(angle), 0, math.sin(angle))","local radial = rangeRing.radials[i]","local sideY = heading:Cross(radial).Y","local sideArc = math.abs(sideY) > 0.5","local readyArc = sideArc and sideY * enemySide > 0","if seg.Color ~= tint then seg.Color = tint end","if radar.beam.Enabled ~= enabled then radar.beam.Enabled = enabled end","if radar.ready ~= ready then","radar.ready = ready","seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)"]) assert.ok(naval.includes(token),token);
