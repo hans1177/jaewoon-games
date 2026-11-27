@@ -4437,6 +4437,19 @@ test('Mare limits only distant idle and chase joint sampling under frame pressur
   assert.ok(field.includes('if sb.btn:GetAttribute("CooldownRemaining") ~= remaining'));
 });
 
+test('Mare actor motion reuses sample options without changing role or state selection',()=>{
+  const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
+  const actor=motion.slice(motion.indexOf('function FM.actor('),motion.indexOf('local comboCache'));
+  for(const role of ['BOSS','NPC','ENEMY']){
+    assert.ok(motion.includes(role+' = { bodyPlan = "BIPED", actorClass = "'+role+'", availableJoints = AVAILABLE, secondary = 0.65 }'));
+  }
+  assert.equal([...actor.matchAll(/GetAttribute\("MotionRole"\)/g)].length,1);
+  assert.match(actor,/if isBoss then "BOSS" elseif role == "ally-ranged" or role == "ally-melee" then "NPC" else "ENEMY"/);
+  assert.match(actor,/if state == "EVADE" then "RUN"\s+elseif state == "KNOCKDOWN" or state == "GETUP" then "HIT"\s+elseif state == "BLOCK" or state == "PARRY" then "ANTICIPATION" else state, phase, ACTOR_OPTIONS\[actorClass\], h.canon/);
+  assert.ok(motion.includes('for jn, cn in R6_MAP do'));
+  assert.ok(actor.includes('FM.step(h, dt, rootRot, response)'));
+});
+ 
 test('Mare port construction audit records shared imported assets and separates attempted scenery failures',()=>{
   const source=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
   assert.match(source,/if RunService:IsStudio\(\) and AssetIds\[kind \.\. "\/" \.\. asset\] then/);
