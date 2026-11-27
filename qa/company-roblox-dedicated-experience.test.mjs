@@ -1123,6 +1123,31 @@ print('MARE_HISTORICAL_RENDER_FIXTURES=PASS')
   assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_HISTORICAL_RENDER_FIXTURES=PASS/);
 });
 
+// [정적 배치 진단] 기존 주점 prop과 항구 stack 호출만 정확히 추적한다.
+test('Mare reference audit recognizes existing scene placement without claiming native placement',()=>{
+  const fixture=String.raw`
+import tempfile,json,subprocess,sys
+from pathlib import Path
+scanner=Path('roblox-games/mare-essentia/tools/devloop/asset_check.py').resolve()
+with tempfile.TemporaryDirectory() as temp:
+    root=Path(temp)
+    src=root/'src'
+    src.mkdir()
+    keys=['Interior/lampwall','Interior/unused','Castle/tower-hexagon-mid','Castle/tower-hexagon-roof','Castle/unused']
+    (root/'assets-registered.json').write_text(json.dumps({'assets':{k:{'assetType':'Model'} for k in keys}}))
+    (root/'default.project.json').write_text(json.dumps({'tree':{'ReplicatedStorage':{'MareAssets':{'Interior':{},'Castle':{}}}}}))
+    (src/'NavalBattle.luau').write_text('prop("Interior", "lampwall", at, 7, 0)\n-- prop("Interior", "unused", at, 7, 0)\n')
+    (src/'PortScene.luau').write_text('stack("Castle", { "tower-hexagon-mid", "tower-hexagon-roof" }, 7, 0, 0)\n')
+    out=subprocess.check_output([sys.executable,str(scanner),str(root)],text=True)
+    result=json.loads(next(x.split('=',1)[1] for x in out.splitlines() if x.startswith('MARE_ASSET_REFERENCE_EVIDENCE=')))
+    assert result['literalOrPlacementReferenceCount']==3
+    assert result['unresolvedReferenceKeys']==['Castle/unused','Interior/unused']
+    assert result['scope']=='STATIC_REFERENCE_CANDIDATES_NOT_RUNTIME_PLACEMENT'
+print('MARE_SCENE_REFERENCE_FIXTURE=PASS')
+`;
+  assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_SCENE_REFERENCE_FIXTURE=PASS/);
+});
+
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`
@@ -2796,6 +2821,28 @@ test('Mare Dropbox candidate recognizes exact successful check runs without weak
   assert.ok(block.includes('gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"'));
   assert.ok(!block.includes('--admin'));
   assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
+});
+
+test('Mare Dropbox UI replacement preserves existing verified registration and exact candidate checks',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-mare-essentia-assets.yml','utf8');
+  const stage=workflow.slice(workflow.indexOf('      - name: Stage reviewed Dropbox original'),workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'));
+  const pr=workflow.slice(workflow.indexOf('      - name: Open reviewed Dropbox candidate PR'),workflow.indexOf('      - name: Check reviewed animal originals'));
+  const recovery=workflow.slice(workflow.indexOf('      - name: Select existing full registration'),workflow.indexOf('      - name: Restore full-color originals'));
+  assert.ok(stage.includes("ui = name.startswith('ui_')"));
+  assert.ok(stage.includes("relative = 'assets/cardart/'+name+'.png' if ui else"));
+  assert.ok(stage.includes("old_raw[25]!=3"));
+  assert.ok(stage.includes("previous.get('source')!=str(target)"));
+  assert.ok(stage.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+  assert.ok(stage.includes("if not ui:"));
+  assert.ok(pr.includes("original=root+'cardart/'+name+'.png' if ui else"));
+  assert.ok(pr.includes("CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:"));
+  assert.ok(pr.includes("CARD_DROPBOX_UI_PR_PNG_INVALID:"));
+  assert.ok(pr.includes("pr['changed_files']!=2"));
+  assert.ok(pr.includes("if not ui:"));
+  assert.ok(recovery.includes("CARD_UI_APPROVED_REGISTRATION_RECOVERY"));
+  assert.ok(recovery.includes("old.get('sourceSha256')==digest"));
+  assert.ok(recovery.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+  assert.ok(recovery.includes("MARE_MODELS_ONLY=false"));
 });
 
 test('Mare indexed PNG audit separates exact registered SHA from archived and pending originals',()=>{
