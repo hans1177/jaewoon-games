@@ -4744,6 +4744,29 @@ test('Mare 36 designed ships have source-verified registered models and seven-co
 
 
 // [마을 주민 전방 검증] 기존 주민 모션 코드와 공식 Studio 실물 얼굴 검사만 확인한다.
+test('Mare resident capture retains six distinct subjects and frames their actual feet and head',()=>{
+  const steps=JSON.parse(fs.readFileSync('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-villagers.json','utf8'));
+  const camera=steps.find(step=>step.code?.includes('VILLAGER_TRACKED_CAMERA_READY')).code;
+  assert.match(camera,/local bottom=math\.min\(left\.Position\.Y-left\.Size\.Y\*0\.5,rightFoot\.Position\.Y-rightFoot\.Size\.Y\*0\.5\)/);
+  assert.match(camera,/shotRay\.FilterDescendantsInstances=\{m\}/);
+  assert.match(camera,/workspace:Raycast\(focus,offset,shotRay\)/);
+  assert.match(camera,/offset=offset\.Unit\*safe/);
+  const roster=steps.filter(step=>step.code?.includes('VILLAGER_CAPTURE_ROSTER_TOO_SMALL'));
+  assert.equal(roster.length,6);
+  for(const [i,step] of roster.entries()){
+    assert.ok(step.code.includes('local k='+(i+1)+' '));
+    assert.ok(step.code.includes('if not _G.VRoster then'));
+    assert.ok(step.code.includes('local t=assert(_G.VRoster[k])'));
+  }
+  for(const n of [6,7,10,25,100]){
+    const indices=Array.from({length:6},(_,i)=>Math.floor(i*(n-1)/5));
+    assert.equal(new Set(indices).size,6);
+    assert.equal(indices[5],n-1);
+  }
+  assert.equal(steps.filter(step=>step.type==='capture').length,30);
+  assert.ok(steps.at(-1).code.includes('_G.VRoster=nil'));
+});
+
 test('Mare town villagers keep arm gestures in front and faces aligned with torso without changing NPC jobs',()=>{
   const root='roblox-games/mare-essentia/';
   const pose=fs.readFileSync(root+'src/ReplicatedStorage/Shared/Pose.luau','utf8');
@@ -4777,7 +4800,15 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   assert.match(port,/for sample = 0, 7 do/);
   assert.match(port,/walker.cx \+= offset.X/);
   assert.match(port,/walker.model:PivotTo\(CFrame.new\(walker.cx \+ walker.r, safe.Position.Y, walker.cz\)/);
-  assert.equal(script.length,46,'existing town gameplay and added ground measurement must remain');
+  // [마을 촬영 회귀] 기존 46단계에 추가된 4개 세부 촬영(각 3단계)을 모두 유지한다.
+  assert.equal(script.length,58,'existing town gameplay, ground measurement and four detail captures must remain');
+  assert.deepEqual(script.filter(row=>row.type==='capture').map(row=>row.name),[
+    '01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall',
+    ...Array.from({length:8},(_,i)=>'08_harbor_npc_sparring_'+String(i+1).padStart(2,'0')),
+    '09_rural','10_economy','11_npc_front','12_npc_hair'
+  ]);
+  assert.deepEqual(script.slice(46).map(row=>row.type),
+    Array.from({length:4},()=>['luau','wait','capture']).flat());
   assert.ok(script.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
 });
 
@@ -4816,7 +4847,7 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(check.code,/TOWN_CENTRAL_PLAZA_PART:/);
   assert.match(check.code,/CentralPlazaClearRadius/);
   assert.match(check.code,/plaza_structures=0 inspected=%d/);
-  assert.equal(town.length,46,'all existing town screenshots, layout and ground checks must remain');
+  assert.equal(town.length,58,'all existing town screenshots, layout, ground checks and four detail captures must remain');
   assert.ok(town.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
   assert.ok(port.includes('CityPortPlazaAccessConnected')&&port.includes('CentralPlazaRemovedStructures'),'new plaza access and final occupancy cleanup must remain');
 });
