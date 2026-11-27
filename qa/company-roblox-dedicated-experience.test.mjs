@@ -1079,6 +1079,75 @@ print('MARE_ALTERNATE_RETRY_FIXTURES=4')
   assert.match(workflow,/if \[\[ "\$MARE_ANIMAL_PREVIEW" == "true" \]\]; then/);
 });
 
+// [검수 이력] 비렌더 장부 갱신에서 동일 원본 이력만 보존하고 현재 승인·프레임으로 재사용하지 않는다.
+test('Mare animal ledger preserves bounded historical render evidence without treating it as current',()=>{
+  const fixture=String.raw`
+import ast,json,os,re,subprocess
+from pathlib import Path
+from unittest.mock import patch
+source=Path('tools/devloop/assets_wanted.py').read_text(encoding='utf8')
+tree=ast.parse(source)
+fn=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='render_animal_review_candidates')
+root='roblox-games/mare-essentia'
+exec(compile(ast.Module(body=[fn],type_ignores=[]),'assets_wanted.py','exec'))
+member='a'*64
+def row():
+    return {'name':'goat','sourceSha256':'b'*64,'modelMembers':[{'sha256':member}], 'geometry':{}}
+def run(old):
+    report={'candidates':[row()]}
+    prior={'animalSourcePractice':{'candidates':[old],'lastPreviewRun':{'runId':'123'}}}
+    with patch.object(subprocess,'check_output',return_value=json.dumps(prior).encode()):
+        render_animal_review_candidates(report,'')
+    return report['candidates'][0]
+old=row()
+old['sourcePreview']={'state':'RENDERED_AWAITING_VISUAL_REVIEW','sourceMemberSha256':member,'registrationApproved':False,'visualQualityApproved':False,'artifactDirectory':'old','frames':[{'name':'front.png','sha256':'c'*64}]}
+old['qualityCandidate']={'state':'QUALITY_CANDIDATE_RETRY_REQUIRED','sourceMemberSha256':member,'registrationApproved':False,'visualQualityApproved':False,'nativeRuntimeVerified':False,'failureReason':'ANIMAL_QUALITY_CANDIDATE_STRUCTURE'}
+first=run(old)
+assert 'sourcePreview' not in first and 'qualityCandidate' not in first
+assert first['lastSourcePreview']['historicalOnly'] is True
+assert first['lastSourcePreview']['runId']=='123'
+assert 'artifactDirectory' not in first['lastSourcePreview']
+assert first['lastQualityCandidate']['failureReason']=='ANIMAL_QUALITY_CANDIDATE_STRUCTURE'
+assert run(first)==first
+bad=row()
+bad['sourcePreview']=dict(old['sourcePreview'],sourceMemberSha256='d'*64)
+assert 'lastSourcePreview' not in run(bad)
+bad['sourcePreview']=dict(old['sourcePreview'],registrationApproved=True)
+assert 'lastSourcePreview' not in run(bad)
+report={'candidates':[row()]}
+with patch.object(subprocess,'check_output',side_effect=OSError('no prior ledger')):
+    render_animal_review_candidates(report,'')
+assert 'lastSourcePreview' not in report['candidates'][0]
+print('MARE_HISTORICAL_RENDER_FIXTURES=PASS')
+`;
+  assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_HISTORICAL_RENDER_FIXTURES=PASS/);
+});
+
+// [정적 배치 진단] 기존 주점 prop과 항구 stack 호출만 정확히 추적한다.
+test('Mare reference audit recognizes existing scene placement without claiming native placement',()=>{
+  const fixture=String.raw`
+import tempfile,json,subprocess,sys
+from pathlib import Path
+scanner=Path('roblox-games/mare-essentia/tools/devloop/asset_check.py').resolve()
+with tempfile.TemporaryDirectory() as temp:
+    root=Path(temp)
+    src=root/'src'
+    src.mkdir()
+    keys=['Interior/lampwall','Interior/unused','Castle/tower-hexagon-mid','Castle/tower-hexagon-roof','Castle/unused']
+    (root/'assets-registered.json').write_text(json.dumps({'assets':{k:{'assetType':'Model'} for k in keys}}))
+    (root/'default.project.json').write_text(json.dumps({'tree':{'ReplicatedStorage':{'MareAssets':{'Interior':{},'Castle':{}}}}}))
+    (src/'NavalBattle.luau').write_text('prop("Interior", "lampwall", at, 7, 0)\n-- prop("Interior", "unused", at, 7, 0)\n')
+    (src/'PortScene.luau').write_text('stack("Castle", { "tower-hexagon-mid", "tower-hexagon-roof" }, 7, 0, 0)\n')
+    out=subprocess.check_output([sys.executable,str(scanner),str(root)],text=True)
+    result=json.loads(next(x.split('=',1)[1] for x in out.splitlines() if x.startswith('MARE_ASSET_REFERENCE_EVIDENCE=')))
+    assert result['literalOrPlacementReferenceCount']==3
+    assert result['unresolvedReferenceKeys']==['Castle/unused','Interior/unused']
+    assert result['scope']=='STATIC_REFERENCE_CANDIDATES_NOT_RUNTIME_PLACEMENT'
+print('MARE_SCENE_REFERENCE_FIXTURE=PASS')
+`;
+  assert.match(execFileSync('python3',['-c',fixture],{encoding:'utf8',timeout:15000}),/MARE_SCENE_REFERENCE_FIXTURE=PASS/);
+});
+
 // [동물 원본 기하 QA] 실제 바이너리 접근 범위·인덱스·모바일 예산을 확인한다.
 test('Mare held animal mesh geometry rejects malformed bytes and cannot grant visual approval',()=>{
   const script=String.raw`

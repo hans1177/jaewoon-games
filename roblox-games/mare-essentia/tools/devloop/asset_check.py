@@ -15,6 +15,9 @@ p4 = re.compile(r'\b(?:rowOf|one)\(\s*"(%s)",\s*"([\w\-\.]+)"' % "|".join(kinds)
 # [참조 증거] 등록 목록 자체는 사용 증거가 아니다. 동적 접두사는 후보로만 기록한다.
 literal_key = re.compile(r'["\']((?:%s)/[\w.-]+)["\']' % "|".join(map(re.escape, kinds)))
 dynamic_prefix = re.compile(r'\b(?:AssetIds|ids)\s*\[\s*["\']((?:%s)/[\w.-]*)["\']\s*\.\.' % "|".join(map(re.escape, kinds)))
+# 기존 배치 함수의 인수도 정적 증거로 분류한다. 임의 배치 또는 실행 성공으로 승격하지 않는다.
+prop_reference = re.compile(r'\bprop\(\s*"(%s)",\s*"([\w.-]+)"\s*,' % "|".join(map(re.escape, kinds)))
+stack_reference = re.compile(r'\bstack\(\s*"(%s)",\s*\{([^{}]+)\}\s*,' % "|".join(map(re.escape, kinds)))
 literal_mentions, dynamic_prefixes = set(), set()
 used, missing = set(), []
 for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
@@ -24,6 +27,16 @@ for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
         source = "\n".join(line for line in text.splitlines() if not line.lstrip().startswith("--"))
         literal_mentions.update(key for key in literal_key.findall(source) if key in reg)
         dynamic_prefixes.update(dynamic_prefix.findall(source))
+        # 확인된 책임 파일의 실제 배치 호출만 추가 분류한다.
+        if os.path.basename(f) == "NavalBattle.luau":
+            literal_mentions.update(key for k, n in prop_reference.findall(source)
+                                    if (key := f"{k}/{n}") in reg)
+        if os.path.basename(f) == "PortScene.luau":
+            for kind, parts in stack_reference.findall(source):
+                if not re.fullmatch(r'\s*"[\w.-]+"(?:\s*,\s*"[\w.-]+")*\s*,?\s*', parts):
+                    continue
+                literal_mentions.update(key for n in re.findall(r'"([\w.-]+)"', parts)
+                                        if (key := f"{kind}/{n}") in reg)
     for k, n in p1.findall(text) + p2.findall(text) + p3.findall(text) + p4.findall(text):
         used.add(f"{k}/{n}")
         if f"{k}/{n}" not in reg:
@@ -49,6 +62,7 @@ evidence = {
     "literalOrPlacementReferenceCount": len(known),
     "dynamicPrefixCandidateCount": len(dynamic_candidates),
     "unresolvedReferenceCount": len(unresolved),
+    "unresolvedReferenceKeys": sorted(unresolved),
     "dynamicPrefixes": sorted(dynamic_prefixes),
     "groups": {
         kind: {
