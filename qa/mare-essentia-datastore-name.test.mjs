@@ -4760,6 +4760,17 @@ test('Mare building trim preserves original roof and window materials and fits d
   const scene=read('ReplicatedStorage/Shared/PortScene.luau');
   const importer=scene.slice(scene.indexOf('local function importedModel('),scene.indexOf('-- 등불:'));
   assert.match(importer,/if tint and not architecture and not preserveArchitectureTexture then/);
+  assert.match(importer,/local groundArchitecture = kind == "Town" and/);
+  assert.match(importer,/solid == true and \(asset:find\("house", 1, true\) ~= nil or asset == "eastasia-base"\)/);
+  assert.match(importer,/or asset == "eastasia-stairs" or asset == "eastasia-column-base"/);
+  assert.match(importer,/if isAnimal or groundArchitecture then/);
+  assert.match(importer,/piece:IsA\("BasePart"\) and piece.Transparency < 0\.98/);
+  assert.match(importer,/if visibleBottomY < math\.huge then visibleBottomY else center\.Position\.Y - size\.Y \/ 2/);
+  assert.match(importer,/CFrame\.new\(bottomPosition - bottom\) \* m:GetPivot\(\)/);
+  const lower=(y,axis,half)=>y-axis.reduce((v,n,i)=>v+Math.abs(n)*half[i],0);
+  assert.equal(lower(7,[0,1,0],[2,3,4]),4);
+  assert.equal(lower(7,[1,0,0],[2,3,4]),5);
+  assert.equal(Math.min(lower(7,[0,1,0],[2,3,4]),lower(4,[0,1,0],[1,1,1])),3);
   assert.match(importer,/if tint and asset:find\("roof", 1, true\) and not asset:find\("house", 1, true\) then/);
   const uniform=scene.slice(scene.indexOf('local function uniformMaterial('),scene.indexOf('local vacancyRate'));
   assert.match(uniform,/if not textured and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\s+and low >= 0\.78 and high - low <= 0\.14 then/);

@@ -762,9 +762,13 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
 		end
 		local center, size = m:GetBoundingBox()
-		-- [동물 발바닥 접지] 투명한 리그 루트의 경계는 제외하고 실제 보이는 메시의 최저점에 지면을 맞춘다.
+		-- [동물 발바닥·건축 기초 접지] 투명한 루트/보조 경계가 아니라 보이는 부품의 회전된 최저점을 사용한다.
+		-- 기존 필지의 지정 높이만 맞춘다. 완성형 주택의 내부 층고, 처마, 충돌 및 원래 배치 XZ는 유지한다.
+		local groundArchitecture = kind == "Town" and (
+			(solid == true and (asset:find("house", 1, true) ~= nil or asset == "eastasia-base"))
+			or asset == "eastasia-stairs" or asset == "eastasia-column-base")
 		local visibleBottomY = math.huge
-		if isAnimal then
+		if isAnimal or groundArchitecture then
 			for _, piece in m:GetDescendants() do
 				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
 					local half = piece.Size * 0.5
