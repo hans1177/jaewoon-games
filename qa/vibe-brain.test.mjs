@@ -547,5 +547,19 @@ test('Mare port variant survey checks display tier, season and weather without c
   assert.match(workflow,/PORT_SURVEY_WRONG_SEASON/);
   assert.match(workflow,/PORT_SURVEY_WRONG_WEATHER/);
   assert.match(workflow,/PORT_SURVEY_SEASON_DAY/);
-  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=327/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=475/);
+});
+
+test('Mare field climate survey uses real seasonal weather and lighting in Studio only', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.match(field,/local month = os\.date\("!\*t"\)\.month/);
+  assert.match(field,/RunService:IsStudio\(\) and type\(opts\.studioCaptureMonth\)/);
+  assert.match(field,/if RunService:IsStudio\(\) then\s+if type\(opts\.studioCaptureWeather\)/);
+  assert.match(field,/table\.find\(weatherOptions, wanted\)/);
+  assert.match(field,/local captureHour = biome\.clock/);
+  assert.match(workflow,/FIELD_SURVEY_WRONG_MONTH/);
+  assert.match(workflow,/FIELD_SURVEY_WRONG_PHASE/);
+  assert.match(workflow,/FIELD_SURVEY_PRECIPITATION_WRONG/);
+  assert.match(workflow,/FIELD_SURVEY_CLOCK_MISMATCH/);
 });
