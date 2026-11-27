@@ -4467,6 +4467,13 @@ test('Mare limits only distant idle and chase joint sampling under frame pressur
   assert.ok(field.includes('if sb.btn:GetAttribute("CooldownRemaining") ~= remaining'));
 });
 
+test('Mare naval camera reuses interpolation state and fleet health only changes when needed',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  for(const token of ["local v = 1 - (1 - meHp) * mc.share","local v = 1 - (1 - foeHp) * fc.share","local size = UDim2.fromScale(math.clamp(v, 0, 1), 1)","if mc.c.fill.Size ~= size then mc.c.fill.Size = size end","if fc.c.fill.Size ~= size then fc.c.fill.Size = size end","if mc.c.fill.BackgroundColor3 ~= color then mc.c.fill.BackgroundColor3 = color end","FX.cam.pos = FX.cam.pos:Lerp(camPos, a)","FX.cam.focus = FX.cam.focus:Lerp(focus, a)","FX.cam = { pos = camPos, focus = focus }","local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))"]) assert.ok(naval.includes(token),token);
+  assert.ok(naval.includes('local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58)'));
+  assert.doesNotMatch(naval,/FX\.cam = if FX\.cam then/);
+});
+
 test('Mare actor motion reuses sample options without changing role or state selection',()=>{
   const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
   const actor=motion.slice(motion.indexOf('function FM.actor('),motion.indexOf('local comboCache'));
