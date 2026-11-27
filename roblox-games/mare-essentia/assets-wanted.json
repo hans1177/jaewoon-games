@@ -2296,7 +2296,7 @@
     },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "4db0f3600456dd54299f5a34147ffe20856ae411",
+     "sourceRevision": "27b045313df46cb0f2ee730f3a192e1845d20a2d",
      "sourceMemberSha256": "c080be83036f5ee91d22ea523e683a72ee994d57090534412bb13e1b46753e01",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2305,7 +2305,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "c080be83036f5ee9-c080be83036f5ee9",
+     "sourceMemberSha256": "c080be83036f5ee91d22ea523e683a72ee994d57090534412bb13e1b46753e01",
+     "triangles": 256,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "0df519d66d176e545118edd689546567a064cea6deede57ab9adc78189403538",
+       "bytes": 227525
+      },
+      {
+       "name": "rear.png",
+       "sha256": "6be2aae729f826d1593484a6c66c5c6d00931199bcbc499a75f5ba8c195a2c19",
+       "bytes": 229049
+      },
+      {
+       "name": "side.png",
+       "sha256": "22f2d7730c885b04f259884c37008fd98238715198fa187f9db42d7ff23eeea3",
+       "bytes": 226634
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "kiwi",
@@ -2453,7 +2481,7 @@
     },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "4db0f3600456dd54299f5a34147ffe20856ae411",
+     "sourceRevision": "27b045313df46cb0f2ee730f3a192e1845d20a2d",
      "sourceMemberSha256": "4a8584e5d3ab846a316cbe4f7ef542e1e737cc3fbbe5027b23324d8abdcdbdf9",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2462,7 +2490,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "4a8584e5d3ab846a-4a8584e5d3ab846a",
+     "sourceMemberSha256": "4a8584e5d3ab846a316cbe4f7ef542e1e737cc3fbbe5027b23324d8abdcdbdf9",
+     "triangles": 510,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "f694bbcd3bfd0b3667bb82fd72911e70f51592711d7427c54edce9e86ae2d95a",
+       "bytes": 239797
+      },
+      {
+       "name": "rear.png",
+       "sha256": "ce4f522dd2e1e1ab7cd203dbf068ba2fc97af2f0a1395db1843bee8d57b3051e",
+       "bytes": 232557
+      },
+      {
+       "name": "side.png",
+       "sha256": "bafe812f7beb6a8eadc7d2495ff1a1520c10f7b2b7ba04bbe9aecd9d04828722",
+       "bytes": 241048
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "manatee",
@@ -2762,22 +2818,22 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "12eb06b4d5889790abb94496899e24a324232fe34600312483062dfa01aebd17",
+       "sha256": "c5aa87cff1d9c76942825a7f54f3f704d9dbef52a5e1f3313f5db554fd237195",
        "bytes": 234535
       },
       {
        "name": "rear.png",
-       "sha256": "9634ec7db0d09fe57a71cf044e58951ae18cdd021399df00e1ab0c1aaacd8dd2",
+       "sha256": "b081b9997984c3bcfc763baf0b10c7bd9760c80df83bdc8f8d290e721f19bc8c",
        "bytes": 236844
       },
       {
        "name": "side.png",
-       "sha256": "3713955bea968fcbdaba50a6c0dfa551685be25b7307990420707b06de3c11b0",
+       "sha256": "8d924a892629265041261aaa4f91b1c7e8723b9b724a391e60e3b9fcf7ab956f",
        "bytes": 238952
       }
      ],
      "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "runId": "45940135821",
+     "runId": "45943821905",
      "historicalOnly": true,
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2794,35 +2850,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "b2e80ab8c4ce8c2f-b2e80ab8c4ce8c2f",
-     "sourceMemberSha256": "b2e80ab8c4ce8c2fea06cf94e5b50f7b031b936101176075f2e03ebd84381517",
-     "triangles": 494,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "c5aa87cff1d9c76942825a7f54f3f704d9dbef52a5e1f3313f5db554fd237195",
-       "bytes": 234535
-      },
-      {
-       "name": "rear.png",
-       "sha256": "b081b9997984c3bcfc763baf0b10c7bd9760c80df83bdc8f8d290e721f19bc8c",
-       "bytes": 236844
-      },
-      {
-       "name": "side.png",
-       "sha256": "8d924a892629265041261aaa4f91b1c7e8723b9b724a391e60e3b9fcf7ab956f",
-       "bytes": 238952
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "toucan",
@@ -2864,22 +2892,22 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "28d836a7ee8960c97da8a22a52517e491ec791566c71eb65d5e5b6d9f1397309",
+       "sha256": "c65143e7fa53b422c6db1df63e16439ae3b37070a40a6913f3cc265f2ffece2f",
        "bytes": 227100
       },
       {
        "name": "rear.png",
-       "sha256": "d50a9c9532d0be229cbaf1f3ba2c12034354604114a94ce94604aa53a56bff1c",
+       "sha256": "14bcdb77b36d18ccca70190b7f4929fa34580e45a0337bcf841b99ff3f5e54bc",
        "bytes": 225803
       },
       {
        "name": "side.png",
-       "sha256": "8d855c413fb51e1bb5be13457edbfa3377e95b93de1bb6bd8d28bce64afb186d",
+       "sha256": "a41e6cc4008e8462cb308dbdda4b79635a4e5c1cfef4d930803c675671bc257d",
        "bytes": 232972
       }
      ],
      "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "runId": "45940135821",
+     "runId": "45943821905",
      "historicalOnly": true,
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2890,7 +2918,7 @@
      "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
      "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE",
      "originalPreserved": true,
-     "runId": "45940135821",
+     "runId": "45943821905",
      "historicalOnly": true,
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2916,55 +2944,7 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "4e1b93cc5a4d8de9-4e1b93cc5a4d8de9",
-     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-     "triangles": 432,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "c65143e7fa53b422c6db1df63e16439ae3b37070a40a6913f3cc265f2ffece2f",
-       "bytes": 227100
-      },
-      {
-       "name": "rear.png",
-       "sha256": "14bcdb77b36d18ccca70190b7f4929fa34580e45a0337bcf841b99ff3f5e54bc",
-       "bytes": 225803
-      },
-      {
-       "name": "side.png",
-       "sha256": "a41e6cc4008e8462cb308dbdda4b79635a4e5c1cfef4d930803c675671bc257d",
-       "bytes": 232972
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    },
-    "qualityCandidate": {
-     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
-     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "nativeRuntimeVerified": false,
-     "originalPreserved": true,
-     "failureReason": "ANIMAL_QUALITY_CANDIDATE_STRUCTURE"
-    },
-    "sourceVisualLastAttempt": {
-     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "07d6933dfb8f85b899dcb77568db689a7b3a133e",
-     "sourceMemberSha256": "4e1b93cc5a4d8de964a47b37629f198da9356b7c78faa285c4a9ee9d816ba621",
-     "registrationApproved": false,
-     "visualQualityApproved": false,
-     "failureReason": "FREE_QUOTA_LIMIT",
-     "httpStatuses": [
-      429
-     ]
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "hippo",
@@ -3133,22 +3113,22 @@
      "frames": [
       {
        "name": "front.png",
-       "sha256": "21e7d716a29420e555c8b92283f0b3ca37f339f02e419974897a646dba538867",
-       "bytes": 240039
+       "sha256": "7f659d21d4461a5fa88eb7e79a5900049d6826d347e7f3b8ee8ebcba3c6e8106",
+       "bytes": 240107
       },
       {
        "name": "rear.png",
-       "sha256": "663d8a014534e339f331f427d3945da39f816852d61702af779ee334bd3a9eb4",
-       "bytes": 247562
+       "sha256": "761f9711d7aeaf51a9136162e51724f80b8121b369dc6fcdc61788aa96c62b0b",
+       "bytes": 247597
       },
       {
        "name": "side.png",
-       "sha256": "8a914d8fe7116b9cd00498f7fc3db098245998738637c42edc32237528d5ac06",
-       "bytes": 240841
+       "sha256": "2fc4d454b03d58038378ca85538fba61b94b3f2f5c90b651ae28c5f5115a9bd5",
+       "bytes": 240950
       }
      ],
      "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "runId": "45936814628",
+     "runId": "45943821905",
      "historicalOnly": true,
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -3165,35 +3145,7 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
-    "sourcePreview": {
-     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
-     "artifactDirectory": "41e008751c798c66-41e008751c798c66",
-     "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
-     "triangles": 732,
-     "frames": [
-      {
-       "name": "front.png",
-       "sha256": "7f659d21d4461a5fa88eb7e79a5900049d6826d347e7f3b8ee8ebcba3c6e8106",
-       "bytes": 240107
-      },
-      {
-       "name": "rear.png",
-       "sha256": "761f9711d7aeaf51a9136162e51724f80b8121b369dc6fcdc61788aa96c62b0b",
-       "bytes": 247597
-      },
-      {
-       "name": "side.png",
-       "sha256": "2fc4d454b03d58038378ca85538fba61b94b3f2f5c90b651ae28c5f5115a9bd5",
-       "bytes": 240950
-      }
-     ],
-     "renderer": "BLENDER_WORKBENCH_TEXTURE",
-     "ignoredReferenceImages": 0,
-     "restoredTextureReferences": 0,
-     "registrationApproved": false,
-     "visualQualityApproved": false
-    }
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
    },
    {
     "name": "narwhal",
@@ -3381,7 +3333,55 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "9d5e67a5147dabe0-9d5e67a5147dabe0",
+     "sourceMemberSha256": "9d5e67a5147dabe04c5e3f677b10aa8042ed4efe337378bccc3b7dd6338d99b6",
+     "triangles": 504,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "bdada68b77171ef7f227405b7e3f54d83d6c1db5bce4b982b4a0a57cb18bedba",
+       "bytes": 229187
+      },
+      {
+       "name": "rear.png",
+       "sha256": "ffa633d3cd703da70ef9ecaff419e6dbb6e448ad486b7a1c823eea8a5b434d16",
+       "bytes": 222828
+      },
+      {
+       "name": "side.png",
+       "sha256": "1e60405adf336005790c8c4fb4b4cbe28741f1608dc3f884877e1857d9d267ec",
+       "bytes": 228117
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "9d5e67a5147dabe04c5e3f677b10aa8042ed4efe337378bccc3b7dd6338d99b6",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_BUDGET_UNREACHABLE"
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "27b045313df46cb0f2ee730f3a192e1845d20a2d",
+     "sourceMemberSha256": "9d5e67a5147dabe04c5e3f677b10aa8042ed4efe337378bccc3b7dd6338d99b6",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "sea_otter",
@@ -16103,7 +16103,7 @@
   "scenePublisherExactNameCandidates": 0,
   "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "45943821905",
+   "runId": "45944822120",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
