@@ -1336,6 +1336,9 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				uniformMaterial(roof, style, "roof")
 			end
 		end
+		-- [입면 정밀 배치] 기존 승인 창호·현관만 실제 주택 표면에 맞춘다.
+		-- 모델의 두께/피벗 차이로 벽 속에 묻히거나 바깥에 떠 있는 문제를 방지한다.
+		local facadeDetails = {}
 		if architecture.trim and not vacant and seed % (if houseTier >= 3 then 2 else 3) == 0 then
 			local trim = importedModel(parent, "Town", architecture.trim,
 				pos + Vector3.new(ext.X * 0.2, ext.Y * 0.40, front * ext.Z * 0.51),
@@ -1343,6 +1346,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if trim then
 				trim.Name = "HarborWindowDetail"
 				uniformMaterial(trim, style, "trim")
+				table.insert(facadeDetails, trim)
 			end
 		end
 		-- 승인된 문의 둥근 아치/목재 형태로 집 입면을 구분한다.
@@ -1354,6 +1358,29 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if doorway then
 				doorway.Name = "HarborDoorDetail"
 				uniformMaterial(doorway, style, "entry")
+				table.insert(facadeDetails, doorway)
+			end
+		end
+		if #facadeDetails > 0 then
+			local houseCF, houseSize = mesh:GetBoundingBox()
+			local houseHalfDepth = (math.abs(houseCF.RightVector.Z) * houseSize.X
+				+ math.abs(houseCF.UpVector.Z) * houseSize.Y + math.abs(houseCF.LookVector.Z) * houseSize.Z) * 0.5
+			local wallProbe = RaycastParams.new()
+			wallProbe.FilterType = Enum.RaycastFilterType.Include
+			wallProbe.FilterDescendantsInstances = { mesh }
+			for _, detail in facadeDetails do
+				local detailCF, detailSize = detail:GetBoundingBox()
+				local detailHalfDepth = (math.abs(detailCF.RightVector.Z) * detailSize.X
+					+ math.abs(detailCF.UpVector.Z) * detailSize.Y + math.abs(detailCF.LookVector.Z) * detailSize.Z) * 0.5
+				local origin = Vector3.new(detailCF.Position.X, detailCF.Position.Y, houseCF.Position.Z + front * (houseHalfDepth + 2))
+				local hit = workspace:Raycast(origin, Vector3.new(0, 0, -front * (houseHalfDepth * 2 + 4)), wallProbe)
+				if hit and hit.Normal.Z * front >= 0.5 then
+					local targetZ = hit.Position.Z + front * math.max(0, detailHalfDepth - 0.08)
+					detail:PivotTo(CFrame.new(0, 0, targetZ - detailCF.Position.Z) * detail:GetPivot())
+				else
+					-- 지지할 벽이 없는 위치에는 떠 있는 장식을 남기지 않는다.
+					detail:Destroy()
+				end
 			end
 		end
 		local size = math.max(w, d) * variation
