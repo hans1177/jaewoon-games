@@ -7516,6 +7516,11 @@ function PortScene.build(info, onFacility)
 		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		local now = os.clock()
 		local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
+		-- [항구 모션 거리] 카메라·거리 기준은 프레임당 한 번만 읽는다. 실측 스튜디오 모션 검사는 보존한다.
+		local motionCamera = workspace.CurrentCamera
+		local motionEye = motionCamera and motionCamera.CFrame.Position
+		local motionRange = if UserInputService.TouchEnabled then 135 else 180
+		local fullMotion = RunService:IsStudio() or not motionEye
 		for _, w in walkers do
 			if w.mode == "sparring" and w.model.Parent and sparring then
 				local side = if w == sparring[1] then -1 else 1
@@ -7786,12 +7791,12 @@ function PortScene.build(info, onFacility)
 						if workCycle >= 14.5 then kind = "stretch"
 						elseif workCycle >= 12.5 then kind = "inspect" end
 					end
-					if kind == "stoop" then
-						-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
-						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
-					end
 					-- 궁정·공방은 멀리 있을 때 인구·직업 속성은 유지하되 관절 업데이트만 생략.
-					if not cam or (cam.CFrame.Position - p0).Magnitude < (if game:GetService("UserInputService").TouchEnabled then 135 else 180) then
+					if not motionEye or (motionEye - p0).Magnitude < motionRange then
+						if kind == "stoop" then
+							-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
+							Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
+						end
 						Pose.work(w.model, kind, now + w.phase)
 					end
 				end
@@ -7848,8 +7853,7 @@ function PortScene.build(info, onFacility)
 						w.model:SetAttribute("AnimalActivity", action)
 					end
 					local destination = (w.base * CFrame.new(0, 0, d)).Position
-					local camera = workspace.CurrentCamera
-					local close = not camera or (camera.CFrame.Position - destination).Magnitude < (if UserInputService.TouchEnabled then 105 else 155)
+					local close = not motionEye or (motionEye - destination).Magnitude < (if UserInputService.TouchEnabled then 105 else 155)
 					-- [지면 접촉] 타일·경사·부두 높이를 0.18초마다 확인하고 실제 높이로 지수 보간한다.
 					-- 원본 모델 발-몸통 간격과 축은 그대로 보존한다. 레이캐스트 실패 시 원래 높이를 따른다.
 					if close and now >= w.groundCheckAt then
@@ -7962,13 +7966,15 @@ function PortScene.build(info, onFacility)
 					local hop = 0
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, floorY, w.cz + math.sin(a + 0.1) * w.r)
 					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)))
-					Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
-					-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
-					local play = (now + w.phase * 1.9) % 21
-					if play < 1.8 then
-						Pose.work(w.model, "wave", now + w.phase, true)
-					elseif play < 3.8 then
-						Pose.work(w.model, "look", now + w.phase, true)
+					if fullMotion or (motionEye - pos).Magnitude < motionRange then
+						Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
+						-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
+						local play = (now + w.phase * 1.9) % 21
+						if play < 1.8 then
+							Pose.work(w.model, "wave", now + w.phase, true)
+						elseif play < 3.8 then
+							Pose.work(w.model, "look", now + w.phase, true)
+						end
 					end
 				end
 			elseif w.model.Parent then
@@ -7982,8 +7988,10 @@ function PortScene.build(info, onFacility)
 						w.model:SetAttribute("DailyRoutine", "rest")
 					end
 					w.model:PivotTo(w.base)
-					Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
-					Pose.work(w.model, "stretch", now + w.phase)
+					if fullMotion or (motionEye - w.base.Position).Magnitude < motionRange then
+						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
+						Pose.work(w.model, "stretch", now + w.phase)
+					end
 				else
 				if w.districtJob and w.lastRoutine ~= "work" then
 					w.lastRoutine = "work"
@@ -8017,17 +8025,22 @@ function PortScene.build(info, onFacility)
 				moving = moving and walked > 0.006
 				if moving then
 					w.trav = (w.trav or 0) + walked
-					Pose.makeR15Action(w.model, "walk", 0, w.trav * (2 * math.pi / 5.2))
-				else
-					Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
 				end
-				if not moving then
-					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor((now + w.phase * 7) / 7) % #IDLE_POOL) + 1], now + w.phase)
-				elseif w.kind then
-					Pose.work(w.model, w.kind, now + w.phase, true)
-				elseif w.elder then
-					-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
-					Pose.work(w.model, "stoop", now, true)
+				-- 원거리에서도 위치·보행 누적 거리는 유지하고 관절만 생략한다.
+				if fullMotion or (motionEye - pos).Magnitude < motionRange then
+					if moving then
+						Pose.makeR15Action(w.model, "walk", 0, w.trav * (2 * math.pi / 5.2))
+					else
+						Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
+					end
+					if not moving then
+						Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor((now + w.phase * 7) / 7) % #IDLE_POOL) + 1], now + w.phase)
+					elseif w.kind then
+						Pose.work(w.model, w.kind, now + w.phase, true)
+					elseif w.elder then
+						-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
+						Pose.work(w.model, "stoop", now, true)
+					end
 				end
 				end -- 새벽·야간 휴식, 기존 보행 동작은 낮에만 실행
 			end
