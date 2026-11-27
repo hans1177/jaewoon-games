@@ -273,6 +273,37 @@ test('canonical promotion safely discards ephemeral LFS art modifications before
   assert.match(persist,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
 });
 
+test('promotion persistence reads main web entry evidence without staging game files',()=>{
+  const persist=promotion.slice(promotion.indexOf('- name: Persist promoted state to company runtime branch'),promotion.indexOf('- name: Verify exact promoted runtime design handoff for Vibe'));
+  const command=persist.match(/git restore --source=origin\/main --worktree -- ':\(glob\)web-games\/\*\/index\.html'/)?.[0];
+  assert.ok(command);
+  assert.ok(persist.indexOf(command)<persist.indexOf('node tools/design-only-promotion-sync.mjs'));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'promotion-web-source-'));
+  try{
+    const git=(...args)=>{
+      const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});
+      assert.equal(result.status,0,result.stderr);
+      return result.stdout.trim();
+    };
+    git('init','-q');
+    git('config','user.name','test');
+    git('config','user.email','test@example.invalid');
+    fs.mkdirSync(path.join(root,'web-games/deep-diver'),{recursive:true});
+    fs.writeFileSync(path.join(root,'web-games/deep-diver/index.html'),'<html>source</html>');
+    fs.writeFileSync(path.join(root,'web-games/deep-diver/game.js'),'// source');
+    git('add','.');
+    git('commit','-qm','source');
+    git('update-ref','refs/remotes/origin/main','HEAD');
+    git('rm','-qr','web-games');
+    git('commit','-qm','runtime');
+    const result=spawnSync('bash',['-ec',command],{cwd:root,encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);
+    assert.equal(fs.readFileSync(path.join(root,'web-games/deep-diver/index.html'),'utf8'),'<html>source</html>');
+    assert.equal(fs.existsSync(path.join(root,'web-games/deep-diver/game.js')),false);
+    assert.equal(git('diff','--cached','--name-only'),'');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('promotion imports the canonical V5 grammar validator and all transitive seed dependencies from main',()=>{
   const checkout=promotion.match(/git checkout origin\/main --[^\n]+/)?.[0]||'';
   const reset=promotion.match(/git reset -- company-directive\.json[^\n]+/)?.[0]||'';
