@@ -4623,7 +4623,8 @@ test('Mare boarding scene cancels pending visual and audio callbacks on destruct
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const cards=naval.slice(naval.indexOf('g.Name = "BoardingGui"'),naval.indexOf('-- 적 포탄 낙하 경고'));
   assert.equal(cards.split('cardTimers[task.delay(').length-1,11);
-  assert.equal(cards.split('cardTimers[coroutine.running()] = nil').length-1,11);
+  assert.equal(cards.split('cardTimers[coroutine.running()] = nil').length-1,12);
+  assert.equal(cards.split('cardTimers[task.defer(').length-1,1);
   for(const token of ['for timer in cardTimers do task.cancel(timer) end','table.clear(cardTimers)','if scorePulse then scorePulse:Cancel(); scorePulse = nil end','if finished or not g.Parent then return end','onEnd(m, actions)']) assert.ok(cards.includes(token),token);
   const roundAudio=cards.slice(cards.indexOf('task.delay(0.5, function()',cards.indexOf('local function afterAction')),cards.indexOf('local before, order = previousBoard'));
   assert.ok(roundAudio.indexOf('if finished or not g.Parent then return end') < roundAudio.indexOf('Sfx.play('));
@@ -4659,6 +4660,16 @@ test('Mare naval tracking reuses trajectory appearance and skips unchanged coord
   assert.ok(loop > 0);
 });
 
+
+test('Mare card highlight and deferred effects release their scene resources',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const hint=naval.slice(naval.indexOf('local dropGlow'),naval.indexOf('local boardCards, previousBoard'));
+  for(const token of ['dropGlow.tween:Cancel()','dropGlow.tween:Destroy()','dropGlow.stroke:Destroy()','g.Destroying:Connect(clearDropHint)','TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)','dropGlow = { stroke = st, tween = tween }','tween:Play()']) assert.ok(hint.includes(token),token);
+  const action=naval.slice(naval.indexOf('local function afterAction('),naval.indexOf('local passArmedAt'));
+  for(const token of ['cardTimers[task.defer(function()','cardTimers[coroutine.running()] = nil','if not finished and g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end','render()']) assert.ok(action.includes(token),token);
+  assert.equal(naval.split('if focusTween then focusTween:Cancel(); focusTween:Destroy(); focusTween = nil end').length-1,2);
+  assert.ok(naval.includes('TweenInfo.new(0.26, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)'));
+});
 
 test('Mare naval fleet wake shares weather and alternation without changing particle cadence',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
