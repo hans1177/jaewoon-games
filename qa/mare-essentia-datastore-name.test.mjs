@@ -4565,3 +4565,14 @@ test('Mare naval radar reuses fixed directions and unchanged visual state',()=>{
   assert.match(naval,/local scanAngle = \(now \* 2\.45\) % tau/);
   assert.match(naval,/local charged = \(\(angle - me\.theta \+ tau\) % tau\) \/ tau <= reloadProgress/);
 });
+
+test('Mare boarding scene cancels pending visual and audio callbacks on destruction',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const cards=naval.slice(naval.indexOf('g.Name = "BoardingGui"'),naval.indexOf('-- 적 포탄 낙하 경고'));
+  assert.equal(cards.split('cardTimers[task.delay(').length-1,11);
+  assert.equal(cards.split('cardTimers[coroutine.running()] = nil').length-1,11);
+  for(const token of ['for timer in cardTimers do task.cancel(timer) end','table.clear(cardTimers)','if scorePulse then scorePulse:Cancel(); scorePulse = nil end','if finished or not g.Parent then return end','onEnd(m, actions)']) assert.ok(cards.includes(token),token);
+  const roundAudio=cards.slice(cards.indexOf('task.delay(0.5, function()',cards.indexOf('local function afterAction')),cards.indexOf('local before, order = previousBoard'));
+  assert.ok(roundAudio.indexOf('if finished or not g.Parent then return end') < roundAudio.indexOf('Sfx.play('));
+  assert.ok(roundAudio.includes('Sfx.play(if res.winner == "me"'));
+});
