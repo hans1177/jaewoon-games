@@ -12,10 +12,10 @@
     },
     "mare-essentia:health": {
       "lastAt": 1795803212858,
-      "pending": true,
+      "pending": false,
       "lastSha": "cf550be4d9fd567f2b1155c81b256ad0c940ad1c",
-      "runs": 14,
-      "ema": 0.996,
+      "runs": 15,
+      "ema": 0.997,
       "failStreak": 0,
       "lastResult": "FOUND"
     },
@@ -144,9 +144,9 @@
       "lastSha": "bf62bfc3c1e432fc02d651b9b32ad9412538856d"
     },
     "mare-essentia:poselab": {
-      "lastAt": 1795739527593,
+      "lastAt": 1795806445759,
       "pending": true,
-      "lastSha": "b5b218a85c3e491813873257e24cb91b2f169c3b"
+      "lastSha": "fc2031444b6153a032bcef20fd932ced45650c13"
     },
     "mare-essentia:holes": {
       "lastAt": 1795770535968,
@@ -176,7 +176,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=5 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
+    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=1 first=BackgroundImage is not a valid member of Frame \\\"SelectedFrame\\\"\\nHEALTH_ASSET fail=0 total=5 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -199,8 +199,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:no-mobs",
       "firstAt": 1794371928830,
-      "lastAt": 1795477693572,
-      "seen": 14,
+      "lastAt": 1795806445759,
+      "seen": 15,
       "resolvedAt": 1794375225082
     },
     "mare-essentia:sky-missing": {
@@ -211,8 +211,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:sky-missing",
       "firstAt": 1794371928830,
-      "lastAt": 1795477693572,
-      "seen": 14,
+      "lastAt": 1795806445759,
+      "seen": 15,
       "resolvedAt": 1794375225082
     },
     "mare-essentia:sparse-world": {
@@ -223,8 +223,8 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:sparse-world",
       "firstAt": 1794371928830,
-      "lastAt": 1795477693572,
-      "seen": 14,
+      "lastAt": 1795806445759,
+      "seen": 15,
       "resolvedAt": 1794375225082
     },
     "fantasy-survival:asset-fail": {
@@ -274,12 +274,12 @@
       "id": "console-errors",
       "kind": "error",
       "task": "health",
-      "text": "콘솔 오류 1건. 첫 오류: Players.Anyanguy1980.PlayerScripts.Client.Game:782: attempt to concatenate string with nil",
+      "text": "콘솔 오류 1건. 첫 오류: BackgroundImage is not a valid member of Frame \"SelectedFrame\"",
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:console-errors",
       "firstAt": 1794456463187,
-      "lastAt": 1794456463187,
-      "seen": 1,
+      "lastAt": 1795806445759,
+      "seen": 2,
       "resolvedAt": 1794462200681
     },
     "mare-essentia:ui-missing": {
@@ -290,13 +290,12 @@
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:ui-missing",
       "firstAt": 1794456463187,
-      "lastAt": 1795477693572,
-      "seen": 9,
+      "lastAt": 1795806445759,
+      "seen": 10,
       "resolvedAt": 1794462200681
     }
   },
   "history": [
-    "mare-essentia:town",
     "mare-essentia:health",
     "mare-essentia:poselab",
     "mare-essentia:ships",
@@ -307,8 +306,9 @@
     "mare-essentia:ships",
     "mare-essentia:holes",
     "mare-essentia:town",
-    "mare-essentia:health"
+    "mare-essentia:health",
+    "mare-essentia:poselab"
   ],
-  "lastDispatchAt": 1795803212858,
-  "lastDecisionAt": 1795803212858
+  "lastDispatchAt": 1795806445759,
+  "lastDecisionAt": 1795806445759
 }
