@@ -412,6 +412,9 @@ jobs:
           });
           const bind = town.find(row => row.type === 'luau' && row.code.includes('BindToRenderStep("MareShot"'));
           if (!bind) throw Error('STUDIO_PORT_CAMERA_BIND_MISSING');
+          // [항구 실측] 기본 19회에 기존 마을 상세 검증을 그대로 재사용한다.
+          const townAudit = town.find(row => row.type === 'luau' && row.code.includes('TOWN_LIVE_SPACING_PASS') && row.code.includes('GRAPHIC_AUDIT') && row.code.includes('OUTFIT_AUDIT'));
+          if (!variant && !townAudit) throw Error('STUDIO_PORT_TOWN_AUDIT_MISSING');
           const steps = [town[0], town[1], {type:'luau',ctx:'Client',code:
             'local P=require(game:GetService("ReplicatedStorage").Shared.Ports).Ports local expected=' +
             '{' + ports.map(id => '"' + id + '"').join(',') + '}' +
@@ -433,6 +436,7 @@ jobs:
             steps.push({type:'wait',ms:8000}, bind);
             for (const [camera, wait, capture] of cameras) {
               steps.push({...camera,code:'local id="'+id+'" local scene=assert(workspace:FindFirstChild("PortScene"),"PORT_SURVEY_CAMERA_SCENE") '+verify+camera.code},wait,{...capture,name:'port_'+tag+'_'+capture.name});
+              if (!variant && capture.name === '07_wall') steps.push({...townAudit,label:'port_'+tag+'_audit',code:'local id="'+id+'" local scene=assert(workspace:FindFirstChild("PortScene"),"PORT_SURVEY_AUDIT_SCENE") '+verify+townAudit.code});
             }
           }
           if (steps.filter(row => row.type === 'capture').length !== selected.length * conditions.length * names.length) throw Error('STUDIO_PORT_CAPTURE_COUNT_MISMATCH');
