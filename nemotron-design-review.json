@@ -2,15 +2,15 @@
   "version": 3,
   "provider": "GEMINI",
   "gameId": "mare-essentia",
-  "sourceRevision": "4f86f03dc0f5c094b9a22cbb579690ddf83581af",
+  "sourceRevision": "c09f758275bb5785dc89ca41fe0bb2659f007efe",
   "status": "CANDIDATE_EDITED",
-  "selectedRole": "UI",
+  "selectedRole": "MOTION",
   "usageWindow": {
     "day": "2026-11-27",
     "calls": {
-      "NVIDIA": 7,
-      "GEMINI": 6,
-      "OPENROUTER": 7
+      "NVIDIA": 8,
+      "GEMINI": 7,
+      "OPENROUTER": 8
     },
     "windowIds": {
       "NVIDIA": "2026-11-27",
@@ -25,20 +25,20 @@
   },
   "cooldowns": {
     "GEMINI_FLASH": "2026-11-28T11:17:18.263Z",
-    "OPENROUTER_GEMMA": "2026-11-27T13:37:11.018Z",
-    "NVIDIA_VL": "2026-11-27T14:06:26.370Z"
+    "OPENROUTER_OMNI": "2026-11-27T15:31:17.980Z",
+    "NVIDIA_VL": "2026-11-27T16:01:01.096Z"
   },
   "quotaForecast": {
     "NVIDIA": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 7,
-      "remainingLocal": 5,
-      "effectiveRemaining": 5,
-      "regularWorkRemaining": 2,
+      "localUsed": 8,
+      "remainingLocal": 4,
+      "effectiveRemaining": 4,
+      "regularWorkRemaining": 1,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 0.73,
-      "estimatedHoursToLocalCap": 6.8,
+      "estimatedCallsPerHour": 0.69,
+      "estimatedHoursToLocalCap": 5.8,
       "nextLocalWindowAt": "2026-11-28T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -49,13 +49,13 @@
     "GEMINI": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 12,
-      "localUsed": 6,
-      "remainingLocal": 6,
-      "effectiveRemaining": 6,
-      "regularWorkRemaining": 3,
+      "localUsed": 7,
+      "remainingLocal": 5,
+      "effectiveRemaining": 5,
+      "regularWorkRemaining": 2,
       "emergencyReserveRemaining": 3,
-      "estimatedCallsPerHour": 1.24,
-      "estimatedHoursToLocalCap": 4.8,
+      "estimatedCallsPerHour": 1.01,
+      "estimatedHoursToLocalCap": 5,
       "nextLocalWindowAt": "2026-11-28T08:00:00.000Z",
       "resetBasis": "PACIFIC_DAILY",
       "accountWideBalanceVerified": false,
@@ -66,13 +66,13 @@
     "OPENROUTER": {
       "scope": "STUDIO_VISUAL_ONLY",
       "localDailyLimit": 30,
-      "localUsed": 7,
-      "remainingLocal": 23,
-      "effectiveRemaining": 23,
-      "regularWorkRemaining": 17,
+      "localUsed": 8,
+      "remainingLocal": 22,
+      "effectiveRemaining": 22,
+      "regularWorkRemaining": 16,
       "emergencyReserveRemaining": 6,
-      "estimatedCallsPerHour": 0.73,
-      "estimatedHoursToLocalCap": 31.5,
+      "estimatedCallsPerHour": 0.69,
+      "estimatedHoursToLocalCap": 31.9,
       "nextLocalWindowAt": "2026-11-28T00:00:00.000Z",
       "resetBasis": "INTERNAL_UTC_DAY_NOT_PROVIDER_CONFIRMED",
       "accountWideBalanceVerified": false,
@@ -84,10 +84,10 @@
   "accountQuota": null,
   "attempts": [
     {
-      "id": "OPENROUTER_GEMMA",
-      "status": "HTTP_429",
+      "id": "OPENROUTER_OMNI",
+      "status": "EMPTY_OUTPUT_TOKEN_LIMIT",
       "provider": "OPENROUTER",
-      "model": "google/gemma-4-31b-it:free"
+      "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
     },
     {
       "id": "NVIDIA_VL",
@@ -109,46 +109,46 @@
   ],
   "frames": [
     {
-      "name": "qa_click_trade_to_harbor-0.jpg",
-      "sha256": "89abaa901b8b39f91e5455ca5e13719a92e716c9829983581b185d8a4141c39a"
+      "name": "field_actor_after_motion-0.jpg",
+      "sha256": "53b1e9daab03c86348cf2290a77b105275e2ec3394da66f7782e36107124ea8f"
     },
     {
-      "name": "tab_trade-0.jpg",
-      "sha256": "5d8543059fe9724dbbb491b6bc97e77056a80310ef549465a54d0e9b1b4a00f7"
+      "name": "field_motion_smooth_icons-0.jpg",
+      "sha256": "782f1574c87e5dcd6da42a73496a7b6398d4e6239dfe730a288bd9a9b1d60bc3"
     },
     {
-      "name": "ui_trade_inline-0.jpg",
-      "sha256": "a505bbd3638b20f0c0e9f4512d0bfcb6f84a9a8f6d4a564d73b84542b06a3182"
+      "name": "field_runtime_fps_sample-0.jpg",
+      "sha256": "5219643fee0c9a9ad0682e984d75adba87ed739e08448794a3e33cd854ae8d75"
     },
     {
-      "name": "field_hud_hitbox-0.jpg",
-      "sha256": "dfe0b4c896fef5bc934a4d7925b60fcffc06b433bf685ecd6a655cb23cbdff70"
+      "name": "harbor_motion_attack-0.jpg",
+      "sha256": "7032606b23ae317d2b08bcfa611d51ba1485a6970e60aaaa78c447b855b0efb2"
     }
   ],
   "model": "gemini-3.5-flash-lite",
-  "rawResponseSha256": "e58f005b5d78fa8a1d3af1a4775cbba069813c6bd4dedccca9aa79574c8700de",
+  "rawResponseSha256": "877f3083b45133edf6139d7683fd752318052a500a088b471240ff8d4607319e",
   "issues": [
     {
-      "category": "ui",
+      "category": "npc-clothing",
       "severity": "medium",
-      "screenshot": "qa_click_trade_to_harbor-0.jpg",
-      "evidenceSha256": "8430e8e26c4f8b921c673b07e4992f5666c08a3bf944af86f2000284a245e90c"
+      "screenshot": "harbor_motion_attack-0.jpg",
+      "evidenceSha256": "86409e6bb6caa56a73f38301857f31b3c7656ea1ab5965337bb88199486db376"
     }
   ],
   "edits": [
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
-      "category": "ui",
-      "screenshot": "qa_click_trade_to_harbor-0.jpg",
-      "beforeSha256": "4c43e86f40693fde081e83647ebe1025cd3b36164c4794c70a568077d8968d65",
-      "afterSha256": "03bad7ee9130c0ea318bd0d421deeed83a0f04c9e36c1b32301ed27959ab2de4"
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "category": "npc-clothing",
+      "screenshot": "harbor_motion_attack-0.jpg",
+      "beforeSha256": "6a794d71ad0665bb5a0783e9416bf61d8e9d70b62cc35b7aacefe051c1aeb49c",
+      "afterSha256": "1a00b1f89de7b56c2fe0d6fdcc32c08c9c9a1795106d6ec0b4389ecbdacf2eaf"
     }
   ],
   "sourceHashes": [
     {
-      "path": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
-      "beforeSha256": "d330049ff97d3c1313dadeb4c45766e01df3bd0c247fe8842cc2fdff9d843038",
-      "afterSha256": "0e1ea9293b516f59d18d1036430769e837ec4e12cc876acc3e1c142fe3fe67b6"
+      "path": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+      "beforeSha256": "84ed557532ff15acbcec78034dca5da3ce9a38d6853107b6292d17054daefb4e",
+      "afterSha256": "5eed278b8b5caba3c205f66e80e7379ea0d1fc6e02b41e9f2479c85a23e1a716"
     }
   ],
   "candidateOnly": true,
