@@ -4508,3 +4508,10 @@ test('Mare voyage avoids repeated emitter and parent writes and destroys detache
   assert.match(voyage,/if breakWave then\s+jet\.emitter:Emit\(math\.ceil\(3 \+ 5 \* flow \+ 4 \* roughness\)\)/);
   assert.match(voyage,/table\.clear\(helmConns\)\s+--[^\n]*\n\s+for _, g in gulls do\s+if not g\.model\.Parent then g\.model:Destroy\(\) end\s+end\s+folder:Destroy\(\)/);
 });
+
+test('Mare naval radar reuses fixed directions and unchanged visual state',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  for(const token of ["local count = if MOBILE_VFX then 28 else 40","local angle = (i - 1) * (math.pi * 2) / count","rangeRing.radials[i] = Vector3.new(math.cos(angle), 0, math.sin(angle))","local radial = rangeRing.radials[i]","local sideY = heading:Cross(radial).Y","local sideArc = math.abs(sideY) > 0.5","local readyArc = sideArc and sideY * enemySide > 0","if seg.Color ~= tint then seg.Color = tint end","if radar.beam.Enabled ~= enabled then radar.beam.Enabled = enabled end","if radar.ready ~= ready then","radar.ready = ready","seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)"]) assert.ok(naval.includes(token),token);
+  assert.match(naval,/local scanAngle = \(now \* 2\.45\) % tau/);
+  assert.match(naval,/local charged = \(\(angle - me\.theta \+ tau\) % tau\) \/ tau <= reloadProgress/);
+});

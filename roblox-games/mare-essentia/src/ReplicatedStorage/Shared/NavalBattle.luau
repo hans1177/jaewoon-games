@@ -1327,7 +1327,7 @@ function NavalBattle.play(opts)
 	local lastTacticText, lastTacticColor = "", nil
 	-- [실전 사거리 나침반] 기존 사거리 원주 조각 재사용: 좌·우 선측포 영역, 회전 탐색광, 장전·포격·명중 펄스.
 	-- 판정값은 원래 cannon.range와 각도 그대로 사용하며 장식용 기본 파츠를 추가하지 않는다.
-	local rangeRing = { segments = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
+	local rangeRing = { segments = {}, radials = {}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 }
 	do
 		local count = if MOBILE_VFX then 28 else 40 -- [깨끗한 탐지 원] 모바일 포각 윤곽을 다듬되 고정 파츠만 재사용
 		local segmentLength = 2 * math.pi * cannon.range / count * 0.86
@@ -1335,6 +1335,9 @@ function NavalBattle.play(opts)
 			local seg = part(folder, Vector3.new(0.72, 0.12, segmentLength), CFrame.new(ORIGIN), Color3.fromRGB(255, 210, 128), Enum.Material.Neon)
 			seg.Transparency = 0.78
 			rangeRing.segments[i] = seg
+			-- 고정 원주 방향은 생성 시 한 번만 계산한다.
+			local angle = (i - 1) * (math.pi * 2) / count
+			rangeRing.radials[i] = Vector3.new(math.cos(angle), 0, math.sin(angle))
 		end
 		-- 기존 등록 선박 메시와 사거리 원주에 광선만 연결한다. 새 Part·선박·외부 에셋은 만들지 않는다.
 		local hullPart = me.model:FindFirstChildWhichIsA("BasePart", true)
@@ -6722,12 +6725,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local enemyAngle = if dd > 0.1 then math.atan2(direction.Z, direction.X) else 0
 			for i, seg in rangeRing.segments do
 				local angle = (i - 1) * tau / #rangeRing.segments
-				local radial = Vector3.new(math.cos(angle), 0, math.sin(angle))
+				local radial = rangeRing.radials[i]
 				local tangent = Vector3.new(-radial.Z, 0, radial.X)
 				local at = ORIGIN + me.pos + radial * cannon.range + Vector3.new(0, 0.2, 0)
 				seg.CFrame = CFrame.lookAt(at, at + tangent)
 				-- 좌·우 선측: 실제 조준 기준인 교차곱 0.5 이상인 방향만 두껍고 밝게.
-				local sideArc = math.abs(heading:Cross(radial).Y) > 0.5
+				local sideY = heading:Cross(radial).Y
+				local sideArc = math.abs(sideY) > 0.5
 				local charged = ((angle - me.theta + tau) % tau) / tau <= reloadProgress
 				local trailAngle = (scanAngle - angle + tau) % tau
 				local trail = if trailAngle < 1.45 then (1 - trailAngle / 1.45) ^ 1.25 else 0 -- [잔광] 좁은 원주 잔상, 뒤쪽만 남는다
@@ -6760,11 +6764,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				-- [준비 표시] 적이 있는 선측만 황동빛으로 표시하고, 발사하면 기존 섬광으로 넘긴다.
 				if broadsideReady and not hitMe and not hitFoe and now >= skillUntil.guard and now >= skillUntil.dash then
-					local readyArc = sideArc and heading:Cross(radial).Y * enemySide > 0
+					local readyArc = sideArc and sideY * enemySide > 0
 					tint = if readyArc then Color3.fromRGB(249, 201, 126) else Color3.fromRGB(94, 127, 138)
 					alpha = if readyArc then 0.25 else 0.9
 				end
-				seg.Color = tint
+				if seg.Color ~= tint then seg.Color = tint end
 				seg.Transparency = if opts.cardOnly then 1 else 1 - rangeRing.fade * (1 - alpha)
 			end
 			-- [회전 탐색광] 새 물체를 만들지 않고 기존 선박 메시·원주 Attachment 위치만 이동.
@@ -6774,9 +6778,14 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local rim = center + Vector3.new(math.cos(scanAngle), 0, math.sin(scanAngle)) * cannon.range
 				radar.origin.Position = radar.hull.CFrame:PointToObjectSpace(center)
 				radar.edge.Position = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
-				radar.beam.Enabled = not opts.cardOnly and not broadsideReady and rangeRing.fade > 0.08 and phase == "duel"
-				radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
-					if inRange and aligned then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
+				local enabled = not opts.cardOnly and not broadsideReady and rangeRing.fade > 0.08 and phase == "duel"
+				if radar.beam.Enabled ~= enabled then radar.beam.Enabled = enabled end
+				local ready = inRange and aligned
+				if radar.ready ~= ready then
+					radar.beam.Color = ColorSequence.new(Color3.fromRGB(135, 223, 210),
+						if ready then Color3.fromRGB(120, 255, 170) else Color3.fromRGB(255, 211, 136))
+					radar.ready = ready
+				end
 			end
 			-- 진입과 선측 조타만 안내한다. 재장전·포격 가능 여부는 기존 장전 막대에 표시한다.
 			local messageText = if phase == "duel" and not opts.card and not opts.cardOnly
