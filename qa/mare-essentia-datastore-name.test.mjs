@@ -4393,6 +4393,13 @@ test('Mare naval HUD avoids duplicate writes without changing cooldown and healt
   assert.ok(naval.includes('reloadText.Text = if not inRange then "사거리 밖"'));
 });
 
+test('Mare naval support and music retries release ended scene references',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const audio=read('ReplicatedStorage/Shared/Sfx.luau');
+  for(const token of ['if not gui.Parent then return end','CH.popTimers[l] = task.delay(1.7, function()','CH.popTimers[l] = nil','CH.introThread = task.delay(1.2, function()','if not gui.Parent then break end','task.cancel(CH.introThread)','for _, timer in CH.popTimers do task.cancel(timer) end','table.clear(CH.popTimers)','table.clear(CH.chips)','table.clear(CH.shown)']) assert.ok(naval.includes(token),token);
+  for(const token of ['if musicRetry then task.cancel(musicRetry); musicRetry = nil end','musicRetry = task.delay(22, function()','musicRetry = task.delay(retryAfter, function()']) assert.ok(audio.includes(token),token);
+});
+
 test('Mare naval finish releases connection references and cancels pending timeout without cancelling itself',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));

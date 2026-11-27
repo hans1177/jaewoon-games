@@ -226,10 +226,16 @@ function Sfx.music(name)
 	currentMusic = s
 	-- [배경음 자동 복구] 12초에 로딩 실패로 20초 유예된 음원을 22초에 즉시 재요청하면
 	-- 유예에 막혀 currentMusic만 사라지고 영구 무음이 된다. 유예 만료 후 같은 곡일 때만 복구한다.
-	task.delay(22, function()
+	local musicRetry
+	s.Destroying:Once(function()
+		if musicRetry then task.cancel(musicRetry); musicRetry = nil end
+	end)
+	musicRetry = task.delay(22, function()
+		musicRetry = nil
 		if currentMusic ~= s or currentName ~= name or not s.Parent or s.IsLoaded then return end
 		local retryAfter = math.max(0, (broken[name] or 0) - os.clock()) + 0.2
-		task.delay(retryAfter, function()
+		musicRetry = task.delay(retryAfter, function()
+			musicRetry = nil
 			if currentMusic == s and currentName == name and s.Parent and not s.IsLoaded then
 				currentName = nil
 				Sfx.music(name)
