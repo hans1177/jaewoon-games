@@ -4400,6 +4400,11 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(client,/while not RS:GetAttribute\("MareAssetsReady"\) and os\.clock\(\) - t0 < 5 and player\.Parent do/);
   assert.match(client,/while not RS:GetAttribute\("MareAssetsSettled"\) and player\.Parent do/);
   assert.match(client,/if player\.Parent and RS:GetAttribute\("MareAssetsSettled"\) and view then\s+sceneKey = nil\s+if not sceneHold and not inField then\s+syncScene\(\)/);
+  // [항구 중복 생성] 다른 항구의 공사 완료와 생성 중 이전 키 복귀를 구분한다.
+  assert.match(client,/H\.shownLv\[pid\] = nil[^\n]*\n[^\n]*\n\s+if view and view\.player and view\.player\.portId == pid then\s+sceneKey = nil\s+if syncScene then pcall\(syncScene\) end/);
+  const sceneSync=client.slice(client.indexOf('syncScene = function()'),client.indexOf('function H.measurePortTransition'));
+  assert.match(sceneSync,/if H\.portBuilding then\s+H\.portBuildPending = true\s+return\s+end\s+if key == sceneKey then/);
+  assert.match(sceneSync,/if H\.portBuildPending then[\s\S]*?H\.portBuildPending = false\s+task\.defer\(function\(\) if syncScene then syncScene\(\) end end\)/);
   assert.match(qa,/local modelReadyDeadline = os\.clock\(\) \+ 60/);
   assert.match(qa,/while ReplicatedStorage:GetAttribute\("MareAssetsSettled"\) ~= true and os\.clock\(\) < modelReadyDeadline do/);
   // [항구 우물 회귀] 실측 실패한 5개 텍스처를 기존 모델 로더에서만 제거한다.
