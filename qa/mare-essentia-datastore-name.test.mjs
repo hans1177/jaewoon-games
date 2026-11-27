@@ -4054,6 +4054,13 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
   assert.match(naval,/cliff-large-stone/);
 });
 
+test('Mare naval weather and distant merchants preserve cadence and restore the scene',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const env=naval.slice(naval.indexOf('local envConnection'),naval.indexOf('-- [후미 흰 포말]'));
+  for(const token of ['if tickSum < (if MOBILE_VFX then 0.20 else 0.10) then return end','elapsed += tickSum','tickSum = 0','local driftTime, bobTime = elapsed * 0.055, elapsed * 1.2','math.sin(driftTime + merchant.speed) * 50','math.sin(bobTime + merchant.speed) * 0.27','if merchant.model:GetPivot() ~= pivot then merchant.model:PivotTo(pivot) end','0.035 + math.sin(elapsed * (if mode == "storm" then 1.5 else 0.6)) * 0.012','if sea.Color ~= waterColor then sea.Color = waterColor end','local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994','local brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)','if colorGrade.Brightness ~= brightness then colorGrade.Brightness = brightness end','for _, anchor in oceanNodes do anchor:Destroy() end','for _, anchor in weatherNodes do anchor:Destroy() end','lighting.ClockTime, lighting.FogColor = savedLighting.clock, savedLighting.fogColor','bloom:Destroy()','sunRays:Destroy()','colorGrade:Destroy()']) assert.ok(env.includes(token),token);
+  assert.equal(env.split('envConnection:Disconnect()').length-1,2);
+});
+
 // [4차 추가 원본 8종] Kenney CC0 실물 지형의 원본 해시·등록 권한·기존 모바일 예산을 함께 검증한다.
 test('대항해시대 4차 원경 능선·자연 메시 8종·해안 시각 모델 검증',()=>{
   const root='roblox-games/mare-essentia/';

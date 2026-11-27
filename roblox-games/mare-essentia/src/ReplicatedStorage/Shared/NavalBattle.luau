@@ -913,17 +913,25 @@ function NavalBattle.play(opts)
 			elapsed += tickSum
 			tickSum = 0
 			-- 기본 파도·하늘은 엔진이 움직인다. 매 프레임 사각형/구체를 갱신하지 않는다.
-			for _, merchant in distantShips do
-				if merchant.model.Parent then
-					merchant.model:PivotTo(merchant.start * CFrame.new(math.sin(elapsed * 0.055 + merchant.speed) * 50,
-						math.sin(elapsed * 1.2 + merchant.speed) * 0.27, 0))
+			if #distantShips > 0 then
+				-- [원경 항해선] 같은 시간축을 공유하고 기존 항로와 부유 모션은 유지한다.
+				local driftTime, bobTime = elapsed * 0.055, elapsed * 1.2
+				for _, merchant in distantShips do
+					if merchant.model.Parent then
+						local pivot = merchant.start * CFrame.new(math.sin(driftTime + merchant.speed) * 50,
+							math.sin(bobTime + merchant.speed) * 0.27, 0)
+						if merchant.model:GetPivot() ~= pivot then merchant.model:PivotTo(pivot) end
+					end
 				end
 			end
-			sea.Color = coast.water:Lerp(foamColor,
+			-- [날씨 갱신] 동일한 물 색과 번개 밝기는 다시 기록하지 않는다.
+			local waterColor = coast.water:Lerp(foamColor,
 				0.035 + math.sin(elapsed * (if mode == "storm" then 1.5 else 0.6)) * 0.012)
+			if sea.Color ~= waterColor then sea.Color = waterColor end
 			if mode == "storm" then
 				local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994
-				colorGrade.Brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)
+				local brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)
+				if colorGrade.Brightness ~= brightness then colorGrade.Brightness = brightness end
 			end
 		end)
 		folder.Destroying:Connect(function()
