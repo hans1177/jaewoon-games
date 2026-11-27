@@ -374370,11 +374370,131 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0e514cd0c4507dafe942982d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15563",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4b9c77ca531be72a754da380a3b8181b448c93c9",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15563,
+        "baseBranch": "main",
+        "headBranch": "mare-naval-radar-tracking",
+        "baseSha": "4b9c77ca531be72a754da380a3b8181b448c93c9",
+        "headSha": "cf2e7e1281a84840e0a0351260c5245a241bac56",
+        "mergeCommitSha": "49f66c4330280deea69a8f55c630039b117b374f",
+        "mergedAt": "2026-11-27T14:19:13Z",
+        "authorLogin": "hans1177",
+        "titleHash": "74749c9662294edfc60a44725e37b8ffeb9cc190c44c2ae8f8eb24dd843ef537",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-naval-radar-tracking",
+        "candidateSha": "cf2e7e1281a84840e0a0351260c5245a241bac56"
+      },
+      "changeStats": {
+        "changedFileCount": 3,
+        "codingRelevantFileCount": 3,
+        "addedLineCount": 175,
+        "deletedLineCount": 154,
+        "changedFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15563",
+        "merge-commit:49f66c4330280deea69a8f55c630039b117b374f",
+        "base-main:4b9c77ca531be72a754da380a3b8181b448c93c9"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2959
+    "total": 2960
   }
 }
