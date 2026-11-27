@@ -537,3 +537,15 @@ test('Mare world survey binds exact site and sea identities and preserves manual
   assert.match(workflow,/MareNavalSurveyExit/);
   assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED/);
 });
+
+// [항구 변형 촬영] 게임 정본의 발전 단계와 반구별 계절을 실제 장면 속성으로 검증한다.
+test('Mare port variant survey checks display tier, season and weather without changing saves', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  assert.match(workflow,/const variantStart = 107 \+ scenarios\.length/);
+  assert.match(workflow,/Array\.from\(\{length:6\}/);
+  assert.match(workflow,/PORT_SURVEY_SOURCE_TIER/);
+  assert.match(workflow,/PORT_SURVEY_WRONG_SEASON/);
+  assert.match(workflow,/PORT_SURVEY_WRONG_WEATHER/);
+  assert.match(workflow,/PORT_SURVEY_SEASON_DAY/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=327/);
+});
