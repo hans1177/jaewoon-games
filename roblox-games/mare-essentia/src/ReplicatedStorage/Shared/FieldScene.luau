@@ -4366,6 +4366,17 @@ function FieldScene.start(opts)
 			elephant = "코끼리", llama = "라마" }
 		-- [항구·탐험 일치] 말 성체, 소, 양, 돼지 등 실물 비율을 목장과 똑같이 적용한다.
 		local sizes = PortBuildings.AnimalVisual
+		-- [종별 시각 보행] 목장과 같은 보폭을 사용하되 몸무게·발 수에 맞는 발 디딤과 머리/꼬리 움직임을 분리한다.
+		-- stride(스터드), speed(스터드/초), swing(라디안), head, tail, fourBeat.
+		local gait = {
+			horse = {4.3, 2.8, 0.30, 0.07, 0.15, true}, cow = {3.8, 1.7, 0.21, 0.055, 0.12, true},
+			donkey = {3.2, 2.2, 0.25, 0.07, 0.14, true}, llama = {3.4, 2.0, 0.24, 0.045, 0.11, true},
+			sheep = {2.6, 1.7, 0.24, 0.09, 0.09, true}, pig = {2.5, 1.6, 0.22, 0.09, 0.13, true},
+			elephant = {4.8, 1.5, 0.15, 0.035, 0.09, true},
+			["dog-pug"] = {2.2, 2.5, 0.33, 0.065, 0.30, false},
+			cat = {1.9, 1.8, 0.28, 0.045, 0.18, false},
+			chicken = {1.0, 0.95, 0.35, 0.14, 0.055, false},
+		}
 		local region = biome.region or ""
 		local candidates = if region == "nordic" or region == "britain" then { "sheep", "horse", "cow", "dog-pug" }
 			elseif region == "desert" or region == "ottoman" then { "donkey", "cat", "sheep" }
@@ -4397,9 +4408,8 @@ function FieldScene.start(opts)
 			-- [실물 접지] 최초 생성부터 언덕·지면의 실제 높이를 따른다.
 			local floorHit = workspace:Raycast(Vector3.new(pos.X, ORIGIN.Y + 110, pos.Z),
 				Vector3.new(0, -170, 0), groundRay)
-			if floorHit and floorHit.Normal.Y > 0.65 then
-				pos = Vector3.new(pos.X, floorHit.Position.Y, pos.Z)
-			end
+			if not floorHit or floorHit.Normal.Y <= 0.65 then return end
+			pos = Vector3.new(pos.X, floorHit.Position.Y, pos.Z)
 			local visual = sizes[species]
 			local coatIndex = 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39)) % #visual.coats
 			local model = placeModel(folder, "Animals", species, pos, visual.size, false, Color3.fromRGB(table.unpack(visual.coats[coatIndex])))
@@ -4425,16 +4435,46 @@ function FieldScene.start(opts)
 					say("동물 발견: " .. (names[species] or species) .. " · 현장 관찰 완료")
 				end)
 			end
-			-- [원본 모델 보존] 승인 동물의 실제 Bone·분리된 사지만 움직인다.
+			-- [원본 모델 보존] 수입 Pivot의 Up/Look 축은 실제 메시의 머리·발 방향과 다를 수 있다.
+			-- 원본 자세를 CFrame.lookAt으로 덮지 않고, 월드 Y축 회전만 적용한다.
 			local origin = model:GetPivot()
-			local forward = origin.LookVector
-			local upright = if math.abs(forward.X) + math.abs(forward.Z) > 0.01
-				then CFrame.lookAt(origin.Position, origin.Position + Vector3.new(forward.X, 0, forward.Z))
-				else CFrame.new(origin.Position)
-			model:PivotTo(upright * CFrame.Angles(0, wildlifeRng:NextNumber(-math.pi, math.pi), 0))
+			local box, extent = model:GetBoundingBox()
+			local headSum, tailSum, footSum = Vector3.zero, Vector3.zero, Vector3.zero
+			local heads, tails, feet = 0, 0, 0
+			for _, node in model:GetDescendants() do
+				local p = if node:IsA("Bone") then node.WorldPosition
+					elseif node:IsA("BasePart") and node.Transparency < 0.98 then node.Position else nil
+				if p then
+					local name = node.Name:lower()
+					if name:find("head", 1, true) or name:find("beak", 1, true) or name:find("muzzle", 1, true) then
+						headSum += p; heads += 1
+					elseif name:find("tail", 1, true) then
+						tailSum += p; tails += 1
+					elseif name:find("foot", 1, true) or name:find("hoof", 1, true) or name:find("paw", 1, true) or name:find("toe", 1, true) then
+						footSum += p; feet += 1
+					end
+				end
+			end
+			local front = if heads > 0 then headSum / heads else nil
+			local back = if tails > 0 then tailSum / tails else box.Position
+			local axis = if front then (front - back) * Vector3.new(1, 0, 1) else Vector3.zero
+			local facingKnown = axis.Magnitude > math.max(0.08, visual.size * 0.035)
+			local forward = if facingKnown then axis.Unit else Vector3.new(0, 0, -1)
+			-- 발이 몸 중앙보다 위에 있다는 실측 증거가 있을 때만 뒤집힌 원본을 바로 세운다.
+			if facingKnown and feet >= 2 and (footSum / feet).Y > box.Position.Y + extent.Y * 0.12 then
+				model:PivotTo(CFrame.new(box.Position) * CFrame.fromAxisAngle(forward, math.pi)
+					* CFrame.new(-box.Position) * origin)
+				origin = model:GetPivot()
+			end
+			local yaw = wildlifeRng:NextNumber(-math.pi, math.pi)
+			local spin = CFrame.Angles(0, yaw, 0)
+			model:PivotTo(CFrame.new(box.Position) * spin * CFrame.new(-box.Position) * origin)
+			forward = spin:VectorToWorldSpace(forward)
 			local lowestY = math.huge
+			local visiblePieces = {}
 			for _, piece in model:GetDescendants() do
 				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
+					table.insert(visiblePieces, piece)
 					local half, cf = piece.Size * 0.5, piece.CFrame
 					lowestY = math.min(lowestY, cf.Position.Y - math.abs(cf.RightVector.Y) * half.X
 						- math.abs(cf.UpVector.Y) * half.Y - math.abs(cf.LookVector.Y) * half.Z)
@@ -4444,6 +4484,9 @@ function FieldScene.start(opts)
 				model:PivotTo(CFrame.new(0, pos.Y - lowestY, 0) * model:GetPivot())
 			end
 			local basePivot = model:GetPivot()
+			local right = forward:Cross(Vector3.yAxis)
+			local profile = gait[species]
+			model:SetAttribute("FieldAnimalFacing", if facingKnown then "ANATOMICAL_FORWARD" else "UNVERIFIED_STATIC")
 			local _, ext = model:GetBoundingBox()
 			local bodySize = math.max(ext.X, ext.Y, ext.Z)
 			-- [실물 리그] Bone·Motor6D·분리 사지를 중복 없이 수집한다.
@@ -4470,31 +4513,40 @@ function FieldScene.start(opts)
 				local tail = name:find("tail", 1, true)
 				local kind = if leg then "leg" elseif head then "head" elseif tail then "tail" else nil
 				if kind then
-					local left = name:find("left", 1, true) or name:find("_l", 1, true)
-						or name:sub(1, 2) == "l_"
-					local rear = name:find("rear", 1, true) or name:find("hind", 1, true)
-						or name:find("back", 1, true)
-					local phase = if rear then (if left then math.pi * 1.5 else math.pi * 0.5)
-						else (if left then 0 else math.pi)
+					local jointFrame = if node:IsA("Bone") then node.WorldCFrame
+						elseif node:IsA("Motor6D") and node.Part0 then node.Part0.CFrame * node.C0
+						elseif node:IsA("AnimationConstraint") and node.Attachment0 then node.Attachment0.WorldCFrame
+						elseif targetPart and targetPart:IsA("BasePart") then targetPart.CFrame
+						elseif node:IsA("BasePart") then node.CFrame else basePivot
+					local bodyCenter = model:GetBoundingBox().Position
+					local rel = jointFrame.Position - bodyCenter
+					local left = rel:Dot(right) < 0
+					local rear = species ~= "chicken" and rel:Dot(forward) < 0
+					local phase = if profile[6] then
+						(if rear then (if left then math.pi * 1.5 else math.pi * 0.5) else (if left then 0 else math.pi))
+						else (if rear then (if left then math.pi else 0) else (if left then 0 else math.pi))
+					local localRight = jointFrame:VectorToObjectSpace(right)
+					local localUp = jointFrame:VectorToObjectSpace(Vector3.yAxis)
+					local lower = name:find("lower", 1, true) or name:find("foot", 1, true) or name:find("toe", 1, true)
 					local accepted = false
 					if node:IsA("Bone") and #bones < 14 then
-						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase })
+						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower })
 						accepted = true
 					elseif targetPart and targetPart:IsA("BasePart") then
 						if targetPart.Anchored and not drivenParts[targetPart] and #parts < 12
 							and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) < bodySize * 0.77 then
 							table.insert(parts, { part = targetPart, base = basePivot:ToObjectSpace(targetPart.CFrame),
-								kind = kind, phase = phase, hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
+								kind = kind, phase = phase, axis = targetPart.CFrame:VectorToObjectSpace(right), up = targetPart.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
 							drivenParts[targetPart] = true
 							accepted = true
 						elseif not targetPart.Anchored and #bones < 14 then
-							table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase })
+							table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower })
 							accepted = true
 						end
 					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
 						and #parts < 12 and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodySize * 0.77 then
 						table.insert(parts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
-							kind = kind, phase = phase, hinge = math.min(node.Size.Y * 0.34, 0.65) })
+							kind = kind, phase = phase, axis = node.CFrame:VectorToObjectSpace(right), up = node.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, hinge = math.min(node.Size.Y * 0.34, 0.65) })
 						drivenParts[node] = true
 						accepted = true
 					end
@@ -4505,13 +4557,13 @@ function FieldScene.start(opts)
 					end
 				end
 			end
-			local canWalk = legCount >= 2
+			local canWalk = facingKnown and legCount >= (if species == "chicken" then 2 else 3)
 			model:SetAttribute("FieldAnimalMotionRig", if canWalk then "WALK_RIG"
 				elseif #bones + #parts > 0 then "IDLE_RIG" else "STATIC_UNRIGGED")
 			table.insert(animals, { model = model, center = basePivot, bornAt = os.clock(),
 				phase = wildlifeRng:NextNumber(0, 7), bones = bones, parts = parts, canWalk = canWalk,
-				heading = 0, travel = 0, lastTravel = 0, step = 0, homeFloor = pos.Y,
-				groundTarget = 0, groundOffset = 0, groundCheckAt = 0 })
+				forward = forward, profile = profile, visiblePieces = visiblePieces,
+				heading = 0, travel = 0, step = 0, stepWeight = 0, homeFloor = pos.Y, groundOffset = 0 })
 		end
 		-- 자연동물은 최대 4마리만 두고 화면 밖에 있을 때 짧은 산책·풀 뜯기를 반복한다.
 		local tick = 0
@@ -4533,42 +4585,58 @@ function FieldScene.start(opts)
 					local time = now - a.bornAt
 					local cycle = time * 0.33 + a.phase
 					local target = if a.canWalk then 5.5 * math.sin(cycle) else 0
-					local want = if a.canWalk and math.cos(cycle) < -0.06 then math.pi else 0
+					-- [전진 보행] 실제 남은 이동량을 기준으로 먼저 몸을 돌린 뒤 움직인다.
+					local delta = target - a.travel
+					local want = if delta < -0.025 then math.pi elseif delta > 0.025 then 0 else a.heading
 					local turn = math.atan2(math.sin(want - a.heading), math.cos(want - a.heading))
-					a.heading += turn * (1 - math.exp(-5.5 * elapsed))
-					local facing = math.clamp(1 - math.abs(turn) / 1.25, 0, 1)
-					a.travel += (target - a.travel) * (1 - math.exp(-7 * elapsed)) * facing
-					local walked = math.abs(a.travel - a.lastTravel)
-					a.lastTravel = a.travel
-					local moving = a.canWalk and facing > 0.2 and walked > 0.01
-					if moving then a.step += walked * (2 * math.pi / 3.4) end
-					local travelPivot = a.center * CFrame.new(0, 0, -a.travel)
-					if now >= a.groundCheckAt then
-						a.groundCheckAt = now + 0.2
-						local p = travelPivot.Position
-						local hit = workspace:Raycast(Vector3.new(p.X, ORIGIN.Y + 110, p.Z),
-							Vector3.new(0, -170, 0), groundRay)
-						if hit and hit.Normal.Y > 0.65 then
-							a.groundTarget = math.clamp(hit.Position.Y - a.homeFloor, -18, 22)
-						end
+					a.heading += math.clamp(turn, -2.8 * elapsed, 2.8 * elapsed)
+					local remainingTurn = math.atan2(math.sin(want - a.heading), math.cos(want - a.heading))
+					local stepDistance = if a.canWalk and math.abs(remainingTurn) < 0.12
+						then math.clamp(delta, -a.profile[2] * elapsed, a.profile[2] * elapsed) else 0
+					local proposed = a.travel + stepDistance
+					local p = a.center.Position + a.forward * proposed
+					-- 이동할 발밑을 먼저 검사한다. 절벽·구멍·급경사에는 들어가지 않는다.
+					local hit = workspace:Raycast(Vector3.new(p.X, ORIGIN.Y + 110, p.Z),
+						Vector3.new(0, -170, 0), groundRay)
+					if hit and hit.Normal.Y > 0.65 and math.abs(hit.Position.Y - a.homeFloor - a.groundOffset) <= math.max(0.7, math.abs(stepDistance) * 1.5) then
+						a.travel = proposed
+						a.groundOffset = hit.Position.Y - a.homeFloor
+					else
+						stepDistance = 0
 					end
-					a.groundOffset += (a.groundTarget - a.groundOffset) * (1 - math.exp(-8 * elapsed))
-					local pivot = travelPivot * CFrame.new(0, a.groundOffset, 0) * CFrame.Angles(0, a.heading, 0)
+					local walked = math.abs(stepDistance)
+					local moving = walked > 0.001
+					if moving then a.step += walked * (2 * math.pi / a.profile[1]) end
+					a.stepWeight += ((if moving then 1 else 0) - a.stepWeight) * (1 - math.exp(-12 * elapsed))
+					local position = a.center.Position + a.forward * a.travel + Vector3.new(0, a.groundOffset, 0)
+					-- 원본의 회전(수입 리그의 Up축 포함)은 보존하고 월드 Y축만 돌린다.
+					local pivot = CFrame.new(position) * CFrame.Angles(0, a.heading, 0) * a.center.Rotation
 					a.model:PivotTo(pivot)
 					for _, limb in a.bones do
-						local pitch = if limb.kind == "leg" and moving then math.sin(a.step + limb.phase) * 0.23
-							elseif limb.kind == "head" and not moving then 0.10 + math.sin(time * 1.4) * 0.07
-							elseif limb.kind == "head" then math.sin(a.step * 2) * 0.035 else 0
-						local yaw = if limb.kind == "tail" then math.sin(time * 2.2) * 0.12 else 0
-						limb.joint.Transform = limb.base * CFrame.Angles(pitch, yaw, 0)
+						local pitch = if limb.kind == "leg" then math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * (if limb.lower then -0.38 else 1)
+							elseif limb.kind == "head" then (if moving then math.sin(a.step * 2) * a.profile[4] else math.sin(time * 1.4) * a.profile[4]) else 0
+						local wag = if limb.kind == "tail" then math.sin(time * 2.2) * a.profile[5] else 0
+						limb.joint.Transform = limb.base * CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag)
 					end
 					for _, limb in a.parts do
-						local pitch = if limb.kind == "leg" and moving then math.sin(a.step + limb.phase) * 0.23
-							elseif limb.kind == "head" and not moving then 0.10 + math.sin(time * 1.4) * 0.07
-							elseif limb.kind == "head" then math.sin(a.step * 2) * 0.035 else 0
-						local yaw = if limb.kind == "tail" then math.sin(time * 2.2) * 0.12 else 0
-						limb.part.CFrame = pivot * limb.base * CFrame.new(0, limb.hinge, 0)
-							* CFrame.Angles(pitch, yaw, 0) * CFrame.new(0, -limb.hinge, 0)
+						local pitch = if limb.kind == "leg" then math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * (if limb.lower then -0.38 else 1)
+							elseif limb.kind == "head" then (if moving then math.sin(a.step * 2) * a.profile[4] else math.sin(time * 1.4) * a.profile[4]) else 0
+						local wag = if limb.kind == "tail" then math.sin(time * 2.2) * a.profile[5] else 0
+						local hinge = limb.up * limb.hinge
+						limb.part.CFrame = pivot * limb.base * CFrame.new(hinge)
+							* CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag) * CFrame.new(-hinge)
+					end
+					-- 분리된 실제 사지의 움직임 뒤에도 가장 낮은 가시 메시를 지면에 유지한다.
+					local low = math.huge
+					for _, piece in a.visiblePieces do
+						if piece.Parent then
+							local half, cf = piece.Size * 0.5, piece.CFrame
+							low = math.min(low, cf.Position.Y - math.abs(cf.RightVector.Y) * half.X
+								- math.abs(cf.UpVector.Y) * half.Y - math.abs(cf.LookVector.Y) * half.Z)
+						end
+					end
+					if low < math.huge then
+						a.model:PivotTo(a.model:GetPivot() + Vector3.new(0, a.homeFloor + a.groundOffset - low, 0))
 					end
 				end
 			end
