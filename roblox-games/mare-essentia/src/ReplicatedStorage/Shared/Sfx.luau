@@ -64,22 +64,29 @@ local function make(name, parent)
 	-- 각 음원당 최초 실패 한 번만 기록해 모바일 로그 폭증을 막는다.
 	group:SetAttribute("AudioLastRequested", name)
 	if not s.IsLoaded then
+		-- 로드 완료·객체 제거 시 진단 예약을 즉시 해제해 종료된 음원을 붙잡지 않는다.
+		local loadTimeout
 		s.Loaded:Once(function()
+			if loadTimeout then task.cancel(loadTimeout); loadTimeout = nil end
 			if not s.Parent then return end
 			broken[name] = nil
 			group:SetAttribute("AudioLastLoaded", name)
 		end)
-	end
-	task.delay(12, function()
-		if s.Parent and not s.IsLoaded then
-			broken[name] = os.clock() + 20
-			group:SetAttribute("AudioLastFailed", name)
-			if not warned[name] then
-				warned[name] = true
-				warn("[MareAudio] 음원 로드 실패: 권한·게시 Universe·연결 점검:", name, s.SoundId)
+		s.Destroying:Once(function()
+			if loadTimeout then task.cancel(loadTimeout); loadTimeout = nil end
+		end)
+		loadTimeout = task.delay(12, function()
+			loadTimeout = nil
+			if s.Parent and not s.IsLoaded then
+				broken[name] = os.clock() + 20
+				group:SetAttribute("AudioLastFailed", name)
+				if not warned[name] then
+					warned[name] = true
+					warn("[MareAudio] 음원 로드 실패: 권한·게시 Universe·연결 점검:", name, s.SoundId)
+				end
 			end
-		end
-	end)
+		end)
+	end
 	return s
 end
 
@@ -124,9 +131,15 @@ function Sfx.play(name, volume, speed, fallback)
 	-- [지연 로딩 복구] 이전 12초 타이머는 파일이 12초 뒤 도착하기 전에
 	-- 객체를 삭제해 첫 모바일 효과음이 영구히 들리지 않게 했다.
 	-- 최대 34초만 유지하며, 로딩 중에는 같은 효과음 한 개만 상주한다.
-	task.delay(math.max(34, s.TimeLength + 1), function()
+	local cleanupTimeout
+	cleanupTimeout = task.delay(math.max(34, s.TimeLength + 1), function()
+		cleanupTimeout = nil
 		if loadingEffects[name] == s then loadingEffects[name] = nil end
 		if s.Parent then s:Destroy() end
+	end)
+	s.Destroying:Once(function()
+		if cleanupTimeout then task.cancel(cleanupTimeout); cleanupTimeout = nil end
+		if loadingEffects[name] == s then loadingEffects[name] = nil end
 	end)
 end
 
