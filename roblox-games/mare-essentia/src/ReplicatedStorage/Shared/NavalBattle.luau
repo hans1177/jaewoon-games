@@ -2307,6 +2307,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 		local g = Instance.new("ScreenGui")
 		g.Name = "BoardingGui"
+		local cardTimers = {}
 		g.ResetOnSpawn = false
 		g.DisplayOrder = 40
 		g.Parent = player:WaitForChild("PlayerGui")
@@ -2717,17 +2718,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local mine = adviceToken
 			adviceTag.Text = text
 			adviceTag.Visible = true
-			task.delay(seconds or 7, function()
+			cardTimers[task.delay(seconds or 7, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
 				if adviceToken == mine and adviceTag.Parent then adviceTag.Visible = false end
-			end)
+			end)] = true
 		end
 		do
 			local sc = BC.scout(cfg and cfg.seed or 1, { boss = opts.isBoss == true })
-			task.delay(0.6, function()
+			cardTimers[task.delay(0.6, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
 				if adviceTag.Parent then
 					sayAdvice(if opts.cardOnly then string.format("정찰: 상대는 %s · %s 덱. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.weakName, BC.ROW_NAME[sc.counterRow]) else string.format("정찰: 적은 %s · %s · %s. 약한 줄은 %s이니 %s 줄 카드가 유리해요.", sc.faction, sc.style, sc.sea, sc.weakName, BC.ROW_NAME[sc.counterRow]), 9)
 				end
-			end)
+			end)] = true
 		end
 		-- [손패 받침대] 카드 아이콘·터치 확대 기능은 기존 ScrollingFrame에서 처리한다.
 		local handTray = Instance.new("Frame")
@@ -2826,6 +2831,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 		g.Destroying:Connect(function()
 			cardMotionStep:Disconnect()
+			-- [카드배틀 종료] 아직 실행되지 않은 화면·음향 예약만 취소한다.
+			for timer in cardTimers do task.cancel(timer) end
+			table.clear(cardTimers)
+			if scorePulse then scorePulse:Cancel(); scorePulse = nil end
 			for _, moving in cardMotions do moving.stop() end
 			table.clear(cardMotions)
 		end)
@@ -2935,7 +2944,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local delta = to - from
 			local length = delta.Magnitude
 			if length < 4 then return end
-			task.delay(at, function()
+			cardTimers[task.delay(at, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
 				if not bg.Parent then return end
 				local trail = Instance.new("Frame")
 				trail.Size = UDim2.fromOffset(0, 3)
@@ -2951,11 +2962,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				TweenService:Create(trail, TweenInfo.new(0.16), {
 					Size = UDim2.fromOffset(length, 2), BackgroundTransparency = 1,
 				}):Play()
-				task.delay(0.18, function() trail:Destroy() end)
-			end)
+				cardTimers[task.delay(0.18, function()
+					cardTimers[coroutine.running()] = nil
+					if trail.Parent then trail:Destroy() end
+				end)] = true
+			end)] = true
 		end
 		local function effectAt(position, size, caption, tint, delay, style)
-			task.delay(delay, function()
+			cardTimers[task.delay(delay, function()
+				cardTimers[coroutine.running()] = nil
+				if finished or not g.Parent then return end
 				if not g.Parent or not bg.Parent then return end
 				if size.X < 1 or size.Y < 1 then return end
 				local burst = Instance.new("Frame")
@@ -3008,8 +3024,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				TweenService:Create(flash, TweenInfo.new(0.48, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 					Position = UDim2.fromOffset(position.X, captionY - 17), BackgroundTransparency = 1, TextTransparency = 1,
 				}):Play()
-				task.delay(0.5, function() flash:Destroy(); burst:Destroy() end)
-			end)
+				cardTimers[task.delay(0.5, function()
+					cardTimers[coroutine.running()] = nil
+					if flash.Parent then flash:Destroy() end
+					if burst.Parent then burst:Destroy() end
+				end)] = true
+			end)] = true
 		end
 		local function cardCenter(widget)
 			if not widget or not widget.Parent or widget.AbsoluteSize.X < 1 then return nil end
@@ -3029,7 +3049,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				scale.Parent = source
 				local unfold = TweenService:Create(scale, TweenInfo.new(0.20, Enum.EasingStyle.Back), { Scale = 1 })
 				unfold:Play()
-				task.delay(0.25, function() scale:Destroy() end)
+				cardTimers[task.delay(0.25, function()
+					cardTimers[coroutine.running()] = nil
+					if scale.Parent then scale:Destroy() end
+				end)] = true
 			end
 			if leader == "elizabeth" and m.armadaShots then
 				for i, shot in m.armadaShots do
@@ -3119,11 +3142,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local caption = "「" .. line[if english then 2 else 1] .. "」"
 				local shownOnTurn = cardLineTurn
 				info.Text = caption
-				task.delay(1.8, function()
+				cardTimers[task.delay(1.8, function()
+					cardTimers[coroutine.running()] = nil
+					if finished or not g.Parent then return end
 					if info.Parent and shownOnTurn == cardLineTurn and info.Text == caption then
 						info.Text = actionText
 					end
-				end)
+				end)] = true
 			end
 			if res then
 				if opts.cardOnly then
@@ -3134,19 +3159,23 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						local currentResult = roundResultTick
 						roundResult.Image = "rbxassetid://" .. tostring(resultArtId)
 						roundResult.Visible = true
-						task.delay(1.6, function()
+						cardTimers[task.delay(1.6, function()
+							cardTimers[coroutine.running()] = nil
+							if finished or not g.Parent then return end
 							if currentResult == roundResultTick and roundResult.Parent then roundResult.Visible = false end
-						end)
+						end)] = true
 					end
 				end
 				info.Text = if english then string.format("Round %d — You %d : Pirates %d %s", res.round, res.me, res.foe,
 					if res.winner == "me" then "(Victory!)" elseif res.winner == "foe" then "(Defeat)" else "(Draw)")
 					else string.format("%d판 결과 — 우리 %d : 해적 %d  %s", res.round, res.me, res.foe,
 						if res.winner == "me" then "(우리가 이겼다!)" elseif res.winner == "foe" then "(해적이 이겼다)" else "(무승부)")
-				task.delay(0.5, function()
+				cardTimers[task.delay(0.5, function()
+					cardTimers[coroutine.running()] = nil
+					if finished or not g.Parent then return end
 					Sfx.play(if res.winner == "me" then "sfx_fanfare" else "sfx_naval_hull_hit", 0.6, 1, "sfx_hit")
 					Sfx.play("sfx_metal_clash", 0.5, 1)
-				end)
+				end)] = true
 			end
 			local before, order = previousBoard, previousOrder
 			for unit, widget in boardCards do
@@ -4143,13 +4172,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if displayedScore and displayedRound == m.round and displayedScore ~= score then
 					if scorePulse then scorePulse:Cancel() end
 					local scoreRound = m.round
-					task.delay(0.34, function()
+					cardTimers[task.delay(0.34, function()
+						cardTimers[coroutine.running()] = nil
+						if finished or not g.Parent then return end
 						if not g.Parent or battleScore.Text ~= score or m.round ~= scoreRound then return end
 						if scorePulse then scorePulse:Cancel() end
 						battleScore.TextColor3 = CardTheme.confirm
 						scorePulse = TweenService:Create(battleScore, TweenInfo.new(0.45), { TextColor3 = ink })
 						scorePulse:Play()
-					end)
+					end)] = true
 				end
 				displayedScore, displayedRound = score, m.round
 				battleTurn.Text = if m.over then t("종료", "Over") elseif m.turn == "me" then t("내 차례", "Your turn") else t("상대 차례", "Enemy turn")
@@ -4737,8 +4768,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					else t("승부가 나지 않았다.", "The battle ended in a draw.")
 			end
 			task.wait(1.8)
+			if finished or not g.Parent then return end
 			TweenService:Create(bg, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play()
 			task.wait(0.5)
+			if finished or not g.Parent then return end
 			g:Destroy()
 			boardingOn = false
 			onEnd(m, actions)
