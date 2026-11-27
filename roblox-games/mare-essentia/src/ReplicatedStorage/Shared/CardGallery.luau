@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: CardGallery.luau
 -- 내 카드 갤러리: 퀸트식 카드 타일 격자 + 큰 카드 보기. (표시만 다룬다 — 덱 규칙·저장은 CardBook/서버가 그대로 맡는다)
 -- 타일: 그림·이름·점수 동그라미·보유 수·동은금 테두리. 금 카드는 은은히 반짝이고, 큰 카드 그림은 천천히 움직인다.
 local TweenService = game:GetService("TweenService")
@@ -480,7 +481,12 @@ function Gallery.build(parent, ctx, order)
 							shine.Rotation = 25
 							shine.Offset = Vector2.new(-1, 0)
 							shine.Parent = img
-							TweenService:Create(shine, TweenInfo.new(2.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false, 1.2), { Offset = Vector2.new(1, 0) }):Play()
+							local shineTween = TweenService:Create(shine, TweenInfo.new(2.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false, 1.2), { Offset = Vector2.new(1, 0) })
+							tile.Destroying:Once(function()
+								shineTween:Cancel()
+								shineTween:Destroy()
+							end)
+							shineTween:Play()
 						end
 					end
 					tile.Activated:Connect(function() Sfx.play("sfx_ui_select", 0.5, 1, "sfx_click") showDetail(ctx, id) end)
