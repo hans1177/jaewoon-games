@@ -4393,7 +4393,7 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(model,/local deadline = loadStarted \+ 30/);
   assert.match(model,/startupTotal - priorityPending, startupTotal, os\.clock\(\) - loadStarted/);
   assert.match(model,/loaded, #queue, failed, os\.clock\(\) - loadStarted/);
-  assert.match(model,/cursor \+= 1\s+if not item\.startup then\s+while priorityPending > 0 and os\.clock\(\) < initialPriorityDeadline do\s+task\.wait\(0\.1\)\s+end\s+end\s+local good, container = pcall\(InsertService\.LoadAsset, InsertService, item\.id\)/);
+  assert.match(model,/while priorityPending > 0 and cursor <= #queue and not queue\[cursor\]\.startup\s+and os\.clock\(\) < initialPriorityDeadline do\s+task\.wait\(0\.1\)\s+end\s+if cursor > #queue then break end\s+local item = queue\[cursor\]\s+cursor \+= 1\s+local good, container = pcall\(InsertService\.LoadAsset, InsertService, item\.id\)/);
   assert.match(model,/if pending == 0 then\s+ReplicatedStorage:SetAttribute\("MareAssetsSettled", true\)/);
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   assert.match(client,/if not H\.assetWaitDone then/);
