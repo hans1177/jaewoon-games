@@ -4513,6 +4513,12 @@ test('Mare naval camera reuses interpolation state and fleet health only changes
   for(const token of ["local v = 1 - (1 - meHp) * mc.share","local v = 1 - (1 - foeHp) * fc.share","local size = UDim2.fromScale(math.clamp(v, 0, 1), 1)","if mc.c.fill.Size ~= size then mc.c.fill.Size = size end","if fc.c.fill.Size ~= size then fc.c.fill.Size = size end","if mc.c.fill.BackgroundColor3 ~= color then mc.c.fill.BackgroundColor3 = color end","FX.cam.pos = FX.cam.pos:Lerp(camPos, a)","FX.cam.focus = FX.cam.focus:Lerp(focus, a)","FX.cam = { pos = camPos, focus = focus }","local a = 1 - math.exp(-dt * (if cardBusy then 6 else 2.6))"]) assert.ok(naval.includes(token),token);
   assert.ok(naval.includes('local closePos = ORIGIN + mid + perp * (if MOBILE_VFX then 69 else 58)'));
   assert.doesNotMatch(naval,/FX\.cam = if FX\.cam then/);
+  const camera=naval.slice(naval.indexOf('-- [접현 시네마] 포격 중에는'),naval.indexOf('-- 일정 시간 안에 끝나지 않으면 자동으로 마무리한다'));
+  for(const token of ['local cameraFov = (if opts.cardOnly then (if MOBILE_VFX then 73 else 75) else (if MOBILE_VFX then 69 else 71)) - kick * 0.6 + math.min(shake, 2.5) * 2 + (me.speed / myTop) * 5 + killZoom - FX.boardZoom * (17 + math.clamp(me.fx.stage or 2, 1, 6) * 0.6)','cameraFov = 66 - (if showingSinking then 7 else 3) * math.clamp((now - endAt) / 1.5, 0, 1)','if cam.FieldOfView ~= cameraFov then cam.FieldOfView = cameraFov end','local cameraFrame = CFrame.lookAt(FX.cam.pos + Vector3.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0), FX.cam.focus)','if cam.CFrame ~= cameraFrame then cam.CFrame = cameraFrame end','shake = math.max(0, shake - 3.6 * dt)','kick *= 0.86 ^ (dt * 60)','FX.boardZoom += ((if boardingView then 1 else 0) - FX.boardZoom) * (1 - math.exp(-dt * 4.2))']) assert.ok(camera.includes(token),token);
+  assert.equal(camera.split('cam.FieldOfView = ').length-1,1);
+  assert.equal(camera.split('cam.CFrame = ').length-1,1);
+  assert.equal(camera.split('math.random()').length-1,2);
+  assert.ok(camera.indexOf('cameraFov = 66 -') < camera.indexOf('if cam.FieldOfView ~= cameraFov'));
 });
 
 test('Mare actor motion reuses sample options without changing role or state selection',()=>{
