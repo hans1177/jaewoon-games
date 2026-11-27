@@ -18,6 +18,11 @@ dynamic_prefix = re.compile(r'\b(?:AssetIds|ids)\s*\[\s*["\']((?:%s)/[\w.-]*)["\
 # 기존 배치 함수의 인수도 정적 증거로 분류한다. 임의 배치 또는 실행 성공으로 승격하지 않는다.
 prop_reference = re.compile(r'\bprop\(\s*"(%s)",\s*"([\w.-]+)"\s*,' % "|".join(map(re.escape, kinds)))
 stack_reference = re.compile(r'\bstack\(\s*"(%s)",\s*\{([^{}]+)\}\s*,' % "|".join(map(re.escape, kinds)))
+# PortScene의 기존 제목 아이콘 표 및 조건식의 실제 모델 선택 후보만 추적한다.
+title_icon_table = re.compile(r'\blocal\s+TITLE_ICONS\s*=\s*\{(.*?)\n\}', re.S)
+title_icon_row = re.compile(r'\{\s*"[^"\n]+"\s*,\s*"(%s)"\s*,\s*"([\w.-]+)"\s*\}' % "|".join(map(re.escape, kinds)))
+conditional_model = re.compile(r'\bimportedModel\([^,\n]+,\s*"(%s)"\s*,\s*if\b([^,]+)' % "|".join(map(re.escape, kinds)))
+branch_name = re.compile(r'\b(?:then|else)\s*"([\w.-]+)"')
 literal_mentions, dynamic_prefixes = set(), set()
 used, missing = set(), []
 for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
@@ -32,6 +37,12 @@ for f in glob.glob(os.path.join(root, "src/**/*.luau"), recursive=True):
             literal_mentions.update(key for k, n in prop_reference.findall(source)
                                     if (key := f"{k}/{n}") in reg)
         if os.path.basename(f) == "PortScene.luau":
+            for icons in title_icon_table.findall(source):
+                literal_mentions.update(key for k, n in title_icon_row.findall(icons)
+                                        if (key := f"{k}/{n}") in reg)
+            for kind, choices in conditional_model.findall(source):
+                literal_mentions.update(key for n in branch_name.findall(choices)
+                                        if (key := f"{kind}/{n}") in reg)
             for kind, parts in stack_reference.findall(source):
                 if not re.fullmatch(r'\s*"[\w.-]+"(?:\s*,\s*"[\w.-]+")*\s*,?\s*', parts):
                     continue
