@@ -376952,11 +376952,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_84efc8b1c8a0d8aebbb1299d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15629",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "5b4f5ddd727b929129c331917471b92a52dea238",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15629,
+        "baseBranch": "main",
+        "headBranch": "mare-building-material",
+        "baseSha": "5b4f5ddd727b929129c331917471b92a52dea238",
+        "headSha": "8a97ee2e22d5db1070de4e270591062478e1ad7b",
+        "mergeCommitSha": "2b960240785ad1fd06ac21907872b31dcb2ce6df",
+        "mergedAt": "2026-11-27T19:37:23Z",
+        "authorLogin": "hans1177",
+        "titleHash": "491bbd66cdd5732c06907dcfa39e587a50d4f795616a8c70fe2adb661d2ba42c",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-building-material",
+        "candidateSha": "8a97ee2e22d5db1070de4e270591062478e1ad7b"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 362,
+        "deletedLineCount": 193,
+        "changedFiles": [
+          ".github/workflows/devloop-studio.yml",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortCultures.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/tests/cultures.test.luau",
+          "roblox-games/mare-essentia/tests/smoke_prelude.luau"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/devloop-studio.yml",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-port-identity.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortCultures.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/tests/cultures.test.luau",
+          "roblox-games/mare-essentia/tests/smoke_prelude.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15629",
+        "merge-commit:2b960240785ad1fd06ac21907872b31dcb2ce6df",
+        "base-main:5b4f5ddd727b929129c331917471b92a52dea238"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2980
+    "total": 2981
   }
 }
