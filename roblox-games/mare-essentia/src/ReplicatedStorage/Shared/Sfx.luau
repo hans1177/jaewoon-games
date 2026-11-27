@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: Sfx.luau
 -- 음악·효과음 재생기 (클라이언트). ID는 AudioIds.luau(업로드 워크플로가 기록)에서 읽는다. ID가 없으면 조용히 건너뛴다.
 
 local SoundService = game:GetService("SoundService")
@@ -45,6 +46,7 @@ local musicOn, sfxOn = true, true
 local musicLevel, sfxLevel = 1.5, 1.5
 local currentMusic, currentName = nil, nil
 local ambient = {}
+local ambientRetries = {} -- 환경 전환 시 이전 로딩 복구 예약을 즉시 해제한다.
 local ambientKey = nil -- 같은 항구 화면을 다시 그릴 때 환경음을 중복 재생하지 않는다
 local lastPlayed = {}
 local loadingEffects = {} -- [모바일 지연 로딩] 같은 효과음 미로딩 객체는 한 개만 유지한다.
@@ -503,6 +505,8 @@ function Sfx.ambient(names, gain)
 		end
 		if audible then return end
 	end
+	for retry in ambientRetries do task.cancel(retry) end
+	table.clear(ambientRetries)
 	ambientKey = key
 	for _, s in ambient do
 		local tw = TweenService:Create(s, TweenInfo.new(1.2), { Volume = 0 })
@@ -527,22 +531,24 @@ function Sfx.ambient(names, gain)
 			TweenService:Create(s, TweenInfo.new(1.5), { Volume = target }):Play()
 				table.insert(ambient, s)
 			-- [환경음 자동 복구] 로딩 실패 뒤에도 같은 날씨가 이어지면 22초마다 복구를 재시도한다.
-			task.delay(22, function()
+			ambientRetries[task.delay(22, function()
+				ambientRetries[coroutine.running()] = nil
 				if ambientKey == key and s.Parent and not s.IsLoaded then
 					ambientKey = nil
 					Sfx.ambient(names, gain)
 				end
-			end)
+			end)] = true
 		end
 	end
 	-- [모든 환경음 로딩 실패] 초기 20초 유예에도 날씨가 그대로라면 다음 호출이 없어 영구 무음이 되던 문제를 복구한다.
 	if names and #names > 0 and #ambient == 0 then
-		task.delay(21, function()
+		ambientRetries[task.delay(21, function()
+			ambientRetries[coroutine.running()] = nil
 			if ambientKey == key and #ambient == 0 then
 				ambientKey = nil
 				Sfx.ambient(names, gain)
 			end
-		end)
+		end)] = true
 	end
 end
 
