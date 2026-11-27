@@ -10167,7 +10167,9 @@ function FieldScene.start(opts)
 				local rot = pv.Rotation
 				if facing then
 					local targetRot = CFrame.lookAt(Vector3.zero, facing).Rotation
-					rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
+					if targetRot ~= rot then
+						rot = rot:Lerp(targetRot, 1 - math.exp(-(if charging then 12 elseif e.ac.state == "windup" then 10 else 7) * enemyDt))
+					end
 				end
 				-- [경사 접지] 적군도 실제 구릉 표면을 따른다. 높이 검사는 모바일에서 저빈도 갱신.
 				local nextPos = pv.Position + delta
@@ -10180,7 +10182,12 @@ function FieldScene.start(opts)
 					nextPos = Vector3.new(nextPos.X,
 						math.clamp(e.groundY, nextPos.Y - 25 * enemyDt, nextPos.Y + 25 * enemyDt), nextPos.Z)
 				end
-				e.model:PivotTo(CFrame.new(nextPos) * rot)
+				-- [적 모델 이동 최적화] 완전히 동일한 위치·회전이면 전체 리그의 변환 재설정을 생략한다.
+				-- 실제 미세 이동, 방향 전환, 접지 보정, 공격·넉백은 기존대로 반영한다.
+				local nextPivot = CFrame.new(nextPos) * rot
+				if nextPivot ~= pv then
+					e.model:PivotTo(nextPivot)
+				end
 			end
 			local traveled = (e.root.Position - beforeMove).Magnitude
 			if traveled > 0.02 then

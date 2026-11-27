@@ -4424,7 +4424,12 @@ test('Mare limits only distant idle and chase joint sampling under frame pressur
   const loop=field.slice(field.indexOf('[적 R15 관절·전술 통합 루프]'),field.indexOf('[비전투 파티]'));
   const visual=loop.slice(loop.indexOf('local constrainedVisual'),loop.indexOf('FM.actor(e.fm'));
   assert.ok(loop.indexOf('AC.stepEnemy(e.ac, enemyDt')<loop.indexOf('local constrainedVisual'));
-  assert.ok(loop.indexOf('e.model:PivotTo(CFrame.new(nextPos) * rot)')<loop.indexOf('local constrainedVisual'));
+  const moveWrite=loop.indexOf('e.model:PivotTo(nextPivot)');
+  assert.ok(moveWrite>=0 && moveWrite<loop.indexOf('local constrainedVisual'));
+  assert.match(loop,/if targetRot ~= rot then\s+rot = rot:Lerp\(/);
+  assert.match(loop,/local nextPivot = CFrame\.new\(nextPos\) \* rot\s+if nextPivot ~= pv then\s+e\.model:PivotTo\(nextPivot\)/);
+  assert.ok(loop.includes('e.model:PivotTo(e.model:GetPivot() + lunge)'));
+  assert.ok(loop.includes('e.model:PivotTo(e.model:GetPivot() + e.kbVel'));
   for(const token of ['not e.boss','e.ac.state == "idle" or e.ac.state == "chase"','e.hurtAt','e.knockUntil','e.riseUntil','e.guardUntil','e.parryUntil','e.dodgeUntil','not farVisual or visualChanged','math.min(0.15','e.visualElapsed = 0']) assert.ok(visual.includes(token),token);
   assert.ok(loop.includes('FM.actor(e.fm, st, ph, visualDt, e.boss'));
   assert.ok(field.includes('if staminaNumber.Text ~= staminaText'));
