@@ -9495,18 +9495,20 @@ function FieldScene.start(opts)
 				end
 			end
 		end
-		staminaFill.Size = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
+		local staminaSize = UDim2.fromScale(math.clamp(pl.stamina / AC.STAMINA_MAX, 0, 1), 1)
+		if staminaFill.Size ~= staminaSize then staminaFill.Size = staminaSize end
 		local staminaText = string.format("기력 %d", math.floor(pl.stamina + 0.5))
 		if staminaNumber.Text ~= staminaText then staminaNumber.Text = staminaText end
 		if magicFill then
 			magicValue = math.min(100, magicValue + math.min(dt, 0.1) * 5)
-			magicFill.Size = UDim2.fromScale(magicValue / 100, 1)
+			local magicSize = UDim2.fromScale(magicValue / 100, 1)
+			if magicFill.Size ~= magicSize then magicFill.Size = magicSize end
 			local magicText = string.format("마력 %d", math.floor(magicValue + 0.5))
 			if magicAmount.Text ~= magicText then magicAmount.Text = magicText end
 		end
+		local style = Weapons.actionDesign(wpn)
 		for key, sb in combatBtns do
 			if key == "heavy" or key == "sweep" then
-				local style = Weapons.actionDesign(wpn)
 				local detailed = if key == "heavy" then style.heavyName else style.sweepName
 				sb.label = if key == "heavy" then style.heavy else style.sweep
 				if sb.btn:GetAttribute("SkillFullName") ~= detailed then sb.btn:SetAttribute("SkillFullName", detailed) end
@@ -9530,14 +9532,17 @@ function FieldScene.start(opts)
 			if shade then
 				local fraction = math.clamp(left / math.max(duration, 0.1), 0, 1)
 				-- [해상·지상 통일] 원화 아이콘이 있으면 원 음영 대신 아이콘 자체만 어두워진다(음영이 아이콘보다 넓어 보이던 문제).
-				shade.Visible = left > 0 and sb.btn:FindFirstChild("FieldButtonIcon") == nil
-				shade.Size = UDim2.fromScale(1, 1)
-				shade.BackgroundTransparency = 0.24 + (1 - fraction) * 0.68
-				local timer = sb.btn:FindFirstChild("FieldCooldownTime")
-				if timer then timer.Visible = false end
-				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
-				if track then track.Visible = false end
 				local icon = sb.btn:FindFirstChild("FieldButtonIcon")
+				local shadeVisible = left > 0 and icon == nil
+				if shade.Visible ~= shadeVisible then shade.Visible = shadeVisible end
+				local shadeSize = UDim2.fromScale(1, 1)
+				if shade.Size ~= shadeSize then shade.Size = shadeSize end
+				local shadeAlpha = 0.24 + (1 - fraction) * 0.68
+				if shade.BackgroundTransparency ~= shadeAlpha then shade.BackgroundTransparency = shadeAlpha end
+				local timer = sb.btn:FindFirstChild("FieldCooldownTime")
+				if timer and timer.Visible then timer.Visible = false end
+				local track = sb.btn:FindFirstChild("FieldCooldownTrack")
+				if track and track.Visible then track.Visible = false end
 				if icon and icon:IsA("ImageLabel") then
 					icon.ImageTransparency = if left > 0 then fraction * 0.42 else 0
                     icon.ImageColor3 = if left > 0 then Color3.fromRGB(208, 190, 160):Lerp(Color3.fromRGB(97, 88, 83), fraction)
