@@ -4619,3 +4619,12 @@ test('Mare naval damage fire reuses per-ship emission values and preserves thres
   for(const token of ['state.next = now + 0.14','local rootFrame = root.CFrame','vent.Position = rootFrame:PointToObjectSpace(origin)','if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3','local severity = math.clamp((0.62 - hp) / 0.62, 0, 1)','local sootRate = math.floor(severity * (if MOBILE_VFX then 10 else (7 + stage * 3)))','local fireRate = if hp < 0.42 then math.floor((0.42 - hp) * (if MOBILE_VFX then 46 else (38 + stage * 9))) else 0','local brightness = if hp < 0.42 then severity * (if MOBILE_VFX then 1.1 else (1.0 + stage * 0.2)) * (0.85 + 0.15 * math.sin(now * 13)) else 0','if vent.soot.Rate ~= sootRate then vent.soot.Rate = sootRate end','if vent.fire.Rate ~= fireRate then vent.fire.Rate = fireRate end','if vent.soot.Enabled ~= sootEnabled then vent.soot.Enabled = sootEnabled end','if vent.fire.Enabled ~= fireEnabled then vent.fire.Enabled = fireEnabled end','if vent.glow.Brightness ~= brightness then vent.glow.Brightness = brightness end']) assert.ok(fire.includes(token),token);
   assert.ok(fire.indexOf('local brightness =') < fire.indexOf('for _, vent in state.vents do'));
 });
+
+test('Mare naval skill icons compose readiness glow once and skip identical writes',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const start=naval.indexOf('local art = b:FindFirstChild("NavalButtonArtwork")',naval.indexOf('-- [전투 HUD] 실제 표시'));
+  const skill=naval.slice(start,naval.indexOf('-- 배 카드:',start));
+  assert.equal(skill.split('b:FindFirstChild("NavalButtonArtwork")').length-1,1);
+  assert.equal(skill.split('art.ImageColor3 =').length-1,1);
+  for(const token of ['if shade.Visible ~= visible then shade.Visible = visible end','if shade.BackgroundTransparency ~= transparency then shade.BackgroundTransparency = transparency end','if art.ImageTransparency ~= transparency then art.ImageTransparency = transparency end','if art.ImageColor3 ~= color then art.ImageColor3 = color end','if pulse > 0 then color = color:Lerp(Color3.fromRGB(255, 232, 143), pulse * 0.9) end','if rim.Color ~= color then rim.Color = color end','if rim.Thickness ~= thickness then rim.Thickness = thickness end','if rim.Transparency ~= transparency then rim.Transparency = transparency end','b:SetAttribute("NavalReadyPulseUntil", now + 0.55)','TweenInfo.new(0.47','TweenInfo.new(0.42','local interactable = ready and phase == "duel" and not opts.cardOnly and not opts.card']) assert.ok(skill.includes(token),token);
+});
