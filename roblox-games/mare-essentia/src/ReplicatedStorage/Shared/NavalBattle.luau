@@ -5337,7 +5337,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 	end
 	end
 	-- [해역·노선별 항적] 대양 범선은 길고 얇은 흰 줄, 노선은 양측 거품, 미지 선박은 청록빛 잔류 파문.
-	function FX.wake(sh, key, now)
+	function FX.wake(sh, key, now, waveBoost)
 		-- [항적·뱃머리 파도] 선박 이동 방향에 맞춰 선수 좌우 물보라와 V자형 포말을 생성한다.
 		-- 새로운 3D 물/기본 도형 없이 승인된 선박 모델과 기존 spark 입자만 사용한다.
 		local last = FX.wakeAt[key]
@@ -5357,8 +5357,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		local right = Vector3.new(-heading.Z, 0, heading.X)
 		local rowing = profile.rowed == true
-		local seaMood = folder:GetAttribute("NavalWeatherMode") or "clear"
-		local waveBoost = if seaMood == "storm" then 1.45 elseif seaMood == "rain" then 1.18 else 1
 		local drive = math.clamp((sh.speed or 0) / 18, 0.34, 1.75)
 		local stern = ORIGIN + sh.pos - heading * sh.length * 0.49 + Vector3.new(0, 0.27, 0)
 		-- [선미] 흰 선형 포말과 조금 굵은 물방울을 겹쳐 물살이 끊기지 않도록 한다.
@@ -5371,8 +5369,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		})
 		-- [선수] 좌현·우현 물보라가 배 앞에서 갈라진다. 모바일은 반씩 번갈아 표시한다.
 		local bow = ORIGIN + sh.pos + heading * sh.length * 0.43 + Vector3.new(0, 0.33, 0)
+		local evenFrame = last.frame % 2 == 0
+		local spraySide = if evenFrame then 1 else -1
 		for side = -1, 1, 2 do
-			if not MOBILE_VFX or side == (if last.frame % 2 == 0 then 1 else -1) then
+			if not MOBILE_VFX or side == spraySide then
 				local sprayDir = right * side * 0.72 - heading * 0.35 + Vector3.new(0, 0.7, 0)
 				FX.burst(bow + right * side * sh.length * 0.075, sprayDir, {
 					{ tex = "spark", c0 = Color3.fromRGB(248, 255, 255), c1 = theme.foam,
@@ -5385,7 +5385,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		end
 		-- [노선] 실제 노로 젓는 함선은 양쪽에서 짧은 흰 물줄기를 추가한다.
-		if rowing and not MOBILE_VFX and last.frame % 2 == 0 then
+		if rowing and not MOBILE_VFX and evenFrame then
 			for side = -1, 1, 2 do
 				local oar = ORIGIN + sh.pos - heading * sh.length * 0.15
 					+ right * side * sh.length * 0.22 + Vector3.new(0, 0.30, 0)
@@ -5957,7 +5957,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			sh.wakeNext = t + (if MOBILE_VFX then 0.20 else 0.11)
 			local heading = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 			local stern = ORIGIN + sh.pos - heading * sh.length * 0.40 + Vector3.new(0, 0.3, 0)
-			sh.wake.WorldCFrame = CFrame.lookAt(stern, stern - heading)
+			local wakeFrame = CFrame.lookAt(stern, stern - heading)
+			if sh.wake.WorldCFrame ~= wakeFrame then sh.wake.WorldCFrame = wakeFrame end
 			-- [항적 중복 갱신] 속도와 침몰 상태가 같으면 입자 속성을 다시 쓰지 않는다.
 			local enabled = (sh.speed or 0) > 2 and not sink
 			local rate = math.clamp((sh.speed or 0) * (if MOBILE_VFX then 0.42 else 0.75), 1.5, if MOBILE_VFX then 8 else 16)
@@ -6947,15 +6948,21 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 			end
 		end
-		FX.wake(me, "me", now)
-		FX.wake(foe, "foe", now)
-		for i, e in escorts do
-			FX.wake(e, "e" .. i, now)
-		end
-		-- [아군 함대 포말] 기함과 동일한 물살/선수 물보라를 호출하고 모바일은 교대로 경량화한다.
-		for i, al in allies do
-			if not MOBILE_VFX or (i + math.floor(now * 3)) % 2 == 0 then
-				FX.wake(al, "a" .. i, now)
+		do
+			-- [함대 항적] 같은 프레임의 날씨와 모바일 교대 위상을 모든 함선에 공유한다.
+			local wakeMood = folder:GetAttribute("NavalWeatherMode") or "clear"
+			local waveBoost = if wakeMood == "storm" then 1.45 elseif wakeMood == "rain" then 1.18 else 1
+			FX.wake(me, "me", now, waveBoost)
+			FX.wake(foe, "foe", now, waveBoost)
+			for i, e in escorts do
+				FX.wake(e, "e" .. i, now, waveBoost)
+			end
+			-- [아군 함대 포말] 기함과 동일한 물살/선수 물보라를 호출하고 모바일은 교대로 경량화한다.
+			local wakePhase = math.floor(now * 3)
+			for i, al in allies do
+				if not MOBILE_VFX or (i + wakePhase) % 2 == 0 then
+					FX.wake(al, "a" .. i, now, waveBoost)
+				end
 			end
 		end
 		FX.damage(me, "me", now)
