@@ -6902,8 +6902,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local radar = rangeRing.radar
 				local center = ORIGIN + me.pos + Vector3.new(0, 0.3, 0)
 				local rim = center + Vector3.new(math.cos(scanAngle), 0, math.sin(scanAngle)) * cannon.range
-				radar.origin.Position = radar.hull.CFrame:PointToObjectSpace(center)
-				radar.edge.Position = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
+				local originPosition = radar.hull.CFrame:PointToObjectSpace(center)
+				local edgePosition = rangeRing.segments[1].CFrame:PointToObjectSpace(rim)
+				if radar.origin.Position ~= originPosition then radar.origin.Position = originPosition end
+				if radar.edge.Position ~= edgePosition then radar.edge.Position = edgePosition end
 				local enabled = not opts.cardOnly and not broadsideReady and rangeRing.fade > 0.08 and phase == "duel"
 				if radar.beam.Enabled ~= enabled then radar.beam.Enabled = enabled end
 				local ready = inRange and aligned
@@ -6929,12 +6931,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local aim = phase == "duel" and not opts.card and dd < cannon.range * 1.25
 			local a0 = ORIGIN + me.pos + Vector3.new(0, 8, 0)
 			local a1 = ORIGIN + foe.pos + Vector3.new(0, 6, 0)
+			-- [탄도 표시] 같은 프레임의 색상·투명도·간격을 모든 점에서 공유한다.
+			local alpha = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
+			local tint = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
+			local dotDivisor = #trajDots + 1
 			for i, dot in trajDots do
 				if aim then
-					local u = i / (#trajDots + 1)
-					dot.CFrame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
-					local alpha = if not aligned then 0.88 elseif inRange then 0.3 else 0.78
-					local tint = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)
+					local u = i / dotDivisor
+					local frame = CFrame.new(a0:Lerp(a1, u) + Vector3.new(0, math.sin(u * math.pi) * cannon.arc, 0))
+					if dot.CFrame ~= frame then dot.CFrame = frame end
 					if dot.Transparency ~= alpha then dot.Transparency = alpha end
 					if dot.Color ~= tint then dot.Color = tint end
 				elseif dot.Transparency ~= 1 then
@@ -7004,9 +7009,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				local ky = if math.abs(dir.Y) > 1e-3 then (vp.Y / 2 - 120) / math.abs(dir.Y) else math.huge
 				local pt = c0 + dir * math.min(kx, ky)
 				local inset = game:GetService("GuiService"):GetGuiInset()
-				foeArrow.Position = UDim2.fromOffset(pt.X - inset.X, pt.Y - inset.Y)
-				foeArrow.Rotation = math.deg(math.atan2(dir.Y, dir.X))
-				foeArrowTag.Position = UDim2.fromOffset(pt.X - inset.X - dir.X * 34, pt.Y - inset.Y - dir.Y * 28)
+				local arrowPosition = UDim2.fromOffset(pt.X - inset.X, pt.Y - inset.Y)
+				local arrowRotation = math.deg(math.atan2(dir.Y, dir.X))
+				local tagPosition = UDim2.fromOffset(pt.X - inset.X - dir.X * 34, pt.Y - inset.Y - dir.Y * 28)
+				if foeArrow.Position ~= arrowPosition then foeArrow.Position = arrowPosition end
+				if foeArrow.Rotation ~= arrowRotation then foeArrow.Rotation = arrowRotation end
+				if foeArrowTag.Position ~= tagPosition then foeArrowTag.Position = tagPosition end
 				local arrowText = string.format("적선 %dm", math.floor(dv))
 				if foeArrowTag.Text ~= arrowText then foeArrowTag.Text = arrowText end
 			end
