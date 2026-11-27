@@ -762,9 +762,13 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			if size.Z > size.X then m:PivotTo(m:GetPivot() * CFrame.Angles(0, math.pi / 2, 0)) end
 		end
 		local center, size = m:GetBoundingBox()
-		-- [동물 발바닥 접지] 투명한 리그 루트의 경계는 제외하고 실제 보이는 메시의 최저점에 지면을 맞춘다.
+		-- [동물 발바닥·건축 기초 접지] 투명한 루트/보조 경계가 아니라 보이는 부품의 회전된 최저점을 사용한다.
+		-- 기존 필지의 지정 높이만 맞춘다. 완성형 주택의 내부 층고, 처마, 충돌 및 원래 배치 XZ는 유지한다.
+		local groundArchitecture = kind == "Town" and (
+			(solid == true and (asset:find("house", 1, true) ~= nil or asset == "eastasia-base"))
+			or asset == "eastasia-stairs" or asset == "eastasia-column-base")
 		local visibleBottomY = math.huge
-		if isAnimal then
+		if isAnimal or groundArchitecture then
 			for _, piece in m:GetDescendants() do
 				if piece:IsA("BasePart") and piece.Transparency < 0.98 then
 					local half = piece.Size * 0.5
@@ -1336,7 +1340,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if roof then
 				roof.Name = "HarborRoofDetail"
 				uniformMaterial(roof, style, "roof")
-				table.insert(facadeDetails, { model = roof, top = true })
+				table.insert(facadeDetails, { model = roof, top = true, multi = true })
 			end
 		end
 		-- [입면 정밀 배치] 기존 승인 창호·현관만 실제 주택 표면에 맞춘다.
@@ -1377,7 +1381,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if chim then
 				chim.Name = "HarborChimney"
 				uniformMaterial(chim, style)
-				table.insert(facadeDetails, { model = chim, top = true })
+				table.insert(facadeDetails, { model = chim, top = true, multi = true })
 			end
 		end
 		if architecture.balcony and houseTier >= 3 and not vacant and seed % 3 == 0 and (floors or 1) >= 2 then
@@ -1385,11 +1389,11 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 			if bal then
 				bal.Name = "HarborBalcony"
 				uniformMaterial(bal, style, "trim")
-				table.insert(facadeDetails, { model = bal })
+				table.insert(facadeDetails, { model = bal, multi = true })
 			end
 		end
-		-- [입면·지붕 정밀 배치] 모델이 workspace에 연결되기 전에는 Raycast가 불가능하다.
-		-- 실제 보이는 부품의 회전된 경계 상자를 검사하여 접점을 계산한다. 메시 표면 자체는 Studio에서 확인한다.
+		-- [입면·지붕 정밀 배치] 생성 중 실제 부품의 회전 경계로 접점을 추정한다.
+		-- 지붕·굴뚝은 바닥 중앙/양축, 발코니는 벽 접합 좌우를 검사한다. 메시 표면은 Studio에서 검증한다.
 		if #facadeDetails > 0 then
 			local houseCF, houseSize = mesh:GetBoundingBox()
 			local reach = houseSize.Magnitude + 2
@@ -1403,38 +1407,70 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 				local detail = item.model
 				local detailCF, detailSize = detail:GetBoundingBox()
 				local direction = if item.top then Vector3.new(0, -1, 0) else Vector3.new(0, 0, -front)
-				local origin = if item.top
+				local centerOrigin = if item.top
 					then Vector3.new(detailCF.Position.X, houseCF.Position.Y + reach, detailCF.Position.Z)
 					else Vector3.new(detailCF.Position.X, detailCF.Position.Y, houseCF.Position.Z + front * reach)
-				local nearest = math.huge
-				for _, piece in visibleParts do
-					-- 회전된 부품의 로컬 좌표계에서 3축 구간 교차를 계산한다.
-					local rayOrigin = piece.CFrame:PointToObjectSpace(origin)
-					local rayDir = piece.CFrame:VectorToObjectSpace(direction)
-					local half = piece.Size * 0.5
-					local enter, exit = 0, reach * 2
-					for _, axis in { "X", "Y", "Z" } do
-						local o, v, h = rayOrigin[axis], rayDir[axis], half[axis]
-						if math.abs(v) < 0.000001 then
-							if math.abs(o) > h then enter = math.huge; break end
-						else
-							local lo, hi = (-h - o) / v, (h - o) / v
-							enter = math.max(enter, math.min(lo, hi))
-							exit = math.min(exit, math.max(lo, hi))
-							if enter > exit then break end
-						end
+				local halfDepth = (math.abs(detailCF.RightVector:Dot(direction)) * detailSize.X
+					+ math.abs(detailCF.UpVector:Dot(direction)) * detailSize.Y
+					+ math.abs(detailCF.LookVector:Dot(direction)) * detailSize.Z) * 0.5
+				local origins = { centerOrigin }
+				if item.multi then
+					local spanX = (math.abs(detailCF.RightVector.X) * detailSize.X
+						+ math.abs(detailCF.UpVector.X) * detailSize.Y
+						+ math.abs(detailCF.LookVector.X) * detailSize.Z) * 0.30
+					table.insert(origins, centerOrigin + Vector3.new(-spanX, 0, 0))
+					table.insert(origins, centerOrigin + Vector3.new(spanX, 0, 0))
+					if item.top then
+						local spanZ = (math.abs(detailCF.RightVector.Z) * detailSize.X
+							+ math.abs(detailCF.UpVector.Z) * detailSize.Y
+							+ math.abs(detailCF.LookVector.Z) * detailSize.Z) * 0.30
+						table.insert(origins, centerOrigin + Vector3.new(0, 0, -spanZ))
+						table.insert(origins, centerOrigin + Vector3.new(0, 0, spanZ))
 					end
-					if enter <= exit then nearest = math.min(nearest, enter) end
 				end
-				if nearest < math.huge then
-					local halfDepth = (math.abs(detailCF.RightVector:Dot(direction)) * detailSize.X
-						+ math.abs(detailCF.UpVector:Dot(direction)) * detailSize.Y
-						+ math.abs(detailCF.LookVector:Dot(direction)) * detailSize.Z) * 0.5
-					local contact = origin + direction * nearest
+				local centerDistance, farthest, closest, supported = math.huge, 0, math.huge, 0
+				for sample, origin in origins do
+					local nearest = math.huge
+					for _, piece in visibleParts do
+						local rayOrigin = piece.CFrame:PointToObjectSpace(origin)
+						local rayDir = piece.CFrame:VectorToObjectSpace(direction)
+						local half = piece.Size * 0.5
+						local enter, exit = 0, reach * 2
+						for _, axis in { "X", "Y", "Z" } do
+							local o, v, h = rayOrigin[axis], rayDir[axis], half[axis]
+							if math.abs(v) < 0.000001 then
+								if math.abs(o) > h then enter = math.huge; break end
+							else
+								local lo, hi = (-h - o) / v, (h - o) / v
+								enter = math.max(enter, math.min(lo, hi))
+								exit = math.min(exit, math.max(lo, hi))
+								if enter > exit then break end
+							end
+						end
+						if enter <= exit then nearest = math.min(nearest, enter) end
+					end
+					if sample == 1 then centerDistance = nearest end
+					if nearest < math.huge then
+						supported += 1
+						closest = math.min(closest, nearest)
+						farthest = math.max(farthest, nearest)
+					end
+				end
+				-- 충분한 지지가 있는 평면만 깊은 접점을 사용한다. 경사가 큰 곳의 과도한 매몰은 금지.
+				local contactDistance = centerDistance
+				local maxEmbed = math.min(0.35, halfDepth * 0.30)
+				if item.multi and supported >= 3 and farthest - closest <= maxEmbed then
+					contactDistance = farthest
+				end
+				if contactDistance < math.huge then
+					local contact = centerOrigin + direction * contactDistance
 					local target = contact - direction * math.max(0, halfDepth - 0.08)
+					-- 원래 회전을 유지하고 접합축 방향으로만 이동한다.
 					detail:PivotTo(CFrame.new(target - detailCF.Position) * detail:GetPivot())
+				elseif item.multi and supported == 0 and #visibleParts > 0 then
+					-- 다중 검사에서 본체 지지면이 전혀 없는 신규 비충돌 장식만 제거한다.
+					detail:Destroy()
 				end
-				-- 경계 교차가 없으면 기존 배치를 유지한다. 정상 장식을 임의로 삭제하지 않는다.
 			end
 		end
 		-- [유럽·지중해·남아시아] 동일한 기본 주택 메시에 지역별 골조/박공/회랑/현관을 얹는다.
@@ -4097,8 +4133,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							end
 						end
 						local bounds, dimensions = staged:GetBoundingBox()
-						local measuredHalfX = math.abs(bounds.Position.X - pos.X) + dimensions.X * 0.5 + 2.5
-						local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + dimensions.Z * 0.5 + 2.5
+						-- 회전된 BoundingBox의 각 축을 월드 도로축에 투영한다. 90도 회전/비대칭 처마까지 포함한다.
+						local worldHalfX = (math.abs(bounds.RightVector.X) * dimensions.X
+							+ math.abs(bounds.UpVector.X) * dimensions.Y
+							+ math.abs(bounds.LookVector.X) * dimensions.Z) * 0.5
+						local worldHalfZ = (math.abs(bounds.RightVector.Z) * dimensions.X
+							+ math.abs(bounds.UpVector.Z) * dimensions.Y
+							+ math.abs(bounds.LookVector.Z) * dimensions.Z) * 0.5
+						local measuredHalfX = math.abs(bounds.Position.X - pos.X) + worldHalfX + 2.5
+						local measuredHalfZ = math.abs(bounds.Position.Z - pos.Z) + worldHalfZ + 2.5
 						-- 이웃 필지는 기존 여유 폭을 보존하지만, 도로는 실제 처마 외곽으로만 판정한다.
 						-- 필지 예약 반경을 도로 판정에 중복 적용하면 모든 주택이 사라질 수 있다.
 						local actualHalfX = math.max(half, measuredHalfX)
@@ -4115,8 +4158,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						for _, direction in homeShifts do
 							local shift = Vector3.new(direction.X, 0, direction.Z * side)
 							local at = pos + shift
-							local clearRoad = math.abs(math.abs(at.Z) - laneNear) > measuredHalfZ + laneWidth * 0.5 + 1.5
-								and math.abs(math.abs(at.Z) - laneFar) > measuredHalfZ + laneWidth * 0.5 + 1.5
+							local signedZ = at.Z * side
+							local clearRoad = signedZ - measuredHalfZ > laneNear + laneWidth * 0.5 + 1.5
+								and signedZ + measuredHalfZ < laneFar - laneWidth * 0.5 - 1.5
 							if clearRoad and not onStreet(at.X, measuredHalfX)
 								and not reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
 								chosenShift = shift
@@ -4363,7 +4407,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local rowShift = if villageLayout == "terrace" and p % 2 == 1 then -4
 					elseif villageLayout == "organic" and p % 2 == 1 then 3 else 0
 				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260 + rowShift, side, p, 1)
-				fillRow(side * (laneZ + laneL - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
+				local nextBend = if villageLayout == "organic" then (if (p + 1) % 2 == 0 then -3 else 3)
+					elseif villageLayout == "terrace" then (p + 1) * 2 else 0
+				local nextLaneZ = 152 + laneOffset + (p + 1) * laneL + nextBend
+				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
 			end
 		end
 	end
@@ -4615,23 +4662,33 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local londonMarketDay = info.portId == "london" and type(info.day) == "number"
 					and require(script.Parent:WaitForChild("Harbor")).festivalAt("europe", info.day) ~= nil
 				local londonExtraStalls = 0
+				-- [시장 보행축] 중앙 통로는 비우고 기본 가판대와 장날 추가 가판대 사이도 띄운다.
+				-- 시장의 예약 필지(반폭 41/43) 안에서만 기존 전시물을 옮긴다.
+				local stallRowZ = 11
+				local festivalRowZ = 22
+				local cargoEdgeZ = cz - 33
+				local displayEdgeZ = cz + 33
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10
 					local side = if k % 2 == 0 then -1 else 1
 					local localMarket = info.portId .. "_bld_market_stalls"
 					local fallbackStall = if (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
 					local stallAsset = if lvl >= 2 and k == 1 and AssetIds["Town/" .. localMarket] then localMarket else fallbackStall
-					local originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
+					local originalStall = put("Town", stallAsset, 7, x, cz + side * stallRowZ, false,
 						if side > 0 then face else face + math.pi)
 					if not originalStall and stallAsset == localMarket then
 						stallAsset = fallbackStall
-						originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
+						originalStall = put("Town", stallAsset, 7, x, cz + side * stallRowZ, false,
 							if side > 0 then face else face + math.pi)
 					end
-					if londonMarketDay and originalStall and
-						put("Town", stallAsset, 7, x, cz + side * 19, false,
-							if side > 0 then face else face + math.pi) then
-						londonExtraStalls += 1
+					if originalStall then originalStall.Name = "CityMarketStall" end
+					if londonMarketDay and originalStall then
+						local extra = put("Town", stallAsset, 7, x, cz + side * festivalRowZ, false,
+							if side > 0 then face else face + math.pi)
+						if extra then
+							extra.Name = "CityMarketStall"
+							londonExtraStalls += 1
+						end
 					end
 				end
 				if stalls >= 2 and warehouseBuilt > 0 then
@@ -4640,12 +4697,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					local cartSource = info.portId .. "-wheelbarrow-source"
 					local crateSource = info.portId .. "-wooden-produce-crate-source"
 					if not (RunService:IsStudio() and AssetIds["Town/" .. cartSource]
-						and put("Town", cartSource, 4, cx - 14, cz, false)) then
-						put("Town", "cart", 4, cx - 14, cz, false)
+						and put("Town", cartSource, 4, cx - 14, cargoEdgeZ, false)) then
+						put("Town", "cart", 4, cx - 14, cargoEdgeZ, false)
 					end
 					if not (RunService:IsStudio() and AssetIds["Town/" .. crateSource]
-						and put("Town", crateSource, 2.4, cx + 13, cz, false)) then
-						put("Cargo", "box-open", 2.4, cx + 13, cz, false)
+						and put("Town", crateSource, 2.4, cx + 13, cargoEdgeZ, false)) then
+						put("Cargo", "box-open", 2.4, cx + 13, cargoEdgeZ, false)
 					end
 				end
 				-- [장날] 런던만 같은 승인 가판대를 두 줄로 진열, 다른 항구는 기존 연출을 보존한다.
@@ -4666,7 +4723,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					local mesh = if stalls > 0 then GOOD_MESH[good] else nil
 					if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
 						local item = put(mesh[1], mesh[2], goodSize(good, 2.5),
-							cx - 12 + (i - 1) * 22, cz + 2, false)
+							cx + (i - (#marketGoods + 1) / 2) * 18, displayEdgeZ, false)
 						if item then
 							item.Name = "MarketSpecialtyDisplay_" .. good
 							item:SetAttribute("LocalProduct", good)
@@ -8875,23 +8932,40 @@ function PortScene.build(info, onFacility)
 		table.insert(gulls, { body = body, l = l, r = r, radius = rng:NextNumber(14, 34), height = rng:NextNumber(18, 30), speed = rng:NextNumber(0.25, 0.5), phase = i * 1.1, cx = rng:NextNumber(30, 70), cz = rng:NextNumber(-20, 20) })
 	end
 
-	-- [광장 실제 점유] 배치 전 검사는 기준점(pos)만 보지만, 집 모델은 앞뒤 뒤집기·크기 변주·피벗 차이로
-	-- 몸체 중심이 광장 안으로 들어올 수 있다(마을 검사 44928264116: 리스본 HarborHouse 몸체 중심 -6,24 → 광장 반경 26 안).
-	-- 완성된 실제 경계 상자 중심이 광장 안에 있는 고정 구조물만 걷어낸다(사람·동물·바닥판 제외, 반경 그대로).
-	local plazaRemoved = 0
+	-- [광장 실제 점유] 중심점뿐 아니라 회전된 경계의 광장 가장자리 침범도 검사한다.
+	-- 기존 중심점 제거 정책은 유지하고, 가장자리의 필수 시설/본체는 삭제하지 않고 별도 진단한다.
+	local plazaRemoved, plazaEdgeBlocked = 0, 0
 	for _, obj in folder:GetChildren() do
 		if obj:IsA("Model") and not obj:FindFirstChildOfClass("Humanoid") and not obj:FindFirstChildOfClass("AnimationController") then
-			local ok, box = pcall(obj.GetBoundingBox, obj)
-			if ok and box then
+			local ok, box, ext = pcall(obj.GetBoundingBox, obj)
+			if ok and box and ext then
 				local dx, dz = box.Position.X + 6, box.Position.Z
-				if dx * dx + dz * dz < CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS then
+				local radius2 = CENTRAL_PLAZA_RADIUS * CENTRAL_PLAZA_RADIUS
+				if dx * dx + dz * dz < radius2 then
 					obj:Destroy()
 					plazaRemoved += 1
+				else
+					local hx = (math.abs(box.RightVector.X) * ext.X + math.abs(box.UpVector.X) * ext.Y
+						+ math.abs(box.LookVector.X) * ext.Z) * 0.5
+					local hz = (math.abs(box.RightVector.Z) * ext.X + math.abs(box.UpVector.Z) * ext.Y
+						+ math.abs(box.LookVector.Z) * ext.Z) * 0.5
+					local nearX, nearZ = math.max(0, math.abs(dx) - hx), math.max(0, math.abs(dz) - hz)
+					if nearX * nearX + nearZ * nearZ < radius2 then
+						if obj.Name == "HarborRoofDetail" or obj.Name == "HarborWindowDetail"
+							or obj.Name == "HarborChimney" or obj.Name == "HarborBalcony"
+							or obj.Name == "CityCulturalHouseFront" or obj.Name == "CityMerchantRoofGrowth" then
+							obj:Destroy()
+							plazaRemoved += 1
+						else
+							plazaEdgeBlocked += 1
+						end
+					end
 				end
 			end
 		end
 	end
 	folder:SetAttribute("CentralPlazaRemovedStructures", plazaRemoved)
+	folder:SetAttribute("CentralPlazaEdgeCandidates", plazaEdgeBlocked)
 	sliceMark("beforeDestroyOld")
 	-- [교체 분할] 실측(44926863645): 기존 항구 한 번에 삭제 529ms + 새 항구 한 번에 workspace 연결 584ms가
 	-- 같은 프레임에 몰려 최대 1.46초 멈춤. 최상위 묶음 단위로 나눠 프레임 예산 안에서 지우고 붙인다.
@@ -8940,8 +9014,11 @@ function PortScene.build(info, onFacility)
 			local box = cf * CFrame.new(0, 3.1, -half)
 			for _, hit in workspace:GetPartBoundsInBox(box, Vector3.new(4.4, 5, length + 4), params) do
 				local owner = hit:FindFirstAncestorOfClass("Model")
-				if hit.CanCollide and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
-					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= 2
+				-- 비충돌 승인 가판대와 특산품도 주민이 시각적으로 관통하지 않도록 기존 생성 직후 검사에 포함한다.
+				local visualMarket = hit:FindFirstAncestor("CityMarketStall") ~= nil
+					or (owner and string.find(owner.Name, "MarketSpecialtyDisplay_", 1, true) == 1)
+				if (hit.CanCollide or visualMarket) and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
+					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= (if visualMarket then 0.5 else 2)
 					and not (actor and hit:IsDescendantOf(actor))
 					and not (owner and owner:FindFirstChildOfClass("Humanoid")) then
 					return true

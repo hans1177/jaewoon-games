@@ -2301,6 +2301,13 @@ test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 �
   'local stalls = math.min(if districtTouch then 4 else 6',
   'if stalls >= 2 and warehouseBuilt > 0 then',
   'folder:SetAttribute("CityMarketStalls", stalls)',
+  'local stallRowZ = 11',
+  'local festivalRowZ = 22',
+  'local cargoEdgeZ = cz - 33',
+  'local displayEdgeZ = cz + 33',
+  'cx - 14, cargoEdgeZ, false',
+  'cx + 13, cargoEdgeZ, false',
+  'cx + (i - (#marketGoods + 1) / 2) * 18, displayEdgeZ, false',
   'local farmsBuilt = if districtBuildings then',
   'local cropRows = if farmsBuilt <= 0 or not farmAsset then 0 else math.min(2, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))',
   'if farmsBuilt > 0 then',
@@ -2683,7 +2690,23 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.match(home,/measuredHalfZ = math\.abs\(bounds\.Position\.Z - pos\.Z\)/);
  assert.match(home,/actualHalfX = math\.max\(half, measuredHalfX\)/);
  assert.match(home,/actualHalfZ = math\.max\(half, measuredHalfZ\)/);
- assert.match(home,/clearRoad = math\.abs\(math\.abs\(at\.Z\) - laneNear\) > measuredHalfZ/,'도로 판정은 실제 건물 외곽');
+ assert.match(home,/local worldHalfX = \(math\.abs\(bounds\.RightVector\.X\) \* dimensions\.X/);
+ assert.match(home,/local worldHalfZ = \(math\.abs\(bounds\.RightVector\.Z\) \* dimensions\.X/);
+ assert.match(home,/measuredHalfX = math\.abs\(bounds\.Position\.X - pos\.X\) \+ worldHalfX \+ 2\.5/);
+ assert.match(home,/measuredHalfZ = math\.abs\(bounds\.Position\.Z - pos\.Z\) \+ worldHalfZ \+ 2\.5/);
+ assert.match(home,/local signedZ = at\.Z \* side/);
+ assert.match(home,/clearRoad = signedZ - measuredHalfZ > laneNear \+ laneWidth \* 0\.5 \+ 1\.5/);
+ assert.match(home,/signedZ \+ measuredHalfZ < laneFar - laneWidth \* 0\.5 - 1\.5/);
+ assert.match(port,/local nextLaneZ = 152 \+ laneOffset \+ \(p \+ 1\) \* laneL \+ nextBend/);
+ assert.match(port,/fillRow\(side \* \(nextLaneZ - laneWidth \/ 2 - 6 - S \/ 2\)/);
+ const project=(axis,dims)=>axis.reduce((sum,v,i)=>sum+Math.abs(v)*dims[i],0)/2;
+ assert.equal(project([1,0,0],[8,6,20]),4);
+ assert.equal(project([0,0,-1],[8,6,20]),10);
+ const fits=(z,side,half)=>z*side-half>105.5 && z*side+half<144.5;
+ assert.equal(fits(125,1,10),true);
+ assert.equal(fits(-125,-1,10),true);
+ assert.equal(fits(160,1,10),false);
+ assert.equal(fits(109,1,10),false);
  assert.match(home,/laneNear = 152 \+ laneOffset \+ laneIndex \* laneL/);
  assert.match(home,/clearRoad and not onStreet\(at\.X, measuredHalfX\)/);
  assert.match(home,/not reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\)/);
@@ -4760,6 +4783,17 @@ test('Mare building trim preserves original roof and window materials and fits d
   const scene=read('ReplicatedStorage/Shared/PortScene.luau');
   const importer=scene.slice(scene.indexOf('local function importedModel('),scene.indexOf('-- 등불:'));
   assert.match(importer,/if tint and not architecture and not preserveArchitectureTexture then/);
+  assert.match(importer,/local groundArchitecture = kind == "Town" and/);
+  assert.match(importer,/solid == true and \(asset:find\("house", 1, true\) ~= nil or asset == "eastasia-base"\)/);
+  assert.match(importer,/or asset == "eastasia-stairs" or asset == "eastasia-column-base"/);
+  assert.match(importer,/if isAnimal or groundArchitecture then/);
+  assert.match(importer,/piece:IsA\("BasePart"\) and piece.Transparency < 0\.98/);
+  assert.match(importer,/if visibleBottomY < math\.huge then visibleBottomY else center\.Position\.Y - size\.Y \/ 2/);
+  assert.match(importer,/CFrame\.new\(bottomPosition - bottom\) \* m:GetPivot\(\)/);
+  const lower=(y,axis,half)=>y-axis.reduce((v,n,i)=>v+Math.abs(n)*half[i],0);
+  assert.equal(lower(7,[0,1,0],[2,3,4]),4);
+  assert.equal(lower(7,[1,0,0],[2,3,4]),5);
+  assert.equal(Math.min(lower(7,[0,1,0],[2,3,4]),lower(4,[0,1,0],[1,1,1])),3);
   assert.match(importer,/if tint and asset:find\("roof", 1, true\) and not asset:find\("house", 1, true\) then/);
   const uniform=scene.slice(scene.indexOf('local function uniformMaterial('),scene.indexOf('local vacancyRate'));
   assert.match(uniform,/if not textured and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\s+and low >= 0\.78 and high - low <= 0\.14 then/);
@@ -4770,9 +4804,56 @@ test('Mare building trim preserves original roof and window materials and fits d
   assert.match(house,/piece\.CFrame:VectorToObjectSpace\(direction\)/);
   assert.match(house,/if enter <= exit then nearest = math\.min\(nearest, enter\) end/);
   assert.match(house,/local target = contact - direction \* math\.max\(0, halfDepth - 0\.08\)/);
-  assert.doesNotMatch(house,/workspace:Raycast|detail:Destroy\(\)/);
+  assert.doesNotMatch(house,/workspace:Raycast/);
+  for(const name of ['roof','chim']) assert.ok(house.includes('model = '+name+', top = true, multi = true'));
+  assert.ok(house.includes('model = bal, multi = true'));
+  assert.match(house,/local origins = \{ centerOrigin \}/);
+  assert.match(house,/supported >= 3/);
+  assert.match(house,/farthest - closest <= maxEmbed/);
+  assert.match(house,/elseif item.multi and supported == 0 and #visibleParts > 0 then\s+--[^\n]+\s+detail:Destroy\(\)/);
+  const contact=(samples,halfDepth)=>{
+    const hits=samples.filter(Number.isFinite);
+    if(hits.length===0)return null;
+    if(hits.length>=3 && Math.max(...hits)-Math.min(...hits)<=Math.min(0.35,halfDepth*0.30))return Math.max(...hits);
+    return samples[0];
+  };
+  assert.equal(contact([10,10.05,10.1,10,10.15],1),10.15);
+  assert.equal(contact([10,10.1,13,10,10],1),10);
+  assert.equal(contact([10,Infinity,10.1],1),10);
+  assert.equal(contact([Infinity,Infinity,Infinity],1),null);
   for(const [o,v,h,expected] of [[12,-1,2,10],[-12,1,2,10],[0,1,2,0]]){
     const lo=(-h-o)/v,hi=(h-o)/v;
     assert.equal(Math.max(0,Math.min(lo,hi)),expected);
   }
+});
+
+// [시장 통행축] 기존 목표 폭 기준의 중앙·장날·외곽 진열 간격을 검증한다. 실제 모델 외곽은 Studio에서 검사한다.
+test('시장 가판대와 외곽 진열물이 중앙 보행축을 공유하지 않는다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const market=scene.slice(scene.indexOf('elseif d.kind == "market" then'),scene.indexOf('else -- farm',scene.indexOf('elseif d.kind == "market" then')));
+ assert.match(market,/cz \+ side \* stallRowZ/);
+ assert.match(market,/cz \+ side \* festivalRowZ/);
+ assert.doesNotMatch(market,/cx - 14, cz, false|cx \+ 13, cz, false/);
+ assert.ok(11-7/2>=7);
+ assert.ok(22-11-7>=4);
+ assert.ok(33-22-7/2-4/2>=5);
+ assert.ok(33+4/2<43);
+});
+
+// [광장·시장 동선] 실제 모델 경계 후보와 비충돌 가판대 검사를 기존 생성 시점에 수행한다.
+test('광장 가장자리 장식과 시장 가판대의 보행 간섭을 검사한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const plaza=scene.slice(scene.indexOf('-- [광장 실제 점유]'),scene.indexOf('sliceMark("beforeDestroyOld")'));
+ assert.match(plaza,/local ok, box, ext = pcall\(obj.GetBoundingBox, obj\)/);
+ assert.match(plaza,/nearX \* nearX \+ nearZ \* nearZ < radius2/);
+ assert.match(plaza,/CentralPlazaEdgeCandidates", plazaEdgeBlocked/);
+ assert.match(plaza,/else\s+plazaEdgeBlocked \+= 1/);
+ const intersects=(dx,dz,hx,hz)=>Math.max(0,Math.abs(dx)-hx)**2+Math.max(0,Math.abs(dz)-hz)**2<26**2;
+ assert.equal(intersects(30,0,6,2),true);
+ assert.equal(intersects(30,0,3,2),false);
+ assert.equal(intersects(28,28,5,5),false);
+ assert.match(scene,/originalStall.Name = "CityMarketStall"/);
+ assert.match(scene,/extra.Name = "CityMarketStall"/);
+ assert.match(scene,/hit:FindFirstAncestor\("CityMarketStall"\)/);
+ assert.match(scene,/\(hit.CanCollide or visualMarket\)/);
 });
