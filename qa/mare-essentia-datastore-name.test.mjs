@@ -3793,7 +3793,8 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   // [모자 정수리] 실물 깃털모자가 기존 머리 보조를 모두 지우면서 뚫린 윗면을 드러내지 않도록 한다.
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
-  assert.ok(pose.includes('assetName == "acc_feather_hat"'));
+  assert.ok(pose.includes('local featherHat = model:FindFirstChild("R15Asset_acc_feather_hat_Head")'), '실제 깃털모자 슬롯으로 판정');
+  assert.match(pose,/if featherHat then\s+for _, mesh in featherHat:GetDescendants\(\) do\s+if mesh:IsA\("BasePart"\) and mesh.Transparency < 0.95 and mesh.LocalTransparencyModifier < 0.95 then\s+featherVisible = true/, '실물 모자의 가시성 확인 후 중첩을 정리');
   assert.ok(!pose.includes('local fittedUpperReady = false'), '기본복 삭제 조건 제거');
   assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
   assert.ok(pose.includes('part.Material = Enum.Material.Leather'));
