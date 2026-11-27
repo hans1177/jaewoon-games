@@ -208,11 +208,12 @@ local function animateSign(rec)
 		local scaleBlend = if mobile then 1 - 0.88 ^ (math.max(0, t - lastSignUpdate) * 60) else 0.12
 		lastSignUpdate = t
 		local eye = camera.CFrame.Position
+		local sailing = workspace:GetAttribute("VoyageActive") == true
 		for i = #signAnims, 1, -1 do
 			local a = signAnims[i]
 			if not a.bb.Parent then
 				table.remove(signAnims, i)
-			else
+			elseif not sailing then
 				local d = (a.base - eye).Magnitude
 				if d < SIGN_ACTIVE then
 					local ang = t * 0.9 + a.phase
@@ -310,12 +311,18 @@ local function sign(parent, adornee, text, color, height, compact, iconModel)
 		return true
 	end
 	if not tryShow() then
-		task.spawn(function()
+		-- [간판 로딩] 제거된 간판의 재시도 스레드와 모델 참조를 즉시 정리한다.
+		local signCleanup
+		local signThread = task.defer(function()
 			for _ = 1, 40 do
 				task.wait(1)
-				if not bb.Parent then return end
-				if tryShow() then return end
+				if not bb.Parent or not adornee.Parent then break end
+				if tryShow() then break end
 			end
+			signCleanup:Disconnect()
+		end)
+		signCleanup = bb.Destroying:Once(function()
+			if coroutine.status(signThread) == "suspended" then task.cancel(signThread) end
 		end)
 	end
 	-- 작은 이름표 (아래쪽)
@@ -805,11 +812,13 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				piece.part.CFrame = piece.final + Vector3.new(0, -drop, 0)
 			end
 			m:SetAttribute("BuildVisualState", "installing")
-			task.delay(buildDelay, function()
+			-- [설치 타이머] 모델이 제거되면 대기 중인 설치 작업도 즉시 정리한다.
+			local installCleanup
+			local installThread = task.delay(buildDelay, function()
 				-- 장면이 Workspace에 배치되기 전에 설치 모션이 사라지지 않도록 부착 완료를 기다린다.
 				local deadline = os.clock() + 25
 				while m.Parent and not parent.Parent and os.clock() < deadline do task.wait(0.12) end
-				if not m.Parent then return end
+				if not m.Parent then installCleanup:Disconnect() return end
 				if not parent.Parent then
 					-- 타임아웃에는 숨김·위치·원래 충돌을 복원해 완성 자산이 사라지지 않게 한다.
 					for _, piece in pieces do
@@ -818,6 +827,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						end
 					end
 					m:SetAttribute("BuildVisualState", "complete")
+					installCleanup:Disconnect()
 					return
 				end
 				local timing = TweenInfo.new(0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
@@ -826,13 +836,16 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						TweenService:Create(piece.part, timing, { CFrame = piece.final, Transparency = piece.alpha }):Play()
 					end
 				end
-				task.delay(0.76, function()
-					if not m.Parent or not parent.Parent then return end
-					for _, piece in pieces do
-						if piece.part.Parent then piece.part.CanCollide = piece.solid end
-					end
-					m:SetAttribute("BuildVisualState", "complete")
-				end)
+				task.wait(0.76)
+				installCleanup:Disconnect()
+				if not m.Parent or not parent.Parent then return end
+				for _, piece in pieces do
+					if piece.part.Parent then piece.part.CanCollide = piece.solid end
+				end
+				m:SetAttribute("BuildVisualState", "complete")
+			end)
+			installCleanup = m.Destroying:Once(function()
+				if coroutine.status(installThread) == "suspended" then task.cancel(installThread) end
 			end)
 		else
 			m:SetAttribute("BuildVisualState", "complete")
@@ -3415,7 +3428,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				end
 			end
 		end
-		task.spawn(function()
+		local crewCleanup
+		local crewThread = task.defer(function()
 			-- [항구 로딩 보호] Workspace 부착 전에는 작업 시간을 소모하지 않는다.
 			local deadline = os.clock() + 25
 			while item.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
@@ -3425,6 +3439,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				for _, member in crew do
 					if member.model.Parent then member.model:Destroy() end
 				end
+				crewCleanup:Disconnect()
 				return
 			end
 			-- [시공 연출] 비계는 공정 완료까지 남고, 점검 후 모든 작업자가 철수한다.
@@ -3441,6 +3456,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			for _, member in crew do
 				if member.model.Parent then member.model:Destroy() end
 			end
+			crewCleanup:Disconnect()
+		end)
+		crewCleanup = folder.Destroying:Once(function()
+			if coroutine.status(crewThread) == "suspended" then task.cancel(crewThread) end
 		end)
 	end
 	-- 도시마다 고정된 지형 시드로 구획 방향·필지 크기·외곽 폭을 달리한다. 재진입해도 같은 항구는 같은 형태다.
@@ -5973,7 +5992,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	if #swayingFoliage > 0 then
 		local swayAt, swayConn = 0, nil
 		swayConn = RunService.Heartbeat:Connect(function()
-			if not folder.Parent then return end
+			if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 			local now = os.clock()
 			if now < swayAt or workspace:GetAttribute("VoyageActive") then return end
 			swayAt = now + 0.22
@@ -6905,27 +6924,38 @@ function PortScene.build(info, onFacility)
 									local duty = { model = builder, base = builder:GetPivot(), mode = "stay",
 										kind = taskKind, phase = rng:NextNumber(0, 5) }
 									table.insert(walkers, duty)
-									task.spawn(function()
+									-- [시설 공사] 작업자 삭제 시 대기 중인 공정 연출을 취소한다.
+									local builderCleanup
+									local builderThread = task.defer(function()
 										local deadline = os.clock() + 25
 										while builder.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-										if not folder.Parent then return end
+										if not folder.Parent or not builder.Parent then builderCleanup:Disconnect() return end
 										task.wait(delay + 2.6)
 										if builder.Parent then
 											duty.kind = "inspect"
 											builder:SetAttribute("Activity", "inspect")
 											task.wait(1.2)
-											if builder.Parent then builder:Destroy() end
 										end
+										builderCleanup:Disconnect()
+										if builder.Parent then builder:Destroy() end
+									end)
+									builderCleanup = builder.Destroying:Once(function()
+										if coroutine.status(builderThread) == "suspended" then task.cancel(builderThread) end
 									end)
 								end
 							end
 						end
-						task.spawn(function()
+						local scaffoldCleanup
+						local scaffoldThread = task.defer(function()
 							local deadline = os.clock() + 25
 							while scaffold.Parent and not folder.Parent and os.clock() < deadline do task.wait(0.12) end
-							if not folder.Parent then return end
+							if not folder.Parent or not scaffold.Parent then scaffoldCleanup:Disconnect() return end
 							task.wait(delay + 3.2)
+							scaffoldCleanup:Disconnect()
 							if scaffold.Parent then scaffold:Destroy() end
+						end)
+						scaffoldCleanup = scaffold.Destroying:Once(function()
+							if coroutine.status(scaffoldThread) == "suspended" then task.cancel(scaffoldThread) end
 						end)
 					end
 				end
@@ -7482,8 +7512,14 @@ function PortScene.build(info, onFacility)
 		-- [모바일 최적화] 먼 바다에서 항해하는 동안 항구 주민/가축 관절을 계산하지 않는다.
 		-- NPC 시간표는 아래의 절대 시각으로 복귀 즉시 다시 계산하며 게임 상태는 변경하지 않는다.
 		if not folder.Parent or workspace:GetAttribute("VoyageActive") then return end
+		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		local now = os.clock()
 		local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
+		-- [항구 모션 거리] 카메라·거리 기준은 프레임당 한 번만 읽는다. 실측 스튜디오 모션 검사는 보존한다.
+		local motionCamera = workspace.CurrentCamera
+		local motionEye = motionCamera and motionCamera.CFrame.Position
+		local motionRange = if UserInputService.TouchEnabled then 135 else 180
+		local fullMotion = RunService:IsStudio() or not motionEye
 		for _, w in walkers do
 			if w.mode == "sparring" and w.model.Parent and sparring then
 				local side = if w == sparring[1] then -1 else 1
@@ -7754,12 +7790,12 @@ function PortScene.build(info, onFacility)
 						if workCycle >= 14.5 then kind = "stretch"
 						elseif workCycle >= 12.5 then kind = "inspect" end
 					end
-					if kind == "stoop" then
-						-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
-						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
-					end
 					-- 궁정·공방은 멀리 있을 때 인구·직업 속성은 유지하되 관절 업데이트만 생략.
-					if not cam or (cam.CFrame.Position - p0).Magnitude < (if game:GetService("UserInputService").TouchEnabled then 135 else 180) then
+					if not motionEye or (motionEye - p0).Magnitude < motionRange then
+						if kind == "stoop" then
+							-- 허리를 굽히기만 하는 모션이 이전 인사 자세의 팔을 남기지 않게 초기화.
+							Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
+						end
 						Pose.work(w.model, kind, now + w.phase)
 					end
 				end
@@ -7816,8 +7852,7 @@ function PortScene.build(info, onFacility)
 						w.model:SetAttribute("AnimalActivity", action)
 					end
 					local destination = (w.base * CFrame.new(0, 0, d)).Position
-					local camera = workspace.CurrentCamera
-					local close = not camera or (camera.CFrame.Position - destination).Magnitude < (if UserInputService.TouchEnabled then 105 else 155)
+					local close = not motionEye or (motionEye - destination).Magnitude < (if UserInputService.TouchEnabled then 105 else 155)
 					-- [지면 접촉] 타일·경사·부두 높이를 0.18초마다 확인하고 실제 높이로 지수 보간한다.
 					-- 원본 모델 발-몸통 간격과 축은 그대로 보존한다. 레이캐스트 실패 시 원래 높이를 따른다.
 					if close and now >= w.groundCheckAt then
@@ -7930,13 +7965,15 @@ function PortScene.build(info, onFacility)
 					local hop = 0
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, floorY, w.cz + math.sin(a + 0.1) * w.r)
 					w.model:PivotTo(CFrame.lookAt(pos + Vector3.new(0, hop, 0), ahead + Vector3.new(0, hop, 0)))
-					Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
-					-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
-					local play = (now + w.phase * 1.9) % 21
-					if play < 1.8 then
-						Pose.work(w.model, "wave", now + w.phase, true)
-					elseif play < 3.8 then
-						Pose.work(w.model, "look", now + w.phase, true)
+					if fullMotion or (motionEye - pos).Magnitude < motionRange then
+						Pose.makeR15Action(w.model, "walk", 0, (now + w.phase) * w.speed * (2 * math.pi / 5.2))
+						-- [아이 생활동작] 걷기 관절은 유지하고 손짓·주변 시선만 드물게 얹는다.
+						local play = (now + w.phase * 1.9) % 21
+						if play < 1.8 then
+							Pose.work(w.model, "wave", now + w.phase, true)
+						elseif play < 3.8 then
+							Pose.work(w.model, "look", now + w.phase, true)
+						end
 					end
 				end
 			elseif w.model.Parent then
@@ -7950,8 +7987,10 @@ function PortScene.build(info, onFacility)
 						w.model:SetAttribute("DailyRoutine", "rest")
 					end
 					w.model:PivotTo(w.base)
-					Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
-					Pose.work(w.model, "stretch", now + w.phase)
+					if fullMotion or (motionEye - w.base.Position).Magnitude < motionRange then
+						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
+						Pose.work(w.model, "stretch", now + w.phase)
+					end
 				else
 				if w.districtJob and w.lastRoutine ~= "work" then
 					w.lastRoutine = "work"
@@ -7985,17 +8024,22 @@ function PortScene.build(info, onFacility)
 				moving = moving and walked > 0.006
 				if moving then
 					w.trav = (w.trav or 0) + walked
-					Pose.makeR15Action(w.model, "walk", 0, w.trav * (2 * math.pi / 5.2))
-				else
-					Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
 				end
-				if not moving then
-					Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor((now + w.phase * 7) / 7) % #IDLE_POOL) + 1], now + w.phase)
-				elseif w.kind then
-					Pose.work(w.model, w.kind, now + w.phase, true)
-				elseif w.elder then
-					-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
-					Pose.work(w.model, "stoop", now, true)
+				-- 원거리에서도 위치·보행 누적 거리는 유지하고 관절만 생략한다.
+				if fullMotion or (motionEye - pos).Magnitude < motionRange then
+					if moving then
+						Pose.makeR15Action(w.model, "walk", 0, w.trav * (2 * math.pi / 5.2))
+					else
+						Pose.makeR15Action(w.model, "idle", 0, now * w.speed + w.phase)
+					end
+					if not moving then
+						Pose.work(w.model, w.idleKind or IDLE_POOL[(math.floor((now + w.phase * 7) / 7) % #IDLE_POOL) + 1], now + w.phase)
+					elseif w.kind then
+						Pose.work(w.model, w.kind, now + w.phase, true)
+					elseif w.elder then
+						-- [노인 보행] 굽은 자세만 합성하고 양쪽 다리·발목의 이동거리 기반 보행을 유지한다.
+						Pose.work(w.model, "stoop", now, true)
+					end
 				end
 				end -- 새벽·야간 휴식, 기존 보행 동작은 낮에만 실행
 			end
@@ -8097,10 +8141,8 @@ function PortScene.build(info, onFacility)
 	do
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
-			if not folder.Parent then
-				conn:Disconnect()
-				return
-			end
+			-- [항구 생명주기] 분할 생성 중에는 대기하고, 실제 제거 시에만 연결을 해제한다.
+			if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 			if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") then
 				return
 			end
@@ -8111,6 +8153,7 @@ function PortScene.build(info, onFacility)
 				char:PivotTo(CFrame.new(-6, 6, 10))
 			end
 		end)
+		folder.Destroying:Connect(function() conn:Disconnect() end)
 	end
 	-- 한낮의 열기, 새벽 해무, 황혼의 따뜻한 빛과 야간 등불을 같은 시간축에 맞춘다.
 	local latitude = (PortData.Ports[info.portId] or {}).lat or 0
@@ -8197,18 +8240,19 @@ function PortScene.build(info, onFacility)
 	local lightConn = folder.DescendantAdded:Connect(registerLight)
 	local updateAt, cloudUpdateAt = 0, 0
 	local climateConn = RunService.Heartbeat:Connect(function()
+		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		local now = os.clock()
 		if now < updateAt then return end
 		updateAt = now + 0.10
-		-- [원경 구름 움직임] 기존 구름 덮임만 2.5초마다 미세 변화시킨다.
-		if portClouds and portClouds.Parent and now >= cloudUpdateAt and not workspace:FindFirstChild("FieldScene") then
+		-- [날씨 소유권] 항해 장면은 같은 구름을 사용하므로 항구 구름 갱신보다 먼저 중단한다.
+		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") or workspace:FindFirstChild("FieldScene") then
+			if snow and snow.Rate ~= 0 then snow.Rate = 0 end
+			return
+		end
+		-- [원경 구름 움직임] 항구에서만 기존 구름 덮임을 2.5초마다 미세 변화시킨다.
+		if portClouds and portClouds.Parent and now >= cloudUpdateAt then
 			cloudUpdateAt = now + 2.5
 			portClouds.Cover = (if UserInputService.TouchEnabled then 0.16 else 0.26) + math.sin(now / 48) * 0.025
-		end
-		-- [조명 충돌 방지] 지상 탐험이 진행 중이면 항구의 주야 주기가 필드 조명을 덮어쓰지 않는다.
-		if workspace:GetAttribute("VoyageActive") or workspace:GetAttribute("ShotCF") or workspace:FindFirstChild("FieldScene") then
-			if snow then snow.Rate = 0 end
-			return
 		end
 		local clock = (8.2 + (now - PORT_CLOCK_EPOCH) * 24 / 600) % 24
 		local daylight = if temperate then season.day else 12
@@ -8485,10 +8529,11 @@ function PortScene.build(info, onFacility)
 		groundRay.RespectCanCollide = true
 		-- [동료 R15] 주민/전투와 동일한 공식 관절 적용 시점에서 보행·대기 모션을 갱신한다.
 		followConn = RunService.PreSimulation:Connect(function(deltaTime)
+			if folder:GetAttribute("PortSceneActive") ~= true then return end
 			local now = os.clock()
 			local dt = math.clamp(tonumber(deltaTime) or 1 / 60, 0, 0.1)
-			-- [중복 소환 방지] 항구의 시각 동료는 탐험 중 추적을 멈춘다. 탐험용 FieldAlly만 전장에 존재한다.
-			if workspace:FindFirstChild("FieldScene") then return end
+			-- [중복 소환 방지] 항해·탐험에서는 항구 동료의 지면 질의와 관절 계산을 멈춘다.
+			if workspace:GetAttribute("VoyageActive") or workspace:FindFirstChild("FieldScene") then return end
 			local char = Players.LocalPlayer and Players.LocalPlayer.Character
 			local root = char and char:FindFirstChild("HumanoidRootPart")
 			if not root then return end
@@ -8774,6 +8819,8 @@ function PortScene.build(info, onFacility)
 	-- [삭제 방식 원복] 강제 프레임 양보(500·1500개 단위) 시험은 프레임마다 엔진 해제 비용이 커서 전체 전환이
 	-- 길어져 정밀검사 233단계(4초 대기)를 넘겼다(44968230194, 44969891132). 기존 최상위 묶음 단위 삭제로 되돌린다.
 	if old and old.Parent then
+		-- [이전 항구 정리] 분할 삭제 중에는 이전 장면의 모션·조명·낙하 복구를 멈춘다.
+		old:SetAttribute("PortSceneActive", false)
 		local destroyedCount = #old:GetDescendants()
 		for _, child in old:GetChildren() do
 			child:Destroy()
@@ -8793,6 +8840,8 @@ function PortScene.build(info, onFacility)
 		sliceYield("parentToWorkspace")
 	end
 	holder:Destroy()
+	-- 모든 모델을 배치한 뒤 새 장면의 모션·조명·낙하 복구를 시작한다.
+	folder:SetAttribute("PortSceneActive", true)
 	sliceMark("parentToWorkspace")
 
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
@@ -8926,15 +8975,18 @@ function PortScene.build(info, onFacility)
 		local people = shelf and shelf:FindFirstChild("People")
 		if people then
 			local queued, refreshReady = false, false
+			local outfitThread
 			local function refreshOutfits(includeReady)
 				-- [자산 지연 입고] 원래 완성된 주민도 승인된 신규 머리/장신구 도착 때 재선택한다.
 				-- 기존 0.08초 배치와 원본 R15 착용 함수를 재사용한다.
+				if folder:GetAttribute("PortSceneActive") ~= true then return end
 				if includeReady == true then refreshReady = true end
 				if queued then return end
 				queued = true
-				task.delay(0.08, function()
+				outfitThread = task.delay(0.08, function()
+					outfitThread = nil
 					queued = false
-					if not folder.Parent then return end
+					if not folder.Parent or folder:GetAttribute("PortSceneActive") ~= true then return end
 					local includeCompleted = refreshReady
 					refreshReady = false
 					for _, subject in folder:GetDescendants() do
@@ -8969,6 +9021,8 @@ function PortScene.build(info, onFacility)
 			-- 장면보다 먼저 모델 로드가 끝난 경우에도 누락/헤어 후보를 한 번 재검사한다.
 			if ReplicatedStorage:GetAttribute("MareAssetsReady") then refreshOutfits(true) end
 			folder.Destroying:Connect(function()
+				if outfitThread and coroutine.status(outfitThread) == "suspended" then task.cancel(outfitThread) end
+				outfitThread = nil
 				outfitConn:Disconnect()
 				readyConn:Disconnect()
 				for _, conn in gearConns do conn:Disconnect() end
@@ -9104,6 +9158,7 @@ function PortScene.build(info, onFacility)
 	local wasVoyageActive = false
 	local conn = RunService.Heartbeat:Connect(function()
 		if not folder.Parent then return end
+		if folder:GetAttribute("PortSceneActive") ~= true then return end
 		if workspace:GetAttribute("VoyageActive") then
 			if not wasVoyageActive then
 				setFoam(0)

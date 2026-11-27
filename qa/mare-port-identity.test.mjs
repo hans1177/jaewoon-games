@@ -611,10 +611,89 @@ test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광�
   assert.match(scene, /"CityLondonMarketDay", londonMarketDay/);
   assert.ok(scene.includes('for index, mineral in { "coal", "tin" } do'));
   assert.match(scene, /AssetIds\["Cargo\/" \.\. mineral\]/);
-  assert.match(scene, /info\.portId == "london" and lay\.freight and lay\.shipyardBuilt/);
-  assert.match(scene, /if rope then rope:SetAttribute\("LondonHarborRopeSupply", true\) end/);
+  // 공통 원본 밧줄 배치와 런던 전용 대체 원본·진단을 각각 검증한다.
+  const ropeBlock = scene.split('-- [런던 조선항]')[1].split('-- [지역 특산품 하역]')[0];
+  assert.match(ropeBlock, /if lay\.freight and lay\.shipyardBuilt then/);
+  assert.match(ropeBlock, /local ropeSource = info\.portId \.\. "-rope-twist-02-source"/);
+  assert.match(ropeBlock, /if not rope and info\.portId == "london" and AssetIds\["Relics\/rope-bundle-a"\] then\s+rope = one\("Relics", "rope-bundle-a",/);
+  assert.match(ropeBlock, /if rope and info\.portId == "london" then rope:SetAttribute\("LondonHarborRopeSupply", true\) end/);
   assert.ok(scene.includes('if stalls > 0 then GOOD_MESH[good] else nil'),
     '실제 시장 건물 없으면 특산품 미배치');
   assert.ok(scene.includes('if table.find((port and port.produces) or {}, mineral)'),
     '등록된 실물 생산품만 하역');
+});
+
+test('항구 분할 교체 중 이전 모션을 중단하고 새 장면의 낙하 복구 연결을 보존한다', () => {
+  const retiring = scene.indexOf('old:SetAttribute("PortSceneActive", false)');
+  const destroy = scene.indexOf('child:Destroy()', retiring);
+  const attach = scene.indexOf('folder.Parent = workspace', destroy);
+  const ready = scene.indexOf('folder:SetAttribute("PortSceneActive", true)', attach);
+  const holder = scene.indexOf('holder:Destroy()', attach);
+  assert.ok(retiring >= 0 && destroy > retiring && attach > destroy && holder > attach && ready > holder);
+  const safety = scene.split('-- 안전망: 어떤 이유로든 바다나 허공')[1].split('-- 한낮의 열기')[0];
+  assert.match(safety, /if not folder\.Parent or folder:GetAttribute\("PortSceneActive"\) ~= true then return end/);
+  assert.match(safety, /folder\.Destroying:Connect\(function\(\) conn:Disconnect\(\) end\)/);
+  assert.match(safety, /hrp\.Position\.Y < -12/);
+  assert.match(safety, /char:PivotTo\(CFrame\.new\(-6, 6, 10\)\)/);
+  for (const loop of ['swayConn = RunService.Heartbeat', 'local walkConn = RunService.PreSimulation', 'local climateConn = RunService.Heartbeat', 'followConn = RunService.PreSimulation']) {
+    const start = scene.indexOf(loop);
+    assert.ok(start >= 0 && scene.slice(start, start + 500).includes('folder:GetAttribute("PortSceneActive") ~= true'), loop);
+  }
+});
+
+test('건축 모델 설치와 시공 인력의 지연 작업은 제거 시 취소하고 정상 완료 시 연결을 해제한다', () => {
+  const install = scene.split('-- [설치 타이머]')[1].split('return m')[0];
+  assert.match(install, /local installThread = task\.delay\(buildDelay, function\(\)/);
+  assert.match(install, /installCleanup = m\.Destroying:Once\(function\(\)\s+if coroutine\.status\(installThread\) == "suspended" then task\.cancel\(installThread\) end/);
+  assert.match(install, /task\.wait\(0\.76\)/);
+  assert.match(install, /piece\.part\.CanCollide = piece\.solid/);
+  assert.match(install, /installCleanup:Disconnect\(\)/);
+  assert.doesNotMatch(install, /task\.delay\(0\.76/);
+  assert.match(scene, /local crewThread = task\.defer\(function\(\)/);
+  assert.match(scene, /crewCleanup = folder\.Destroying:Once\(function\(\)\s+if coroutine\.status\(crewThread\) == "suspended" then task\.cancel\(crewThread\) end/);
+  assert.match(scene, /crewCleanup:Disconnect\(\)/);
+});
+
+test('간판·시설 작업자·비계·복장 갱신은 제거된 장면에 지연 작업을 남기지 않는다', () => {
+  for (const [cleanup, owner, thread] of [
+    ['signCleanup', 'bb', 'signThread'],
+    ['builderCleanup', 'builder', 'builderThread'],
+    ['scaffoldCleanup', 'scaffold', 'scaffoldThread'],
+  ]) {
+    assert.ok(scene.includes(cleanup + ' = ' + owner + '.Destroying:Once(function()'));
+    assert.ok(scene.includes('if coroutine.status(' + thread + ') == "suspended" then task.cancel(' + thread + ') end'));
+    assert.ok(scene.includes(cleanup + ':Disconnect()'));
+  }
+  assert.match(scene, /for _ = 1, 40 do\s+task\.wait\(1\)\s+if not bb\.Parent or not adornee\.Parent then break end\s+if tryShow\(\) then break end/);
+  assert.match(scene, /builderCleanup:Disconnect\(\)\s+if builder\.Parent then builder:Destroy\(\) end/);
+  assert.match(scene, /scaffoldCleanup:Disconnect\(\)\s+if scaffold\.Parent then scaffold:Destroy\(\) end/);
+  assert.match(scene, /outfitThread = task\.delay\(0\.08, function\(\)\s+outfitThread = nil/);
+  assert.match(scene, /if outfitThread and coroutine\.status\(outfitThread\) == "suspended" then task\.cancel\(outfitThread\) end\s+outfitThread = nil/);
+});
+
+test('항해 중 항구 간판과 동료 연산을 중단하고 해상 날씨 소유권을 유지한다', () => {
+  const signs = scene.split('local function animateSign(rec)')[1].split('-- 방문시설 간판:')[0];
+  assert.match(signs, /local sailing = workspace:GetAttribute\("VoyageActive"\) == true/);
+  assert.match(signs, /if not a\.bb\.Parent then\s+table\.remove\(signAnims, i\)\s+elseif not sailing then/);
+  assert.match(signs, /if #signAnims == 0 then\s+signLoop:Disconnect\(\)/);
+  const followers = scene.split('followConn = RunService.PreSimulation:Connect')[1].split('followConn:Disconnect()')[0];
+  assert.match(followers, /if workspace:GetAttribute\("VoyageActive"\) or workspace:FindFirstChild\("FieldScene"\) then return end/);
+  assert.ok(followers.indexOf('workspace:GetAttribute("VoyageActive")') < followers.indexOf('workspace:Raycast('));
+  const climate = scene.split('local climateConn = RunService.Heartbeat:Connect')[1].split('climateConn:Disconnect()')[0];
+  assert.match(climate, /if workspace:GetAttribute\("VoyageActive"\) or workspace:GetAttribute\("ShotCF"\) or workspace:FindFirstChild\("FieldScene"\) then\s+if snow and snow\.Rate ~= 0 then snow\.Rate = 0 end\s+return\s+end/);
+  assert.ok(climate.indexOf('workspace:GetAttribute("VoyageActive")') < climate.indexOf('portClouds.Cover ='));
+  assert.match(climate, /snow\.Rate = if seasonIndex == 1 then 18 \+ dawn \* 9 else 0/);
+});
+
+test('원거리 주민은 위치와 보행 위상을 보존하고 관절 갱신만 제한한다', () => {
+  const walk = scene.split('local walkConn = RunService.PreSimulation:Connect')[1].split('walkConn:Disconnect()')[0];
+  assert.match(walk, /local motionEye = motionCamera and motionCamera\.CFrame\.Position/);
+  assert.match(walk, /local motionRange = if UserInputService\.TouchEnabled then 135 else 180/);
+  assert.match(walk, /local fullMotion = RunService:IsStudio\(\) or not motionEye/);
+  assert.match(walk, /w\.trav = \(w\.trav or 0\) \+ walked\s+end\s+--[^\n]*\n\s+if fullMotion or \(motionEye - pos\)\.Magnitude < motionRange then/);
+  assert.match(walk, /if fullMotion or \(motionEye - w\.base\.Position\)\.Magnitude < motionRange then/);
+  assert.match(walk, /local close = not motionEye or \(motionEye - destination\)\.Magnitude < \(if UserInputService\.TouchEnabled then 105 else 155\)/);
+  assert.match(walk, /if close and now >= w\.groundCheckAt then/);
+  assert.match(walk, /local pivot = w\.base \* CFrame\.new\(0, w\.groundOffset \+ bob, d\) \* CFrame\.Angles\(0, w\.hd, 0\)\s+w\.model:PivotTo\(pivot\)/);
+  assert.match(scene, /if math\.max\(sz\.X, sz\.Y, sz\.Z\) < 4 then\s+d\.CastShadow = false/);
 });
