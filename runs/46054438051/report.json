@@ -1,0 +1,74 @@
+{
+ "sourceRevision": "fc2031444b6153a032bcef20fd932ced45650c13",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "LAB ok R15NPC\ntext"
+  },
+  {
+   "step": 3,
+   "capture": "poselab_stage",
+   "files": 1
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "PROBE fwd=-5.684341886080802e-14, -1.4210854715202004e-14, -1 anchored=true\nPROBE LeftHip +0.6 -> LeftFoot fwd=1.09 up=0.34\nPROBE LeftKnee +0.6 -> LeftFoot fwd=0.60 up=0.18\nPROBE LeftKnee -0.6 -> LeftFoot fwd=-0.60 up=0.18\nPROBE LeftShoulder -1.0 -> LeftHand fwd=-1.37 up=0.75\nPROBE LeftShoulder +1.0 -> LeftHand fwd=1.37 up=0.75\nPROBE LeftElbow -0.8 -> LeftHand fwd=-0.64 up=0.27\nPROBE LeftElbow +0.8 -> LeftHand fwd=0.64 up=0.27\nPROBE Waist +0.4 -> Head fwd=-0.85 up=-0.17\nPROBE Root +0.3 -> Head fwd=-0.76 up=-0.11\nPROBE joints \ntext"
+  },
+  {
+   "step": 5,
+   "capture": "poselab_probe",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 30007
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 209
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 1514
+  },
+  {
+   "step": 3,
+   "type": "capture",
+   "elapsedMs": 856
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 3740
+  },
+  {
+   "step": 5,
+   "type": "capture",
+   "elapsedMs": 589
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 6,
+  "completedSteps": 6,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 2,
+  "capturedFrames": 2,
+  "abortedEarly": false
+ }
+}
