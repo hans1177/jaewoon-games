@@ -4754,3 +4754,25 @@ test('Mare card guidance and temporary advice share a reserved non-overlapping s
     assert.ok(right<menuLeft && right>width*0.02);
   }
 });
+
+
+test('Mare building trim preserves original roof and window materials and fits details before scene parenting',()=>{
+  const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+  const importer=scene.slice(scene.indexOf('local function importedModel('),scene.indexOf('-- 등불:'));
+  assert.match(importer,/if tint and not architecture and not preserveArchitectureTexture then/);
+  assert.match(importer,/if tint and asset:find\("roof", 1, true\) and not asset:find\("house", 1, true\) then/);
+  const uniform=scene.slice(scene.indexOf('local function uniformMaterial('),scene.indexOf('local vacancyRate'));
+  assert.match(uniform,/if not textured and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\s+and low >= 0\.78 and high - low <= 0\.14 then/);
+  const house=scene.slice(scene.indexOf('-- [건축 장식 접합]'),scene.indexOf('-- [유럽·지중해·남아시아]'));
+  for(const name of ['roof','trim','doorway','chim','bal']) assert.ok(house.includes('model = '+name),name);
+  assert.match(house,/piece\.Transparency < 0\.98/);
+  assert.match(house,/piece\.CFrame:PointToObjectSpace\(origin\)/);
+  assert.match(house,/piece\.CFrame:VectorToObjectSpace\(direction\)/);
+  assert.match(house,/if enter <= exit then nearest = math\.min\(nearest, enter\) end/);
+  assert.match(house,/local target = contact - direction \* math\.max\(0, halfDepth - 0\.08\)/);
+  assert.doesNotMatch(house,/workspace:Raycast|detail:Destroy\(\)/);
+  for(const [o,v,h,expected] of [[12,-1,2,10],[-12,1,2,10],[0,1,2,0]]){
+    const lo=(-h-o)/v,hi=(h-o)/v;
+    assert.equal(Math.max(0,Math.min(lo,hi)),expected);
+  }
+});
