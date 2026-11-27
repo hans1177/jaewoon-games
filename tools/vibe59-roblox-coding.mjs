@@ -22,6 +22,8 @@ export const VIBE59_ROBLOX_OFFLINE_RULES=Object.freeze(RULE_TABLE.map(
 ));
 // [루아우 분석] 문자열·긴 문자열·주석을 선형으로 구분한다.
 // 규칙이 실제 인자로 검사하는 문자열만 보존하고, 그 외 텍스트는 공백 처리한다.
+// [읽기 전용 한도] 실제 대형 Roblox 장면까지 검사하되 편집·합성 제한은 별도 유지한다.
+const MAX_READONLY_LUAU_CHARS=1000000;
 const OFFLINE_LITERAL_ARGUMENTS=new Set([
   'HumanoidRootPart','DataStoreService','Part','Tool',
   'Coins','Gold','Money','Currency','Inventory','build','place'
@@ -78,9 +80,14 @@ function stripVibe59LuauComments(source){
 
 export function diagnoseVibe59RobloxOffline({path='',source=''}={}){
   const side=classifyVibe59RobloxScript(path);
-  if(typeof source!=='string'||source.length>260000||!/\.(?:lua|luau)$/i.test(String(path)))
+  if(typeof source!=='string'||source.length>MAX_READONLY_LUAU_CHARS||!/\.(?:lua|luau)$/i.test(String(path)))
     throw Error('VIBE59_ROBLOX_DIAGNOSTIC_SOURCE');
-  const code=stripVibe59LuauComments(source),diagnostics=[];
+  return diagnoseVibe59ActiveLuau(path,side,stripVibe59LuauComments(source));
+}
+
+// 단일 정적 진단 책임: 전체 흐름 검사에서는 이미 정제된 원본을 재사용한다.
+function diagnoseVibe59ActiveLuau(path,side,code){
+  const diagnostics=[];
   // [성능] 규칙 50종이 같은 원문 앞부분을 반복 탐색하지 않도록 행 시작 위치를 한 번만 구축한다.
   const lineStarts=[0];
   for(let i=0;i<code.length;i++)if(code.charCodeAt(i)===10)lineStarts.push(i+1);
@@ -148,7 +155,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       continue;
     }
     // 검사 상한·읽기 전용 정책은 유지하고 누락된 파일을 명시적으로 보고한다.
-    if(source.length>260000){
+    if(source.length>MAX_READONLY_LUAU_CHARS){
       unscanned.push({path,reason:'LUAU_SOURCE_LIMIT_EXCEEDED',responsible:owners.has(path)});
       continue;
     }
@@ -229,7 +236,7 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       if(side==='SERVER'&&/^(FireServer|InvokeServer)$/.test(match[2]))
         if(!found.has('CLIENT_REMOTE_CALL_IN_SERVER'))found.set('CLIENT_REMOTE_CALL_IN_SERVER',{code:'CLIENT_REMOTE_CALL_IN_SERVER',line});
     }
-    // [저장·서버 권한] 원격 호출과 동일한 26만 자 한도에서 전체 소스를 검사한다.
+    // [저장·서버 권한] 읽기 전용 한도 안에서 전체 소스를 검사한다.
     // 여러 줄로 분리된 접근과 4천 줄 이후의 접근도 실제 원본 줄에 연결한다.
     for(const match of activeSource.matchAll(/:\s*(GetDataStore|UpdateAsync|SetAsync|GetAsync|SetAttribute)\s*\(/g)){
       const line=sourceLineAt(match.index);
@@ -307,9 +314,10 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
       if(found.has('FRAME_REMOTE_REQUEST')&&found.has('FRAME_SERVER_BROADCAST')
         &&found.has('FRAME_CONNECTION_ACCUMULATION'))break;
     }
-    // [전체 함수 영향] 26만 자의 검증된 상한 안에서 4천 줄 이후 의존성도 확인한다.
+    // [전체 함수 영향] 읽기 전용 상한 안에서 4천 줄 이후 의존성도 확인한다.
     // 저장되는 함수 선언·호출 수의 기존 48/64개 제한과 읽기 전용 성격은 유지한다.
     for(const [i,line] of activeSource.split(/\r?\n/).entries()){
+      if(functionDefinitions.length>=48&&functionCalls.length>=64)break;
       if(!line.trim())continue;
       // [함수 의존관계] 기존 Luau 주석·문자열 제거 결과만 사용한다.
       // 동일 파일 심볼의 선언과 호출은 정적 후보이며 실제 실행·스코프 확정이 아니다.
@@ -317,13 +325,14 @@ export function inspectVibe59RobloxCoding({files=[],responsiblePaths=[]}={}){
         if(functionDefinitions.length<48)functionDefinitions.push({
           name:declaration[1]||declaration[2],line:i+1});
       }
+      if(functionCalls.length>=64)continue;
       for(const invocation of line.matchAll(/(?<![\w.:])([A-Za-z_]\w*)\s*\(/g)){
         if(functionCalls.length>=64)break;
         if(invocation[1]==='function'||/\bfunction\s+$/.test(line.slice(0,invocation.index)))continue;
         functionCalls.push({name:invocation[1],line:i+1});
       }
     }
-    const offline=diagnoseVibe59RobloxOffline({path,source});
+    const offline=diagnoseVibe59ActiveLuau(path,side,activeSource);
     // 정확한 원본 한 줄이 유일할 때만 편집 앵커 후보로 노출한다.
     // 중복·긴 줄·미확인 위치는 앵커를 생성하지 않고 읽기 전용 검토로 남긴다.
     const originalLines=source.split('\n');
