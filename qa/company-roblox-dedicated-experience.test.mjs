@@ -2818,6 +2818,14 @@ test('Mare Dropbox candidate recognizes exact successful check runs without weak
   assert.ok(block.includes('CARD_DROPBOX_CHECK_RUN_PENDING_OR_FAILED'));
   assert.ok(block.includes('gh pr checks "$pr" --repo "$GITHUB_REPOSITORY" --required'));
   assert.ok(block.includes("no checks reported on the '$CARD_BRANCH' branch"));
+  assert.ok(block.includes("no required checks reported on the '$CARD_BRANCH' branch"));
+  const guard=block.split('\n').find(line=>line.includes('if [[ "$required_checks" !='));
+  assert.ok(guard);
+  const script='CARD_BRANCH=exact-candidate\nrequired_checks="$1"\n'+guard+'\nexit 1\nfi\nexit 0\n';
+  for(const prefix of ['no checks reported','no required checks reported'])
+    assert.doesNotThrow(()=>execFileSync('bash',['-c',script,'--',prefix+" on the 'exact-candidate' branch"]));
+  for(const message of ["no required checks reported on the 'other' branch","required check failed","HTTP 403"])
+    assert.throws(()=>execFileSync('bash',['-c',script,'--',message]));
   assert.ok(block.includes('gh pr merge "$pr" --repo "$GITHUB_REPOSITORY" --squash --match-head-commit "$head"'));
   assert.ok(!block.includes('--admin'));
   assert.ok(block.indexOf('CARD_DROPBOX_PR_CHECKS_VERIFIED')<block.indexOf('gh pr merge'));
