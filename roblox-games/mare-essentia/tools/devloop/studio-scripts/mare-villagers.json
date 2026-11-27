@@ -1,1 +1,455 @@
-[{"type":"wait","ms":35000},{"type":"luau","ctx":"Client","code":"for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('MareShot') end) RS:BindToRenderStep('MareShot',Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute('ShotCF') local m=_G.VTarget if m and m.Parent then local p=m:GetPivot().Position cf=CFrame.lookAt(p+Vector3.new(2.5,9,5),p+Vector3.new(0,2.2,0)) end if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=55 end end) return 'cam'"},{"type":"luau","ctx":"Client","code":"local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='amsterdam',portName='amsterdam',level=4,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end return 'built '..tostring(ok)..' '..tostring(err)"},{"type":"wait","ms":9000},{"type":"luau","ctx":"Client","code":"local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=1 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"},{"type":"wait","ms":500},{"type":"capture","name":"vil_1_0"},{"type":"wait","ms":500},{"type":"capture","name":"vil_1_1"},{"type":"wait","ms":500},{"type":"capture","name":"vil_1_2"},{"type":"luau","ctx":"Client","code":"local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=2 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"},{"type":"wait","ms":500},{"type":"capture","name":"vil_2_0"},{"type":"wait","ms":500},{"type":"capture","name":"vil_2_1"},{"type":"wait","ms":500},{"type":"capture","name":"vil_2_2"},{"type":"luau","ctx":"Client","code":"local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=3 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"},{"type":"wait","ms":500},{"type":"capture","name":"vil_3_0"},{"type":"wait","ms":500},{"type":"capture","name":"vil_3_1"},{"type":"wait","ms":500},{"type":"capture","name":"vil_3_2"},{"type":"luau","ctx":"Client","code":"local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=4 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"},{"type":"wait","ms":500},{"type":"capture","name":"vil_4_0"},{"type":"wait","ms":500},{"type":"capture","name":"vil_4_1"},{"type":"wait","ms":500},{"type":"capture","name":"vil_4_2"},{"type":"luau","ctx":"Client","code":"local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=5 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"},{"type":"wait","ms":500},{"type":"capture","name":"vil_5_0"},{"type":"wait","ms":500},{"type":"capture","name":"vil_5_1"},{"type":"wait","ms":500},{"type":"capture","name":"vil_5_2"},{"type":"luau","ctx":"Client","code":"local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=6 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"},{"type":"wait","ms":500},{"type":"capture","name":"vil_6_0"},{"type":"wait","ms":500},{"type":"capture","name":"vil_6_1"},{"type":"wait","ms":500},{"type":"capture","name":"vil_6_2"},{"type":"luau","ctx":"Client","code":"-- [주민 외형 실물 검증] 기존 장면·R15·승인 자산을 읽기만 한다. 저장·복장 상태는 수정하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"VILLAGER_SCENE_MISSING\")\nlocal checked,ready,baseBody,hairReady,hairExpected,garments,overlap,whiteBoot,hoodCovered,hoodHairOverlap,hoodMissing,visibleAccessories,falseReady=0,0,0,0,0,0,0,0,0,0,0,0,0\nlocal missing,hairProblems,falseReadyProfiles={},{},{}\nfor _,actor in scene:GetDescendants() do\n if actor:IsA(\"Model\") and actor:GetAttribute(\"NpcAssetProfile\") then\n  checked+=1\n  local readyState=actor:GetAttribute(\"NpcAppearanceState\")\n  if readyState==\"ready\" then ready+=1 end\n  local activeRequired=(tonumber(actor:GetAttribute(\"OutfitRequiredCount\")) or 0)-(tonumber(actor:GetAttribute(\"OutfitLodHiddenCount\")) or 0)\n  local mounted=tonumber(actor:GetAttribute(\"OutfitVisibleCount\")) or 0\n  visibleAccessories+=tonumber(actor:GetAttribute(\"NpcR15AccessoryVisible\")) or 0\n  if readyState==\"ready\" and mounted<activeRequired then\n   falseReady+=1\n   if #falseReadyProfiles<6 then table.insert(falseReadyProfiles,tostring(actor:GetAttribute(\"NpcAssetProfile\"))..\":\"..mounted..\"/\"..activeRequired) end\n  end\n  local miss=actor:GetAttribute(\"OutfitMissing\")\n  if type(miss)==\"string\" and #miss>0 then\n   table.insert(missing,tostring(actor:GetAttribute(\"NpcAssetProfile\"))..\":\"..miss)\n  end\n  if actor:FindFirstChild(\"R15Asset_male_peasant_body_UpperTorso\")\n   or actor:FindFirstChild(\"R15Asset_female_peasant_body_UpperTorso\")\n   or actor:FindFirstChild(\"R15Asset_male_ranger_body_UpperTorso\")\n   or actor:FindFirstChild(\"R15Asset_female_ranger_body_UpperTorso\") then baseBody+=1 end\n  -- [두건 착용자] 실물 두건 표시와 기본 예비 머리의 겹침을 헤어 누락과 구분한다.\n  local profile=actor:GetAttribute(\"NpcAssetProfile\")\n  local hoodName=if profile==\"companion_clergy_male\" then \"R15Asset_male_ranger_head_hood_Head\"\n   elseif profile==\"companion_clergy_female\" then \"R15Asset_female_ranger_head_hood_Head\" else nil\n  local hood=hoodName and actor:FindFirstChild(hoodName)\n  local hoodVisible=false\n  if hood then\n   for _,part in hood:GetDescendants() do\n    if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.95 then\n     hoodVisible=true break\n    end\n   end\n  end\n  if hoodName then\n   if hoodVisible then\n    hoodCovered+=1\n    for _,name in {\"Hair\",\"HairBack\",\"HairScalp\",\"HairScalpSide\"} do\n     local piece=actor:FindFirstChild(name)\n     if piece and piece:IsA(\"BasePart\") and piece.Transparency<0.95 then hoodHairOverlap+=1 end\n    end\n   else hoodMissing+=1 end\n  end\n  local hairStyle=actor:GetAttribute(\"NpcHairStyle\")\n  if (hairStyle==\"short\" or hairStyle==\"long\" or hairStyle==\"bun\") and not hoodVisible then\n   hairExpected+=1\n   if actor:GetAttribute(\"NpcHairMeshReady\")==true then\n    hairReady+=1\n   else\n    local worn={}\n    for _,slot in actor:GetChildren() do\n     if slot:IsA(\"Model\") and slot.Name:sub(1,14)==\"R15Asset_hair_\" then\n      local showing=0\n      for _,part in slot:GetDescendants() do\n       if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.95 then showing+=1 end\n      end\n      table.insert(worn,slot.Name..\":\"..showing)\n     end\n    end\n    local fallback=actor:FindFirstChild(\"Hair\")\n    table.insert(hairProblems,tostring(actor:GetAttribute(\"NpcAssetProfile\"))..\"/\"..tostring(actor:GetAttribute(\"AppearanceProfession\"))..\"/\"..hairStyle..\"/slots=\"..table.concat(worn,\",\")..\"/fallback=\"..tostring(fallback and fallback.Transparency))\n   end\n  end\n  local vest,coat=false,false\n  for _,item in actor:GetChildren() do\n   if item:IsA(\"Model\") and item.Name:sub(1,16)==\"R15Asset_outfit_\" then\n    for _,part in item:GetDescendants() do\n     if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.99 then\n      garments+=1\n      if item.Name==\"R15Asset_outfit_vest_UpperTorso\" then vest=true end\n      if item.Name==\"R15Asset_outfit_coat_UpperTorso\" then coat=true end\n      if item.Name:find(\"R15Asset_outfit_boot_\",1,true) then\n       local surface=part:FindFirstChildOfClass(\"SurfaceAppearance\")\n       local shade=if surface then surface.Color else part.Color\n       local neutral=math.max(shade.R,shade.G,shade.B)-math.min(shade.R,shade.G,shade.B)<0.12\n       if not surface and (not part:IsA(\"MeshPart\") or part.TextureID==\"\")\n        and shade.R>0.80 and shade.G>0.79 and shade.B>0.76 and neutral then whiteBoot+=1 end\n      end\n     end\n    end\n   end\n  end\n  if vest and coat then overlap+=1 end\n end\nend\nlocal report=string.format(\"VILLAGER_OUTFIT_RUNTIME_AUDIT checked=%d ready=%d baseBody=%d hairReady=%d/%d hoodCovered=%d hoodHairOverlap=%d hoodMissing=%d visibleGarmentParts=%d visibleAccessories=%d falseReady=%d overlap=%d whiteBoot=%d missing=%d falseReadyProfiles=[%s] hairFailures=[%s]\",checked,ready,baseBody,hairReady,hairExpected,hoodCovered,hoodHairOverlap,hoodMissing,garments,visibleAccessories,falseReady,overlap,whiteBoot,#missing,table.concat(falseReadyProfiles,\" | \"),table.concat(hairProblems,\" | \",1,math.min(8,#hairProblems)))\nassert(checked>=10,\"VILLAGER_RUNTIME_ROSTER_MISSING:\"..report)\nassert(ready>=checked-2,\"VILLAGER_RUNTIME_NOT_READY:\"..report)\nassert(falseReady==0,\"VILLAGER_FALSE_READY:\"..report)\nassert(baseBody>=10,\"VILLAGER_BASE_BODY_MISSING:\"..report)\nassert(hairExpected>=10,\"VILLAGER_HAIR_PROFILE_EMPTY:\"..report)\nassert(garments>=10,\"VILLAGER_OUTFIT_RENDER_EMPTY:\"..report)\nassert(overlap==0,\"VILLAGER_OUTFIT_LAYER_OVERLAP:\"..report)\nassert(whiteBoot==0,\"VILLAGER_WHITE_BOOT_UNTEXTURED:\"..report)\nassert(hoodMissing==0,\"VILLAGER_HOOD_NOT_VISIBLE:\"..report)\nassert(hoodHairOverlap==0,\"VILLAGER_HOOD_HAIR_OVERLAP:\"..report)\nassert(#missing==0,\"VILLAGER_OUTFIT_MISSING:\"..table.concat(missing,\" | \",1,math.min(5,#missing)))\nlocal rs=game:GetService(\"ReplicatedStorage\")\nreturn report..\" R15Wearables=\"..tostring(rs:GetAttribute(\"MareR15WearablesState\"))..\" PBRMaterialAudit=\"..tostring(rs:GetAttribute(\"MareOutfitMaterialAuditState\"))"},{"type":"luau","ctx":"Client","code":"-- [헤어 전수 판정] 직전 진단 단계의 상세 결과가 먼저 로그에 저장된 뒤 실패를 알린다.\n-- 동일한 실제 게임 모델만 재확인하고 새 캐릭터/자산/저장 변경은 하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"VILLAGER_SCENE_MISSING\")\nlocal expected,visible=0,0\nfor _,actor in scene:GetDescendants() do\n if actor:IsA(\"Model\") and actor:GetAttribute(\"NpcAssetProfile\") then\n  local profile=actor:GetAttribute(\"NpcAssetProfile\")\n  local hoodName=if profile==\"companion_clergy_male\" then \"R15Asset_male_ranger_head_hood_Head\"\n   elseif profile==\"companion_clergy_female\" then \"R15Asset_female_ranger_head_hood_Head\" else nil\n  local hood=hoodName and actor:FindFirstChild(hoodName)\n  local hoodVisible=false\n  if hood then\n   for _,part in hood:GetDescendants() do\n    if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.95 then\n     hoodVisible=true break\n    end\n   end\n  end\n  local style=actor:GetAttribute(\"NpcHairStyle\")\n  if (style==\"short\" or style==\"long\" or style==\"bun\") and not hoodVisible then\n   expected+=1\n   if actor:GetAttribute(\"NpcHairMeshReady\")==true then visible+=1 end\n  end\n end\nend\nassert(expected>=10,\"VILLAGER_HAIR_PROFILE_EMPTY:\"..expected)\nassert(visible==expected,(\"VILLAGER_HAIR_NOT_READY:%d/%d\"):format(visible,expected))\nreturn (\"VILLAGER_HAIR_RUNTIME_PASS:%d/%d\"):format(visible,expected)"}]
+[
+  {
+    "type": "wait",
+    "ms": 35000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [주민 촬영] 이동하는 실제 주민의 머리 좌표와 방향을 따라간다.\nfor _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end\nlocal RS=game:GetService(\"RunService\")\npcall(function() RS:UnbindFromRenderStep(\"MareShot\") end)\n_G.VAngle=\"front\"\nRS:BindToRenderStep(\"MareShot\",Enum.RenderPriority.Last.Value+1,function()\n local cam=workspace.CurrentCamera\n local cf=workspace:GetAttribute(\"ShotCF\")\n local m=_G.VTarget\n if m and m.Parent then\n  local h=m:FindFirstChild(\"Head\")\n  if h and h:IsA(\"BasePart\") then\n   local mode=_G.VAngle\n   local p=h.Position\n   local forward=h.CFrame.LookVector\n   local right=h.CFrame.RightVector\n   local distance=math.max(h.Size.X,h.Size.Y,h.Size.Z)\n   local focus=p\n   local offset=forward*distance*4.8\n   if mode==\"body\" then focus=p-Vector3.new(0,distance*0.85,0) offset=forward*distance*9\n   elseif mode==\"side\" then offset=right*distance*4.8+Vector3.new(0,distance*0.16,0)\n   elseif mode==\"back\" then offset=-forward*distance*4.8+Vector3.new(0,distance*0.16,0) end\n   cf=CFrame.lookAt(focus+offset,focus)\n  end\n end\n if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=if _G.VAngle==\"body\" then 48 else 38 end\nend)\nreturn \"VILLAGER_TRACKED_CAMERA_READY\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='amsterdam',portName='amsterdam',level=4,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end return 'built '..tostring(ok)..' '..tostring(err)"
+  },
+  {
+    "type": "wait",
+    "ms": 9000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=1 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end assert(_G.VTarget and _G.VTarget:FindFirstChild('Head'),'VILLAGER_CAPTURE_TARGET_MISSING') _G.VAngle='body' return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"
+  },
+  {
+    "type": "wait",
+    "ms": 1200
+  },
+  {
+    "type": "capture",
+    "name": "vil_1_0"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local m=assert(_G.VTarget) local h=assert(m:FindFirstChild(\"Head\")) local d=assert(h:FindFirstChildWhichIsA(\"Decal\"),\"VILLAGER_FACE_DECAL_MISSING\") assert(d.Face==Enum.NormalId.Front and d.Transparency<1,\"VILLAGER_FACE_DECAL_INVALID\") _G.VAngle=\"front\" local tex=if h:IsA(\"MeshPart\") then h.TextureID else \"\" return \"VILLAGER_FACE_DIAGNOSTIC profile=\"..tostring(m:GetAttribute(\"NpcAssetProfile\"))..\" hair=\"..tostring(m:GetAttribute(\"NpcVisibleHairMesh\"))..\" accessory=\"..tostring(m:GetAttribute(\"NpcVisibleAccessoryMesh\"))..\" decal=\"..d.Texture..\" headTexture=\"..tex"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_1_1"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(game:GetService(\"RunService\"):IsStudio(),\"VILLAGER_STUDIO_ONLY\") local m=assert(_G.VTarget) local d=assert(m:FindFirstChild(\"Head\"):FindFirstChildWhichIsA(\"Decal\")) _G.VFaceDecal=d _G.VFaceAlpha=d.Transparency d.Transparency=1 assert(d.Transparency==1,\"VILLAGER_FACE_HIDE_FAILED\") return \"VILLAGER_FACE_DECAL_ISOLATED\""
+  },
+  {
+    "type": "wait",
+    "ms": 700
+  },
+  {
+    "type": "capture",
+    "name": "vil_1_decal_off"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local d=assert(_G.VFaceDecal) d.Transparency=_G.VFaceAlpha assert(d.Transparency==_G.VFaceAlpha,\"VILLAGER_FACE_RESTORE_FAILED\") _G.VFaceDecal=nil _G.VFaceAlpha=nil return \"VILLAGER_FACE_DECAL_RESTORED\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"side\" return \"VILLAGER_SIDE_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_1_2"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"back\" return \"VILLAGER_BACK_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_1_back"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=2 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end assert(_G.VTarget and _G.VTarget:FindFirstChild('Head'),'VILLAGER_CAPTURE_TARGET_MISSING') _G.VAngle='body' return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"
+  },
+  {
+    "type": "wait",
+    "ms": 1200
+  },
+  {
+    "type": "capture",
+    "name": "vil_2_0"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local m=assert(_G.VTarget) local h=assert(m:FindFirstChild(\"Head\")) local d=assert(h:FindFirstChildWhichIsA(\"Decal\"),\"VILLAGER_FACE_DECAL_MISSING\") assert(d.Face==Enum.NormalId.Front and d.Transparency<1,\"VILLAGER_FACE_DECAL_INVALID\") _G.VAngle=\"front\" local tex=if h:IsA(\"MeshPart\") then h.TextureID else \"\" return \"VILLAGER_FACE_DIAGNOSTIC profile=\"..tostring(m:GetAttribute(\"NpcAssetProfile\"))..\" hair=\"..tostring(m:GetAttribute(\"NpcVisibleHairMesh\"))..\" accessory=\"..tostring(m:GetAttribute(\"NpcVisibleAccessoryMesh\"))..\" decal=\"..d.Texture..\" headTexture=\"..tex"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_2_1"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(game:GetService(\"RunService\"):IsStudio(),\"VILLAGER_STUDIO_ONLY\") local m=assert(_G.VTarget) local d=assert(m:FindFirstChild(\"Head\"):FindFirstChildWhichIsA(\"Decal\")) _G.VFaceDecal=d _G.VFaceAlpha=d.Transparency d.Transparency=1 assert(d.Transparency==1,\"VILLAGER_FACE_HIDE_FAILED\") return \"VILLAGER_FACE_DECAL_ISOLATED\""
+  },
+  {
+    "type": "wait",
+    "ms": 700
+  },
+  {
+    "type": "capture",
+    "name": "vil_2_decal_off"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local d=assert(_G.VFaceDecal) d.Transparency=_G.VFaceAlpha assert(d.Transparency==_G.VFaceAlpha,\"VILLAGER_FACE_RESTORE_FAILED\") _G.VFaceDecal=nil _G.VFaceAlpha=nil return \"VILLAGER_FACE_DECAL_RESTORED\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"side\" return \"VILLAGER_SIDE_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_2_2"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"back\" return \"VILLAGER_BACK_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_2_back"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=3 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end assert(_G.VTarget and _G.VTarget:FindFirstChild('Head'),'VILLAGER_CAPTURE_TARGET_MISSING') _G.VAngle='body' return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"
+  },
+  {
+    "type": "wait",
+    "ms": 1200
+  },
+  {
+    "type": "capture",
+    "name": "vil_3_0"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local m=assert(_G.VTarget) local h=assert(m:FindFirstChild(\"Head\")) local d=assert(h:FindFirstChildWhichIsA(\"Decal\"),\"VILLAGER_FACE_DECAL_MISSING\") assert(d.Face==Enum.NormalId.Front and d.Transparency<1,\"VILLAGER_FACE_DECAL_INVALID\") _G.VAngle=\"front\" local tex=if h:IsA(\"MeshPart\") then h.TextureID else \"\" return \"VILLAGER_FACE_DIAGNOSTIC profile=\"..tostring(m:GetAttribute(\"NpcAssetProfile\"))..\" hair=\"..tostring(m:GetAttribute(\"NpcVisibleHairMesh\"))..\" accessory=\"..tostring(m:GetAttribute(\"NpcVisibleAccessoryMesh\"))..\" decal=\"..d.Texture..\" headTexture=\"..tex"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_3_1"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(game:GetService(\"RunService\"):IsStudio(),\"VILLAGER_STUDIO_ONLY\") local m=assert(_G.VTarget) local d=assert(m:FindFirstChild(\"Head\"):FindFirstChildWhichIsA(\"Decal\")) _G.VFaceDecal=d _G.VFaceAlpha=d.Transparency d.Transparency=1 assert(d.Transparency==1,\"VILLAGER_FACE_HIDE_FAILED\") return \"VILLAGER_FACE_DECAL_ISOLATED\""
+  },
+  {
+    "type": "wait",
+    "ms": 700
+  },
+  {
+    "type": "capture",
+    "name": "vil_3_decal_off"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local d=assert(_G.VFaceDecal) d.Transparency=_G.VFaceAlpha assert(d.Transparency==_G.VFaceAlpha,\"VILLAGER_FACE_RESTORE_FAILED\") _G.VFaceDecal=nil _G.VFaceAlpha=nil return \"VILLAGER_FACE_DECAL_RESTORED\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"side\" return \"VILLAGER_SIDE_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_3_2"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"back\" return \"VILLAGER_BACK_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_3_back"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=4 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end assert(_G.VTarget and _G.VTarget:FindFirstChild('Head'),'VILLAGER_CAPTURE_TARGET_MISSING') _G.VAngle='body' return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"
+  },
+  {
+    "type": "wait",
+    "ms": 1200
+  },
+  {
+    "type": "capture",
+    "name": "vil_4_0"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local m=assert(_G.VTarget) local h=assert(m:FindFirstChild(\"Head\")) local d=assert(h:FindFirstChildWhichIsA(\"Decal\"),\"VILLAGER_FACE_DECAL_MISSING\") assert(d.Face==Enum.NormalId.Front and d.Transparency<1,\"VILLAGER_FACE_DECAL_INVALID\") _G.VAngle=\"front\" local tex=if h:IsA(\"MeshPart\") then h.TextureID else \"\" return \"VILLAGER_FACE_DIAGNOSTIC profile=\"..tostring(m:GetAttribute(\"NpcAssetProfile\"))..\" hair=\"..tostring(m:GetAttribute(\"NpcVisibleHairMesh\"))..\" accessory=\"..tostring(m:GetAttribute(\"NpcVisibleAccessoryMesh\"))..\" decal=\"..d.Texture..\" headTexture=\"..tex"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_4_1"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(game:GetService(\"RunService\"):IsStudio(),\"VILLAGER_STUDIO_ONLY\") local m=assert(_G.VTarget) local d=assert(m:FindFirstChild(\"Head\"):FindFirstChildWhichIsA(\"Decal\")) _G.VFaceDecal=d _G.VFaceAlpha=d.Transparency d.Transparency=1 assert(d.Transparency==1,\"VILLAGER_FACE_HIDE_FAILED\") return \"VILLAGER_FACE_DECAL_ISOLATED\""
+  },
+  {
+    "type": "wait",
+    "ms": 700
+  },
+  {
+    "type": "capture",
+    "name": "vil_4_decal_off"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local d=assert(_G.VFaceDecal) d.Transparency=_G.VFaceAlpha assert(d.Transparency==_G.VFaceAlpha,\"VILLAGER_FACE_RESTORE_FAILED\") _G.VFaceDecal=nil _G.VFaceAlpha=nil return \"VILLAGER_FACE_DECAL_RESTORED\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"side\" return \"VILLAGER_SIDE_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_4_2"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"back\" return \"VILLAGER_BACK_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_4_back"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=5 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end assert(_G.VTarget and _G.VTarget:FindFirstChild('Head'),'VILLAGER_CAPTURE_TARGET_MISSING') _G.VAngle='body' return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"
+  },
+  {
+    "type": "wait",
+    "ms": 1200
+  },
+  {
+    "type": "capture",
+    "name": "vil_5_0"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local m=assert(_G.VTarget) local h=assert(m:FindFirstChild(\"Head\")) local d=assert(h:FindFirstChildWhichIsA(\"Decal\"),\"VILLAGER_FACE_DECAL_MISSING\") assert(d.Face==Enum.NormalId.Front and d.Transparency<1,\"VILLAGER_FACE_DECAL_INVALID\") _G.VAngle=\"front\" local tex=if h:IsA(\"MeshPart\") then h.TextureID else \"\" return \"VILLAGER_FACE_DIAGNOSTIC profile=\"..tostring(m:GetAttribute(\"NpcAssetProfile\"))..\" hair=\"..tostring(m:GetAttribute(\"NpcVisibleHairMesh\"))..\" accessory=\"..tostring(m:GetAttribute(\"NpcVisibleAccessoryMesh\"))..\" decal=\"..d.Texture..\" headTexture=\"..tex"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_5_1"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(game:GetService(\"RunService\"):IsStudio(),\"VILLAGER_STUDIO_ONLY\") local m=assert(_G.VTarget) local d=assert(m:FindFirstChild(\"Head\"):FindFirstChildWhichIsA(\"Decal\")) _G.VFaceDecal=d _G.VFaceAlpha=d.Transparency d.Transparency=1 assert(d.Transparency==1,\"VILLAGER_FACE_HIDE_FAILED\") return \"VILLAGER_FACE_DECAL_ISOLATED\""
+  },
+  {
+    "type": "wait",
+    "ms": 700
+  },
+  {
+    "type": "capture",
+    "name": "vil_5_decal_off"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local d=assert(_G.VFaceDecal) d.Transparency=_G.VFaceAlpha assert(d.Transparency==_G.VFaceAlpha,\"VILLAGER_FACE_RESTORE_FAILED\") _G.VFaceDecal=nil _G.VFaceAlpha=nil return \"VILLAGER_FACE_DECAL_RESTORED\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"side\" return \"VILLAGER_SIDE_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_5_2"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"back\" return \"VILLAGER_BACK_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_5_back"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local f=workspace:FindFirstChild('PortScene') local list={} for _,m in f:GetDescendants() do if m:IsA('Model') and m.Name=='Villager' and m:FindFirstChildOfClass('Humanoid') then local p=m:GetPivot().Position if math.abs(p.Y)<4 then table.insert(list,m) end end end table.sort(list,function(a,b) return a:GetPivot().Position.X<b:GetPivot().Position.X end) local k=6 local step=math.max(1,math.floor(#list/6)) _G.VTarget=list[math.min(#list,1+(k-1)*step)] local t=_G.VTarget if t then local q=t:GetPivot().Position workspace:SetAttribute('ShotCF',CFrame.lookAt(q+Vector3.new(2.5,9,5),q+Vector3.new(0,2.2,0))) end assert(_G.VTarget and _G.VTarget:FindFirstChild('Head'),'VILLAGER_CAPTURE_TARGET_MISSING') _G.VAngle='body' return 'villagers='..#list..' pick='..tostring(_G.VTarget and _G.VTarget:GetPivot().Position)"
+  },
+  {
+    "type": "wait",
+    "ms": 1200
+  },
+  {
+    "type": "capture",
+    "name": "vil_6_0"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local m=assert(_G.VTarget) local h=assert(m:FindFirstChild(\"Head\")) local d=assert(h:FindFirstChildWhichIsA(\"Decal\"),\"VILLAGER_FACE_DECAL_MISSING\") assert(d.Face==Enum.NormalId.Front and d.Transparency<1,\"VILLAGER_FACE_DECAL_INVALID\") _G.VAngle=\"front\" local tex=if h:IsA(\"MeshPart\") then h.TextureID else \"\" return \"VILLAGER_FACE_DIAGNOSTIC profile=\"..tostring(m:GetAttribute(\"NpcAssetProfile\"))..\" hair=\"..tostring(m:GetAttribute(\"NpcVisibleHairMesh\"))..\" accessory=\"..tostring(m:GetAttribute(\"NpcVisibleAccessoryMesh\"))..\" decal=\"..d.Texture..\" headTexture=\"..tex"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_6_1"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(game:GetService(\"RunService\"):IsStudio(),\"VILLAGER_STUDIO_ONLY\") local m=assert(_G.VTarget) local d=assert(m:FindFirstChild(\"Head\"):FindFirstChildWhichIsA(\"Decal\")) _G.VFaceDecal=d _G.VFaceAlpha=d.Transparency d.Transparency=1 assert(d.Transparency==1,\"VILLAGER_FACE_HIDE_FAILED\") return \"VILLAGER_FACE_DECAL_ISOLATED\""
+  },
+  {
+    "type": "wait",
+    "ms": 700
+  },
+  {
+    "type": "capture",
+    "name": "vil_6_decal_off"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local d=assert(_G.VFaceDecal) d.Transparency=_G.VFaceAlpha assert(d.Transparency==_G.VFaceAlpha,\"VILLAGER_FACE_RESTORE_FAILED\") _G.VFaceDecal=nil _G.VFaceAlpha=nil return \"VILLAGER_FACE_DECAL_RESTORED\""
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"side\" return \"VILLAGER_SIDE_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_6_2"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "_G.VAngle=\"back\" return \"VILLAGER_BACK_CAMERA\""
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "capture",
+    "name": "vil_6_back"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [주민 외형 실물 검증] 기존 장면·R15·승인 자산을 읽기만 한다. 저장·복장 상태는 수정하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"VILLAGER_SCENE_MISSING\")\nlocal checked,ready,baseBody,hairReady,hairExpected,garments,overlap,whiteBoot,hoodCovered,hoodHairOverlap,hoodMissing,visibleAccessories,falseReady=0,0,0,0,0,0,0,0,0,0,0,0,0\nlocal missing,hairProblems,falseReadyProfiles={},{},{}\nfor _,actor in scene:GetDescendants() do\n if actor:IsA(\"Model\") and actor:GetAttribute(\"NpcAssetProfile\") then\n  checked+=1\n  local readyState=actor:GetAttribute(\"NpcAppearanceState\")\n  if readyState==\"ready\" then ready+=1 end\n  local activeRequired=(tonumber(actor:GetAttribute(\"OutfitRequiredCount\")) or 0)-(tonumber(actor:GetAttribute(\"OutfitLodHiddenCount\")) or 0)\n  local mounted=tonumber(actor:GetAttribute(\"OutfitVisibleCount\")) or 0\n  visibleAccessories+=tonumber(actor:GetAttribute(\"NpcR15AccessoryVisible\")) or 0\n  if readyState==\"ready\" and mounted<activeRequired then\n   falseReady+=1\n   if #falseReadyProfiles<6 then table.insert(falseReadyProfiles,tostring(actor:GetAttribute(\"NpcAssetProfile\"))..\":\"..mounted..\"/\"..activeRequired) end\n  end\n  local miss=actor:GetAttribute(\"OutfitMissing\")\n  if type(miss)==\"string\" and #miss>0 then\n   table.insert(missing,tostring(actor:GetAttribute(\"NpcAssetProfile\"))..\":\"..miss)\n  end\n  if actor:FindFirstChild(\"R15Asset_male_peasant_body_UpperTorso\")\n   or actor:FindFirstChild(\"R15Asset_female_peasant_body_UpperTorso\")\n   or actor:FindFirstChild(\"R15Asset_male_ranger_body_UpperTorso\")\n   or actor:FindFirstChild(\"R15Asset_female_ranger_body_UpperTorso\") then baseBody+=1 end\n  -- [두건 착용자] 실물 두건 표시와 기본 예비 머리의 겹침을 헤어 누락과 구분한다.\n  local profile=actor:GetAttribute(\"NpcAssetProfile\")\n  local hoodName=if profile==\"companion_clergy_male\" then \"R15Asset_male_ranger_head_hood_Head\"\n   elseif profile==\"companion_clergy_female\" then \"R15Asset_female_ranger_head_hood_Head\" else nil\n  local hood=hoodName and actor:FindFirstChild(hoodName)\n  local hoodVisible=false\n  if hood then\n   for _,part in hood:GetDescendants() do\n    if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.95 then\n     hoodVisible=true break\n    end\n   end\n  end\n  if hoodName then\n   if hoodVisible then\n    hoodCovered+=1\n    for _,name in {\"Hair\",\"HairBack\",\"HairScalp\",\"HairScalpSide\"} do\n     local piece=actor:FindFirstChild(name)\n     if piece and piece:IsA(\"BasePart\") and piece.Transparency<0.95 then hoodHairOverlap+=1 end\n    end\n   else hoodMissing+=1 end\n  end\n  local hairStyle=actor:GetAttribute(\"NpcHairStyle\")\n  if (hairStyle==\"short\" or hairStyle==\"long\" or hairStyle==\"bun\") and not hoodVisible then\n   hairExpected+=1\n   if actor:GetAttribute(\"NpcHairMeshReady\")==true then\n    hairReady+=1\n   else\n    local worn={}\n    for _,slot in actor:GetChildren() do\n     if slot:IsA(\"Model\") and slot.Name:sub(1,14)==\"R15Asset_hair_\" then\n      local showing=0\n      for _,part in slot:GetDescendants() do\n       if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.95 then showing+=1 end\n      end\n      table.insert(worn,slot.Name..\":\"..showing)\n     end\n    end\n    local fallback=actor:FindFirstChild(\"Hair\")\n    table.insert(hairProblems,tostring(actor:GetAttribute(\"NpcAssetProfile\"))..\"/\"..tostring(actor:GetAttribute(\"AppearanceProfession\"))..\"/\"..hairStyle..\"/slots=\"..table.concat(worn,\",\")..\"/fallback=\"..tostring(fallback and fallback.Transparency))\n   end\n  end\n  local vest,coat=false,false\n  for _,item in actor:GetChildren() do\n   if item:IsA(\"Model\") and item.Name:sub(1,16)==\"R15Asset_outfit_\" then\n    for _,part in item:GetDescendants() do\n     if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.99 then\n      garments+=1\n      if item.Name==\"R15Asset_outfit_vest_UpperTorso\" then vest=true end\n      if item.Name==\"R15Asset_outfit_coat_UpperTorso\" then coat=true end\n      if item.Name:find(\"R15Asset_outfit_boot_\",1,true) then\n       local surface=part:FindFirstChildOfClass(\"SurfaceAppearance\")\n       local shade=if surface then surface.Color else part.Color\n       local neutral=math.max(shade.R,shade.G,shade.B)-math.min(shade.R,shade.G,shade.B)<0.12\n       if not surface and (not part:IsA(\"MeshPart\") or part.TextureID==\"\")\n        and shade.R>0.80 and shade.G>0.79 and shade.B>0.76 and neutral then whiteBoot+=1 end\n      end\n     end\n    end\n   end\n  end\n  if vest and coat then overlap+=1 end\n end\nend\nlocal report=string.format(\"VILLAGER_OUTFIT_RUNTIME_AUDIT checked=%d ready=%d baseBody=%d hairReady=%d/%d hoodCovered=%d hoodHairOverlap=%d hoodMissing=%d visibleGarmentParts=%d visibleAccessories=%d falseReady=%d overlap=%d whiteBoot=%d missing=%d falseReadyProfiles=[%s] hairFailures=[%s]\",checked,ready,baseBody,hairReady,hairExpected,hoodCovered,hoodHairOverlap,hoodMissing,garments,visibleAccessories,falseReady,overlap,whiteBoot,#missing,table.concat(falseReadyProfiles,\" | \"),table.concat(hairProblems,\" | \",1,math.min(8,#hairProblems)))\nassert(checked>=10,\"VILLAGER_RUNTIME_ROSTER_MISSING:\"..report)\nassert(ready>=checked-2,\"VILLAGER_RUNTIME_NOT_READY:\"..report)\nassert(falseReady==0,\"VILLAGER_FALSE_READY:\"..report)\nassert(baseBody>=10,\"VILLAGER_BASE_BODY_MISSING:\"..report)\nassert(hairExpected>=10,\"VILLAGER_HAIR_PROFILE_EMPTY:\"..report)\nassert(garments>=10,\"VILLAGER_OUTFIT_RENDER_EMPTY:\"..report)\nassert(overlap==0,\"VILLAGER_OUTFIT_LAYER_OVERLAP:\"..report)\nassert(whiteBoot==0,\"VILLAGER_WHITE_BOOT_UNTEXTURED:\"..report)\nassert(hoodMissing==0,\"VILLAGER_HOOD_NOT_VISIBLE:\"..report)\nassert(hoodHairOverlap==0,\"VILLAGER_HOOD_HAIR_OVERLAP:\"..report)\nassert(#missing==0,\"VILLAGER_OUTFIT_MISSING:\"..table.concat(missing,\" | \",1,math.min(5,#missing)))\nlocal rs=game:GetService(\"ReplicatedStorage\")\nreturn report..\" R15Wearables=\"..tostring(rs:GetAttribute(\"MareR15WearablesState\"))..\" PBRMaterialAudit=\"..tostring(rs:GetAttribute(\"MareOutfitMaterialAuditState\"))"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [헤어 전수 판정] 직전 진단 단계의 상세 결과가 먼저 로그에 저장된 뒤 실패를 알린다.\n-- 동일한 실제 게임 모델만 재확인하고 새 캐릭터/자산/저장 변경은 하지 않는다.\nlocal scene=assert(workspace:FindFirstChild(\"PortScene\"),\"VILLAGER_SCENE_MISSING\")\nlocal expected,visible=0,0\nfor _,actor in scene:GetDescendants() do\n if actor:IsA(\"Model\") and actor:GetAttribute(\"NpcAssetProfile\") then\n  local profile=actor:GetAttribute(\"NpcAssetProfile\")\n  local hoodName=if profile==\"companion_clergy_male\" then \"R15Asset_male_ranger_head_hood_Head\"\n   elseif profile==\"companion_clergy_female\" then \"R15Asset_female_ranger_head_hood_Head\" else nil\n  local hood=hoodName and actor:FindFirstChild(hoodName)\n  local hoodVisible=false\n  if hood then\n   for _,part in hood:GetDescendants() do\n    if part:IsA(\"BasePart\") and part.Transparency<0.95 and part.LocalTransparencyModifier<0.95 then\n     hoodVisible=true break\n    end\n   end\n  end\n  local style=actor:GetAttribute(\"NpcHairStyle\")\n  if (style==\"short\" or style==\"long\" or style==\"bun\") and not hoodVisible then\n   expected+=1\n   if actor:GetAttribute(\"NpcHairMeshReady\")==true then visible+=1 end\n  end\n end\nend\nassert(expected>=10,\"VILLAGER_HAIR_PROFILE_EMPTY:\"..expected)\nassert(visible==expected,(\"VILLAGER_HAIR_NOT_READY:%d/%d\"):format(visible,expected))\nreturn (\"VILLAGER_HAIR_RUNTIME_PASS:%d/%d\"):format(visible,expected)"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "assert(not _G.VFaceDecal,\"VILLAGER_FACE_RESTORE_LEAK\") _G.VTarget=nil _G.VAngle=nil game:GetService(\"RunService\"):UnbindFromRenderStep(\"MareShot\") workspace:SetAttribute(\"ShotCF\",nil) return \"VILLAGER_CAMERA_CLEANUP\""
+  }
+]
