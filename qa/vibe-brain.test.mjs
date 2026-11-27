@@ -495,3 +495,26 @@ test('Studio screenshot artifact expires in one day and visual review verifies e
   assert.match(brain, /checks\.sourceRevision !== revision/);
   assert.match(brain, /digest\('hex'\) !== hashes\.get\(file\)/);
 });
+
+// [항구 촬영] 정본 181곳을 10개씩 나누고 11개 구도를 모두 기록한다.
+test('Mare port survey covers 181 unique ports without replacing primary QA reports', () => {
+  const workflow = fs.readFileSync('.github/workflows/devloop-studio.yml', 'utf8');
+  const root = 'roblox-games/mare-essentia/tools/devloop/studio-scripts/';
+  const qa = JSON.parse(fs.readFileSync(root + 'mare-qa-click.json', 'utf8'));
+  const town = JSON.parse(fs.readFileSync(root + 'mare-town.json', 'utf8'));
+  const ports = qa.map(row => row.code?.match(/^-- \[항구 위치\] ([a-z0-9_]+)/)?.[1]).filter(Boolean);
+  assert.equal(ports.length, 181);
+  assert.equal(new Set(ports).size, 181);
+  const names = ['01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall','09_rural','10_economy','11_npc_front','12_npc_hair'];
+  for (const name of names) {
+    const i = town.findIndex(row => row.type === 'capture' && row.name === name);
+    assert.ok(i >= 2);
+    assert.equal(town[i-2].type, 'luau');
+    assert.equal(town[i-1].type, 'wait');
+  }
+  assert.match(workflow, /ports\.slice\(\(batch - 1\) \* 10, batch \* 10\)/);
+  assert.match(workflow, /CityPortVisualIdentity/);
+  assert.match(workflow, /if \(!portBatch\)/);
+  assert.match(workflow, /STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED/);
+  assert.match(workflow, /retention-days: 1/);
+});

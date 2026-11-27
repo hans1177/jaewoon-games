@@ -22,6 +22,21 @@ on:
         required: false
         default: ''
         type: string
+      port_batch:
+        description: 항구 전수 촬영 회차 (0=기존 검사, 1~19=10항구씩 분할)
+        required: false
+        default: '0'
+        type: string
+      port_chain:
+        description: 항구 촬영 성공 후 다음 회차 자동 연결
+        required: false
+        default: true
+        type: boolean
+      port_revision:
+        description: 전수 촬영의 시작 main SHA (후속 회차용)
+        required: false
+        default: ''
+        type: string
 permissions:
   contents: write
   pull-requests: write
@@ -199,6 +214,8 @@ jobs:
           GAME_IN: ${{ github.event_name == 'push' && 'mare-essentia' || inputs.game }}
           SCRIPT_IN: ${{ github.event_name == 'push' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.candidate_ref != '' && 'roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json' || inputs.script }}
           DESIGN_CANDIDATE_IN: ${{ inputs.candidate_ref || '' }}
+          PORT_BATCH_IN: ${{ inputs.port_batch || '0' }}
+          PORT_REVISION_IN: ${{ inputs.port_revision || '' }}
         run: |
           $g = $env:GAME_IN
           $candidateRef = [string]$env:DESIGN_CANDIDATE_IN
@@ -212,6 +229,60 @@ jobs:
             if (Test-Path "main/$d") { $sc = $d } elseif ($g -eq 'mare-essentia') { $sc = "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-town.json" } else { $sc = '' }
           }
           if ($sc -ne '' -and $sc -notmatch '^roblox-games/[a-z0-9-]+/[A-Za-z0-9_./-]+\.json$') { throw "bad script path" }
+          # [항구 전수] 기존 마을 시나리오와 QA 항구 목록에서 회차별 실제 촬영 절차를 생성한다.
+          if ($env:PORT_BATCH_IN -notmatch '^(0|[1-9]|1[0-9])$') { throw 'STUDIO_PORT_BATCH_INVALID' }
+          $portBatch = [int]$env:PORT_BATCH_IN
+          if ($portBatch -gt 0) {
+            if ($g -ne 'mare-essentia' -or $candidateRef -ne '' -or $env:SCRIPT_IN -ne '') { throw 'STUDIO_PORT_BATCH_SCOPE_INVALID' }
+            $revision = (& git -C main rev-parse HEAD).Trim()
+            if ($revision -notmatch '^[a-f0-9]{40}$' -or ($env:PORT_REVISION_IN -ne '' -and $env:PORT_REVISION_IN -ne $revision)) { throw 'STUDIO_PORT_BATCH_REVISION_CHANGED' }
+            $sc = "roblox-games/$g/tools/devloop/studio-scripts/mare-town.json"
+            $generated = Join-Path $env:RUNNER_TEMP 'mare-port-survey.json'
+            $generate = @'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const [root, out, rawBatch] = process.argv.slice(2);
+          const batch = Number(rawBatch);
+          const town = JSON.parse(fs.readFileSync(path.join(root, 'mare-town.json'), 'utf8'));
+          const qa = JSON.parse(fs.readFileSync(path.join(root, 'mare-qa-click.json'), 'utf8'));
+          const ports = qa.map(row => row.code?.match(/^-- \[항구 위치\] ([a-z0-9_]+)/)?.[1]).filter(Boolean);
+          if (ports.length !== 181 || new Set(ports).size !== 181 || !Number.isInteger(batch) || batch < 1 || batch > 19)
+            throw Error('STUDIO_PORT_SURVEY_CATALOG_MISMATCH');
+          const selected = ports.slice((batch - 1) * 10, batch * 10);
+          const names = ['01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall','09_rural','10_economy','11_npc_front','12_npc_hair'];
+          const cameras = names.map(name => {
+            const i = town.findIndex(row => row.type === 'capture' && row.name === name);
+            if (i < 2 || town[i-2].type !== 'luau' || town[i-1].type !== 'wait') throw Error('STUDIO_PORT_CAMERA_MISSING:' + name);
+            return [town[i-2], town[i-1], town[i]];
+          });
+          const bind = town.find(row => row.type === 'luau' && row.code.includes('BindToRenderStep("MareShot"'));
+          if (!bind) throw Error('STUDIO_PORT_CAMERA_BIND_MISSING');
+          const steps = [town[0], town[1], {type:'luau',ctx:'Client',code:
+            'local P=require(game:GetService("ReplicatedStorage").Shared.Ports).Ports local expected=' +
+            '{' + ports.map(id => '"' + id + '"').join(',') + '}' +
+            ' local n=0 for id,p in P do n+=1 end assert(n==#expected,"PORT_SURVEY_RUNTIME_COUNT") for _,id in expected do assert(P[id] and P[id].id==id,"PORT_SURVEY_RUNTIME_ID:"..id) end return "PORT_SURVEY_RUNTIME_CATALOG=181"'}];
+          for (const id of selected) {
+            steps.push({type:'luau',ctx:'Client',timeoutMs:90000,code:
+              'local RS=game:GetService("ReplicatedStorage") local P=require(RS.Shared.Ports).Ports local id="' + id + '" local p=assert(P[id],"PORT_SURVEY_ID") ' +
+              'for _,g in game.Players.LocalPlayer.PlayerGui:GetChildren() do if g:IsA("ScreenGui") then g.Enabled=false end end ' +
+              'local result=require(RS.Shared.PortScene).build({portId=id,portName=p.name,shipId="galleon",hasShipyard=p.shipyard,facilities={"bank","guild","harbormaster","palace"},storyCount=0},function() end) ' +
+              'local scene=assert(result.folder,"PORT_SURVEY_SCENE_MISSING") assert(scene.Parent==workspace and scene:GetAttribute("CityPortVisualIdentity")==id,"PORT_SURVEY_WRONG_SCENE:"..id) ' +
+              'local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild("HumanoidRootPart") then c.HumanoidRootPart.Anchored=true c:PivotTo(result.spawn) end return "PORT_SURVEY_SCENE="..id'});
+            steps.push({type:'wait',ms:8000}, bind);
+            for (const [camera, wait, capture] of cameras) {
+              steps.push(camera,wait,{...capture,name:'port_'+id+'_'+capture.name});
+            }
+          }
+          if (steps.filter(row => row.type === 'capture').length !== selected.length * names.length) throw Error('STUDIO_PORT_CAPTURE_COUNT_MISMATCH');
+          fs.writeFileSync(out, JSON.stringify(steps));
+          console.log('STUDIO_PORT_BATCH=' + batch + '/19 PORTS=' + selected.join(',') + ' PLANNED_FRAMES=' + selected.length * names.length);
+          '@
+            $generate | & node - (Join-Path $env:GITHUB_WORKSPACE "main/roblox-games/$g/tools/devloop/studio-scripts") $generated $portBatch
+            if ($LASTEXITCODE -ne 0) { throw 'STUDIO_PORT_SURVEY_GENERATION_FAILED' }
+            "CAP_SCRIPT_FILE=$generated" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            "STUDIO_PORT_REVISION=$revision" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+          "STUDIO_PORT_BATCH=$portBatch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "CAP_GAME=$g" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "CAP_SCRIPT=$sc" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Build place with pinned Rojo
@@ -325,7 +396,8 @@ jobs:
             try {
               Start-Process -FilePath $studio -ArgumentList @($env:MARE_PLACE) -PassThru | Out-Null
               if ($env:CAP_SCRIPT -ne '') {
-                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=main/$($env:CAP_SCRIPT)" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
+                $activeScript = if ($env:CAP_SCRIPT_FILE) { $env:CAP_SCRIPT_FILE } else { "main/$($env:CAP_SCRIPT)" }
+                & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=studio-script "--script=$activeScript" "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
               } else {
                 & node 'main/tools/company-development-roblox-studio-local-play.mjs' --mode=opening-capture "--mcp-command=$mcp" '--studio-name=marecheck' "--out-dir=$out"
               }
@@ -641,7 +713,7 @@ jobs:
               & node (Join-Path $checkoutRoot 'tools/company-nemotron-design-review.mjs') "--root=$checkoutRoot" "--frames=$out" "--previous=$priorDesign" "--feedback=$priorVisualFeedback" "--out=$(Join-Path $out 'nemotron-design-review.json')"
               if ($LASTEXITCODE -ne 0) { Write-Host 'DESIGN_FREE_REVIEW=UNVERIFIED' }
             }
-            $scriptFile = Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT)
+            $scriptFile = if ($env:CAP_SCRIPT_FILE) { $env:CAP_SCRIPT_FILE } else { Join-Path $env:GITHUB_WORKSPACE ("main/" + $env:CAP_SCRIPT) }
             # [증거] 단계별 통과·실패, 감사 판정, 촬영 파일과 SHA256 비교를 원본 report에 연결한다.
             # SHA256 비교는 파일 변경 탐지이며 사진 품질의 개선·악화 판정으로 표시하지 않는다.
             $archive = @'
@@ -655,8 +727,9 @@ jobs:
           const prior = fs.existsSync(indexFile) ? JSON.parse(fs.readFileSync(indexFile, 'utf8')) : {runs: []};
           const history = Array.isArray(prior.runs) ? prior.runs : [];
           const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
-          const kind = deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
-          const previous = history.find(row => row.kind === kind);
+          const portBatch = Number(process.env.STUDIO_PORT_BATCH || 0);
+          const kind = portBatch ? 'port-survey' : deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const previous = history.find(row => row.kind === kind && (!portBatch || row.portBatch === portBatch));
           const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
           const summary = report.summary || {};
           const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
@@ -730,7 +803,7 @@ jobs:
             result = 'UNVERIFIED';
           const captureArtifact = {name: 'studio-frames-' + runId, retentionDays: 1, runId};
           const link = 'https://github.com/' + repo + '/actions/runs/' + runId;
-          const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result, captureArtifact,
+          const checks = {runId, kind, portBatch: portBatch || null, sourceRevision: report.sourceRevision || '', result, captureArtifact,
             failureStage: qaStage || null, failureSignature: qaSignature || null,
             summary, errors, audits, steps: rows,
             screenshotComparison: comparisons.map(row => ({...row, url: link})),
@@ -742,14 +815,17 @@ jobs:
           fs.mkdirSync(folder, {recursive: true});
           fs.cpSync(out, folder, {recursive: true, force: true, filter: file => !imageExt.test(file)});
           fs.writeFileSync(path.join(folder, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
-          for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
-            if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
-              fs.rmSync(path.join(dst, entry.name));
+          // 항구 전수는 기존 복구용 최신 정밀검사 보고서를 덮어쓰지 않는다.
+          if (!portBatch) {
+            for (const entry of fs.readdirSync(dst, {withFileTypes: true})) {
+              if (entry.isFile() && (imageExt.test(entry.name) || ['report.json', 'checks.json'].includes(entry.name)))
+                fs.rmSync(path.join(dst, entry.name));
+            }
+            for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
+              if (entry.isFile() && !imageExt.test(entry.name)) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
+            }
+            fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
           }
-          for (const entry of fs.readdirSync(out, {withFileTypes: true})) {
-            if (entry.isFile() && !imageExt.test(entry.name)) fs.copyFileSync(path.join(out, entry.name), path.join(dst, entry.name));
-          }
-          fs.writeFileSync(path.join(dst, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
           // 기존 회차의 Git 작업 트리 사진만 제거한다. 이미 만들어진 Git 커밋 이력은 강제 변경하지 않는다.
           for (const row of history) {
             if (!/^runs\/[0-9]+$/.test(row.path || '')) continue;
@@ -760,7 +836,7 @@ jobs:
             }
           }
           fs.writeFileSync(path.join(out, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
-          const record = {runId, kind, at: new Date().toISOString(), sourceRevision: checks.sourceRevision, captureArtifact,
+          const record = {runId, kind, portBatch: portBatch || null, at: new Date().toISOString(), sourceRevision: checks.sourceRevision, captureArtifact,
             result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
             summary, path: 'runs/' + runId};
           const merged = [record, ...history.filter(row => row.runId !== runId)];
@@ -769,16 +845,17 @@ jobs:
           for (const row of merged) {
             if (Date.parse(row.at) >= cutoff &&
                 ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
-                 (row.kind !== 'deep' && kept.filter(item => item.kind !== 'deep').length < 6)))
+                 (row.kind === 'port-survey' && !kept.some(item => item.kind === 'port-survey' && item.portBatch === row.portBatch) && kept.filter(item => item.kind === 'port-survey').length < 19) ||
+                 (!['deep','port-survey'].includes(row.kind) && kept.filter(item => !['deep','port-survey'].includes(item.kind)).length < 6)))
               kept.push(row);
             else if (/^runs\/[0-9]+$/.test(row.path || ''))
               fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
           }
-          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: record,
+          fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: portBatch ? (prior.latest || null) : record,
             lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
-          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](' + link + ') | [checklist](checks.json) | [history](index.json)', 'Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs and others 6 runs', '',
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](' + link + ') | [checklist](checks.json) | [history](index.json)', 'Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs, others 6 runs, port survey 19 batches', '',
             '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
-            ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
+            ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + (row.portBatch ? ':' + row.portBatch : '') + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
           fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
           console.log('STUDIO_QA_CHECKS=' + JSON.stringify({result, steps: rows.length, audits}));
           console.log('STUDIO_SCREENSHOT_ARCHIVE=' + JSON.stringify({runId, kind, frames: frames.length,
@@ -786,7 +863,7 @@ jobs:
           '@
             $archive | & node - $dst $out $env:GITHUB_RUN_ID $env:CAP_SCRIPT $scriptFile $env:GITHUB_REPOSITORY $qaStage $qaSignature
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_ARCHIVE_REPORT_FAILED' }
-            $storedChecks = Get-Content -LiteralPath (Join-Path $dst 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
+            $storedChecks = Get-Content -LiteralPath (Join-Path $out 'checks.json') -Encoding UTF8 -Raw | ConvertFrom-Json
             Write-Host ("STUDIO_SCREENSHOT_REAL_IMAGES=" + [string]$storedChecks.screenshotFrameAudit.checked + " INVALID=" + [string]$storedChecks.screenshotFrameAudit.invalid)
             if ([int]$storedChecks.screenshotFrameAudit.invalid -gt 0 -and -not $qaStage) {
               $qaStage = 'STUDIO_EXECUTION'
@@ -1107,6 +1184,21 @@ jobs:
             Write-Host "STUDIO_LOCAL_EVIDENCE_CLEANED_MB=$([math]::Round($localCleanBytes/1MB,2))"
             Write-Host "STUDIO_E_DRIVE_FREE_MB_AFTER_ARCHIVE=$([math]::Round(([IO.DriveInfo]::new('E:\')).AvailableFreeSpace/1MB,2))"
           }
+      - name: Continue exact-revision port survey
+        if: ${{ success() && steps.studio_photo_artifact.outcome == 'success' && inputs.port_chain && inputs.port_batch != '0' }}
+        shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $batch = [int]$env:STUDIO_PORT_BATCH
+          if ($batch -lt 1 -or $batch -gt 19) { throw 'STUDIO_PORT_BATCH_INVALID' }
+          if ($batch -eq 19) { Write-Host 'STUDIO_PORT_SURVEY_LAST_BATCH_FINISHED=19'; exit 0 }
+          $mainSha = (& gh api "repos/$env:GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha').Trim()
+          if ($LASTEXITCODE -ne 0 -or $mainSha -ne $env:STUDIO_PORT_REVISION) { throw 'STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED' }
+          & gh workflow run devloop-studio.yml --repo $env:GITHUB_REPOSITORY --ref main -f game=mare-essentia -f "port_batch=$($batch + 1)" -f port_chain=true -f "port_revision=$mainSha"
+          if ($LASTEXITCODE -ne 0) { throw 'STUDIO_PORT_SURVEY_NEXT_DISPATCH_FAILED' }
+          Write-Host "STUDIO_PORT_SURVEY_NEXT_BATCH=$($batch + 1)"
       - name: Backup registered 3D assets to MYBOX
         # [백업 전용] 무료 네이버 MYBOX N:이 연결된 경우에만 기존 등록 원본을 증분 복사한다.
         # [게임 보호] QA 스크린샷, .git, 게임 저장 파일, 미검증 바이너리, 러너 등록정보는 백업하지 않는다.
