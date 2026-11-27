@@ -43,17 +43,18 @@ end
 
 -- 한 줄에서 발동 중인 전술 이름 (동료가 가장 많은 지역 하나, 없으면 nil)
 function B.activeTactic(list: any): string?
+	-- 지역별 일반 카드 수를 한 번만 집계하고 기존 카드 순서로 동률을 결정한다.
+	local counts = {}
+	for _, c in list do
+		if not c.hero and c.region and B.TACTICS[c.region] then
+			counts[c.region] = (counts[c.region] or 0) + 1
+		end
+	end
 	local best, bestN = nil, 0
-	for idx in list do
-		local c = list[idx]
-		if B.tacticBonus(list, idx) > 0 then
-			local n = 0
-			for _, o in list do
-				if not o.hero and o.region == c.region then
-					n += 1
-				end
-			end
-			if n > bestN then
+	for _, c in list do
+		if not c.hero and c.region then
+			local n = counts[c.region] or 0
+			if n >= 2 and n > bestN then
 				best, bestN = c.region, n
 			end
 		end
