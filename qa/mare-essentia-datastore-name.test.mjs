@@ -4432,6 +4432,20 @@ test('마레 지상 동물은 실제 전방과 종별 보폭으로 움직이며 
   assert.ok(!wild.includes('CFrame.new(0, 0, -a.travel)'));
 });
 
+test('Mare mobile distant regular enemies restore only original casting shadows before active combat',()=>{
+  const field=read('ReplicatedStorage/Shared/FieldScene.luau');
+  const shadow=field.slice(field.indexOf('[모바일 원거리 그림자]'),field.indexOf('멀리서 자고 있는 적은 계산을 쉰다'));
+  assert.match(shadow,/if visualMobile and not e\.elite and not e\.ac\.dead then/);
+  assert.match(shadow,/e\.ac\.state == "idle" or e\.ac\.state == "chase"/);
+  for(const token of ['e.hurtAt','e.riseUntil','e.guardUntil','e.parryUntil','e.dodgeUntil','e.kbUntil']) assert.ok(shadow.includes(token),token);
+  assert.match(shadow,/if not quiet or flat\.Magnitude <= 80 then/);
+  assert.match(shadow,/elseif quiet and flat\.Magnitude > 100 then/);
+  assert.match(shadow,/part:IsA\("BasePart"\) and part\.CastShadow then\s+table\.insert\(e\.shadowParts, part\)\s+part\.CastShadow = false/);
+  assert.match(shadow,/if part:IsDescendantOf\(e\.model\) then part\.CastShadow = true end/);
+  assert.ok(shadow.includes('e.shadowParts = nil'));
+  assert.doesNotMatch(shadow,/CanCollide|CanQuery|Transparency|RenderFidelity|:Destroy\(/);
+});
+
 test('Mare limits only distant idle and chase joint sampling under frame pressure',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
   const loop=field.slice(field.indexOf('[적 R15 관절·전술 통합 루프]'),field.indexOf('[비전투 파티]'));

@@ -9691,6 +9691,30 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			-- [모바일 원거리 그림자] 일반 적의 실제 원본 그림자만 거리별로 관리한다.
+			-- 100/80스터드 히스테리시스로 경계 반복 갱신 방지. 근접·정예·두목·공격 모션은 보존.
+			if visualMobile and not e.elite and not e.ac.dead then
+				local quiet = (e.ac.state == "idle" or e.ac.state == "chase")
+					and now >= (e.hurtAt or -100) + 0.3 and now >= (e.riseUntil or 0)
+					and now >= (e.guardUntil or 0) and now >= (e.parryUntil or 0)
+					and now >= (e.dodgeUntil or 0) and now >= (e.kbUntil or 0)
+				if e.shadowParts then
+					if not quiet or flat.Magnitude <= 80 then
+						for _, part in e.shadowParts do
+							if part:IsDescendantOf(e.model) then part.CastShadow = true end
+						end
+						e.shadowParts = nil
+					end
+				elseif quiet and flat.Magnitude > 100 then
+					e.shadowParts = {}
+					for _, part in e.model:GetDescendants() do
+						if part:IsA("BasePart") and part.CastShadow then
+							table.insert(e.shadowParts, part)
+							part.CastShadow = false
+						end
+					end
+				end
+			end
 			-- 멀리서 자고 있는 적은 계산을 쉰다(적이 100명이어도 가볍게)
 			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
 				continue
