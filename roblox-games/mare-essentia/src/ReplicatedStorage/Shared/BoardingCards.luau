@@ -2939,21 +2939,21 @@ function B.gainOf(m: any, side, c)
 		end
 		gain = if best >= 6 then lost else -5
 	elseif c.special == "weather" then
-		local before = B.total(m, side) - B.total(m, foe)
+		local before = mine - theirs
 		local prev = m.weather[lane(c)] -- 미리 계산하다 이미 깔린 날씨를 지우지 않도록 원래 값으로 되돌린다
 		m.weather[lane(c)] = true
 		local after = B.total(m, side) - B.total(m, foe)
 		m.weather[lane(c)] = prev
 		gain = after - before
 	elseif c.special == "clear" then
-		local before = B.total(m, side) - B.total(m, foe)
+		local before = mine - theirs
 		local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
 		m.weather = { melee = false, ranged = false, cannon = false }
 		local after = B.total(m, side) - B.total(m, foe)
 		m.weather = saved
 		gain = after - before
 	elseif c.special == "wind" then
-		local before = B.total(m, side) - B.total(m, foe)
+		local before = mine - theirs
 		local saved = { melee = m.weather.melee, ranged = m.weather.ranged, cannon = m.weather.cannon }
 		m.weather = { melee = false, ranged = false, cannon = false }
 		local after = B.total(m, side) - B.total(m, foe)
@@ -2962,7 +2962,7 @@ function B.gainOf(m: any, side, c)
 	elseif c.special == "horn" then
 		local row = bestHornRow(m, side)
 		if row then
-			local before = B.total(m, side) - B.total(m, foe)
+			local before = mine - theirs
 			m.horn[side][row] = true
 			local after = B.total(m, side) - B.total(m, foe)
 			m.horn[side][row] = nil
@@ -2973,7 +2973,7 @@ function B.gainOf(m: any, side, c)
 	elseif c.special == "refute" then
 		m.refuted = m.refuted or { me = {}, foe = {} }
 		local kind = c.refuteKind or ""
-		local before = B.total(m, side) - B.total(m, foe)
+		local before = mine - theirs
 		local prev = m.refuted[foe][kind]
 		m.refuted[foe][kind] = true
 		local after = B.total(m, side) - B.total(m, foe)
@@ -3003,7 +3003,7 @@ function B.gainOf(m: any, side, c)
 		gain = 0
 	else
 		local target = if c.ability == "spy" or c.ability == "feigned" or c.ability == "defect" then foe else side
-		local before = B.total(m, side) - B.total(m, foe)
+		local before = mine - theirs
 		table.insert(m.rows[target][lane(c)], c)
 		local after = B.total(m, side) - B.total(m, foe)
 		table.remove(m.rows[target][lane(c)])
