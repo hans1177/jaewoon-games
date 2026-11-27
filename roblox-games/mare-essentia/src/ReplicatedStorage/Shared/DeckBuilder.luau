@@ -1,4 +1,5 @@
 --!nonstrict
+-- 파일명: DeckBuilder.luau
 -- 내 카드(덱 구성) 화면: 카드 게임 컬렉션처럼 [왼쪽 카드 격자 | 오른쪽 덱 목록] 두 칸 + 위 상태줄 + 아래 큰 행동 버튼.
 -- 규칙·저장은 CardBook/서버가 그대로 맡고, 여기서는 보여 주고 누르는 일만 한다 (ctx 로 동작을 받는다).
 --   카드 누르기 = 큰 카드 보기 · + = 덱에 1장 넣기 · 덱 줄의 − = 1장 빼기
@@ -1080,7 +1081,12 @@ function DeckBuilder.build(parent, ctx)
 				shine.Rotation = 25
 				shine.Offset = Vector2.new(-1, 0)
 				shine.Parent = img
-				TweenService:Create(shine, TweenInfo.new(2.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false, 1.2), { Offset = Vector2.new(1, 0) }):Play()
+				local shineTween = TweenService:Create(shine, TweenInfo.new(2.6, Enum.EasingStyle.Linear, Enum.EasingDirection.In, -1, false, 1.2), { Offset = Vector2.new(1, 0) })
+				tile.Destroying:Once(function()
+					shineTween:Cancel()
+					shineTween:Destroy()
+				end)
+				shineTween:Play()
 			end
 		end
 		if not detail.Visible and owned > (want[id] or 0) and not d.archiveOnly then
