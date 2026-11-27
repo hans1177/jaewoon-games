@@ -1018,6 +1018,8 @@ print('MARE_REFERENCE_TEXTURE_FIXTURES=10')
   assert.match(source,/SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE/);
   assert.match(source,/VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED/);
   assert.match(source,/MARE_ANIMAL_TEXTURE_ALTERNATE_PRIORITY/);
+  assert.match(source,/"deferredTextureOriginals":/);
+  assert.match(source,/MARE_ANIMAL_TEXTURE_ORIGINAL_DEFERRED/);
   const alternateRetryFixture=String.raw`
 from pathlib import Path
 import textwrap
@@ -1033,6 +1035,9 @@ def check(observation, expected_first, alternatives=True):
     assert retry[0]['name']==expected_first
     if alternatives:
         assert old in scope['deferred'] and old not in retry
+        assert old['sourcePreview']['state']=='DEFERRED_TEXTURE_ALTERNATE'
+        assert old['priorRenderRetry'] is True
+        assert old['sourcePreview']['failureReason']=='SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE'
         assert old['sourcePreview']['registrationApproved'] is False
         assert old['sourcePreview']['visualQualityApproved'] is False
     else:

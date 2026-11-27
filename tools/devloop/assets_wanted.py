@@ -1307,10 +1307,13 @@ def render_animal_review_candidates(report, out):
             replacement = alternatives[0]
             retry.remove(row)
             deferred.append(row)
-            row["sourcePreview"] = {"state": "RENDER_FAILED_RETRY",
+            # 이번 실행에서 실제로 렌더하지 않은 원본은 신규 실패로 집계하지 않는다.
+            # 기존 실패 사유와 재시도 상태는 보존하여 대체 원본이 사라지면 복구 대상으로 돌아간다.
+            row["sourcePreview"] = {"state": "DEFERRED_TEXTURE_ALTERNATE",
                                     "failureReason": row["priorRenderFailureReason"],
                                     "registrationApproved": False, "visualQualityApproved": False}
             row["alternateSourceState"] = "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
+            print("MARE_ANIMAL_TEXTURE_ORIGINAL_DEFERRED", row["name"])
             observation = replacement.get("sourceVisualObservation", {})
             already_observed = (
                 observation.get("state") == "SOURCE_VISUAL_OBSERVED_ONLY"
@@ -1590,6 +1593,9 @@ if animal_audit:
             "renderFailures": [{"name": row["name"], "reason": row["sourcePreview"].get("failureReason")}
                                for row in animal_audit.get("candidates", [])
                                if row.get("sourcePreview", {}).get("state") == "RENDER_FAILED_RETRY"][:3],
+            "deferredTextureOriginals": [{"name": row["name"], "reason": row["sourcePreview"].get("failureReason")}
+                                         for row in animal_audit.get("candidates", [])
+                                         if row.get("sourcePreview", {}).get("state") == "DEFERRED_TEXTURE_ALTERNATE"][:3],
             "registrationApproved": False, "nativeRuntimeVerified": False,
         }
     out["animalSourcePractice"] = animal_audit
