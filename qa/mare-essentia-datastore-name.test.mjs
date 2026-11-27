@@ -4515,6 +4515,16 @@ test('Mare naval camera reuses interpolation state and fleet health only changes
   assert.doesNotMatch(naval,/FX\.cam = if FX\.cam then/);
 });
 
+test('Mare naval announcements and damage cues release scheduled scene references',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const pop=naval.slice(naval.indexOf('local function popText(text, color)'),naval.indexOf('-- [맵 보급 안내]'));
+  for(const token of ['local fadeTimer = task.delay(0.92, function()','local removeTimer = task.delay(1.28, function()','local fadeTimer = task.delay(1.8, function()','local hideTimer = task.delay(0.26, function()','local removeTimer = task.delay(1.2, function()','if finished or navalHitCueSerial ~= cueSerial or not navalHitCue.Parent then return end','if not finished and navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end','if currentAnnouncement == l then currentAnnouncement = nil end','navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1','TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)']) assert.ok(pop.includes(token),token);
+  assert.equal(pop.split('conns[coroutine.running()] = nil').length-1,5);
+  assert.equal(pop.split('conns[fadeTimer] = fadeTimer').length-1,2);
+  assert.equal(pop.split('conns[removeTimer] = removeTimer').length-1,2);
+  assert.equal(pop.split('conns[hideTimer] = hideTimer').length-1,1);
+});
+
 test('Mare actor motion reuses sample options without changing role or state selection',()=>{
   const motion=read('ReplicatedStorage/Shared/FieldMotion.luau');
   const actor=motion.slice(motion.indexOf('function FM.actor('),motion.indexOf('local comboCache'));
