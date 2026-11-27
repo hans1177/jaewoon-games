@@ -4737,16 +4737,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local k = (os.clock() - t0) / 0.9
-			if k >= 1 or finished then
+			if k >= 1 or finished or not folder.Parent or not ring.Parent then
 				conn:Disconnect()
-				ring:Destroy()
+				if ring.Parent then ring:Destroy() end
 				return
 			end
 			ring.Transparency = 0.45 + k * 0.5
 			ring.Size = Vector3.new(0.4, 26 - k * 8, 26 - k * 8)
 		end)
 		task.delay(0.9, function()
-			if finished then
+			if finished or not folder.Parent then
 				return
 			end
 			local radius = if os.clock() < skillUntil.evade then 11 else 20
@@ -5598,10 +5598,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
 			local k = math.clamp((os.clock() - t0) / 1.6, 0, 1)
-			if finished then
+			if finished or not folder.Parent or not pole.Parent or not sail.Parent then
 				conn:Disconnect()
-				pole:Destroy()
-				sail:Destroy()
+				if pole.Parent then pole:Destroy() end
+				if sail.Parent then sail:Destroy() end
 				return
 			end
 			local ang = k * k * 1.45
@@ -5702,6 +5702,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local dur = nc.dur
 		local conn
 		conn = RunService.Heartbeat:Connect(function()
+			-- 장면 종료·교체 후에는 이전 포탄의 프레임 계산과 명중 효과를 중단한다.
+			if finished or not folder.Parent or not ball.Parent then
+				conn:Disconnect()
+				if ball.Parent then ball:Destroy() end
+				return
+			end
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
 			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * nc.arc, 0)
 			local velocity = (to - from) + Vector3.new(0, math.cos(u * math.pi) * nc.arc * math.pi, 0)
