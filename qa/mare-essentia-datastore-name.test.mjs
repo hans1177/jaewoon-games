@@ -4480,6 +4480,16 @@ test('Mare actor motion reuses sample options without changing role or state sel
   assert.ok(actor.includes('FM.step(h, dt, rootRot, response)'));
 });
  
+test('Mare naval burst timers release external terrain effects on scene destruction',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  assert.match(naval,/folder\.Destroying:Connect\(function\(\)\s+for anchor, timer in FX\.burstTimers do\s+task\.cancel\(timer\)\s+anchor:Destroy\(\)\s+end\s+table\.clear\(FX\.burstTimers\)/);
+  assert.match(naval,/function FX\.burst\(pos, dir, list, light\)\s+if finished or not folder\.Parent then return end/);
+  assert.match(naval,/FX\.burstTimers\[anchor\] = task\.delay\(longest, function\(\)\s+FX\.burstTimers\[anchor\] = nil\s+anchor:Destroy\(\)/);
+  assert.match(naval,/longest = math\.max\(longest, e\.life \+ 0\.2\)/);
+  assert.match(naval,/if finished or not at\.Parent or not lt\.Parent then return end/);
+  assert.match(naval,/if not finished and folder\.Parent then Sfx\.play\(name, vol \* q, speed, fb\) end/);
+});
+
 test('Mare port construction audit records shared imported assets and separates attempted scenery failures',()=>{
   const source=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau');
   assert.match(source,/if RunService:IsStudio\(\) and AssetIds\[kind \.\. "\/" \.\. asset\] then/);
