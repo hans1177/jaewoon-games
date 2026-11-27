@@ -4382,6 +4382,13 @@ test('지역별 공방·우물·종교·시장·제분 시설은 해당 항구 �
  }
 });
 
+test('Mare naval HUD avoids duplicate writes without changing cooldown and health conditions',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  for(const token of ["local meSize, foeSize = UDim2.fromScale(meHp, 1), UDim2.fromScale(foeHp, 1)","if meFill.Size ~= meSize then meFill.Size = meSize end","if foeFill.Size ~= foeSize then foeFill.Size = foeSize end","local reloadSize = UDim2.new(prog, -8 * prog, 0, 3)","if reloadFill.Size ~= reloadSize then reloadFill.Size = reloadSize end","if reloadFill.BackgroundColor3 ~= reloadColor then reloadFill.BackgroundColor3 = reloadColor end","if remaining > 0 and sk.id ~= \"fire\" then","if buffFill.Visible ~= buffVisible then buffFill.Visible = buffVisible end","if b.Text ~= sk.text then b.Text = sk.text end","local interactable = ready and phase == \"duel\" and not opts.cardOnly and not opts.card","if b.Interactable ~= interactable then b.Interactable = interactable end","if b.Active ~= interactable then b.Active = interactable end","if b.AutoButtonColor ~= interactable then b.AutoButtonColor = interactable end"]) assert.ok(naval.includes(token),token);
+  assert.ok(naval.includes('b:SetAttribute("NavalReadyPulseUntil", now + 0.55)'));
+  assert.ok(naval.includes('reloadText.Text = if not inRange then "사거리 밖"'));
+});
+
 test('Mare naval finish releases connection references and cancels pending timeout without cancelling itself',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
