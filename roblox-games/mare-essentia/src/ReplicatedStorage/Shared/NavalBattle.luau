@@ -6917,7 +6917,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local messageText = if phase == "duel" and not opts.card and not opts.cardOnly
 				then (if not inRange then "적선에 접근" elseif not aligned then steerCue else "") else ""
 			local tone = if not inRange then Color3.fromRGB(255, 205, 130) else Color3.fromRGB(255, 185, 123)
-			tactic.Visible = messageText ~= ""
+			local visible = messageText ~= ""
+			if tactic.Visible ~= visible then tactic.Visible = visible end
 			if messageText ~= lastTacticText then
 				tactic.Text, lastTacticText = messageText, messageText
 			end
@@ -6963,8 +6964,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if not opts.cardOnly then
 			local dv = (foe.pos - me.pos).Magnitude
 			local inRange = dv < cannon.range
-			distLabel.Text = string.format("적선 %d m · %s", math.floor(dv), if inRange then "사정거리 안 — 포격 중" elseif dv < cannon.range * 1.4 then "조금만 더 접근!" else "사정거리 밖")
-			distLabel.TextColor3 = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
+			-- [거리 표시] 실제 정수 거리와 사거리 상태가 같은 경우 속성을 다시 쓰지 않는다.
+			do
+				local distanceText = string.format("적선 %d m · %s", math.floor(dv), if inRange then "사정거리 안 — 포격 중" elseif dv < cannon.range * 1.4 then "조금만 더 접근!" else "사정거리 밖")
+				local distanceColor = if inRange then Color3.fromRGB(130, 235, 150) elseif dv < cannon.range * 1.4 then Color3.fromRGB(255, 226, 120) else Color3.fromRGB(255, 255, 255)
+				if distLabel.Text ~= distanceText then distLabel.Text = distanceText end
+				if distLabel.TextColor3 ~= distanceColor then distLabel.TextColor3 = distanceColor end
+			end
 			local cdNow = cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)
 			local prog = if opts.card or not inRange then 0 else 1 - math.clamp((nextMeFire - now) / math.max(0.1, cdNow), 0, 1)
 			do
@@ -6973,13 +6979,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if reloadFill.Size ~= reloadSize then reloadFill.Size = reloadSize end
 				if reloadFill.BackgroundColor3 ~= reloadColor then reloadFill.BackgroundColor3 = reloadColor end
 			end
-			reloadText.Text = if not inRange then "사거리 밖"
-				elseif prog >= 1 then "장전 완료"
-				else "장전 중"
+			do
+				local reloadCaption = if not inRange then "사거리 밖"
+					elseif prog >= 1 then "장전 완료"
+					else "장전 중"
+				if reloadText.Text ~= reloadCaption then reloadText.Text = reloadCaption end
+			end
 			local v = cam:WorldToViewportPoint(ORIGIN + foe.pos)
 			local vp = cam.ViewportSize
 			local onScr = v.Z > 0 and v.X > 40 and v.X < vp.X - 40 and v.Y > 90 and v.Y < vp.Y - 90
-			foeArrow.Visible, foeArrowTag.Visible = not onScr, not onScr
+			if foeArrow.Visible ~= not onScr then foeArrow.Visible = not onScr end
+			if foeArrowTag.Visible ~= not onScr then foeArrowTag.Visible = not onScr end
 			if not onScr then
 				local c0 = vp / 2
 				local dir = Vector2.new(v.X, v.Y) - c0
@@ -6997,21 +7007,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				foeArrow.Position = UDim2.fromOffset(pt.X - inset.X, pt.Y - inset.Y)
 				foeArrow.Rotation = math.deg(math.atan2(dir.Y, dir.X))
 				foeArrowTag.Position = UDim2.fromOffset(pt.X - inset.X - dir.X * 34, pt.Y - inset.Y - dir.Y * 28)
-				foeArrowTag.Text = string.format("적선 %dm", math.floor(dv))
+				local arrowText = string.format("적선 %dm", math.floor(dv))
+				if foeArrowTag.Text ~= arrowText then foeArrowTag.Text = arrowText end
 			end
 		end
-		if rt then
-			mePct.Text = string.format("%d / %d", math.ceil(meHp * rt.meMax), rt.meMax)
-			foePct.Text = string.format("%d / %d", math.ceil(foeHp * rt.foeMax), rt.foeMax)
-		else
-			mePct.Text = string.format("%d%%", math.ceil(meHp * 100))
-			foePct.Text = string.format("%d%%", math.ceil(foeHp * 100))
+		do
+			local meText = if rt then string.format("%d / %d", math.ceil(meHp * rt.meMax), rt.meMax) else string.format("%d%%", math.ceil(meHp * 100))
+			local foeText = if rt then string.format("%d / %d", math.ceil(foeHp * rt.foeMax), rt.foeMax) else string.format("%d%%", math.ceil(foeHp * 100))
+			if mePct.Text ~= meText then mePct.Text = meText end
+			if foePct.Text ~= foeText then foePct.Text = foeText end
 		end
 		local hullColor = if meHp < 0.3 then Color3.fromRGB(214, 82, 76) elseif meHp < 0.6 then Color3.fromRGB(226, 178, 80) else Color3.fromRGB(91, 181, 120)
 		local allyFlash = math.clamp((rangeRing.hitUntil - now) / 0.55, 0, 1)
 		local enemyFlash = math.clamp((rangeRing.impactUntil - now) / 0.48, 0, 1)
-		meFill.BackgroundColor3 = hullColor:Lerp(Color3.fromRGB(255, 155, 131), allyFlash)
-		foeFill.BackgroundColor3 = Color3.fromRGB(214, 82, 76):Lerp(Color3.fromRGB(255, 218, 153), enemyFlash)
+		do
+			local meColor = hullColor:Lerp(Color3.fromRGB(255, 155, 131), allyFlash)
+			local foeColor = Color3.fromRGB(214, 82, 76):Lerp(Color3.fromRGB(255, 218, 153), enemyFlash)
+			if meFill.BackgroundColor3 ~= meColor then meFill.BackgroundColor3 = meColor end
+			if foeFill.BackgroundColor3 ~= foeColor then foeFill.BackgroundColor3 = foeColor end
+		end
 		-- [선체 숫자 선명도] 버프 문구 때문에 폰트가 10px까지 줄던 문제를 막는다.
 		-- 선체 체력은 항상 14px로, 기존 활성 스킬 시간은 아래 3px 상태 막대로만 표현한다.
 		do
