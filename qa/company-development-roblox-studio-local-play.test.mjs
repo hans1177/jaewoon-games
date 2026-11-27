@@ -4800,7 +4800,15 @@ test('Mare town villagers keep arm gestures in front and faces aligned with tors
   assert.match(port,/for sample = 0, 7 do/);
   assert.match(port,/walker.cx \+= offset.X/);
   assert.match(port,/walker.model:PivotTo\(CFrame.new\(walker.cx \+ walker.r, safe.Position.Y, walker.cz\)/);
-  assert.equal(script.length,46,'existing town gameplay and added ground measurement must remain');
+  // [마을 촬영 회귀] 기존 46단계에 추가된 4개 세부 촬영(각 3단계)을 모두 유지한다.
+  assert.equal(script.length,58,'existing town gameplay, ground measurement and four detail captures must remain');
+  assert.deepEqual(script.filter(row=>row.type==='capture').map(row=>row.name),[
+    '01_top','02_plaza','03_street','04_dock','05_aerial','06_backstreet','07_wall',
+    ...Array.from({length:8},(_,i)=>'08_harbor_npc_sparring_'+String(i+1).padStart(2,'0')),
+    '09_rural','10_economy','11_npc_front','12_npc_hair'
+  ]);
+  assert.deepEqual(script.slice(46).map(row=>row.type),
+    Array.from({length:4},()=>['luau','wait','capture']).flat());
   assert.ok(script.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
 });
 
@@ -4839,7 +4847,7 @@ test('Mare central plaza is reserved as empty walking space and all original civ
   assert.match(check.code,/TOWN_CENTRAL_PLAZA_PART:/);
   assert.match(check.code,/CentralPlazaClearRadius/);
   assert.match(check.code,/plaza_structures=0 inspected=%d/);
-  assert.equal(town.length,46,'all existing town screenshots, layout and ground checks must remain');
+  assert.equal(town.length,58,'all existing town screenshots, layout, ground checks and four detail captures must remain');
   assert.ok(town.some(row=>row.code?.includes('TOWN_RURAL_GROUND_MISSING')));
   assert.ok(port.includes('CityPortPlazaAccessConnected')&&port.includes('CentralPlazaRemovedStructures'),'new plaza access and final occupancy cleanup must remain');
 });
