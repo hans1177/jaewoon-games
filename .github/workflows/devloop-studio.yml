@@ -312,7 +312,7 @@ jobs:
             const helm=scenario==='mare-voyage-manual-helm';
             const file=helm?'mare-voyage-manual':scenario;
             const steps=JSON.parse(fs.readFileSync(path.join(root,file+'.json'),'utf8')).map(row=>{
-              if (helm && row.type==='luau') return {...row,code:row.code.replace('rings=true,firstVisit=true','helm=true').replace('직접 항해','직접 조종').replace('WindRing','HelmStick')};
+              if (helm && row.type==='luau') return {...row,code:row.code.replace('rings=true,firstVisit=true','helm=true').replace('직접 항해','직접 조종').replaceAll('WindRing','HelmStick')};
               return row;
             }).map(row=>row.type==='capture'?{...row,name:scenario.replace(/^mare-/,'').replace(/-/g,'_')+'_'+row.name}:row);
             if (!steps.some(row=>row.type==='capture')) throw Error('STUDIO_FEATURE_CAPTURE_MISSING:'+scenario);
