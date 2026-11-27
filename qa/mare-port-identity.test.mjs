@@ -714,3 +714,25 @@ test('건축 외벽색은 원본 지붕·창호를 덮지 않고 복원된 부�
   assert.match(uniform, /ch:IsA\("SpecialMesh"\) and ch\.TextureId ~= ""/);
   assert.match(uniform, /p\.Material = selected/);
 });
+
+
+test('창호와 현관은 주택 표면에 붙이며 회전된 실제 경계와 두께를 반영한다', () => {
+  const start = scene.indexOf('-- [입면 정밀 배치]');
+  const block = scene.slice(start, scene.indexOf('local size = math.max(w, d) * variation', start));
+  assert.ok(start >= 0);
+  assert.match(block, /table\.insert\(facadeDetails, trim\)/);
+  assert.match(block, /table\.insert\(facadeDetails, doorway\)/);
+  assert.match(block, /wallProbe\.FilterType = Enum\.RaycastFilterType\.Include/);
+  assert.match(block, /wallProbe\.FilterDescendantsInstances = \{ mesh \}/);
+  assert.match(block, /math\.abs\(houseCF\.RightVector\.Z\) \* houseSize\.X/);
+  assert.match(block, /math\.abs\(detailCF\.LookVector\.Z\) \* detailSize\.Z/);
+  assert.match(block, /hit\.Normal\.Z \* front >= 0\.5/);
+  assert.match(block, /hit\.Position\.Z \+ front \* math\.max\(0, detailHalfDepth - 0\.08\)/);
+  assert.match(block, /detail:PivotTo\(CFrame\.new\(0, 0, targetZ - detailCF\.Position\.Z\) \* detail:GetPivot\(\)\)/);
+  assert.match(block, /else\s+--[^\n]+\n\s+detail:Destroy\(\)/);
+  for (const front of [-1, 1]) for (const halfDepth of [0.05, 0.5, 2]) {
+    const wallZ = 10 * front;
+    const targetZ = wallZ + front * Math.max(0, halfDepth - 0.08);
+    assert.ok(Math.abs((targetZ - front * halfDepth) - wallZ) <= 0.0800000001);
+  }
+});
