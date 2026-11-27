@@ -2520,9 +2520,12 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				if i == 1 then battleRound = part elseif i == 2 then battleScore = part else battleTurn = part end
 			end
 		end
+		-- [카드 안내] 메뉴 버튼 너비와 여백을 확보해 작은 화면에서도 안내 영역을 침범하지 않는다.
+		local guidanceSize = UDim2.new(0.96, if opts.cardOnly then (if compactCards then -100 else -116) else 0, 0.05, 0)
 		local info = label(g, "", 15, Color3.fromRGB(250, 236, 200))
+		info.Name = "CardBattleGuidance"
 		info.Position = UDim2.fromScale(0.02, 0.08)
-		info.Size = UDim2.fromScale(0.96, 0.05)
+		info.Size = guidanceSize
 		info.TextXAlignment = Enum.TextXAlignment.Left
 		info.TextTruncate = Enum.TextTruncate.AtEnd
 		info.BackgroundTransparency = 0.45
@@ -2697,14 +2700,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		weatherTag.TextWrapped = true
 		weatherTag.Visible = not compactCards and not opts.cardOnly
 		-- 동료 조언·적 정찰 말풍선 (한 판에 한 번, 한 전투에 최대 3번)
-		-- 점수판(panel) 안에 두면 내 점수 칸과 겹치므로, 안내 줄(info) 자리에 잠깐 덮어 보여 준다
+		-- [조언 표시] 기존 안내 줄과 같은 구역을 교대로 사용하며 두 문구를 동시에 표시하지 않는다.
 		local adviceTag = label(g, "", 14, Color3.fromRGB(255, 233, 170), true)
-		adviceTag.Position = UDim2.fromScale(0.02, 0.08)
-		adviceTag.Size = UDim2.fromScale(0.96, 0.05)
+		adviceTag.Name = "CardBattleAdvice"
+		adviceTag.Position = info.Position
+		adviceTag.Size = guidanceSize
 		adviceTag.TextScaled = true
 		adviceTag.TextWrapped = true
 		adviceTag.BackgroundColor3 = Color3.fromRGB(40, 33, 26)
-		adviceTag.BackgroundTransparency = 0.25
+		adviceTag.BackgroundTransparency = 0
 		adviceTag.Visible = false
 		adviceTag.ZIndex = 20
 		local adviceRound, adviceCount, adviceToken = 0, 0, 0
@@ -2732,11 +2736,15 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			adviceToken += 1
 			local mine = adviceToken
 			adviceTag.Text = text
+			info.Visible = false
 			adviceTag.Visible = true
 			cardTimers[task.delay(seconds or 7, function()
 				cardTimers[coroutine.running()] = nil
 				if finished or not g.Parent then return end
-				if adviceToken == mine and adviceTag.Parent then adviceTag.Visible = false end
+				if adviceToken == mine and adviceTag.Parent and info.Parent then
+					adviceTag.Visible = false
+					info.Visible = true
+				end
 			end)] = true
 		end
 		do
