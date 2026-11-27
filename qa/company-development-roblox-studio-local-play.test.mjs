@@ -4366,6 +4366,9 @@ test('Mare official Studio QA records complete registered media, model loading a
   assert.match(model,/if asset\.startup then priorityPending \+= 1 end/);
   assert.match(model,/if item\.startup then priorityPending -= 1 end/);
   assert.match(model,/for _ = 1, 12 do/);
+  // [초기 요청 격리] 후순위 요청만 최대 5초 양보하며 기존 전체 로딩과 실패 판정은 유지한다.
+  assert.match(model,/local initialPriorityDeadline = os\.clock\(\) \+ 5\s+for _ = 1, 12 do/);
+  assert.match(model,/cursor \+= 1\s+if not item\.startup then\s+while priorityPending > 0 and os\.clock\(\) < initialPriorityDeadline do\s+task\.wait\(0\.1\)\s+end\s+end\s+local good, container = pcall\(InsertService\.LoadAsset, InsertService, item\.id\)/);
   assert.match(model,/if pending == 0 then\s+ReplicatedStorage:SetAttribute\("MareAssetsSettled", true\)/);
   const client=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
   assert.match(client,/if not H\.assetWaitDone then/);
