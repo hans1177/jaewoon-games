@@ -808,8 +808,25 @@ test('Vibe59 does not aggregate effects across duplicate matching Remote handler
 });
 
 // [로블록스 파일 검증] 스캔 상한 초과·경로 누락은 안전하다는 증거가 아니다.
+test('Vibe59 reads Mare-sized Luau without losing exact late findings or granting write authority',()=>{
+  const path='client/Game.client.luau';
+  const lines=Array.from({length:18000},()=> '-- humanoid:TakeDamage(7) ignored source decoy');
+  lines.push('humanoid:TakeDamage(19)');
+  const source=lines.join('\n');
+  assert.ok(source.length>680000&&source.length<1000000);
+  const direct=diagnoseVibe59RobloxOffline({path,source});
+  const report=inspectVibe59RobloxCoding({files:[{path,source}],responsiblePaths:[path]});
+  assert.deepEqual(direct.diagnostics.filter(x=>x.code==='COMBAT_CLIENT_DAMAGE').map(x=>x.line),[18001]);
+  const finding=report.diagnostics.find(x=>x.code==='COMBAT_CLIENT_DAMAGE');
+  assert.equal(finding.line,18001);
+  assert.equal(finding.exactAnchor,'humanoid:TakeDamage(19)');
+  assert.equal(report.scanCoverage.responsibleComplete,true);
+  assert.equal(report.scanCoverage.sourceWrite,false);
+  assert.equal(report.scanCoverage.runtimeVerified,false);
+});
+
 test('Vibe59 exposes oversized responsible Luau files instead of silently clearing findings',()=>{
-  const path='server/Combat.server.luau',source='--'+'.'.repeat(260001);
+  const path='server/Combat.server.luau',source='--'+'.'.repeat(1000001);
   const files=[{path,source}];
   const result=inspectVibe59RobloxCoding({files,responsiblePaths:[path]});
   assert.deepEqual(result.files,[]);
