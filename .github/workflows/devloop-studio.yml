@@ -23,12 +23,12 @@ on:
         default: ''
         type: string
       port_batch:
-        description: 항구 전수 촬영 회차 (0=기존 검사, 1~19=10항구씩 분할)
+        description: 전수 촬영 (0=기존 검사, 1~19 항구, 20~79 탐험, 80~106 해역, 107~146 기능)
         required: false
         default: '0'
         type: string
       port_chain:
-        description: 항구 촬영 성공 후 다음 회차 자동 연결
+        description: 촬영 성공 후 다음 회차 자동 연결
         required: false
         default: true
         type: boolean
@@ -230,8 +230,9 @@ jobs:
           }
           if ($sc -ne '' -and $sc -notmatch '^roblox-games/[a-z0-9-]+/[A-Za-z0-9_./-]+\.json$') { throw "bad script path" }
           # [항구 전수] 기존 마을 시나리오와 QA 항구 목록에서 회차별 실제 촬영 절차를 생성한다.
-          if ($env:PORT_BATCH_IN -notmatch '^(0|[1-9]|1[0-9])$') { throw 'STUDIO_PORT_BATCH_INVALID' }
+          if ($env:PORT_BATCH_IN -notmatch '^(0|[1-9][0-9]{0,2})$') { throw 'STUDIO_PORT_BATCH_INVALID' }
           $portBatch = [int]$env:PORT_BATCH_IN
+          if ($portBatch -gt 146) { throw 'STUDIO_PORT_BATCH_INVALID' }
           if ($portBatch -gt 0) {
             if ($g -ne 'mare-essentia' -or $candidateRef -ne '' -or $env:SCRIPT_IN -ne '') { throw 'STUDIO_PORT_BATCH_SCOPE_INVALID' }
             $revision = (& git -C main rev-parse HEAD).Trim()
@@ -243,6 +244,82 @@ jobs:
           const path = require('node:path');
           const [root, out, rawBatch] = process.argv.slice(2);
           const batch = Number(rawBatch);
+          const scenarios = ["mare-town","mare-regions","mare-field","mare-fieldcombat","mare-discovery-forms","mare-voyage-manual","mare-voyage-manual-helm","mare-voyage","mare-helm","mare-depart","mare-events","mare-navalrt","mare-navalfleet","mare-naval2","mare-navalcards","mare-questscene-live","mare-questscene-tradefun","mare-questscene-probe","mare-cardbattle","mare-cardgallery","mare-cardflow","mare-cardgain","mare-facilities","mare-tradehall","mare-menus","mare-ships","mare-villagers","mare-zoo","mare-knowledge","mare-title","mare-ui","mare-ui2","mare-palaces","mare-tavern","mare-recruit","mare-trade","mare-wallet","mare-weapons","mare-repair","mare-cards"];
+          const maxBatch = 106 + scenarios.length;
+          if (!Number.isInteger(batch) || batch < 1 || batch > maxBatch) throw Error('STUDIO_SURVEY_BATCH_INVALID');
+          const gameRoot = path.resolve(root, '../../..');
+          const shared = path.join(gameRoot, 'src/ReplicatedStorage/Shared');
+          // [지상 전수] 기존 지역 탐험의 정상 철수·카메라 구도를 그대로 사용한다. 지점 이름과 카드 풀은 런타임 정본에서 읽는다.
+          if (batch >= 20 && batch <= 79) {
+            const siteSource = fs.readFileSync(path.join(shared, 'Sites.luau'), 'utf8');
+            const sites = [...siteSource.matchAll(/^\s*\{\s*id\s*=\s*"([a-z0-9_]+)",\s*name\s*=\s*"[^"]+",\s*portId\s*=\s*"([a-z0-9_]+)"/gm)].map(m => ({id:m[1],port:m[2]}));
+            if (sites.length !== 592 || new Set(sites.map(row => row.id)).size !== sites.length) throw Error('STUDIO_FIELD_CATALOG_MISMATCH');
+            const selected = sites.slice((batch - 20) * 10, (batch - 19) * 10);
+            const regions = JSON.parse(fs.readFileSync(path.join(root, 'mare-regions.json'), 'utf8'));
+            const steps = [regions[0],regions[1],{type:'luau',ctx:'Client',code:
+              'local S=require(game:GetService("ReplicatedStorage").Shared.Sites).Sites assert(#S==592,"FIELD_SURVEY_CATALOG_COUNT") return "FIELD_SURVEY_CATALOG=592"'}];
+            const cameraAngles = [['north','0,0.2,0.65','0,0,-0.18'],['east','0.65,0.2,0','-0.18,0,0'],['south','0,0.2,-0.65','0,0,0.18'],['west','-0.65,0.2,0','0.18,0,0'],['overhead','0,1.1,0','0,0,0']];
+            for (const [i, row] of selected.entries()) {
+              const id = row.id, port = row.port;
+              steps.push({type:'luau',ctx:'Client',timeoutMs:90000,code:
+                'local old=workspace:FindFirstChild("MareRegionQAExit") if old then old:Invoke() old:Destroy() end assert(not workspace:FindFirstChild("FieldScene"),"FIELD_SURVEY_SCENE_LEAK") '+
+                'local RS=game:GetService("ReplicatedStorage") local site for _,s in require(RS.Shared.Sites).Sites do if s.id=="'+id+'" then site=s break end end assert(site and site.portId=="'+port+'","FIELD_SURVEY_SITE_MISMATCH") '+
+                'workspace:SetAttribute("FieldErr","RUNNING:'+id+'") workspace:SetAttribute("VoyageActive",true) '+
+                'task.spawn(function() local ok,result=xpcall(function() return require(RS.Shared.FieldScene).start({name=site.name,portId=site.portId,siteId=site.id,nodes=math.clamp(#site.pool,1,3),danger=math.clamp(site.minLevel,1,5),year=math.max(1700,site.fromYear or 1700),seed='+((batch-20)*10+i+1)+',observableCards=site.pool,weapon="sword",onFinish=function()end}) end,function(e) return debug.traceback(tostring(e)) end) '+
+                'if not ok or type(result)~="table" or type(result.finish)~="function" then workspace:SetAttribute("FieldErr","FAIL:'+id+':"..tostring(result):sub(1,350)) return end local gate=Instance.new("BindableFunction") gate.Name="MareRegionQAExit" gate.OnInvoke=function() result.finish("retreat") end gate.Parent=workspace workspace:SetAttribute("FieldErr","PASS:'+id+'") end return "FIELD_SURVEY_LAUNCHED:'+id+'"'});
+              steps.push({type:'wait',ms:3500},{type:'luau',ctx:'Client',timeoutMs:90000,code:
+                'local state for i=1,200 do state=workspace:GetAttribute("FieldErr") if state=="PASS:'+id+'" or (type(state)=="string" and state:sub(1,5)=="FAIL:") then break end task.wait(0.3) end assert(state=="PASS:'+id+'","FIELD_SURVEY_BUILD:"..tostring(state)) local f=assert(workspace:FindFirstChild("FieldScene")) assert(f:GetAttribute("FieldSiteId")=="'+id+'" and f:GetAttribute("FieldPortId")=="'+port+'","FIELD_SURVEY_WRONG_SCENE") assert(workspace:GetAttribute("FieldCombatReady")==true,"FIELD_SURVEY_NOT_READY") local ground=assert(f:FindFirstChild("FieldGround")) assert(ground.Size.X>=180 and f:FindFirstChild("FieldSafetyFloor"),"FIELD_SURVEY_GROUND") return "FIELD_SURVEY_ID:'+id+'"'});
+              for (const [name,from,to] of cameraAngles) {
+                steps.push({type:'luau',ctx:'Client',code:
+                  'local f=assert(workspace:FindFirstChild("FieldScene")) assert(f:GetAttribute("FieldSiteId")=="'+id+'","FIELD_SURVEY_CAMERA_ID") local g=assert(f:FindFirstChild("FieldGround")) local p=g.Position local s=math.max(g.Size.X,g.Size.Z) workspace:SetAttribute("ShotFov",70) workspace:SetAttribute("ShotCF",CFrame.lookAt(p+Vector3.new('+from+')*s,p+Vector3.new('+to+')*s,'+(name==='overhead'?'Vector3.new(0,0,-1)':'Vector3.yAxis')+')) return "FIELD_SURVEY_CAMERA:'+name+'"'},{type:'wait',ms:1500},{type:'capture',name:'field_'+id+'_'+name});
+              }
+            }
+            steps.push(regions.at(-1));
+            if (steps.filter(row=>row.type==='capture').length !== selected.length*5) throw Error('STUDIO_FIELD_CAPTURE_COUNT');
+            fs.writeFileSync(out,JSON.stringify(steps));
+            console.log('STUDIO_FIELD_BATCH='+batch+' SITES='+selected.length+' FRAMES='+selected.length*5);
+            process.exit(0);
+          }
+          // [해역 전수] 원본 지시서 파일과 해전 코드의 해역 매핑을 대조하고 실제 해전 배경 ID를 검사한다.
+          if (batch >= 80 && batch <= 106) {
+            const navalSource=fs.readFileSync(path.join(shared,'NavalBattle.luau'),'utf8');
+            const block=navalSource.match(/local briefPorts = \{([\s\S]*?)\n\s*\}/)?.[1] || '';
+            const seas=[...block.matchAll(/^\s*([a-z_]+) = "([a-z0-9_]+)(?: [a-z0-9_]+)*",/gm)].map(m=>({id:m[1],port:m[2]})).sort((a,b)=>a.id.localeCompare(b.id));
+            const docs=fs.readdirSync(path.join(gameRoot,'docs/battle_backdrops/naval')).filter(n=>n.endsWith('.md')).map(n=>n.slice(0,-3)).sort();
+            if (seas.length!==27 || JSON.stringify(seas.map(row=>row.id))!==JSON.stringify(docs)) throw Error('STUDIO_NAVAL_CATALOG_MISMATCH');
+            const sea=seas[batch-80];
+            const naval=JSON.parse(fs.readFileSync(path.join(root,'mare-navalrt.json'),'utf8'));
+            const start=naval[1].code.replace('function() NB.play({','function() return NB.play({portId="'+sea.port+'",portLat=assert(require(RS.Shared.Ports).Ports["'+sea.port+'"]).lat,portLon=require(RS.Shared.Ports).Ports["'+sea.port+'"].lon,');
+            if (start===naval[1].code) throw Error('STUDIO_NAVAL_START_ANCHOR');
+            const verifiedStart=start.replace("return 'play ok='..tostring(ok)..' '..tostring(err)",'assert(ok and type(err)=="table" and type(err.finish)=="function","NAVAL_SURVEY_START:"..tostring(err)) local gate=Instance.new("BindableFunction") gate.Name="MareNavalSurveyExit" gate.OnInvoke=function() err.finish(false) end gate.Parent=workspace return "NAVAL_SURVEY_STARTED"');
+            if (verifiedStart===start) throw Error('STUDIO_NAVAL_RESULT_ANCHOR');
+            const steps=[naval[0],{...naval[1],code:verifiedStart,timeoutMs:90000},{type:'wait',ms:4500},
+              {type:'luau',ctx:'Client',code:'local f=assert(workspace:FindFirstChild("BattleScene")) assert(f:GetAttribute("NavalBriefSea")=="'+sea.id+'","NAVAL_SURVEY_WRONG_SEA") assert(game.Players.LocalPlayer.PlayerGui:FindFirstChild("BattleGui"),"NAVAL_SURVEY_GUI") return "NAVAL_SURVEY_SEA:'+sea.id+'"'},{type:'capture',name:'sea_'+sea.id+'_battle'}];
+            const bind=JSON.parse(fs.readFileSync(path.join(root,'mare-town.json'),'utf8')).find(row=>row.type==='luau'&&row.code.includes('BindToRenderStep("MareShot"'));
+            if (!bind) throw Error('STUDIO_NAVAL_CAMERA_BIND');
+            steps.push(bind);
+            for (const [name,from,to] of [['north','0,100,550','0,10,-350'],['east','550,100,0','-350,10,0'],['south','0,100,-550','0,10,350'],['west','-550,100,0','350,10,0'],['overhead','0,1100,0','0,0,0']]) {
+              steps.push({type:'luau',ctx:'Client',code:'local f=assert(workspace:FindFirstChild("BattleScene")) assert(f:GetAttribute("NavalBriefSea")=="'+sea.id+'","NAVAL_SURVEY_CAMERA_ID") local p=assert(f:FindFirstChild("NavalSeaSurface")).Position workspace:SetAttribute("ShotFov",70) workspace:SetAttribute("ShotCF",CFrame.lookAt(p+Vector3.new('+from+'),p+Vector3.new('+to+'),'+(name==='overhead'?'Vector3.new(0,0,-1)':'Vector3.yAxis')+')) return "NAVAL_SURVEY_CAMERA:'+name+'"'},{type:'wait',ms:1500},{type:'capture',name:'sea_'+sea.id+'_'+name});
+            }
+            steps.push({type:'luau',ctx:'Client',code:'game:GetService("RunService"):UnbindFromRenderStep("MareShot") local gate=assert(workspace:FindFirstChild("MareNavalSurveyExit")) gate:Invoke() gate:Destroy() assert(not workspace:FindFirstChild("BattleScene"),"NAVAL_SURVEY_SCENE_LEAK") return "NAVAL_SURVEY_EXIT"'});
+            fs.writeFileSync(out,JSON.stringify(steps));
+            console.log('STUDIO_NAVAL_BATCH='+batch+' SEA='+sea.id+' FRAMES=6');
+            process.exit(0);
+          }
+          // [기능 전수] 기존 검증 스크립트를 독립 Studio 실행으로 재사용한다. 동일한 이름의 사진은 기능명으로 구별한다.
+          if (batch >= 107) {
+            const scenario=scenarios[batch-107];
+            const helm=scenario==='mare-voyage-manual-helm';
+            const file=helm?'mare-voyage-manual':scenario;
+            const steps=JSON.parse(fs.readFileSync(path.join(root,file+'.json'),'utf8')).map(row=>{
+              if (helm && row.type==='luau') return {...row,code:row.code.replace('rings=true,firstVisit=true','helm=true').replace('직접 항해','직접 조종').replace('WindRing','HelmStick')};
+              return row;
+            }).map(row=>row.type==='capture'?{...row,name:scenario.replace(/^mare-/,'').replace(/-/g,'_')+'_'+row.name}:row);
+            if (!steps.some(row=>row.type==='capture')) throw Error('STUDIO_FEATURE_CAPTURE_MISSING:'+scenario);
+            fs.writeFileSync(out,JSON.stringify(steps));
+            console.log('STUDIO_FEATURE_BATCH='+batch+' SCENARIO='+scenario+' FRAMES='+steps.filter(row=>row.type==='capture').length);
+            process.exit(0);
+          }
           const town = JSON.parse(fs.readFileSync(path.join(root, 'mare-town.json'), 'utf8'));
           const qa = JSON.parse(fs.readFileSync(path.join(root, 'mare-qa-click.json'), 'utf8'));
           const ports = qa.map(row => row.code?.match(/^-- \[항구 위치\] ([a-z0-9_]+)/)?.[1]).filter(Boolean);
@@ -728,7 +805,7 @@ jobs:
           const history = Array.isArray(prior.runs) ? prior.runs : [];
           const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
           const portBatch = Number(process.env.STUDIO_PORT_BATCH || 0);
-          const kind = portBatch ? 'port-survey' : deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
+          const kind = portBatch ? (portBatch <= 19 ? 'port-survey' : portBatch <= 79 ? 'field-survey' : portBatch <= 106 ? 'naval-survey' : 'feature-survey') : deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
           const previous = history.find(row => row.kind === kind && (!portBatch || row.portBatch === portBatch));
           const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
           const summary = report.summary || {};
@@ -845,15 +922,15 @@ jobs:
           for (const row of merged) {
             if (Date.parse(row.at) >= cutoff &&
                 ((row.kind === 'deep' && kept.filter(item => item.kind === 'deep').length < 4) ||
-                 (row.kind === 'port-survey' && !kept.some(item => item.kind === 'port-survey' && item.portBatch === row.portBatch) && kept.filter(item => item.kind === 'port-survey').length < 19) ||
-                 (!['deep','port-survey'].includes(row.kind) && kept.filter(item => !['deep','port-survey'].includes(item.kind)).length < 6)))
+                 (String(row.kind).endsWith('-survey') && !kept.some(item => item.kind === row.kind && item.portBatch === row.portBatch) && kept.filter(item => String(item.kind).endsWith('-survey')).length < 146) ||
+                 (row.kind !== 'deep' && !String(row.kind).endsWith('-survey') && kept.filter(item => item.kind !== 'deep' && !String(item.kind).endsWith('-survey')).length < 6)))
               kept.push(row);
             else if (/^runs\/[0-9]+$/.test(row.path || ''))
               fs.rmSync(path.join(dst, row.path), {recursive: true, force: true});
           }
           fs.writeFileSync(indexFile, JSON.stringify({version: 1, retentionDays: 7, latest: portBatch ? (prior.latest || null) : record,
             lastDeepAt: kept.find(row => row.kind === 'deep')?.at || null, runs: kept}, null, 2) + '\n');
-          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](' + link + ') | [checklist](checks.json) | [history](index.json)', 'Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs, others 6 runs, port survey 19 batches', '',
+          const gallery = ['# Studio QA screenshot history', '', 'Latest: [screenshots](' + link + ') | [checklist](checks.json) | [history](index.json)', 'Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs, others 6 runs, world survey 146 batches', '',
             '| Run | Type | Status | Frames | Changed files |', '|---|---|---|---:|---:|',
             ...kept.map(row => '| [' + row.runId + '](runs/' + row.runId + '/) | ' + row.kind + (row.portBatch ? ':' + row.portBatch : '') + ' | ' + row.result + ' | ' + row.frames + ' | ' + row.changedFrames + ' |')];
           fs.writeFileSync(path.join(dst, 'README.md'), gallery.join('\n') + '\n');
@@ -1184,7 +1261,7 @@ jobs:
             Write-Host "STUDIO_LOCAL_EVIDENCE_CLEANED_MB=$([math]::Round($localCleanBytes/1MB,2))"
             Write-Host "STUDIO_E_DRIVE_FREE_MB_AFTER_ARCHIVE=$([math]::Round(([IO.DriveInfo]::new('E:\')).AvailableFreeSpace/1MB,2))"
           }
-      - name: Continue exact-revision port survey
+      - name: Continue exact-revision world survey
         if: ${{ success() && steps.studio_photo_artifact.outcome == 'success' && inputs.port_chain && inputs.port_batch != '0' }}
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         env:
@@ -1192,8 +1269,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $batch = [int]$env:STUDIO_PORT_BATCH
-          if ($batch -lt 1 -or $batch -gt 19) { throw 'STUDIO_PORT_BATCH_INVALID' }
-          if ($batch -eq 19) { Write-Host 'STUDIO_PORT_SURVEY_LAST_BATCH_FINISHED=19'; exit 0 }
+          if ($batch -lt 1 -or $batch -gt 146) { throw 'STUDIO_PORT_BATCH_INVALID' }
+          if ($batch -eq 146) { Write-Host 'STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED=146'; exit 0 }
           $mainSha = (& gh api "repos/$env:GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha').Trim()
           if ($LASTEXITCODE -ne 0 -or $mainSha -ne $env:STUDIO_PORT_REVISION) { throw 'STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED' }
           & gh workflow run devloop-studio.yml --repo $env:GITHUB_REPOSITORY --ref main -f game=mare-essentia -f "port_batch=$($batch + 1)" -f port_chain=true -f "port_revision=$mainSha"

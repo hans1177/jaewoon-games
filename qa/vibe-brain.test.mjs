@@ -518,3 +518,22 @@ test('Mare port survey covers 181 unique ports without replacing primary QA repo
   assert.match(workflow, /STUDIO_PORT_SURVEY_MAIN_CHANGED_RESTART_REQUIRED/);
   assert.match(workflow, /retention-days: 1/);
 });
+
+// [전체 지형] 원본 592 탐험과 27 해역을 기존 실제 장면으로 촬영한다.
+test('Mare world survey binds exact site and sea identities and preserves manual controls', () => {
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const base='roblox-games/mare-essentia/';
+  const sites=fs.readFileSync(base+'src/ReplicatedStorage/Shared/Sites.luau','utf8');
+  const ids=[...sites.matchAll(/^\s*\{\s*id\s*=\s*"([a-z0-9_]+)",\s*name\s*=\s*"[^"]+",\s*portId\s*=\s*"([a-z0-9_]+)"/gm)];
+  assert.equal(ids.length,592);
+  assert.equal(new Set(ids.map(m=>m[1])).size,592);
+  const seaDocs=fs.readdirSync(base+'docs/battle_backdrops/naval').filter(n=>n.endsWith('.md'));
+  assert.equal(seaDocs.length,27);
+  const manual=JSON.parse(fs.readFileSync(base+'tools/devloop/studio-scripts/mare-voyage-manual.json','utf8'));
+  assert.ok(manual.some(row=>row.code?.includes('rings=true,firstVisit=true')));
+  assert.ok(manual.some(row=>row.code?.includes('MANUAL_MODE_WRONG')));
+  assert.match(workflow,/FIELD_SURVEY_WRONG_SCENE/);
+  assert.match(workflow,/NAVAL_SURVEY_WRONG_SEA/);
+  assert.match(workflow,/MareNavalSurveyExit/);
+  assert.match(workflow,/STUDIO_WORLD_SURVEY_LAST_BATCH_FINISHED/);
+});
