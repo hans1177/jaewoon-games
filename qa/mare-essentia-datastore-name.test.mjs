@@ -4546,7 +4546,12 @@ test('Mare naval burst timers release external terrain effects on scene destruct
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   assert.match(naval,/folder\.Destroying:Connect\(function\(\)\s+for anchor, timer in FX\.burstTimers do\s+task\.cancel\(timer\)\s+anchor:Destroy\(\)\s+end\s+table\.clear\(FX\.burstTimers\)/);
   assert.match(naval,/function FX\.burst\(pos, dir, list, light\)\s+if finished or not folder\.Parent then return end/);
-  assert.match(naval,/FX\.burstTimers\[anchor\] = task\.delay\(longest, function\(\)\s+FX\.burstTimers\[anchor\] = nil\s+anchor:Destroy\(\)/);
+  assert.match(naval,/FX\.burstTimers\[anchor\] = task\.delay\(longest, function\(\)\s+FX\.burstTimers\[anchor\] = nil/);
+  for(const token of ['for _, node in FX.burstPool do node.anchor:Destroy() end','table.clear(FX.burstPool)','if #FX.burstPool[i].emitters == #list then','node = table.remove(FX.burstPool, i)','local pe = existing or Instance.new("ParticleEmitter")','local l = existing or Instance.new("PointLight")','local pe = emitterOn(anchor, e, node.emitters[i])','pe:Emit(math.min(e.n or 8, if MOBILE_VFX then 12 else 26))','if lightTween then lightTween:Cancel(); lightTween:Destroy() end','if finished or not folder.Parent or #FX.burstPool >= (if MOBILE_VFX then 8 else 16) then','pe.Enabled = false','pe.Rate = 0','pe:Clear()','if node.light then node.light.Enabled = false; node.light.Brightness = 0 end','anchor.Parent = nil','table.insert(FX.burstPool, node)']) assert.ok(naval.includes(token),token);
+  const burst=naval.slice(naval.indexOf('function FX.burst('),naval.indexOf('local ORANGE, YELLOW, RED'));
+  assert.ok(burst.indexOf('FX.burstTimers[anchor] = task.delay(longest') < burst.indexOf('table.insert(FX.burstPool, node)'));
+  assert.ok(burst.indexOf('anchor.Parent = nil') < burst.indexOf('table.insert(FX.burstPool, node)'));
+  assert.match(burst,/if not node then\s+node = \{ anchor = Instance\.new\("Attachment"\), emitters = \{\} \}/);
   assert.match(naval,/longest = math\.max\(longest, e\.life \+ 0\.2\)/);
   assert.match(naval,/if finished or not at\.Parent or not lt\.Parent then return end/);
   assert.match(naval,/if not finished and folder\.Parent then Sfx\.play\(name, vol \* q, speed, fb\) end/);
