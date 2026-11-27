@@ -4177,15 +4177,17 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					end
 				end
 			end
-			foePlate.deck.Text = tostring(#(m.deck and m.deck.foe or {}))
-			mePlate.deck.Text = tostring(#(m.deck and m.deck.me or {}))
+			local foeDeckText = tostring(#(m.deck and m.deck.foe or {}))
+			local myDeckText = tostring(#(m.deck and m.deck.me or {}))
+			if foePlate.deck.Text ~= foeDeckText then foePlate.deck.Text = foeDeckText end
+			if mePlate.deck.Text ~= myDeckText then mePlate.deck.Text = myDeckText end
 			local myScore, foeScore = BC.total(m, "me"), BC.total(m, "foe")
 			foePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.foe) else tostring(foeScore)
 			mePlate.total.Text = if opts.cardOnly then t("손패 ", "Hand ") .. tostring(#m.hand.me) else tostring(myScore)
 			if opts.cardOnly then
 				battleRound.Text = t(tostring(m.round) .. "판", "Round " .. tostring(m.round))
 				local score = t("나 ", "You ") .. tostring(myScore) .. " : " .. tostring(foeScore) .. t(" 상대", " Rival")
-				battleScore.Text = score
+				if battleScore.Text ~= score then battleScore.Text = score end
 				if displayedScore and displayedRound == m.round and displayedScore ~= score then
 					if scorePulse then scorePulse:Cancel() end
 					local scoreRound = m.round
@@ -4206,9 +4208,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			for _, pair in { { mePlate, "me", myScore, foeScore }, { foePlate, "foe", foeScore, myScore } } do
 				local plate, side, own, rival = pair[1], pair[2], pair[3], pair[4]
 				if plate.score then
-					plate.score.Text = tostring(own)
+					local scoreText = tostring(own)
+					if plate.score.Text ~= scoreText then plate.score.Text = scoreText end
 					-- 앞선 쪽 총점은 금색, 뒤진 쪽은 흐린 양피지색 (궨트 총점 표시)
-					plate.score.BackgroundColor3 = if own > rival then Color3.fromRGB(255, 206, 96) else Color3.fromRGB(196, 176, 140)
+					local scoreColor = if own > rival then Color3.fromRGB(255, 206, 96) else Color3.fromRGB(196, 176, 140)
+					if plate.score.BackgroundColor3 ~= scoreColor then plate.score.BackgroundColor3 = scoreColor end
 				end
 				if plate.passed then plate.passed.Visible = m.passed[side] == true and not m.over end
 			end
@@ -4233,10 +4237,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 			if not opts.cardOnly then
 				header.Text = if english then string.format("%s · Round %d   You %d : %d Pirates · %s",
-					TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
+					TITLE, m.round, myScore, foeScore,
 					if m.over then "Battle Over" elseif m.turn == "me" then "Your Turn" else "Enemy Turn")
 					else string.format("%s · %d판   우리 %d : %d 해적   ·   %s",
-						TITLE, m.round, BC.total(m, "me"), BC.total(m, "foe"),
+						TITLE, m.round, myScore, foeScore,
 						if m.over then "전투 종료" elseif m.turn == "me" then "내 차례" else "해적 차례")
 				header.Text ..= if english then string.format("   ·   Wins %d:%d   Hand %d:%d%s", m.wins.me, m.wins.foe,
 					#m.hand.me, #m.hand.foe, if #weather > 0 then " · " .. table.concat(weather, ", ") else "")
