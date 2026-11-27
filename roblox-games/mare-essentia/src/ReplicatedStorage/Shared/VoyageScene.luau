@@ -1088,6 +1088,18 @@ function VoyageScene.play(info)
 		return math.clamp(-0.9 - bottomRel, -6, 6), math.max(bsize.X, bsize.Z)
 	end
 	local baseY, shipLen = restY(ship)
+	-- [항해 카메라] 실제 확대된 선박의 중심 오차와 전체 크기를 포함한 회전 불변 경계.
+	-- 선체 안으로 들어가지 않도록 출항 때 한 번 계산하고, 매 프레임 모델을 다시 훑지 않는다.
+	local cameraFit
+	do
+		local boundsCF, boundsSize = ship:GetBoundingBox()
+		local radius = (boundsCF.Position - shipBase.Position).Magnitude + boundsSize.Magnitude * 0.5
+		cameraFit = {
+			back = math.max(36, radius + 12),
+			height = math.max(13, baseY + radius + 10),
+			ahead = math.max(46, radius * 2.5),
+		}
+	end
 	local heel = 0
 	local wheels = {}
 	for _, name in { "PaddleWheelPort", "PaddleWheelStarboard" } do
@@ -2157,19 +2169,19 @@ function VoyageScene.play(info)
 			end
 		end
 
-		-- 카메라: 배 뒤쪽 위에서 천천히 좌우로 돌며 비춘다
+		-- [항해 카메라] 실제 선박 경계 밖에서 진행 방향을 바라본다.
 		camera = workspace.CurrentCamera or camera
 		if camera.CameraType ~= Enum.CameraType.Scriptable then
 			camera.CameraType = Enum.CameraType.Scriptable
 		end
 		camera.FieldOfView = 70 + fovBoost
-		-- 수동 항해: 카메라는 배 정중앙 바로 뒤에 고정하고(좌우 회전 없음), 바로 앞을 본다.
-		-- 고리가 화면 가운데에서 정면으로 다가오고, 배를 좌우로 움직여 구멍에 맞춘다.
-		local sway = 0
-		local back = CFrame.new(pos) * CFrame.Angles(0, yaw + sway, 0) * CFrame.new(-36, 13, 0)
+		-- 수동 항해의 좌우 중심축·고리 판정·기존 흔들림을 유지한다.
+		local heading = CFrame.new(pos) * CFrame.Angles(0, yaw, 0)
+		local back = heading * CFrame.new(-cameraFit.back, cameraFit.height, 0)
 		shakeAmp *= math.max(0, 1 - dt * 4)
 		local shakeOff = Vector3.new(math.sin(t * 53) * shakeAmp, math.sin(t * 67) * shakeAmp, 0)
-		camera.CFrame = CFrame.lookAt(back.Position + shakeOff + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), (CFrame.new(pos) * CFrame.Angles(0, yaw, 0) * CFrame.new(46, 6 + math.sin(t * 1.3 + 0.6) * 0.3, 0)).Position)
+		local target = heading * CFrame.new(cameraFit.ahead, 6 + math.sin(t * 1.3 + 0.6) * 0.3, 0)
+		camera.CFrame = CFrame.lookAt(back.Position + shakeOff + Vector3.new(0, math.sin(t * 1.3) * 0.5, 0), target.Position)
 		camera.CFrame = camera.CFrame * CFrame.Angles(0, 0, bankRoll * 0.55)
 		ui(k, t)
 
