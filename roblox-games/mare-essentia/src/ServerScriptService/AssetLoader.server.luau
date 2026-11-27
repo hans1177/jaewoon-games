@@ -286,11 +286,19 @@ if studioAudit and #queue == 0 then
 	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "FAIL")
 	ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState", "FAIL")
 end
+-- [초기 로딩] 첫 장면 요청이 진행 중이면 후순위 요청은 입장 대기 범위(5초)까지만 양보한다.
+-- 지연된 초기 모델이 전체 큐를 막지 않으며 Studio 전체 검증·동시 작업자 수는 유지한다.
+local initialPriorityDeadline = os.clock() + 5
 for _ = 1, 12 do
 	task.spawn(function()
 		while cursor <= #queue do
 			local item = queue[cursor]
 			cursor += 1
+			if not item.startup then
+				while priorityPending > 0 and os.clock() < initialPriorityDeadline do
+					task.wait(0.1)
+				end
+			end
 			local good, container = pcall(InsertService.LoadAsset, InsertService, item.id)
 			if good and container then
 				local model = container:FindFirstChildWhichIsA("Model") or container
