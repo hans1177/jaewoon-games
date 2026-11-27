@@ -4161,19 +4161,25 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						img = face and AssetIds[face]
 					end
 					local old = pair[1].leader:FindFirstChild("Face")
-					if old then old:Destroy() end
 					if img then
 						pair[1].leader.Text = ""
-						local f = Instance.new("ImageLabel")
-						f.Name = "Face"
-						f.Size = UDim2.fromScale(1, 1)
-						f.BackgroundTransparency = 1
-						f.ScaleType = Enum.ScaleType.Crop
-						f.Image = "rbxassetid://" .. tostring(img)
-						local fc = Instance.new("UICorner")
-						fc.CornerRadius = UDim.new(1, 0)
-						fc.Parent = f
-						f.Parent = pair[1].leader
+						local imageId = "rbxassetid://" .. tostring(img)
+						if old then
+							if old.Image ~= imageId then old.Image = imageId end
+						else
+							local f = Instance.new("ImageLabel")
+							f.Name = "Face"
+							f.Size = UDim2.fromScale(1, 1)
+							f.BackgroundTransparency = 1
+							f.ScaleType = Enum.ScaleType.Crop
+							f.Image = imageId
+							local fc = Instance.new("UICorner")
+							fc.CornerRadius = UDim.new(1, 0)
+							fc.Parent = f
+							f.Parent = pair[1].leader
+						end
+					elseif old then
+						old:Destroy()
 					end
 				end
 			end
@@ -4289,7 +4295,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				if not compactCards then emblem(rf, rowIcons[row], UDim2.new(0, 4, 0.5, 0), UDim2.new(0, 21, 0.8, 0)) end
 				local mult, adv, dis = BC.rowMatchup(m, side, row)
-				local tag = label(rf, string.format("%s\n%d%s", rowName(row), BC.rowTotal(m, side, row), if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if BC.activeTactic(m.rows[side][row]) then "\n" .. BC.activeTactic(m.rows[side][row]) else ""), 13, Color3.fromRGB(246, 208, 130))
+				local rowScore = BC.rowTotal(m, side, row)
+				local tactic = BC.activeTactic(m.rows[side][row])
+				local tag = label(rf, string.format("%s\n%d%s", rowName(row), rowScore, if adv and dis then " ▲▼" elseif adv then t(" ▲상성", " ▲Adv") elseif dis then t(" ▼불리", " ▼Dis") else "") .. (if tactic then "\n" .. tactic else ""), 13, Color3.fromRGB(246, 208, 130))
 				tag.Position = if compactCards then UDim2.new(1, -40, 0, 0) else UDim2.fromOffset(29, 0)
 				tag.Size = UDim2.new(0, if compactCards then 36 else 68, 1, 0)
 				if compactCards then
@@ -4327,7 +4335,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					badge.Font = Enum.Font.GothamBlack
 					badge.TextScaled = true
 					badge.TextColor3 = Color3.fromRGB(255, 232, 170)
-					badge.Text = tostring(BC.rowTotal(m, side, row))
+					badge.Text = tostring(rowScore)
 					badge.Parent = rf
 					local bc = Instance.new("UICorner")
 					bc.CornerRadius = UDim.new(1, 0)
