@@ -1,0 +1,88 @@
+{
+  "runId": "45914419063",
+  "kind": "autopilot",
+  "sourceRevision": "e4eed2ad4612a4ae6730070071ffd70973d466ea",
+  "result": "PASS",
+  "failureStage": null,
+  "failureSignature": null,
+  "summary": {
+    "plannedSteps": 5,
+    "completedSteps": 5,
+    "plannedClicks": 0,
+    "successfulClicks": 0,
+    "skippedOptionalClicks": 0,
+    "plannedFrames": 1,
+    "capturedFrames": 1,
+    "abortedEarly": false
+  },
+  "errors": [],
+  "audits": {
+    "models": "NOT_RUN",
+    "registered": "NOT_RUN",
+    "features": "NOT_RUN",
+    "registry": "NOT_RUN"
+  },
+  "steps": [
+    {
+      "step": 0,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 1,
+      "type": "luau",
+      "name": "autopilot-health",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 2,
+      "type": "capture",
+      "name": "ap_game",
+      "status": "PASS",
+      "screenshots": [
+        "ap_game-0.jpg"
+      ]
+    },
+    {
+      "step": 3,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 4,
+      "type": "luau",
+      "name": "autopilot-health-2",
+      "status": "PASS",
+      "screenshots": []
+    }
+  ],
+  "screenshotComparison": [
+    {
+      "name": "ap_game-0.jpg",
+      "sha256": "f907365e48c1738fee60e0f26844ff699ed931c49bfae27d03dc891e507f6c4d",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/blob/mare-essentia-studio-frames/runs/45914419063/ap_game-0.jpg"
+    }
+  ],
+  "screenshotFrameAudit": {
+    "checked": 1,
+    "invalid": 0,
+    "images": [
+      {
+        "name": "ap_game-0.jpg",
+        "bytes": 250711,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      }
+    ],
+    "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
+  },
+  "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
+  "previousRunId": "45722588758"
+}
