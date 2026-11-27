@@ -510,7 +510,7 @@
     "CardArt/ui_score_enemy": "4be540e1023a0029e417e28bbd706d0be2277926d28993f511023a8583e4ae41",
     "CardArt/ui_score_player": "3eb782f18113db4955af7172261b983bd9a12f8bdfb028b820f4d1aae6500a5a",
     "CardArt/ui_icon_shield": "b40772fd4aa2d6b08f34ccedeee1d4d48343ae6dfef7175c0072db86220eed6a",
-    "CardArt/ui_icon_bow": "2752d7516560340dcfa8e010486cd9f516b57ce7ac1b82582ec933aeaae1b100",
+    "CardArt/ui_icon_bow": "947400c248e872173d23e679a53e9dc36258e0407013053d37c743e657cf0ea4",
     "CardArt/ui_icon_hourglass": "d18a06fdc3b5d547ec0c8879442b82e14eadffbde2605552b86c04c255843703",
     "CardArt/ui_icon_victory": "08b613dc6b573ab3450227c58e00d0738b603816b1c76ac02f7f22d7369356b1",
     "CardArt/ui_parchment": "11366dc544acd7a9441206d693b8881caacd1ecffa6a43dc9b097e2093baac64",
@@ -1431,29 +1431,5 @@
       "replacesAssetId": "122487478364635"
     }
   },
-  "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지.",
-  "dropboxPending": {
-    "CardArt/ui_icon_bow": {
-      "bytes": 711434,
-      "width": 1254,
-      "height": 1254,
-      "review": {
-        "sourceType": "IMAGE_GENERATION_MODEL",
-        "sourceFile": "assets/cardart/ui_icon_bow.png",
-        "sourceSha256": "947400c248e872173d23e679a53e9dc36258e0407013053d37c743e657cf0ea4",
-        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
-        "reviewedAt": "2026-11-27",
-        "license": "PROJECT_ORIGINAL_ART",
-        "subjectMatch": true,
-        "historicalContext": true,
-        "houseStyle": true,
-        "singleFinishedScene": true,
-        "noPartsOrSprites": true,
-        "robloxSafety": true,
-        "commercialRights": true,
-        "replacesSha256": "2752d7516560340dcfa8e010486cd9f516b57ce7ac1b82582ec933aeaae1b100",
-        "replacesAssetId": "113535103445611"
-      }
-    }
-  }
+  "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지."
 }
