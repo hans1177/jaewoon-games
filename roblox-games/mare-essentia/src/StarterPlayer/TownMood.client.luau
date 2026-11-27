@@ -20,7 +20,7 @@ local fx = Instance.new("ColorCorrectionEffect")
 fx.Name = "TownMood"
 fx.Parent = Lighting
 local TARGET = {
-	boom = { Saturation = 0.08, Brightness = 0.02, TintColor = Color3.fromRGB(255, 246, 228) },
+	boom = { Saturation = 0.05, Brightness = 0.01, TintColor = Color3.fromRGB(255, 246, 228) },
 	slump = { Saturation = -0.12, Brightness = -0.02, TintColor = Color3.fromRGB(226, 232, 244) },
 	steady = { Saturation = 0, Brightness = 0, TintColor = Color3.fromRGB(255, 255, 255) },
 }
