@@ -4422,6 +4422,14 @@ test('Mare naval skill and mast timers and live projectile connections release s
   assert.ok(shot.includes('if hit then\n\t\t\t\t\tfx()'));
 });
 
+test('Mare naval pickups reuse display calculations and preserve collection rules',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const items=naval.slice(naval.indexOf('function FX.itemsStep(now)'),naval.indexOf('local function dismast(sh)'));
+  for(const token of ['local pickupRadius = math.max(12, me.length * 0.25)','local bobTime = now * 1.9','(me.pos - item.pos).Magnitude <= pickupRadius','math.sin(bobTime + item.phase) * 0.42','math.sin(now + item.phase) * 0.10','local courseUnit = if nearestDist > 0.1 then course.Unit else Vector3.zero','local front = if nearestDist > 0.1 then courseUnit:Dot(heading) else 1','local side = courseUnit:Dot(right)','if pickupCue.Visible ~= visible then pickupCue.Visible = visible end','if pickupCue.Text ~= text then pickupCue.Text = text end','if pickupCue.TextColor3 ~= color then pickupCue.TextColor3 = color end','FX.pickupCueAt = now + 0.20','FX.nextItemAt = now + (if MOBILE_VFX then 13 else 11)','#FX.items < 3','expires = now + 30','FX.mineCharges = math.min(2, FX.mineCharges + 1)','skillReady[sk.id] = math.max(now, skillReady[sk.id] - 5)','table.remove(FX.items, i)','if dist < nearestDist then closest, nearestDist = entry, dist end']) assert.ok(items.includes(token),token);
+  assert.equal(items.split('course.Unit').length-1,1);
+  assert.ok(items.indexOf('local pickupRadius =') < items.indexOf('for i = #FX.items, 1, -1 do'));
+});
+
 test('Mare naval finish releases connection references and cancels pending timeout without cancelling itself',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
