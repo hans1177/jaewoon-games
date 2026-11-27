@@ -1,1 +1,75 @@
-[{"type": "wait", "ms": 35000}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) return 'NEWGAME ok='..tostring(a and a.ok)"}, {"type": "wait", "ms": 3000}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local P=require(RS.Shared.Ports) local out={}\nlocal a=r:InvokeServer('State',{}) local v=a.view\ntable.insert(out,'HERE '..v.player.portId..' yard='..tostring(v.shipyard.available)..' field='..tostring(v.shipyard.field))\nlocal target for _,rt in ipairs(v.routes) do if not rt.yard and not rt.locked and (not target or rt.distanceKm<target.distanceKm) then target=rt end end\nlocal ny=v.nearestYard table.insert(out,'NEARYARD '..tostring(ny and ny.name)..' '..tostring(ny and ny.distanceKm))\nif target then local s=r:InvokeServer('Sail',{portId=target.id}) task.wait(1) a=r:InvokeServer('State',{}) v=a.view table.insert(out,'AT '..v.player.portId..' yard='..tostring(v.shipyard.available)..' field='..tostring(v.shipyard.field)..' nearest='..tostring(v.nearestYard and v.nearestYard.name)..' ok='..tostring(s and s.ok)) end\nreturn table.concat(out,' | ')"}, {"type": "wait", "ms": 2000}, {"type": "luau", "ctx": "Client", "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local c=0 for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then c+=1 end end return \"ERR Client count=\"..c"}]
+[
+  {
+    "type": "wait",
+    "ms": 35000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) return 'NEWGAME ok='..tostring(a and a.ok)"
+  },
+  {
+    "type": "wait",
+    "ms": 3000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local P=require(RS.Shared.Ports) local out={}\nlocal a=r:InvokeServer('State',{}) local v=a.view\ntable.insert(out,'HERE '..v.player.portId..' yard='..tostring(v.shipyard.available)..' field='..tostring(v.shipyard.field))\nlocal target for _,rt in ipairs(v.routes) do if not rt.yard and not rt.locked and (not target or rt.distanceKm<target.distanceKm) then target=rt end end\nlocal ny=v.nearestYard table.insert(out,'NEARYARD '..tostring(ny and ny.name)..' '..tostring(ny and ny.distanceKm))\nif target then local s=r:InvokeServer('Sail',{portId=target.id}) task.wait(1) a=r:InvokeServer('State',{}) v=a.view table.insert(out,'AT '..v.player.portId..' yard='..tostring(v.shipyard.available)..' field='..tostring(v.shipyard.field)..' nearest='..tostring(v.nearestYard and v.nearestYard.name)..' ok='..tostring(s and s.ok)) end\nreturn table.concat(out,' | ')"
+  },
+  {
+    "type": "wait",
+    "ms": 2000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local L=game:GetService(\"LogService\"):GetLogHistory() local c=0 for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError then c+=1 end end return \"ERR Client count=\"..c"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('DevCall','State') return 'REPAIR_REFRESH'"
+  },
+  {
+    "type": "wait",
+    "ms": 1500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "workspace:SetAttribute('DevCall','Yard') return 'QA_YARD_INLINE_OPEN'"
+  },
+  {
+    "type": "wait",
+    "ms": 3000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [조선소 정비 페이지] 정비와 선박 비교는 실제 별도 탭이다. 먼저 정비 페이지를 검사한다.\nlocal pg=game:GetService(\"Players\").LocalPlayer:WaitForChild(\"PlayerGui\")\nlocal gui=assert(pg:FindFirstChild(\"MareEssentiaGui\"),\"YARD_BOOK_MISSING\")\nlocal main=assert(gui:FindFirstChild(\"Main\",true),\"YARD_MAIN_MISSING\")\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true),\"YARD_TAB_DETAIL_MISSING\")\nlocal refit=assert(detail:FindFirstChild(\"YardSectionRefit\",true),\"YARD_TAB_REFIT_MISSING\")\nlocal maintenance=assert(detail:FindFirstChild(\"YardTab_maintenance\",true),\"YARD_MAINTENANCE_TAB_MISSING\")\nassert(main.Visible and detail.Visible and refit.Visible and maintenance:GetAttribute(\"SelectedTab\")==true,\"YARD_MAINTENANCE_NOT_VISIBLE\")\nassert(not pg:FindFirstChild(\"TradeHallGui\"),\"YARD_EXTRA_WINDOW_RETURNED\")\nreturn \"YARD_MAINTENANCE_PASS\""
+  },
+  {
+    "type": "capture",
+    "name": "repair_maintenance"
+  },
+  {
+    "type": "click_from_luau",
+    "ctx": "Client",
+    "label": "yard_compare_tab",
+    "code": "-- [조선소 실제 클릭] 선박 비교 탭을 눌러 별도 페이지를 연다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true))\nlocal btn=assert(detail:FindFirstChild(\"YardTab_compare\",true),\"YARD_COMPARE_TAB_MISSING\")\nassert(btn.Visible and btn.Active,\"YARD_COMPARE_TAB_DISABLED\")\nreturn string.format(\"%d,%d CLICK=YARD_COMPARE_TAB\",math.floor(btn.AbsolutePosition.X+btn.AbsoluteSize.X/2),math.floor(btn.AbsolutePosition.Y+btn.AbsoluteSize.Y/2))"
+  },
+  {
+    "type": "wait",
+    "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [조선소 선박 비교] 클릭 후 비교 페이지의 제목과 선택 상태를 확인한다.\nlocal gui=assert(game:GetService(\"Players\").LocalPlayer.PlayerGui:FindFirstChild(\"MareEssentiaGui\"))\nlocal detail=assert(gui:FindFirstChild(\"FacilityDetail\",true))\nlocal tab=assert(detail:FindFirstChild(\"YardTab_compare\",true),\"YARD_COMPARE_TAB_MISSING\")\nlocal ships=assert(detail:FindFirstChild(\"YardSectionShips\",true),\"YARD_TAB_SHIPS_MISSING\")\nassert(tab:GetAttribute(\"SelectedTab\")==true and ships.Visible,\"YARD_COMPARE_NOT_VISIBLE\")\nreturn \"YARD_COMPARE_PAGE_PASS\""
+  },
+  {
+    "type": "capture",
+    "name": "repair_compare"
+  }
+]
