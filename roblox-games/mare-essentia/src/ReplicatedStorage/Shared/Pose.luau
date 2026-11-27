@@ -1567,8 +1567,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false
 				part.Massless = true
 				local surface = part:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = surfaceHasMaps(surface)
-					or (part:IsA("MeshPart") and (part.TextureID ~= "" or part.MaterialVariant ~= ""))
+				local textured = surfaceHasMaps(surface) or part.MaterialVariant ~= ""
+					or (part:IsA("MeshPart") and part.TextureID ~= "")
 				-- [색상 지도 없는 경우] TextureID만 가져온 헤어는 SurfaceAppearance 경로를
 				-- 지나지 않는다. 머리카락 메시의 원본 TextureID를 유지한 채 색상 배율만 적용한다.
 				-- PBR SurfaceAppearance가 있는 모델은 아래 기존 PBR 분기에서 처리한다.
@@ -1576,11 +1576,14 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					and string.sub(assetName, 1, 5) == "hair_" then
 					local hairTint = model:GetAttribute("NpcHairTint")
 					if typeof(hairTint) == "Color3" then
-						-- [회색/흰 머리 복구] 밝은 무채색 수입 결과만 강하게 원래 머리색으로 맞춘다.
+						-- [원본 머리색 보호] 이미 색이 있는 텍스처에는 어두운 배율을 중복 적용하지 않는다.
 						local pale = part.Color.R > 0.78 and part.Color.G > 0.78 and part.Color.B > 0.77
 							and math.max(part.Color.R, part.Color.G, part.Color.B)
 								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
-						part.Color = part.Color:Lerp(hairTint, if pale then 0.93 else 0.45)
+						if pale then
+							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.65)
+							part.Color = part.Color:Lerp(softTint, 0.50)
+						end
 					end
 				end
 				-- [실물 헤어·직업 복식 구분] PBR 원본 ColorMap/Normal/Roughness는 그대로 두고,
@@ -1590,14 +1593,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					if string.sub(assetName, 1, 5) == "hair_" then
 						local hairTint = model:GetAttribute("NpcHairTint")
 						if typeof(hairTint) == "Color3" then
-							-- [PBR 헤어] 원본 컬러맵은 보존하고 흰색 기본 배율만 주민 고유 머리색으로 복구한다.
-							-- 검거나 이미 염색된 부위는 과도하게 다시 덮지 않는다.
+							-- [PBR 헤어] 컬러맵 자체의 머리색을 살리고 밝은 무채색 배율에만 약한 개인색을 섞는다.
+							-- 검거나 이미 염색된 부위는 원본 배율 그대로 유지한다.
 							local base = surface.Color
 							local pale = base.R > 0.78 and base.G > 0.78 and base.B > 0.77
 								and math.max(base.R, base.G, base.B)
 									- math.min(base.R, base.G, base.B) < 0.12
-							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.12)
-							surface.Color = surface.Color:Lerp(softTint, if pale then 0.93 else 0.50)
+							if pale then
+								local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.65)
+								surface.Color = surface.Color:Lerp(softTint, 0.50)
+							end
 						end
 					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3" then
 						-- [원본 6부위 재질] 커프 GLB는 금속 단추와 직물 레이스가 같은 이름으로 수입된다.
