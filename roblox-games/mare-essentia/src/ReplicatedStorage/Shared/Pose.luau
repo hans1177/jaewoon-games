@@ -133,7 +133,7 @@ local function drawFace(head)
 	decal.Texture = "rbxasset://textures/face.png"
 	decal.Color3 = Color3.new(1, 1, 1)
 	decal.Transparency = 0
-	-- 정면 중복 데칼만 숨긴다. 원래 머리 메시의 텍스처·옆면 장식은 보존한다.
+	-- 정면 중복 데칼만 숨긴다. 옆면 장식은 보존하며 기본 머리 텍스처 처리는 생성 단계에서만 수행한다.
 	for _, child in head:GetChildren() do
 		if child ~= decal and child:IsA("Decal") and child.Face == Enum.NormalId.Front then
 			child.Transparency = 1
@@ -421,6 +421,11 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			if descendant == root then
 				descendant.Transparency = 1
 			elseif n == "Head" then
+				-- [주민 얼굴 단일 표현] 기본 머리 텍스처와 정면 데칼의 중첩을 방지한다.
+				-- 주민 기본 머리만 대상으로 하며 미리보기·전투 리그·등록 복식은 보존한다.
+				if citizenCloth and not parent:IsA("WorldModel") and descendant:IsA("MeshPart") then
+					descendant.TextureID = ""
+				end
 				descendant.Color = skin
 				descendant.Material = Enum.Material.SmoothPlastic
 			elseif string.find(n, "Hand") then
