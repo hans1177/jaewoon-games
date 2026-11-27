@@ -4639,3 +4639,16 @@ test('Mare naval tracking reuses trajectory appearance and skips unchanged coord
   assert.ok(tracking.indexOf('local tint = if inRange and aligned then Color3.fromRGB(130, 235, 150) else Color3.fromRGB(255, 166, 106)') < loop);
   assert.ok(loop > 0);
 });
+
+
+test('Mare naval fleet wake shares weather and alternation without changing particle cadence',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const wake=naval.slice(naval.indexOf('function FX.wake('),naval.indexOf('function FX.damage('));
+  assert.ok(!wake.includes('GetAttribute("NavalWeatherMode")'));
+  for(const token of ['function FX.wake(sh, key, now, waveBoost)','local step = if MOBILE_VFX then 0.31 else 0.22','if moved <= 0.35 or (sh.speed or 0) <= 1.5 then return end','local evenFrame = last.frame % 2 == 0','local spraySide = if evenFrame then 1 else -1','if not MOBILE_VFX or side == spraySide then','if rowing and not MOBILE_VFX and evenFrame then','n = if MOBILE_VFX then 5 else 9']) assert.ok(wake.includes(token),token);
+  const fleet=naval.slice(naval.indexOf('-- [함대 항적]'),naval.indexOf('FX.damage(me, "me", now)'));
+  assert.equal(fleet.split('GetAttribute("NavalWeatherMode")').length-1,1);
+  for(const token of ['local waveBoost = if wakeMood == "storm" then 1.45 elseif wakeMood == "rain" then 1.18 else 1','FX.wake(me, "me", now, waveBoost)','FX.wake(foe, "foe", now, waveBoost)','FX.wake(e, "e" .. i, now, waveBoost)','FX.wake(al, "a" .. i, now, waveBoost)','local wakePhase = math.floor(now * 3)','if not MOBILE_VFX or (i + wakePhase) % 2 == 0 then']) assert.ok(fleet.includes(token),token);
+  assert.ok(naval.includes('if sh.wake.WorldCFrame ~= wakeFrame then sh.wake.WorldCFrame = wakeFrame end'));
+  assert.ok(naval.includes('sh.wakeNext = t + (if MOBILE_VFX then 0.20 else 0.11)'));
+});
