@@ -1439,7 +1439,7 @@ function NavalBattle.play(opts)
 	endingCaption.Visible = false
 
 	-- 카드 지원 표시판: 덱의 지식 카드가 해전을 자동으로 거드는 효과. 발동할 때마다 해당 줄이 번쩍이고 문구가 떠오른다.
-	local CH = { chips = {}, shown = {} }
+	local CH = { chips = {}, shown = {}, popTimers = {} }
 	do
 		local entries = opts.cardEffects or {}
 		if #entries > 0 and not opts.cardOnly then
@@ -1493,6 +1493,7 @@ function NavalBattle.play(opts)
 	local KIND_COLOR = { melee = Color3.fromRGB(220, 120, 90), cannon = Color3.fromRGB(240, 180, 80), speed = Color3.fromRGB(110, 190, 230), pump = Color3.fromRGB(110, 200, 160), medic = Color3.fromRGB(150, 220, 130) }
 	local KIND_PHRASE = { melee = "접현 카드가 칼날을 벼린다", cannon = "포 카드가 조준을 돕는다", speed = "항해 카드가 바람을 읽는다", pump = "조선 카드가 물을 막는다", medic = "의학 카드가 부상자를 살린다" }
 	function CH.flash(kind)
+		if not gui.Parent then return end
 		local c = CH.chips[kind]
 		if not c or CH.shown[kind] and os.clock() - CH.shown[kind] < 2.5 then
 			return
@@ -1518,18 +1519,22 @@ function NavalBattle.play(opts)
 			TweenService:Create(l, TweenInfo.new(1.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 				Position = l.Position - UDim2.fromOffset(0, 40), TextTransparency = 1, TextStrokeTransparency = 1,
 			}):Play()
-			task.delay(1.7, function() l:Destroy() end)
+			CH.popTimers[l] = task.delay(1.7, function()
+				CH.popTimers[l] = nil
+				if l.Parent then l:Destroy() end
+			end)
 		end
 	end
 	-- 전투가 시작되면 지원 효과를 차례로 알린다
-	task.spawn(function()
-		task.wait(1.2)
+	CH.introThread = task.delay(1.2, function()
 		for _, kind in { "speed", "cannon", "melee", "pump" } do
+			if not gui.Parent then break end
 			if CH.chips[kind] then
 				CH.flash(kind)
 				task.wait(0.7)
 			end
 		end
+		CH.introThread = nil
 	end)
 
 	local finished = false
@@ -1545,6 +1550,12 @@ function NavalBattle.play(opts)
 			return
 		end
 		finished = true
+		-- [지원 연출 종료] 남은 예약과 화면 참조를 먼저 해제한다.
+		if CH.introThread then task.cancel(CH.introThread); CH.introThread = nil end
+		for _, timer in CH.popTimers do task.cancel(timer) end
+		table.clear(CH.popTimers)
+		table.clear(CH.chips)
+		table.clear(CH.shown)
 		if controls then
 			pcall(function()
 				controls:Enable()
