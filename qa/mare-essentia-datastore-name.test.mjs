@@ -4620,6 +4620,18 @@ test('Mare naval damage fire reuses per-ship emission values and preserves thres
   assert.ok(fire.indexOf('local brightness =') < fire.indexOf('for _, vent in state.vents do'));
 });
 
+test('Mare naval queued volleys release their timers and preserve the last-shot hit',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const volley=naval.slice(naval.indexOf('-- 내 포격: 사정거리 안에서'),naval.indexOf('-- 두 배가 맞닿으면 바로 접현'));
+  assert.equal(volley.split('local volleyTimer = task.delay(k * 0.08, function()').length-1,3);
+  assert.equal(volley.split('conns[coroutine.running()] = nil').length-1,3);
+  assert.equal(volley.split('conns[volleyTimer] = volleyTimer').length-1,3);
+  assert.equal(volley.split('if k == volley - 1 then').length-1,3);
+  for(const token of ['if finished or rt.ended then','rtDamage(false, base * acc)','rt.hits += 1','applyHit(false, e)','applyHit(true, e)','math.clamp(math.floor((e and e.hull or 8) / 8) + 1, 1, 4)','nextMeFire = now + cannon.cd * (if now < skillUntil.rapid then 0.4 else 1)','nextFoeFire = now + 1.45']) assert.ok(volley.includes(token),token);
+  assert.ok(naval.includes('if c ~= coroutine.running() and coroutine.status(c) ~= "dead" then task.cancel(c) end'));
+  assert.ok(naval.includes('table.clear(conns)'));
+});
+
 test('Mare naval skill icons compose readiness glow once and skip identical writes',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const start=naval.indexOf('local art = b:FindFirstChild("NavalButtonArtwork")',naval.indexOf('-- [전투 HUD] 실제 표시'));
