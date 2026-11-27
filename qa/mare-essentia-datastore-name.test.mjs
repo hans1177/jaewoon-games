@@ -4400,6 +4400,25 @@ test('Mare naval support and music retries release ended scene references',()=>{
   for(const token of ['if musicRetry then task.cancel(musicRetry); musicRetry = nil end','musicRetry = task.delay(22, function()','musicRetry = task.delay(retryAfter, function()']) assert.ok(audio.includes(token),token);
 });
 
+test('Mare naval skill and mast timers and live projectile connections release scene references',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const skill=naval.slice(naval.indexOf('function FX.skill(sh, id, dur)'),naval.indexOf('function FX.shipFire'));
+  const mast=naval.slice(naval.indexOf('local function dismast(sh)'),naval.indexOf('local function shoot(fromPos'));
+  const shot=naval.slice(naval.indexOf('local function shoot(fromPos'),naval.indexOf('local function forward(theta)'));
+  for(const token of ['FX.effectTimers[at] = task.delay(dur, function()','FX.effectTimers[at] = task.delay(2, function()','if finished or not at.Parent or not lt.Parent then return end']) assert.ok(skill.includes(token),token);
+  assert.equal(skill.split('FX.effectTimers[at] = nil').length-1,2);
+  for(const token of ['FX.effectTimers[pole] = task.delay(2.5, function()','FX.effectTimers[pole] = nil','if pole.Parent then pole:Destroy() end','if sail.Parent then sail:Destroy() end']) assert.ok(mast.includes(token),token);
+  for(const block of [mast,shot]){
+    assert.ok(block.includes('conns[conn] = conn'));
+    assert.equal(block.split('conn:Disconnect()').length-1,2);
+    assert.equal(block.split('conns[conn] = nil').length-1,2);
+  }
+  assert.ok(naval.includes('for _, timer in FX.effectTimers do task.cancel(timer) end'));
+  assert.ok(naval.includes('table.clear(FX.effectTimers)'));
+  assert.ok(shot.includes('local hit = hullHit and (not hitTest or hitTest())'));
+  assert.ok(shot.includes('if hit then\n\t\t\t\t\tfx()'));
+});
+
 test('Mare naval finish releases connection references and cancels pending timeout without cancelling itself',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
