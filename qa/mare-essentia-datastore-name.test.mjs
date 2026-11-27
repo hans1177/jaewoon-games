@@ -4493,3 +4493,14 @@ test('Mare port construction audit records shared imported assets and separates 
   assert.match(source,/PortAssetAuditScope", "STUDIO_SCENE_CONSTRUCTION_ONLY"/);
   assert.match(source,/CityPortMissingLandmark/);
 });
+
+test('Mare voyage avoids repeated emitter and parent writes and destroys detached gulls',()=>{
+  const voyage=read('ReplicatedStorage/Shared/VoyageScene.luau');
+  for(const [property,value] of [['jet.emitter.Rate','jetRate'],['sternEm.Rate','sternRate'],['wake.trail.Enabled','trailEnabled'],['g.model.Parent','gullParent'],['precip.Rate','precipRate'],['hailBurst.Rate','hailRate']]){
+    assert.ok(voyage.includes('if '+property+' ~= '+value+' then '+property+' = '+value+' end'),property);
+  }
+  assert.match(voyage,/local jetRate = math\.floor\(flow \* \(15 \+ 10 \* roughness\)\)/);
+  assert.match(voyage,/local precipRate = math\.floor\(weather\.rate \* weatherLevel \* \(if mobile then 0\.60 else 1\)\)/);
+  assert.match(voyage,/if breakWave then\s+jet\.emitter:Emit\(math\.ceil\(3 \+ 5 \* flow \+ 4 \* roughness\)\)/);
+  assert.match(voyage,/table\.clear\(helmConns\)\s+--[^\n]*\n\s+for _, g in gulls do\s+if not g\.model\.Parent then g\.model:Destroy\(\) end\s+end\s+folder:Destroy\(\)/);
+});
