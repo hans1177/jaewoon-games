@@ -1853,7 +1853,9 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
  assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
- assert.match(pose,/target\.Size\.Z \* \(if beard then -0\.42 else \(spec\[8\] or 0\)\)/, '얼굴 앞쪽 수염 위치와 기존 액세서리 오프셋을 모두 보존');
+ assert.match(pose,/local hairOffsetZ = spec\[8\] or 0/, '기존 액세서리 깊이 오프셋 기본값 보존');
+ assert.match(pose,/target\.Size\.Z \* \(if beard then -0\.42 else hairOffsetZ\)/, '수염 전방 위치와 보정된 헤어 오프셋 적용');
+ assert.match(pose,/if hairStyle == "short" and crownY - ext\.Y \/ target\.Size\.Y < 0\.20 then[\s\S]*?hairOffsetZ \+= math\.clamp\(frontOverlap, 0, 0\.18\)/, '눈을 가리는 짧은 헤어에만 깊이 보정');
  assert.match(pose,/skin:ScaleTo\(ratio\)/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(pose,/part\.Anchored, part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
