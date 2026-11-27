@@ -3132,13 +3132,19 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           proof.batches++;
         }
         const missingCount=proof.missing.length+proof.soundMissing.length;
-        if(missingCount>0&&missingCount<=8){
+        // [누락 재검사] 최대 24개를 12개씩 재확인한다. 전체 장애는 기존 실패를 유지한다.
+        if(missingCount>0&&missingCount<=24){
           const imageMissing=new Set(proof.missing),soundMissing=new Set(proof.soundMissing);
           const pendingRows=allRows.filter(row=>row.kind==='Image'?imageMissing.has(row.key):soundMissing.has(row.key));
-          const retry=await auditBatch(pendingRows);
-          proof.firstPassMissing={images:proof.missing,sounds:proof.soundMissing};
-          proof.missing=retry.missing;
-          proof.soundMissing=retry.soundMissing;
+          proof.firstPassMissing={images:[...proof.missing],sounds:[...proof.soundMissing]};
+          const retryMissing=[],retrySoundMissing=[];
+          for(let offset=0;offset<pendingRows.length;offset+=12){
+            const retry=await auditBatch(pendingRows.slice(offset,offset+12));
+            retryMissing.push(...retry.missing);
+            retrySoundMissing.push(...retry.soundMissing);
+          }
+          proof.missing=retryMissing;
+          proof.soundMissing=retrySoundMissing;
           proof.retryVerified=true;
         }
         proof.loaded=proof.expected-proof.missing.length;

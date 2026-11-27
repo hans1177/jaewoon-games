@@ -4530,11 +4530,40 @@ test('Mare Client retries missing media once while requiring complete approved I
   assert.ok(script.includes('const batchSize=60;'));
   assert.ok(script.includes('await auditBatch(allRows.slice(offset,offset+batchSize))'));
   assert.ok(script.includes('pendingRows=allRows.filter(row=>'));
-  assert.ok(script.includes('missingCount>0&&missingCount<=8'));
+  assert.ok(script.includes('missingCount>0&&missingCount<=24'));
   assert.ok(script.includes("throw Error('STUDIO_CLIENT_MEDIA_BATCH_EVIDENCE_INVALID')"));
   assert.ok(script.includes('missing.every(key=>allowed.has(key))'));
   assert.ok(script.includes('proof.expected===imageRows.length&&proof.loaded===imageRows.length'));
   assert.ok(script.includes('proof.soundExpected===soundRows.length&&proof.soundLoaded===soundRows.length'));
+});
+
+// [실제 재시도 분기] 8개 이미지+1개 음원 누락과 24개 한계 및 잔여 실패를 재현한다.
+test('Mare client media retries nine missing assets and retains failures with bounded batches',async()=>{
+  const start=helper.indexOf('        const missingCount=proof.missing.length+proof.soundMissing.length;');
+  const end=helper.indexOf('        proof.loaded=proof.expected-proof.missing.length;',start);
+  assert.ok(start>=0&&end>start);
+  const retry=new Function('proof','allRows','auditBatch','return (async()=>{'+helper.slice(start,end)+'})()');
+  for(const count of [0,9,24,25]){
+    const missing=Array.from({length:Math.max(0,count-1)},(_,i)=>'image'+i);
+    const soundMissing=count?['sound']:[], proof={missing:[...missing],soundMissing:[...soundMissing]};
+    const rows=[...missing.map(key=>({kind:'Image',key})),...soundMissing.map(key=>({kind:'Sound',key})),{kind:'Image',key:'alreadyLoaded'}];
+    const calls=[];
+    await retry(proof,rows,async batch=>{
+      calls.push(batch.map(row=>row.key));
+      return {missing:[],soundMissing:batch.some(row=>row.kind==='Sound')?['sound']:[]};
+    });
+    if(count===9||count===24){
+      assert.equal(calls.flat().length,count);
+      assert.ok(calls.every(batch=>batch.length<=12&&!batch.includes('alreadyLoaded')));
+      assert.deepEqual(proof.firstPassMissing,{images:missing,sounds:soundMissing});
+      assert.deepEqual(proof.missing,[]);
+      assert.deepEqual(proof.soundMissing,['sound']);
+    }else{
+      assert.equal(calls.length,0);
+      assert.deepEqual(proof.missing,missing);
+      assert.deepEqual(proof.soundMissing,soundMissing);
+    }
+  }
 });
 
 // [대항해시대] 서버 이미지 선로딩 타임아웃은 실제 Studio Client 이미지 로딩 증거로만 정정할 수 있다.
