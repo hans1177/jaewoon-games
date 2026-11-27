@@ -2301,6 +2301,13 @@ test('시장·농경·종교 구획은 시설과 인력에 따라 달라지고 �
   'local stalls = math.min(if districtTouch then 4 else 6',
   'if stalls >= 2 and warehouseBuilt > 0 then',
   'folder:SetAttribute("CityMarketStalls", stalls)',
+  'local stallRowZ = 11',
+  'local festivalRowZ = 22',
+  'local cargoEdgeZ = cz - 33',
+  'local displayEdgeZ = cz + 33',
+  'cx - 14, cargoEdgeZ, false',
+  'cx + 13, cargoEdgeZ, false',
+  'cx + (i - (#marketGoods + 1) / 2) * 18, displayEdgeZ, false',
   'local farmsBuilt = if districtBuildings then',
   'local cropRows = if farmsBuilt <= 0 or not farmAsset then 0 else math.min(2, lvl, math.max(1, math.floor(math.sqrt(farmsBuilt) / 2)))',
   'if farmsBuilt > 0 then',
@@ -4818,4 +4825,17 @@ test('Mare building trim preserves original roof and window materials and fits d
     const lo=(-h-o)/v,hi=(h-o)/v;
     assert.equal(Math.max(0,Math.min(lo,hi)),expected);
   }
+});
+
+// [시장 통행축] 기존 목표 폭 기준의 중앙·장날·외곽 진열 간격을 검증한다. 실제 모델 외곽은 Studio에서 검사한다.
+test('시장 가판대와 외곽 진열물이 중앙 보행축을 공유하지 않는다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ const market=scene.slice(scene.indexOf('elseif d.kind == "market" then'),scene.indexOf('else -- farm',scene.indexOf('elseif d.kind == "market" then')));
+ assert.match(market,/cz \+ side \* stallRowZ/);
+ assert.match(market,/cz \+ side \* festivalRowZ/);
+ assert.doesNotMatch(market,/cx - 14, cz, false|cx \+ 13, cz, false/);
+ assert.ok(11-7/2>=7);
+ assert.ok(22-11-7>=4);
+ assert.ok(33-22-7/2-4/2>=5);
+ assert.ok(33+4/2<43);
 });

@@ -4662,21 +4662,27 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local londonMarketDay = info.portId == "london" and type(info.day) == "number"
 					and require(script.Parent:WaitForChild("Harbor")).festivalAt("europe", info.day) ~= nil
 				local londonExtraStalls = 0
+				-- [시장 보행축] 중앙 통로는 비우고 기본 가판대와 장날 추가 가판대 사이도 띄운다.
+				-- 시장의 예약 필지(반폭 41/43) 안에서만 기존 전시물을 옮긴다.
+				local stallRowZ = 11
+				local festivalRowZ = 22
+				local cargoEdgeZ = cz - 33
+				local displayEdgeZ = cz + 33
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10
 					local side = if k % 2 == 0 then -1 else 1
 					local localMarket = info.portId .. "_bld_market_stalls"
 					local fallbackStall = if (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
 					local stallAsset = if lvl >= 2 and k == 1 and AssetIds["Town/" .. localMarket] then localMarket else fallbackStall
-					local originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
+					local originalStall = put("Town", stallAsset, 7, x, cz + side * stallRowZ, false,
 						if side > 0 then face else face + math.pi)
 					if not originalStall and stallAsset == localMarket then
 						stallAsset = fallbackStall
-						originalStall = put("Town", stallAsset, 7, x, cz + side * 8, false,
+						originalStall = put("Town", stallAsset, 7, x, cz + side * stallRowZ, false,
 							if side > 0 then face else face + math.pi)
 					end
 					if londonMarketDay and originalStall and
-						put("Town", stallAsset, 7, x, cz + side * 19, false,
+						put("Town", stallAsset, 7, x, cz + side * festivalRowZ, false,
 							if side > 0 then face else face + math.pi) then
 						londonExtraStalls += 1
 					end
@@ -4687,12 +4693,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					local cartSource = info.portId .. "-wheelbarrow-source"
 					local crateSource = info.portId .. "-wooden-produce-crate-source"
 					if not (RunService:IsStudio() and AssetIds["Town/" .. cartSource]
-						and put("Town", cartSource, 4, cx - 14, cz, false)) then
-						put("Town", "cart", 4, cx - 14, cz, false)
+						and put("Town", cartSource, 4, cx - 14, cargoEdgeZ, false)) then
+						put("Town", "cart", 4, cx - 14, cargoEdgeZ, false)
 					end
 					if not (RunService:IsStudio() and AssetIds["Town/" .. crateSource]
-						and put("Town", crateSource, 2.4, cx + 13, cz, false)) then
-						put("Cargo", "box-open", 2.4, cx + 13, cz, false)
+						and put("Town", crateSource, 2.4, cx + 13, cargoEdgeZ, false)) then
+						put("Cargo", "box-open", 2.4, cx + 13, cargoEdgeZ, false)
 					end
 				end
 				-- [장날] 런던만 같은 승인 가판대를 두 줄로 진열, 다른 항구는 기존 연출을 보존한다.
@@ -4713,7 +4719,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					local mesh = if stalls > 0 then GOOD_MESH[good] else nil
 					if mesh and AssetIds[mesh[1] .. "/" .. mesh[2]] then
 						local item = put(mesh[1], mesh[2], goodSize(good, 2.5),
-							cx - 12 + (i - 1) * 22, cz + 2, false)
+							cx + (i - (#marketGoods + 1) / 2) * 18, displayEdgeZ, false)
 						if item then
 							item.Name = "MarketSpecialtyDisplay_" .. good
 							item:SetAttribute("LocalProduct", good)
