@@ -2837,6 +2837,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local render
 		local auto = false
 		local playing = false
+		local activeFlightTween
 		local selected
 		local cardMotions = {}
 		-- 모든 카드가 공유하는 단일 프레임 갱신. 손패 10장 + 최근 전장 2장도 모바일에서 관리한다.
@@ -2846,6 +2847,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		end)
 		g.Destroying:Connect(function()
 			cardMotionStep:Disconnect()
+			if activeFlightTween then activeFlightTween:Cancel(); activeFlightTween = nil end
 			-- [카드배틀 종료] 아직 실행되지 않은 화면·음향 예약만 취소한다.
 			for timer in cardTimers do task.cancel(timer) end
 			table.clear(cardTimers)
@@ -4566,10 +4568,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						Size = UDim2.fromOffset(if c.special then 76 else rowWidth, if opts.cardOnly and not c.special then rowWidth / portraitCardRatio else math.min(b.AbsoluteSize.Y, target.AbsoluteSize.Y)),
 						Rotation = 0,
 					})
+					activeFlightTween = flightTween
 					flightTween:Play()
-					flightTween.Completed:Wait()
+					local playbackState = flightTween.Completed:Wait()
+					if activeFlightTween == flightTween then activeFlightTween = nil end
+					flightTween:Destroy()
 					playing = false
-					if finished or not g.Parent then return end
+					if playbackState ~= Enum.PlaybackState.Completed or finished or not g.Parent then return end
 					art.Parent = b
 					flight:Destroy()
 					b.Visible = true
@@ -4604,9 +4609,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						.. (if c.hero then t(" · 영웅: 날씨·소각 면역", " · Hero: weather and Scorch immune") else "")
 						.. t(" · 크게 보고 사용 버튼 또는 다시 눌러 사용", " · Enlarge to inspect; tap again or Play Card")
 				end
-				local dragSuppressClick = false
+				-- [드래그 클릭 억제] 예약 스레드 없이 기존 0.25초 유효시간을 유지한다.
+				local dragSuppressUntil = 0
 				b.Activated:Connect(function()
-					if dragSuppressClick then dragSuppressClick = false return end
+					if os.clock() < dragSuppressUntil then dragSuppressUntil = 0 return end
 					local reason = blockedReason()
 					if reason then info.Text = reason return end
 					if selected ~= b then
@@ -4629,10 +4635,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					local wasDragging = ghost ~= nil
 					if ghost then ghost:Destroy() ghost = nil end
 					dragInput, dragStart = nil, nil
-					if not wasDragging or not b.Parent then return end
+					-- 카드가 제거되는 경우 연결과 복제본만 정리한다.
+					if not pos or not wasDragging or not b.Parent or finished or not g.Parent then return end
 					b.Visible = true
-					dragSuppressClick = true
-					task.delay(0.25, function() dragSuppressClick = false end)
+					dragSuppressUntil = os.clock() + 0.25
 					local target = dropTarget()
 					local inside = false
 					if target and pos then
@@ -4653,6 +4659,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					dragInput, dragStart = input, input.Position
 					table.insert(dragConns, UIS.InputChanged:Connect(function(move)
 						if not dragInput then return end
+						if finished or not g.Parent or not b.Parent then endDrag(nil); return end
 						local sameTouch = move == dragInput or (dragInput.UserInputType == Enum.UserInputType.MouseButton1
 							and move.UserInputType == Enum.UserInputType.MouseMovement)
 						if not sameTouch then return end
@@ -4672,7 +4679,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 							b.Visible = false
 						end
 						local at = Vector2.new(move.Position.X, move.Position.Y) - bg.AbsolutePosition
-						ghost.Position = UDim2.fromOffset(at.X, at.Y)
+						local position = UDim2.fromOffset(at.X, at.Y)
+						if ghost.Position ~= position then ghost.Position = position end
 					end))
 					table.insert(dragConns, UIS.InputEnded:Connect(function(done)
 						if done == dragInput or (dragInput and dragInput.UserInputType == Enum.UserInputType.MouseButton1
