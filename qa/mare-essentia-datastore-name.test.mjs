@@ -3994,7 +3994,11 @@ test('대항해시대 3차 원근·계절 숲·선박 항적 CC0 자산 실물 �
   assert.match(field,/if visualMobile then 1 else 3/);
   assert.match(naval,/NavalWakeSourceCount/);
   assert.match(naval,/wakeCount < \(if MOBILE_VFX then 2 else 6\)/);
-  assert.match(naval,/sh\.wakeFx\.Enabled = \(sh\.speed or 0\) > 2 and not sink/);
+  assert.match(naval,/local enabled = \(sh\.speed or 0\) > 2 and not sink/);
+  assert.match(naval,/if sh\.wakeFx\.Enabled ~= enabled then sh\.wakeFx\.Enabled = enabled end/);
+  assert.match(naval,/local rate = math\.clamp\(\(sh\.speed or 0\) \* \(if MOBILE_VFX then 0\.42 else 0\.75\), 1\.5, if MOBILE_VFX then 8 else 16\)/);
+  assert.match(naval,/if sh\.wakeRate ~= rate then\s+sh\.wakeFx\.Rate = rate\s+sh\.wakeRate = rate\s+end/);
+  assert.match(naval,/if #list == 0 then continue end[\s\S]*?local shipPivot = sh\.model:GetPivot\(\)\s+local otherPosition = other\.model:GetPivot\(\)\.Position\s+for _, c in list do\s+local pos = \(shipPivot \* c\.off\)\.Position\s+local look = Vector3\.new\(otherPosition\.X, pos\.Y, otherPosition\.Z\)/);
   assert.match(naval,/local stern = ORIGIN \+ sh\.pos - heading \* sh\.length \* 0\.40/);
   assert.match(naval,/cliff-cornerlarge-rock/);
   assert.match(naval,/cliff-waterfall-stone/);
