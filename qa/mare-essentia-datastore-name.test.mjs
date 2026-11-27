@@ -2077,6 +2077,13 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   // [모자 원본 교체] 헤어는 예비 장식을 숨기고, 깃털모자는 기존 윗면만 남겨 정수리 구멍을 막는다.
   assert.match(pose,/if piece:IsA\("BasePart"\) and piece\.Name == "Hat" then/, '깃털모자 원형만 교체');
   assert.match(pose,/piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1/, '모자 정수리 보존');
+  assert.match(pose,/hairOffsetY = math\.max\(hairOffsetY, 0\.30 \+ ext\.Y \* 0\.5 \/ target\.Size\.Y\)/, "머리띠 아래 경계가 이마 위에 위치");
+  assert.match(pose,/local featherHat = model:FindFirstChild\("R15Asset_acc_feather_hat_Head"\)/);
+  assert.match(pose,/if featherVisible then\s+piece\.Transparency = if piece:GetAttribute\("NpcHatCrown"\) == true then 0 else 1\s+else\s+piece\.Transparency = 0/, "실물 모자가 숨겨지거나 교체되면 기존 모자 복원");
+  for (const height of [0.1, 0.2, 0.4, 0.8]) {
+    const center = Math.max(0.14, 0.30 + height * 0.5);
+    assert.ok(center - height * 0.5 >= 0.30 - 1e-9);
+  }
   assert.match(pose,/piece\.Transparency = if wornHair or hoodVisible then 1 else 0/, '실물 헤어와 성직자 두건 착용 시 보조모발 숨김');
   // [모델 후보 안전범위] 원래 시각 기준 대신 중앙정책에 허용된 정확한 숫자 범위와 수정을 검증한다.
   const skirt=pose.match(/q\.Size = Vector3\.new\(len, lower\.Size\.X \* ([0-9.]+), lower\.Size\.X \* ([0-9.]+)\)/);
@@ -3642,7 +3649,7 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/surface\.Color = surface\.Color:Lerp\(softTint, if pale then 0\.93 else 0\.50\)/,
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.50\)/,
     '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
@@ -3766,9 +3773,14 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.ok(pose.includes('part.Color = part.Color:Lerp(hairTint, if pale then 0.93 else 0.45)'), '텍스처 머리 흰색 기본 배율 복구');
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.50\)/, '텍스처 머리 원본 색상 보존');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(softTint, if pale then 0.93 else 0.50)'), 'PBR 머리 흰색 기본 배율 복구');
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.50\)/, 'PBR 머리 원본 색상 보존');
+  assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
+  for (const hair of [0, 0.1, 0.3, 0.8, 1]) {
+    const multiplier = 0.78 * 0.5 + (hair * 0.35 + 0.65) * 0.5;
+    assert.ok(multiplier >= 0.715 && multiplier <= 1, '밝은 머리 배율에 과도한 암부가 생기지 않는다');
+  }
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
   // [사진 회귀] 실물 헤어가 부분 메시일 때 목덜미·묶은 머리 볼륨을 보존한다.
@@ -3789,7 +3801,8 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   // [모자 정수리] 실물 깃털모자가 기존 머리 보조를 모두 지우면서 뚫린 윗면을 드러내지 않도록 한다.
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
-  assert.ok(pose.includes('assetName == "acc_feather_hat"'));
+  assert.ok(pose.includes('local featherHat = model:FindFirstChild("R15Asset_acc_feather_hat_Head")'), '실제 깃털모자 슬롯으로 판정');
+  assert.match(pose,/if featherHat then\s+for _, mesh in featherHat:GetDescendants\(\) do\s+if mesh:IsA\("BasePart"\) and mesh.Transparency < 0.95 and mesh.LocalTransparencyModifier < 0.95 then\s+featherVisible = true/, '실물 모자의 가시성 확인 후 중첩을 정리');
   assert.ok(!pose.includes('local fittedUpperReady = false'), '기본복 삭제 조건 제거');
   assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
   assert.ok(pose.includes('part.Material = Enum.Material.Leather'));
