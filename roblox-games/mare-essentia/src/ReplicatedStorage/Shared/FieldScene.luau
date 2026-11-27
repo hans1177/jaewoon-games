@@ -3322,6 +3322,15 @@ function FieldScene.start(opts)
 			local ok, err = pcall(function() c:Disconnect() end)
 			if not ok then warn("[MareEssentia] 비정상 탐험 정리 오류", err) end
 		end
+		-- [종료 메모리 정리] 미처치 적의 관절 제어기도 폐기하고 종료된 장면 참조를 해제한다.
+		table.clear(conns)
+		for _, enemy in enemies do
+			if enemy.fm then
+				FM.destroy(enemy.fm)
+				enemy.fm = nil
+			end
+		end
+		table.clear(enemies)
 		workspace:SetAttribute("FieldCombatReady", nil)
 		workspace:SetAttribute("FieldTouchPad", nil)
 		workspace:SetAttribute("FieldCameraMode", nil)
@@ -3637,6 +3646,15 @@ function FieldScene.start(opts)
 			local ok, err = pcall(function() c:Disconnect() end)
 			if not ok then warn("[MareEssentia] 필드 연결 정리 오류", err) end
 		end
+		-- [종료 메모리 정리] 미처치 적의 관절 제어기도 폐기하고 종료된 장면 참조를 해제한다.
+		table.clear(conns)
+		for _, enemy in enemies do
+			if enemy.fm then
+				FM.destroy(enemy.fm)
+				enemy.fm = nil
+			end
+		end
+		table.clear(enemies)
 		gui:Destroy()
 		folder:Destroy()
 		-- [현장 음향 복구] 항구·전투 화면에 탐험 풍향/폭풍 루프가 남지 않도록 원래 음향 관리자로 반환한다.
