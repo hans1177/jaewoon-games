@@ -98,6 +98,12 @@ test('전체 지원 분야: 원화 제외, 수동 주소보다 실제 자동 주
   const design=[{id:'fight',kind:'Motion',localAcquisition:[{sourceId:'free-motion'}]},{id:'art',kind:'Portraits',localAcquisition:[{sourceId:'card-art-pack'}]}];
   const wanted={game:'g',wanted:[{id:'fight',kind:'Motion',status:'missing'},{id:'art',kind:'Portraits',status:'missing'}]};
   assert.deepEqual(plan({registry:reg,repoRoot:repo,libDir:lib,design,wanted}).picks.map(x=>x.src.id),['free-motion']);
+  const allDesign=[...design,{id:'weapons',kind:'Relics'},{id:'props',kind:'Town',localAcquisition:[{sourceId:'unknown'}]}];
+  const allWanted={...wanted,wanted:[...wanted.wanted,{id:'weapons',kind:'Relics',status:'missing'},{id:'props',kind:'Town',status:'partly-source-registered-runtime-unverified',missing:['kite']}],animalSourcePractice:{assetSourceCoverage:{categories:{Relics:{missingModelRights:19}}}}};
+  const result=plan({registry:reg,repoRoot:repo,libDir:lib,design:allDesign,wanted:allWanted});
+  assert.ok(result.demand.some(x=>x.demandId==='weapons'&&x.state==='EXACT_SOURCE_MAPPING_REQUIRED'));
+  assert.ok(result.demand.some(x=>x.demandId==='props'&&x.state==='SOURCE_POLICY_OR_CATALOG_REQUIRED'));
+  assert.ok(result.demand.some(x=>x.kind==='Relics'&&x.missing===19));
   wanted.wanted[0].status='registered-models-runtime-qa-pending';
   assert.equal(plan({registry:reg,repoRoot:repo,libDir:lib,design,wanted}).picks.length,0);
   assert.equal(plan({registry:reg,repoRoot:repo,libDir:lib,design:[],wanted}).picks.length,0);

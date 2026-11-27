@@ -671,5 +671,17 @@
       "lisbon_workshop_porcelain",
       "lisbon_workshop_pepper"
     ]
+  },
+  {
+    "id": "mare-regional-weapon-models",
+    "kind": "Relics",
+    "purpose": "Weapons.luau의 기본·지역별 실제 전용 무기 모델 부족분을 등록 장부와 대조하고 정확한 CC0 원본만 기존 제작자 검색에서 후보로 확보한다. 무기 모션·시대·지역·저장·전투 능력치를 보존한다.",
+    "status": "missing",
+    "candidates": [
+      "기존 회사·게임 원본 우선 재사용",
+      "기존 제작자 CC0 정확한 명칭 검색 및 시각 검수"
+    ],
+    "replacementGate": "EXACT_ROLE_CC0_SOURCE_SHA256_UNIVERSE_PERMISSION_NATIVE_VISUAL_QA",
+    "autoBindWithoutRuntimeProof": false
   }
 ]

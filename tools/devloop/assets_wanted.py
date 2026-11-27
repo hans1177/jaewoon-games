@@ -521,7 +521,7 @@ def gobkit_animal_sources(manifest, targets, scene=False):
 
 
 # [항구·전투 원본] 제작 지시서의 정확한 자산 키만 확보 대상으로 사용한다.
-def scene_source_targets(registry, progress=None, battle_progress=None):
+def scene_source_targets(registry, progress=None, battle_progress=None, asset_progress=None):
     docs = os.path.join(root, "docs")
     ports_dir = os.path.join(docs, "ports")
     with open(os.path.join(ports_dir, "README.md"), encoding="utf-8") as handle:
@@ -567,9 +567,45 @@ def scene_source_targets(registry, progress=None, battle_progress=None):
     with open(os.path.join(shared, "Pose.luau"), encoding="utf-8") as handle:
         for asset in re.findall(r'"((?:hair|outfit|acc)_[a-z0-9_]+)"', handle.read()):
             targets.setdefault(asset, "People")
+    # [실제 부족 자산] 기존 게임의 무기 정의에서 정확한 전용 원본 키를 얻는다.
+    # 맨손은 모델 대상이 아니다. 일반 총은 역사적 세부형이 모호하므로 정확한 세부형만 검색한다.
+    weapon_ids = {}
+    weapons_file = os.path.join(shared, "Weapons.luau")
+    if os.path.isfile(weapons_file):
+        with open(weapons_file, encoding="utf-8") as handle:
+            weapons = handle.read()
+        basic = weapons.split("Weapons.List = {", 1)[1].split("\n}", 1)[0]
+        for wid, model in re.findall(r'id = "([a-z0-9_]+)"[^\n]*?model = ("[a-z0-9_-]+"|nil)', basic):
+            if wid != "fist" and model != "nil":
+                weapon_ids[wid] = model.strip('"')
+        regional = weapons.split("local regionalDefs = {", 1)[1].split("\n}", 1)[0]
+        for line in regional.splitlines():
+            values = re.findall(r'"([^"]+)"', line)
+            if len(values) in (6, 7) and re.fullmatch(r"[a-z0-9_]+", values[0]):
+                weapon_ids[values[0]] = values[6] if len(values) == 7 else "weapon-" + values[0].replace("_", "-")
+        for asset in weapon_ids.values():
+            targets.setdefault(asset, "Relics")
+    # 기존 선박 지시서에서 실제 전용 V5 모델 키만 검색한다. 손상·개조는 가공 목표이지 완성 원본이 아니다.
+    ship_csv = os.path.join(docs, "ships", "ship_prompts.csv")
+    if os.path.isfile(ship_csv):
+        with open(ship_csv, encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                match = re.fullmatch(r"ship_([a-z0-9_]+)_v5", row.get("asset_id", ""))
+                if match and row.get("category") == "ship":
+                    targets.setdefault(match.group(1) + "-v5", "Naval")
+    model_kinds = ("People", "Outfits", "Monsters", "Animals", "Town", "Terrain", "Naval", "Relics", "Cargo", "Rig", "Motion")
+    # 실제 부족 목록의 소품·유물·의상 등도 등록 확인 뒤 동일 검색 경로로 보낸다.
+    for row in seed:
+        kind = row.get("kind")
+        if kind not in model_kinds or row.get("status", "").startswith("blocked"):
+            continue
+        blocked = set(row.get("blocked", []))
+        for asset in row.get("missing", []):
+            if isinstance(asset, str) and asset not in blocked and re.fullmatch(r"[a-z0-9_-]+", asset):
+                targets.setdefault(asset, kind)
     for _, asset_key in missing:
         kind, _, asset = asset_key.partition("/")
-        if kind in ("People", "Outfits", "Monsters", "Animals") and re.fullmatch(r"[a-z0-9_-]+", asset):
+        if kind in model_kinds and re.fullmatch(r"[a-z0-9_-]+", asset):
             targets.setdefault(asset, kind)
 
     # 공용 R15 동작은 재수집하지 않는다. 직업별 작업 동작과 동물별 리그·클립만 찾는다.
@@ -598,6 +634,18 @@ def scene_source_targets(registry, progress=None, battle_progress=None):
         return (row.get("assetType") == "Model" and re.fullmatch(r"[1-9][0-9]*", asset_id) is not None
                 and row.get("usePermissionGranted") is True)
     outstanding = {asset: kind for asset, kind in targets.items() if not registered(asset, kind)}
+    if asset_progress is not None:
+        asset_progress.update({
+            "state": "SOURCE_SEARCH_CONNECTED_RUNTIME_UNVERIFIED",
+            "categories": {kind: {"planned": sum(v == kind for v in targets.values()),
+                                  "registeredModelRights": sum(v == kind and registered(a, kind) for a, v in targets.items()),
+                                  "missingModelRights": sum(v == kind for v in outstanding.values())}
+                           for kind in sorted(set(targets.values()))},
+            "weapons": [{"weaponId": wid, "assetKey": "Relics/" + asset,
+                         "state": "REGISTERED_MODEL_RIGHTS" if registered(asset, "Relics") else "EXACT_SOURCE_REQUIRED"}
+                        for wid, asset in sorted(weapon_ids.items())],
+            "nativeRuntimeVerified": False, "automaticRuntimePromotionAllowed": False,
+        })
     if progress is not None:
         rows = []
         for port in ports:
@@ -902,7 +950,9 @@ def animal_source_practice():
     # 일반 자산 등록이나 5분 원본 탐색에서도 같은 지시서 장부를 갱신한다.
     report["portImplementation"] = {}
     report["battleImplementation"] = {}
-    scene_targets = scene_source_targets(registry, report["portImplementation"], report["battleImplementation"])
+    report["assetSourceCoverage"] = {}
+    scene_targets = scene_source_targets(registry, report["portImplementation"], report["battleImplementation"],
+                                        report["assetSourceCoverage"])
     if (not any(arg.startswith("--animal-preview-dir=") for arg in sys.argv)
             or os.path.islink(os.path.dirname(hold)) or os.path.islink(hold)):
         return report
@@ -916,6 +966,19 @@ def animal_source_practice():
         manifest = json.loads(manifest_bytes)
         catalog = gobkit_animal_sources(manifest, missing)
         scene_catalog = gobkit_animal_sources(manifest, scene_targets, scene=True)
+        # 정확한 무기/선박 명칭의 접두·접미사만 제거해 제작자 이름을 대조한다.
+        # 유형이 같은 다른 무기나 선박은 대체하지 않는다. 원본 후보로만 보관한다.
+        aliases = {}
+        for asset, kind in scene_targets.items():
+            if asset in scene_catalog:
+                continue
+            alias = asset.removeprefix("weapon-") if kind == "Relics" and asset.startswith("weapon-") else (
+                asset.removesuffix("-v5") if kind == "Naval" and asset.endswith("-v5") else None)
+            if alias and alias not in scene_targets:
+                aliases.setdefault(alias, []).append(asset)
+        exact = gobkit_animal_sources(manifest, [a for a, keys in aliases.items() if len(keys) == 1], scene=True)
+        for alias, entry in exact.items():
+            scene_catalog[aliases[alias][0]] = entry
     except (OSError,ValueError,TypeError,KeyError,AttributeError) as error:
         report["publisherSearchState"] = "PUBLISHER_CATALOG_RETRY"
         print("MARE_ANIMAL_PUBLISHER_CATALOG_RETRY")
@@ -980,7 +1043,7 @@ def animal_source_practice():
             component_roles.add(key)
     role_catalog = gobkit_animal_sources(manifest, role_targets, scene=True)
     held_urls = set()
-    for kind in ("Town", "Naval", "Terrain", "People", "Outfits", "Monsters", "Rig", "Motion", "Animals"):
+    for kind in ("Town", "Naval", "Terrain", "People", "Outfits", "Monsters", "Rig", "Motion", "Animals", "Relics", "Cargo"):
         directory = os.path.join(os.path.dirname(hold), kind)
         if not os.path.isdir(directory) or os.path.islink(directory):
             continue
@@ -1038,12 +1101,14 @@ def animal_source_practice():
     start = slot * 3
     picks = picks[start % len(picks):] + picks[:start % len(picks)]
     # 분야마다 먼저 한 자리를 배정한다. 세 자리에서 밀린 분야는 다음 회차에 먼저 본다.
-    fields = ("harbor", "wildlife", "field", "naval")
+    fields = ("harbor", "wildlife", "field", "naval", "equipment", "motion")
     fields = fields[slot % len(fields):] + fields[:slot % len(fields)]
     field_for_kind = {"Town": "harbor", "People": "harbor", "Outfits": "harbor",
-                      "Naval": "naval", "Terrain": "field"}
+                      "Naval": "naval", "Terrain": "field", "Relics": "equipment", "Cargo": "harbor",
+                      "Rig": "motion", "Motion": "motion"}
     batch = []
     remaining = 3 - report["downloadAttempts"]
+    batch_urls = set()
     for scene, name in picks:
         if remaining <= 0:
             break
@@ -1053,6 +1118,10 @@ def animal_source_practice():
         if (os.path.islink(os.path.dirname(path)) or os.path.islink(path)
                 or path in blocked_paths or proof_path in blocked_paths or os.path.lexists(proof_path)):
             continue
+        url = (scene_catalog if scene else catalog)[name]["url"]
+        if url in held_urls or url in batch_urls:
+            continue
+        batch_urls.add(url)
         batch.append((field_for_kind.get(kind, "wildlife"), scene, name))
     batch.sort(key=lambda pair: fields.index(pair[0]))
     primary, extra = [], []
