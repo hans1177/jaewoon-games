@@ -684,3 +684,16 @@ test('항해 중 항구 간판과 동료 연산을 중단하고 해상 날씨 �
   assert.ok(climate.indexOf('workspace:GetAttribute("VoyageActive")') < climate.indexOf('portClouds.Cover ='));
   assert.match(climate, /snow\.Rate = if seasonIndex == 1 then 18 \+ dawn \* 9 else 0/);
 });
+
+test('원거리 주민은 위치와 보행 위상을 보존하고 관절 갱신만 제한한다', () => {
+  const walk = scene.split('local walkConn = RunService.PreSimulation:Connect')[1].split('walkConn:Disconnect()')[0];
+  assert.match(walk, /local motionEye = motionCamera and motionCamera\.CFrame\.Position/);
+  assert.match(walk, /local motionRange = if UserInputService\.TouchEnabled then 135 else 180/);
+  assert.match(walk, /local fullMotion = RunService:IsStudio\(\) or not motionEye/);
+  assert.match(walk, /w\.trav = \(w\.trav or 0\) \+ walked\s+end\s+--[^\n]*\n\s+if fullMotion or \(motionEye - pos\)\.Magnitude < motionRange then/);
+  assert.match(walk, /if fullMotion or \(motionEye - w\.base\.Position\)\.Magnitude < motionRange then/);
+  assert.match(walk, /local close = not motionEye or \(motionEye - destination\)\.Magnitude < \(if UserInputService\.TouchEnabled then 105 else 155\)/);
+  assert.match(walk, /if close and now >= w\.groundCheckAt then/);
+  assert.match(walk, /local pivot = w\.base \* CFrame\.new\(0, w\.groundOffset \+ bob, d\) \* CFrame\.Angles\(0, w\.hd, 0\)\s+w\.model:PivotTo\(pivot\)/);
+  assert.match(scene, /if math\.max\(sz\.X, sz\.Y, sz\.Z\) < 4 then\s+d\.CastShadow = false/);
+});
