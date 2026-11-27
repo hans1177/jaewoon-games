@@ -4404,7 +4404,8 @@ test('Mare naval finish releases connection references and cancels pending timeo
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
   assert.match(finish,/finished = true/);
-  assert.match(finish,/for _, c in conns do\s+local ok, err = pcall\(function\(\) c:Disconnect\(\) end\)/);
+  assert.match(finish,/for _, c in conns do\s+local ok, err = pcall\(function\(\)/);
+  assert.match(finish,/if type\(c\) == "thread" then\s+if c ~= coroutine.running\(\) and coroutine.status\(c\) ~= "dead" then task.cancel\(c\) end\s+else\s+c:Disconnect\(\)/);
   assert.match(finish,/table\.clear\(conns\)\s+gui:Destroy\(\)\s+folder:Destroy\(\)/);
   assert.ok(finish.includes('opts.onDone(math.floor(flair), replay == true)'));
   const timeout=naval.slice(naval.indexOf('local timeout = task.delay(130'),naval.lastIndexOf('return { finish = finish }'));
@@ -4505,6 +4506,20 @@ test('Mare actor motion reuses sample options without changing role or state sel
   assert.ok(actor.includes('FM.step(h, dt, rootRot, response)'));
 });
  
+test('Mare naval warning splash and shot sound timers leave the existing scene cleanup collection',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const warning=naval.slice(naval.indexOf('local function warnRing'),naval.indexOf('-- [해전 이펙트]'));
+  const splash=naval.slice(naval.indexOf('function FX.splash'),naval.indexOf('do -- 입자 연출용'));
+  const sound=naval.slice(naval.indexOf('local function shoot(fromPos'),naval.indexOf('-- [발사 펄스]'));
+  for(const [block,count] of [[warning,1],[splash,2],[sound,3]]){
+    assert.equal(block.split('conns[timer] = timer').length-1,count);
+    assert.equal(block.split('conns[coroutine.running()] = nil').length-1,count);
+  }
+  for(const token of ['conns[conn] = conn','conns[conn] = nil','local radius = if os.clock() < skillUntil.evade then 11 else 20','onLand((me.pos - center).Magnitude <= radius)','flair += 10 + combo * 2']) assert.ok(warning.includes(token),token);
+  assert.ok(splash.includes('FX.waterColumn(surface, style, strength)'));
+  assert.ok(sound.includes('Sfx.play("sfx_cannon_reload", 0.34, 0.95 + math.random() * 0.1)'));
+});
+
 test('Mare naval burst timers release external terrain effects on scene destruction',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   assert.match(naval,/folder\.Destroying:Connect\(function\(\)\s+for anchor, timer in FX\.burstTimers do\s+task\.cancel\(timer\)\s+anchor:Destroy\(\)\s+end\s+table\.clear\(FX\.burstTimers\)/);

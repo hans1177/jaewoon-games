@@ -1563,7 +1563,13 @@ function NavalBattle.play(opts)
 		end
 		-- [해전 종료 메모리] 한 연결 정리 실패가 다른 자산과 UI의 정리를 막지 않는다.
 		for _, c in conns do
-			local ok, err = pcall(function() c:Disconnect() end)
+			local ok, err = pcall(function()
+				if type(c) == "thread" then
+					if c ~= coroutine.running() and coroutine.status(c) ~= "dead" then task.cancel(c) end
+				else
+					c:Disconnect()
+				end
+			end)
 			if not ok then warn("[MareEssentia] 해전 연결 정리 오류", err) end
 		end
 		table.clear(conns)
@@ -4755,13 +4761,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			local k = (os.clock() - t0) / 0.9
 			if k >= 1 or finished or not folder.Parent or not ring.Parent then
 				conn:Disconnect()
+				conns[conn] = nil
 				if ring.Parent then ring:Destroy() end
 				return
 			end
 			ring.Transparency = 0.45 + k * 0.5
 			ring.Size = Vector3.new(0.4, 26 - k * 8, 26 - k * 8)
 		end)
-		task.delay(0.9, function()
+		conns[conn] = conn
+		local timer = task.delay(0.9, function()
+			conns[coroutine.running()] = nil
 			if finished or not folder.Parent then
 				return
 			end
@@ -4778,6 +4787,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				combo = 0
 			end
 		end)
+		conns[timer] = timer
 	end
 	-- [해전 이펙트] 연기·파편·불꽃·물기둥·항적을 한 목록으로 관리한다 (함수 안 지역 변수 수를 아끼려고 한 표에 모음)
 	-- [전투 맵 아이템] 기존 등록 3D 보급 부표/화약폭탄 모델을 재사용한다. 미등록이면 생성하지 않는다.
@@ -4853,8 +4863,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		})
 		-- 2차: 세로 물기둥. 기존 함수는 낙하 운동만 시각화한다.
 		FX.waterColumn(surface, style, strength)
-		task.delay(0.20, function()
-			if finished then return end
+		local timer = task.delay(0.20, function()
+			conns[coroutine.running()] = nil
+			if finished or not folder.Parent then return end
 			-- 3차: 물기둥 꼭대기에서 중력으로 떨어지는 빛나는 물방울.
 			FX.burst(surface + drift * strength + Vector3.new(0, 4 * strength, 0), Vector3.new(0, 1, 0), {
 				{ tex = "spark", c0 = Color3.fromRGB(240, 252, 255), c1 = theme.foam,
@@ -4864,8 +4875,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					acc = Vector3.new(0, -44, 0), drag = 0.8, a0 = 0.12 },
 			})
 		end)
-		task.delay(0.53, function()
-			if finished then return end
+		conns[timer] = timer
+		local timer = task.delay(0.53, function()
+			conns[coroutine.running()] = nil
+			if finished or not folder.Parent then return end
 			-- 4차: 내려앉은 거품이 수면 위로 퍼지고 투명하게 사라진다.
 			FX.burst(surface, nil, {
 				{ tex = "spark", c0 = Color3.fromRGB(247, 255, 255), c1 = theme.foam,
@@ -4875,6 +4888,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					acc = drift * 5 },
 			})
 		end)
+		conns[timer] = timer
 	end
 	do -- 입자 연출용 지역 변수는 이 블록 안에만 둔다 (함수당 지역 변수 한도 때문)
 	local TweenService = game:GetService("TweenService")
@@ -5700,23 +5714,29 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			shooter.recoilForce = math.clamp(nc.ball * 0.11, 0.08, 0.26)
 		end
 		if nearShip and stage >= 2 and not MOBILE_VFX then
-			task.delay(math.min(0.22, nc.dur * 0.40), function()
+			local timer = task.delay(math.min(0.22, nc.dur * 0.40), function()
+				conns[coroutine.running()] = nil
 				if not finished then Sfx.play("sfx_sail_fabric", 0.13, 1.35 + stage * 0.025) end
 			end)
+			conns[timer] = timer
 		end
 		if stage >= 5 and not MOBILE_VFX then
-			task.delay(0.14, function()
+			local timer = task.delay(0.14, function()
+				conns[coroutine.running()] = nil
 				if not finished then Sfx.play("sfx_cannon", 0.25, 0.78) end
 			end)
+			conns[timer] = timer
 		end
 		shake = math.max(shake, if hullHit then 0.7 else 0.35)
 		kick = math.max(kick, nc.ball * 1.6)
 		if hullHit then
-			task.delay(0.9, function()
+			local timer = task.delay(0.9, function()
+				conns[coroutine.running()] = nil
 				if not finished then
 					Sfx.play("sfx_cannon_reload", 0.34, 0.95 + math.random() * 0.1)
 				end
 			end)
+			conns[timer] = timer
 		end
 		-- [발사 펄스] 우리 기함 실제 포구에서 발사된 경우 사거리 나침반이 순간적으로 밝아진다.
 		if shooter == me then
