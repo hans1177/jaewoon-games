@@ -4419,6 +4419,9 @@ test('Mare naval skill and mast timers and live projectile connections release s
   assert.ok(naval.includes('for _, timer in FX.effectTimers do task.cancel(timer) end'));
   assert.ok(naval.includes('table.clear(FX.effectTimers)'));
   assert.ok(shot.includes('local hit = hullHit and (not hitTest or hitTest())'));
+  for(const token of ['local flightDelta = to - from','FX.muzzle(from, flightDelta.Unit, style, nc)','local u = math.clamp((os.clock() - t0) / dur, 0, 1)','local angle = u * math.pi','from:Lerp(to, u) + Vector3.new(0, math.sin(angle) * nc.arc, 0)','flightDelta + Vector3.new(0, math.cos(angle) * nc.arc * math.pi, 0)','if ball.CFrame ~= frame then ball.CFrame = frame end','struck.impactSide = if broadside:Dot(flightDelta) >= 0 then 1 else -1','local timer = task.delay(0.15, function()','if not finished and folder.Parent then Sfx.play("sfx_splash", 0.22, 0.85) end']) assert.ok(shot.includes(token),token);
+  assert.equal(shot.split('conns[timer] = timer').length-1,4);
+  assert.equal(shot.split('conns[coroutine.running()] = nil').length-1,4);
   assert.ok(shot.includes('if hit then\n\t\t\t\t\tfx()'));
 });
 

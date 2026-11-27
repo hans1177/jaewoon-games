@@ -5800,7 +5800,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		if stage >= 4 and nearShip and not MOBILE_VFX then
 			Sfx.play("sfx_cannon", 0.26 + stage * 0.025, 0.82 - stage * 0.016)
 		end
-		FX.muzzle(from, (to - from).Unit, style, nc)
+		-- [포탄 비행] 발사 시 확정된 방향 벡터를 비행·피격 연출에서 재사용한다.
+		local flightDelta = to - from
+		FX.muzzle(from, flightDelta.Unit, style, nc)
 		-- [실제 포구 반동] 발사한 승인 선체 메시의 포격 방향만 기록한다. 속도·피해·장전은 변경하지 않는다.
 		if shooter then
 			local fireAxis = toPos - fromPos
@@ -5855,9 +5857,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				return
 			end
 			local u = math.clamp((os.clock() - t0) / dur, 0, 1)
-			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(u * math.pi) * nc.arc, 0)
-			local velocity = (to - from) + Vector3.new(0, math.cos(u * math.pi) * nc.arc * math.pi, 0)
-			ball.CFrame = CFrame.lookAt(bpos, bpos + velocity.Unit)
+			local angle = u * math.pi
+			local bpos = from:Lerp(to, u) + Vector3.new(0, math.sin(angle) * nc.arc, 0)
+			local velocity = flightDelta + Vector3.new(0, math.cos(angle) * nc.arc * math.pi, 0)
+			local frame = CFrame.lookAt(bpos, bpos + velocity.Unit)
+			if ball.CFrame ~= frame then ball.CFrame = frame end
 			if u >= 1 then
 				conn:Disconnect()
 				conns[conn] = nil
@@ -5880,9 +5884,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					Sfx.play("sfx_naval_splash", 0.50 + nc.ball * 0.11, 1.1 - nc.ball * 0.1, "sfx_splash")
 					if nc.ball >= 1.5 then Sfx.play("sfx_splash", 0.22, 1.16 + math.random() * 0.18) end
 					if nc.ball >= 1.5 and not MOBILE_VFX then
-						task.delay(0.15, function()
-							if not finished then Sfx.play("sfx_splash", 0.22, 0.85) end
+						local timer = task.delay(0.15, function()
+							conns[coroutine.running()] = nil
+							if not finished and folder.Parent then Sfx.play("sfx_splash", 0.22, 0.85) end
 						end)
+						conns[timer] = timer
 					end
 				end
 				if hit then
@@ -5891,7 +5897,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					if struck then
 						local broadside = Vector3.new(-math.sin(struck.theta), 0, math.cos(struck.theta))
 						struck.impactAt = os.clock()
-						struck.impactSide = if broadside:Dot(to - from) >= 0 then 1 else -1
+						struck.impactSide = if broadside:Dot(flightDelta) >= 0 then 1 else -1
 						struck.impactPower = math.clamp(nc.ball * 0.15, 0.09, 0.30)
 					end
 					FX.splinters(to, if MOBILE_VFX then 5 else 5 + stage * 2)
