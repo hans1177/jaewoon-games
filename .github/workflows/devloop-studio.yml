@@ -727,7 +727,21 @@ jobs:
           if (deep && result === 'PASS' && Object.values(audits).some(status => status !== 'PASS'))
             result = 'UNVERIFIED';
           const link = 'https://github.com/' + repo + '/blob/mare-essentia-studio-frames/runs/' + runId + '/';
+          // [주민 화면 열람] 기존 공개 JPEG 원본 2장만 문자형으로 보존한다. 새 러너/서비스 없이 동일 SHA 검증 가능.
+          // 사진이 없거나 크기 제한을 넘으면 생략하며 기존 화면 및 통과 판정을 변경하지 않는다.
+          const residentReviewFrames = [];
+          if (deep && /^[a-f0-9]{40}$/.test(report.sourceRevision || '')) {
+            for (const name of ['harbor_npc_face_front-0.jpg', 'harbor_npc_sparring_01-0.jpg']) {
+              const row = frameIntegrity.find(item => item.name === name && item.status === 'PASS');
+              if (!row || row.bytes > 192 * 1024) continue;
+              const bytes = fs.readFileSync(path.join(out, name));
+              if (bytes.length !== row.bytes || bytes[0] !== 255 || bytes[1] !== 216) continue;
+              residentReviewFrames.push({name, mimeType: 'image/jpeg', bytes: bytes.length,
+                sha256: crypto.createHash('sha256').update(bytes).digest('hex'), base64: bytes.toString('base64')});
+            }
+          }
           const checks = {runId, kind, sourceRevision: report.sourceRevision || '', result,
+            residentReviewFrames,
             failureStage: qaStage || null, failureSignature: qaSignature || null,
             summary, errors, audits, steps: rows,
             screenshotComparison: comparisons.map(row => ({...row, url: link + encodeURIComponent(row.name)})),
