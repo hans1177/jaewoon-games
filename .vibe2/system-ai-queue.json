@@ -157985,7 +157985,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -158019,7 +158019,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 16,
-      "previousReservationId": "system-ai:46192721530:1",
+      "previousReservationId": "system-ai:46193795258:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -158027,12 +158027,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46193795258:1",
-      "reservedAt": "2026-11-28T22:03:55.729Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -158796,7 +158796,13 @@
         "model-output-sha256:73a5b45a4a674ddf5b242391929f3fccfdf5d453af4b205f07129c63ef83c9a8",
         "system-ai-handoff-to-reservation:system-ai:46192721530:1",
         "actions-run:46192721530",
-        "system-ai-handoff-to-reservation:system-ai:46193795258:1"
+        "system-ai-handoff-to-reservation:system-ai:46193795258:1",
+        "actions-run:46193795258",
+        "external-ai-raw-output-sha256:ae608bb7af0ede892ed0686a5b315b532801d628f06900cfe902d29018e095a9",
+        "system-ai-applied-answer-sha256:cbff58faf3556d7347655437cae85b71041ce9510cd6303d45b1c3c2aedc2881",
+        "repair-strategy-fingerprint:9681722350b2046841e89b9420b0917f66d82963d328720c4a96eae2f2db5782",
+        "failed-strategy-fingerprint:9681722350b2046841e89b9420b0917f66d82963d328720c4a96eae2f2db5782",
+        "model-output-sha256:ae608bb7af0ede892ed0686a5b315b532801d628f06900cfe902d29018e095a9"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1890,
@@ -158811,7 +158817,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T22:03:55.729Z"
+      "updatedAt": "2026-11-28T22:09:41.453Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -159905,7 +159911,7 @@
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -159939,7 +159945,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 3,
-      "previousReservationId": "system-ai:46189138553:1",
+      "previousReservationId": "system-ai:46193795258:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -159947,12 +159953,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46193795258:1",
-      "reservedAt": "2026-11-28T22:03:55.729Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -160299,7 +160305,13 @@
         "system-ai-handoff-from-reservation:system-ai:46189138553:1",
         "system-ai-impact-score:402",
         "system-ai-blocked-task-count:2",
-        "system-ai-handoff-to-reservation:system-ai:46193795258:1"
+        "system-ai-handoff-to-reservation:system-ai:46193795258:1",
+        "actions-run:46193795258",
+        "external-ai-raw-output-sha256:567b146456af52dbc88a34e3ec6c28ada42a2d3c22ca2398be83b3502087e7a7",
+        "system-ai-applied-answer-sha256:3b7fdced3ef7382720675e34b4ff9b750d40c4dc6f6be5eecceff37ab446c58f",
+        "repair-strategy-fingerprint:b4a57cfd11a07a7b072c586ddbd83e6da858c489cbc9a7713c45a549e8ce8d25",
+        "failed-strategy-fingerprint:b4a57cfd11a07a7b072c586ddbd83e6da858c489cbc9a7713c45a549e8ce8d25",
+        "model-output-sha256:567b146456af52dbc88a34e3ec6c28ada42a2d3c22ca2398be83b3502087e7a7"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -160314,7 +160326,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T22:03:55.729Z"
+      "updatedAt": "2026-11-28T22:09:41.453Z"
     },
     {
       "id": "marketing-card-grid-duel-pre-release-v1",
