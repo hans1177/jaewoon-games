@@ -53,6 +53,7 @@
 |---|---|---|---|---|
 | **보스(단계·스킬·모션·체력)** | **`BOSS_BRIEF.md`** | `FIELD_COMBAT_BRIEF.md` | `Monsters`·`Naval` | `kraken.glb` |
 | 동물 뼈대·움직임·몬스터 변형 | **`discoveries/ANIMAL_RIG_MOTION.md`** | `discoveries/README.md` | `Animals`·`Monsters` | `<카드id>.glb` |
+| **마을 가축 실사풍 재제작(고양이·개·소·말…)** | **`discoveries/ANIMAL_RIG_MOTION.md` 7절** (`<종>_v2` 이름이면 자동 교체) | — | `Animals` | `cow_v2.glb` |
 | 탐험 발견물(식물·광물·유물·유적) | **`discoveries/README.md`** | `discoveries/MISSING.md` | `Animals`·`Terrain`·`Relics`·`Town` | `<카드id>.glb` |
 
 ## 5. 바다
