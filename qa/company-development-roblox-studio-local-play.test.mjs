@@ -4861,3 +4861,23 @@ test('Mare Studio priority model delay remains a failure unless full recovery is
   assert.ok(workflow.includes('STUDIO_PRIORITY_MODEL_DELAY_RECOVERED='));
   assert.ok(workflow.includes('-not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)'));
 });
+
+test('Studio before/after uses only the exact scenario and script revision',()=>{
+  const workflow=fs.readFileSync('.github/workflows/devloop-studio.yml','utf8');
+  const start=workflow.indexOf('          const previous = scriptSha256 ? history.find');
+  const end=workflow.indexOf('          const report =',start);
+  assert.ok(start>=0&&end>start);
+  const select=new Function('history','kind','portBatch','scriptPath','scriptSha256',workflow.slice(start,end)+'\nreturn previous;');
+  const history=[
+    {kind:'studio',portBatch:null,scriptPath:'mare-town.json',scriptSha256:'a',runId:'1'},
+    {kind:'studio',portBatch:null,scriptPath:'mare-menus.json',scriptSha256:'b',runId:'2'},
+    {kind:'studio',portBatch:null,scriptPath:'mare-menus.json',scriptSha256:'a',runId:'3'}
+  ];
+  assert.equal(select(history,'studio',0,'mare-menus.json','a').runId,'3');
+  assert.equal(select(history,'studio',0,'mare-menus.json',''),null);
+  assert.equal(select(history,'studio',0,'mare-menus.json','c'),undefined);
+  assert.ok(workflow.includes('previousChecks.runId === previous.runId'));
+  assert.ok(workflow.includes('previousChecks.scriptSha256 === scriptSha256'));
+  assert.ok(workflow.includes('previousRunId: baselineVerified ? previous.runId : null'));
+  assert.ok(workflow.includes('not visual quality evidence'));
+});
