@@ -1079,5 +1079,37 @@ do
 	check("장 결말은 선택한 분기만 해금", S.Quest.visible(sb, Q.ch4_5b) and not S.Quest.visible(sb, Q.ch4_5a))
 end
 
+-- 모든 지상·해상·교역·연구·서막·허가증 의뢰는 실제 카드에 연결된다.
+do
+	local bad, count, fields, regions, permits = {}, 0, 0, 0, 0
+	for _, q in D.Quests.Quests do
+		count += 1
+		local card = q.loreCardId and D.Cards.ById[q.loreCardId]
+		local hook, ending = S.Quest.storyOf(q)
+		local entries = card and D.Quests.Kit.LORE[q.loreCardId]
+		local found = false
+		for _, entry in entries or {} do
+			if entry.questId == q.id and entry.text == q.loreText then found = true break end
+		end
+		if not card or not found or not q.loreText or q.loreText == "" or not hook or not ending
+			or not string.find(hook, "관련 백과: " .. (card and card.name or ""), 1, true) then
+			table.insert(bad, q.id)
+		end
+		if q.routeId then
+			fields += 1
+			if q.loreCardId ~= q.cardId then table.insert(bad, q.id) end
+		end
+		if string.sub(q.id, 1, 5) == "q_rg_" then regions += 1 end
+		if q.rewardPermit then permits += 1 end
+	end
+	check("전체 의뢰 지식카드 색인: " .. table.concat(bad, ","), count > 300 and #bad == 0 and fields == 50 and regions == 60 and permits > 0)
+	local st = S.State.new("england", 1700)
+	local q = D.Quests.ById.q_field_north_sea_1
+	check("미완료 의뢰의 카드 이야기는 숨긴다", D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, q.loreCardId) == nil)
+	st.quests.done[q.id] = true
+	local lore = D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, q.loreCardId)
+	check("완료 의뢰의 카드 이야기만 열림", lore ~= nil and #lore == 1 and lore[1].text == q.loreText)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

@@ -868,7 +868,10 @@ for _, qq in Quests do
 	end
 end
 
+local StoryCardName: { [string]: string } = {}
 local function Story(q: Quest, goodName: string?, portName: string?): (string, string)
+	local related = StoryCardName[q.id]
+	local cardLine = if related then "\n관련 백과: " .. related .. " (참고 기록)" else ""
 	local vars = { giver = pick(q.id, GIVERS), good = goodName or "물건", port = portName or "그 항구", n = tostring(q.amount) }
 	local set: { { string } } = STORY_KIND.default
 	if q.kind == "deliver" then
@@ -897,13 +900,116 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 		local base = q.story or fill(t[1], vars)
 		local tag = string.format("제%d장. ", depth)
 		if HAND[q.id] then
-			return tag .. (if HAND[q.id][1] ~= "" then HAND[q.id][1] else base), HAND[q.id][2]
+			return tag .. (if HAND[q.id][1] ~= "" then HAND[q.id][1] else base) .. cardLine, HAND[q.id][2]
 		end
-		return tag .. base, fill(c[2], vars)
+		return tag .. base .. cardLine, fill(c[2], vars)
 	end
 	local hand = HAND[q.id]
 	local hook = (if hand and hand[1] ~= "" then hand[1] else nil) or q.story or fill(t[1], vars)
-	return hook, (if hand then hand[2] else fill(t[2], vars))
+	return hook .. cardLine, (if hand then hand[2] else fill(t[2], vars))
+end
+
+-- [전체 의뢰·지식카드 연계] 기존 발견·보상·상품·지역·학문 데이터를 우선 사용한다.
+-- 관련 기록은 완료 조건이나 보상이 아니다. 기존 카드 상세의 이야기 색인으로만 연결한다.
+local CardsData = require(script.Parent.KnowledgeCards) :: any
+local PortsData = require(script.Parent.Ports) :: any
+local RegionCard: { [string]: string } = {
+	north_sea = "myth_selkie", atlantic_europe = "myth_ys", mediterranean = "myth_siren",
+	red_sea = "geo_red_sea", west_africa = "site_goree", east_africa = "site_kilwa",
+	south_asia = "geo_monsoon", southeast_asia = "geo_malacca_strait",
+	east_asia = "site_dejima", americas = "lost_el_dorado", pacific = "pac_navigation_stick",
+	europe = "nation_venice", w_africa = "site_elmina_castle", new_world = "geo_caribbean_sea",
+	indian = "geo_monsoon", far_east = "geo_malacca_strait",
+}
+local NationCard: { [string]: string } = {
+	england = "ast_halley_prediction", netherlands = "phy_pendulum", france = "ast_jupiter_moons",
+	portugal = "nav_cross_staff", ottoman = "lang_manuscript_reading", swahili = "geo_monsoon",
+	malabar = "bot_pepper_vine", japan = "math_place_value", china = "relic_woodblock",
+	spain = "nav_portolan", korea = "med_herb_garden", new_spain = "am_maya_stela",
+}
+local CompanionCard: { [string]: string } = {
+	h_england = "phi_scientific_method", h_netherlands = "finance_bill_exchange", h_france = "good_sugar",
+	h_ottoman = "good_pepper", h_swahili = "geo_monsoon", h_malabar = "bot_pepper_vine",
+	h_japan = "bot_herbarium", h_new_spain = "am_silver_ore_potosi", h_portugal = "relic_ship_log",
+	c_merian = "zoo_metamorphosis", c_halley = "ast_halley_prediction", c_leeuwenhoek = "phy_microscope",
+	c_linnaeus = "bot_systema_naturae", c_boyle = "phy_boyle_law", c_papin = "phy_papin_digester",
+}
+local SubjectCard: { [string]: string } = {
+	Botany = "bot_herbarium", Zoology = "zoo_metamorphosis", Mineral = "min_quartz", Relic = "relic_ship_log",
+	Site = "site_stonehenge", Geography = "nav_portolan", Myth = "myth_selkie", Mystery = "mys_voynich",
+	Lost = "lost_terra_australis", Astronomy = "ast_polaris", Physics = "phy_pendulum",
+	Architecture = "arch_arsenal", Language = "lang_translation", Medicine = "med_ship_surgeon", Art = "art_engraving",
+	astronomy = "ast_halley_prediction", medicine = "med_ship_surgeon", geography = "nav_portolan",
+	navigation = "nav_cross_staff", commerce = "finance_bill_exchange", history = "culture_oral_history",
+	architecture = "arch_gothic_arch", physics = "phy_pendulum", chemistry = "chem_distillation", art = "art_engraving",
+	explorer = "nav_portolan", science = "phi_scientific_method", merchant = "finance_bill_exchange",
+	pirate = "geo_pirate_waters", ruler = "pol_institution_records", letters = "lang_printing_press",
+}
+local SpecificCard: { [string]: string } = {
+	ch1_1 = "myth_selkie", ch1_3 = "geo_pirate_waters", ch1_4 = "law_code_interpretation",
+	ch1_5a = "finance_marine_insurance", ch1_5b = "myth_selkie",
+	ch2_1 = "chem_glass", ch2_3 = "nation_venice", ch2_4 = "institution_venetian_senate",
+	ch2_5a = "chem_glass", ch2_5b = "institution_venetian_senate",
+	ch3_1 = "good_pepper", ch3_3 = "geo_monsoon", ch3_4 = "finance_bill_exchange",
+	ch3_5a = "bot_pepper_vine", ch3_5b = "geo_monsoon",
+	ch4_1 = "site_dejima", ch4_3 = "geo_south_china_sea", ch4_4 = "lang_translation",
+	ch4_5a = "site_dejima", ch4_5b = "min_copper_ingot",
+	q_ch_nav_pirates = "geo_pirate_waters", q_ch_geo_spice = "good_pepper",
+	q_ch_steam_coal = "min_coal_seam", q_ch_alchemy_battle = "finance_marine_insurance",
+	q_ch_nature_explore = "bot_herbarium",
+	q_steam_dawn = "phy_savery_pump", q_steam_ship = "ship_steam_engine", q_steam_winch = "arch_harbor_crane",
+	q_grand_tour = "org_hanseatic_league", q_grand_tour_2 = "nav_portolan",
+	q_grand_tour_3 = "geo_north_notes", q_mediterranean = "geo_med_currents",
+	q_med_tour = "lang_lingua_franca", q_world_tour = "relic_world_map_old", q_world_tour2 = "nav_mercator",
+	q_west_africa_tour = "geo_guinea_gulf", q_indian_tour = "geo_monsoon",
+	q_east_asia_tour = "geo_south_china_sea", q_americas_tour = "geo_caribbean_sea", q_pacific_tour = "geo_pacific_vast",
+	q_era_2 = "ship_caravel", q_era_3 = "phi_scientific_method", q_era_4 = "phi_enlightenment", q_era_5 = "phy_newcomen_engine",
+}
+local KindCard: { [string]: string } = {
+	deliver = "finance_bill_exchange", discover = "bot_herbarium", discover_card = "culture_oral_history",
+	win = "geo_pirate_waters", visit = "nav_portolan", research = "phi_scientific_method",
+	field = "bot_herbarium", chronicle = "culture_oral_history", chron_draft = "lang_manuscript_reading",
+	chron_paper = "lang_printing_press", war_clear = "finance_marine_insurance",
+	stock = "finance_bill_exchange", dividend = "lang_ledger", history = "culture_oral_history",
+	people = "culture_oral_history", people_talk = "lang_port_interview", present = "phi_scientific_method",
+	understand = "phi_scientific_method", understand_card = "phi_scientific_method",
+	expo = "art_engraving", joint = "phi_scientific_method", port_tech = "industry_watermill",
+	landmark = "arch_arsenal", launch = "finance_bill_exchange", order_patrol = "law_code_interpretation",
+	era = "phi_enlightenment", choice = "law_code_interpretation", duel_leader = "relic_ship_log",
+}
+local GoodCard: { [string]: string } = {
+	wool = "org_hanseatic_league", fish = "zoo_cod", saffron = "chem_dye", carpet = "art_tapestry",
+	incense = "culture_festival_observation", gum_arabic = "bot_acacia", camphor = "chem_distillation",
+	cochineal = "chem_dye", copper = "min_copper_ingot",
+}
+local PortCard: { [string]: string } = {}
+-- 실제 방문 등록 카드가 있는 항구만 사용한다. 임의 지역 매칭 금지.
+for _, card in CardsData.Cards do
+	if card.visitPort and not PortCard[card.visitPort] then PortCard[card.visitPort] = card.id end
+end
+for _, q in Quests do
+	local region = q.regionId or q.routeId or string.match(q.id, "^q_rg_(.+)_%d+$")
+	local good = q.goodId and PortsData.Goods[q.goodId]
+	local permitCard = if q.rewardPermit then PortCard[q.rewardPermit] else nil
+	local id = q.loreCardId or q.cardId or q.rewardCardId or SpecificCard[q.id]
+		or (region and RegionCard[region]) or (q.nation and NationCard[q.nation])
+		or (q.companionId and CompanionCard[q.companionId]) or permitCard
+		or (q.goodId and GoodCard[q.goodId]) or (good and good.knowledgeId)
+		or (q.fieldId and SubjectCard[q.fieldId]) or (q.disc and SubjectCard[q.disc])
+		or (q.cat and SubjectCard[q.cat]) or KindCard[q.kind]
+	local card = id and CardsData.ById[id]
+	if not card then
+		-- 기존 데이터의 관련 카드가 없을 때만 종류별 검증된 기록으로 연결한다.
+		id = KindCard[q.kind]
+		card = id and CardsData.ById[id]
+	end
+	assert(card and id, "퀘스트 관련 지식카드 누락: " .. q.id)
+	q.loreCardId = id
+	StoryCardName[q.id] = card.name
+	if not q.loreText then
+		local _, ending = Story(q, good and good.name, q.portId and PortsData.Ports[q.portId] and PortsData.Ports[q.portId].name)
+		q.loreText = ending
+	end
 end
 
 local Kit = require(script.Parent.StoryKit) :: any
