@@ -12144,7 +12144,11 @@ do
 		end
 		local sheet = art("ui_haggle_merchant_sheet")
 		holder.Say.Text = FACE_TEXT[mood] or ""
+		local stageWidth = parent.AbsoluteSize.X
+		holder.Say.Size = UDim2.fromOffset(math.min(300, if stageWidth > 0 then math.max(100, stageWidth - 8) else 260), 32)
+		holder.Say.TextWrapped = true
 		if sheet then
+			holder.Say.Position = UDim2.new(0.5, 0, 1, 2)
 			holder.Image = sheet
 			holder.ImageRectSize = Vector2.new(256, 256)
 			holder:SetAttribute("Row", FACE_ROW[mood] or 1)
@@ -12153,10 +12157,14 @@ do
 				holder:SetAttribute("Animating", true)
 				task.spawn(function()
 					local f = 0
-					while holder:IsDescendantOf(game) do
+					while holder:IsDescendantOf(game) and not game:GetService("GuiService").ReducedMotionEnabled do
 						holder.ImageRectOffset = Vector2.new(f * 256, (holder:GetAttribute("Row") or 1) * 256)
 						task.wait(if f == 0 then 1.2 else 0.12)
 						f = (f + 1) % 4 -- 가만히 있다가 깜빡·끄덕
+					end
+					if holder:IsDescendantOf(game) then
+						holder.ImageRectOffset = Vector2.new(0, (holder:GetAttribute("Row") or 1) * 256)
+						holder:SetAttribute("Animating", false)
 					end
 				end)
 			end
