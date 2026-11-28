@@ -38,7 +38,7 @@
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_speed.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_32.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_33.png` | 등록 |  |
-| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_34.png` | 등록 |  |
+| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_34.png` | 재검사 | 기존 승인 원본과 등록번호 보존; 드롭박스 원본 재검사 대기 |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_11.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_02.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_06.png` | 등록 |  |
@@ -59,7 +59,7 @@
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/me_11.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/me_13.png` | 등록 |  |
 | 2026-11-28T04:17Z | `/Vibe2Transfer/inbox/CardArt/eu_40.png` | 거부 | 대륙 카드는 세로 7:10, 1049×1499 이상 (지금 1043×1490) |
-| 2026-11-28T04:17Z | `/Vibe2Transfer/inbox/CardArt/eu_18.png` | 등록 |  |
+| 2026-11-28T04:17Z | `/Vibe2Transfer/inbox/CardArt/eu_18.png` | 재검사 | 기존 승인 원본과 등록번호 보존; 드롭박스 원본 재검사 대기 |
 | 2026-11-28T04:17Z | `/Vibe2Transfer/inbox/CardArt/af_13.png` | 거부 | 대륙 카드는 세로 7:10, 1049×1499 이상 (지금 1043×1490) |
 | 2026-11-28T04:17Z | `/Vibe2Transfer/inbox/CardArt/event_title_ship.png` | 등록 |  |
 | 2026-11-28T04:17Z | `/Vibe2Transfer/inbox/CardArt/af_10.png` | 거부 | 대륙 카드는 세로 7:10, 1049×1499 이상 (지금 1043×1490) |

@@ -9,7 +9,7 @@
 자동 검사(하나라도 실패하면 등록 안 함, 이유를 보고서에 기록):
   - 확장자·이름 규칙, 크기(그림 4096px 이하, 128px 이상 / 모델 20MB 이하), 파일 머리(PNG·JPG·glTF·FBX)
   - 256색 금지(팔레트·감색) — asset_color_check.color_problem
-  - 대륙 카드(eu_/ea_/me_/nw_/af_/sa_ 숫자)는 세로 7:10, 1049×1499 이상 → 1400×2000 RGB 로 맞춤
+  - 대륙 카드(eu_/ea_/me_/nw_/af_/sa_ 숫자)는 세로 7:10, 1049×1499 이상, RGB/RGBA 원본 바이트 유지. 기존 승인·시각검수와 다른 원본은 검수 대기.
   - 저장소에 같은 바이트가 이미 있으면 중복으로 건너뜀
 통과하면 assets/inbox/<종류>/ + .license.json(PROJECT_ORIGINAL_ART, 오너 드롭박스) → 기존 register_asset.py 로 정식 폴더 이동.
 처리 기록은 roblox-games/mare-essentia/assets/dropbox-imported.json (드롭박스 content_hash 기준, 같은 파일 재처리 안 함).
@@ -141,9 +141,8 @@ def check_image(kind, fn, raw, tmp):
     if kind == "CardArt" and CONTINENT.match(fn):
         if w < 1049 or h < 1499 or abs(w * 10 - h * 7) > h * 0.05:
             return None, f"대륙 카드는 세로 7:10, 1049×1499 이상 (지금 {w}×{h})"
-        buf = io.BytesIO()
-        im.convert("RGB").resize((1400, 2000), Image.LANCZOS).save(buf, "PNG", optimize=True)
-        data = buf.getvalue()
+        if len(raw) < 33 or raw[24] != 8 or raw[25] not in (2, 6):
+            return None, "대륙 카드는 8비트 RGB/RGBA PNG 원본만 허용"
     elif kind == "CardArt" and fn.endswith(".png") and not fn.startswith("ui_"):
         # 기존 등록기는 그 밖의 카드 그림을 JPG 로 받는다(대륙 카드·UI 만 PNG)
         buf = io.BytesIO()
@@ -195,8 +194,13 @@ def main():
             continue
         kind, fn = rel.split("/", 1)
         prev = state["files"].get(path)
-        if prev and prev.get("content_hash") == e.get("content_hash"):
-            continue
+        if prev and prev.get("content_hash") == e.get("content_hash") and prev.get("status") != "recheck":
+            if prev.get("status") != "pending_review":
+                continue
+            card = "CardArt/" + os.path.splitext(fn)[0]
+            if (approved_doc.get("approved", {}).get(card) != prev.get("sha256")
+                    or approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256")):
+                continue
         rec = {"content_hash": e.get("content_hash"), "at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "kind": kind}
         why, result = None, None
         if kind not in IMAGE_KINDS | MODEL_KINDS:
@@ -221,6 +225,26 @@ def main():
         if result and not why:
             out_name, data = result
             digest = hashlib.sha256(data).hexdigest()
+            # 대륙 원화는 기존 시각 검수/승인 해시를 자동 반입만으로 바꾸지 않는다.
+            if kind == "CardArt" and CONTINENT.match(fn):
+                card = "CardArt/" + os.path.splitext(fn)[0]
+                review = approved_doc.get("modelOriginals", {}).get(card, {})
+                if approved_doc.get("approved", {}).get(card) != digest or review.get("sourceSha256") != digest:
+                    rec.update(status="pending_review", file=out_name, sha256=digest, reason="기존 원본 검수·승인 절차 대기")
+                    state["files"][path] = rec
+                    log("DROPBOX_INBOX_CARD_REVIEW_PENDING", card)
+                    continue
+                if blob_sha(data) in known:
+                    rec.update(status="already_approved", file=out_name, sha256=digest, reason="동일 승인 원본 보존")
+                    state["files"][path] = rec
+                    continue
+                # 승인 기록만으로 기존 대상의 다른 바이트를 덮어쓰지 않는다.
+                # 교체는 기존 원본 승격 등록기만 책임진다.
+                target = os.path.join(GAME, "assets", "cardart", out_name)
+                if os.path.isfile(target):
+                    rec.update(status="pending_review", file=out_name, sha256=digest, reason="기존 원본 승격 등록기 대기")
+                    state["files"][path] = rec
+                    continue
             if blob_sha(data) in known:
                 why = f"중복(이미 {known[blob_sha(data)]})"
             else:
@@ -264,8 +288,9 @@ def main():
     lines = ["# 드롭박스 자동 인입 최근 결과", "", f"갱신: {datetime.datetime.now(datetime.timezone.utc):%Y-%m-%d %H:%M} UTC", ""]
     rows = sorted(state["files"].items(), key=lambda kv: kv[1].get("at", ""), reverse=True)[:80]
     lines += ["| 시각 | 파일 | 결과 | 이유 |", "|---|---|---|---|"]
+    labels = {"accepted": "후보 반입", "rejected": "거부", "pending_review": "검수 대기", "already_approved": "동일 원본 보존", "recheck": "재검사"}
     for p, r in rows:
-        lines.append(f"| {r.get('at','')} | `{p}` | {'등록' if r.get('status')=='accepted' else '거부'} | {r.get('reason','')} |")
+        lines.append(f"| {r.get('at','')} | `{p}` | {labels.get(r.get('status'), '미확인')} | {r.get('reason','')} |")
     open(report, "w", encoding="utf-8").write("\n".join(lines) + "\n")
 
 
