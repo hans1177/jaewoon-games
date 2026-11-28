@@ -3777,7 +3777,11 @@ function FieldScene.start(opts)
 	completePopup.Name = "FieldCompletionPopup"
 	completePopup.AnchorPoint = Vector2.new(0.5, 0.5)
 	completePopup.Position = UDim2.fromScale(0.5, 0.43)
-	completePopup.Size = UDim2.fromOffset(286, 198)
+	completePopup.Size = UDim2.new(0.88, 0, 0, 254)
+	do
+		local limit = Instance.new("UISizeConstraint", completePopup)
+		limit.MaxSize = Vector2.new(480, 254)
+	end
 	completePopup.BackgroundColor3 = Color3.fromRGB(27, 39, 55)
 	completePopup.BackgroundTransparency = 0.05
 	completePopup.BorderSizePixel = 0
@@ -3798,8 +3802,8 @@ function FieldScene.start(opts)
 	popupTitle.Size = UDim2.new(1, -24, 0, 34)
 	popupTitle.Position = UDim2.fromOffset(12, 18)
 	popupTitle.ZIndex = 24
-	local popupSummary = label(completePopup, "현장 기록 수집 완료 · 보상은 귀환 후 확정", 13, Color3.fromRGB(222, 235, 246))
-	popupSummary.Size = UDim2.new(1, -20, 0, 43)
+	local popupSummary = label(completePopup, "현장 기록 수집 완료 · 보상은 귀환 후 확정", 19, Color3.fromRGB(222, 235, 246))
+	popupSummary.Size = UDim2.new(1, -20, 0, 90)
 	popupSummary.Position = UDim2.fromOffset(10, 60)
 	popupSummary.TextWrapped = true
 	popupSummary.ZIndex = 24
@@ -3808,7 +3812,7 @@ function FieldScene.start(opts)
 	completeBtn.Name = "FieldComplete"
 	completeBtn.ZIndex = 25
 	completeBtn.Visible = false
-	completeBtn.TextSize = 17
+	completeBtn.TextSize = 22
 	local completeReopen = btn(gui, "조사 완료", Color3.fromRGB(137, 111, 59), UDim2.fromOffset(if compactTouch then 90 else 98, 38), -- [좁은 세로] 영웅 상태창과 이격
 		UDim2.new(1, -12, 0, 64), Vector2.new(1, 0))
 	completeReopen.Name = "FieldCompleteReopen"
@@ -3817,11 +3821,11 @@ function FieldScene.start(opts)
 	completeReopen.Activated:Connect(function()
 		if not finished and found >= nodeCount then completePopup.Visible = true end
 	end)
-	local continueBtn = btn(completePopup, "더 둘러보기", Color3.fromRGB(63, 94, 110), UDim2.fromOffset(116, 32),
-		UDim2.new(0.5, 0, 0, 112), Vector2.new(0.5, 0))
+	local continueBtn = btn(completePopup, "더 둘러보기", Color3.fromRGB(63, 94, 110), UDim2.fromOffset(156, 44),
+		UDim2.new(0.5, 0, 0, 150), Vector2.new(0.5, 0))
 	continueBtn.Name = "FieldContinue"
 	continueBtn.ZIndex = 25
-	continueBtn.TextSize = 13
+	continueBtn.TextSize = 18
 	continueBtn.Activated:Connect(function() completePopup.Visible = false end)
 	local function showCompletion()
 		if completePopup.Visible then return end
@@ -3834,8 +3838,11 @@ function FieldScene.start(opts)
 		scale.Scale = 0.78
 		scale.Parent = completePopup
 		TweenService:Create(scale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-		TweenService:Create(popupStroke, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Thickness = 3.1 }):Play()
-		task.delay(0.65, function() if popupStroke.Parent then TweenService:Create(popupStroke, TweenInfo.new(0.4), { Thickness = 2.2 }):Play() end end)
+		local stroke = completePopup:FindFirstChildOfClass("UIStroke")
+		if stroke then
+			TweenService:Create(stroke, TweenInfo.new(0.55, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Thickness = 3.1 }):Play()
+			task.delay(0.65, function() if stroke.Parent then TweenService:Create(stroke, TweenInfo.new(0.4), { Thickness = 2.2 }):Play() end end)
+		end
 		sfx("sfx_coin", 0.7, 1.1)
 		for i = 1, 10 do
 			local glint = Instance.new("Frame")
@@ -8307,7 +8314,7 @@ function FieldScene.start(opts)
 			task.spawn(function()
 				local t0 = os.clock()
 				local lastP = 0
-				local duration = if visualMobile then 1.35 else 1.70
+				local duration = if e.boss then 2.5 elseif visualMobile then 1.35 else 1.70
 				while dying.Parent and os.clock() - t0 < duration do
 					local p = math.clamp((os.clock() - t0) / duration, 0, 1)
 					Pose.dieR15(dying, p, deathVariant)
@@ -8373,7 +8380,43 @@ function FieldScene.start(opts)
 				questHint.Text = "길이 열렸다 · " .. (targetCard and targetCard.name or "현장 기록") .. " 조사"
 				say("두목을 물리쳐 기록으로 가는 길이 열렸어. 현장 단서를 조사하자.", 3.5)
 			else
-				say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+				if not e.boss then say("적을 물리쳤다!") end
+			end
+			if e.boss then
+				-- [지상 보스 격파] 기존 사망 모션과 전리품 판정을 유지하는 비차단 승리 띠.
+				folder:SetAttribute("FieldBossDefeatedCount", (folder:GetAttribute("FieldBossDefeatedCount") or 0) + 1)
+				local old = gui:FindFirstChild("FieldBossVictory")
+				if old then old:Destroy() end
+				local band = Instance.new("Frame")
+				band.Name = "FieldBossVictory"
+				band.AnchorPoint = Vector2.new(0.5, 0.5)
+				band.Position = UDim2.fromScale(0.5, 0.27)
+				band.Size = UDim2.new(0.86, 0, 0, 86)
+				band.BackgroundColor3 = Color3.fromRGB(36, 25, 19)
+				band.BackgroundTransparency = 0.12
+				band.BorderSizePixel = 0
+				band.ZIndex = 28
+				band.Active = false
+				band.Parent = gui
+				Instance.new("UICorner", band).CornerRadius = UDim.new(0, 12)
+				local stroke = Instance.new("UIStroke", band)
+				stroke.Color = Color3.fromRGB(245, 204, 113)
+				stroke.Thickness = 3
+				local title = label(band, "두목 격파", 32, Color3.fromRGB(255, 224, 144))
+				title.Size = UDim2.new(1, -16, 0, 44)
+				title.Position = UDim2.fromOffset(8, 3)
+				title.ZIndex = 29
+				local desc = label(band, "전리품 회복약 · 탐험 보상은 귀환 후 확정", 18, Color3.fromRGB(252, 241, 220))
+				desc.Size = UDim2.new(1, -16, 0, 36)
+				desc.Position = UDim2.fromOffset(8, 46)
+				desc.TextWrapped = true
+				desc.ZIndex = 29
+				if not game:GetService("GuiService").ReducedMotionEnabled then
+					local scale = Instance.new("UIScale", band)
+					scale.Scale = 0.84
+					TweenService:Create(scale, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
+				end
+				task.delay(2.8, function() if band.Parent then band:Destroy() end end)
 			end
 			-- [전투 목표 · 2026-11-28] 모두 쓰러뜨리면 이번 목표 달성 별(표시용, 보상·저장 불변)
 			if pl.fieldChallenge and not pl.fieldChallenge.done then
@@ -8400,8 +8443,9 @@ function FieldScene.start(opts)
 			-- 전리품: 쓰러뜨리면 체력 회복약을 줍는다 (두목은 항상, 졸개는 40%)
 			if e.boss or math.random() < 0.4 then
 				local heal = if e.boss then 30 else 12
+				local previousHp = pl.hp
 				pl.hp = math.min(pl.maxHp, pl.hp + heal)
-				popDamage(e.model, heal, false)
+				popDamage(e.model, pl.hp - previousHp, false)
 				burst(e.root.Position + Vector3.new(0, 2, 0), 10, false)
 				refresh()
 			end

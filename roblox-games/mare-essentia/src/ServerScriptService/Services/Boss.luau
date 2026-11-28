@@ -27,7 +27,7 @@ return function(D, S)
 	end
 
 	-- 보스전 결과 반영 (자동 전투와 카드 대결이 함께 쓴다)
-	local function settleOutcome(state, boss, rec, winner, msgs)
+	local function settleOutcome(state: any, boss: any, rec: any, winner: string, msgs: {string})
 		if winner == "a" then
 			rec.defeated += 1
 			state.coins += boss.rewardCoins
@@ -37,9 +37,24 @@ return function(D, S)
 			for _, line in S.Perk.companionLines(state, "win") do
 				table.insert(msgs, line)
 			end
-			S.Discovery.grantCard(state, boss.cardId, msgs)
+			local receipt: { [string]: any } = { coins = boss.rewardCoins, fame = boss.rewardFame, career = "battle" }
+			if S.Discovery.grantCard(state, boss.cardId, msgs) then
+				local card = D.Cards.ById[boss.cardId]
+				if card then receipt.discovery = { id = boss.cardId, name = card.name } end
+			end
 			S.Cardbook.offer(state, "boss", msgs, nil, nil, D.CardBook.BOSS_CARD[boss.id])
+			local beforeLevel, beforeXp = state.careers.battle.level, state.careers.battle.xp
 			S.State.gainXp(state, "battle", boss.rewardXp, msgs)
+			local after = state.careers.battle
+			local xp = after.xp - beforeXp
+			for level = beforeLevel, after.level - 1 do xp += D.Careers.xpForNext(level) end
+			receipt.xp = math.max(0, xp)
+			receipt.beforeLevel, receipt.beforeXp = beforeLevel, beforeXp
+			receipt.afterLevel, receipt.afterXp = after.level, after.xp
+			receipt.beforeNextXp, receipt.afterNextXp = D.Careers.xpForNext(beforeLevel), D.Careers.xpForNext(after.level)
+			receipt.maxLevel = D.Careers.MAX_LEVEL
+			state._bossReward = { id = boss.id, name = boss.name, grade = 5, boss = true, bossArt = boss.cardId,
+				rewardCareer = "battle", receipt = receipt, ending = string.format("격파 기록 %d회", rec.defeated) }
 			S.Perk.addAffinity(state, 5, msgs)
 		elseif winner == "b" then
 			local lost = 0

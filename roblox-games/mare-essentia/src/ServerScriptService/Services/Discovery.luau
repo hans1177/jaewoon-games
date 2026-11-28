@@ -264,7 +264,7 @@ return function(D, S)
 		return true, ""
 	end
 
-	function handlers.Explore(state, p, ctx)
+	function handlers.Explore(state: any, p, ctx)
 		local site = type(p.siteId) == "string" and findSite(p.siteId)
 		if not site then
 			return false, "잘못된 요청"
@@ -307,6 +307,9 @@ return function(D, S)
 		if type(state.stats.fieldCheckpoint) == "table" and state.stats.fieldCheckpoint.siteId == site.id then state.stats.fieldCheckpoint = nil end
 		if fieldRuns[state] and fieldRuns[state].siteId == site.id then fieldRuns[state] = nil end
 
+		local coinsBefore, fameBefore = state.coins, state.fame
+		local beforeLevel, beforeXp = state.careers.adventure.level, state.careers.adventure.xp
+		local receipt: { [string]: any } = { career = "adventure" }
 		local msgs = { string.format("%s 탐험 (%d일)", site.name, site.days) }
 		if ctx.rng() < 0.45 then
 			S.Cardbook.reward(state, "explore", msgs, ctx.rng)
@@ -325,11 +328,23 @@ return function(D, S)
 		local field = D.Cards.ById[cardId].field
 		local chance = math.min(0.95, 0.55 + D.Careers.discoverBonus(lv) + S.Perk.discoverBonus(state, field))
 		if ctx.rng() < chance then
-			grantCard(state, cardId, msgs, { method = "explore", siteId = site.id })
+			if grantCard(state, cardId, msgs, { method = "explore", siteId = site.id }) then
+				receipt.discovery = { id = cardId, name = D.Cards.ById[cardId].name }
+			end
 		else
 			table.insert(msgs, "이번에는 아무것도 찾지 못했다")
 			S.State.gainXp(state, "adventure", 5, msgs)
 		end
+		local after = state.careers.adventure
+		local xp = after.xp - beforeXp
+		for level = beforeLevel, after.level - 1 do xp += D.Careers.xpForNext(level) end
+		receipt.coins, receipt.fame, receipt.xp = math.max(0, state.coins - coinsBefore), math.max(0, state.fame - fameBefore), math.max(0, xp)
+		receipt.beforeLevel, receipt.beforeXp = beforeLevel, beforeXp
+		receipt.afterLevel, receipt.afterXp = after.level, after.xp
+		receipt.beforeNextXp, receipt.afterNextXp = D.Careers.xpForNext(beforeLevel), D.Careers.xpForNext(after.level)
+		receipt.maxLevel = D.Careers.MAX_LEVEL
+		state._fieldReward = { id = site.id, name = site.name, field = true, grade = 1, rewardCareer = "adventure", receipt = receipt,
+			ending = if receipt.discovery then "현장 발견 기록을 등록했어." else "탐험을 마쳤지만 새로운 발견은 없었어." }
 		return true, table.concat(msgs, "\n")
 	end
 
