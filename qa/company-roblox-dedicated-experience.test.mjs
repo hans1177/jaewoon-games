@@ -1732,7 +1732,9 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/steerDir = if math\.abs\(nx\) < 0\.12 then 0 else nx/);
   assert.match(src,/local turnSign = if rightTurn:Dot\(cam\.CFrame\.RightVector\) < -0\.05 then -1 else 1/);
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
-  assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
+  assert.match(src,/adviceLine\.Visible = true/);
+  assert.match(src,/adviceLine\.Position = UDim2\.new\(0\.5, 0, 0, 112\)/);
+  assert.match(src,/adviceLine\.TextSize = if battleViewport\.X < 480 then 16 else 20/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
   assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\), if battleViewport\.X < 480 then math\.max\(80, battleViewport\.X - 206\) else 168\), 26\)/);
   assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
@@ -1777,16 +1779,28 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   for(const token of [
     'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)',
     'if battleViewport.X < 480 then 56 else 96',
-    'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
+    'sailLabel.Position = UDim2.new(0.5, 0, 0, 69)',
+    'wind.Position = UDim2.new(0.5, 0, 0, 38)',
     'f.Visible = star or battleViewport.X >= 720',
     'navalHitCue.Visible = false',
     'navalHitCue.Name = "NavalHitStreak"',
-    'navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)',
-    'math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08)))',
-    'navalHitCueScale.Scale = 1.08',
+    'navalHitCue.AnchorPoint = Vector2.new(0.5, 0.5)',
+    'navalHitCue.Position = UDim2.fromScale(0.5, 0.27)',
+    'navalHitCue.Size = UDim2.new(0.82, 0, 0, math.min(112, math.floor(battleViewport.Y * 0.18)))',
+    'navalHitCue.Font = Enum.Font.Bangers',
+    'navalHitCue.BackgroundTransparency = 1',
+    'navalHitCue.Active = false',
+    'navalHitCueScale.Scale = if milestone then 1.20 else 1.13',
+    'local centerY = if battleViewport.Y < 480 then 0.43 else (if milestone then 0.245 else 0.27)',
+    'popText(string.format("포격 %d연타!", navalHitStreak), accent, navalHitStreak % 5 == 0, true)',
+    'skillPop = popText',
+    'navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1',
+    'navalCue.fade:Play()',
     'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
-    'tactic.Position = UDim2.fromOffset(16, 126)',
-    'math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168)',
+    'tactic.Position = UDim2.new(0.5, 0, 0, 4)',
+    'tactic.TextSize = if battleViewport.X < 480 then 18 else 22',
+    'tactic.Active = false',
+    'math.min(320, math.floor(battleViewport.X * (if battleViewport.X < 480 then 0.54 elseif battleViewport.X < 720 then 0.46 else 0.34)) - 36)',
     'panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 173 else 122)',
     'local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 482)',
     'sk.x = -72',
@@ -1811,22 +1825,30 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'if reloadText.Text ~= reloadCaption then reloadText.Text = reloadCaption end',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
-  // [휴대전화 세로] 실제 104/86/76px 버튼, 전술판·카드 지원판·연타 확대 좌표를 검증한다.
+  assert.doesNotMatch(battle,/navalHitCue\.Position = UDim2\.fromOffset|navalHitCueStroke|NavalBattleAnnouncement/,'left announcement panels must not return');
+  // [휴대전화 세로] 조작 안전 영역 및 중앙 알림의 화면 경계를 검증한다.
   for(const w of [320,360,390,430]) for(const h of [520,560,640,844,932]) for(const entries of [1,4,12]){
     const stick={x:28,y:h-198,w:170,h:170};
     const speed={x:w-100,y:h-100,w:76,h:76};
     const fire={x:w-124,y:h-352,w:104,h:104};
     const special={x:w-115,y:h-227,w:86,h:86};
     const skip={x:12,y:181,w:56,h:36};
-    const tactic={x:16,y:126,w:Math.min(168,Math.floor(w*0.42),Math.max(80,w-206)),h:26};
+    const guideWidth=Math.min(320,Math.floor(w*0.54)-36);
+    const tactic={x:(w-guideWidth)/2,y:4,w:guideWidth,h:30};
+    const hullLeft={x:16,y:12,w:w*0.23,h:44},hullRight={x:w-16-w*0.23,y:12,w:w*0.23,h:44};
+    const weather={x:(w-120)/2,y:38,w:120,h:28};
     const fleetLeft={x:16,y:66,w:96,h:46},fleetRight={x:w-112,y:66,w:96,h:46};
     const wind={x:(w-Math.max(80,w-240))/2,y:69,w:Math.max(80,w-240),h:20};
     const reload={x:fire.x+21,y:fire.y+12,w:62,h:19};
     const panel={x:w-182,y:120,w:166,h:Math.min(24+entries*30,Math.max(34,h-482))};
-    const cue={x:16,y:225,w:Math.min(182,Math.max(80,Math.floor((w-206)/1.08)))*1.08,h:46*1.08};
+    const cueWidth=w*0.82*1.20, cueHeight=Math.min(112,Math.floor(h*0.18))*1.20;
+    for(const y of [0.20,0.245,0.27]){
+      const cue={x:(w-cueWidth)/2,y:h*y-cueHeight/2,w:cueWidth,h:cueHeight};
+      assert.ok(cue.x>=0&&cue.y>=0&&cue.x+cue.w<=w&&cue.y+cue.h<=h,'central transient cue stays inside screen');
+    }
     assert.ok(reload.x>=fire.x&&reload.x+reload.w<=fire.x+fire.w&&reload.y>=fire.y&&reload.y+reload.h<=fire.y+fire.h,'reload gauge must stay inside fire button');
     assert.ok(fire.y-(panel.y+panel.h)>=10,'scrolling panel must leave at least 10px before fire button');
-    for(const [left,right] of [[stick,speed],[stick,fire],[stick,special],[speed,fire],[speed,special],[fire,special],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,special],[reload,panel],[panel,fire],[panel,special],[panel,speed],[panel,stick],[panel,tactic],[panel,skip],[cue,skip],[cue,panel],[cue,fire],[cue,stick]]){
+    for(const [left,right] of [[stick,speed],[stick,fire],[stick,special],[speed,fire],[speed,special],[fire,special],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,special],[reload,panel],[panel,fire],[panel,special],[panel,speed],[panel,stick],[panel,tactic],[panel,skip],[tactic,hullLeft],[tactic,hullRight],[tactic,weather],[weather,hullLeft],[weather,hullRight]]){
       assert.equal(intersects(left,right),false,'phone HUD overlap at '+w+'x'+h+': '+JSON.stringify([left,right]));
     }
   }
