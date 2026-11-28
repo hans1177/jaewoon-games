@@ -6725,19 +6725,19 @@ function RENDERERS.status()
 		add(function()
 			local weapon = Weapons.get(id)
 			local xp = math.max(0, math.floor((view.weaponPractice or {})[id] or 0))
-			-- 현재 메인 필드의 5단계 기준을 그대로 표시한다. 전투 판정에는 사용하지 않는다.
-			local thresholds = { 0, 8, 26, 55, 100 }
+			-- 전투 후보 #15817의 실제 숙련 기준. 메뉴는 저장 경험치만 읽고 전투 판정은 하지 않는다.
+			local thresholds = { 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 }
 			local rank = 1
 			for i, need in thresholds do if xp >= need then rank = i end end
 			local nextXp = thresholds[rank + 1]
-			local row = mkRow(content, weapon.name .. " · 숙련 " .. rank .. "단", string.format("경험치 %d%s · %s", xp, if nextXp then "/" .. nextXp else " · 최고", weapon.note), nil, 148)
+			local row = mkRow(content, weapon.name .. " · 숙련 " .. rank .. "단", string.format("경험치 %d%s · %s", xp, if nextXp then "/" .. nextXp else " · 최고", weapon.note), nil, 194)
 			row.Name = "WeaponMasteryTree_" .. id
 			if weapon.model then withIcon(row, "Relics", weapon.model, nil, 52) end
 			local box = row:FindFirstChild("RowText")
 			if box then
 				local stages = Instance.new("Frame")
 				stages.Name = "WeaponMasteryStages"
-				stages.Size = UDim2.new(1, -4, 0, 26)
+				stages.Size = UDim2.new(1, -4, 0, 56)
 				stages.BackgroundTransparency = 1
 				stages.Parent = box
 				for i, need in thresholds do
@@ -6746,11 +6746,28 @@ function RENDERERS.status()
 					stage.TextXAlignment = Enum.TextXAlignment.Center
 					stage.BackgroundTransparency = 0
 					stage.BackgroundColor3 = if i <= rank then Color3.fromRGB(211, 173, 92) else Color3.fromRGB(192, 181, 164)
-					stage.Position = UDim2.new((i - 1) / #thresholds, 1, 0, 0)
-					stage.Size = UDim2.new(1 / #thresholds, -3, 1, 0)
+					stage.Position = UDim2.new(((i - 1) % 5) / 5, 1, 0, math.floor((i - 1) / 5) * 28)
+					stage.Size = UDim2.new(1 / 5, -3, 0, 25)
+					stage.Name = "MasteryStage_" .. i
+					stage:SetAttribute("RequiredExperience", need)
 					corner(stage, 3)
 				end
-				mkLabel(box, if rank == 1 then "기본 공격 · 자동 스킬 잠김" elseif rank < 4 then "자동 강타 해금" else "자동 강타·회전 기술 해금", 13, INK, true)
+				local track = Instance.new("Frame")
+				track.Name = "WeaponMasteryExperience"
+				track.Size = UDim2.new(1, -4, 0, 10)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = box
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(if nextXp then math.clamp((xp - thresholds[rank]) / math.max(1, nextXp - thresholds[rank]), 0, 1) else 1, 1)
+				fill.BackgroundColor3 = UI_BRASS_DARK
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+				local skillText = if rank == 1 then "기본 공격 · 자동 스킬 잠김" elseif rank < 4 then "자동 강타 해금" else "자동 강타·회전 기술 해금"
+				mkLabel(box, string.format("연속 공격 %d단 · %s", rank, skillText), 13, INK, true)
+				mkLabel(box, if rank >= 8 then "필살기 해금 · 전투 중 충전 필요" else "필살기 8단 해금 · 경험치 380 필요", 13, if rank >= 8 then Color3.fromRGB(47, 122, 58) else INK_SOFT, true)
 			end
 			return row
 		end)
