@@ -43,6 +43,18 @@ test('일반 인입 후보 검사 완료 이벤트는 정확한 SHA 및 필수 �
   assert.ok(wf.includes('if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then exit 0; fi'));
 });
 
+test('승인된 카드 원본만 하나 선택하고 기존 ID에 다른 원본을 덮어쓰지 않는다',()=>{
+  const uploader=fs.readFileSync('tools/mare-essentia-upload-assets.mjs','utf8');
+  assert.ok(uploader.includes('actual === approved'));
+  assert.ok(uploader.includes('CARD_APPROVED_SOURCE_NOT_FOUND'));
+  assert.ok(uploader.includes('item !== selected'));
+  assert.ok(uploader.includes("item.kind === 'CardArt' && !regionalCardArt && (approvedImages[id] ||"));
+  assert.ok(uploader.includes('MODEL_ORIGINAL_REVIEW_REQUIRED'));
+  assert.ok(uploader.includes('MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED'));
+  assert.ok(wf.includes("event_title_(?:ship|parchment)|history_(?:open|map|record)"));
+  assert.ok(wf.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+});
+
 test('재질은 기존 실제 업로더의 CC0 출처 및 해시 조건을 먼저 검증한다', () => {
   const register = fs.readFileSync('tools/devloop/register_asset.py', 'utf8');
   const start = register.indexOf('if not why and kind == "Materials":');

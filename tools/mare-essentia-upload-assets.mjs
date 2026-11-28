@@ -2313,6 +2313,30 @@ for (const [name, row] of Object.entries(registry.assets)) {
 }
 let approvedImages = {...(cardApprovalDocument.approved || {})};
 if (!modelsOnly) try { for (const sid of Object.keys(JSON.parse(await fs.readFile(ROOT + '/assets/cardart/SEALED.json', 'utf8')).sealed || {})) delete approvedImages['CardArt/' + sid]; } catch {} // 봉인 카드: 승인돼 있어도 업로드 금지
+// [같은 이름의 PNG/JPG] 승인된 실제 원본 한 개만 등록 계획에 남긴다.
+if (!modelsOnly && !studioRegrantPath) {
+  const grouped = new Map();
+  for (const item of plan) {
+    if (item.kind !== 'CardArt') continue;
+    const id = item.kind + '/' + item.name;
+    if (!grouped.has(id)) grouped.set(id, []);
+    grouped.get(id).push(item);
+  }
+  for (const [id, items] of grouped) {
+    const approved = approvedImages[id];
+    if (!approved) continue;
+    let selected;
+    for (const item of items) {
+      const actual = crypto.createHash('sha256').update(await fs.readFile(item.file)).digest('hex');
+      if (actual === approved && (!selected || item.file === registry.assets[id]?.source)) selected = item;
+    }
+    if (!selected) {
+      planFailures.push(id + ': CARD_APPROVED_SOURCE_NOT_FOUND');
+      console.error('CARD_APPROVED_SOURCE_NOT_FOUND', id);
+    }
+    for (const item of items) if (item !== selected) plan.splice(plan.indexOf(item), 1);
+  }
+}
 // [원본 보호] 종류 변경 중 신규 업로드나 Universe 사용 권한 확인이 실패하면 기존 등록 ID를 보존한다.
 const previousTypeAssets = new Map();
 for (const item of plan) {
@@ -2427,7 +2451,7 @@ for (const item of plan) {
   }
   // [카드배틀 화면] 승인된 새 이미지의 사용 권한을 확인한 뒤에 기존 번호를 교체한다.
   const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && /^ui_[a-z0-9_]+$/.test(item.name);
-  if (item.kind === 'CardArt' && (/^lo_\d{2}$/.test(item.name) || battleUiArt)) {
+  if (item.kind === 'CardArt' && !regionalCardArt && (approvedImages[id] || /^lo_\d{2}$/.test(item.name) || battleUiArt)) {
     const old = registry.assets[id];
     if (battleUiArt && old?.sourceSha256 !== sourceSha256 && approvedImages[id] === sourceSha256
       && (originalBytes.length < 33
@@ -2437,7 +2461,7 @@ for (const item of plan) {
       failures.push(id + ': CARD_BATTLE_UI_FULL_COLOR_PNG_REQUIRED');
       continue;
     }
-    if (old?.assetId && old.sourceSha256 !== sourceSha256 && (old.sourceSha256 || battleUiArt)) {
+    if (old?.assetId && old.sourceSha256 !== sourceSha256 && (approvedImages[id] || old.sourceSha256 || battleUiArt)) {
       if (approvedImages[id] !== sourceSha256) {
         failures.push(id + (battleUiArt ? ': CARD_BATTLE_UI_APPROVAL_HASH_MISMATCH' : ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH'));
         continue;
@@ -2479,7 +2503,9 @@ for (const item of plan) {
   }
   if (registry.assets[id]?.assetId) {
     // 이미 발급된 ID는 다시 업로드하지 않고 실제 파일 형식/경로만 갱신한다.
-    registry.assets[id].source = item.file;
+    // 승인 해시가 없는 카드 변형은 기존 등록 원본 경로를 바꾸지 않는다.
+    if (item.kind !== 'CardArt' || approvedImages[id] === sourceSha256 || registry.assets[id].source === item.file)
+      registry.assets[id].source = item.file;
     // 구형 등록표는 로컬 승인 원본 해시를 기준으로 다음 이미지 변경을 탐지한다.
     // 이 값만으로 Roblox 원격 바이너리 동일성/Studio 표시를 주장하지 않는다.
     if ((item.kind === 'Goods' && item.assetType === 'Image') || item.kind === 'Materials' || regionalCardArt
