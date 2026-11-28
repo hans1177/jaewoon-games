@@ -11553,6 +11553,21 @@ do
 			chip.ZIndex = 20
 			chip.Parent = gui
 			corner(chip, 12)
+			-- 지시서의 512×128 청동 띠: 등록된 원화만 사용하고 기존 조작 영역은 그대로 둔다.
+			local chipArt = AssetIds["CardArt/ui_frame_chip"]
+			if chipArt then
+				local art = Instance.new("ImageLabel")
+				art.Name = "NextStepFrameArt"
+				art.Size = UDim2.fromScale(1, 1)
+				art.BackgroundTransparency = 1
+				art.Image = "rbxassetid://" .. tostring(chipArt)
+				art.ScaleType = Enum.ScaleType.Slice
+				art.SliceCenter = Rect.new(24, 24, 488, 104)
+				art.SliceScale = 0.5
+				art.ZIndex = chip.ZIndex
+				art.Active = false
+				art.Parent = chip
+			end
 			local st = Instance.new("UIStroke")
 			st.Color = Color3.fromRGB(214, 170, 82)
 			st.Thickness = 2
@@ -11570,6 +11585,17 @@ do
 			arrow.TextXAlignment = Enum.TextXAlignment.Left
 			arrow.ZIndex = 21
 			arrow.Parent = chip
+			if H.hasIconArt("nextstep") then
+				local icon = modelIcon(chip, "FacilityArt", "nextstep", nil, 26, "다음")
+				icon.Name = "NextStepArt"
+				icon.Position = UDim2.new(0, 7, 0.5, -13)
+				icon.ZIndex = 21
+				icon.Active = false
+				arrow.Text = "다음"
+				arrow.TextSize = 12
+				arrow.Position = UDim2.fromOffset(34, 0)
+				arrow.Size = UDim2.new(0, 29, 1, 0)
+			end
 			local label = Instance.new("TextLabel")
 			label.Name = "StepText"
 			label.BackgroundTransparency = 1
@@ -11671,12 +11697,39 @@ do
 				b.Active = tab ~= nil
 				b.Parent = row
 				corner(b, 10)
-				local t = mkLabel(b, title, 14, Color3.fromRGB(255, 236, 196), true)
-				t.Position = UDim2.fromOffset(8, 5)
-				t.Size = if compact then UDim2.new(0.36, -12, 1, -10) else UDim2.new(1, -16, 0, 20)
+				local frameArt = AssetIds["CardArt/ui_frame_card"]
+				if frameArt then
+					local art = Instance.new("ImageLabel")
+					art.Name = "MenuHomeFrameArt"
+					art.Size = UDim2.fromScale(1, 1)
+					art.BackgroundTransparency = 1
+					art.Image = "rbxassetid://" .. tostring(frameArt)
+					art.ScaleType = Enum.ScaleType.Slice
+					art.SliceCenter = Rect.new(24, 24, 232, 232)
+					art.SliceScale = 0.5
+					art.ZIndex = b.ZIndex
+					art.Active = false
+					art.Parent = b
+				end
+				local key = ({ "nextstep", "recommend", "reward" })[order]
+				local hasArt = H.hasIconArt(key)
+				local inset = if hasArt then 30 else 0
+				if hasArt then
+					local icon = modelIcon(b, "FacilityArt", key, nil, 24, title)
+					icon.Name = "MenuHomeIcon"
+					icon.Position = if compact then UDim2.new(0, 5, 0.5, -12) else UDim2.fromOffset(5, 3)
+					icon.ZIndex = b.ZIndex + 1
+					icon.Active = false
+					title = if order == 1 then "지금 할 일" elseif order == 2 then "추천" else "보상 받기"
+				end
+				local t = mkLabel(b, title, 14, if frameArt then INK else Color3.fromRGB(255, 236, 196), true)
+				t.ZIndex = b.ZIndex + 1
+				t.Position = UDim2.fromOffset(8 + inset, 5)
+				t.Size = if compact then UDim2.new(0.36, -12 - inset, 1, -10) else UDim2.new(1, -16 - inset, 0, 20)
 				t.TextWrapped = true
 				t.AutomaticSize = Enum.AutomaticSize.None
-				local d = mkLabel(b, body, 14, Color3.fromRGB(250, 244, 230), false)
+				local d = mkLabel(b, body, 14, if frameArt then INK else Color3.fromRGB(250, 244, 230), false)
+				d.ZIndex = b.ZIndex + 1
 				d.Position = if compact then UDim2.new(0.36, 4, 0, 5) else UDim2.fromOffset(8, 27)
 				d.Size = if compact then UDim2.new(0.64, -12, 1, -10) else UDim2.new(1, -16, 0, 44)
 				d.TextWrapped = true
