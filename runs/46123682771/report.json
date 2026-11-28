@@ -1,0 +1,199 @@
+{
+ "sourceRevision": "f7ac6a26442a70b9f197fd9bb6c231fd096cdf08",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 4,
+   "capture": "flow_hud_nextstep",
+   "files": 1
+  },
+  {
+   "step": 5,
+   "ctx": "Client",
+   "out": "TAB board cards=1\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "flow_tab_board",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "TAB quest cards=6\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "flow_tab_quest",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "TAB route cards=2\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "flow_tab_route",
+   "files": 1
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "TAB status cards=2\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "flow_tab_status",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "TAB trade cards=1\ntext"
+  },
+  {
+   "step": 14,
+   "capture": "flow_tab_trade",
+   "files": 1
+  },
+  {
+   "step": 15,
+   "ctx": "Client",
+   "out": "TAB battle cards=2\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "flow_tab_battle",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "CHIP false Label\ntext"
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "LOG \ntext"
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35009
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 3320
+  },
+  {
+   "step": 2,
+   "type": "wait",
+   "elapsedMs": 4001
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 3005
+  },
+  {
+   "step": 4,
+   "type": "capture",
+   "elapsedMs": 4246
+  },
+  {
+   "step": 5,
+   "type": "luau",
+   "elapsedMs": 3124
+  },
+  {
+   "step": 6,
+   "type": "capture",
+   "elapsedMs": 2493
+  },
+  {
+   "step": 7,
+   "type": "luau",
+   "elapsedMs": 2877
+  },
+  {
+   "step": 8,
+   "type": "capture",
+   "elapsedMs": 1706
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 2983
+  },
+  {
+   "step": 10,
+   "type": "capture",
+   "elapsedMs": 1631
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 2695
+  },
+  {
+   "step": 12,
+   "type": "capture",
+   "elapsedMs": 835
+  },
+  {
+   "step": 13,
+   "type": "luau",
+   "elapsedMs": 2520
+  },
+  {
+   "step": 14,
+   "type": "capture",
+   "elapsedMs": 1187
+  },
+  {
+   "step": 15,
+   "type": "luau",
+   "elapsedMs": 2561
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 850
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 273
+  },
+  {
+   "step": 18,
+   "type": "luau",
+   "elapsedMs": 271
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 19,
+  "completedSteps": 19,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 7,
+  "capturedFrames": 7,
+  "abortedEarly": false
+ }
+}
