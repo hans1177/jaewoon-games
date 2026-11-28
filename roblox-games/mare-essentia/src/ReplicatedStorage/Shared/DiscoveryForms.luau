@@ -8,15 +8,14 @@
 local DF = {}
 
 -- [드롭박스 자동 배치] 카드 id 와 같은 이름으로 등록된 모델(예: Animals/zoo_tiger)이 있으면 그 카드 전용 실물로 쓴다.
--- 로블록스 안에서만 AssetIds 를 읽는다(로직 테스트에서는 없음).
-local okIds, AssetIdsMod = pcall(function()
-	return require((script :: any).Parent:WaitForChild("AssetIds", 2))
-end)
+-- 등록표(AssetIds)는 로블록스 쪽(DiscoveryStage)이 DF.assetIds 로 넣어 준다(로직 테스트에서는 없음).
+DF.assetIds = nil :: any
 local OWN_GROUPS = { "Animals", "Terrain", "Relics", "Town", "Castle", "Naval", "Monsters", "Interior", "Cargo" }
 function DF.ownModel(cardId: string)
-	if not okIds or type(AssetIdsMod) ~= "table" then return nil end
+	local ids = DF.assetIds
+	if type(ids) ~= "table" then return nil end
 	for _, g in OWN_GROUPS do
-		if AssetIdsMod[g .. "/" .. cardId] ~= nil then return { g, cardId } end
+		if ids[g .. "/" .. cardId] ~= nil then return { g, cardId } end
 	end
 	return nil
 end
@@ -241,7 +240,8 @@ local cache = {}
 -- card: { id, name, field, meta? } → 외형 정보(없으면 nil: 실물 카드가 아님)
 function DF.form(card)
 	if type(card) ~= "table" or type(card.id) ~= "string" then return nil end
-	if cache[card.id] then return cache[card.id] end
+	local hit = cache[card.id]
+	if hit and (hit.withIds or DF.assetIds == nil) then return hit end
 	local field = card.field
 	if field == "Botany" or field == "Zoology" or field == "Mineral" or field == "Relic" or field == "Site" or FIELD_OF[field] then
 		-- ok
@@ -279,6 +279,7 @@ function DF.form(card)
 		method = a.method, place = a.place, landmark = a.landmark == true, bloom = a.bloom == true,
 		tint = a.tint, tools = a.tools, condition = cond, exact = exact,
 		missing = #models == 0,
+		withIds = DF.assetIds ~= nil,
 	}
 	cache[card.id] = out
 	return out
