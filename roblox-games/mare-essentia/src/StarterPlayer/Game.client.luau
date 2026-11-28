@@ -11894,6 +11894,9 @@ do
 		if old then return end
 		local g = overlayGui("WorldEventScene", 70)
 		local disaster = a.kind == "disaster"
+		local reduced = game:GetService("GuiService").ReducedMotionEnabled
+		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+		local short = vp.Y < 480
 		local root = Instance.new("TextButton")
 		root.Name = "WorldEventRoot"
 		root.Size = UDim2.fromScale(1, 1)
@@ -11924,7 +11927,7 @@ do
 		tint.Parent = root
 		local tag = Instance.new("TextLabel")
 		tag.AnchorPoint = Vector2.new(0.5, 1)
-		tag.Position = UDim2.fromScale(0.5, 0.55)
+		tag.Position = UDim2.fromScale(0.5, if short then 0.30 else 0.42)
 		tag.Size = UDim2.new(0.9, 0, 0, 30)
 		tag.BackgroundTransparency = 1
 		tag.Font = Enum.Font.GothamBold
@@ -11935,7 +11938,7 @@ do
 		tag.Parent = root
 		local title = Instance.new("TextLabel")
 		title.AnchorPoint = Vector2.new(0.5, 0)
-		title.Position = UDim2.fromScale(0.5, 0.55)
+		title.Position = UDim2.fromScale(0.5, if short then 0.30 else 0.42)
 		title.Size = UDim2.new(0.9, 0, 0, 52)
 		title.TextWrapped = true
 		title.TextScaled = true
@@ -11951,22 +11954,37 @@ do
 		title.Text = tostring(a.title or "")
 		title.ZIndex = 5
 		title.Parent = root
+		local bodyScroll = Instance.new("ScrollingFrame")
+		bodyScroll.Name = "WorldEventTextScroll"
+		bodyScroll.AnchorPoint = Vector2.new(0.5, 0)
+		bodyScroll.Position = UDim2.new(0.5, 0, if short then 0.30 else 0.42, 54)
+		bodyScroll.Size = UDim2.new(0.88, 0, if short then 0.70 else 0.58, -112)
+		bodyScroll.BackgroundColor3 = Color3.fromRGB(27, 22, 18)
+		bodyScroll.BackgroundTransparency = 0.14
+		bodyScroll.BorderSizePixel = 0
+		bodyScroll.ScrollBarThickness = 5
+		bodyScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		bodyScroll.CanvasSize = UDim2.fromOffset(0, 0)
+		bodyScroll.ZIndex = 5
+		bodyScroll.Parent = root
+		corner(bodyScroll, 8)
 		local body = Instance.new("TextLabel")
-		body.AnchorPoint = Vector2.new(0.5, 0)
-		body.Position = UDim2.new(0.5, 0, 0.55, 54)
-		body.Size = UDim2.new(0.88, 0, 0.32, -12)
+		body.Position = UDim2.fromOffset(12, 6)
+		body.Size = UDim2.new(1, -24, 0, 0)
+		body.AutomaticSize = Enum.AutomaticSize.Y
+		body.TextYAlignment = Enum.TextYAlignment.Top
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = 21
+		body.TextSize = 24
 		body.TextWrapped = true
 		body.TextColor3 = Color3.fromRGB(240, 230, 210)
 		body.ZIndex = 5
-		body.Parent = root
+		body.Parent = bodyScroll
 		body.Text = tostring(a.text or "")
-		H.cinemaBars(g, 3.2)
+		if not reduced then H.cinemaBars(g, 3.2) end
 		Sfx.play(if disaster then "sfx_horn" else "sfx_fanfare", 0.4, if disaster then 0.8 else 1, "sfx_bell")
 		TS:Create(art, TweenInfo.new(0.5), { ImageTransparency = 0 }):Play()
-		TS:Create(art, TweenInfo.new(4, Enum.EasingStyle.Linear), { Size = UDim2.fromScale(1.0, 1.0) }):Play()
+		if not reduced then TS:Create(art, TweenInfo.new(4, Enum.EasingStyle.Linear), { Size = UDim2.fromScale(1.0, 1.0) }):Play() end
 		if disaster and not game:GetService("GuiService").ReducedMotionEnabled then
 			task.spawn(function()
 				for i = 1, 6 do
@@ -11985,8 +12003,11 @@ do
 			TS:Create(art, TweenInfo.new(0.3), { ImageTransparency = 1 }):Play()
 			task.delay(0.32, function() if g.Parent then g:Destroy() end end)
 		end
-		root.Activated:Connect(close)
-		task.delay(math.clamp((utf8.len(body.Text) or #body.Text) / 9 + 3, 6, 16), close)
+		local confirm = mkButton(root, "확인", COLORS.gold, UDim2.fromOffset(144, 48), close, true)
+		confirm.AnchorPoint = Vector2.new(0.5, 1)
+		confirm.Position = UDim2.new(0.5, 0, 1, -6)
+		confirm.ZIndex = 8
+		-- 글을 읽는 동안 자동으로 닫지 않는다. 명시적인 확인으로 다음 사건을 진행한다.
 	end
 
 	-- 새로 시작된 세계 사건만 감지(첫 화면은 기준선). 다른 장면 중이면 기다렸다가 보여 준다.
@@ -13398,12 +13419,15 @@ do
 		if H.cinemaBars then H.cinemaBars(g, 60) end
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
 		local narrow = vp.X < 600
+		local short = vp.Y < 480
+		local talkHeight = math.min(if short then 218 else 280, math.floor(vp.Y * (if short then 0.72 else 0.48)))
+		local faceHeight = math.max(44, math.min(if narrow then 196 else 288, vp.Y - talkHeight - 38))
 		-- 초상(왼쪽 아래, 크게)
 		local face = Instance.new("ImageLabel")
 		face.Name = "TalkPortrait"
 		face.AnchorPoint = Vector2.new(0, 1)
-		face.Position = UDim2.new(0, 16, 1, if narrow then -170 else -150)
-		face.Size = if narrow then UDim2.fromOffset(150, 196) else UDim2.fromOffset(220, 288)
+		face.Position = UDim2.new(0, 16, 1, -talkHeight - 8)
+		face.Size = UDim2.fromOffset(math.floor(faceHeight * 0.76), faceHeight)
 		face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
 		face.BorderSizePixel = 0
 		face.ScaleType = Enum.ScaleType.Crop
@@ -13419,7 +13443,7 @@ do
 		box.Name = "TalkBox"
 		box.AnchorPoint = Vector2.new(0.5, 1)
 		box.Position = UDim2.new(0.5, 0, 1, -16)
-		box.Size = UDim2.new(1, -32, 0, math.min(if narrow then 202 else 184, math.floor(vp.Y * 0.53)))
+		box.Size = UDim2.new(1, -32, 0, talkHeight)
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.ZIndex = 6
@@ -13432,7 +13456,8 @@ do
 		local nameTag = Instance.new("TextLabel")
 		nameTag.Name = "TalkName"
 		nameTag.Position = UDim2.fromOffset(14, -18)
-		nameTag.Size = UDim2.fromOffset(240, 32)
+		nameTag.Size = UDim2.new(1, -28, 0, 32)
+		nameTag.TextTruncate = Enum.TextTruncate.AtEnd
 		nameTag.BackgroundColor3 = Color3.fromRGB(70, 44, 24)
 		nameTag.BorderSizePixel = 0
 		nameTag.Font = Enum.Font.GothamBlack
@@ -13441,33 +13466,49 @@ do
 		nameTag.ZIndex = 7
 		nameTag.Parent = box
 		corner(nameTag, 8)
+		local bodyScroll = Instance.new("ScrollingFrame")
+		bodyScroll.Name = "TalkTextScroll"
+		bodyScroll.Position = UDim2.fromOffset(14, 22)
+		bodyScroll.Size = UDim2.new(1, -28, 1, -80)
+		bodyScroll.BackgroundTransparency = 1
+		bodyScroll.BorderSizePixel = 0
+		bodyScroll.ScrollBarThickness = 5
+		bodyScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+		bodyScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		bodyScroll.CanvasSize = UDim2.fromOffset(0, 0)
+		bodyScroll.ZIndex = 7
+		bodyScroll.Parent = box
 		local body = Instance.new("TextLabel")
 		body.Name = "TalkText"
-		body.Position = UDim2.fromOffset(18, 22)
-		body.Size = UDim2.new(1, -36, 1, -48)
+		body.Position = UDim2.fromOffset(2, 0)
+		body.Size = UDim2.new(1, -12, 0, 0)
+		body.AutomaticSize = Enum.AutomaticSize.Y
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = if narrow then 20 else 22
+		body.TextSize = if narrow then 22 else 24
 		body.TextWrapped = true
 		body.TextXAlignment = Enum.TextXAlignment.Left
 		body.TextYAlignment = Enum.TextYAlignment.Top
 		body.TextColor3 = Color3.fromRGB(52, 38, 24)
 		body.ZIndex = 7
-		body.Parent = box
-		local next = Instance.new("TextLabel")
+		body.Parent = bodyScroll
+		local next = Instance.new("TextButton")
+		next.Name = "TalkNext"
 		next.AnchorPoint = Vector2.new(1, 1)
 		next.Position = UDim2.new(1, -14, 1, -6)
-		next.Size = UDim2.fromOffset(160, 20)
-		next.BackgroundTransparency = 1
+		next.Size = UDim2.fromOffset(156, 48)
+		next.BackgroundColor3 = Color3.fromRGB(111, 74, 34)
+		next.BackgroundTransparency = 0
 		next.Font = Enum.Font.GothamBold
-		next.TextSize = 16
-		next.TextXAlignment = Enum.TextXAlignment.Right
-		next.TextColor3 = Color3.fromRGB(130, 100, 60)
+		next.TextSize = 19
+		next.TextXAlignment = Enum.TextXAlignment.Center
+		next.TextColor3 = Color3.fromRGB(255, 239, 202)
 		next.ZIndex = 7
 		next.Parent = box
+		corner(next, 8)
 		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(128, 48), function() end, true)
 		skip.AnchorPoint = Vector2.new(1, 0)
-		skip.Position = UDim2.new(1, -16, 0, 70)
+		skip.Position = UDim2.new(1, -16, 0, 12)
 		skip.ZIndex = 8
 		local index, closed = 0, false
 		local function close()
@@ -13505,10 +13546,10 @@ do
 			lastFace = faceKey
 			body.MaxVisibleGraphemes = -1
 			body.Text = tostring(ln.text or "")
+			bodyScroll.CanvasPosition = Vector2.zero
 			Sfx.play("sfx_card_page", 0.25, 1)
 		end
-		dim.Activated:Connect(function()
-			-- 글자가 아직 나오는 중이면 한 번에 다 보여 주고, 다 나왔으면 다음
+		next.Activated:Connect(function()
 			if body.MaxVisibleGraphemes ~= -1 then body.MaxVisibleGraphemes = -1 return end
 			show()
 		end)
