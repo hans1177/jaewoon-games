@@ -16,10 +16,10 @@
 ## 2. 작업 종류별 필독
 | 작업 | 반드시 읽을 것 |
 |---|---|
-| 마을·건물·항구 배치, 건축 시뮬, 구획, 주민 동선, 날씨 | `docs/PORT_VILLAGE_PROMPTS.md` + `docs/ports/README.md` + `docs/ports/<항구>.md` |
+| 마을·건물·항구 배치, 건축 시뮬, 구획, 주민 동선, 날씨 | **`docs/VILLAGE_LAYOUT_SPEC.md`(숫자 규격·구도·간격, 우선)** + `docs/PORT_VILLAGE_PROMPTS.md` + `docs/ports/README.md` + `docs/ports/<항구>.md` |
 | 해전·지상전·퀘스트 배경 | `docs/battle_backdrops/README.md` + 해당 파일 (`naval/`, `field/`, `quests.md`) |
 | 배 디자인·질감·등급 기능 | `docs/ships/README.md` + `docs/ships/grades.md` + `docs/ships/<배>.md` |
-| 주민(NPC) 헤어·복장·악세·재질·모션 | `docs/residents/README.md` + `docs/residents/jobs.md` + `docs/residents/<문화권>.md` |
+| 주민(NPC) 헤어·복장·악세·재질·모션 | **`docs/residents/OUTFIT_SPEC.md`(만들 파일 이름·부위·색·프롬프트, 자동 적용)** + `docs/residents/README.md` + `docs/residents/jobs.md` + `docs/residents/<문화권>.md` |
 | 카드배틀 시스템·화면·이펙트·카드 문구·진영 | `docs/card_battle/README.md`(0절 카드 분류 규칙) + 같은 폴더 전부 |
 | 백과사전 시각화·백과사전 수준 해설(875장) | `docs/ENCYCLOPEDIA_BRIEF.md` + `docs/encyclopedia_articles_needed.csv` |
 | **비주얼 전면 재제작 목록·초상화 정리(주인공 15·동료 49·담당자 8)·프롬프트** | `docs/VISUAL_REMAKE_BRIEF.md` |
