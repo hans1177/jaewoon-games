@@ -13,7 +13,7 @@ test('메뉴 5묶음·하단 5버튼·건물 이름 보존', () => {
   const all = [...groups.matchAll(/"([a-z]+)"/g)].map(m => m[1]);
   for (const t of ['board','quest','route','trade','market','status','harbor','crew','recruit','scholar','yard','codex','encyclopedia','tech','map','diplomacy','explore','battle','gwent','war']) assert.ok(all.includes(t), t);
   assert.match(game, /H\.FACILITY_GROUPS = \{/);
-  assert.match(game, /setPortrait\(facilityGroup\.name\)/);
+  assert.match(game, /H\.pageDetails\.Text = p\.portName/);
   assert.match(game, /\{ "route", "항해", if H\.reserveIconAtlas\[3\] then "nav" else "route" \}/);
   assert.match(game, /\{ "trade", "교역", if H\.reserveIconAtlas\[3\] then "tradeg" else "trade" \}/);
   assert.match(game, /\{ "board", "모험", if H\.reserveIconAtlas\[3\] then "adventure" else "battle" \}/);
@@ -73,4 +73,16 @@ test('등록된 청동 안내 원화와 9분할 프레임만 선택적으로 연
   assert.match(home, /if frameArt then INK else/);
   assert.match(home, /b\.Activated:Connect/);
   assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
+});
+
+test("전면 재구성 메뉴: 가로 기능 레일, 세로 탭, 장식 전시장 제거, 실제 기능 본문 우선", () => {
+  const layout = game.split("function H.layoutBook()")[1].split("mainInner:GetPropertyChangedSignal")[0];
+  assert.match(layout, /local rail = tabs and width >= 700 and width > height and not facilityDetail/);
+  assert.match(layout, /Enum\.ScrollingDirection\.Y else Enum\.ScrollingDirection\.X/);
+  assert.match(layout, /local tabH, gap = 44, 4/);
+  assert.match(layout, /content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - 6\)/);
+  assert.doesNotMatch(game, /function H\.renderFacilityGallery|H\.facilityGallery|H\.menuFocusBanner|H\.menuActionDock/);
+  const render = game.split("function render()")[1].split("-- [단일 시작 화면]")[0];
+  assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.menuHomeStrip()"));
+  assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.firstTimeCoach(currentTab)"));
 });

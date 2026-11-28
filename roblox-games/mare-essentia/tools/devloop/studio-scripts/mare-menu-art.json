@@ -1,1 +1,86 @@
-[{"type": "wait", "ms": 35000}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"}, {"type": "wait", "ms": 4000}, {"type": "luau", "ctx": "Client", "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('IntroName',{name='Tester'}) local b=r:InvokeServer('IntroCompanion',{}) return 'INTRO name='..tostring(a and a.ok)..' comp='..tostring(b and b.ok)"}, {"type": "wait", "ms": 2000}, {"type": "luau", "ctx": "Client", "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"}, {"type": "luau", "ctx": "Client", "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:harbor') return 'tab harbor'"}, {"type": "wait", "ms": 3500}, {"type": "capture", "name": "menu_harbor"}, {"type": "luau", "ctx": "Client", "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:quest') return 'tab quest'"}, {"type": "wait", "ms": 3500}, {"type": "capture", "name": "menu_quest"}, {"type": "luau", "ctx": "Client", "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:diplomacy') return 'tab diplomacy'"}, {"type": "wait", "ms": 3500}, {"type": "capture", "name": "menu_diplomacy"}, {"type": "luau", "ctx": "Client", "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:explore') return 'tab explore'"}, {"type": "wait", "ms": 3500}, {"type": "capture", "name": "menu_explore"}, {"type": "wait", "ms": 9000}, {"type": "capture", "name": "menu_explore_auto"}, {"type": "luau", "ctx": "Client", "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('FacilityGallery',true) return 'GALLERY vis='..tostring(g and g.Visible)..' size='..tostring(g and g.AbsoluteSize)"}]
+[
+  {
+    "type": "wait",
+    "ms": 35000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+  },
+  {
+    "type": "wait",
+    "ms": 4000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a=r:InvokeServer('IntroName',{name='Tester'}) local b=r:InvokeServer('IntroCompanion',{}) return 'INTRO name='..tostring(a and a.ok)..' comp='..tostring(b and b.ok)"
+  },
+  {
+    "type": "wait",
+    "ms": 2000
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end return 'killed='..tostring(g~=nil)"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:harbor') return 'tab harbor'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "capture",
+    "name": "menu_harbor"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:quest') return 'tab quest'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "capture",
+    "name": "menu_quest"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:diplomacy') return 'tab diplomacy'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "capture",
+    "name": "menu_diplomacy"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:explore') return 'tab explore'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "capture",
+    "name": "menu_explore"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('FacilityGallery',true) assert(not g,'공통 장식 전시장 재발') local f=pg:FindFirstChild('FacilityTabBar',true) assert(f,'기능 탭 누락') return 'NO_GALLERY tab='..tostring(f.AbsoluteSize)"
+  }
+]
