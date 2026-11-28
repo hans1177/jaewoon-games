@@ -1,0 +1,898 @@
+{
+ "sourceRevision": "34c33b585d3e9649e531981a4225d1e279221515",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "VILLAGER_TRACKED_CAMERA_READY\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "built true nil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "villager=1 pick=-660, 2.939530849456787, 4.5\ntext"
+  },
+  {
+   "step": 6,
+   "capture": "vil_1_0",
+   "files": 1
+  },
+  {
+   "step": 7,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_worker_male hair=hair_buzzed accessory=nil decal=rbxasset://textures/face.png headTexture=\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "vil_1_1",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_ISOLATED\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "vil_1_decal_off",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_RESTORED\ntext"
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "VILLAGER_SIDE_CAMERA\ntext"
+  },
+  {
+   "step": 16,
+   "capture": "vil_1_2",
+   "files": 1
+  },
+  {
+   "step": 17,
+   "ctx": "Client",
+   "out": "VILLAGER_BACK_CAMERA\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "vil_1_back",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "villager=2 pick=-114, 2.9859185218811035, -356\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "vil_2_0",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_official_male hair=hair_simpleparted accessory=cc0_pouch decal=rbxasset://textures/face.png headTexture=\ntext"
+  },
+  {
+   "step": 25,
+   "capture": "vil_2_1",
+   "files": 1
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_ISOLATED\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "vil_2_decal_off",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_RESTORED\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "VILLAGER_SIDE_CAMERA\ntext"
+  },
+  {
+   "step": 32,
+   "capture": "vil_2_2",
+   "files": 1
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "VILLAGER_BACK_CAMERA\ntext"
+  },
+  {
+   "step": 35,
+   "capture": "vil_2_back",
+   "files": 1
+  },
+  {
+   "step": 36,
+   "ctx": "Client",
+   "out": "villager=3 pick=-82, 3.046966314315796, -23.200000762939453\ntext"
+  },
+  {
+   "step": 38,
+   "capture": "vil_3_0",
+   "files": 1
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_female hair=hair_low_bun accessory=acc_ribbon_bow decal=rbxasset://textures/face.png headTexture=\ntext"
+  },
+  {
+   "step": 41,
+   "capture": "vil_3_1",
+   "files": 1
+  },
+  {
+   "step": 42,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_ISOLATED\ntext"
+  },
+  {
+   "step": 44,
+   "capture": "vil_3_decal_off",
+   "files": 1
+  },
+  {
+   "step": 45,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_RESTORED\ntext"
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "VILLAGER_SIDE_CAMERA\ntext"
+  },
+  {
+   "step": 48,
+   "capture": "vil_3_2",
+   "files": 1
+  },
+  {
+   "step": 49,
+   "ctx": "Client",
+   "out": "VILLAGER_BACK_CAMERA\ntext"
+  },
+  {
+   "step": 51,
+   "capture": "vil_3_back",
+   "files": 1
+  },
+  {
+   "step": 52,
+   "ctx": "Client",
+   "out": "villager=4 pick=-68, 3.0104143619537354, 75.4000015258789\ntext"
+  },
+  {
+   "step": 54,
+   "capture": "vil_4_0",
+   "files": 1
+  },
+  {
+   "step": 55,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_official_male hair=hair_buzzed accessory=cc0_necklace_2 decal=rbxasset://textures/face.png headTexture=\ntext"
+  },
+  {
+   "step": 57,
+   "capture": "vil_4_1",
+   "files": 1
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_ISOLATED\ntext"
+  },
+  {
+   "step": 60,
+   "capture": "vil_4_decal_off",
+   "files": 1
+  },
+  {
+   "step": 61,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_RESTORED\ntext"
+  },
+  {
+   "step": 62,
+   "ctx": "Client",
+   "out": "VILLAGER_SIDE_CAMERA\ntext"
+  },
+  {
+   "step": 64,
+   "capture": "vil_4_2",
+   "files": 1
+  },
+  {
+   "step": 65,
+   "ctx": "Client",
+   "out": "VILLAGER_BACK_CAMERA\ntext"
+  },
+  {
+   "step": 67,
+   "capture": "vil_4_back",
+   "files": 1
+  },
+  {
+   "step": 68,
+   "ctx": "Client",
+   "out": "villager=5 pick=-10.79377555847168, 2.9859185218811035, -73.15652465820312\ntext"
+  },
+  {
+   "step": 70,
+   "capture": "vil_5_0",
+   "files": 1
+  },
+  {
+   "step": 71,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_male hair=hair_court_curls accessory=nil decal=rbxasset://textures/face.png headTexture=\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "vil_5_1",
+   "files": 1
+  },
+  {
+   "step": 74,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_ISOLATED\ntext"
+  },
+  {
+   "step": 76,
+   "capture": "vil_5_decal_off",
+   "files": 1
+  },
+  {
+   "step": 77,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_RESTORED\ntext"
+  },
+  {
+   "step": 78,
+   "ctx": "Client",
+   "out": "VILLAGER_SIDE_CAMERA\ntext"
+  },
+  {
+   "step": 80,
+   "capture": "vil_5_2",
+   "files": 1
+  },
+  {
+   "step": 81,
+   "ctx": "Client",
+   "out": "VILLAGER_BACK_CAMERA\ntext"
+  },
+  {
+   "step": 83,
+   "capture": "vil_5_back",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "villager=6 pick=3.161365270614624, 1.8827589750289917, 7.526156902313232\ntext"
+  },
+  {
+   "step": 86,
+   "capture": "vil_6_0",
+   "files": 1
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_female hair=hair_shoulder_waves accessory=acc_ribbon_bow decal=rbxasset://textures/face.png headTexture=\ntext"
+  },
+  {
+   "step": 89,
+   "capture": "vil_6_1",
+   "files": 1
+  },
+  {
+   "step": 90,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_ISOLATED\ntext"
+  },
+  {
+   "step": 92,
+   "capture": "vil_6_decal_off",
+   "files": 1
+  },
+  {
+   "step": 93,
+   "ctx": "Client",
+   "out": "VILLAGER_FACE_DECAL_RESTORED\ntext"
+  },
+  {
+   "step": 94,
+   "ctx": "Client",
+   "out": "VILLAGER_SIDE_CAMERA\ntext"
+  },
+  {
+   "step": 96,
+   "capture": "vil_6_2",
+   "files": 1
+  },
+  {
+   "step": 97,
+   "ctx": "Client",
+   "out": "VILLAGER_BACK_CAMERA\ntext"
+  },
+  {
+   "step": 99,
+   "capture": "vil_6_back",
+   "files": 1
+  },
+  {
+   "step": 100,
+   "ctx": "Client",
+   "out": "VILLAGER_OUTFIT_RUNTIME_AUDIT checked=90 ready=90 baseBody=90 hairReady=88/88 hoodCovered=2 hoodHairOverlap=0 hoodMissing=0 visibleGarmentParts=2407 visibleAccessories=75 falseReady=0 overlap=0 whiteBoot=0 missing=0 falseReadyProfiles=[] hairFailures=[] R15Wearables=READY PBRMaterialAudit=FAIL\ntext"
+  },
+  {
+   "step": 101,
+   "ctx": "Client",
+   "out": "VILLAGER_HAIR_RUNTIME_PASS:88/88\ntext"
+  },
+  {
+   "step": 102,
+   "ctx": "Client",
+   "out": "VILLAGER_CAMERA_CLEANUP\ntext"
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35009
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 187
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 8275
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 9010
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 122
+  },
+  {
+   "step": 5,
+   "type": "wait",
+   "elapsedMs": 1202
+  },
+  {
+   "step": 6,
+   "type": "capture",
+   "elapsedMs": 1205
+  },
+  {
+   "step": 7,
+   "type": "luau",
+   "elapsedMs": 254
+  },
+  {
+   "step": 8,
+   "type": "wait",
+   "elapsedMs": 901
+  },
+  {
+   "step": 9,
+   "type": "capture",
+   "elapsedMs": 1342
+  },
+  {
+   "step": 10,
+   "type": "luau",
+   "elapsedMs": 211
+  },
+  {
+   "step": 11,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 12,
+   "type": "capture",
+   "elapsedMs": 1344
+  },
+  {
+   "step": 13,
+   "type": "luau",
+   "elapsedMs": 205
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 909
+  },
+  {
+   "step": 16,
+   "type": "capture",
+   "elapsedMs": 1023
+  },
+  {
+   "step": 17,
+   "type": "luau",
+   "elapsedMs": 192
+  },
+  {
+   "step": 18,
+   "type": "wait",
+   "elapsedMs": 904
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 1048
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 235
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 1215
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 1267
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 207
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 909
+  },
+  {
+   "step": 25,
+   "type": "capture",
+   "elapsedMs": 1270
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 213
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 710
+  },
+  {
+   "step": 28,
+   "type": "capture",
+   "elapsedMs": 1068
+  },
+  {
+   "step": 29,
+   "type": "luau",
+   "elapsedMs": 337
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 208
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 901
+  },
+  {
+   "step": 32,
+   "type": "capture",
+   "elapsedMs": 1013
+  },
+  {
+   "step": 33,
+   "type": "luau",
+   "elapsedMs": 189
+  },
+  {
+   "step": 34,
+   "type": "wait",
+   "elapsedMs": 907
+  },
+  {
+   "step": 35,
+   "type": "capture",
+   "elapsedMs": 957
+  },
+  {
+   "step": 36,
+   "type": "luau",
+   "elapsedMs": 172
+  },
+  {
+   "step": 37,
+   "type": "wait",
+   "elapsedMs": 1209
+  },
+  {
+   "step": 38,
+   "type": "capture",
+   "elapsedMs": 1179
+  },
+  {
+   "step": 39,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 40,
+   "type": "wait",
+   "elapsedMs": 909
+  },
+  {
+   "step": 41,
+   "type": "capture",
+   "elapsedMs": 1103
+  },
+  {
+   "step": 42,
+   "type": "luau",
+   "elapsedMs": 180
+  },
+  {
+   "step": 43,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 44,
+   "type": "capture",
+   "elapsedMs": 1107
+  },
+  {
+   "step": 45,
+   "type": "luau",
+   "elapsedMs": 263
+  },
+  {
+   "step": 46,
+   "type": "luau",
+   "elapsedMs": 230
+  },
+  {
+   "step": 47,
+   "type": "wait",
+   "elapsedMs": 906
+  },
+  {
+   "step": 48,
+   "type": "capture",
+   "elapsedMs": 1294
+  },
+  {
+   "step": 49,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 50,
+   "type": "wait",
+   "elapsedMs": 910
+  },
+  {
+   "step": 51,
+   "type": "capture",
+   "elapsedMs": 1193
+  },
+  {
+   "step": 52,
+   "type": "luau",
+   "elapsedMs": 189
+  },
+  {
+   "step": 53,
+   "type": "wait",
+   "elapsedMs": 1214
+  },
+  {
+   "step": 54,
+   "type": "capture",
+   "elapsedMs": 1734
+  },
+  {
+   "step": 55,
+   "type": "luau",
+   "elapsedMs": 302
+  },
+  {
+   "step": 56,
+   "type": "wait",
+   "elapsedMs": 903
+  },
+  {
+   "step": 57,
+   "type": "capture",
+   "elapsedMs": 1499
+  },
+  {
+   "step": 58,
+   "type": "luau",
+   "elapsedMs": 338
+  },
+  {
+   "step": 59,
+   "type": "wait",
+   "elapsedMs": 710
+  },
+  {
+   "step": 60,
+   "type": "capture",
+   "elapsedMs": 1464
+  },
+  {
+   "step": 61,
+   "type": "luau",
+   "elapsedMs": 209
+  },
+  {
+   "step": 62,
+   "type": "luau",
+   "elapsedMs": 216
+  },
+  {
+   "step": 63,
+   "type": "wait",
+   "elapsedMs": 914
+  },
+  {
+   "step": 64,
+   "type": "capture",
+   "elapsedMs": 1319
+  },
+  {
+   "step": 65,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 66,
+   "type": "wait",
+   "elapsedMs": 908
+  },
+  {
+   "step": 67,
+   "type": "capture",
+   "elapsedMs": 1155
+  },
+  {
+   "step": 68,
+   "type": "luau",
+   "elapsedMs": 202
+  },
+  {
+   "step": 69,
+   "type": "wait",
+   "elapsedMs": 1203
+  },
+  {
+   "step": 70,
+   "type": "capture",
+   "elapsedMs": 1220
+  },
+  {
+   "step": 71,
+   "type": "luau",
+   "elapsedMs": 328
+  },
+  {
+   "step": 72,
+   "type": "wait",
+   "elapsedMs": 909
+  },
+  {
+   "step": 73,
+   "type": "capture",
+   "elapsedMs": 1273
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 284
+  },
+  {
+   "step": 75,
+   "type": "wait",
+   "elapsedMs": 712
+  },
+  {
+   "step": 76,
+   "type": "capture",
+   "elapsedMs": 1235
+  },
+  {
+   "step": 77,
+   "type": "luau",
+   "elapsedMs": 184
+  },
+  {
+   "step": 78,
+   "type": "luau",
+   "elapsedMs": 204
+  },
+  {
+   "step": 79,
+   "type": "wait",
+   "elapsedMs": 915
+  },
+  {
+   "step": 80,
+   "type": "capture",
+   "elapsedMs": 1310
+  },
+  {
+   "step": 81,
+   "type": "luau",
+   "elapsedMs": 202
+  },
+  {
+   "step": 82,
+   "type": "wait",
+   "elapsedMs": 912
+  },
+  {
+   "step": 83,
+   "type": "capture",
+   "elapsedMs": 848
+  },
+  {
+   "step": 84,
+   "type": "luau",
+   "elapsedMs": 87
+  },
+  {
+   "step": 85,
+   "type": "wait",
+   "elapsedMs": 1203
+  },
+  {
+   "step": 86,
+   "type": "capture",
+   "elapsedMs": 735
+  },
+  {
+   "step": 87,
+   "type": "luau",
+   "elapsedMs": 79
+  },
+  {
+   "step": 88,
+   "type": "wait",
+   "elapsedMs": 907
+  },
+  {
+   "step": 89,
+   "type": "capture",
+   "elapsedMs": 723
+  },
+  {
+   "step": 90,
+   "type": "luau",
+   "elapsedMs": 83
+  },
+  {
+   "step": 91,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 92,
+   "type": "capture",
+   "elapsedMs": 907
+  },
+  {
+   "step": 93,
+   "type": "luau",
+   "elapsedMs": 66
+  },
+  {
+   "step": 94,
+   "type": "luau",
+   "elapsedMs": 85
+  },
+  {
+   "step": 95,
+   "type": "wait",
+   "elapsedMs": 910
+  },
+  {
+   "step": 96,
+   "type": "capture",
+   "elapsedMs": 877
+  },
+  {
+   "step": 97,
+   "type": "luau",
+   "elapsedMs": 175
+  },
+  {
+   "step": 98,
+   "type": "wait",
+   "elapsedMs": 914
+  },
+  {
+   "step": 99,
+   "type": "capture",
+   "elapsedMs": 920
+  },
+  {
+   "step": 100,
+   "type": "luau",
+   "elapsedMs": 176
+  },
+  {
+   "step": 101,
+   "type": "luau",
+   "elapsedMs": 188
+  },
+  {
+   "step": 102,
+   "type": "luau",
+   "elapsedMs": 192
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 12,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 103,
+  "completedSteps": 103,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 30,
+  "capturedFrames": 30,
+  "abortedEarly": false
+ }
+}
