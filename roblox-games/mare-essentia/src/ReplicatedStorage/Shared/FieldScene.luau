@@ -7272,7 +7272,7 @@ function FieldScene.start(opts)
 		-- [약점·반격 · 2026-11-28] 적마다 노릴 곳(AC.weakness) + 완벽 회피 직후 1.6초 반격 ×2.
 		local inFront = approach.Magnitude > 0.1 and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
 		local weakMult, weakLabel = AC.weakness(e.ac, inFront, approach.Magnitude / 2)
-		local counterHit = not quiet and os.clock() < (pl.counterUntil or 0)
+		local counterHit = ownerAttack ~= false and not quiet and os.clock() < (pl.counterUntil or 0)
 		if counterHit then pl.counterUntil = 0 end
 		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
@@ -8141,7 +8141,8 @@ function FieldScene.start(opts)
 			return
 		end
 		if ultimateCast and ((pl.masteryRank or 1) < 8 or (moveId ~= "heavy" and moveId ~= "sweep")) then return end
-		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] and not ultimateCast then
+		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] and not ultimateCast
+			and not (moveId == "sweep" and (pl.masteryRank or 1) >= 4) then
 			say("장착한 스킬이 아니에요")
 			return
 		end
