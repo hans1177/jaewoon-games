@@ -5235,3 +5235,16 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(source.includes('return H.portraitFor({ key = "keeper:tavern" }, true)'));
  assert.ok(source.includes('if exact then return nil end'));
 });
+
+ test('고서 기록 메뉴는 등록 원화 움직임과 기존 저장 책갈피를 보존한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ assert.ok(dex.includes('current.combatArt and current.motionSheet'));
+ assert.ok(dex.includes('frame = (frame + 1) % 24'));
+ assert.ok(dex.includes('if plate.Visible and leaf.Visible then'));
+ assert.ok(dex.includes('ReducedMotionEnabled'));
+ assert.ok(dex.includes('SelectedPlateGold'));
+ assert.ok(source.includes('EncyclopediaBookmarkJump'));
+ assert.ok(source.includes('H.encyclopediaTargetId = saved.id'));
+ assert.ok(source.includes('ArtGallery = 10'));
+});
