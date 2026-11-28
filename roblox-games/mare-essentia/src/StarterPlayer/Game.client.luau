@@ -17629,6 +17629,116 @@ function H.setTitleMode(on)
 	H.wasTitle = titleVisible
 end
 
+-- [긴 설명 접기 · 2026-11-28 오너: "메뉴창 등 긴 설명 표시 다 → 직관적 시각적 표현으로"]
+-- 메뉴 본문을 다 그린 뒤 한 번: 64자 넘는 본문 설명은 첫 문장(최대 40자) + ⓘ 로 줄이고,
+-- 누르면 작은 말풍선에 항목별(•) 전체 설명을 보여 준다. 제목·숫자·버튼·도감 본문·대화·이야기 장면은 건드리지 않는다.
+do
+	local SKIP_ANCESTOR = { "Dex", "Story", "Talk", "Dialogue", "Article", "Encyclopedia", "Cinema", "Recap",
+		"QuestResult", "Haggle", "Coach", "FullTextPopup", "Title", "Epilogue", "Prologue" }
+	local function ulen(s) return utf8.len(s) or #s end
+	local function usub(s, n)
+		local i = utf8.offset(s, n + 1)
+		return if i then string.sub(s, 1, i - 1) else s
+	end
+	function H.shortText(s, n)
+		s = tostring(s or "")
+		local first = string.split(s, "\n")[1]
+		local stop = string.find(first, "[%.!?] ") -- lint:ok (문장 끝 패턴 의도)
+		if stop and ulen(string.sub(first, 1, stop)) <= n then first = string.sub(first, 1, stop) end
+		if ulen(first) > n then
+			local parts = string.split(first, " · ")
+			if #parts >= 2 and ulen(parts[1] .. " · " .. parts[2]) <= n then first = parts[1] .. " · " .. parts[2]
+			elseif ulen(parts[1]) <= n then first = parts[1]
+			else first = usub(first, n - 1) .. "…" end
+		end
+		return first
+	end
+	local function skipped(label)
+		local node = label.Parent
+		while node and node ~= gui do
+			for _, k in SKIP_ANCESTOR do
+				if string.find(node.Name, k, 1, true) then return true end
+			end
+			node = node.Parent
+		end
+		return false
+	end
+	function H.showFullText(anchor, text)
+		local old = gui:FindFirstChild("FullTextPopup")
+		if old then old:Destroy() end
+		local lines = {}
+		for _, line in string.split(tostring(text), "\n") do
+			for _, part in string.split(line, " · ") do
+				if part ~= "" then table.insert(lines, "• " .. part) end
+			end
+		end
+		local pop = Instance.new("TextButton")
+		pop.Name = "FullTextPopup"
+		pop.AutoButtonColor = false
+		pop.ZIndex = 60
+		pop.BackgroundColor3 = Color3.fromRGB(40, 31, 24)
+		pop.BackgroundTransparency = 0.04
+		pop.Font = Enum.Font.GothamMedium
+		pop.TextSize = 16
+		pop.TextColor3 = Color3.fromRGB(250, 236, 206)
+		pop.TextWrapped = true
+		pop.TextXAlignment = Enum.TextXAlignment.Left
+		pop.TextYAlignment = Enum.TextYAlignment.Top
+		pop.Text = table.concat(lines, "\n")
+		local w = math.clamp(anchor.AbsoluteSize.X, 260, 420)
+		local size = game:GetService("TextService"):GetTextSize(pop.Text, 16, pop.Font, Vector2.new(w - 24, 2000))
+		local view = gui.AbsoluteSize
+		local x = math.clamp(anchor.AbsolutePosition.X, 8, math.max(8, view.X - w - 8))
+		local y = anchor.AbsolutePosition.Y + anchor.AbsoluteSize.Y + 4
+		if y + size.Y + 24 > view.Y - 8 then y = math.max(8, anchor.AbsolutePosition.Y - size.Y - 28) end
+		pop.Position = UDim2.fromOffset(x, y)
+		pop.Size = UDim2.fromOffset(w, size.Y + 22)
+		local pad = Instance.new("UIPadding")
+		pad.PaddingLeft, pad.PaddingRight, pad.PaddingTop = UDim.new(0, 12), UDim.new(0, 12), UDim.new(0, 10)
+		pad.Parent = pop
+		corner(pop, 10)
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(214, 170, 82)
+		st.Thickness = 1.5
+		st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		st.Parent = pop
+		pop.Parent = gui
+		pop.Activated:Connect(function() pop:Destroy() end)
+		task.delay(8, function() if pop.Parent then pop:Destroy() end end)
+	end
+	-- 짧은 줄 여러 개(시세표·목록)는 설명이 아니라 자료라서 그대로 둔다.
+	local function isList(text)
+		local lines = string.split(text, "\n")
+		if #lines < 3 then return false end
+		local total = 0
+		for _, line in lines do total += ulen(line) end
+		return total / #lines < 32
+	end
+	function H.compactLongText(root)
+		if not root or currentTab == "codex" or currentTab == "encyclopedia" then return 0 end
+		local changed = 0
+		for _, d in root:GetDescendants() do
+			if d:IsA("TextLabel") and d.Visible and not d.RichText and not d:GetAttribute("CompactDone")
+				and d.TextSize <= 19 and ulen(d.Text) > 64 and not isList(d.Text) and not skipped(d) then
+				local full = d.Text
+				d:SetAttribute("CompactDone", true)
+				d:SetAttribute("FullText", full)
+				d.Text = H.shortText(full, 40) .. "  ⓘ"
+				local hit = Instance.new("TextButton")
+				hit.Name = "FullTextHit"
+				hit.BackgroundTransparency = 1
+				hit.Text = ""
+				hit.Size = UDim2.fromScale(1, 1)
+				hit.ZIndex = d.ZIndex + 1
+				hit.Parent = d
+				hit.Activated:Connect(function() H.showFullText(d, full) end)
+				changed += 1
+			end
+		end
+		return changed
+	end
+end
+
 function render()
 	-- [시설 메뉴 스크롤] 서버 응답으로 같은 탭을 다시 그릴 때 읽던 위치를 유지한다.
 	-- 탭을 바꾸거나 새 게임을 열면 기존처럼 첫 줄부터 시작한다.
@@ -17988,6 +18098,14 @@ function render()
 			end)
 		end
 	end
+	-- [긴 설명 접기] 다 그린 다음 프레임에 본문·시설 상세의 긴 설명을 한 줄 + ⓘ 로 줄인다.
+	task.defer(function()
+		if H.contentRenderSerial ~= renderSerial then return end
+		local n = H.compactLongText(content)
+		local detail = mainInner:FindFirstChild("FacilityDetail")
+		if detail then n += H.compactLongText(detail) end
+		if n > 0 then H.layoutBook() end
+	end)
 	H.contentRenderedTab = currentTab
 	H.contentRenderedPortId = view.player and view.player.portId
 	if retainScroll and savedScroll > 0 then
