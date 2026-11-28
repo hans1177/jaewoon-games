@@ -4,6 +4,11 @@
 > 어떤 파일이든 **raw 주소로 읽으면 크기와 상관없이 다 보인다**:
 > `https://raw.githubusercontent.com/hans1177/jaewoon-games/main/<경로>`
 
+> ## ⛔ 중앙 검증기는 네가 직접 실행하지 않는다 (2026-11-29 오너)
+> - 중앙 검증기(`tools/company-shared-context.mjs`, `company-system-ai-worker.mjs --preflight`, 중앙 JSON 안의 `validator`·`preflight` 경로 전부)는 **GitHub Actions 가 PR 에서 실행한다.** 채팅 AI 가 직접 실행하는 단계는 **없다.**
+> - 그래서 "직접 실행 못 함 / 실행 여부가 문제 / 실행 환경이 없음"은 **정상 상태**다. 보류 사유가 아니다. 재연결도 필요 없다.
+> - 네가 할 일: ① 4종 읽기 ② 읽은 main SHA 기록 ③ 코드 수정 ④ 브랜치·PR ⑤ PR 검사 결과(통과/실패)를 보고. 검사가 실패하면 그 로그를 보고 고친다.
+
 ## 1. 정책(중앙문서) 4종은 **있다**. 여기서 읽는다
 
 | # | 파일 | 크기 | 읽는 법 |
