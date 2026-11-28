@@ -2,6 +2,7 @@
 
 > **드롭박스 올리는 곳 (필독)**
 > - `/Vibe2Transfer/inbox/Town/<항구id>_<슬롯>.glb` — 예: `london_landmark_full.glb`, `lisbon_house_2.glb`, `goa_workshop_pepper.glb`
+> - ⭐ **먼저: 문화권 공용 세트 `ports/CULTURE_SET.md`** — `<문화권>_house_1.glb` 하나로 그 문화권 항구 전부가 바뀐다.
 > - 슬롯: landmark_base · landmark_full · house_1~3 · street_lamp · bld_well · bld_market_stalls · bld_mill · plaza_center · workshop_<특산품> · stall_<특산품>
 > - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
 

@@ -13,6 +13,8 @@
 ### 중앙 사전점검(preflight)이 뜻하는 것 — "검증기에 연결 못 해서 수정 보류"로 멈추지 않는다 (2026-11-28 오너 지시)
 - **사전점검 = 최신 main에서 위 4종을 읽고, 읽은 main 커밋 SHA(또는 각 파일 blob SHA)를 작업 기록·PR 본문에 적는 것**이다. 이것으로 `startupSync.documentHashesRequired`를 채운다.
 - `tools/company-shared-context.mjs` 같은 **중앙 검증기는 작업자가 직접 돌리는 것이 아니다.** 중앙문서·AGENTS.md가 바뀌는 PR에서 GitHub Actions `company-central-policy-contract-qa`가 실행한다. 게임 소스 PR은 기존 PR 검사(`devloop-gates`·`vibe-qa`·`discover-and-verify` 등)가 검증한다.
+- **중앙 검증기를 채팅 AI 가 직접 실행하는 단계는 없다.** "직접 실행 여부"·"실행 환경 없음"은 정상 상태이며 보류 사유가 아니다. 중앙 JSON 의 `validator`·`preflight` 경로는 GitHub Actions 가 PR 에서 돌린다.
+- **"깃허브 주소 해석 오류(DNS)·네트워크 차단·clone 실패로 검증기 실행 못 함"도 사전점검 실패가 아니다.** GPT 코드 실행창은 원래 인터넷이 막혀 있다. 실행창에서 clone·node 를 시도하지 말고 GitHub 커넥터(또는 raw 주소)로 읽고, 커넥터로 브랜치·커밋·PR 을 만든다. 검사는 PR 에서 GitHub Actions 가 돌린다.
 - 그래서 **채팅형 GPT가 node·셸을 직접 실행할 수 없는 것은 사전점검 실패가 아니다.** `noSourceOrRuntimeWriteWhenCentralPreflightFails`의 "실패"는 ① 4종을 못 읽었거나 ② 오너 요청이 중앙정책과 정면 충돌할 때만이다.
 - 오너가 수정을 지시했으면(`chatExecution.chatgptDirectCoding: true`, 지시어 "진행·적용·넣어·수정·작업진행·구현") 순서: 4종 읽기 → SHA 기록 → 기존 책임 소스 직접 수정 → 후보 브랜치 PR(main 직접 푸시 금지) → 기존 검사 통과 시 기존 경로로 병합. 검사가 실패하면 그 원인을 고친다.
 - 실행 환경이 없어 **직접 확인 못 한 것은 "미검증"으로 보고**하면 된다. 그것을 이유로 수정·PR 자체를 보류하지 않는다. 새 검증 파이프라인·래퍼를 만들지 않는다.
@@ -59,6 +61,13 @@
 12. **드롭박스 분류:** 모든 그림·모델은 `/Vibe2Transfer/inbox/<종류>/<이름>` 으로 올린다 — 종류·이름 표는 `roblox-games/mare-essentia/docs/READ_FIRST.md` 3-2절. 각 지시서 맨 위에도 '드롭박스 올리는 곳'이 있다.
 
 작업 후 `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함)와 Studio 촬영 확인 전에는 완료로 보고하지 않는다.
+
+## Studio 화면 검증 = 12각도 + 보고서 (바이브 엔진 시각 검수 · 2026-11-29 오너)
+- 오너: "스샷 한 번 찍을 때 많이·자세히. 매번 찔끔 말고." / "검증 안 된 결과 완료 처리 금지."
+- Studio 스크립트에서 장면을 찍을 때는 `roblox-games/mare-essentia/tools/devloop/studio_shots.py` 의 `shot_steps("<항구>")` 로 **장면마다 12각도**(전체 위·비스듬 2·광장 눈높이·큰길·집·항만·목장·가축 옆/앞·주민 가까이·마을 끝)를 한 번에 찍는다. 1~2장만 찍고 끝내지 않는다.
+- 실행이 끝나면 `python3 tools/devloop/studio_report.py <실행번호> [--prev <이전 실행번호>] --out <폴더>` → 장면별 묶음 시트, 이상 화면, **항구끼리 너무 비슷함(같은 각도 유사도 ≥0.93)**, 전/후 비교, 단계 숫자 표가 든 `REPORT.md` 가 나온다.
+- PR 본문 "검증" 칸에 REPORT.md 요약(사진 수·이상·비슷함·핵심 숫자)을 붙인다. 보고서가 없으면 화면 항목은 **미검증**으로 적는다(완료 처리 금지).
+- ChatGPT 협업: REPORT.md 와 시트 PNG 를 그대로 넘기면 같은 기준으로 판단한다(별도 형식 만들지 않음).
 
 ## 한방패치
 

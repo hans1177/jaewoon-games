@@ -312,7 +312,27 @@ return function(D, S)
 		for _ in ((state.landmarks or {})[portId] or {}) do
 			marks += 1
 		end
-		local score = harborLv * 5 + stages * 3 + tech * 2 + marks * 4
+		-- [국가 발전 공유 · 2026-11-29 오너: "항구별 국가별 연결"] 같은 나라 다른 항구에서 지은 건물 단계·연구 단계·
+		-- 특수 건축물이 이 항구에도 조금(개당 0.5점, 최대 12점) 보탬이 된다. 투자는 공유하지 않는다(그 항구만의 몫).
+		local national = 0
+		local country = port.country
+		if country then
+			for otherId, other in D.Ports.Ports do
+				if otherId ~= portId and other.country == country then
+					for _, chain in D.PortBuildings.Chains do
+						national += (S.Build.stageOf(state, otherId, chain.id) or 0) * 0.5
+					end
+					for _, pts in ((state.portTech or {})[otherId] or {}) do
+						for _, need in TECH_STEPS do
+							if pts >= need then national += 0.5 end
+						end
+					end
+					for _ in ((state.landmarks or {})[otherId] or {}) do national += 0.5 end
+				end
+			end
+		end
+		national = math.min(12, national)
+		local score = harborLv * 5 + stages * 3 + tech * 2 + marks * 4 + national
 		local level = 1
 		for i, need in PORT_LEVEL_AT do
 			if score >= need then level = i end
@@ -363,7 +383,7 @@ return function(D, S)
 			blocks = blocks, sizeName = V.SIZE_NAME[level], subDistricts = subs,
 			districts = opened, nextDistrict = nextD and (nextD.name .. " (Lv." .. nextD.minLevel .. ")") or nil,
 			id = portId, name = port.name, score = score, level = level, levelName = LEVEL_NAME[level],
-			harbor = harborLv, stages = stages, tech = tech, landmarks = marks,
+			harbor = harborLv, stages = stages, tech = tech, landmarks = marks, national = national,
 			nextAt = PORT_LEVEL_AT[level + 1],
 		}
 	end

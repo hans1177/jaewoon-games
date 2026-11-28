@@ -107,3 +107,33 @@
   3. `DiscoveryStage` 의 도망을 상태 머신(Calm → Curious/Alert → Flee/Threat)으로 교체하고, 이동은 실제 걸음(Walk/Run)으로.
   4. 몬스터는 `FieldScene` 적 생성에서 같은 리그 + 4절 변형 층을 쓰는 `MonsterVariants` 표로.
 - 애니메이션 자산은 `assets/inbox/Animations/<동물id>_<상태>.rbxm` + `.license.json` 으로 `docs/ASSET_MANAGEMENT.md` 2절 경로만 사용. ID 는 `AssetIds["Animations/<동물id>_<상태>"]`.
+
+## 7. 마을 가축 실사풍 재제작 (2026-11-29 오너: "가축 표현 장난감 같아, 고양이는 이상해")
+
+**진단:** 지금 마을 가축 11종(`Animals/cat·chicken·cow·donkey·dog-pug·elephant·horse·llama·pig·sheep`, 오리는 원본 없음)은 로우폴리 만화풍 원본이라 장난감처럼 보인다. 개는 모든 문화권이 퍼그 한 종. 고양이는 비율이 어색해 **2026-11-29부터 마을에서 숨김**(새 원본이 오면 자동 복귀).
+**코드 준비 완료:** `Animals/<종>_v2.glb` 이름으로 올리면 그 종은 자동으로 새 원본을 쓴다(`PortScene` animal 함수). 고양이는 `cat_v2`가 오면 다시 나타난다.
+
+| 파일 | 크기(몸길이, 스터드) | 뼈대(1절) | 꼭 넣을 모션(2절 이름) | 문화권 품종 메모 |
+|---|---|---|---|---|
+| `cat_v2.glb` | 1.6 | 4족 소형 | idle_sit, walk, groom, stretch, sleep | 유럽 줄무늬·지중해 흰얼룩·동아시아 삼색 |
+| `dog_v2.glb` | 2.4 | 4족 소형 | idle, walk, run, sniff, sit, wag | 퍼그 대신 중형 목양견·사냥개 |
+| `chicken_v2.glb` | 1.1 | 2족 조류 | idle, walk, peck, flap | 갈색·흰색 |
+| `duck_v2.glb` | 1.2 | 2족 조류 | idle, waddle, peck, swim | 새로 필요 |
+| `pig_v2.glb` | 2.6 | 4족 중형 | idle, walk, root(코로 파기), lie | 분홍·검은 얼룩 |
+| `sheep_v2.glb` | 2.6 | 4족 중형 | idle, walk, graze | 털 덩어리감(무늬 텍스처) |
+| `cow_v2.glb` | 4.2 | 4족 대형 | idle, walk, graze, tail_swish, lie | 갈색·흑백 |
+| `donkey_v2.glb` | 3.4 | 4족 대형 | idle, walk, graze, ear_flick | 회갈색 |
+| `horse_v2.glb` | 4.6 | 4족 대형 | idle, walk, trot, graze, tail_swish | 밤색·흑마·백마 |
+| `llama_v2.glb` | 3.6 | 4족 대형 | idle, walk, graze | 신대륙 전용 |
+| `elephant_v2.glb` | 7.5 | 4족 거대 | idle, walk, trunk_swing, ear_flap | 말라바르 전용 |
+
+**규격:** 반실사 손그림 PBR(몸 1024px, 고양이·개 얼굴 1024px), 풀컬러, 다리 4개 관절(어깨·무릎·발목), 머리·목·꼬리 관절, 눈은 작고 현실 비율(만화 큰 눈 금지), 털 방향 노멀맵, 실루엣이 60스터드 거리에서도 종 구분. 5절 품질 체크리스트 그대로.
+
+**프롬프트(복사):**
+```
+Semi-realistic farm animal for a Roblox Age-of-Sail port town (1500-1800): {SPECIES}, {BREED/COLOUR},
+realistic proportions (NOT cartoon, NOT toy, small realistic eyes), hand-painted PBR albedo+normal+roughness 1024px,
+fur/feather direction in normal map, full colour, rigged {quadruped small|quadruped large|biped bird} with shoulder/knee/ankle,
+neck, head, tail joints, animations: {list from table}, body length {N} studs, pivot at feet centre, front = -Z,
+derived from an approved CC0 base mesh (record in .license.json). GLB named Animals/{species}_v2.glb
+```

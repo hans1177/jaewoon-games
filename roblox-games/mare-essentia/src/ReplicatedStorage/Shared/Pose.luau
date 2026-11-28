@@ -512,8 +512,13 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			local hairPalette = { Color3.fromRGB(33, 28, 27), Color3.fromRGB(65, 44, 32),
 				Color3.fromRGB(110, 76, 44), Color3.fromRGB(164, 115, 63),
 				Color3.fromRGB(199, 166, 101), Color3.fromRGB(102, 49, 36) }
+			-- [문화권 머리색] 유럽 문화권만 금발·적갈색까지, 그 외(동아시아·이슬람·아프리카·인도·열대)는 검은~짙은 갈색.
+			-- 난수 소비 횟수는 그대로(한 번) 유지해 다른 외형 선택을 흔들지 않는다.
+			local darkPalette = { Color3.fromRGB(22, 19, 19), Color3.fromRGB(33, 28, 27), Color3.fromRGB(45, 34, 29),
+				Color3.fromRGB(28, 24, 24), Color3.fromRGB(52, 38, 30), Color3.fromRGB(38, 30, 27) }
+			local palette = if EUROPEAN_DETAIL_CULTURES[outfit.culture] then hairPalette else darkPalette
 			outfit.hairColor = if outfit.age == "elder" then Color3.fromRGB(179, 174, 163)
-				else hairPalette[rng:NextInteger(1, #hairPalette)]
+				else palette[rng:NextInteger(1, #palette)]
 		end
 		-- [머리색 다양성] 항구에서 받은 원래 색과 문화권은 보존하고 자연스러운 금발·적갈색·갈색 차이만 보완한다.
 		-- 노년 회백색과 비유럽 지역의 원래 팔레트는 변경하지 않는다.
@@ -1655,8 +1660,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							and math.max(part.Color.R, part.Color.G, part.Color.B)
 								- math.min(part.Color.R, part.Color.G, part.Color.B) <= 0.08
 						if pale then
-							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.85)
-							part.Color = part.Color:Lerp(softTint, 0.35)
+							-- [흰 머리 문제 · 2026-11-29 오너: "주민 헤어 색은 왜 다 흰색이냐"] 흰 텍스처는 색을 입혀 쓰라고
+							-- 만든 원본이다. 예전엔 15%만 섞어 거의 흰색으로 남았다. 이제 정한 머리색을 그대로 곱한다.
+							part.Color = hairTint:Lerp(Color3.new(1, 1, 1), 0.12)
 						end
 					end
 				end
@@ -1678,8 +1684,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								and math.max(base.R, base.G, base.B)
 									- math.min(base.R, base.G, base.B) <= 0.08
 							if pale then
-								local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.85)
-								surface.Color = surface.Color:Lerp(softTint, 0.35)
+								surface.Color = hairTint:Lerp(Color3.new(1, 1, 1), 0.12) -- 흰 PBR 헤어도 정한 색을 그대로
 							end
 						end
 					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3"

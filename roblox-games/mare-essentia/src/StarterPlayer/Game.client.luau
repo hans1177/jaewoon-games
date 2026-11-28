@@ -16891,7 +16891,14 @@ syncScene = function()
 	for _, c in crew do
 		table.insert(crewIds, c.id)
 	end
-	local portLevel = (view.harbor and view.harbor.level) or 1
+	-- [종합 발전도로 마을 단계 · 2026-11-29 오너: "경제·건축·발전·연구 모두 연결돼 있지 않아? 항구마다"]
+	-- 예전엔 마을 크기를 항구 투자 레벨(view.harbor.level)만으로 정했다. 서버 종합 발전도(Village.portDev:
+	-- 투자 5점 + 지은 건물 단계 3점 + 항구 연구 2점 + 특수 건축물 4점)는 장면 단계에 반영되지 않았다.
+	-- 이제 둘 중 큰 값(최대 5)을 쓴다. 투자만 한 항구는 그대로, 건축·연구·상징물로 키운 항구도 커진다.
+	local investLevel = (view.harbor and view.harbor.level) or 1
+	local devHere = view.village and view.village.here
+	local devLevel = devHere and tonumber(devHere.level) or 0
+	local portLevel = math.clamp(math.max(investLevel, devLevel), 1, 5)
 	-- 발전도가 오르면 마을이 바로 바뀌지 않고, 공사 기간(일꾼이 짓는 모습)을 거친 뒤 새 단계로 바뀐다
 	H.shownLv = H.shownLv or {}
 	H.buildDue = H.buildDue or {}
@@ -17003,6 +17010,11 @@ syncScene = function()
 		builtLandmarks = view.harbor and view.harbor.builtLandmarks,
 		year = p.year,
 		day = p.day,
+		-- [날씨·계절 땅] 같은 날 같은 항구는 항해 예보와 같은 날씨(Voyage.weather). 예전엔 전달이 없었다.
+		weather = (function()
+			local okW, w = pcall(function() return require(Shared:WaitForChild("Voyage")).weather(tonumber(p.day) or 0, p.portId).id end)
+			return if okW then w else nil
+		end)(),
 		storyCount = #(view.story or {}),
 		companions = crew,
 		voyagers = view.diplo and view.diplo.voyagers,

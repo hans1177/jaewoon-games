@@ -2741,8 +2741,8 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.match(home,/measuredHalfX = math\.abs\(bounds\.Position\.X - pos\.X\) \+ worldHalfX \+ 2\.5/);
  assert.match(home,/measuredHalfZ = math\.abs\(bounds\.Position\.Z - pos\.Z\) \+ worldHalfZ \+ 2\.5/);
  assert.match(home,/local signedZ = at\.Z \* side/);
- assert.match(home,/clearRoad = signedZ - measuredHalfZ > laneNear \+ laneWidth \* 0\.5 \+ 1\.5/);
- assert.match(home,/signedZ \+ measuredHalfZ < laneFar - laneWidth \* 0\.5 - 1\.5/);
+ assert.match(home,/local nearLimit = laneNear \+ laneWidth \* 0\.5 \+ 1\.5[\s\S]*clearRoad = signedZ - measuredHalfZ > nearLimit and signedZ \+ measuredHalfZ < farLimit/);
+ assert.match(home,/local farLimit = laneFar - laneWidth \* 0\.5 - 1\.5/);
  assert.match(port,/local nextLaneZ = 152 \+ laneOffset \+ \(p \+ 1\) \* laneL \+ nextBend/);
  assert.match(port,/fillRow\(side \* \(nextLaneZ - laneWidth \/ 2 - 6 - S \/ 2\)/);
  const project=(axis,dims)=>axis.reduce((sum,v,i)=>sum+Math.abs(v)*dims[i],0)/2;
@@ -2754,8 +2754,8 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.equal(fits(160,1,10),false);
  assert.equal(fits(109,1,10),false);
  assert.match(home,/laneNear = 152 \+ laneOffset \+ laneIndex \* laneL/);
- assert.match(home,/clearRoad and not onStreet\(at\.X, measuredHalfX\)/);
- assert.match(home,/not reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\)/);
+ assert.match(home,/elseif onStreet\(at\.X, measuredHalfX\) then/);
+ assert.match(home,/elseif reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\) then/);
  assert.match(home,/if chosenShift then[\s\S]*?for _, object in staged:GetChildren\(\) do object\.Parent = folder end/);
  assert.match(home,/staged:Destroy\(\)/,'실패한 후보 자산 삭제');
  assert.match(home,/BuildingFootprintX", actualHalfX \* 2/);
@@ -2826,7 +2826,7 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(read('ReplicatedStorage/Shared/DiscoveryStage.luau'),/Color3\.fromRGB\(table\.unpack\(coats\[1\]\)\)/,'탐험 동물 품종색(발견물 연출)');
  assert.match(field,/if not textured and not detail then/);
  assert.match(read('ReplicatedStorage/Shared/DiscoveryStage.luau'),/m:SetAttribute\("ObservedSpecies", card\.id\)/,'관찰 동물 표시(발견물 연출)');
- assert.match(scene,/for k = 1, grazeCount do/);
+ assert.match(scene,/for k = 1, herd do/);
  assert.match(scene,/for i = 1, lay\.pens do/);
  assert.match(scene,/horse:SetAttribute\("ShowcaseOnly", true\)/);
  assert.doesNotMatch(config,/DataStoreService/);
@@ -3750,7 +3750,7 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/,
+  assert.match(pose,/surface\.Color = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.12\)/,
     '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
@@ -3888,9 +3888,9 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.35\)/, '텍스처 머리 원본 색상 보존');
+  assert.match(pose,/part\.Color = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.12\)/, '흰 텍스처 머리는 정한 머리색(2026-11-29 오너: 다 흰색 문제)');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/, 'PBR 머리 원본 색상 보존');
+  assert.match(pose,/surface\.Color = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.12\)/, 'PBR 머리 원본 색상 보존');
   assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
   const fitting=pose.slice(pose.indexOf('local textured = surfaceHasMaps(surface)'),pose.indexOf('local weld = Instance.new("WeldConstraint")',pose.indexOf('local textured = surfaceHasMaps(surface)')));
   assert.ok(fitting.includes('child:IsA("SpecialMesh") and child.TextureId ~= ""'));
