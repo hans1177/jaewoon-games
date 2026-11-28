@@ -3959,14 +3959,14 @@ function FieldScene.start(opts)
 			if i == found + 1 then folder:SetAttribute("FieldCurrentZoneName", zoneName) end
 			-- [승인 소품] 완료 구역 재접속 시에도 동일 배치. 기존 난수·전투 물리에는 관여하지 않는다.
 			-- 중앙 동선에서 벗어난 평탄한 지면만 사용하고 수면/겹침/미등록 원본은 건너뛴다.
-			if props and i > found then
+			if (props or (not special and not extraction)) and i > found then
 				zoneSceneryBuilders[i] = function()
 				if finished or not folder.Parent or not anchor.Parent or i ~= found + 1 then return end
 				if folder:FindFirstChild("FieldZoneScenery" .. i) then return end
 				local group = Instance.new("Folder")
 				group.Name = "FieldZoneScenery" .. i
 				group.Parent = folder
-				for index, spec in props do
+				for index, spec in props or {} do
 					if visualMobile and index > 1 then break end
 					if not AssetIds[spec[1] .. "/" .. spec[2]] then continue end
 					local x = pos.X + (if index == 1 then -1 else 1) * 15
@@ -3989,6 +3989,16 @@ function FieldScene.start(opts)
 					if blocked then continue end
 					local model = placeModel(group, spec[1], spec[2], hit.Position, spec[3], false, nil, "near")
 					if model then model:SetAttribute("FieldZoneProp", true) end
+				end
+				-- 일반 조사 실물도 활성 구역에만 배치하고 완료 시 같은 그룹에서 정리한다.
+				if not special and not extraction then
+						-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
+						local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
+						local pick = if i == 2 and targetCard and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding") and (opts.danger or 1) >= 3
+							then props[1] else props[(i - 1) % #props + 1]
+						if not placeModel(group, pick[1], pick[2], pos, pick[3], false) then
+							placeModel(group, "Naval", "chest", pos, 3.2, false)
+						end
 				end
 				if #group:GetChildren() == 0 then group:Destroy() end
 				end
@@ -4033,19 +4043,12 @@ function FieldScene.start(opts)
 			tag.Position = UDim2.fromOffset(0, if artId then 117 else 45)
 			tag.Size = UDim2.fromOffset(154, 28)
 			tag.TextWrapped = true
-		elseif not extraction then
-			-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
-			local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
-			local pick = if i == 2 and targetCard and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding") and (opts.danger or 1) >= 3
-				then props[1] else props[(i - 1) % #props + 1]
-			if not placeModel(folder, pick[1], pick[2], pos, pick[3], false) then
-				placeModel(folder, "Naval", "chest", pos, 3.2, false)
-			end
 		end
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 214, 120)
 		light.Range = 18
 		light.Brightness = 2
+		light.Enabled = i == found + 1
 		light.Parent = anchor
 		local pp = Instance.new("ProximityPrompt")
 		pp.ActionText = if extraction then "탈출 확인" elseif guardedTransit then "기록 확보" elseif special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
@@ -4197,6 +4200,8 @@ function FieldScene.start(opts)
 			local nextPrompt = nextAnchor and nextAnchor:FindFirstChildOfClass("ProximityPrompt")
 			if nextPrompt then
 				nextPrompt.Enabled = true
+				local nextLight = nextAnchor:FindFirstChildOfClass("PointLight")
+				if nextLight then nextLight.Enabled = true end
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
 				folder:SetAttribute("FieldCurrentZoneName", nextAnchor:GetAttribute("FieldZoneName"))
 				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
@@ -5527,7 +5532,7 @@ function FieldScene.start(opts)
 				end
 				local nearbyDiscovery, nearestDistance = nil, math.huge
 				for _, point in folder:GetChildren() do
-					if point:IsA("BasePart") and string.sub(point.Name, 1, 9) == "Discovery" then
+					if point:IsA("BasePart") and string.sub(point.Name, 1, 9) == "Discovery" and point:GetAttribute("FieldRouteStep") == found + 1 then
 						local distance = (point.Position - p0).Magnitude
 						if distance < nearestDistance then
 							nearbyDiscovery, nearestDistance = point, distance

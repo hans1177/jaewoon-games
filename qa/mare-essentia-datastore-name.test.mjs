@@ -5483,7 +5483,7 @@ test('연속 두목전은 서버에 접수된 두 번째 단계에서 이미 격
 test("탐험 장소별 구획과 승인 소품은 기존 저장 경계를 유지한다",()=>{
  const field=read("ReplicatedStorage/Shared/FieldScene.luau");
  assert.match(field,/anchor:SetAttribute\("FieldZoneName", zoneName\)/);
- assert.match(field,/if props and i > found then/);
+ assert.match(field,/if \(props or \(not special and not extraction\)\) and i > found then/);
  assert.match(field,/if not AssetIds\[spec\[1\] \.\. "\/" \.\. spec\[2\]\] then continue end/);
  assert.match(field,/if visualMobile and index > 1 then break end/);
  assert.match(field,/surface\.Material == Enum\.Material\.Water then continue end/);
@@ -5498,4 +5498,14 @@ test("현재 탐험 구역의 장식만 생성하고 서버 접수 이후 다음
  assert.match(field,/if i == found \+ 1 then\s+zoneSceneryBuilders\[i\]\(\)/);
  assert.match(field,/recorded = requestOk and recorded == true[\s\S]*?if not recorded then[\s\S]*?found \+= 1[\s\S]*?completedScenery:Destroy\(\)[\s\S]*?zoneSceneryBuilders\[found \+ 1\]\(\)/);
  for(const site of ["alexandria_library","split_palace","antwerp_monastery_herbs"])assert.ok(field.includes(`opts.siteId == "${site}"`));
+});
+
+
+test("미래 탐험 구역의 일반 발견물과 조명은 서버 접수 전 노출하지 않는다",()=>{
+ const field=read("ReplicatedStorage/Shared/FieldScene.luau");
+ const zone=field.split("zoneSceneryBuilders[i] = function()")[1].split("if i <= found then")[0];
+ assert.match(zone,/if not special and not extraction then[\s\S]*?placeModel\(group, pick\[1\]/);
+ assert.match(field,/light.Enabled = i == found \+ 1/);
+ assert.match(field,/nextPrompt.Enabled = true\s+local nextLight = nextAnchor:FindFirstChildOfClass\("PointLight"\)\s+if nextLight then nextLight.Enabled = true end/);
+ assert.match(field,/point:GetAttribute\("FieldRouteStep"\) == found \+ 1 then/);
 });
