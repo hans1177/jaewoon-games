@@ -160,8 +160,12 @@
     },
     "mare-essentia:ships": {
       "lastAt": 1795854938209,
-      "pending": true,
-      "lastSha": "fe53736259da52c6ac642074088f5e2c76ff8aab"
+      "pending": false,
+      "lastSha": "fe53736259da52c6ac642074088f5e2c76ff8aab",
+      "runs": 1,
+      "ema": 0.35,
+      "failStreak": 1,
+      "lastResult": "FAILED"
     },
     "mare-essentia:regions": {
       "lastAt": 1795487259171,
@@ -176,7 +180,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "[{\"plannedSteps\":5,\"completedSteps\":5,\"plannedClicks\":0,\"successfulClicks\":0,\"skippedOptionalClicks\":0,\"plannedFrames\":1,\"capturedFrames\":1,\"abortedEarly\":false},0,3,[{\"step\":4,\"ctx\":\"Client\",\"out\":\"HEALTH_ERR n=0 first=\\nHEALTH_ASSET fail=0 total=5 ids=\\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\\nHEALTH_UI 퀘스트=0 항해=4 교역=2 백과=0\\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\\ntext\"}]]"
+    "mare-essentia": "studio:46131398057:283b75f77f6d5cfc381dc9a14ec4bf55579b8893"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -310,5 +314,5 @@
     "mare-essentia:ships"
   ],
   "lastDispatchAt": 1795854938209,
-  "lastDecisionAt": 1795858931517
+  "lastDecisionAt": 1795859756764
 }
