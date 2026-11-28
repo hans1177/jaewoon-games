@@ -5085,3 +5085,22 @@ test('교역·조선의 상세 메뉴는 중복 머리줄을 줄이고 승인 �
   assert.match(yard,/icon\.Name = "YardTabIcon"/);
   assert.match(yard,/limit\.MinTextSize = 13/);
 });
+
+
+test('항해 목록과 상세 및 일지 구획은 기존 행동과 실제 진행 수치를 보존한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const route=source.slice(source.indexOf('function RENDERERS.route()'),source.indexOf('local openYardHall'));
+  const quest=source.slice(source.indexOf('function RENDERERS.quest()'),source.indexOf('-- 주점의 지식 카드 배틀'));
+  assert.match(route,/local sorted = if selected then \{ selected \} else table\.clone\(view\.routes\)/);
+  assert.match(route,/H\.routeDetailId = r\.id/);
+  assert.match(route,/H\.routeDetailId = nil; render\(\)/);
+  assert.match(route,/confirmSail\(r\)/);
+  assert.match(route,/call\("WaitDay", \{\}\)/);
+  assert.match(route,/if r\.locked then/);
+  for(const section of ['active','auto','field','done']) assert.ok(quest.includes('section == "'+section+'"'));
+  assert.match(quest,/if expanded and H\.questCauseCard then H\.questCauseCard\(q\) end/);
+  for(const action of ['TurnIn','StoryChoose']) assert.ok(quest.includes('call("'+action+'"'));
+  assert.match(quest,/H\.devCards\.duel\(q\.id\)/);
+  assert.match(quest,/openTab\("war"\)/);
+  assert.match(quest,/math\.clamp\(done \/ total, 0, 1\)/);
+});
