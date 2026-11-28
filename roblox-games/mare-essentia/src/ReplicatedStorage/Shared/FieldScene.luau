@@ -3534,6 +3534,56 @@ function FieldScene.start(opts)
 		magicAmount.ZIndex = 6
 	end
 
+	-- [두목 체력 HUD] 기존 필드 GUI 생명주기 안에서 실제 전투 체력과 기술 단계만 표시한다.
+	do
+		local panel = Instance.new("Frame")
+		panel.Name = "FieldBossHud"
+		panel.AnchorPoint = Vector2.new(0.5, 0)
+		panel.Position = UDim2.new(0.5, 0, 0, if compactTouch then 54 else 70)
+		panel.Size = if compactTouch then UDim2.new(1, -24, 0, 19) else UDim2.new(1, -440, 0, 36)
+		local limit = Instance.new("UISizeConstraint")
+		limit.MinSize = Vector2.new(80, 0)
+		limit.MaxSize = Vector2.new(320, 36)
+		limit.Parent = panel
+		panel.BackgroundColor3 = Color3.fromRGB(29, 23, 24)
+		panel.BackgroundTransparency = 0.15
+		panel.BorderSizePixel = 0
+		panel.Visible = false
+		panel.Parent = gui
+		local caption = label(panel, "", if compactTouch then 10 else 14, Color3.fromRGB(255, 224, 168))
+		caption.Name = "FieldBossCaption"
+		caption.Size = UDim2.new(1, -8, 0, if compactTouch then 12 else 21)
+		caption.Position = UDim2.fromOffset(4, 0)
+		caption.TextScaled = true
+		local textLimit = Instance.new("UITextSizeConstraint")
+		textLimit.MaxTextSize = if compactTouch then 10 else 14
+		textLimit.Parent = caption
+		local back = Instance.new("Frame")
+		back.Name = "FieldBossHealth"
+		back.Size = UDim2.new(1, -12, 0, if compactTouch then 5 else 10)
+		back.Position = UDim2.fromOffset(6, if compactTouch then 13 else 23)
+		back.BackgroundColor3 = Color3.fromRGB(56, 41, 42)
+		back.BorderSizePixel = 0
+		back.Parent = panel
+		local fill = Instance.new("Frame")
+		fill.Name = "FieldBossHealthFill"
+		fill.Size = UDim2.fromScale(1, 1)
+		fill.BackgroundColor3 = Color3.fromRGB(201, 70, 65)
+		fill.BorderSizePixel = 0
+		fill.Parent = back
+		for _, boundary in { 0.70, 0.40, 0.15 } do
+			local mark = Instance.new("Frame")
+			mark.Name = "FieldBossPhaseMark"
+			mark.Size = UDim2.new(0, 2, 1, 0)
+			mark.Position = UDim2.new(boundary, -1, 0, 0)
+			mark.BackgroundColor3 = Color3.fromRGB(255, 223, 157)
+			mark.BorderSizePixel = 0
+			mark.ZIndex = fill.ZIndex + 1
+			mark.Parent = back
+		end
+		pl.bossHud = { panel = panel, caption = caption, fill = fill, nextAt = 0 }
+	end
+
 	-- [상호작용 안내] 평소 전투 HUD 배치는 유지하고 긴 유적 조사 기록만 별도 영역에 펼친다.
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
 	note.Name = "FieldInteractionNote"
@@ -10768,6 +10818,41 @@ function FieldScene.start(opts)
 			and folder:GetAttribute("FieldInterceptStartedAt") and (folder:GetAttribute("FieldInterceptRemaining") or 0) > 0 then
 			local destination = folder:FindFirstChild("Discovery2")
 			duelActive = destination ~= nil and destination:IsA("BasePart") and (hrp.Position - destination.Position).Magnitude <= 28
+		end
+		-- [두목 HUD 갱신] 기존 전투 루프에서 10Hz로 현재 활성 두목만 선택한다.
+		do
+			local hud = pl.bossHud
+			if now >= hud.nextAt then
+				hud.nextAt = now + 0.1
+				local target, nearest = nil, 90
+				for _, enemy in enemies do
+					if enemy.boss and enemy.bossIntroduced and not enemy.ac.dead and enemy.root.Parent
+						and (not duelActive or enemy.model:GetAttribute("FieldInterceptWave")) then
+						local order = enemy.model:GetAttribute("FieldBossRushOrder")
+						local active = not order or (folder:GetAttribute("FieldInterceptStartedAt")
+							and order == folder:GetAttribute("FieldBossRushNext")
+							and now >= (folder:GetAttribute("FieldBossRushNextAt") or 0))
+						local distance = (enemy.root.Position - hrp.Position).Magnitude
+						if active and distance < nearest then target, nearest = enemy, distance end
+					end
+				end
+				if target then
+					local hp = math.clamp(target.ac.hp, 0, target.maxHp)
+					local ratio = hp / target.maxHp
+					local phase = AC.bossPhase(hp, target.maxHp)
+					local name = target.tag.Text
+					if hud.target ~= target or hud.hp ~= hp or hud.phase ~= phase or hud.name ~= name then
+						hud.target, hud.hp, hud.phase, hud.name = target, hp, phase, name
+						hud.fill.Size = UDim2.fromScale(ratio, 1)
+						hud.fill.BackgroundColor3 = if phase == 4 then Color3.fromRGB(246, 126, 61) else Color3.fromRGB(201, 70, 65)
+						hud.caption.Text = string.format("%s · %d단계 · %d/%d", name, phase, math.ceil(hp), target.maxHp)
+					end
+					if not hud.panel.Visible then hud.panel.Visible = true end
+				else
+					if hud.panel.Visible then hud.panel.Visible = false end
+					hud.target = nil
+				end
+			end
 		end
 		local attackers = AC.attackersCount(enemies)
 		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.

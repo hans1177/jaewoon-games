@@ -161,3 +161,20 @@ test('두목 능력 및 기술 단계는 공용 전투 상태로 계산하고 �
   assert.match(field, /AC\.bossPhase\(e\.ac\.hp, e\.maxHp\)/);
   for (const check of [/ratio < 0\.66/, /ratio < 0\.33/, /ratio <= 0\.5/, /e\.def\.speed \*= 1\.25/, /e\.def\.windup \*= 0\.85/, /e\.def\.range \*= 1\.2/, /e\.def\.recover \*= 1\.6/]) assert.match(ac, check);
 });
+
+test('두목 HUD는 공용 기술 단계와 실제 체력을 표시하며 대기 중인 연속 두목을 제외한다', () => {
+  const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  const setup = field.split('-- [두목 체력 HUD]')[1].split('-- [상호작용 안내]')[0];
+  const update = field.split('-- [두목 HUD 갱신]')[1].split('local attackers = AC.attackersCount(enemies)')[0];
+  assert.match(setup, /panel.Parent = gui/);
+  assert.match(setup, /panel.Visible = false/);
+  assert.match(setup, /0\.70, 0\.40, 0\.15/);
+  assert.match(update, /now \+ 0\.1/);
+  assert.match(update, /enemy.bossIntroduced and not enemy.ac.dead/);
+  assert.match(update, /order == folder:GetAttribute\("FieldBossRushNext"\)/);
+  assert.match(update, /AC.bossPhase\(hp, target.maxHp\)/);
+  assert.match(update, /hud.fill.Size = UDim2.fromScale\(ratio, 1\)/);
+  assert.match(update, /hud.hp ~= hp/);
+  assert.match(update, /hud.panel.Visible = false/);
+  assert.doesNotMatch(update, /\.ac\.hp\s*=|onCheckpoint\(|grantCard\(|gainXp\(/);
+});
