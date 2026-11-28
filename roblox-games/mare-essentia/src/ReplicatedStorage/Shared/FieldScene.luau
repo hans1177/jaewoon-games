@@ -401,7 +401,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				-- [지상전 PBR 재질] 계절색은 무늬 없는 표면에만 약하게 섞는다.
 				-- 승인 메시의 ColorMap/TextureID/UV·원본 색을 강제로 덮지 않는다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or sa ~= nil or d.MaterialVariant ~= ""
 				for _, ch in d:GetChildren() do
 					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 				end
@@ -426,7 +426,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or kind == "Town" or kind == "Terrain" or kind == "Interior"
 				if named then
 					local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
+					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or sa ~= nil
 					for _, ch in d:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 					end
@@ -438,7 +438,10 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 						and d.Material ~= Enum.Material.Glass and d.Material ~= Enum.Material.Metal and d.Material ~= Enum.Material.Neon then
 						local role = d.Name:lower()
 						local name = (asset .. " " .. d.Name):lower()
-						for _, key in { "roof", "tile", "wood", "beam", "door", "stone", "wall", "glass", "metal", "trunk", "bark", "leaf", "leaves", "grass", "foliage", "moss" } do
+						for _, key in { "glass", "windowpane", "glazing", "hinge", "iron", "metal", "latch", "awning", "canvas", "cloth", "fabric",
+							"rug", "flag", "banner", "roof", "tile", "gable", "shingle", "wood", "timber", "beam", "door", "frame",
+							"fence", "bench", "cart", "table", "bookcase", "crate", "stone", "wall", "brick", "plaster",
+							"trunk", "bark", "branch", "stump", "log", "leaf", "leaves", "grass", "foliage", "moss", "rock", "cliff", "sand", "snow" } do
 							if role:find(key, 1, true) then name = role; break end
 						end
 						local mat, color = Enum.Material.Cobblestone, Color3.fromRGB(160, 141, 117)
@@ -454,16 +457,17 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 							mat, color = Enum.Material.Rock, tint or Color3.fromRGB(137, 126, 105)
 						elseif name:find("fence", 1, true) or name:find("bench", 1, true) or name:find("cart", 1, true) or name:find("table", 1, true) or name:find("bookcase", 1, true) or name:find("crate", 1, true) then
 							mat, color = Enum.Material.WoodPlanks, tint or Color3.fromRGB(129, 91, 60)
-						elseif name:find("rug", 1, true) or name:find("flag", 1, true) or name:find("banner", 1, true) then
+						elseif name:find("rug", 1, true) or name:find("flag", 1, true) or name:find("banner", 1, true)
+							or name:find("awning", 1, true) or name:find("canvas", 1, true) or name:find("cloth", 1, true) or name:find("fabric", 1, true) then
 							mat, color = Enum.Material.Fabric, tint or Color3.fromRGB(144, 75, 55)
-						elseif name:find("glass", 1, true) then
+						elseif name:find("glass", 1, true) or name:find("windowpane", 1, true) or name:find("glazing", 1, true) then
 							mat, color = Enum.Material.Glass, Color3.fromRGB(194, 218, 222)
-						elseif name:find("metal", 1, true) or name:find("iron", 1, true) then
+						elseif name:find("metal", 1, true) or name:find("iron", 1, true) or name:find("hinge", 1, true) or name:find("latch", 1, true) then
 							mat, color = Enum.Material.Metal, Color3.fromRGB(100, 105, 108)
-						elseif name:find("roof", 1, true) or name:find("tile", 1, true) then
+						elseif name:find("roof", 1, true) or name:find("tile", 1, true) or name:find("gable", 1, true) or name:find("shingle", 1, true) then
 							mat, color = Enum.Material.Slate, Color3.fromRGB(122, 85, 63)
-						elseif name:find("wood", 1, true) or name:find("beam", 1, true)
-							or name:find("dock", 1, true) or name:find("platform", 1, true) then
+						elseif name:find("wood", 1, true) or name:find("beam", 1, true) or name:find("timber", 1, true)
+							or name:find("door", 1, true) or name:find("frame", 1, true) or name:find("dock", 1, true) or name:find("platform", 1, true) then
 							mat, color = Enum.Material.WoodPlanks, Color3.fromRGB(128, 97, 69)
 						elseif name:find("path", 1, true) or name:find("ground-", 1, true) then
 							mat, color = Enum.Material.Ground, Color3.fromRGB(135, 119, 91)
@@ -476,7 +480,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 							mat, color = Enum.Material.WoodPlanks, tint or Color3.fromRGB(126, 92, 64)
 						end
 						d.Material, d.Color, d.Reflectance = mat, color, 0
-						if sa then sa.Color = color end
+						-- SurfaceAppearance가 있는 원본은 위에서 제외하므로 색 지도를 변경하지 않는다.
 					end
 				end
 			end
