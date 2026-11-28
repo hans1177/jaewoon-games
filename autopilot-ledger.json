@@ -180,7 +180,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "studio:46182302566:c3117f38c435bcb517c2f17a30d52cd0bce9c511"
+    "mare-essentia": "studio:46186569978:7cc111612853ce96f9ab21d825fd1381017424a8"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -304,6 +304,17 @@
       "firstAt": 1795860213035,
       "lastAt": 1795894672254,
       "seen": 12
+    },
+    "mare-essentia:card-ui-issues": {
+      "id": "card-ui-issues",
+      "kind": "ui",
+      "task": "cards",
+      "text": "카드 화면 글자 잘림/겹침: deck(1048x380): CUT[999997749] box=76x20 text=80x16 | practice(1048x380): CUT[999997749] box=76x20 text=80x16 | tactics(1048x380): CUT[999997749] box=76x20 text=80x16",
+      "game": "mare-essentia",
+      "fingerprint": "mare-essentia:card-ui-issues",
+      "firstAt": 1795899298506,
+      "lastAt": 1795899298506,
+      "seen": 1
     }
   },
   "history": [
@@ -321,5 +332,5 @@
     "mare-essentia:town"
   ],
   "lastDispatchAt": 1795898531200,
-  "lastDecisionAt": 1795898531200
+  "lastDecisionAt": 1795899298507
 }
