@@ -3694,7 +3694,7 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.50\)/,
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/,
     '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
@@ -3832,13 +3832,18 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.50\)/, '텍스처 머리 원본 색상 보존');
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.35\)/, '텍스처 머리 원본 색상 보존');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.50\)/, 'PBR 머리 원본 색상 보존');
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/, 'PBR 머리 원본 색상 보존');
   assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
+  assert.match(pose,/and part\.MaterialVariant == "" and string\.sub\(assetName, 1, 5\) == "hair_" then/);
+  assert.match(pose,/local pale = part\.Color\.R >= 0\.90 and part\.Color\.G >= 0\.90 and part\.Color\.B >= 0\.90/);
+  assert.match(pose,/local pale = base\.R >= 0\.90 and base\.G >= 0\.90 and base\.B >= 0\.90/);
+  assert.doesNotMatch(pose,/if faded or \(hair and npcOutfit and model:GetAttribute\("NpcHairTint"\)\)/);
+  assert.match(pose,/if faded or \(npcOutfit and not hair and \(ribbon or headwear\)\) then/);
   for (const hair of [0, 0.1, 0.3, 0.8, 1]) {
-    const multiplier = 0.78 * 0.5 + (hair * 0.35 + 0.65) * 0.5;
-    assert.ok(multiplier >= 0.715 && multiplier <= 1, '밝은 머리 배율에 과도한 암부가 생기지 않는다');
+    const multiplier = 0.90 * 0.65 + (hair * 0.15 + 0.85) * 0.35;
+    assert.ok(multiplier >= 0.8825 - 1e-9 && multiplier <= 1, '밝은 머리 배율에 과도한 암부가 생기지 않는다');
   }
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));

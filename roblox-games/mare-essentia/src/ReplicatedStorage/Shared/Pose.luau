@@ -1603,16 +1603,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				-- 지나지 않는다. 머리카락 메시의 원본 TextureID를 유지한 채 색상 배율만 적용한다.
 				-- PBR SurfaceAppearance가 있는 모델은 아래 기존 PBR 분기에서 처리한다.
 				if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""
-					and string.sub(assetName, 1, 5) == "hair_" then
+					and part.MaterialVariant == "" and string.sub(assetName, 1, 5) == "hair_" then
 					local hairTint = model:GetAttribute("NpcHairTint")
 					if typeof(hairTint) == "Color3" then
 						-- [원본 머리색 보호] 이미 색이 있는 텍스처에는 어두운 배율을 중복 적용하지 않는다.
-						local pale = part.Color.R > 0.78 and part.Color.G > 0.78 and part.Color.B > 0.77
+						local pale = part.Color.R >= 0.90 and part.Color.G >= 0.90 and part.Color.B >= 0.90
 							and math.max(part.Color.R, part.Color.G, part.Color.B)
-								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
+								- math.min(part.Color.R, part.Color.G, part.Color.B) <= 0.08
 						if pale then
-							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.65)
-							part.Color = part.Color:Lerp(softTint, 0.50)
+							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.85)
+							part.Color = part.Color:Lerp(softTint, 0.35)
 						end
 					end
 				end
@@ -1630,12 +1630,12 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							-- [PBR 헤어] 컬러맵 자체의 머리색을 살리고 밝은 무채색 배율에만 약한 개인색을 섞는다.
 							-- 검거나 이미 염색된 부위는 원본 배율 그대로 유지한다.
 							local base = surface.Color
-							local pale = base.R > 0.78 and base.G > 0.78 and base.B > 0.77
+							local pale = base.R >= 0.90 and base.G >= 0.90 and base.B >= 0.90
 								and math.max(base.R, base.G, base.B)
-									- math.min(base.R, base.G, base.B) < 0.12
+									- math.min(base.R, base.G, base.B) <= 0.08
 							if pale then
-								local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.65)
-								surface.Color = surface.Color:Lerp(softTint, 0.50)
+								local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.85)
+								surface.Color = surface.Color:Lerp(softTint, 0.35)
 							end
 						end
 					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3"
@@ -1864,12 +1864,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
 					local faded = neutral and part.Color.R > 0.87
 					-- [기존 채색 보존] 이미 컬러가 들어간 메시를 황토색으로 몰아넣지 않는다.
-					-- 원본 색상 누락 또는 인물의 실제 머리색에 필요한 부분만 최소 보정한다.
-					if faded or (hair and npcOutfit and model:GetAttribute("NpcHairTint"))
-						or (npcOutfit and (ribbon or headwear)) then
+					-- 원본 색상 누락만 복구한다. 무텍스처라도 이미 유색인 주민 머리는 다시 어둡게 하지 않는다.
+					if faded or (npcOutfit and not hair and (ribbon or headwear)) then
 						part.Color = part.Color:Lerp(tint,
 							if hair and faded then 0.90
-							elseif hair and model:GetAttribute("NpcHairTint") then 0.45
 							elseif ribbon or headwear then 0.38 else 0.78)
 					end
 					part.Reflectance = if part.Material == Enum.Material.Metal then 0.025 else 0
