@@ -178,3 +178,23 @@ test('두목 HUD는 공용 기술 단계와 실제 체력을 표시하며 대기
   assert.match(update, /hud.panel.Visible = false/);
   assert.doesNotMatch(update, /\.ac\.hp\s*=|onCheckpoint\(|grantCard\(|gainXp\(/);
 });
+
+
+test('해상 일지는 기존 전투 원화와 정확한 작전 진입 버튼을 제공한다', () => {
+  const sea = game.split('elseif section == "sea" then')[1].split('elseif section == "done" then')[0];
+  assert.match(game, /text = "해상 전투", color = if section == "sea"/);
+  assert.match(sea, /kind = "FacilityArt", icon = if q\.kind == "war_clear" then "war" else "battle"/);
+  assert.match(sea, /targetId = "war_" \.\. q\.regionId/);
+  assert.match(sea, /candidate\.id == targetId/);
+  assert.match(sea, /w\.id == targetId[\s\S]*?w\.next == true, function\(\) call\("WarNext"\)/);
+  assert.match(sea, /operation\.blocked == nil, function\(\) call\("WarStart", \{ id = operation\.id \}\)/);
+  assert.match(sea, /elseif w then[\s\S]*?caption, enabled = "함대전 진행 중", false/);
+  assert.match(sea, /view\.ship\.hull < view\.ship\.maxHull \* 0\.3/);
+  assert.match(sea, /function\(\) call\("Hunt"\) end/);
+  assert.match(sea, /if seen\[q\.id\]/);
+  assert.match(sea, /for _, q in view\.quests\.active do navalTile\(q, true\) end/);
+  assert.match(sea, /for _, q in view\.quests\.available do navalTile\(q, false\) end/);
+  assert.match(sea, /H\.tileGrid\(tiles, content, 176, 210\)/);
+  assert.match(view, /exploreSite = q\.exploreSite, warId = q\.warId, regionId = q\.regionId/);
+  assert.match(view, /auto = S\.Quest\.isAuto\(q\), kind = q\.kind, warId = q\.warId, regionId = q\.regionId/);
+});
