@@ -1,0 +1,164 @@
+{
+ "sourceRevision": "9ee93ca31f585dece3ecab54f0ed57b70d92dbda",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "NEWGAME ok=true\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "INTRO step=name name=true comp=true portrait=true dialogsLeft=0\ntext"
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "TAB codex thumbs=nil hero=nil strip=false\ntext"
+  },
+  {
+   "step": 7,
+   "capture": "dex_codex",
+   "files": 1
+  },
+  {
+   "step": 8,
+   "ctx": "Client",
+   "out": "TAB encyclopedia thumbs=nil hero=1 strip=false\ntext"
+  },
+  {
+   "step": 9,
+   "capture": "dex_encyclopedia",
+   "files": 1
+  },
+  {
+   "step": 10,
+   "ctx": "Client",
+   "out": "TAB trade thumbs=nil hero=nil strip=false\ntext"
+  },
+  {
+   "step": 11,
+   "capture": "strip_trade",
+   "files": 1
+  },
+  {
+   "step": 12,
+   "ctx": "Client",
+   "out": "TAB board thumbs=nil hero=nil strip=false\ntext"
+  },
+  {
+   "step": 13,
+   "capture": "strip_board",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "TAB quest thumbs=nil hero=nil strip=false\ntext"
+  },
+  {
+   "step": 15,
+   "capture": "strip_quest",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35014
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 2613
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 9056
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 3003
+  },
+  {
+   "step": 4,
+   "type": "wait",
+   "elapsedMs": 4009
+  },
+  {
+   "step": 5,
+   "type": "wait",
+   "elapsedMs": 3013
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 3156
+  },
+  {
+   "step": 7,
+   "type": "capture",
+   "elapsedMs": 2807
+  },
+  {
+   "step": 8,
+   "type": "luau",
+   "elapsedMs": 3291
+  },
+  {
+   "step": 9,
+   "type": "capture",
+   "elapsedMs": 1380
+  },
+  {
+   "step": 10,
+   "type": "luau",
+   "elapsedMs": 3366
+  },
+  {
+   "step": 11,
+   "type": "capture",
+   "elapsedMs": 1449
+  },
+  {
+   "step": 12,
+   "type": "luau",
+   "elapsedMs": 3301
+  },
+  {
+   "step": 13,
+   "type": "capture",
+   "elapsedMs": 1890
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 3393
+  },
+  {
+   "step": 15,
+   "type": "capture",
+   "elapsedMs": 1981
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 16,
+  "completedSteps": 16,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 5,
+  "capturedFrames": 5,
+  "abortedEarly": false
+ }
+}
