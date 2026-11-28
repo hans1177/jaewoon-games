@@ -15088,35 +15088,177 @@ function RENDERERS.scholar()
 end
 
 function RENDERERS.tech()
-	-- [연구소] 해금 상태와 자금 조건을 서버 스냅샷으로 분리해 보여 준다.
+	-- [연구 장부] 기술 선택 / 해금 조건 비교 / 연구 실행을 분리한다.
 	local completed, affordable, blocked = 0, 0, 0
+	local selected
 	for _, t in view.tech do
 		if t.owned then completed += 1
 		elseif t.blocked then blocked += 1
 		elseif (t.cost or 0) <= view.player.coins then affordable += 1 end
+		if t.id == H.techSelectedId then selected = t end
 	end
-	H.statStrip({
-		{ "연구 완료", tostring(completed), tone = "good" },
-		{ "연구 가능", tostring(affordable), tone = "key" },
-		{ "조건 잠금", tostring(blocked), tone = "key" },
-	})
-	add(function()
-		return mkLabel(content, "기술은 선행 지식과 보유 코인을 확인해 연구해. 증기 장비는 석탄을 사용해.", 14, COLORS.muted, false)
+	if not selected then H.techSelectedId = nil end
+	H.techFilter = H.techFilter or "all"
+	local root = add(function()
+		local frame = Instance.new("Frame")
+		frame.Name = "ResearchWorkspace"
+		frame.BackgroundTransparency = 1
+		frame.Size = UDim2.new(1, -6, 0, math.max(180, content.AbsoluteSize.Y - 8))
+		return frame
 	end)
-	add(function()
-		local tiles = {}
-		for _, t in view.tech do
-			local affordableNow = (t.cost or 0) <= view.player.coins
-			local reason = if t.owned then "연구 완료" elseif t.blocked then t.blocked
-				elseif not affordableNow then string.format("코인 %s 부족 · %s", H.commas((t.cost or 0) - view.player.coins), t.summary)
-				else "연구 가능 · " .. t.summary
-			table.insert(tiles, { icon = if t.owned then "cc0_yes" else "tech", title = t.name, sub = reason,
-				btn = if t.owned then "완료" elseif not affordableNow and not t.blocked then "자금 부족" else tostring(t.cost) .. " 코인",
-				color = COLORS.steam, enabled = not t.owned and t.blocked == nil and affordableNow,
-				onClick = function() call("Research", { techId = t.id }) end })
+	local list = Instance.new("ScrollingFrame")
+	list.Name = "ResearchTechnologyList"
+	list.BackgroundTransparency = 1
+	list.BorderSizePixel = 0
+	list.ScrollBarThickness = 4
+	list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	list.CanvasSize = UDim2.fromOffset(0, 0)
+	list.Parent = root
+	local listLayout = Instance.new("UIListLayout")
+	listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	listLayout.Padding = UDim.new(0, 6)
+	listLayout.Parent = list
+	local detail = Instance.new("ScrollingFrame")
+	detail.Name = "ResearchDecision"
+	detail.BackgroundTransparency = 1
+	detail.BorderSizePixel = 0
+	detail.ScrollBarThickness = 4
+	detail.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	detail.CanvasSize = UDim2.fromOffset(0, 0)
+	detail.Parent = root
+	local detailLayout = Instance.new("UIListLayout")
+	detailLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	detailLayout.Padding = UDim.new(0, 6)
+	detailLayout.Parent = detail
+	local footer = Instance.new("Frame")
+	footer.Name = "ResearchActionBar"
+	footer.BackgroundTransparency = 1
+	footer.Parent = root
+	local back = mkButton(footer, "기술 목록", COLORS.leather, UDim2.new(0.38, -4, 1, 0), function()
+		H.techSelectedId = nil
+		render()
+	end, true)
+	local action
+	local coins = view.player.coins
+	if selected then
+		local ready = not selected.owned and selected.blocked == nil and (selected.cost or 0) <= coins
+		local caption = if selected.owned then "연구 완료" elseif selected.blocked then "조건 잠김"
+			elseif not ready then "자금 부족" else "연구 · " .. H.commas(selected.cost or 0) .. " 코인"
+		action = mkButton(footer, caption, COLORS.gold, UDim2.fromScale(1, 1), function()
+			call("Research", { techId = selected.id })
+		end, ready)
+	end
+	local function layoutWorkspace()
+		local wide = root.AbsoluteSize.X >= 640
+		list.Visible = wide or selected == nil
+		detail.Visible = wide or selected ~= nil
+		footer.Visible = selected ~= nil
+		back.Visible = not wide and selected ~= nil
+		list.Position = UDim2.fromOffset(0, 0)
+		list.Size = UDim2.new(if wide then 0.43 else 1, if wide then -5 else 0, 1, 0)
+		detail.Position = if wide then UDim2.new(0.43, 5, 0, 0) else UDim2.fromOffset(0, 0)
+		detail.Size = UDim2.new(if wide then 0.57 else 1, if wide then -5 else 0, 1, if selected then -54 else 0)
+		footer.Position = if wide then UDim2.new(0.43, 5, 1, -48) else UDim2.new(0, 0, 1, -48)
+		footer.Size = UDim2.new(if wide then 0.57 else 1, if wide then -5 else 0, 0, 48)
+		if action then
+			action.Position = if wide then UDim2.fromOffset(0, 0) else UDim2.new(0.38, 4, 0, 0)
+			action.Size = if wide then UDim2.fromScale(1, 1) else UDim2.new(0.62, -4, 1, 0)
 		end
-		return H.tileGrid(tiles, content, 176, 160)
+	end
+	local resize = content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		root.Size = UDim2.new(1, -6, 0, math.max(180, content.AbsoluteSize.Y - 8))
 	end)
+	root.Destroying:Connect(function() resize:Disconnect() end)
+	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutWorkspace)
+	local progress = mkRow(list, string.format("연구 %d / %d", completed, #view.tech),
+		string.format("연구 가능 %d · 조건 잠금 %d", affordable, blocked), nil, 104)
+	progress.LayoutOrder = 0
+	local progressText = progress:FindFirstChild("RowText")
+	if progressText then
+		local track = Instance.new("Frame")
+		track.Name = "ResearchProgress"
+		track.Size = UDim2.new(1, -4, 0, 12)
+		track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+		track.BorderSizePixel = 0
+		track.Parent = progressText
+		corner(track, 4)
+		local fill = Instance.new("Frame")
+		fill.Size = UDim2.fromScale(completed / math.max(1, #view.tech), 1)
+		fill.BackgroundColor3 = Color3.fromRGB(47, 122, 58)
+		fill.BorderSizePixel = 0
+		fill.Parent = track
+		corner(fill, 4)
+	end
+	local filters = Instance.new("Frame")
+	filters.Name = "ResearchFilters"
+	filters.BackgroundTransparency = 1
+	filters.Size = UDim2.new(1, -6, 0, 94)
+	filters.LayoutOrder = 1
+	filters.Parent = list
+	for i, spec in { { "전체", "all" }, { "가능", "ready" }, { "잠김", "blocked" }, { "완료", "done" } } do
+		local button = mkButton(filters, spec[1], if H.techFilter == spec[2] then COLORS.gold else COLORS.paper,
+			UDim2.new(0.5, -4, 0, 44), function() H.techFilter = spec[2]; render() end, true)
+		button.Position = UDim2.new(((i - 1) % 2) * 0.5, 2, 0, math.floor((i - 1) / 2) * 48)
+	end
+	for i, t in view.tech do
+		local ready = not t.owned and not t.blocked and (t.cost or 0) <= coins
+		local state = if t.owned then "done" elseif ready then "ready" else "blocked"
+		if H.techFilter ~= "all" and H.techFilter ~= state then continue end
+		local status = if t.owned then "연구 완료" elseif t.blocked then "조건 잠김"
+			elseif not ready then "자금 부족" else "연구 가능"
+		local row = mkRow(list, t.name, status .. " · " .. H.commas(t.cost or 0) .. " 코인", nil, 78)
+		row.Name = "ResearchTechnology_" .. tostring(t.id)
+		row.LayoutOrder = i + 1
+		local key = if t.owned then "cc0_yes" elseif state == "blocked" then "lock" else "tech"
+		if H.hasIconArt(key) then withIcon(row, "FacilityArt", key, nil, 44) end
+		local accent = row:FindFirstChild("AccentBar")
+		if accent and accent:IsA("Frame") then
+			accent.BackgroundColor3 = if state == "blocked" then COLORS.red elseif ready then UI_BRASS else Color3.fromRGB(47, 122, 58)
+		end
+		local stroke = row:FindFirstChildOfClass("UIStroke")
+		if stroke and selected and selected.id == t.id then stroke.Thickness = 3; stroke.Color = UI_BRASS_DARK end
+		local hit = Instance.new("TextButton")
+		hit.Name = "ResearchSelect"
+		hit.Text = ""
+		hit.BackgroundTransparency = 1
+		hit.Size = UDim2.fromScale(1, 1)
+		hit.ZIndex = row.ZIndex + 5
+		hit.Parent = row
+		hit.Activated:Connect(function() H.techSelectedId = t.id; render() end)
+	end
+	if selected then
+		local t = selected
+		local header = mkRow(detail, t.name, t.summary or "", nil, 110)
+		header.LayoutOrder = 0
+		if H.hasIconArt("tech") then withIcon(header, "FacilityArt", "tech", nil, 54) end
+		local required = t.cost or 0
+		local reason = if t.owned then "연구 완료" elseif t.blocked then t.blocked
+			elseif coins < required then H.commas(required - coins) .. " 코인 부족" else "연구 가능"
+		local cost = mkRow(detail, "연구 조건", reason .. "\n보유 " .. H.commas(coins) .. " / 필요 " .. H.commas(required), nil, 130)
+		cost.LayoutOrder = 1
+		local box = cost:FindFirstChild("RowText")
+		if box then
+			local track = Instance.new("Frame")
+			track.Name = "ResearchBudgetMeter"
+			track.Size = UDim2.new(1, -6, 0, 12)
+			track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+			track.BorderSizePixel = 0
+			track.Parent = box
+			corner(track, 4)
+			local fill = Instance.new("Frame")
+			fill.Size = UDim2.fromScale(if required <= 0 then 1 else math.clamp(coins / required, 0, 1), 1)
+			fill.BackgroundColor3 = if coins < required then COLORS.red else Color3.fromRGB(47, 122, 58)
+			fill.BorderSizePixel = 0
+			fill.Parent = track
+			corner(fill, 4)
+		end
+		local note = mkRow(detail, "연구 안내", "기술은 선행 지식과 보유 코인을 확인해 연구해. 증기 장비는 석탄을 사용해.", nil, 90)
+		note.LayoutOrder = 2
+	else
+		local empty = mkRow(detail, "기술을 선택해", "효과와 해금 조건, 비용을 비교하고 연구할 수 있어.", nil, 90)
+		empty.LayoutOrder = 0
+	end
+	layoutWorkspace()
 end
 
 function RENDERERS.quest()
