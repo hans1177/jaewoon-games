@@ -502,6 +502,10 @@ return function(D, S)
 		local name = D.Ports.Goods[pend.goodId].name
 		if pct > 0 then
 			h.deal = { goodId = pend.goodId, mult = 1 - pct / 100, mode = pend.game }
+			-- 길드 허가와 완벽한 비밀 협상으로 기존 12일 화물 주기의 숨은 제안을 연다.
+			if pend.game == "secret" and pct == 12 and D.TradeFun and state.stats and state.stats.permits and state.stats.permits[state.portId] == true and not embargoed(state) then
+				h.deal.rareWindow = math.floor((state.day or 0) / D.TradeFun.RARE_WINDOW)
+			end
 			if pend.game == "barter" then
 				-- 보유 화물의 실제 매입 여유가 있는 품목만 제안. 새 저장 키나 화물 생성 없음.
 				local eligible = {}
@@ -567,9 +571,10 @@ return function(D, S)
 	function handlers.BuyRareLot(state, p, _ctx)
 		local TF = D.TradeFun
 		if not TF then return false, "지금은 살 수 없어요" end
-		local lot: any = TF.rareLot(D.Ports, D.Regions, state.portId, state.day or 0)
+		local lot: any = TF.rareLot(D.Ports, D.Regions, state.portId, state.day or 0, state)
 		if not lot then return false, "이 항구에는 지금 희귀 화물이 없어요" end
 		if TF.get(state).lots[lot.key] then return false, "이미 산 화물이에요" end
+		if lot.secret and (embargoed(state) or lockOf(state, state.portId, lot.goodId)) then return false, "거래 허가가 필요해요" end
 		if p and p.haggleConfirm == true then
 			local h = state.haggle
 			if not h or h.portId ~= state.portId or not h.deal or h.deal.mode ~= "secret" or h.deal.goodId ~= p.contractGoodId
@@ -585,6 +590,7 @@ return function(D, S)
 		state.basis[lot.goodId] = (basis * owned + total) / (owned + lot.qty)
 		state.cargo[lot.goodId] = owned + lot.qty
 		TF.commitRareBuy(state, lot)
+		if lot.secret or (p and p.haggleConfirm == true) then state.haggle.deal = nil end
 		local names = {}
 		for _, id in lot.targets do table.insert(names, D.Ports.Ports[id].name) end
 		return true, string.format("희귀 %s %d개 구매 (-%d)\n%d일 안에 %s 중 한 곳에 팔면 %.1f배!", D.Ports.Goods[lot.goodId].name, lot.qty, total, TF.RARE_KEEP, table.concat(names, "·"), TF.RARE_SELL)

@@ -5366,6 +5366,39 @@ local function testHaggleGames()
 			check("계약 결제 재전송 차단", not act(st, "Buy", { goodId = goodId, amount = 1, haggleConfirm = true }) and st.cargo[goodId] == amountBefore + 1)
 		end
 	end
+	-- 숨은 희귀 화물은 동일 주기/저장 키, 길드 허가와 서버 협상으로만 해금한다.
+	do
+		local st: any = newState("england")
+		local tf = D.TradeFun
+		local dayFound, offer = nil, nil
+		st.stats.permits = { [st.portId] = true }
+		for day = 0, 240, tf.RARE_WINDOW do
+			st.day = day
+			st.haggle = { portId = st.portId, tried = {}, deal = { mode = "secret", rareWindow = math.floor(day / tf.RARE_WINDOW) } }
+			local candidate = tf.rareLot(D.Ports, D.Regions, st.portId, day, st)
+			if candidate and candidate.secret then dayFound, offer = day, candidate; break end
+		end
+		check("숨은 희귀 화물 후보 존재", offer ~= nil)
+		if offer then
+			st.haggle = nil
+			st.coins = 10000000
+			st.stats.permits[st.portId] = nil
+			local goodId = "wool"
+			check("비밀 협상 없는 숨은 화물 거절", not act(st, "BuyRareLot", {}))
+			st.stats.permits[st.portId] = true
+			act(st, "HaggleStart", { goodId = goodId, game = "secret" })
+			local trade = st.haggle.pending.trade
+			for i, row in trade.rounds do act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }) end
+			local shown = S.View.build(st, ctx).tradeFun.lot
+			check("완벽 비밀 협상 희귀 화물 표시", shown and shown.secret and shown.goodId == offer.goodId)
+			st.stats.permits[st.portId] = nil
+			check("길드 허가 없는 숨은 화물 거절", not act(st, "BuyRareLot", {}))
+			st.stats.permits[st.portId] = true
+			local before = st.cargo[offer.goodId] or 0
+			check("숨은 희귀 화물 실제 구매", act(st, "BuyRareLot", {}) and st.cargo[offer.goodId] == before + offer.qty)
+			check("숨은 희귀 화물 중복 구매 차단", not act(st, "BuyRareLot", {}))
+		end
+	end
 	-- 실제 물물교환은 서버에서 기존 판매/구매를 한 요청으로 확정하고 미검증 제안을 거절한다.
 	do
 		local st: any = newState()

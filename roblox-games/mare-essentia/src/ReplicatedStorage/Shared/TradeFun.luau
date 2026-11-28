@@ -144,10 +144,16 @@ function TF.rival(Ports, Regions, regionId: string, day: number)
 end
 
 -- 7. 희귀 화물
-function TF.rareLot(Ports, Regions, portId: string, day: number)
+function TF.rareLot(Ports, Regions, portId: string, day: number, state: any?)
 	local window = math.floor(day / TF.RARE_WINDOW)
 	local key = portId .. ":" .. window
-	if hash(key) % 100 >= TF.RARE_CHANCE then return nil end
+	local secret = hash(key) % 100 >= TF.RARE_CHANCE
+	if secret then
+		local h = state and state.haggle
+		local deal = h and h.portId == portId and h.deal
+		local permit = state and state.stats and state.stats.permits and state.stats.permits[portId] == true
+		if not permit or not deal or deal.mode ~= "secret" or deal.rareWindow ~= window then return nil end
+	end
 	local port = Ports.Ports[portId]
 	if not port then return nil end
 	local here = Regions.of(port).id
@@ -173,7 +179,7 @@ function TF.rareLot(Ports, Regions, portId: string, day: number)
 	end
 	if #targets == 0 then return nil end
 	return {
-		key = key, goodId = goodId, qty = TF.RARE_QTY, targets = targets,
+		key = key, goodId = goodId, qty = TF.RARE_QTY, targets = targets, secret = secret,
 		unitPrice = math.floor(Ports.Goods[goodId].basePrice * TF.RARE_PRICE + 0.5),
 		untilDay = (window + 1) * TF.RARE_WINDOW - 1,
 	}
@@ -304,12 +310,12 @@ function TF.view(state, Ports, Regions)
 		local p, g = string.match(k, "^(.-)|(.+)$")
 		if p == portId and d >= day then table.insert(out.crazes, { good = goodName(g), left = d - day }) end
 	end
-	local lot = TF.rareLot(Ports, Regions, portId, day)
+	local lot = TF.rareLot(Ports, Regions, portId, day, state)
 	if lot then
 		local names = {}
 		for _, id in lot.targets do table.insert(names, portName(id)) end
 		out.lot = { goodId = lot.goodId, good = goodName(lot.goodId), qty = lot.qty, unitPrice = lot.unitPrice,
-			total = lot.unitPrice * lot.qty, targets = names, untilIn = lot.untilDay - day, bought = t.lots[lot.key] == true }
+			total = lot.unitPrice * lot.qty, targets = names, untilIn = lot.untilDay - day, bought = t.lots[lot.key] == true, secret = lot.secret }
 	end
 	for g, r in t.rare do
 		if r.qty > 0 and day <= r.untilDay then
