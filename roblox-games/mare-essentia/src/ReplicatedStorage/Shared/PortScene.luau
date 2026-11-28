@@ -1878,6 +1878,7 @@ local function strip(folder, style, cx, cz, sx, sz)
 	local p = part(folder, Vector3.new(sx, 0.2, sz), CFrame.new(cx, 0.1, cz), roadColor(style), roadMat())
 	p.CanCollide = false
 	p.CanQuery = false
+	p:SetAttribute("RoadStrip", true) -- [작은 마을 정리] 실제 집 범위 밖 빈 길을 잘라내기 위한 표시
 	-- [항구별 날씨] 새로운 도형·효과 인스턴스를 만들지 않고 지시서의 기존 길 표면만 갱신한다.
 	local identity = scenePortId and PortIdentity.get(scenePortId)
 	if identity then
@@ -4579,6 +4580,49 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		local townLeft = if isRoyalCity then -635 else math.min(-475, X_END - 32)
 		local townRight = 35 -- 기존 항구 해안선과 접한 동쪽 가장자리를 유지한다.
 		local townHalfZ = math.min(360 + lvl * 80 + 14, math.max(442, outerEdgeZ + 52))
+		-- [빈 땅 줄이기 · 2026-11-28 오너: "이스탄불 등 넓은 맨땅에 집이 띄엄띄엄"]
+		-- 지시서 항구는 단계별 집 수 상한(6~24채)이 있는데 땅은 510×880 그대로라 텅 비었다.
+		-- 실제 놓인 집·시설·광장 범위 + 40 으로 땅을 줄이고, 그 밖으로 뻗은 빈 길 띠도 잘라낸다.
+		-- 왕궁 도시는 기존 최소 폭 유지. 농촌 바닥·집 배치·저장은 바꾸지 않는다(보이는 땅·길만).
+		if identity and not isRoyalCity and #placedLots > 0 then
+			local bx0, bz0, bz1 = 0, -40, 40
+			for _, lot in placedLots do
+				local hx = lot.HX or lot.H or 8
+				local hz = lot.HZ or lot.H or 8
+				bx0 = math.min(bx0, lot.X - hx)
+				bz0 = math.min(bz0, lot.Z - hz)
+				bz1 = math.max(bz1, lot.Z + hz)
+			end
+			for _, at in facilityLocations do
+				bx0 = math.min(bx0, at.X - 24)
+				bz0 = math.min(bz0, at.Z - 24)
+				bz1 = math.max(bz1, at.Z + 24)
+			end
+			local compactLeft = math.max(townLeft, bx0 - 40)
+			local compactHalfZ = math.min(townHalfZ, math.max(-bz0, bz1) + 40)
+			if compactLeft > townLeft + 20 or compactHalfZ < townHalfZ - 20 then
+				townLeft, townHalfZ = compactLeft, compactHalfZ
+				local trimmed = 0
+				for _, road in folder:GetChildren() do
+					if road:IsA("BasePart") and road:GetAttribute("RoadStrip") then
+						local p, sz = road.Position, road.Size
+						local x0, x1 = math.max(p.X - sz.X / 2, townLeft), math.min(p.X + sz.X / 2, townRight + 60)
+						local z0, z1 = math.max(p.Z - sz.Z / 2, -townHalfZ), math.min(p.Z + sz.Z / 2, townHalfZ)
+						if math.abs(p.Z) < 20 and sz.X > sz.Z then
+							-- 농촌으로 이어지는 중심 큰길은 그대로 둔다.
+						elseif x1 - x0 < 2 or z1 - z0 < 2 then
+							road:Destroy()
+							trimmed += 1
+						elseif x1 - x0 < sz.X - 1 or z1 - z0 < sz.Z - 1 then
+							road.Size = Vector3.new(x1 - x0, sz.Y, z1 - z0)
+							road.Position = Vector3.new((x0 + x1) / 2, p.Y, (z0 + z1) / 2)
+							trimmed += 1
+						end
+					end
+				end
+				folder:SetAttribute("TownCompactRoadsTrimmed", trimmed)
+			end
+		end
 		townFloor.Size = Vector3.new(townRight - townLeft, townFloor.Size.Y, 2 * townHalfZ)
 		townFloor.Position = Vector3.new((townLeft + townRight) * 0.5, townFloor.Position.Y, 0)
 		folder:SetAttribute("TownLandWidth", math.floor(townRight - townLeft))
