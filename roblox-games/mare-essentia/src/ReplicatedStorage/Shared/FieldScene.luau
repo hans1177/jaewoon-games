@@ -669,11 +669,7 @@ function FieldScene.start(opts)
 	local comboRng = Random.new() -- [연타 난수] 지역 맵·보상 추첨 RNG와 별개로 실제 무작위 시각 발동
 	-- [무기별 영구 숙련] 서버 저장본에서 단계를 복원하고 이번 탐험에서 획득한 경험치만 별도 정산한다.
 	local weaponPractice, earnedPractice = {}, {}
-	local function practiceRank(xp)
-		return if xp >= 720 then 10 elseif xp >= 530 then 9 elseif xp >= 380 then 8
-			elseif xp >= 260 then 7 elseif xp >= 170 then 6 elseif xp >= 100 then 5
-			elseif xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1
-	end
+	local practiceRank = Weapons.masteryRank
 	if type(opts.weaponPractice) == "table" then
 		for id, xp in opts.weaponPractice do
 			if type(id) == "string" and Weapons.get(id).id == id and type(xp) == "number" and xp == xp then
@@ -9376,8 +9372,14 @@ function FieldScene.start(opts)
 					showCombo(string.format("%s 숙련 %d단! · %s", wpn.name, rank,
 						if rank == 2 then "2연타·자동 강타 해금" elseif rank == 4 then "회전 베기 해금"
 						elseif rank == 8 then "무기 필살기 해금" elseif rank == 9 then "동료 연계 해금"
-						elseif rank == 10 then "10연타·궁극 연계 해금" else string.format("%d연타 해금", rank)))
-					sfx("sfx_coin", 0.55, 1.3)
+						elseif rank == 10 then "10연타·궁극 연계 해금" else string.format("%d연타 해금", rank)), true,
+						if rank >= 8 then Color3.fromRGB(255, 218, 133) elseif rank >= 6 then Color3.fromRGB(139, 222, 255) else Color3.fromRGB(255, 235, 169))
+					-- [최초 해금] 기존 시각 이펙트만 재생. 카메라 고정·시간 정지·추가 타격 판정 없음.
+					local tint = if rank >= 8 then Color3.fromRGB(255, 195, 91) elseif rank >= 6 then Color3.fromRGB(120, 211, 250) else Color3.fromRGB(255, 226, 143)
+					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), if rank >= 8 then 18 else 9, tint, 0.4)
+					pulseAt("BUFF_PULSE", hrp.CFrame * CFrame.new(0, -2, 0), tint, Color3.fromRGB(255, 246, 211), if rank >= 8 then 12 else 6, if visualMobile then 3 else 6)
+					if rank >= 8 then screenFlash(tint, 0.94) end
+					sfx(if rank >= 8 then "sfx_fanfare" else "sfx_card_ring", if visualMobile then 0.35 else 0.5, 1.05 + rank * 0.025)
 				end
 				if chain > 1 then
 					local activeWeapon, activeSerial = wpn.id, chainMotionSerial
