@@ -24,6 +24,11 @@ seed = []
 if os.path.isfile(seed_path):
     with open(seed_path, encoding="utf-8") as f:
         seed = json.load(f)
+# [자동 배치 빈자리] auto_placement_status.py 가 매번 고른 '오늘 만들 것'을 같은 장부 형식으로 합친다.
+auto_path = os.path.join(root, "assets-wanted.auto.json")
+if os.path.isfile(auto_path):
+    with open(auto_path, encoding="utf-8") as f:
+        seed = seed + [x for x in json.load(f) if isinstance(x, dict)]
 # 게임별 기존 검사기를 호출한다. 정적 참조 결과는 실제 화면 배치 증거가 아니다.
 check_path = os.path.join(root, "tools", "devloop", "asset_check.py")
 check = subprocess.run([sys.executable, check_path, root],
