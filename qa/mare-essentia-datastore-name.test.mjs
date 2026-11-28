@@ -5131,3 +5131,16 @@ test('백과 필사본의 삽화 여백을 보존하고 모바일은 해상도 �
  assert.match(dex,/page\.BackgroundTransparency = if bookId then 1 else 0/);
  assert.match(dex,/hero\.ScaleType = Enum\.ScaleType\.Fit/);
 });
+
+
+test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출은 모션 감소를 존중한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ assert.match(source,/AssetIds\["CardArt\/ency_tab_sheet"\]/);
+ assert.match(source,/holder\.ClipsDescendants = true/);
+ assert.match(source,/art\.Position = UDim2\.fromScale\(-\(cell % 4\), -math\.floor\(cell \/ 4\)\)/);
+ assert.match(dex,/direction and not H\.dexPlateIndex and not game:GetService\("GuiService"\)\.ReducedMotionEnabled/);
+ assert.match(dex,/H\.dexTurnDirection = nil/);
+ assert.match(dex,/if wide then 0\.15 elseif H\.dexReading then 0\.08 else 0\.27/);
+ assert.match(dex,/fade\.Completed:Once\(function\(\) fold:Destroy\(\) end\)/);
+});
