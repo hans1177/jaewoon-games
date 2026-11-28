@@ -526,6 +526,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	local template = group and group:FindFirstChild(asset)
 	if not template or not template:IsA("Model") then return nil end
 	local m = template:Clone()
+	local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80
 	-- [흰색 건물 수정] 등록된 건물의 텍스처 없는 흰 메시만 지역별 벽·지붕·목재·석조로 복원한다.
 	local architecture = (kind == "Town" and (asset:find("house", 1, true)
 		or asset:find("temple", 1, true) or asset:find("church", 1, true)
@@ -643,7 +644,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					if sa then sa.Color = tint end
 				end
 			end
-			if architecture and importedWhite
+			-- [원경 언덕] 무채색 기본 플라스틱만 자연 지형 재질로 복원하며 원본 텍스처는 유지한다.
+			if architecture and (importedWhite or (distantHills and high - low <= 0.14
+				and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)))
 				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
 				and p.Material ~= Enum.Material.Neon then
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
@@ -667,7 +670,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					end
 					local material, paint = Enum.Material.Brick, wallColor
 					if sandy or mediterranean then material = Enum.Material.Plaster end
-					if name:find("glass", 1, true) or name:find("windowpane", 1, true)
+					if distantHills then
+						local stone = role:find("rock", 1, true) or role:find("stone", 1, true)
+						material = if stone then Enum.Material.Rock elseif sandy then Enum.Material.Sand else Enum.Material.Grass
+						paint = if stone then C(126, 126, 113) elseif sandy then C(173, 151, 112) else C(112, 133, 91)
+					elseif name:find("glass", 1, true) or name:find("windowpane", 1, true)
 						or name:find("glazing", 1, true) then
 						-- [유리] 무늬가 없는 수입 흰 창만 원재질을 살린다.
 						material, paint = Enum.Material.Glass, C(194, 218, 222)
@@ -744,8 +751,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		-- 승인 원본의 비율·재질·위치·개수는 유지하며 비충돌 원경 절벽만 균일 축소한다.
 		local cliffHeightLimit = if distantBackdrop and kind == "Terrain" and string.sub(asset, 1, 6) == "cliff-"
 			then math.clamp(desiredSize * 0.28, 24, 52) else nil
-		if cliffHeightLimit and ext.Y > 0.01 then
-			desiredSize = math.min(desiredSize, axis * cliffHeightLimit / ext.Y)
+		local reliefHeightLimit = cliffHeightLimit or (if distantHills then math.clamp(desiredSize * 0.22, 28, 56) else nil)
+		if reliefHeightLimit and ext.Y > 0.01 then
+			desiredSize = math.min(desiredSize, axis * reliefHeightLimit / ext.Y)
 			ratio = desiredSize / axis
 		end
 		if not isAnimal and not distantBackdrop and (ratio < 0.01 or ratio > 100) then
@@ -6671,14 +6679,14 @@ function PortScene.build(info, onFacility)
 			if patch then patch.Name = "SandyShore" end
 		end
 	end
-	-- [거대한 원경 언덕] 기존 CC0 언덕을 좌우 외곽에 2~3겹 확대 배치한다.
+	-- [원경 언덕] 기존 CC0 언덕을 좌우 외곽에 2~3겹 낮은 자연 실루엣으로 배치한다.
 	-- 마을 경계 밖의 비충돌 장면 전용 모델이라 기존 도로·저장·게임 규칙은 불변.
 	if not warmShore and AssetIds["Castle/ground-hills"] then
 		for _, side in { -1, 1 } do
 			for depth = 1, (if UserInputService.TouchEnabled then 2 else 3) do
-				local at = Vector3.new(-350 - depth * 110, -2,
+				local at = Vector3.new(-350 - depth * 110, -2 - depth * 2,
 					side * (CITY_LIMIT_Z + 150 + (depth - 1) * 150))
-				local hills = importedModel(folder, "Castle", "ground-hills", at, 230 + depth * 55, false)
+				local hills = importedModel(folder, "Castle", "ground-hills", at, 155 + depth * 35, false)
 				if hills then
 					hills.Name = "DistantHills"
 					hills:SetAttribute("BackdropLayer", depth)

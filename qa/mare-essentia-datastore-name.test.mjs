@@ -3956,8 +3956,16 @@ test('항구 원경 절벽과 언덕은 원본 배율로 목표 폭을 맞추고
   assert.match(importer,/if isAnimal or distantBackdrop then m:GetScale\(\) \* ratio else ratio/);
   assert.match(importer,/distantBackdrop and kind == "Terrain" and string\.sub\(asset, 1, 6\) == "cliff-"/);
   assert.match(importer,/math\.clamp\(desiredSize \* 0\.28, 24, 52\)/);
-  assert.match(importer,/desiredSize = math\.min\(desiredSize, axis \* cliffHeightLimit \/ ext\.Y\)\s+ratio = desiredSize \/ axis/);
+  assert.match(importer,/desiredSize = math\.min\(desiredSize, axis \* reliefHeightLimit \/ ext\.Y\)\s+ratio = desiredSize \/ axis/);
   const cap=(width,height,wanted)=>Math.min(wanted,width*Math.max(24,Math.min(52,wanted*0.28))/height);
+  assert.match(importer,/local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80/);
+  assert.match(importer,/local reliefHeightLimit = cliffHeightLimit or \(if distantHills then math\.clamp\(desiredSize \* 0\.22, 28, 56\) else nil\)/);
+  assert.match(importer,/if not textured then[\s\S]*?if distantHills then[\s\S]*?Enum\.Material\.Grass/);
+  assert.match(source,/Vector3\.new\(-350 - depth \* 110, -2 - depth \* 2,/);
+  assert.match(source,/importedModel\(folder, "Castle", "ground-hills", at, 155 \+ depth \* 35, false\)/);
+  const hillCap=(width,height,wanted)=>Math.min(wanted,width*Math.max(28,Math.min(56,wanted*0.22))/height);
+  assert.equal(hillCap(20,80,260),14);
+  assert.equal(hillCap(100,10,190),190);
   assert.equal(cap(10,20,200),26);
   assert.equal(cap(100,10,200),200);
   assert.ok(cap(20,40,100)*40/20<=28.000001);
