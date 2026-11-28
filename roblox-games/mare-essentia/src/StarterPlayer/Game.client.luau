@@ -17003,6 +17003,11 @@ syncScene = function()
 		builtLandmarks = view.harbor and view.harbor.builtLandmarks,
 		year = p.year,
 		day = p.day,
+		-- [날씨·계절 땅] 같은 날 같은 항구는 항해 예보와 같은 날씨(Voyage.weather). 예전엔 전달이 없었다.
+		weather = (function()
+			local okW, w = pcall(function() return require(Shared:WaitForChild("Voyage")).weather(tonumber(p.day) or 0, p.portId).id end)
+			return if okW then w else nil
+		end)(),
 		storyCount = #(view.story or {}),
 		companions = crew,
 		voyagers = view.diplo and view.diplo.voyagers,
