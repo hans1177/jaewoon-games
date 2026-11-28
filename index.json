@@ -2,15 +2,15 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "46160920916",
+    "runId": "46161735553",
     "kind": "deep",
     "portBatch": null,
-    "at": "2026-11-28T15:44:56.834Z",
-    "sourceRevision": "7a297e1db6a51c29a875f61a27fac47299c01740",
+    "at": "2026-11-28T15:53:29.096Z",
+    "sourceRevision": "6ffaee30a93ad66185a2c2dc4fea7c6d6a449458",
     "captureArtifact": {
-      "name": "studio-frames-46160920916",
+      "name": "studio-frames-46161735553",
       "retentionDays": 1,
-      "runId": "46160920916"
+      "runId": "46161735553"
     },
     "result": "FAIL",
     "frames": 9,
@@ -25,10 +25,36 @@
       "capturedFrames": 9,
       "abortedEarly": true
     },
-    "path": "runs/46160920916"
+    "path": "runs/46161735553"
   },
-  "lastDeepAt": "2026-11-28T15:44:56.834Z",
+  "lastDeepAt": "2026-11-28T15:53:29.096Z",
   "runs": [
+    {
+      "runId": "46161735553",
+      "kind": "deep",
+      "portBatch": null,
+      "at": "2026-11-28T15:53:29.096Z",
+      "sourceRevision": "6ffaee30a93ad66185a2c2dc4fea7c6d6a449458",
+      "captureArtifact": {
+        "name": "studio-frames-46161735553",
+        "retentionDays": 1,
+        "runId": "46161735553"
+      },
+      "result": "FAIL",
+      "frames": 9,
+      "changedFrames": 9,
+      "summary": {
+        "plannedSteps": 1000,
+        "completedSteps": 36,
+        "plannedClicks": 12,
+        "successfulClicks": 3,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 70,
+        "capturedFrames": 9,
+        "abortedEarly": true
+      },
+      "path": "runs/46161735553"
+    },
     {
       "runId": "46160920916",
       "kind": "deep",
@@ -210,32 +236,6 @@
         "abortedEarly": false
       },
       "path": "runs/46155709039"
-    },
-    {
-      "runId": "46150053565",
-      "kind": "deep",
-      "portBatch": null,
-      "at": "2026-11-28T13:37:20.992Z",
-      "sourceRevision": "d2e17ee4b0de20db0d6a8c0ad600a01ec071b506",
-      "captureArtifact": {
-        "name": "studio-frames-46150053565",
-        "retentionDays": 1,
-        "runId": "46150053565"
-      },
-      "result": "FAIL",
-      "frames": 9,
-      "changedFrames": 9,
-      "summary": {
-        "plannedSteps": 1000,
-        "completedSteps": 36,
-        "plannedClicks": 12,
-        "successfulClicks": 3,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 70,
-        "capturedFrames": 9,
-        "abortedEarly": true
-      },
-      "path": "runs/46150053565"
     },
     {
       "runId": "46139298155",
