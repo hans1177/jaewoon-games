@@ -644,6 +644,10 @@ H.facilityIconAtlas = AssetIds["CardArt/ui_facility_icons"]
 -- [외교 손그림] 기존 승인된 황동 서신·깃펜 원화를 별도 시트에서 쓴다.
 H.diplomacyIconAtlas = AssetIds["CardArt/ui_reserve_icons_2"]
 H.facilityIconCells = {
+	-- [승인 청동 원화 재사용] 신규 시트 미등록 상태에도 공통 메뉴는 같은 황동 실물 아이콘을 사용한다.
+	nav = 2, tradeg = 0, adventure = 4, growth = 6, records = 7,
+	nextstep = 2, reward = 0, recommend = 11, chapter = 7, problem = 4,
+	cause = 11, todo = 7, result = 2, recap = 7, coach = 11, defeat = 4,
 	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
 	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
 	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 5, close = 15, -- 외교: 예비 손그림 2번 시트의 봉인 서신(2행 2열)
@@ -2166,7 +2170,7 @@ H.galleryCaption.TextStrokeTransparency = 0.5
 for _, direction in { -1, 1 } do
   local button = Instance.new("TextButton")
   button.Name = if direction < 0 then "PreviousFacilityArt" else "NextFacilityArt"
-  button.Size = UDim2.fromOffset(40, 40)
+  button.Size = UDim2.fromOffset(44, 44)
   button.Text = if direction < 0 then "◀" else "▶"
   button.TextSize = 24
   button.Font = Enum.Font.GothamBold
@@ -2318,24 +2322,15 @@ function H.renderFacilityGallery()
   H.galleryPrev.Visible = canPage
   H.galleryNext.Visible = canPage
   H.galleryCanPage = canPage
-  -- [가로 사건 원화] 사건 원화는 가로 그림이라 카드 틀에 넣으면 작아진다. 배경 전체를 원화로 쓰고 카드는 숨긴다.
-  -- 세로 7:10 지식 카드만 카드 틀에 자르지 않고 띄운다.
-  local portraitCard = realCard or ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard ~= nil)
-  H.galleryCard.Visible = portraitCard
-  if H.galleryBackdrop then H.galleryBackdrop.ImageTransparency = if portraitCard then 0.35 else 0 end
+  -- [공통 가로 원화] 선명한 배경과 투명한 전체 터치 영역을 분리한다.
+  -- 원본 7:10 카드는 백과에서 자르지 않고 볼 수 있다.
+  H.galleryCard.Visible = true
+  H.galleryImage.ImageTransparency = 1
+  H.galleryBackdrop.ImageTransparency = 0
   if H.galleryImage.Image ~= image then
-    -- [전환 성능] 빠른 넘김에서 이전 페이드가 새 그림 밝기를 덮지 않도록 재사용 제어한다.
     if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
     H.galleryImage.Image = image
-    if H.galleryBackdrop then H.galleryBackdrop.Image = image end
-    if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
-      H.galleryImage.ImageTransparency = 1
-      H.galleryArtTween = game:GetService("TweenService"):Create(H.galleryImage,
-        TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 })
-      H.galleryArtTween:Play()
-    else
-      H.galleryImage.ImageTransparency = 0
-    end
+    H.galleryBackdrop.Image = image
   end
   H.galleryTitle.Text = if selection then selection.name elseif chartName then chartName elseif realCard then matched.name
     elseif focus then focus[1] else TAB_NAME[tab] or "시설 안내"
@@ -2374,7 +2369,7 @@ function H.layoutBook()
   local statusWidth = if width < 480 then math.max(140, math.min(252, width - 142))
     elseif width < 740 then math.min(290, width - 156)
     else math.clamp(math.floor(width * 0.36), 280, 380)
-  local topY = if width < 740 then 68 else 15
+  local topY = if width < 740 then 64 else 15
   local rowH = if width < 740 then 44 else 34
   if width < 740 then
     -- [폰] 두 칸 전체를 가운데 정렬하며 폭이 작을수록 자금 표시만 줄인다.
@@ -2416,7 +2411,7 @@ function H.layoutBook()
   local tabs = tabCount > 1 and tabBar.Visible
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
   local compactTabs = not wide
-  local sectionTop = if compactTabs and not facilityDetail then 120 else 68
+  local sectionTop = if compactTabs and not facilityDetail then 112 else 68
   -- [낮은 가로 화면] 가로폰·작은 창은 탭을 머리줄(제목·자금 오른쪽, X 왼쪽)로 올려 본문 높이를 확보한다.
   local headerTabs, headerTabW = false, 0
   if wide and tabs and height > 0 and height < 600 then
@@ -2436,7 +2431,7 @@ function H.layoutBook()
     headerLabel.Size = UDim2.fromOffset(150, 29)
     H.pageDetails.Size = UDim2.fromOffset(150, 18)
   end
-  local tabHeight = if compactTabs then 52 else 54
+  local tabHeight = if compactTabs then 48 else 46
   local tabGap = if width < 340 then 4 else 6
   local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
   if tabList then tabList.Padding = UDim.new(0, tabGap) end
@@ -2485,10 +2480,10 @@ function H.layoutBook()
       elseif selectedRight > currentX + visibleTabsWidth then selectedRight - visibleTabsWidth else currentX
     H.tabStrip.CanvasPosition = Vector2.new(math.clamp(desiredScroll, 0, math.max(0, allTabsWidth - visibleTabsWidth)), 0)
   end
-  local bodyTop = sectionTop + (if tabs then tabHeight + 12 else 0)
+  local bodyTop = if headerTabs then 68 else sectionTop + (if tabs then tabHeight + 8 else 0)
   H.bookSpine.Visible = false
   H.facilityGallery.Visible = gallery
-  local primaryVisible = gallery and currentTab ~= "board" and currentTab ~= "battle"
+  local primaryVisible = view ~= nil and not newGameMode and H.MENU_FOCUS[currentTab] ~= nil and not facilityDetail and not dexTab and currentTab ~= "board" and currentTab ~= "battle"
     and currentTab ~= "war" and currentTab ~= "route" and currentTab ~= "status"
     and currentTab ~= "scholar" and currentTab ~= "crew" and currentTab ~= "gwent"
   H.menuActionButton.Visible = primaryVisible
@@ -2507,87 +2502,44 @@ function H.layoutBook()
     return
   end
   content.Visible = true
-  -- [첫 판단 카드] 기존 버튼 하나를 가로 모드의 오른쪽 첫 카드에 배치한다.
-  -- 폰 세로에서는 버튼을 기존 하단 도크로 복귀시켜 터치 동작을 보존한다.
+  -- [공통 주요 행동] 원화 여부나 화면 방향과 무관하게 기존 버튼을 아래에 고정한다.
+  H.menuActionButton.Parent = H.menuActionDock
+  H.menuActionButton.Position = UDim2.fromOffset(6, 6)
+  H.menuActionButton.Size = UDim2.new(1, -12, 0, 48)
+  H.menuActionButton.TextSize = 18
   if H.menuFocusBanner and H.menuFocusBanner.Parent and currentTab ~= "codex" then
-    local firstCardAction = wide and primaryVisible
-    local bannerH = 84
     local heading = H.menuFocusBanner:FindFirstChild("MenuFocusHeading")
-    if heading then heading.TextSize = if wide then 20 else 18 end
+    if heading then heading.TextSize = if wide then 18 else 16 end
     local explanation = H.menuFocusBanner:FindFirstChild("MenuFocusDescription")
+    local bannerH = 82
     if explanation then
       explanation.Visible = explanation.Text ~= ""
       if explanation.Visible then
-        local artworkWidth = if wide and gallery then math.clamp(math.floor(width * 0.38), 220, 460) + 8 else 0
-        local textWidth = math.max(1, width - artworkWidth - 50)
-        explanation.TextSize = if wide then 18 else 17
+        explanation.TextSize = if wide then 15 else 14
         local measured = game:GetService("TextService"):GetTextSize(
-          explanation.Text, explanation.TextSize, explanation.Font, Vector2.new(textWidth, 10000))
+          explanation.Text, explanation.TextSize, explanation.Font, Vector2.new(math.max(1, width - 52), 10000))
         explanation.Position = UDim2.fromOffset(14, 82)
         explanation.Size = UDim2.new(1, -28, 0, measured.Y + 4)
         bannerH = 94 + measured.Y
       end
     end
-    H.menuFocusBanner.Size = UDim2.new(1, -6, 0, bannerH + (if firstCardAction then 60 else 0))
-    H.menuActionButton.Parent = if firstCardAction then H.menuFocusBanner else H.menuActionDock
-    H.menuActionButton.Position = if firstCardAction then UDim2.new(0, 12, 1, -60) else UDim2.fromOffset(6, 6)
-    H.menuActionButton.Size = if firstCardAction then UDim2.new(1, -24, 0, 52) else UDim2.new(1, -12, 0, 54)
-    H.menuActionButton.TextSize = if firstCardAction then 19 else 20
-    H.menuActionDock.Visible = primaryVisible and not firstCardAction
+    H.menuFocusBanner.Size = UDim2.new(1, -6, 0, bannerH)
   end
-  -- [반응형 원화 배너] 왼쪽 세로 칸을 없애고 본문 위 전체 폭 가로 띠로 바꾼다.
-  -- 같은 원화를 흐리게 깐 배경 위에 7:10 원화 카드(자르지 않음)와 제목을 놓는다.
-  -- 본문은 전체 폭을 쓰고, 높이가 모자라면 원화를 숨겨 조작을 우선한다.
-  local bodyH = height - bodyTop
-  local showArt = gallery and bodyH >= (if wide then 300 else 340)
-  -- [낮은 가로 화면] 배너 대신 오른쪽 포스터(흐린 배경 + 원화 카드 + 제목)로 바꿔 본문 높이를 지킨다.
-  local poster = gallery and not showArt and wide and bodyH >= 200
-  H.facilityGallery.Visible = showArt or poster
-  local dockH = if H.menuActionDock.Visible then 80 else 8
-  -- [깔끔한 원화 띠 · 2026-11-28 오너: "상단 원화 디자인 구려"] 위 배너는 작은 카드+흐린 배경 대신
-  -- 원화 한 장을 선명하게 꽉 채우고 왼쪽만 어둡게 깔아 제목 한 줄·설명 한 줄. 원화 터치(백과 이동)는 그대로.
-  local cleanStrip = showArt and not poster
-  H.galleryCard.BackgroundTransparency = if cleanStrip then 1 else 0
-  H.galleryImage.ImageTransparency = if cleanStrip then 1 else 0
-  do
-    local st = H.galleryCard:FindFirstChildOfClass("UIStroke")
-    if st then st.Enabled = not cleanStrip end
-  end
-  H.galleryBackdrop.ImageTransparency = if cleanStrip then 0 else 0.35
+  -- [모바일 본문 우선] 낮은 가로 창에는 장식용 포스터를 만들지 않는다.
+  local dockH = if H.menuActionDock.Visible then 68 else 8
+  local bodyH = height - bodyTop - dockH
+  local showArt = gallery and bodyH >= (if wide then 340 else 360)
+  H.facilityGallery.Visible = showArt
+  H.galleryCard.Visible = true
+  H.galleryCard.BackgroundTransparency = 1
+  H.galleryImage.ImageTransparency = 1
+  local st = H.galleryCard:FindFirstChildOfClass("UIStroke")
+  if st then st.Enabled = false end
+  H.galleryBackdrop.ImageTransparency = 0
   if H.galleryShadeGradient then
-    H.galleryShadeGradient.Transparency = if cleanStrip
-      then NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.08), NumberSequenceKeypoint.new(0.5, 0.55), NumberSequenceKeypoint.new(1, 1) })
-      else NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(0.45, 0.25), NumberSequenceKeypoint.new(1, 0.5) })
+    H.galleryShadeGradient.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.08), NumberSequenceKeypoint.new(0.5, 0.55), NumberSequenceKeypoint.new(1, 1) })
   end
-  if poster then
-    local posterW = math.clamp(math.floor(width * 0.24), 200, 300)
-    local posterH = math.max(120, bodyH - 8)
-    H.facilityGallery.Position = UDim2.new(1, -posterW - 8, 0, bodyTop)
-    H.facilityGallery.Size = UDim2.fromOffset(posterW, posterH)
-    local cardH = math.max(60, math.min(posterH - 74, math.floor((posterW - 24) * 10 / 7)))
-    local cardW = math.floor(cardH * 7 / 10)
-    H.galleryCard.Position = UDim2.fromOffset(math.floor((posterW - cardW) / 2), 10)
-    H.galleryCard.Size = UDim2.fromOffset(cardW, cardH)
-    H.galleryTitle.TextWrapped = false
-    H.galleryTitle.TextXAlignment = Enum.TextXAlignment.Center
-    H.galleryTitle.TextSize = 20
-    H.galleryTitle.Position = UDim2.fromOffset(8, cardH + 16)
-    H.galleryTitle.Size = UDim2.new(1, -16, 0, 26)
-    H.galleryCaption.TextWrapped = true
-    H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Center
-    H.galleryCaption.Position = UDim2.fromOffset(8, cardH + 42)
-    H.galleryCaption.Size = UDim2.new(1, -16, 0, 26)
-    local midY = 10 + math.floor(cardH / 2) - 20
-    H.galleryPrev.Position = UDim2.fromOffset(4, midY)
-    H.galleryNext.Position = UDim2.new(1, -44, 0, midY)
-    content.Position = UDim2.fromOffset(8, bodyTop)
-    content.Size = UDim2.new(1, -posterW - 24, 1, -bodyTop - dockH)
-    H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
-    H.menuActionDock.Size = UDim2.new(1, -posterW - 24, 0, 68)
-    return
-  end
-  -- [반응형 배너] 같은 원화를 흐리게 깐 배경 위에 7:10 원화 카드(자르지 않음)와 제목을 놓는다.
-  local artH = if showArt then math.clamp(math.floor(bodyH * (if wide then 0.24 else 0.2)), 92, if wide then 170 else 130) else 0
+  local artH = if showArt then math.clamp(math.floor(bodyH * 0.23), 92, if wide then 150 else 120) else 0
   H.facilityGallery.Position = UDim2.fromOffset(8, bodyTop)
   H.facilityGallery.Size = UDim2.new(1, -16, 0, artH)
   -- 원화 전체가 터치 영역(보이지 않는 카드), 글자는 왼쪽 어두운 쪽에
@@ -2599,18 +2551,18 @@ function H.layoutBook()
   H.galleryTitle.TextXAlignment = Enum.TextXAlignment.Left
   H.galleryTitle.TextSize = if wide then 26 else 21
   H.galleryTitle.Position = UDim2.new(0, textX, 1, if wide then -66 else -56)
-  H.galleryTitle.Size = UDim2.new(0.62, -textX, 0, 32)
+  H.galleryTitle.Size = UDim2.new(1, -textX - 112, 0, 32)
   H.galleryCaption.TextWrapped = false
   H.galleryCaption.TextXAlignment = Enum.TextXAlignment.Left
   H.galleryCaption.Position = UDim2.new(0, textX, 1, -30)
-  H.galleryCaption.Size = UDim2.new(0.62, -textX, 0, 22)
+  H.galleryCaption.Size = UDim2.new(1, -textX - 112, 0, 22)
   H.galleryPrev.Position = UDim2.new(1, -96, 1, -48)
   H.galleryNext.Position = UDim2.new(1, -50, 1, -48)
   local contentY = bodyTop + (if showArt then artH + 8 else 0)
   content.Position = UDim2.fromOffset(8, contentY)
   content.Size = UDim2.new(1, -16, 1, -contentY - dockH)
-  H.menuActionDock.Position = UDim2.new(0, 8, 1, -76)
-  H.menuActionDock.Size = UDim2.new(1, -16, 0, 68)
+  H.menuActionDock.Position = UDim2.new(0, 8, 1, -64)
+  H.menuActionDock.Size = UDim2.new(1, -16, 0, 60)
 end
 mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)
 tabBar:GetPropertyChangedSignal("Visible"):Connect(H.layoutBook)
@@ -11746,11 +11698,11 @@ do
 		add(function()
 			local row = Instance.new("Frame")
 			row.Name = "MenuHomeStrip"
-			local compact = content.AbsoluteSize.X > 0 and content.AbsoluteSize.X < 440
-			row.Size = UDim2.new(1, -6, 0, if compact then 180 else 76)
+			local compact = mainInner.AbsoluteSize.X > 0 and mainInner.AbsoluteSize.X < 350
+			row.Size = UDim2.new(1, -6, 0, if compact then 168 else 76)
 			row.BackgroundTransparency = 1
 			local grid = Instance.new("UIGridLayout")
-			grid.CellSize = if compact then UDim2.new(1, 0, 0, 56) else UDim2.new(1 / 3, -4, 1, 0)
+			grid.CellSize = if compact then UDim2.new(1, 0, 0, 52) else UDim2.new(1 / 3, -4, 1, 0)
 			grid.CellPadding = UDim2.fromOffset(6, if compact then 6 else 0)
 			grid.FillDirectionMaxCells = if compact then 1 else 3
 			grid.SortOrder = Enum.SortOrder.LayoutOrder
@@ -11759,12 +11711,16 @@ do
 				local b = Instance.new("TextButton")
 				b.LayoutOrder = order
 				b.AutoButtonColor = true
-				b.BackgroundColor3 = color
+				b.BackgroundColor3 = COLORS.coverRaised
 				b.BorderSizePixel = 0
 				b.Text = ""
 				b.Active = tab ~= nil
 				b.Parent = row
-				corner(b, 10)
+				corner(b, 6)
+				local edge = Instance.new("UIStroke")
+				edge.Color = if order == 1 then UI_BRASS elseif order == 3 and tab then color else INK_EDGE
+				edge.Thickness = if order == 1 then 1.5 else 1
+				edge.Parent = b
 				local frameArt = AssetIds["CardArt/ui_frame_card"]
 				if frameArt then
 					local art = Instance.new("ImageLabel")
