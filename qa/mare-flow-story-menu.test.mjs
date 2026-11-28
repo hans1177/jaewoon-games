@@ -14,7 +14,9 @@ test('메뉴 5묶음·하단 5버튼·건물 이름 보존', () => {
   for (const t of ['board','quest','route','trade','market','status','harbor','crew','recruit','scholar','yard','codex','encyclopedia','tech','map','diplomacy','explore','battle','gwent','war']) assert.ok(all.includes(t), t);
   assert.match(game, /H\.FACILITY_GROUPS = \{/);
   assert.match(game, /setPortrait\(facilityGroup\.name\)/);
-  assert.match(game, /\{ "route", "항해", "route" \}, \{ "trade", "교역", "trade" \}, \{ "board", "모험", "battle" \}/);
+  assert.match(game, /\{ "route", "항해", if H\.reserveIconAtlas\[3\] then "nav" else "route" \}/);
+  assert.match(game, /\{ "trade", "교역", if H\.reserveIconAtlas\[3\] then "tradeg" else "trade" \}/);
+  assert.match(game, /\{ "board", "모험", if H\.reserveIconAtlas\[3\] then "adventure" else "battle" \}/);
 });
 test('다음 할 일 띠·건물 표시·메뉴 첫 줄', () => {
   for (const f of ['nextStep', 'markFacility', 'refreshNextStep', 'menuHomeStrip']) assert.match(game, new RegExp(`function H\\.${f}\\(`));
@@ -41,4 +43,18 @@ test('첫 경험·패배 이유·교역 이익·막대 현황', () => {
   assert.match(game, /finalWinner == "b" and H\.showDefeatAdvice/);
   assert.match(view, /cargoProfit = \(function\(\)/);
   assert.match(game, /mode == "profit"/);
+});
+
+test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 먼저 보여 준다', () => {
+  const home = game.split('function H.menuHomeStrip()')[1].split('-- [이야기 흐름')[0];
+  assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
+  assert.match(home, /d\.TextWrapped = true/);
+  const trade = game.split('local function openTradeHall()')[1].split('H.tradeHall = openTradeHall')[0];
+  assert.match(trade, /local infoTop = 80/);
+  assert.match(trade, /big\.Position = UDim2\.new\(0\.5, 0, 0, articleTop \+ 8\)/);
+  assert.match(trade, /hg = mkButton\(desk,/);
+  assert.match(trade, /hg\.Position = UDim2\.new\(1\/3,/);
+  const qty = trade.split('local function setQuantity(value)')[1].split('local function quantityButton')[0];
+  assert.match(qty, /refreshReceipt\(\)/);
+  assert.doesNotMatch(qty, /build\(\)/);
 });
