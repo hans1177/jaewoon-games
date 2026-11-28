@@ -1671,7 +1671,8 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = \(if opts\.cardOnly then \(if MOBILE_VFX then 73 else 75\) else \(if MOBILE_VFX then 69 else 71\)\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
+  assert.match(battle,/local cameraFov = \(if opts\.cardOnly then \(if MOBILE_VFX then 73 else 75\) else \(if MOBILE_VFX then 69 else 71\)\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
+  assert.match(battle,/if cam\.FieldOfView ~= cameraFov then cam\.FieldOfView = cameraFov end/);
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
@@ -1736,7 +1737,10 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/adviceLine\.Position = UDim2\.new\(0\.5, 0, 0, 112\)/);
   assert.match(src,/adviceLine\.TextSize = if battleViewport\.X < 480 then 16 else 20/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\), if battleViewport\.X < 480 then math\.max\(80, battleViewport\.X - 206\) else 168\), 26\)/);
+  assert.match(src,/tactic\.AnchorPoint = Vector2\.new\(0\.5, 0\)/);
+  assert.match(src,/tactic\.Position = UDim2\.new\(0\.5, 0, 0, 4\)/);
+  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(320, math\.floor\(battleViewport\.X \* \(if battleViewport\.X < 480 then 0\.54 elseif battleViewport\.X < 720 then 0\.46 else 0\.34\)\) - 36\), 30\)/);
+  assert.match(src,/tactic\.TextSize = if battleViewport\.X < 480 then 18 else 22/);
   assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
   assert.match(src,/l\.TextStrokeTransparency = 1/);
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
