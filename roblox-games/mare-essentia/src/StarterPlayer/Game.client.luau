@@ -2432,8 +2432,8 @@ function H.layoutBook()
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
   -- [방문 메뉴 중복 제거] 교역·조선 상세장부에 동일한 자금/최근 메뉴가 있어
   -- 공통 헤더 표시만 숨긴다. 거래·정비·최근 이동 동작은 기존 상세장부를 사용한다.
-  H.menuStatusLabel.Visible = not facilityDetail
-  H.menuRecentButton.Visible = recent and not facilityDetail
+  H.menuStatusLabel.Visible = not facilityDetail and currentTab ~= "encyclopedia"
+  H.menuRecentButton.Visible = recent and not facilityDetail and currentTab ~= "encyclopedia"
   -- [깔끔한 도감] 도감 탭은 화면 자체가 원화 중심이라 위/옆 원화 배너를 겹쳐 띄우지 않는다.
   local dexTab = (currentTab == "codex" or currentTab == "encyclopedia") and H.dexClean ~= false
   local gallery = H.galleryImage.Image ~= "" and not facilityDetail and view ~= nil and not newGameMode and not dexTab
@@ -14462,252 +14462,126 @@ do
 
 	-- found: 지금 보이는 목록, current: 펼친 카드, article, category, cx
 	function H.renderDex(found, current, article, category, cx, onPick)
-		local W = math.max(320, content.AbsoluteSize.X)
-		local wide = W >= 720
+		local W = math.max(280, content.AbsoluteSize.X)
+		local wide = W >= 660
+		local pageNo = H.encyclopediaPage or 1
 		add(function()
 			local root = Instance.new("Frame")
 			root.Name = "DexRoot"
-			root.BackgroundTransparency = 1
-			local H0 = math.clamp(math.max(content.AbsoluteSize.Y, 520) - 110, 420, 760)
-			root.Size = UDim2.new(1, -6, 0, if wide then H0 else 0)
-			if not wide then root.AutomaticSize = Enum.AutomaticSize.Y end
-
-			-- 왼쪽(넓은 화면) / 위(좁은 화면): 원화 썸네일 격자
-			local grid = Instance.new("ScrollingFrame")
-			grid.Name = "DexGrid"
-			grid.BackgroundColor3 = Color3.fromRGB(38, 30, 22)
-			grid.BorderSizePixel = 0
-			grid.ScrollBarThickness = 4
-			grid.AutomaticCanvasSize = if wide then Enum.AutomaticSize.Y else Enum.AutomaticSize.X
-			grid.CanvasSize = UDim2.new()
-			grid.ScrollingDirection = if wide then Enum.ScrollingDirection.Y else Enum.ScrollingDirection.X
-			grid.Size = if wide then UDim2.new(0.36, -6, 1, 0) else UDim2.new(1, 0, 0, 132)
-			grid.Parent = root
-			corner(grid, 10)
-			local gp = Instance.new("UIPadding")
-			gp.PaddingTop, gp.PaddingBottom, gp.PaddingLeft, gp.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 8)
-			gp.Parent = grid
-			local cols = if wide then (if W >= 1000 then 4 else 3) else 0
-			local gl
-			if wide then
-				gl = Instance.new("UIGridLayout")
-				local cw = math.floor((W * 0.36 - 22 - (cols - 1) * 6) / cols)
-				gl.CellSize = UDim2.fromOffset(cw, math.floor(cw * 1.38))
-				gl.CellPadding = UDim2.fromOffset(6, 6)
-			else
-				gl = Instance.new("UIListLayout")
-				gl.FillDirection = Enum.FillDirection.Horizontal
-				gl.Padding = UDim.new(0, 6)
+			root.BackgroundColor3 = Color3.fromRGB(79, 50, 30)
+			root.BorderSizePixel = 0
+			local height = math.clamp(content.AbsoluteSize.Y - 8, 300, 850)
+			root.Size = UDim2.new(1, -6, 0, height)
+			root.ClipsDescendants = true
+			corner(root, 8)
+			bookMaterial(root, "leather", 192)
+			-- 실제 제작 책 배경은 승인 등록 키가 존재할 때만 연결한다.
+			local bookId = AssetIds["CardArt/ency_bg_book"]
+			if bookId then
+				local art = Instance.new("ImageLabel")
+				art.Name = "EncyclopediaBookArt"
+				art.BackgroundTransparency = 1
+				art.Image = "rbxassetid://" .. tostring(bookId)
+				art.Size = UDim2.fromScale(1, 1)
+				art.ScaleType = Enum.ScaleType.Stretch
+				art.Parent = root
 			end
-			gl.SortOrder = Enum.SortOrder.LayoutOrder
-			gl.Parent = grid
-			for i, card in found do
-				if i > 240 then break end -- 폰 성능: 한 번에 240장까지(검색·분야로 좁힘)
-				local b = Instance.new("ImageButton")
-				b.Name = "DexThumb"
-				b.LayoutOrder = i
-				if not wide then b.Size = UDim2.fromOffset(82, 114) end
-				b.BackgroundColor3 = Color3.fromRGB(70, 58, 44)
-				b.AutoButtonColor = true
-				b.Image = artOf(card)
-				b.ScaleType = Enum.ScaleType.Crop
-				b.Parent = grid
-				corner(b, 8)
-				local sel = card == current
-				local st = Instance.new("UIStroke")
-				st.Color = if sel then Color3.fromRGB(255, 214, 110) else Color3.fromRGB(90, 74, 54)
-				st.Thickness = if sel then 3 else 1
-				st.Parent = b
-				local nm = Instance.new("TextLabel")
-				nm.AnchorPoint = Vector2.new(0, 1)
-				nm.Position = UDim2.fromScale(0, 1)
-				nm.Size = UDim2.new(1, 0, 0, 22)
-				nm.BackgroundColor3 = Color3.new(0, 0, 0)
-				nm.BackgroundTransparency = 0.35
-				nm.Font = Enum.Font.GothamBold
-				nm.TextSize = 11
-				nm.TextColor3 = Color3.new(1, 1, 1)
-				nm.TextTruncate = Enum.TextTruncate.AtEnd
-				nm.Text = tostring(card.name)
-				nm.Parent = b
-				b.Activated:Connect(function() onPick(i) end)
-			end
+			local leaf = Instance.new("Frame")
+			leaf.Name = "EncyclopediaLeaves"
+			leaf.BackgroundTransparency = 1
+			leaf.Position = UDim2.fromOffset(12, 10)
+			leaf.Size = UDim2.new(1, -24, 1, -66)
+			leaf.Parent = root
 
-			-- 오른쪽(넓은 화면) / 아래(좁은 화면): 펼친 카드
+			-- 넓은 화면은 양면 책, 세로폰은 도판/해설 한 장씩 넘긴다.
+			local reading = wide or H.dexReading == true
+			local plate = Instance.new("Frame")
+			plate.Name = "EncyclopediaPlate"
+			plate.BackgroundColor3 = PAPER
+			plate.BackgroundTransparency = if bookId and wide then 0.18 else 0
+			plate.BorderSizePixel = 0
+			plate.Size = if wide then UDim2.new(0.5, -4, 1, 0) else UDim2.fromScale(1, 1)
+			plate.Visible = wide or not reading
+			plate.Parent = leaf
+			corner(plate, 3)
+			local heading = mkLabel(plate, tostring(category.name or "세계 지식") .. "  ·  도판 " .. string.format("%03d", pageNo), 15, SOFTT, true)
+			heading.Position = UDim2.fromOffset(10, 6)
+			heading.Size = UDim2.new(1, -20, 0, 24)
+			heading.AutomaticSize = Enum.AutomaticSize.None
+			heading.TextXAlignment = Enum.TextXAlignment.Center
+			local hero = Instance.new("ImageLabel")
+			hero.Name = "DexHero"
+			hero.Position = UDim2.fromOffset(12, 34)
+			hero.Size = UDim2.new(1, -24, 1, -100)
+			hero.BackgroundTransparency = 1
+			hero.Image = artOf(current)
+			hero.ScaleType = Enum.ScaleType.Fit
+			hero.Parent = plate
+			if hero.Image == "" then
+				local missing = mkLabel(hero, "도판 미등록", 16, SOFTT, false)
+				missing.Size = UDim2.fromScale(1, 1)
+				missing.AutomaticSize = Enum.AutomaticSize.None
+				missing.TextXAlignment = Enum.TextXAlignment.Center
+			end
+			local title = mkLabel(plate, tostring(current.name), 22, INKD, true)
+			title.Position = UDim2.new(0, 10, 1, -60)
+			title.Size = UDim2.new(1, -20, 0, 54)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			title.TextWrapped = true
+			title.TextXAlignment = Enum.TextXAlignment.Center
+
 			local page = Instance.new("ScrollingFrame")
 			page.Name = "DexPage"
 			page.BackgroundColor3 = PAPER
+			page.BackgroundTransparency = if bookId and wide then 0.18 else 0
 			page.BorderSizePixel = 0
 			page.ScrollBarThickness = 4
 			page.AutomaticCanvasSize = Enum.AutomaticSize.Y
 			page.CanvasSize = UDim2.new()
-			if wide then
-				page.Position = UDim2.new(0.36, 6, 0, 0)
-				page.Size = UDim2.new(0.64, -6, 1, 0)
-			else
-				page.Position = UDim2.fromOffset(0, 140)
-				page.Size = UDim2.new(1, 0, 0, math.clamp(content.AbsoluteSize.Y - 40, 420, 900))
-			end
-			page.Parent = root
-			corner(page, 10)
+			page.ScrollingDirection = Enum.ScrollingDirection.Y
+			page.Position = if wide then UDim2.new(0.5, 4, 0, 0) else UDim2.new()
+			page.Size = if wide then UDim2.new(0.5, -4, 1, 0) else UDim2.fromScale(1, 1)
+			page.Visible = reading
+			page.Parent = leaf
+			corner(page, 3)
 			local pp = Instance.new("UIPadding")
-			pp.PaddingTop, pp.PaddingBottom, pp.PaddingLeft, pp.PaddingRight = UDim.new(0, 12), UDim.new(0, 16), UDim.new(0, 14), UDim.new(0, 14)
+			pp.PaddingTop, pp.PaddingBottom, pp.PaddingLeft, pp.PaddingRight = UDim.new(0, 14), UDim.new(0, 18), UDim.new(0, 16), UDim.new(0, 16)
 			pp.Parent = page
 			local pl = Instance.new("UIListLayout")
-			pl.Padding = UDim.new(0, 10)
+			pl.Padding = UDim.new(0, 8)
 			pl.SortOrder = Enum.SortOrder.LayoutOrder
 			pl.Parent = page
 			local order = 0
 			local function nextOrder() order += 1; return order end
-
-			-- 큰 원화(가운데, 카드 비율 그대로) + 아래 그라데이션 위 이름
-			local heroW = math.floor((if wide then W * 0.64 else W) - 40)
-			local heroH = math.clamp(math.floor(heroW * 0.62), 220, 420)
-			local hero = Instance.new("ImageLabel")
-			hero.Name = "DexHero"
-			hero.LayoutOrder = nextOrder()
-			hero.Size = UDim2.new(1, 0, 0, heroH)
-			hero.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
-			hero.Image = artOf(current)
-			hero.ScaleType = Enum.ScaleType.Fit
-			hero.Parent = page
-			corner(hero, 10)
-			local blur = Instance.new("ImageLabel")
-			blur.Name = "DexHeroBackdrop"
-			blur.Size = UDim2.fromScale(1, 1)
-			blur.BackgroundTransparency = 1
-			blur.Image = hero.Image
-			blur.ImageTransparency = 0.78
-			blur.ScaleType = Enum.ScaleType.Crop
-			blur.ZIndex = hero.ZIndex - 1
-			blur.Parent = hero
-			corner(blur, 10)
-			local shade = Instance.new("Frame")
-			shade.AnchorPoint = Vector2.new(0, 1)
-			shade.Position = UDim2.fromScale(0, 1)
-			shade.Size = UDim2.new(1, 0, 0, 86)
-			shade.BackgroundColor3 = Color3.new(0, 0, 0)
-			shade.BorderSizePixel = 0
-			shade.ZIndex = hero.ZIndex + 1
-			shade.Parent = hero
-			corner(shade, 10)
-			local sg = Instance.new("UIGradient")
-			sg.Rotation = 90
-			sg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(1, 0.15) })
-			sg.Parent = shade
-			local name = Instance.new("TextLabel")
-			name.AnchorPoint = Vector2.new(0, 1)
-			name.Position = UDim2.new(0, 16, 1, -30)
-			name.Size = UDim2.new(1, -32, 0, 34)
-			name.BackgroundTransparency = 1
-			name.Font = Enum.Font.GothamBlack
-			name.TextSize = 28
-			name.TextXAlignment = Enum.TextXAlignment.Left
-			name.TextColor3 = Color3.new(1, 1, 1)
-			name.Text = tostring(current.name)
-			name.ZIndex = hero.ZIndex + 2
-			name.Parent = hero
-			local stars = ({ Common = 1, Uncommon = 2, Rare = 3, Epic = 4, Legendary = 5 })[current.rarity] or 1
-			local sub = Instance.new("TextLabel")
-			sub.AnchorPoint = Vector2.new(0, 1)
-			sub.Position = UDim2.new(0, 16, 1, -10)
-			sub.Size = UDim2.new(1, -32, 0, 20)
-			sub.BackgroundTransparency = 1
-			sub.Font = Enum.Font.GothamMedium
-			sub.TextSize = 14
-			sub.TextXAlignment = Enum.TextXAlignment.Left
-			sub.TextColor3 = Color3.fromRGB(255, 226, 150)
-			sub.Text = string.rep("★", stars) .. "   " .. (if article and article.latin then tostring(article.latin) .. "  ·  " else "") .. tostring(category.name or "")
-			sub.ZIndex = hero.ZIndex + 2
-			sub.Parent = hero
-			-- 이전/다음(원화 양옆 반투명 화살표)
-			for _, d in { { -1, "◀", 0 }, { 1, "▶", 1 } } do
-				local a = Instance.new("TextButton")
-				a.AnchorPoint = Vector2.new(d[3], 0.5)
-				a.Position = UDim2.new(d[3], if d[3] == 0 then 8 else -8, 0.45, 0)
-				a.Size = UDim2.fromOffset(44, 44)
-				a.BackgroundColor3 = Color3.new(0, 0, 0)
-				a.BackgroundTransparency = 0.5
-				a.Font = Enum.Font.GothamBlack
-				a.TextSize = 18
-				a.TextColor3 = Color3.new(1, 1, 1)
-				a.Text = d[2]
-				a.ZIndex = hero.ZIndex + 3
-				a.Parent = hero
-				corner(a, 22)
-				a.Activated:Connect(function() onPick(math.clamp((H.encyclopediaPage or 1) + d[1], 1, #found)) end)
-			end
-
-			-- 3칸 정보(분야·지역·시대) 한 줄
-			local chips = Instance.new("Frame")
-			chips.LayoutOrder = nextOrder()
-			chips.Size = UDim2.new(1, 0, 0, 28)
-			chips.BackgroundTransparency = 1
-			chips.Parent = page
-			local cl = Instance.new("UIListLayout")
-			cl.FillDirection = Enum.FillDirection.Horizontal
-			cl.Padding = UDim.new(0, 6)
-			cl.Parent = chips
-			chip(chips, tostring(category.name or current.field or "지식"), Color3.fromRGB(table.unpack(category.color or { 214, 190, 140 })):Lerp(Color3.new(1, 1, 1), 0.55))
-			if current.region then chip(chips, "📍 " .. tostring(current.region)) end
-			if current.era then chip(chips, "⏳ " .. tostring(current.era)) end
-			chip(chips, string.format("%d / %d", H.encyclopediaPage or 1, #found), Color3.fromRGB(230, 222, 206))
-
-			-- 개요(짧게, 큰 글씨)
-			local function para(text, size, color, bold)
-				local l = mkLabel(page, tostring(text), size, color or INKD, bold, nextOrder())
+			local function para(value, size, color, bold)
+				local l = mkLabel(page, tostring(value), size, color or INKD, bold, nextOrder())
 				l.Size = UDim2.new(1, 0, 0, 0)
 				l.AutomaticSize = Enum.AutomaticSize.Y
 				l.TextWrapped = true
 				l.TextTruncate = Enum.TextTruncate.None
 				return l
 			end
-			para(current.description or "", 18, INKD, false)
-			if article and article.summary then para(article.summary, 16, SOFTT, false) end
-
-			-- 자세히(접기/펼치기)
-			local more = Instance.new("TextButton")
-			more.LayoutOrder = nextOrder()
-			more.Size = UDim2.new(1, 0, 0, 42)
-			more.BackgroundColor3 = Color3.fromRGB(232, 220, 194)
-			more.Font = Enum.Font.GothamBold
-			more.TextSize = 15
-			more.TextColor3 = INKD
-			more.Text = if H.dexExpanded then "자세히 접기 ▲" else "자세히 보기 ▼  (생김새 · 역사 · 지도 · 관련 카드)"
-			more.Parent = page
-			corner(more, 10)
-			more.Activated:Connect(function()
-				H.dexExpanded = not H.dexExpanded
-				render()
-			end)
-			if not current.combatArt then
-				local mark = mkButton(page, if H.encyclopediaBookmarkId == current.id then "🔖 책갈피 빼기" else "🔖 책갈피 꽂기",
-					COLORS.leather, UDim2.new(1, 0, 0, 40), function()
-						local result = call("SetEncyclopediaBookmark", { id = current.id })
-						if result and result.ok then Sfx.play("sfx_book_turn", 0.3) end
-					end, true)
-				mark.LayoutOrder = nextOrder()
-				mark.TextSize = 15
+			para(tostring(category.name or "세계 지식"), 14, SOFTT, true)
+			para(current.name, 26, INKD, true)
+			if article and article.latin then para(article.latin, 15, SOFTT, false) end
+			local meta = {}
+			if current.region then table.insert(meta, tostring(current.region)) end
+			if current.era then table.insert(meta, tostring(current.era)) end
+			if #meta > 0 then para(table.concat(meta, " · "), 14, SOFTT, false) end
+			local function section(titleText, value)
+				if not value or value == "" then return end
+				para(titleText, 18, Color3.fromRGB(120, 80, 30), true)
+				para(value, 16, INKD, false)
 			end
-			if H.dexExpanded then
-				local function section(title, text)
-					if not text or text == "" then return end
-					local line = Instance.new("Frame")
-					line.LayoutOrder = nextOrder()
-					line.Size = UDim2.new(1, 0, 0, 1)
-					line.BackgroundColor3 = LINE
-					line.BorderSizePixel = 0
-					line.Parent = page
-					para(title, 17, Color3.fromRGB(120, 80, 30), true)
-					para(text, 16, INKD, false)
-				end
-				if article then
-					section("생김새·구조", article.looks)
-					section("특징", article.details)
-					section("쓰임과 배경", article.context)
-					section("역사", article.history)
-					section("💡 재미있는 이야기", article.trivia)
-				end
+			section("개요", if article and article.summary and article.summary ~= "" then article.summary else current.description)
+			if article then
+				section("생김새·구조", article.looks)
+				section("특징", article.details)
+				section("쓰임과 배경", article.context)
+				section("역사", article.history)
+				section("흥미로운 사실", article.trivia)
+			end
+			if not current.combatArt then
 				if H.encyFacts then H.encyFacts(page, nextOrder(), current, article) end
 				if H.encyMap then H.encyMap(page, nextOrder(), current) end
 				if H.encyTimeline then H.encyTimeline(page, nextOrder(), current) end
@@ -14716,14 +14590,79 @@ do
 				for _, c in (cx.cards or {}) do allById[c.id] = c end
 				if H.encyRelated then H.encyRelated(page, nextOrder(), current, allById) end
 				if H.encyCollection then H.encyCollection(page, nextOrder(), current, cx.cards) end
-				local first = current.provenance
-				if first then
-					section("내 발견 기록", "첫 발견: " .. tostring(first.port or "위치 미상") .. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견"))
-				end
-				if article and type(article.sources) == "table" and #article.sources > 0 then
-					para("참고: " .. table.concat(article.sources, " · "), 13, SOFTT, false)
+			end
+			local first = current.provenance
+			if first then
+				section("내 발견 기록", "첫 발견: " .. tostring(first.port or "위치 미상") .. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견"))
+			end
+			if article and type(article.sources) == "table" and #article.sources > 0 then
+				para("참고: " .. table.concat(article.sources, " · "), 13, SOFTT, false)
+			end
+
+			-- 도판 목차는 펼친 책 위에 12장 단위로만 표시한다.
+			if H.dexPlateIndex then
+				leaf.Visible = false
+				local grid = Instance.new("ScrollingFrame")
+				grid.Name = "DexGrid"
+				grid.BackgroundColor3 = PAPER
+				grid.BorderSizePixel = 0
+				grid.Position = leaf.Position
+				grid.Size = leaf.Size
+				grid.AutomaticCanvasSize = Enum.AutomaticSize.Y
+				grid.CanvasSize = UDim2.new()
+				grid.ScrollBarThickness = 4
+				grid.Parent = root
+				local gl = Instance.new("UIGridLayout")
+				local cols = if wide then 6 else 3
+				local cw = math.max(64, math.floor((W - 48 - (cols - 1) * 6) / cols))
+				gl.CellSize = UDim2.fromOffset(cw, math.floor(cw * 1.4) + 26)
+				gl.CellPadding = UDim2.fromOffset(6, 6)
+				gl.SortOrder = Enum.SortOrder.LayoutOrder
+				gl.Parent = grid
+				local block = math.floor((pageNo - 1) / 12) * 12 + 1
+				for i = block, math.min(block + 11, #found) do
+					local card = found[i]
+					local b = Instance.new("ImageButton")
+					b.Name = "DexThumb"
+					b.LayoutOrder = i
+					b.BackgroundColor3 = PAPER
+					b.Image = artOf(card)
+					b.ScaleType = Enum.ScaleType.Fit
+					b.Parent = grid
+					local nm = mkLabel(b, card.name, 13, INKD, true)
+					nm.AnchorPoint = Vector2.new(0, 1)
+					nm.Position = UDim2.fromScale(0, 1)
+					nm.Size = UDim2.new(1, 0, 0, 26)
+					nm.AutomaticSize = Enum.AutomaticSize.None
+					nm.BackgroundColor3 = PAPER
+					nm.BackgroundTransparency = 0
+					nm.TextTruncate = Enum.TextTruncate.AtEnd
+					b.Activated:Connect(function() H.dexPlateIndex = false; H.dexReading = false; onPick(i) end)
 				end
 			end
+			local footer = Instance.new("Frame")
+			footer.Name = "EncyclopediaPageFooter"
+			footer.BackgroundTransparency = 1
+			footer.Position = UDim2.new(0, 10, 1, -51)
+			footer.Size = UDim2.new(1, -20, 0, 44)
+			footer.Parent = root
+			local function button(text, x, width, action, enabled)
+				local b = mkButton(footer, text, COLORS.leather, UDim2.new(width, -4, 1, 0), action, enabled)
+				b.Position = UDim2.new(x, 2, 0, 0)
+				b.TextSize = 14
+				return b
+			end
+			local stride = if H.dexPlateIndex then 12 else 1
+			button("이전", 0, 0.19, function() onPick(math.max(1, pageNo - stride)) end, pageNo > 1)
+			button(if H.dexPlateIndex then "책으로" else "도판", 0.19, 0.19, function() H.dexPlateIndex = not H.dexPlateIndex; render() end, true)
+			button(if wide then string.format("%d/%d", pageNo, #found) else (if reading then "그림" else "해설"), 0.38, 0.24, function() if not wide then H.dexReading = not reading; H.dexPlateIndex = false; render() end end, not wide)
+			if not current.combatArt then
+				button(if H.encyclopediaBookmarkId == current.id then "책갈피 빼기" else "책갈피", 0.62, 0.19, function()
+					local result = call("SetEncyclopediaBookmark", { id = current.id })
+					if result and result.ok then Sfx.play("sfx_book_turn", 0.3) end
+				end, true)
+			end
+			button("다음", 0.81, 0.19, function() onPick(math.min(#found, pageNo + stride)) end, pageNo < #found)
 			return root
 		end)
 	end
@@ -14828,7 +14767,7 @@ function RENDERERS.encyclopedia()
 		end
 	end
 	if H.dexClean ~= false then
-		add(function() return mkHeader(content, string.format("📖 도감 · %d / %d", cx.found or (#all - collectedOriginals), cx.total or #all)) end)
+		add(function() return mkHeader(content, string.format("세계 백과 · %d / %d", cx.found or (#all - collectedOriginals), cx.total or #all)) end)
 	else
 	add(function() return mkHeader(content, string.format("대항해 지식 대백과 · 지식 %d / %d · 해전 원화 %d",
 		cx.found or (#all - collectedOriginals), cx.total or #all, collectedOriginals)) end)
@@ -14904,6 +14843,7 @@ function RENDERERS.encyclopedia()
 					if g.id == fieldId then COLORS.gold else COLORS.blue,
 					UDim2.new(1 / columns, -7, 0, 43), function()
 						H.encyclopediaCategoryId = selectedField
+						H.encyclopediaIndexOpen = false
 						H.encyclopediaPage = 1
 						H.encyclopediaIndexPage = 1
 						render()
