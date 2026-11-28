@@ -9294,15 +9294,13 @@ function openYardHall()
 		local p, ship = view.player, view.ship
 		local width = root.AbsoluteSize.X
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
-		local showPortrait = false -- 선박 비교와 정비가 중심이다.
 		local inset = 8
-		local landscape = width >= 740
-		local compactNav = not landscape
 		local availableH = math.max(1, root.AbsoluteSize.Y)
-		local showGallery = (page == "compare" or page == "blueprints") and (landscape or availableH >= 440)
+		local landscape = width >= 740 or (width >= 540 and width > availableH and availableH < 440)
+		local showGallery = (page == "compare" or page == "blueprints") and ((landscape and availableH >= 260) or availableH >= 440)
 		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
 		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
-		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
+		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), if availableH < 360 then 96 else 136, 230) else 0
 		local heroTop = if landscape then 92 else 150
 		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.36) else width - inset - 8
 		local heroHeight = if landscape then math.max(1, availableH - heroTop - 8) else math.clamp(math.floor(availableH * 0.24), 98, 172)
@@ -9486,57 +9484,6 @@ function openYardHall()
 		inspect.AnchorPoint = Vector2.new(0.5, 1)
 		inspect.Position = UDim2.new(0.5, 0, 1, -5)
 		end
-		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
-		left.Visible = showPortrait
-		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
-		local tpl = lib and lib:FindFirstChild("People") and lib.People:FindFirstChild(storyPortraitModel("조선 장인", p.portId or ""))
-		local yardRegionalId, yardRegionalOffset, yardRegionalSize = H.facilityPortraitAsset(p.portId, "yard")
-		local yardImageId = yardRegionalId or FACILITY_ATLAS or PORTRAIT_ATLAS
-		if yardImageId then
-			local photo = Instance.new("ImageLabel")
-			photo.Name = "ShipwrightPortrait"
-			photo.Size = UDim2.new(1, 0, 1, -150)
-			photo.BackgroundTransparency = 1
-			photo.BorderSizePixel = 0
-			photo.ScaleType = Enum.ScaleType.Crop
-			photo.Image = "rbxassetid://" .. tostring(yardImageId)
-			photo.ImageRectOffset = yardRegionalOffset or (if FACILITY_ATLAS then FACILITY_TILE.yard else PORTRAIT_TILE.yard)
-			photo.ImageRectSize = yardRegionalSize or PORTRAIT_SIZE
-			photo.Parent = left
-		else
-			local vf = Instance.new("ViewportFrame")
-			vf.BackgroundTransparency = 1
-			vf.Size = UDim2.new(1, 0, 1, -150)
-			vf.Ambient = Color3.fromRGB(170, 170, 178)
-			vf.LightColor = Color3.fromRGB(255, 236, 205)
-			vf.LightDirection = Vector3.new(-0.6, -0.8, -1).Unit
-			vf.Parent = left
-			local cam = Instance.new("Camera")
-			cam.FieldOfView = 40
-			cam.Parent = vf
-			vf.CurrentCamera = cam
-			local world = Instance.new("WorldModel")
-			world.Parent = vf
-			local m = portraitPerson(world, "yard" .. (p.portId or ""), "Knight", tpl)
-			if not m then
-				vf:Destroy()
-			end
-			local cf, size = CFrame.new(), Vector3.new(4, 6, 2)
-			if m then
-				cf, size = m:GetBoundingBox()
-			end
-			local focus = cf.Position + Vector3.new(0, size.Y * 0.1, 0)
-			cam.CFrame = CFrame.lookAt(focus + Vector3.new(0.25, 0.08, -1).Unit * (math.max(size.X, size.Y, size.Z) * 1.7), focus)
-		end
-		local bubble = mkBox(left, UDim2.new(0, 10, 1, -146), UDim2.new(1, -20, 0, 136), Color3.fromRGB(240, 228, 200))
-		corner(bubble, 12)
-		local say = (message ~= "" and message) or "어서 오게. 배는 뱃사람의 목숨이지. 손볼 데가 있나?"
-		local sayL = mkLabel(bubble, say, 16, Color3.fromRGB(50, 36, 24), true)
-		sayL.Position = UDim2.fromOffset(10, 8)
-		sayL.Size = UDim2.new(1, -20, 1, -16)
-		sayL.AutomaticSize = Enum.AutomaticSize.None
-		sayL.TextWrapped = true
-		sayL.TextYAlignment = Enum.TextYAlignment.Top
 
 		-- 기존 조선소 화면 내용을 이 스크롤 영역에 그린다
 		local saved, previousAdvice = content, H.contextAdviceShown

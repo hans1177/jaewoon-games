@@ -3673,6 +3673,10 @@ test('조선소 Studio QA는 정비와 비교 페이지를 각각 실제 클릭�
   assert.ok(steps.indexOf(maintenance)<steps.indexOf(click) && steps.indexOf(click)<steps.indexOf(compare));
   assert.match(click.code,/YardTab_compare/);
   assert.match(compare.code,/YardSectionShips/);
+  assert.match(maintenance.code,/YardSectionShip/);
+  assert.match(maintenance.code,/YARD_REFIT_NOT_SEPARATE/);
+  assert.match(click.code,/nav.CanvasPosition/);
+  assert.match(click.code,/YARD_COMPARE_TAB_CLIPPED/);
 });
 
 
