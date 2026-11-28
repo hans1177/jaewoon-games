@@ -30,7 +30,8 @@
   - 그림 종류: `CardArt` · `Icons` · `Portraits` · `Goods` · `Materials` (png/jpg)
   - 모델 종류: `Animals` · `Terrain` · `Relics` · `Town` · `Castle` · `Naval` · `People` · `Monsters` · `Interior` · `Cargo` (**glb 만**, FBX 는 GLB 로 바꿔서)
   - 이름: 소문자·숫자·`_`·`-` 만
-- 자동 검사: 이름·형식·크기(그림 128~4096px, 모델 20MB 이하)·**256색 금지**·중복. 대륙 카드(eu_01 등)는 세로 7:10 → 1400×2000 으로 맞춤. 그 밖의 카드 그림 PNG 는 JPG 로 바꿔 등록.
+- 자동 검사: 이름·형식·크기(그림 128~4096px, 모델 20MB 이하)·**256색 금지**·중복. 대륙 카드(eu_01 등)는 세로 7:10 → 1400×2000 으로 맞춤. 그 밖의 카드 그림 PNG 는 JPG 로 바꿔 등록(기존 UI PNG 및 아래 백과 전용 PNG 제외).
+- 백과 전용 `ency_bg_book.png`(1600×1000), `ency_tab_sheet.png`(1024×1024), `ency_map_world.png`(2048×1024), `ency_scale_people.png`(512×512)는 PNG 원본 유지. 문양 시트·크기 비교 그림은 실제 알파 투명도 필수. 시트는 16칸 모두 그림이 있고 칸별 8% 여백을 충족해야 하며 독립 원본 16종과 합성 시각 검수 후 기존 승인표의 정확한 해시가 있어야 등록한다.
 - 흐름: 기존 등록 워크플로(`owner-mare-essentia-assets`) 정기 실행이 드롭박스를 확인 → 통과분을 `register_asset.py` 로 정식 폴더에 넣고 main 저장 → 같은 등록기를 다시 불러 Roblox 등록 → `AssetIds` 반영. 대개 10~20분.
 - 결과: `docs/assets/dropbox_inbox_report.md`(등록·거부 이유), 기록 `assets/dropbox-imported.json`. 드롭박스 쓰기 권한이 있으면 처리한 파일은 `_done/`, 거부는 `_rejected/` 로 옮긴다.
 - **이름만 맞추면 게임에 자동 배치**:
