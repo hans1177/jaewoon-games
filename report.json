@@ -1,170 +1,25 @@
 {
- "sourceRevision": "75f30b5f170128818ddc888dacf35706fa52caa4",
+ "sourceRevision": "b2115acfa948bd9e460b30cfb1ff9954c2fd309c",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "NEWGAME ok=true\ntext"
+   "out": "bound\ntext"
   },
   {
-   "step": 3,
+   "step": 2,
    "ctx": "Client",
-   "out": "INTRO name=true comp=true\ntext"
+   "out": "truenil\ntext"
   },
   {
-   "step": 5,
+   "step": 4,
    "ctx": "Client",
-   "out": "killed=false\ntext"
+   "out": "truenil\ntext"
   },
   {
    "step": 6,
    "ctx": "Client",
-   "out": "DEV Tab trade\ntext"
-  },
-  {
-   "step": 8,
-   "capture": "f_trade",
-   "files": 1
-  },
-  {
-   "step": 9,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=298 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 10,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:trade true nil\ntext"
-  },
-  {
-   "step": 11,
-   "ctx": "Client",
-   "out": "killed=true\ntext"
-  },
-  {
-   "step": 12,
-   "ctx": "Client",
-   "out": "DEV Tab route\ntext"
-  },
-  {
-   "step": 14,
-   "capture": "f_route",
-   "files": 1
-  },
-  {
-   "step": 15,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=603 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 16,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:route true nil\ntext"
-  },
-  {
-   "step": 17,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 18,
-   "ctx": "Client",
-   "out": "DEV Tab yard\ntext"
-  },
-  {
-   "step": 20,
-   "capture": "f_yard",
-   "files": 1
-  },
-  {
-   "step": 21,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=195 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 22,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:yard true nil\ntext"
-  },
-  {
-   "step": 23,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 24,
-   "ctx": "Client",
-   "out": "DEV Tab quest\ntext"
-  },
-  {
-   "step": 26,
-   "capture": "f_quest",
-   "files": 1
-  },
-  {
-   "step": 27,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=72 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:quest true nil\ntext"
-  },
-  {
-   "step": 29,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "DEV Tab codex\ntext"
-  },
-  {
-   "step": 32,
-   "capture": "f_codex",
-   "files": 1
-  },
-  {
-   "step": 33,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=838 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:codex true nil\ntext"
-  },
-  {
-   "step": 35,
-   "ctx": "Client",
-   "out": "killed=false\ntext"
-  },
-  {
-   "step": 36,
-   "ctx": "Client",
-   "out": "DEV Tab status\ntext"
-  },
-  {
-   "step": 38,
-   "capture": "f_status",
-   "files": 1
-  },
-  {
-   "step": 39,
-   "ctx": "Client",
-   "out": "CHK deck view=1048x380 texts=212 issues=1 ; CUT[999997749] box=76x20 text=80x16\ntext"
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "DEVRESULT Tab:status true nil\ntext"
-  },
-  {
-   "step": 41,
-   "ctx": "Client",
-   "out": "ERR Client count=0\ntext"
+   "out": "DIAG cow piv(-180,50,-0) bb1.8x7.3x4.1 tilt=flip prim=Cow |   P Cow MeshPart sz1.8x4.1x7.3 r(90,0,50) tr0 |   B root<Cow w(90,0,50) y3.0 |   B FrontFoot.R<root w(0,-50,0) y4.6 |   B Body<root w(90,0,50) y3.0 |   B FrontLeg.R<Body w(90,0,-40) y4.5 |   B FrontUpLeg.R<FrontLeg.R w(-78,-10,-49) y4.5 |   B FrontLowLeg.R<FrontUpLeg.R w(-94,4,-50) y4.7 |   B BackLeg.R<Body w(90,0,-40) y1.3 |   B BackUpLeg.R<BackLeg.R w(-114,23,-44) y1.3 |   B BackLowLeg.R<BackUpLeg.R w(-84,-7,-50) y0.8 |   B FrontLeg.L<Body w(-90,-0,40) y4.5 |   B FrontUpLeg.L<FrontLeg.L w(-85,-16,-50) y4.5 |   B FrontLowLeg.L<FrontUpLeg.L w(-94,4,-50) y4.7 |   B BackLeg.L<Body w(-90,-0,40) y1.3 | sheep piv(-0,-86,-180) bb1.4x2.8x3.8 tilt=nil prim=Sheep |   P Sheep MeshPart sz1.4x2.8x3.8 r(-180,86,180) tr0 |   B root<Sheep w(-180,86,-180) y0.0 |   B FrontFoot.R<root w(-90,0,94) y0.1 |   B Body<root w(-180,86,-180) y1.5 |   B FrontLeg.R<Body w(-180,86,90) y1.6 |   B FrontUpLeg.R<FrontLeg.R w(-80,-78,101) y1.6 |   B FrontLowLeg.R<FrontUpLeg.R w(64,-81,-117) y0.8 |   B BackLeg.R<Body w(-180,86,90) y1.6 |   B BackUpLeg.R<BackLeg.R w(80,-54,-100) y1.6 |   B BackLowLeg.R<BackUpLeg.R w(-67,-79,114) y1.0 |   B FrontLeg.L<Body w(0,-86,-90) y1.6 |   B FrontUpLeg.L<FrontLeg.L w(-48,-75,132) y1.6 |   B FrontLowLeg.L<FrontUpLeg.L w(64,-81,-117) y0.8 |   B BackLeg.L<Body w(0,-86,-90) y1.6 | chicken piv(90,0,23) bb1.5x1.1x1.1 tilt=nil prim=Chicken |   P Chicken MeshPart sz1.6x1.1x1.1 r(-0,-23,-0) tr0 |   B Body<Chicken w(-0,-23,-0) y0.0 |   B Head<Chicken w(-0,-23,-0) y0.3 |   B Head2<Head w(-0,-23,-0) y0.7 |   B Head3<Head2 w(-0,-23,-0) y1.0 |   B Eyebrow.R<Head w(-0,-23,-0) y0.7 |   B Eyebrow.L<Head w(-0,-23,-0) y0.7 | dog piv(-180,77,-0) bb1.1x2.6x2.0 tilt=flip prim=Pug |   P Pug MeshPart sz1.1x2.0x2.6 r(90,0,77) tr0 |   B root<Pug w(90,0,77) y1.1 |   B FrontFoot.R<root w(0,-77,0) y1.7 |   B Body<root w(90,0,77) y1.1 |   B FrontLeg.R<Body w(90,0,-13) y1.7 |   B FrontUpLeg.R<FrontLeg.R w(-86,-9,-77) y1.7 |   B FrontLowLeg.R<FrontUpLeg.R w(-91,6,-77) y1.7 |   B BackLeg.R<Body w(90,0,-13) y0.5 |   B BackUpLeg.R<BackLeg.R w(-101,34,-73) y0.5 |   B BackLowLeg.R<BackUpLeg.R w(-89,-6,-77) y0.4 |   B FrontLeg.L<Body w(-90,-0,13) y1.7 |   B FrontUpLeg.L<FrontLeg.L w(-94,-11,-78) y1.7 |   B FrontLowLeg.L<FrontUpLeg.L w(-91,6,-77) y1.7 |   B BackLeg.L<Body w(-90,-0,13) y0.5 | cat piv(-180,-88,-180) bb1.3x1.8x1.2 tilt=nil prim=RootPart |   P body MeshPart sz0.8x0.9x0.9 r(-180,-88,-180) tr0 |   P leg-back-left MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P leg-back-right MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P leg-front-left MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P leg-front-right MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P Group MeshPart sz0.2x0.1x0.0 r(-180,-88,-180) tr0 |   P tail MeshPart sz0.1x0.7x0.4 r(-180,-88,-180) tr0\ntext"
   }
  ],
  "errors": [],
@@ -172,212 +27,37 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35006
+   "elapsedMs": 35007
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 3064
+   "elapsedMs": 160
   },
   {
    "step": 2,
-   "type": "wait",
-   "elapsedMs": 4009
+   "type": "luau",
+   "elapsedMs": 7297
   },
   {
    "step": 3,
-   "type": "luau",
-   "elapsedMs": 3050
+   "type": "wait",
+   "elapsedMs": 8003
   },
   {
    "step": 4,
-   "type": "wait",
-   "elapsedMs": 2007
+   "type": "luau",
+   "elapsedMs": 8069
   },
   {
    "step": 5,
-   "type": "luau",
-   "elapsedMs": 149
+   "type": "wait",
+   "elapsedMs": 8015
   },
   {
    "step": 6,
    "type": "luau",
-   "elapsedMs": 706
-  },
-  {
-   "step": 7,
-   "type": "wait",
-   "elapsedMs": 3010
-  },
-  {
-   "step": 8,
-   "type": "capture",
-   "elapsedMs": 1627
-  },
-  {
-   "step": 9,
-   "type": "luau",
-   "elapsedMs": 414
-  },
-  {
-   "step": 10,
-   "type": "luau",
-   "elapsedMs": 371
-  },
-  {
-   "step": 11,
-   "type": "luau",
-   "elapsedMs": 406
-  },
-  {
-   "step": 12,
-   "type": "luau",
-   "elapsedMs": 398
-  },
-  {
-   "step": 13,
-   "type": "wait",
-   "elapsedMs": 3001
-  },
-  {
-   "step": 14,
-   "type": "capture",
-   "elapsedMs": 1314
-  },
-  {
-   "step": 15,
-   "type": "luau",
-   "elapsedMs": 424
-  },
-  {
-   "step": 16,
-   "type": "luau",
-   "elapsedMs": 394
-  },
-  {
-   "step": 17,
-   "type": "luau",
-   "elapsedMs": 401
-  },
-  {
-   "step": 18,
-   "type": "luau",
-   "elapsedMs": 409
-  },
-  {
-   "step": 19,
-   "type": "wait",
-   "elapsedMs": 3001
-  },
-  {
-   "step": 20,
-   "type": "capture",
-   "elapsedMs": 1581
-  },
-  {
-   "step": 21,
-   "type": "luau",
-   "elapsedMs": 454
-  },
-  {
-   "step": 22,
-   "type": "luau",
-   "elapsedMs": 460
-  },
-  {
-   "step": 23,
-   "type": "luau",
-   "elapsedMs": 427
-  },
-  {
-   "step": 24,
-   "type": "luau",
-   "elapsedMs": 435
-  },
-  {
-   "step": 25,
-   "type": "wait",
-   "elapsedMs": 3004
-  },
-  {
-   "step": 26,
-   "type": "capture",
-   "elapsedMs": 1594
-  },
-  {
-   "step": 27,
-   "type": "luau",
-   "elapsedMs": 418
-  },
-  {
-   "step": 28,
-   "type": "luau",
-   "elapsedMs": 416
-  },
-  {
-   "step": 29,
-   "type": "luau",
-   "elapsedMs": 434
-  },
-  {
-   "step": 30,
-   "type": "luau",
-   "elapsedMs": 416
-  },
-  {
-   "step": 31,
-   "type": "wait",
-   "elapsedMs": 3009
-  },
-  {
-   "step": 32,
-   "type": "capture",
-   "elapsedMs": 1735
-  },
-  {
-   "step": 33,
-   "type": "luau",
-   "elapsedMs": 470
-  },
-  {
-   "step": 34,
-   "type": "luau",
-   "elapsedMs": 454
-  },
-  {
-   "step": 35,
-   "type": "luau",
-   "elapsedMs": 448
-  },
-  {
-   "step": 36,
-   "type": "luau",
-   "elapsedMs": 434
-  },
-  {
-   "step": 37,
-   "type": "wait",
-   "elapsedMs": 3008
-  },
-  {
-   "step": 38,
-   "type": "capture",
-   "elapsedMs": 1497
-  },
-  {
-   "step": 39,
-   "type": "luau",
-   "elapsedMs": 455
-  },
-  {
-   "step": 40,
-   "type": "luau",
-   "elapsedMs": 441
-  },
-  {
-   "step": 41,
-   "type": "luau",
-   "elapsedMs": 433
+   "elapsedMs": 240
   }
  ],
  "consoleCapture": {
@@ -387,13 +67,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 42,
-  "completedSteps": 42,
+  "plannedSteps": 7,
+  "completedSteps": 7,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 6,
-  "capturedFrames": 6,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
   "abortedEarly": false
  }
 }
