@@ -50,8 +50,12 @@ test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 
   assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
   assert.match(home, /d\.TextWrapped = true/);
   const trade = game.split('local function openTradeHall()')[1].split('H.tradeHall = openTradeHall')[0];
-  assert.match(trade, /local infoTop = 80/);
-  assert.match(trade, /big\.Position = UDim2\.new\(0\.5, 0, 0, articleTop \+ 8\)/);
+  assert.match(trade, /local infoTop = 62/);
+  assert.match(trade, /local narrow = width < 640/);
+  assert.match(trade, /math\.floor\(availableW \* 0\.43\)/);
+  assert.match(trade, /artTap\.Activated:Connect\(openSelectedGoodEncyclopedia\)/);
+  assert.doesNotMatch(trade, /TradeEncyclopediaGallery|TradeBookPage/);
+  assert.match(trade, /row\.Size = UDim2\.new\(1, -8, 0, 116\)/);
   assert.match(trade, /hg = mkButton\(desk,/);
   assert.match(trade, /hg\.Position = UDim2\.new\(1\/3,/);
   const qty = trade.split('local function setQuantity(value)')[1].split('local function quantityButton')[0];
