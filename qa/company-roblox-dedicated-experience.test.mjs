@@ -1828,7 +1828,7 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   assert.match(discovered,/extra = math\.max\(0, amount - oldCount - 1\)/);
   assert.match(discovered,/for _, entry in acquired do\s*table\.insert\(H\.cardGainQueue, entry\)/);
   assert.match(discovered,/if H\.cardGainPlaying then return end/);
-  assert.match(discovered,/while player\.Parent and \(newGameMode or inField or sceneHold or H\.sceneBusy/);
+  assert.match(discovered,/while player\.Parent and \(newGameMode or sceneHold or H\.sceneBusy/,'field discoveries reveal immediately (2026-11-28 owner)');
   assert.match(discovered,/local found = table\.remove\(H\.cardGainQueue, 1\)/);
   assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
   assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');

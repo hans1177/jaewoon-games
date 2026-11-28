@@ -539,6 +539,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
 			or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
 		or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
+		or kind == "Town" or kind == "Terrain" or kind == "Interior"
 	local east = currentKey == "japan" or currentKey == "china" or currentKey == "seasia"
 	local sandy = currentKey == "desert" or currentKey == "ottoman"
 		or currentKey == "swahili" or currentKey == "wafrica" or currentKey == "malabar"
@@ -564,6 +565,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
 			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
 			local importedWhite = low >= 0.78 and high - low <= 0.14
+			-- 기본 회색 플라스틱도 복원한다. 정상 회색 석재·금속은 보호한다.
+			local importedGray = low >= 0.35 and high - low <= 0.10
+				and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)
 			-- [원본 재질 우선] 이미 텍스처/법선/거칠기/MaterialVariant를 가진 건축 메시에는
 			-- 강제 단색 Tint를 곱하지 않는다. 판넬·기와·벽화의 명암과 원래 광택을 보존한다.
 			local surfaceMap = p:FindFirstChildOfClass("SurfaceAppearance")
@@ -645,7 +649,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				end
 			end
 			-- [원경 언덕] 무채색 기본 플라스틱만 자연 지형 재질로 복원하며 원본 텍스처는 유지한다.
-			if architecture and (importedWhite or (distantHills and high - low <= 0.14
+			if architecture and (importedWhite or importedGray or (distantHills and high - low <= 0.14
 				and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)))
 				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
 				and p.Material ~= Enum.Material.Neon then
@@ -661,10 +665,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					-- 예: 목조 주택의 석조 기단·벽돌 외벽, 지붕 자산의 목조 들보를 같은 재질로 덮지 않는다.
 					local role = p.Name:lower()
 					local name = (asset .. " " .. p.Name):lower()
-					if kind == "Town" then
+					if architecture then
 						for _, key in { "glass", "windowpane", "glazing", "hinge", "iron", "metal", "latch",
 							"awning", "canvas", "cloth", "roof", "tile", "gable", "shingle", "wood", "timber",
-							"beam", "door", "frame", "floor", "stone", "column", "wall", "brick", "plaster" } do
+							"beam", "door", "frame", "floor", "stone", "column", "wall", "brick", "plaster",
+							"trunk", "bark", "leaf", "leaves", "foliage", "grass", "moss", "sand", "snow" } do
 							if role:find(key, 1, true) then name = role; break end
 						end
 					end
@@ -674,6 +679,20 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						local stone = role:find("rock", 1, true) or role:find("stone", 1, true)
 						material = if stone then Enum.Material.Rock elseif sandy then Enum.Material.Sand else Enum.Material.Grass
 						paint = if stone then C(126, 126, 113) elseif sandy then C(173, 151, 112) else C(112, 133, 91)
+					elseif name:find("trunk", 1, true) or name:find("bark", 1, true) or name:find("branch", 1, true) or name:find("stump", 1, true) or name:find("log", 1, true) then
+						material, paint = Enum.Material.Wood, C(116, 83, 53)
+					elseif name:find("leaf", 1, true) or name:find("leaves", 1, true) or name:find("foliage", 1, true) or name:find("tree", 1, true) or name:find("bush", 1, true) or name:find("grass", 1, true) or name:find("moss", 1, true) or name:find("plant", 1, true) then
+						material, paint = Enum.Material.Grass, tint or C(87, 137, 65)
+					elseif name:find("snow", 1, true) or name:find("ice", 1, true) then
+						material, paint = Enum.Material.Snow, C(225, 234, 239)
+					elseif name:find("sand", 1, true) then
+						material, paint = Enum.Material.Sand, tint or C(194, 168, 122)
+					elseif name:find("rock", 1, true) or name:find("cliff", 1, true) then
+						material, paint = Enum.Material.Rock, tint or C(137, 126, 105)
+					elseif name:find("fence", 1, true) or name:find("bench", 1, true) or name:find("cart", 1, true) or name:find("table", 1, true) or name:find("bookcase", 1, true) or name:find("crate", 1, true) then
+						material, paint = Enum.Material.WoodPlanks, tint or C(129, 91, 60)
+					elseif name:find("rug", 1, true) or name:find("flag", 1, true) or name:find("banner", 1, true) then
+						material, paint = Enum.Material.Fabric, tint or C(144, 75, 55)
 					elseif name:find("glass", 1, true) or name:find("windowpane", 1, true)
 						or name:find("glazing", 1, true) then
 						-- [유리] 무늬가 없는 수입 흰 창만 원재질을 살린다.
@@ -708,6 +727,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						material = if sandy then Enum.Material.Sandstone elseif mediterranean then Enum.Material.Limestone else Enum.Material.Cobblestone
 						paint = wallColor:Lerp(C(122, 119, 113), if sandy then 0.18 else 0.48)
 						if tint then paint = paint:Lerp(tint, 0.42) end
+					elseif kind == "Terrain" then
+						material, paint = Enum.Material.Ground, tint or C(137, 113, 78)
+					elseif kind == "Interior" then
+						material, paint = Enum.Material.WoodPlanks, tint or C(126, 92, 64)
 					elseif tint then
 						paint = paint:Lerp(tint, 0.86)
 					end
@@ -886,6 +909,42 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		end
 	end
 	return m
+end
+
+-- [자동 배치 보정 · 2026-11-28] 보정표(PlacementOverrides)의 제외·폰 숨김·배율·회전·높이를 모든 항구 배치에 적용한다.
+-- 같은 지역 변수에 다시 넣어 기존 호출부(importedModel)는 그대로 둔다(최상위 local 추가 없음).
+do
+	local okOv, Overrides = pcall(function() return require(script.Parent:WaitForChild("PlacementOverrides", 3)) end)
+	if okOv and Overrides then
+		local raw = importedModel
+		importedModel = function(parent, kind, asset, bottomPosition, desiredSize, solid, tint, buildDelay)
+			local ov = Overrides.get(kind, asset)
+			if ov and (ov.disabled or (ov.mobileHide and game:GetService("UserInputService").TouchEnabled)) then return nil end
+			local m = raw(parent, kind, asset, bottomPosition, desiredSize * ((ov and ov.scale) or 1), solid, tint, buildDelay)
+			if m and ov then Overrides.apply(m, ov) end
+			-- 이름 규칙으로 자동 들어온 항구·문화권 슬롯만 겹침 피하기·지역색을 적용한다(기존 정본 배치는 그대로).
+			local name = tostring(asset)
+			local portSlot = scenePortId and string.sub(name, 1, #scenePortId + 1) == scenePortId .. "_"
+			local cultureSlot = not portSlot and string.sub(name, 1, #tostring(currentKey) + 1) == tostring(currentKey) .. "_"
+			if m and kind == "Town" and (portSlot or cultureSlot) then
+				Overrides.avoidOverlap(m)
+				if cultureSlot and scenePortId then Overrides.regionTint(m, scenePortId) end
+			end
+			return m
+		end
+	end
+end
+
+-- [문화권 공통 대체 · 2026-11-28] 항구 전용 <항구>_<슬롯> 이 없으면 같은 문화권 공통 <문화권>_<슬롯> 을 쓴다.
+-- 주택·가로등·우물·시장·방앗간·광장·공방·가판대만. 대표 경관(landmark)은 다른 곳 것을 쓰지 않는다(사칭 금지).
+function PortScene.cultureSlot(name: string?): string?
+	if not name or AssetIds["Town/" .. name] or not scenePortId then return name end
+	local prefix = scenePortId .. "_"
+	if string.sub(name, 1, #prefix) ~= prefix then return name end
+	local slot = string.sub(name, #prefix + 1)
+	if string.find(slot, "landmark", 1, true) then return name end
+	local alt = tostring(currentKey) .. "_" .. slot
+	return if AssetIds["Town/" .. alt] then alt else name
 end
 
 -- 등불: 승인된 Town/lantern 위에 불빛을 단다 (낮엔 약하고 밤엔 밝아진다)
@@ -1158,7 +1217,7 @@ local function house(parent, pos, w, d, floors, style, rng, wallColor)
 	-- 등록 전에는 기존 문화권 주택 제작을 그대로 보존하며 저장·경제 값은 변경하지 않는다.
 	local originalHouseTier = if houseTier >= 5 and (floors or 1) >= 3 then 3
 		elseif houseTier >= 3 and (floors or 1) >= 2 then 2 else 1
-	local originalHouse = if scenePortId then scenePortId .. "_house_" .. tostring(originalHouseTier) else nil
+	local originalHouse = if scenePortId then PortScene.cultureSlot(scenePortId .. "_house_" .. tostring(originalHouseTier)) else nil
 	-- [런던 주거 실물] 기존 1~3단계 정본을 우선하고, 아직 단계 전용본이 없을 때만
 	-- 실제로 등록된 노동자·장인 주택을 일부 필지에 적용한다. 미등록 파일은 표시하지 않는다.
 	-- [런던 연립 주택] 2단계의 일부 필지에만 승인된 실제 연립 주택을 쓰며 주거·저장 구조는 유지한다.
@@ -4344,7 +4403,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							if not residentialDecorationPlaced and decor.residential > 0 and decorPlaced < decorLimit then
 								local newGrade = previousDecor and decor.residential > (previousDecor.residential or 0)
 									and decorAnimated < animationLimit
-								local originalWell = info.portId .. "_bld_well"
+								local originalWell = PortScene.cultureSlot(info.portId .. "_bld_well")
 								local itemName = if decor.residential >= 3 and AssetIds["Town/" .. originalWell] then originalWell
 									elseif decor.residential >= 3 then "village-well" else "bench_A"
 								local front = if pos.Z > 0 then -1 else 1
@@ -4647,7 +4706,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		local lampStyle = if identity then identity.lamp else "oil_lantern"
 		-- [15항구 전용 등] 등록된 종이초롱·석등·모스크등은 정확한 항구 원본만 사용한다.
 		-- 미등록 원본을 서양 가로등으로 속이지 않으며, 기존 서양 기름등 모델만 재사용한다.
-		local originalLamp = info.portId .. "_street_lamp"
+		local originalLamp = PortScene.cultureSlot(info.portId .. "_street_lamp")
 		local lampAsset = if originalLamp and AssetIds["Town/" .. originalLamp] then originalLamp
 			elseif lampStyle == "oil_lantern" then "kenney_lightpost_01" else nil
 		local lampSpacing = PortIdentity.tier(lvl).lampEvery
@@ -4756,7 +4815,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				for k = 1, stalls do
 					local x = cx + (k - (stalls + 1) / 2) * 10
 					local side = if k % 2 == 0 then -1 else 1
-					local localMarket = info.portId .. "_bld_market_stalls"
+					local localMarket = PortScene.cultureSlot(info.portId .. "_bld_market_stalls")
 					local fallbackStall = if (k + lvl) % 2 == 0 then "stall-red" else "stall-green"
 					local stallAsset = if lvl >= 2 and k == 1 and AssetIds["Town/" .. localMarket] then localMarket else fallbackStall
 					local originalStall = put("Town", stallAsset, 7, x, cz + side * stallRowZ, false,
@@ -4853,11 +4912,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local workshop = if europeanFarm and table.find(made, "timber") then "village-sawmill"
 							elseif europeanFarm and table.find(made, "iron") then "village-blacksmith"
 							elseif europeanFarm and ruralProduct == "grain" then
-							(if AssetIds["Town/" .. info.portId .. "_bld_mill"]
-								then info.portId .. "_bld_mill" else "village-mill") else nil
+							(if AssetIds["Town/" .. PortScene.cultureSlot(info.portId .. "_bld_mill")]
+								then PortScene.cultureSlot(info.portId .. "_bld_mill") else "village-mill") else nil
 						if workshop and AssetIds["Town/" .. workshop] then
 							local building = put("Town", workshop, 22, cx + 62, cz, true, face)
-							if not building and workshop == info.portId .. "_bld_mill" then
+							if not building and workshop == PortScene.cultureSlot(info.portId .. "_bld_mill") then
 								workshop = "village-mill"
 								building = put("Town", workshop, 22, cx + 62, cz, true, face)
 							end
@@ -5075,7 +5134,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				staged.Name = "PortScene"
 				-- [항구별 특산 공방] CSV의 <항구>_workshop_<상품> 실물 원본이 등록된 경우
 				-- 기존 주택 외관 대신 승인된 공방을 사용한다. 없는 원본을 일반 집으로 가장하지 않는다.
-				local workshopName = info.portId .. "_workshop_" .. good
+				local workshopName = PortScene.cultureSlot(info.portId .. "_workshop_" .. good)
 				local workshop = if lvl >= 3 and AssetIds["Town/" .. workshopName]
 					then importedModel(staged, "Town", workshopName, chosen, math.max(width, depth) * HOUSE_SCALE, true)
 					else nil
@@ -5141,7 +5200,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							propGroup, propName = "Cargo", "box-open"
 						end
 						-- [항구별 장터] 전용 가판대 원본이 있으면 기존 공방 앞 한 슬롯만 교체한다.
-						local stallName = info.portId .. "_stall_" .. good
+						local stallName = PortScene.cultureSlot(info.portId .. "_stall_" .. good)
 						local stall = if lvl >= 2 and AssetIds["Town/" .. stallName]
 							then importedModel(folder, "Town", stallName, chosen + Vector3.new(7, 0, 7.4), 5, false)
 							else nil
@@ -6936,7 +6995,7 @@ function PortScene.build(info, onFacility)
 		-- [문화권 고증] 유럽 노점을 부산·캘리컷 장시로, 유럽식 분수를 오스만 세정시설로 쓰지 않는다.
 		local europeanMarket = not identity or info.portId == "london" or info.portId == "rouen"
 		-- [항구별 원본 광장] 15항구 전용 승인 원화가 있으면 기존 동일 광장 슬롯에서 우선 사용한다.
-		local originalPlaza = info.portId .. "_plaza_center"
+		local originalPlaza = PortScene.cultureSlot(info.portId .. "_plaza_center")
 		local asset = if sceneLevel < 2 then nil
 			elseif originalPlaza and AssetIds["Town/" .. originalPlaza] then originalPlaza
 			elseif plazaKind == "market" and europeanMarket then

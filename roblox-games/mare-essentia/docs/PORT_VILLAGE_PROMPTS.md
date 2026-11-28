@@ -1,5 +1,9 @@
 # 항구 마을 구현 프롬프트 (항구 정체성 + 발전도 + 자원)
 
+> **드롭박스 올리는 곳 (필독)**
+> - `/Vibe2Transfer/inbox/Town/<항구id>_<슬롯>.glb` (슬롯은 `docs/ports/README.md` 맨 위 참고)
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 데이터: `src/ReplicatedStorage/Shared/PortIdentity.luau` · 대상: 시작 항구 15곳(이후 같은 틀로 확장)
 용도: 3D 원본(Roblox Studio `generate_mesh`/외부 3D 도구) · 바닥 텍스처 · 배치 기준. 생성물은 승인·등록 후 `AssetIds`에 넣는다.
 시대: 1500~1800년대. 실존 건축 양식을 참고하되 특정 건물 복제가 아닌 "그 양식의 대표형"으로 만든다.

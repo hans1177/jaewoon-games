@@ -1,5 +1,10 @@
 # 카드배틀(접현 카드전) 지시서 — 시스템·컨셉·분위기·진행
 
+> **드롭박스 올리는 곳 (필독)**
+> - 카드 원화: `/Vibe2Transfer/inbox/CardArt/<카드id>.png` — 대륙 카드(eu_01 등)는 세로 7:10, 1400×2000 이상 권장
+> - 카드배틀 화면 UI: `/Vibe2Transfer/inbox/CardArt/ui_<이름>.png` (기존 이름이면 교체)
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 > 필독 순서: `AGENTS.md` → `docs/RULES.md` → 이 문서 → `screens.md` → `effects.md` → `card_text.md` → `factions.md`.
 > 원화는 `docs/CARD_ART_PROMPTS.md`·`docs/CARD_BATTLE_HANDOFF.md`, 크기는 `docs/CARD_SIZE_UI_GUIDE.md`.
 > 규칙 코드: `src/ReplicatedStorage/Shared/BoardingCards.luau` (Roblox API 없음, CLI 시험). 덱·보상: `CardBook.luau`, 서버: `Services/Cardbook.luau`.

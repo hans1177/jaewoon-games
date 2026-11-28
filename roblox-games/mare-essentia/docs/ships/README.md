@@ -1,5 +1,9 @@
 # 배 디테일·렌더링 지시서
 
+> **드롭박스 올리는 곳 (필독)**
+> - `/Vibe2Transfer/inbox/Naval/<배id>-v5.glb` — 예: `galleon-v5.glb` (기존 배 이름에 `-v5` 를 붙이면 해전·항해에서 그 배 대신 쓰임)
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 > 대상: 해전(NavalBattle)·항해(VoyageScene)·조선소 미리보기에 쓰는 모든 배. 먼저 `docs/RULES.md`.
 
 ## 현재 점검 요약

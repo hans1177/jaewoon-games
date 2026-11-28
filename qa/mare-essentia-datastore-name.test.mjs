@@ -1199,7 +1199,7 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
   for(const marker of [
     'local named = (kind == "Town"', 'kind == "Castle"',
     'kind == "Terrain"', 'kind == "Naval"',
-    'd.TextureID ~= ""', 'sa and surfaceHasColorMap(sa)', 'ch.TextureId ~= ""',
+    'd.TextureID ~= ""', 'or sa ~= nil', 'ch.TextureId ~= ""',
     'light >= 0.80 and chroma <= 0.13',
     'Enum.Material.Cobblestone', 'Enum.Material.WoodPlanks',
     'Enum.Material.Slate', 'Enum.Material.Ground',
@@ -1435,7 +1435,8 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/elseif femaleLong and hairstyle == "long" then/);
   assert.match(pose,/elseif femaleLong and hairstyle == "bun" then/);
-  assert.match(pose,/elseif hair and model:GetAttribute\("NpcHairTint"\) then 0\.45/, '원본 헤어 색상 보존');
+  assert.match(pose,/if hair and faded then 0\.90/, '무채색 헤어만 복구');
+  assert.doesNotMatch(pose,/elseif hair and model:GetAttribute\("NpcHairTint"\) then 0\.45/, '유색 원본 헤어 중복 착색 금지');
   for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
     assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
   }
@@ -1718,7 +1719,7 @@ test('항구 주민은 실제 고용을 넘지 않고 개인별 출퇴근·점�
  ]) assert.ok(scene.includes(marker),'개별 시간표 연결 누락: '+marker);
  for(const marker of ['NPC_PROFESSION_ACCESSORY','NpcClothTint','NpcTrouserTint',
   'clothPersonality','outfit_apron','outfit_sash','Enum.Material.Fabric',
-  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)']){
+  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), if assetName == "outfit_stole" then 0.16 else 0.27)']){
    assert.ok(pose.includes(marker),'기등록 재단복 디테일 누락: '+marker);
  }
  for(const accessory of ['acc_sailor_headband','acc_guild_badge','acc_feather_hat','acc_pearl_hairpin']){
@@ -2825,7 +2826,7 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(block,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
  assert.match(block,/surfaceHasMaps\(sa\)/);
  assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
- assert.match(block,/if architecture and \(importedWhite or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
+ assert.match(block,/if architecture and \(importedWhite or importedGray or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
  assert.match(block,/local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80/);
  assert.match(block,/local role = p\.Name:lower\(\)/);
  assert.match(block,/if role:find\(key, 1, true\) then name = role; break end/);
@@ -2842,7 +2843,17 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(field,/asset:find\("kenney_", 1, true\)/);
  assert.match(field,/asset:find\("eastasia", 1, true\)/);
  assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\)/);
- assert.match(field,/if not textured and light >= 0\.80 and chroma <= 0\.13 then/);
+ assert.match(field,/if not textured and d\.MaterialVariant == "" and \(light >= 0\.80 and chroma <= 0\.13 or gray\)/);
+ assert.match(block,/local importedGray = low >= 0\.35 and high - low <= 0\.10/);
+ assert.match(field,/local gray = light >= 0\.35 and chroma <= 0\.10/);
+ assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\) or sa ~= nil/);
+ for(const role of ["windowpane","glazing","hinge","awning","canvas","cloth","door","frame","branch","fence"]){
+   assert.ok(field.includes('name:find("'+role+'", 1, true)'),"탐험 소재 분류 누락: "+role);
+ }
+ for (const [rgb,plastic,expected] of [[[163,163,163],true,true],[[100,100,100],true,true],[[163,163,163],false,false],[[160,100,70],true,false]]) {
+   const low=Math.min(...rgb)/255, high=Math.max(...rgb)/255;
+   assert.equal(low>=0.35 && high-low<=0.10 && plastic,expected);
+ }
  assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
 });
 
@@ -3705,7 +3716,7 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.50\)/,
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/,
     '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
@@ -3758,9 +3769,18 @@ test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본
   assert.ok(pose.includes('or (bestError < 0.0064 and bestMaterial == Enum.Material.Metal)'), '황동/갑옷 금속 원재질 보존');
   assert.ok(pose.includes('or (bestError < 0.0064 and bestMaterial == Enum.Material.Leather)'), '가죽 장식 보존');
   assert.ok(pose.includes('if not metalTrim and not leatherTrim then'), '천 이외 재질 일괄 염색 금지');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)'), 'PBR 천은 원본 텍스처 유지');
+  assert.match(pose,/local paleOutfitSurface = sourceTint\.R >= 0\.90 and sourceTint\.G >= 0\.90 and sourceTint\.B >= 0\.90/);
+  assert.match(pose,/elseif detailAllowed and paleOutfitSurface and \(assetName == "outfit_vest"/);
+  assert.match(pose,/assetName == "outfit_cuff" and typeof\(npcClothTint\) == "Color3"\s+and paleOutfitSurface then/);
+  assert.match(pose,/assetName == "outfit_boot" and typeof\(npcTrouserTint\) == "Color3"\s+and paleOutfitSurface then/);
+  // 어두운 개인색에서도 PBR 색상 배율의 각 채널은 0.73 이상을 유지한다.
+  for (const strength of [0.16,0.27,0.47,0.75,0.78,0.83]) {
+    const outfitMultiplier=0.90*(1-strength)+0.70*strength;
+    assert.ok(outfitMultiplier>=0.73);
+  }
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), if assetName == "outfit_stole" then 0.16 else 0.27)'), 'PBR 천은 원본 텍스처 유지');
   assert.ok(pose.includes('elseif pale and assetName ~= "outfit_guard" then'), '갑옷의 은색 부분을 흰색으로 오진하지 않음');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye, 0.75)'), '실제 순백으로 유실된 직물만 복구');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), 0.75)'), '실제 순백으로 유실된 직물만 복구');
   assert.ok(!pose.includes('surface.Color = surface.Color:Lerp(dye, 0.26)'), '옷 전체 파스텔 일괄 염색 금지');
   assert.ok(pose.includes('if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)'), '무텍스처 직물에서도 단추는 보호');
   assert.ok(pose.includes('for _, spec in specs do'), '현재 직업/계절 의상 기준으로 검사');
@@ -3834,13 +3854,18 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.50\)/, '텍스처 머리 원본 색상 보존');
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.35\)/, '텍스처 머리 원본 색상 보존');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.65\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.50\)/, 'PBR 머리 원본 색상 보존');
+  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/, 'PBR 머리 원본 색상 보존');
   assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
+  assert.match(pose,/and part\.MaterialVariant == "" and string\.sub\(assetName, 1, 5\) == "hair_" then/);
+  assert.match(pose,/local pale = part\.Color\.R >= 0\.90 and part\.Color\.G >= 0\.90 and part\.Color\.B >= 0\.90/);
+  assert.match(pose,/local pale = base\.R >= 0\.90 and base\.G >= 0\.90 and base\.B >= 0\.90/);
+  assert.doesNotMatch(pose,/if faded or \(hair and npcOutfit and model:GetAttribute\("NpcHairTint"\)\)/);
+  assert.match(pose,/if faded or \(npcOutfit and not hair and \(ribbon or headwear\)\) then/);
   for (const hair of [0, 0.1, 0.3, 0.8, 1]) {
-    const multiplier = 0.78 * 0.5 + (hair * 0.35 + 0.65) * 0.5;
-    assert.ok(multiplier >= 0.715 && multiplier <= 1, '밝은 머리 배율에 과도한 암부가 생기지 않는다');
+    const multiplier = 0.90 * 0.65 + (hair * 0.15 + 0.85) * 0.35;
+    assert.ok(multiplier >= 0.8825 - 1e-9 && multiplier <= 1, '밝은 머리 배율에 과도한 암부가 생기지 않는다');
   }
   assert.ok(pose.includes('scalp.Name = "HairScalp"'));
   assert.ok(pose.includes('temple.Name = "HairScalpSide"'));
@@ -3900,10 +3925,10 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('local boot = npcOutfit and assetName == "outfit_boot"'));
   assert.ok(pose.includes('elseif cuff then 0.36 elseif boot then 0.94'), '소매와 장화 높이를 관절 대비 축소');
   assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 elseif beard then -0.29 else hairOffsetY'), '손목/정강이/수염 위치를 각각 분리');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'), '원본 린넨 색상 보존');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.47)'), '원본 린넨 색상 보존');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
   assert.ok(pose.includes('if not metalTrim and pale then'), 'PBR 흰 장화만 보정, 금속 보호');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(leather, 0.83)'), 'PBR 흰 장화 가죽염색');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(leather:Lerp(Color3.new(1, 1, 1), 0.70), 0.83)'), 'PBR 흰 장화 가죽염색');
   assert.ok(pose.includes('if assetName == "outfit_cuff" and neutral then 0.83'), '무텍스처 흰 소매 추가 보정');
   assert.ok(pose.includes('part.Color:Lerp(leather, if bright then 0.86 else 0.20)'), '무텍스처 흰 장화 추가 보정');
   assert.ok(pose.includes('linenOnly = candidate[2] ~= Enum.Material.Metal'));
@@ -4470,15 +4495,15 @@ test('지역별 공방·우물·종교·시장·제분 시설은 해당 항구 �
   'info.portId .. (if n % 2 == 0 then "_bld_carpenter" else "_bld_smithy")',
   'if portWorkshop and not AssetIds["Town/" .. portWorkshop] then portWorkshop = nil end',
   'ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])',
-  'local originalWell = info.portId .. "_bld_well"',
+  'local originalWell = PortScene.cultureSlot(info.portId .. "_bld_well")',
   'if not detail and itemName == originalWell then',
   'local originalReligious = info.portId .. (if lvl <= 2 then "_bld_chapel" else "_bld_temple")',
   'local placedOriginal = AssetIds["Town/" .. originalReligious]',
   'if not placedOriginal then put("Town", "church"',
-  'local localMarket = info.portId .. "_bld_market_stalls"',
+  'local localMarket = PortScene.cultureSlot(info.portId .. "_bld_market_stalls")',
   'if not originalStall and stallAsset == localMarket then',
-  'AssetIds["Town/" .. info.portId .. "_bld_mill"]',
-  'if not building and workshop == info.portId .. "_bld_mill" then'
+  'AssetIds["Town/" .. PortScene.cultureSlot(info.portId .. "_bld_mill")]',
+  'if not building and workshop == PortScene.cultureSlot(info.portId .. "_bld_mill") then'
  ]) assert.ok(scene.includes(token),token);
  for(const port of ['london','acapulco','edo']){
   const brief=readText('roblox-games/mare-essentia/docs/ports/'+port+'.md');
@@ -4572,7 +4597,8 @@ test('마레 지상 동물은 실제 전방과 종별 보폭으로 움직이며 
   const wild=field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]')));
   for(const name of ['horse','cow','donkey','llama','sheep','pig','elephant','dog-pug','cat','chicken']) assert.ok(wild.includes(name));
   assert.ok(wild.includes('ANATOMICAL_FORWARD')&&wild.includes('UNVERIFIED_STATIC'));
-  assert.ok(wild.includes('facingKnown and legCount >='));
+  assert.match(wild,/local requiredLegs = if biped then 2 else 4/);
+  assert.match(wild,/local canWalk = facingKnown and legCount == requiredLegs/);
   assert.ok(wild.includes('local delta = target - a.travel'));
   assert.ok(wild.includes('math.abs(remainingTurn) < 0.12'));
   assert.ok(wild.includes('a.forward * proposed'));

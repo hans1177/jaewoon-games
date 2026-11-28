@@ -7,6 +7,19 @@
 
 local DF = {}
 
+-- [드롭박스 자동 배치] 카드 id 와 같은 이름으로 등록된 모델(예: Animals/zoo_tiger)이 있으면 그 카드 전용 실물로 쓴다.
+-- 등록표(AssetIds)는 로블록스 쪽(DiscoveryStage)이 DF.assetIds 로 넣어 준다(로직 테스트에서는 없음).
+DF.assetIds = nil :: any
+local OWN_GROUPS = { "Animals", "Terrain", "Relics", "Town", "Castle", "Naval", "Monsters", "Interior", "Cargo" }
+function DF.ownModel(cardId: string)
+	local ids = DF.assetIds
+	if type(ids) ~= "table" then return nil end
+	for _, g in OWN_GROUPS do
+		if ids[g .. "/" .. cardId] ~= nil then return { g, cardId } end
+	end
+	return nil
+end
+
 -- 대표 모양: 모델 후보 { 그룹, 이름 }, 기본 크기(스터드), 무리 수, 조사 방법, 장소 힌트
 -- method: sketch(스케치·동물) / collect(채집·식물·광물) / rubbing(탁본·유적) / inspect(조사·유물)
 DF.ARCHETYPES = {
@@ -227,7 +240,8 @@ local cache = {}
 -- card: { id, name, field, meta? } → 외형 정보(없으면 nil: 실물 카드가 아님)
 function DF.form(card)
 	if type(card) ~= "table" or type(card.id) ~= "string" then return nil end
-	if cache[card.id] then return cache[card.id] end
+	local hit = cache[card.id]
+	if hit and (hit.withIds or DF.assetIds == nil) then return hit end
 	local field = card.field
 	if field == "Botany" or field == "Zoology" or field == "Mineral" or field == "Relic" or field == "Site" or FIELD_OF[field] then
 		-- ok
@@ -250,6 +264,11 @@ function DF.form(card)
 		exact = DF.EXACT_ANIMALS[card.id]
 		models = if exact then { { "Animals", exact } } else {}
 	end
+	local own = DF.ownModel(card.id)
+	if own then
+		models = { own }
+		if a.kind == "animal" then exact = exact or card.id end
+	end
 	local cond = nil
 	for _, c in CONDITIONS do
 		if hits(text, c[1]) then cond = c[2]; break end
@@ -260,6 +279,7 @@ function DF.form(card)
 		method = a.method, place = a.place, landmark = a.landmark == true, bloom = a.bloom == true,
 		tint = a.tint, tools = a.tools, condition = cond, exact = exact,
 		missing = #models == 0,
+		withIds = DF.assetIds ~= nil,
 	}
 	cache[card.id] = out
 	return out

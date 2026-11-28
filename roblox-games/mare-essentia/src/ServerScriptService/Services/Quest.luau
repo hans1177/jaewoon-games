@@ -152,6 +152,9 @@ return function(D, S)
 		if quest.needChoice and not D.Quests.Kit.choiceMet(state, quest.needChoice) then
 			return false -- 이야기 분기: 다른 선택을 한 플레이어에게는 안 보인다
 		end
+		if quest.afterPrologue and not state.quests.done["pr_" .. tostring(state.nationId) .. "_4"] then
+			return false -- [장 이야기] 시작 국가 서막을 마친 뒤에 열린다
+		end
 		if quest.nation and quest.nation ~= state.nationId then
 			return false -- 서막은 시작 국가의 이야기만 보인다
 		end

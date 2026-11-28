@@ -2980,6 +2980,75 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           features:{status:last.MareQAFeatureStatus||'UNVERIFIED',progress:last.MareQAFeatureProgress||'',...parseTotals('MareQAFeatureTotals')}
         };
         console.log('STUDIO_SCRIPT_MARE_FULL_AUDIT='+JSON.stringify(report.assetAudit).slice(0,1900));
+        // [Mare 재질 원본 비교] 기존 Studio 보고서에만 기록한다. 검증되지 않은 맵을 복구하거나 통과 처리하지 않는다.
+        if(report.assetAudit.models.materialEvidence==='IMPORTED_MODEL_ONLY_SOURCE_COMPARISON_REQUIRED'){
+          const material={status:'UNVERIFIED',checked:0,sourceCompared:0,suspects:[],missingColorMapCandidates:[],unverified:[],perAsset:{}};
+          report.assetAudit.models.materialComparison=material;
+          try{
+            const root=fs.existsSync(path.join('main','roblox-games','mare-essentia'))
+              ?path.join('main','roblox-games','mare-essentia'):path.join('roblox-games','mare-essentia');
+            const repoRoot=path.resolve(root,'../..');
+            const registered=JSON.parse(fs.readFileSync(path.join(root,'assets-registered.json'),'utf8')).assets;
+            const groups=new Set(Object.entries(registered).filter(([,v])=>v.assetType==='Model').map(([k])=>k.split('/')[0]));
+            for(const kind of groups){
+              if(!/^[A-Za-z]+$/.test(kind))continue;
+              try{
+                const probe="local r=game:GetService('ReplicatedStorage') local l=r:FindFirstChild('MareAssets') "
+                  +"local g=l and l:FindFirstChild("+JSON.stringify(kind)+") "
+                  +"return 'MARE_MATERIAL_GROUP='..(g and g:GetAttribute('MareMaterialAudit') or '{}')";
+                const out=await luau('Server',probe);
+                const line=out.split(/\r?\n/).find(v=>v.startsWith('MARE_MATERIAL_GROUP='));
+                if(!line)throw Error('MATERIAL_GROUP_RESPONSE_MISSING');
+                const details=JSON.parse(line.slice('MARE_MATERIAL_GROUP='.length));
+                for(const [name,detail] of Object.entries(details)){
+                  const key=kind+'/'+name;
+                  if(!registered[key]||!detail||typeof detail!=='object')continue;
+                  material.checked++;
+                  const row={imported:detail,sourceStatus:'UNVERIFIED'};
+                  material.perAsset[key]=row;
+                  if(detail.grayPlasticWithoutMap>0)material.suspects.push(key);
+                  const source=String(registered[key].source||'');
+                  if(!source.toLowerCase().endsWith('.glb')||!source.startsWith('roblox-games/mare-essentia/assets/')){
+                    material.unverified.push({key,reason:'SOURCE_FORMAT_OR_PATH_UNSUPPORTED'});continue;
+                  }
+                  const file=path.resolve(repoRoot,source);
+                  if(!file.startsWith(path.resolve(root,'assets')+path.sep)){
+                    material.unverified.push({key,reason:'SOURCE_PATH_OUTSIDE_ASSETS'});continue;
+                  }
+                  let fd;
+                  try{
+                    fd=fs.openSync(file,'r');
+                    const header=Buffer.alloc(20);
+                    if(fs.readSync(fd,header,0,20,0)!==20||header.readUInt32LE(0)!==0x46546c67
+                      ||header.readUInt32LE(4)!==2||header.readUInt32LE(16)!==0x4e4f534a)throw Error('GLB_HEADER_INVALID');
+                    const bytes=header.readUInt32LE(12);
+                    if(bytes<2||bytes>16*1024*1024||bytes+20>fs.fstatSync(fd).size)throw Error('GLB_JSON_LENGTH_INVALID');
+                    const raw=Buffer.alloc(bytes);
+                    if(fs.readSync(fd,raw,0,bytes,20)!==bytes)throw Error('GLB_JSON_READ_INCOMPLETE');
+                    const doc=JSON.parse(raw.toString('utf8').trim());
+                    const used=new Set((doc.meshes||[]).flatMap(mesh=>(mesh.primitives||[]).map(p=>p.material)).filter(Number.isInteger));
+                    const mats=(doc.materials||[]).filter((_,i)=>used.has(i));
+                    const sourceMaps={color:mats.filter(m=>Number.isInteger(m.pbrMetallicRoughness?.baseColorTexture?.index)).length,
+                      normal:mats.filter(m=>Number.isInteger(m.normalTexture?.index)).length,
+                      roughMetal:mats.filter(m=>Number.isInteger(m.pbrMetallicRoughness?.metallicRoughnessTexture?.index)).length};
+                    row.sourceStatus='GLB_MAP_DECLARATIONS_READ';row.sourceMaps=sourceMaps;material.sourceCompared++;
+                    if(detail.unreadableMaps>0){material.unverified.push({key,reason:'IMPORTED_MAP_READ_UNAVAILABLE'});continue;}
+                    if(sourceMaps.color>0&&detail.colorMaps===0&&detail.textureParts===0&&detail.variants===0){
+                      material.missingColorMapCandidates.push(key);
+                    }
+                  }catch(error){material.unverified.push({key,reason:clean(error?.message||error).slice(0,100)});}
+                  finally{if(fd!==undefined)fs.closeSync(fd);}
+                }
+              }catch(error){material.unverified.push({kind,reason:clean(error?.message||error).slice(0,100)});}
+            }
+            material.status=material.checked===report.assetAudit.models.materialChecked&&material.sourceCompared===material.checked
+              &&material.unverified.length===0?'COMPARISON_RECORDED':'PARTIAL_COMPARISON';
+          }catch(error){material.unverified.push({reason:clean(error?.message||error).slice(0,160)});}
+          console.log('STUDIO_SCRIPT_MARE_MATERIAL_COMPARISON='+JSON.stringify({status:material.status,checked:material.checked,
+            sourceCompared:material.sourceCompared,suspects:material.suspects.length,missingColorMapCandidates:material.missingColorMapCandidates.length,
+            unverified:material.unverified.length}));
+        }
+
         if(report.assetAudit.models.status==='FAIL'||report.assetAudit.registered.status==='FAIL'){
           report.errors.push('STUDIO_ASSET_AUDIT_FAILED');
         }

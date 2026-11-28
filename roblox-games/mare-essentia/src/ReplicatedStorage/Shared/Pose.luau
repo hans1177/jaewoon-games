@@ -1603,16 +1603,16 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				-- 지나지 않는다. 머리카락 메시의 원본 TextureID를 유지한 채 색상 배율만 적용한다.
 				-- PBR SurfaceAppearance가 있는 모델은 아래 기존 PBR 분기에서 처리한다.
 				if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""
-					and string.sub(assetName, 1, 5) == "hair_" then
+					and part.MaterialVariant == "" and string.sub(assetName, 1, 5) == "hair_" then
 					local hairTint = model:GetAttribute("NpcHairTint")
 					if typeof(hairTint) == "Color3" then
 						-- [원본 머리색 보호] 이미 색이 있는 텍스처에는 어두운 배율을 중복 적용하지 않는다.
-						local pale = part.Color.R > 0.78 and part.Color.G > 0.78 and part.Color.B > 0.77
+						local pale = part.Color.R >= 0.90 and part.Color.G >= 0.90 and part.Color.B >= 0.90
 							and math.max(part.Color.R, part.Color.G, part.Color.B)
-								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
+								- math.min(part.Color.R, part.Color.G, part.Color.B) <= 0.08
 						if pale then
-							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.65)
-							part.Color = part.Color:Lerp(softTint, 0.50)
+							local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.85)
+							part.Color = part.Color:Lerp(softTint, 0.35)
 						end
 					end
 				end
@@ -1620,21 +1620,26 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				-- 수입된 SurfaceAppearance의 보조 색상만 약하게 조절해 헤어색과 직군별 천을 구분한다.
 				-- 장식 금속·진주·장화의 원본 광택 및 원형은 절대 변경하지 않는다.
 				if npcOutfit and surface and surfaceHasColorMap(surface) then
+					-- [복장 PBR] 컬러맵에는 원본 색이 이미 포함되어 있다. 흰 중립 배율에만 약한 개인색을 섞고 기존 유색/어두운 배율은 보존한다.
+					local sourceTint = surface.Color
+					local paleOutfitSurface = sourceTint.R >= 0.90 and sourceTint.G >= 0.90 and sourceTint.B >= 0.90
+						and math.max(sourceTint.R, sourceTint.G, sourceTint.B) - math.min(sourceTint.R, sourceTint.G, sourceTint.B) <= 0.08
 					if string.sub(assetName, 1, 5) == "hair_" then
 						local hairTint = model:GetAttribute("NpcHairTint")
 						if typeof(hairTint) == "Color3" then
 							-- [PBR 헤어] 컬러맵 자체의 머리색을 살리고 밝은 무채색 배율에만 약한 개인색을 섞는다.
 							-- 검거나 이미 염색된 부위는 원본 배율 그대로 유지한다.
 							local base = surface.Color
-							local pale = base.R > 0.78 and base.G > 0.78 and base.B > 0.77
+							local pale = base.R >= 0.90 and base.G >= 0.90 and base.B >= 0.90
 								and math.max(base.R, base.G, base.B)
-									- math.min(base.R, base.G, base.B) < 0.12
+									- math.min(base.R, base.G, base.B) <= 0.08
 							if pale then
-								local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.65)
-								surface.Color = surface.Color:Lerp(softTint, 0.50)
+								local softTint = hairTint:Lerp(Color3.new(1, 1, 1), 0.85)
+								surface.Color = surface.Color:Lerp(softTint, 0.35)
 							end
 						end
-					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3" then
+					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3"
+						and paleOutfitSurface then
 						-- [원본 6부위 재질] 커프 GLB는 금속 단추와 직물 레이스가 같은 이름으로 수입된다.
 						-- 이름에 "metal"/"button"이 있는지로 판단하면 황동 버튼까지 천색으로 덮일 수 있다.
 						-- 기등록 원본 glTF의 선형색과 감마색 중 가까운 재질만 선정해 밝은 레이스만 염색한다.
@@ -1658,14 +1663,15 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						if part.Material ~= Enum.Material.Metal then
 							local linen = npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)
 							if bestError < 0.0064 and linenOnly then
-								surface.Color = surface.Color:Lerp(linen, 0.47)
+								surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.47)
 							elseif sourceColor.R > 0.83 and sourceColor.G > 0.81 and sourceColor.B > 0.77
 								and math.max(sourceColor.R, sourceColor.G, sourceColor.B)
 									- math.min(sourceColor.R, sourceColor.G, sourceColor.B) < 0.12 then
-								surface.Color = surface.Color:Lerp(linen, 0.78)
+								surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.78)
 							end
 						end
-					elseif detailAllowed and assetName == "outfit_boot" and typeof(npcTrouserTint) == "Color3" then
+					elseif detailAllowed and assetName == "outfit_boot" and typeof(npcTrouserTint) == "Color3"
+						and paleOutfitSurface then
 						-- [흰 장화 복구] 수입 시 기본 흰색으로 떨어진 가죽에만 바지색 기반 어두운 가죽톤을 입힌다.
 						-- 버클·리벳·금속 장식, 컬러맵 원본은 교체하지 않고 보조 색상만 조절한다.
 						local trim = part.Name:lower()
@@ -1677,9 +1683,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
 						if not metalTrim and pale then
 							local leather = npcTrouserTint:Lerp(Color3.fromRGB(56, 43, 34), 0.67)
-							surface.Color = surface.Color:Lerp(leather, 0.83)
+							surface.Color = surface.Color:Lerp(leather:Lerp(Color3.new(1, 1, 1), 0.70), 0.83)
 						end
-					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
+					elseif detailAllowed and paleOutfitSurface and (assetName == "outfit_vest" or assetName == "outfit_coat"
 						or assetName == "outfit_guard" or assetName == "outfit_apron"
 						or assetName == "outfit_sash" or assetName == "outfit_stole") then
 						-- [원본 재질별 복장 보정] GLB의 섬유·피혁·황동 단추는 같은 outfit 메시라도 별도 재질이다.
@@ -1718,10 +1724,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							end
 							if bestError < 0.0064 and bestMaterial == Enum.Material.SmoothPlastic then
 								-- [실제 PBR 천] ColorMap/Normal/Roughness를 그대로 사용하며 옷색만 약하게 반영한다.
-								surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)
+								surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), if assetName == "outfit_stole" then 0.16 else 0.27)
 							elseif pale and assetName ~= "outfit_guard" then
 								-- [수입 흰 옷 복구] 실제 GLB 원색에 없는 순백 기본 배율만 본래 직물 톤으로 되돌린다.
-								surface.Color = surface.Color:Lerp(dye, 0.75)
+								surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), 0.75)
 							end
 						end
 					elseif string.sub(assetName, 1, 4) == "acc_" and assetName ~= "acc_pearl_hairpin"
@@ -1858,12 +1864,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
 					local faded = neutral and part.Color.R > 0.87
 					-- [기존 채색 보존] 이미 컬러가 들어간 메시를 황토색으로 몰아넣지 않는다.
-					-- 원본 색상 누락 또는 인물의 실제 머리색에 필요한 부분만 최소 보정한다.
-					if faded or (hair and npcOutfit and model:GetAttribute("NpcHairTint"))
-						or (npcOutfit and (ribbon or headwear)) then
+					-- 원본 색상 누락만 복구한다. 무텍스처라도 이미 유색인 주민 머리는 다시 어둡게 하지 않는다.
+					if faded or (npcOutfit and not hair and (ribbon or headwear)) then
 						part.Color = part.Color:Lerp(tint,
 							if hair and faded then 0.90
-							elseif hair and model:GetAttribute("NpcHairTint") then 0.45
 							elseif ribbon or headwear then 0.38 else 0.78)
 					end
 					part.Reflectance = if part.Material == Enum.Material.Metal then 0.025 else 0
