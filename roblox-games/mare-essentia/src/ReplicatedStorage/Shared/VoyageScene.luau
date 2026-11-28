@@ -1277,7 +1277,7 @@ function VoyageScene.play(info)
 				for _, piece in m:GetDescendants() do
 					if piece:IsA("BasePart") then
 						piece.CastShadow = false
-						if not piece:FindFirstChildOfClass("SurfaceAppearance")
+						if piece.MaterialVariant == "" and not piece:FindFirstChildOfClass("SurfaceAppearance")
 							and (not piece:IsA("MeshPart") or piece.TextureID == "") then
 							local hasTexture = false
 							for _, mesh in piece:GetChildren() do
