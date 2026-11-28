@@ -1017,7 +1017,7 @@ for _, q in Quests do
 end
 
 local Kit = require(script.Parent.StoryKit) :: any
-Kit.LORE = Kit.loreIndex(Quests, require(script.Parent.Story).Events)
+Kit.LORE = Kit.loreIndex(Quests, require(script.Parent.Story).Events, require(script.Parent.HistoryEvents).Events)
 
 return {
 	Quests = Quests,

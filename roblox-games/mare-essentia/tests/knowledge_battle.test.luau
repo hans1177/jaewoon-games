@@ -1137,5 +1137,45 @@ do
 	check("거절한 해도 후속 사건 해금 차단", S.Story.blockReason(st, D.Story.ById.lc_2) ~= nil)
 end
 
+-- 역사 사건 전체와 인물 대화의 실데이터 연결 확인.
+do
+	local count, missing = 0, {}
+	for _, ev in D.HistoryEvents.Events do
+		count += 1
+		local id = ev.insight and ev.insight.node
+		for i = 1, #ev.choices + (if ev.insight then 1 else 0) do
+			local found = false
+			for _, row in (id and D.Quests.Kit.LORE[id]) or {} do
+				if row.historyId == ev.id and row.choice == i then found = true break end
+			end
+			if not id or not D.Cards.ById[id] or not found then table.insert(missing, ev.id .. ":" .. i) end
+		end
+	end
+	check("역사 사건 79개 모든 선택의 카드 색인: " .. table.concat(missing, ","), count == 79 and #missing == 0)
+	local st = S.State.new("england", 1700)
+	local ev = D.HistoryEvents.ById.principia
+	local card = ev.insight.node
+	local function matches()
+		local result = {}
+		for _, row in D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, card) or {} do
+			if row.title == ev.title then table.insert(result, row.text) end
+		end
+		return result
+	end
+	check("미완료 역사 선택 기록 비공개", #matches() == 0)
+	st.history = st.history or { seen = {}, fx = {} }
+	st.history.seen[ev.id] = #ev.choices + 1
+	local lore = matches()
+	check("실제 역사 지식 선택만 공개", #lore == 1 and string.find(lore[1], ev.insight.label, 1, true) ~= nil)
+	local npcCount, dialogueOK = 0, true
+	for _, event in D.Story.Events do
+		if string.sub(event.id, 1, 4) == "npc_" then
+			npcCount += 1
+			dialogueOK = dialogueOK and #event.lines >= 3
+		end
+	end
+	check("항구 인물 164개 실제 대화 배열 보완", npcCount == 164 and dialogueOK)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

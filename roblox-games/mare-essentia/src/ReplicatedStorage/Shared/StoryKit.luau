@@ -153,7 +153,7 @@ function K.sanitizeStats(saved: any, into: any, num: any)
 end
 
 -- 이야기를 끝내면 카드 상세에 열리는 한 단락: cardId → { text, quest }
-function K.loreIndex(quests: any, events: any?): any
+function K.loreIndex(quests: any, events: any?, historyEvents: any?): any
 	local idx = {}
 	for _, q in quests do
 		if q.loreCardId and q.loreText then
@@ -171,6 +171,21 @@ function K.loreIndex(quests: any, events: any?): any
 			end
 		end
 	end
+	-- 역사 사건의 실제 선택 번호를 기존 역사 저장에서 읽는다. 확률 결과나 가상의 성과를 단정하지 않는다.
+	for _, event in historyEvents or {} do
+		local choices = table.clone(event.choices)
+		if event.insight then table.insert(choices, event.insight) end
+		for i, choice in choices do
+			local cards = {}
+			for _, cardId in choice.cards or {} do cards[cardId] = true end
+			if event.insight then cards[event.insight.node] = true end
+			for cardId in cards do
+				idx[cardId] = idx[cardId] or {}
+				table.insert(idx[cardId], { historyId = event.id, choice = i, title = event.title,
+					text = tostring(event.year) .. "년 · " .. event.text .. "\n게임 속 선장의 선택: " .. choice.label })
+			end
+		end
+	end
 	return idx
 end
 
@@ -181,7 +196,8 @@ function K.loreFor(state: any, idx: any, cardId: string): any
 	end
 	local out
 	for _, e in list do
-		if (e.questId and state.quests.done[e.questId]) or (e.eventId and state.story and state.story[e.eventId] == e.choice) then
+		if (e.questId and state.quests.done[e.questId]) or (e.eventId and state.story and state.story[e.eventId] == e.choice)
+			or (e.historyId and state.history and state.history.seen and state.history.seen[e.historyId] == e.choice) then
 			out = out or {}
 			table.insert(out, { title = e.title, text = e.text })
 		end
