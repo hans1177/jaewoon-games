@@ -10048,7 +10048,7 @@ function H.showCardGain(card, moreCount)
 	local viewport = if workspace.CurrentCamera then workspace.CurrentCamera.ViewportSize else Vector2.new(720, 900)
 	-- 세로 7:10은 유지하고 가로/세로 화면의 제목 안전 여백 안에서 크게 표시한다.
 	local revealHeight = math.floor(math.max(80, math.min(if rarityLevel >= 3 then 500 else 460,
-		viewport.Y * (if rarityLevel >= 3 then 0.72 else 0.68), viewport.Y - 102, viewport.X * 0.72 / 0.7)))
+		viewport.Y * (if rarityLevel >= 3 then 0.72 else 0.68), viewport.Y * 0.92 - 88, viewport.X * 0.72 / 0.7)))
 	local revealWidth = math.floor(revealHeight * 0.7)
 	local center = UDim2.fromScale(0.5, 0.46)
 	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
@@ -10204,8 +10204,9 @@ function H.showCardGain(card, moreCount)
 	sealGradient.Parent = seal
 	-- 기존 승인 뒷면 원화를 실제 양면 회전에 재사용한다(없으면 기존 봉인 문장 유지).
 	local backId = AssetIds["CardArt/battle_card_back"]
+	local backArt: ImageLabel? = nil
 	if backId then
-		local backArt = Instance.new("ImageLabel")
+		backArt = Instance.new("ImageLabel")
 		backArt.Name = "CardGainBackArt"
 		backArt.Size = UDim2.fromScale(1, 1)
 		backArt.BackgroundTransparency = 1
@@ -10517,8 +10518,7 @@ function H.showCardGain(card, moreCount)
 			local widthRipple = if reducedMotion then 1 else math.max(0.035, math.abs(facing))
 			seal.Visible = not reducedMotion and facing < 0
 			seal.BackgroundTransparency = math.clamp((t - 0.72) / 0.28, 0, 1)
-			local backArt = seal:FindFirstChild("CardGainBackArt")
-			if backArt and backArt:IsA("ImageLabel") then backArt.ImageTransparency = seal.BackgroundTransparency end
+			if backArt then backArt.ImageTransparency = seal.BackgroundTransparency end
 			frame.Position = UDim2.fromOffset(current.X, current.Y)
 			frame.Size = UDim2.fromOffset(
 				math.max(2, math.floor(revealWidth * scale * widthRipple)),
