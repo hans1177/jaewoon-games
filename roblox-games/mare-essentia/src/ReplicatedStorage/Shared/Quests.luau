@@ -440,6 +440,19 @@ local RegionalChains: { { any } } = {
 	{ "east_asia", "동아시아", "canton", "silver", 6, "osaka", "silk", 8, "Art", "예술", { "site_himeji", "relic_zheng_he_fleet", "relic_scroll_painting" }, "site_forbidden_city" },
 	{ "americas", "아메리카", "havana", "cloth", 8, "portobelo", "iron", 8, "Mineral", "광물", { "site_tenochtitlan", "site_chichen_itza", "site_teotihuacan" }, "site_machu_picchu" },
 }
+-- 지역 대장정의 고유 사건 제목(기존 목표와 저장 키는 그대로).
+local RegionalStoryTitles: { [string]: string } = {
+	["north_sea"] = "거꾸로 그린 방벽",
+	["atlantic_europe"] = "물에 잠긴 종소리",
+	["mediterranean"] = "불에 남은 도면",
+	["red_sea"] = "등대지기의 빈 목록",
+	["west_africa"] = "지워진 이름의 장부",
+	["east_africa"] = "바람이 지운 날짜",
+	["south_asia"] = "녹슬지 않는 약속",
+	["southeast_asia"] = "해협의 세 번째 지도",
+	["east_asia"] = "은 장부의 빈 도장",
+	["americas"] = "황금이 아닌 도시",
+}
 for _, rc in RegionalChains do
 	local rid, rname, p1, g1, a1, p2, g2, a2, fld, fname, epics, legend = rc[1], rc[2], rc[3], rc[4], rc[5], rc[6], rc[7], rc[8], rc[9], rc[10], rc[11], rc[12]
 	local steps = {
@@ -454,7 +467,7 @@ for _, rc in RegionalChains do
 	for i, st in steps do
 		local id = "q_rg_" .. rid .. "_" .. i
 		local q: any = {
-			id = id, name = rname .. "의 " .. st[1], after = prev, rewardCareer = "adventure",
+			id = id, name = rname .. " · " .. RegionalStoryTitles[rid] .. " — " .. st[1], after = prev, rewardCareer = "adventure",
 			rewardCoins = if i == 6 then 8000 else 500 * i + 400, rewardFame = if i == 6 then 200 else 20 * i + 10,
 			rewardXp = if i == 6 then 500 else 70 + 40 * i,
 		}
