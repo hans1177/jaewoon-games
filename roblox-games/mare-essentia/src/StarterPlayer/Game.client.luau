@@ -4177,8 +4177,8 @@ local function call(action, payload)
 			task.delay(0.4, Sfx.play, "sfx_treasure_chest", 0.8)
 		end
 	end
-	-- [카드 습득 연출] 카드를 얻을 때 큰 원화 이벤트 씬(원더 씬)은 자동으로 띄우지 않는다.
-	-- 카드 습득 연출(H.showCardGain)만 쓰고, 카드 상세의 '원더 연출 다시 보기'는 직접 누를 때만 재생한다.
+	-- [카드 습득 연출] 카드 습득 연출(H.showCardGain) 뒤, 불가사의 카드를 '처음' 얻을 때만 원더 씬을 한 번 자동 재생한다
+	-- (2026-11-28 오너 지시). 그 뒤로는 카드 상세의 '원더 연출 다시 보기'로만 본다.
 	if result.ranking then
 		ranking = result.ranking
 	end
@@ -4195,6 +4195,7 @@ local function call(action, payload)
 		end
 		refreshBubble()
 		if H.checkNewCards then H.checkNewCards() end
+		if H.checkWorldEvents then H.checkWorldEvents() end
 		if view.scenes and #view.scenes > 0 and H.playQuestScenes then H.playQuestScenes(view.scenes) end
 	end
 	if result.message and result.message ~= "" then
@@ -10253,6 +10254,11 @@ function H.showCardGain(card, moreCount)
 		}):Play()
 	end
 
+	-- [화려한 획득 · 2026-11-28 오너] 등급별 예고 빛·전면 섬광·흔들림·홀로그램 광택·색종이·등급 도장.
+	if H.cardGainFlair then
+		pcall(H.cardGainFlair, { g = g, frame = frame, center = center, level = rarityLevel, tone = tone, gold = gold,
+			w = revealWidth, h = revealHeight, reduced = reducedMotion, viewport = viewport, combat = isCombat, hero = card.isHero == true })
+	end
 	-- [효과음] 기존 등록 음원만 사용하며 모바일에서 과도하게 중첩하지 않는다.
 	Sfx.play("sfx_card_deal", 0.35, 1.05, "sfx_book_turn")
 	if rarityLevel >= 2 then Sfx.play("sfx_card_coin", 0.5, 1 + rarityLevel * 0.035) end
@@ -10740,6 +10746,627 @@ end)
 
 -- [도감 획득] 최초 카드부터 이후 카드까지 저장·발견 표시만 갱신한다.
 -- 강제 전면 이벤트/사운드/클릭 대기는 없으며, 도감과 덱 상세 기능은 그대로 이용할 수 있다.
+-- [이벤트·카드 연출 묶음 · 2026-11-28 오너 지시 '모두 적용, 카드 습득 더 화려하게']
+-- 최상위 local 을 늘리지 않도록 모두 H 필드로 둔다. 보상·저장값은 건드리지 않는다.
+do
+	local TS = game:GetService("TweenService")
+	local RARITY_STAMP = { [0] = nil, [1] = nil, [2] = "희귀!", [3] = "영웅급!", [4] = "전설!" }
+
+	-- 사건 원화 찾기: event_<id> → 낱말로 비슷한 원화 → 재해/행운 기본
+	local KEYWORDS = {
+		{ { "plague", "pox", "fever", "scurvy", "역병", "전염", "천연두", "괴혈" }, "event_plague_wave" },
+		{ { "quake", "지진" }, "event_earthquake" },
+		{ { "vesuvius", "fuji", "huaynaputina", "volcano", "화산" }, "event_volcano" },
+		{ { "fire", "화재", "불" }, "event_harbor_fire" },
+		{ { "famine", "흉작", "기근" }, "event_famine" },
+		{ { "cyclone", "hurricane", "태풍", "허리케인" }, "event_hurricane" },
+		{ { "tsunami", "해일" }, "event_tsunami" },
+		{ { "storm", "폭풍" }, "event_storm" },
+		{ { "pirate", "piracy", "mutiny", "blockade", "embargo", "uprising", "war", "해적", "반란", "봉쇄", "전쟁" }, "event_piracy" },
+		{ { "gold", "silver", "diamant", "boom", "bank", "mocha", "금광", "은", "호황" }, "event_trade_boom" },
+		{ { "route", "founded", "nystad", "peace", "treaty", "항로", "조약", "평화" }, "event_new_route" },
+		{ { "scholar", "학자", "학회" }, "event_principia" },
+		{ { "patron", "charter", "royal", "왕실", "특허" }, "event_royal_charter" },
+		{ { "wreck", "cargo", "보물", "난파" }, "event_treasure_wreck" },
+		{ { "festival", "축제" }, "event_festival" },
+	}
+	function H.eventArtFor(id, tag, title, kind)
+		local key = tostring(id or "")
+		local direct = AssetIds["CardArt/event_" .. key] or AssetIds["CardArt/" .. key]
+		if direct and key ~= "" then return direct end
+		local text = string.lower(key .. " " .. tostring(tag or "") .. " " .. tostring(title or ""))
+		for _, row in KEYWORDS do
+			for _, word in row[1] do
+				if string.find(text, word, 1, true) and AssetIds["CardArt/" .. row[2]] then return AssetIds["CardArt/" .. row[2]] end
+			end
+		end
+		if kind == "disaster" then return AssetIds["CardArt/event_storm"] end
+		if kind == "fortune" then return AssetIds["CardArt/event_calm_seas"] end
+		return AssetIds["CardArt/event_chart_world"]
+	end
+
+	-- [영화 띠] 위아래 검은 띠가 들어왔다가(지속 dur초) 나간다.
+	function H.cinemaBars(layer, dur)
+		local bars = {}
+		for i, y in { 0, 1 } do
+			local bar = Instance.new("Frame")
+			bar.Name = "CinemaBar" .. i
+			bar.AnchorPoint = Vector2.new(0, y)
+			bar.Position = UDim2.fromScale(0, y)
+			bar.Size = UDim2.fromScale(1, 0)
+			bar.BackgroundColor3 = Color3.new(0, 0, 0)
+			bar.BorderSizePixel = 0
+			bar.ZIndex = 40
+			bar.Parent = layer
+			TS:Create(bar, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { Size = UDim2.fromScale(1, 0.09) }):Play()
+			table.insert(bars, bar)
+		end
+		task.delay(dur or 1, function()
+			for _, bar in bars do
+				if bar.Parent then
+					TS:Create(bar, TweenInfo.new(0.4, Enum.EasingStyle.Quad), { Size = UDim2.fromScale(1, 0) }):Play()
+					task.delay(0.42, function() if bar.Parent then bar:Destroy() end end)
+				end
+			end
+		end)
+	end
+
+	-- [글자 한 자씩] 움직임 줄이기 설정이면 바로 다 보여 준다.
+	function H.typewrite(label, text, speed)
+		label.Text = text
+		if game:GetService("GuiService").ReducedMotionEnabled then return end
+		label.MaxVisibleGraphemes = 0
+		task.spawn(function()
+			local n = utf8.len(text) or #text
+			for i = 1, n do
+				if not label.Parent then return end
+				label.MaxVisibleGraphemes = i
+				task.wait(speed or 0.025)
+			end
+			label.MaxVisibleGraphemes = -1
+		end)
+	end
+
+	-- [화려한 카드 습득] showCardGain 이 부른다. 카드 뒤집힘(약 0.51초) 순간에 맞춰 터진다.
+	function H.cardGainFlair(o)
+		local g, frame, level, gold = o.g, o.frame, o.level, o.gold
+		if o.hero then level = math.max(level, 4) end
+		local flip = 0.51
+		local tone = o.tone or gold
+		-- 1) 배경 어둡게 + 등급색 후광(비차단 알림이라 입력은 막지 않음)
+		local veil = Instance.new("Frame")
+		veil.Name = "CardGainVeil"
+		veil.Size = UDim2.fromScale(1, 1)
+		veil.BackgroundColor3 = Color3.new(0, 0, 0)
+		veil.BackgroundTransparency = 1
+		veil.BorderSizePixel = 0
+		veil.Active = false
+		veil.ZIndex = 1
+		veil.Parent = g
+		local grad = Instance.new("UIGradient")
+		grad.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(0.5, 1), NumberSequenceKeypoint.new(1, 0.35) })
+		grad.Parent = veil
+		TS:Create(veil, TweenInfo.new(0.3), { BackgroundTransparency = if level >= 3 then 0.35 elseif level >= 2 then 0.5 else 0.68 }):Play()
+		task.delay(2.6, function()
+			if veil.Parent then TS:Create(veil, TweenInfo.new(0.4), { BackgroundTransparency = 1 }):Play() end
+		end)
+		-- 2) 뒤집기 전 예고: 등급색 맥동 고리(희귀 이상)
+		if level >= 2 and not o.reduced then
+			for i = 1, level - 1 do
+				task.delay((i - 1) * 0.12, function()
+					if not g.Parent then return end
+					local pulse = Instance.new("Frame")
+					pulse.Name = "CardRarityPulse"
+					pulse.AnchorPoint = Vector2.new(0.5, 0.5)
+					pulse.Position = o.center
+					pulse.Size = UDim2.fromOffset(o.w * 0.6, o.h * 0.6)
+					pulse.BackgroundTransparency = 1
+					pulse.ZIndex = 6
+					pulse.Parent = g
+					corner(pulse, 18)
+					local st = Instance.new("UIStroke")
+					st.Color = tone
+					st.Thickness = 5
+					st.Transparency = 0.1
+					st.Parent = pulse
+					TS:Create(pulse, TweenInfo.new(0.5, Enum.EasingStyle.Quad), { Size = UDim2.fromOffset(o.w * 1.25, o.h * 1.2) }):Play()
+					TS:Create(st, TweenInfo.new(0.5), { Transparency = 1 }):Play()
+					task.delay(0.55, function() pulse:Destroy() end)
+				end)
+			end
+		end
+		task.delay(flip, function()
+			if not g.Parent then return end
+			-- 3) 전면 섬광(등급색, 전설은 흰빛)
+			if level >= 2 then
+				local flash = Instance.new("Frame")
+				flash.Name = "CardGainFlash"
+				flash.Size = UDim2.fromScale(1, 1)
+				flash.BackgroundColor3 = if level >= 4 then Color3.fromRGB(255, 250, 230) else tone
+				flash.BackgroundTransparency = if level >= 4 then 0.15 else 0.45
+				flash.BorderSizePixel = 0
+				flash.ZIndex = 30
+				flash.Parent = g
+				TS:Create(flash, TweenInfo.new(if level >= 4 then 0.6 else 0.35), { BackgroundTransparency = 1 }):Play()
+				task.delay(0.65, function() flash:Destroy() end)
+			end
+			-- 4) 흔들림(영웅급 이상)
+			if level >= 3 and not o.reduced and frame.Parent then
+				local base = frame.Position
+				task.spawn(function()
+					for i = 1, 7 do
+						if not frame.Parent then return end
+						local amp = (8 - i) * (if level >= 4 then 2.2 else 1.4)
+						frame.Position = base + UDim2.fromOffset(math.random(-10, 10) / 10 * amp, math.random(-10, 10) / 10 * amp)
+						task.wait(0.035)
+					end
+					if frame.Parent then frame.Position = base end
+				end)
+			end
+			-- 5) 홀로그램 광택(영웅급 이상): 무지개 띠가 카드 위를 한 번 쓸고 지나간다
+			if level >= 3 and frame.Parent then
+				local holo = Instance.new("Frame")
+				holo.Name = "CardHoloSheen"
+				holo.Size = UDim2.fromScale(1, 1)
+				holo.BackgroundColor3 = Color3.new(1, 1, 1)
+				holo.BackgroundTransparency = 0.55
+				holo.BorderSizePixel = 0
+				holo.ZIndex = 10
+				holo.Parent = frame
+				local hg = Instance.new("UIGradient")
+				hg.Color = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 120, 160)), ColorSequenceKeypoint.new(0.25, Color3.fromRGB(255, 230, 120)),
+					ColorSequenceKeypoint.new(0.5, Color3.fromRGB(130, 255, 200)), ColorSequenceKeypoint.new(0.75, Color3.fromRGB(120, 180, 255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 140, 255)),
+				})
+				hg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.45, 0.35), NumberSequenceKeypoint.new(0.55, 0.35), NumberSequenceKeypoint.new(1, 1) })
+				hg.Offset = Vector2.new(-1, 0)
+				hg.Rotation = 25
+				hg.Parent = holo
+				TS:Create(hg, TweenInfo.new(0.9, Enum.EasingStyle.Quad), { Offset = Vector2.new(1, 0) }):Play()
+				task.delay(0.95, function() holo:Destroy() end)
+			end
+			-- 6) 색종이·금가루(희귀 이상, 전설은 많이)
+			if level >= 2 and not o.reduced then
+				local small = o.viewport.X < 540
+				local count = (if level >= 4 then 30 elseif level >= 3 then 20 else 10) // (if small then 2 else 1)
+				local palette = { gold, tone, Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 196, 92) }
+				for i = 1, count do
+					local bit = Instance.new("Frame")
+					bit.Name = "CardConfetti"
+					bit.AnchorPoint = Vector2.new(0.5, 0.5)
+					local x = math.random(5, 95) / 100
+					bit.Position = UDim2.fromScale(x, -0.03)
+					bit.Size = UDim2.fromOffset(math.random(5, 9), math.random(9, 15))
+					bit.BackgroundColor3 = palette[(i % #palette) + 1]
+					bit.BorderSizePixel = 0
+					bit.Rotation = math.random(0, 180)
+					bit.ZIndex = 20
+					bit.Parent = g
+					local fall = 1.4 + math.random() * 1.1
+					TS:Create(bit, TweenInfo.new(fall, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {
+						Position = UDim2.fromScale(x + (math.random() - 0.5) * 0.18, 1.04),
+						Rotation = bit.Rotation + math.random(180, 540),
+					}):Play()
+					task.delay(fall + 0.05, function() bit:Destroy() end)
+				end
+			end
+			-- 7) 등급 도장(희귀 이상): 크게 찍혔다가 카드 모서리에 남는다
+			local stampText = RARITY_STAMP[level]
+			if o.combat and o.hero then stampText = "영웅!" end
+			if stampText and frame.Parent then
+				local stamp = Instance.new("TextLabel")
+				stamp.Name = "CardRarityStamp"
+				stamp.AnchorPoint = Vector2.new(0.5, 0.5)
+				stamp.Position = UDim2.new(o.center.X.Scale, o.w * 0.36, o.center.Y.Scale, -o.h * 0.42)
+				stamp.Size = UDim2.fromOffset(150, 56)
+				stamp.BackgroundColor3 = Color3.fromRGB(120, 24, 20)
+				stamp.BackgroundTransparency = 0.05
+				stamp.BorderSizePixel = 0
+				stamp.Font = Enum.Font.GothamBlack
+				stamp.Text = stampText
+				stamp.TextColor3 = Color3.fromRGB(255, 236, 190)
+				stamp.TextScaled = true
+				stamp.Rotation = -14
+				stamp.ZIndex = 25
+				stamp.Parent = g
+				corner(stamp, 8)
+				local ss = Instance.new("UIStroke")
+				ss.Color = gold
+				ss.Thickness = 2
+				ss.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+				ss.Parent = stamp
+				local sc = Instance.new("UIScale")
+				sc.Scale = 2.6
+				sc.Parent = stamp
+				TS:Create(sc, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = if o.viewport.X < 540 then 0.7 else 0.85 }):Play()
+				task.delay(0.24, function() Sfx.play("sfx_card_coin", 0.35, 0.8) end)
+				task.delay(1.0, function()
+					if stamp.Parent then TS:Create(stamp, TweenInfo.new(0.3), { TextTransparency = 1, BackgroundTransparency = 1 }):Play() ; TS:Create(ss, TweenInfo.new(0.3), { Transparency = 1 }):Play() end
+				end)
+			end
+			-- 8) 느리게 도는 빛살(전설): 기존 빛살 위에 한 바퀴 반
+			if level >= 4 and not o.reduced then
+				local spin = Instance.new("Frame")
+				spin.Name = "LegendRaySpin"
+				spin.AnchorPoint = Vector2.new(0.5, 0.5)
+				spin.Position = o.center
+				spin.Size = UDim2.fromOffset(o.h * 1.9, o.h * 1.9)
+				spin.BackgroundTransparency = 1
+				spin.ZIndex = 4
+				spin.Parent = g
+				for i = 1, 8 do
+					local ray = Instance.new("Frame")
+					ray.AnchorPoint = Vector2.new(0.5, 0.5)
+					ray.Position = UDim2.fromScale(0.5, 0.5)
+					ray.Size = UDim2.new(0, 14, 1, 0)
+					ray.Rotation = i * 22.5
+					ray.BackgroundColor3 = gold
+					ray.BackgroundTransparency = 0.72
+					ray.BorderSizePixel = 0
+					ray.ZIndex = 4
+					ray.Parent = spin
+					local rg = Instance.new("UIGradient")
+					rg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0), NumberSequenceKeypoint.new(1, 1) })
+					rg.Rotation = 90
+					rg.Parent = ray
+				end
+				TS:Create(spin, TweenInfo.new(2.2, Enum.EasingStyle.Linear), { Rotation = 140 }):Play()
+				task.delay(1.6, function()
+					for _, r in spin:GetChildren() do
+						if r:IsA("Frame") then TS:Create(r, TweenInfo.new(0.5), { BackgroundTransparency = 1 }):Play() end
+					end
+				end)
+			end
+		end)
+	end
+
+	-- 카드 원화 이미지 찾기(습득 연출과 같은 규칙)
+	local function cardImage(card)
+		local id = AssetIds["CardArt/" .. tostring(card.id)]
+		if id then return "rbxassetid://" .. tostring(id) end
+		if type(card.image) == "string" and card.image ~= "" then return card.image end
+		if type(card.stageArt) == "string" and AssetIds[card.stageArt] then return "rbxassetid://" .. tostring(AssetIds[card.stageArt]) end
+		return ""
+	end
+	local function miniCard(parent, card, w)
+		local h = math.floor(w / 0.7)
+		local f = Instance.new("Frame")
+		f.AnchorPoint = Vector2.new(0.5, 0.5)
+		f.Size = UDim2.fromOffset(w, h)
+		f.BackgroundColor3 = Color3.fromRGB(234, 212, 166)
+		f.BorderSizePixel = 0
+		f.ZIndex = 12
+		f.Parent = parent
+		corner(f, 8)
+		local st = Instance.new("UIStroke")
+		st.Color = ({ Rare = Color3.fromRGB(90, 150, 230), Epic = Color3.fromRGB(180, 110, 230), Legendary = Color3.fromRGB(245, 200, 80) })[card.rarity]
+			or Color3.fromRGB(205, 170, 105)
+		st.Thickness = if card.rarity == "Legendary" or card.isHero then 3.5 else 2.5
+		st.Parent = f
+		local img = Instance.new("ImageLabel")
+		img.BackgroundTransparency = 1
+		img.Position = UDim2.fromOffset(5, 5)
+		img.Size = UDim2.new(1, -10, 1, -30)
+		img.Image = cardImage(card)
+		img.ScaleType = Enum.ScaleType.Crop
+		img.ZIndex = 13
+		img.Parent = f
+		local nm = Instance.new("TextLabel")
+		nm.BackgroundTransparency = 1
+		nm.Position = UDim2.new(0, 4, 1, -24)
+		nm.Size = UDim2.new(1, -8, 0, 20)
+		nm.Font = Enum.Font.GothamBold
+		nm.TextScaled = true
+		nm.TextColor3 = Color3.fromRGB(52, 36, 24)
+		nm.Text = tostring(card.name or "새 카드")
+		nm.ZIndex = 13
+		nm.Parent = f
+		local back = Instance.new("TextLabel")
+		back.Name = "MiniCardBack"
+		back.Size = UDim2.fromScale(1, 1)
+		back.BackgroundColor3 = Color3.fromRGB(62, 47, 37)
+		back.BorderSizePixel = 0
+		back.Font = Enum.Font.Antique
+		back.Text = "✦"
+		back.TextScaled = true
+		back.TextColor3 = Color3.fromRGB(255, 217, 124)
+		back.ZIndex = 14
+		back.Parent = f
+		corner(back, 8)
+		return f, back
+	end
+
+	-- [여러 장 부채꼴] 3~5장을 펼쳐 차례로 뒤집고 서재/덱으로 날려 보낸다.
+	function H.showCardFan(batch)
+		local pg = player:WaitForChild("PlayerGui")
+		local old = pg:FindFirstChild("CardFan")
+		if old then old:Destroy() end
+		local g = overlayGui("CardFan", 95)
+		g:SetAttribute("NonBlockingCardNotice", true)
+		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+		local w = math.floor(math.clamp(vp.X / (#batch + 2.2), 70, 130))
+		local title = Instance.new("TextLabel")
+		title.AnchorPoint = Vector2.new(0.5, 0)
+		title.Position = UDim2.fromScale(0.5, 0.16)
+		title.Size = UDim2.new(0.9, 0, 0, 40)
+		title.BackgroundTransparency = 1
+		title.Font = Enum.Font.GothamBlack
+		title.TextSize = 26
+		title.TextColor3 = Color3.fromRGB(255, 217, 124)
+		title.TextStrokeTransparency = 0.6
+		title.Text = string.format("카드 %d장 획득!", #batch)
+		title.ZIndex = 15
+		title.Parent = g
+		Sfx.play("sfx_card_deal", 0.4, 1)
+		local n = #batch
+		for i, entry in batch do
+			local f, back = miniCard(g, entry.card, w)
+			local t = (i - (n + 1) / 2)
+			f.Position = UDim2.fromScale(0.5, 1.2)
+			f.Rotation = 0
+			TS:Create(f, TweenInfo.new(0.42 + i * 0.06, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+				Position = UDim2.new(0.5, t * w * 0.82, 0.52, math.abs(t) * w * 0.12),
+				Rotation = t * 9,
+			}):Play()
+			task.delay(0.7 + i * 0.22, function()
+				if not back.Parent then return end
+				TS:Create(f, TweenInfo.new(0.1), { Size = UDim2.fromOffset(4, math.floor(w / 0.7)) }):Play()
+				task.delay(0.1, function()
+					if back.Parent then back:Destroy() end
+					Sfx.play("sfx_card_page", 0.22, 1.05 + i * 0.04)
+					TS:Create(f, TweenInfo.new(0.18, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(w, math.floor(w / 0.7)) }):Play()
+				end)
+			end)
+			task.delay(2.4 + i * 0.05, function()
+				if not f.Parent then return end
+				local icon = if entry.card.gainType == "combat" then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and H.dockButtons.codex
+				local target = if icon and icon.Parent and icon.AbsoluteSize.X > 0 then icon.AbsolutePosition + icon.AbsoluteSize / 2 else Vector2.new(vp.X - 44, 70)
+				TS:Create(f, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+					Position = UDim2.fromOffset(target.X, target.Y), Size = UDim2.fromOffset(12, 17), Rotation = 360,
+				}):Play()
+			end)
+		end
+		task.delay(3.1, function() if g.Parent then g:Destroy() end end)
+	end
+
+	-- [중복 카드 +1] 오른쪽에서 작은 카드가 미끄러져 들어와 '+N' 을 보여 주고 사라진다.
+	function H.showCardPlusOne(card, count)
+		local pg = player:WaitForChild("PlayerGui")
+		local g = pg:FindFirstChild("CardPlusOne") or overlayGui("CardPlusOne", 94)
+		g:SetAttribute("NonBlockingCardNotice", true)
+		local f = miniCard(g, card, 62)
+		local back = f:FindFirstChild("MiniCardBack")
+		if back then back:Destroy() end
+		f.Position = UDim2.new(1, 60, 0.3, 0)
+		local plus = Instance.new("TextLabel")
+		plus.AnchorPoint = Vector2.new(1, 0.5)
+		plus.Position = UDim2.new(0, -6, 0.5, 0)
+		plus.Size = UDim2.fromOffset(70, 34)
+		plus.BackgroundTransparency = 1
+		plus.Font = Enum.Font.GothamBlack
+		plus.TextSize = 28
+		plus.TextXAlignment = Enum.TextXAlignment.Right
+		plus.TextColor3 = Color3.fromRGB(255, 217, 124)
+		plus.TextStrokeTransparency = 0.4
+		plus.Text = "+" .. tostring(count or 1)
+		plus.ZIndex = 15
+		plus.Parent = f
+		Sfx.play("sfx_card_coin", 0.3, 1.15)
+		TS:Create(f, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = UDim2.new(1, -54, 0.3, 0) }):Play()
+		task.delay(1.1, function()
+			if f.Parent then
+				TS:Create(f, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Position = UDim2.new(1, 60, 0.3, 0) }):Play()
+				task.delay(0.27, function() f:Destroy() end)
+			end
+		end)
+	end
+
+	-- [세트 완성] 같은 묶음(지역 묶음)의 카드를 모두 모으면 축하 띠.
+	H.setsCelebrated = H.setsCelebrated or {}
+	function H.checkSetComplete(card, force)
+		local cards = view and view.codex and view.codex.cards
+		if not cards or not card then return end
+		local group = nil
+		for _, c in cards do
+			if c.id == card.id then group = c.worldGroup; break end
+		end
+		if not group or group == "" or H.setsCelebrated[group] then return end
+		local total, found = 0, 0
+		for _, c in cards do
+			if c.worldGroup == group then
+				total += 1
+				if c.found then found += 1 end
+			end
+		end
+		if total < 3 or (found < total and not force) then return end
+		H.setsCelebrated[group] = true
+		H.showSetComplete(tostring(group), total)
+	end
+	function H.showSetComplete(group, total)
+		local g = overlayGui("CardSetComplete", 96)
+		g:SetAttribute("NonBlockingCardNotice", true)
+		local band = Instance.new("Frame")
+		band.AnchorPoint = Vector2.new(0.5, 0.5)
+		band.Position = UDim2.fromScale(0.5, 0.3)
+		band.Size = UDim2.new(0, 0, 0, 74)
+		band.BackgroundColor3 = Color3.fromRGB(70, 44, 24)
+		band.BorderSizePixel = 0
+		band.ClipsDescendants = true
+		band.ZIndex = 20
+		band.Parent = g
+		corner(band, 12)
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(255, 217, 124)
+		st.Thickness = 3
+		st.Parent = band
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(1, 1)
+		label.BackgroundTransparency = 1
+		label.Font = Enum.Font.GothamBlack
+		label.TextSize = 24
+		label.TextColor3 = Color3.fromRGB(255, 230, 160)
+		label.Text = string.format("★ %s 세트 완성! (%d장) ★", group, total)
+		label.ZIndex = 21
+		label.Parent = band
+		Sfx.play("sfx_fanfare", 0.5, 1.05)
+		TS:Create(band, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.new(0.8, 0, 0, 74) }):Play()
+		if H.cardGainFlair then
+			pcall(H.cardGainFlair, { g = g, frame = band, center = UDim2.fromScale(0.5, 0.3), level = 4, gold = Color3.fromRGB(255, 217, 124),
+				tone = Color3.fromRGB(255, 196, 92), w = 300, h = 120, reduced = game:GetService("GuiService").ReducedMotionEnabled,
+				viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600), combat = false, hero = false })
+		end
+		task.delay(3.2, function() if g.Parent then g:Destroy() end end)
+	end
+
+	-- [세계 사건 알림씬] 새 재해·행운이 시작되면 그 원화로 2~3초 장면. 재해는 어둡고 붉게, 행운은 금빛.
+	function H.showWorldEventScene(a)
+		local pg = player:WaitForChild("PlayerGui")
+		local old = pg:FindFirstChild("WorldEventScene")
+		if old then old:Destroy() end
+		local g = overlayGui("WorldEventScene", 70)
+		local disaster = a.kind == "disaster"
+		local root = Instance.new("TextButton")
+		root.Name = "WorldEventRoot"
+		root.Size = UDim2.fromScale(1, 1)
+		root.AutoButtonColor = false
+		root.Text = ""
+		root.BackgroundColor3 = Color3.new(0, 0, 0)
+		root.BackgroundTransparency = 0.25
+		root.BorderSizePixel = 0
+		root.Parent = g
+		local artId = H.eventArtFor(a.id, a.tag, a.title, a.kind)
+		local art = Instance.new("ImageLabel")
+		art.Name = "WorldEventArt"
+		art.AnchorPoint = Vector2.new(0.5, 0.5)
+		art.Position = UDim2.fromScale(0.5, 0.46)
+		art.Size = UDim2.fromScale(1.08, 1.08)
+		art.BackgroundTransparency = 1
+		art.Image = if artId then "rbxassetid://" .. tostring(artId) else ""
+		art.ScaleType = Enum.ScaleType.Crop
+		art.ImageTransparency = 1
+		art.ZIndex = 2
+		art.Parent = root
+		local tint = Instance.new("Frame")
+		tint.Size = UDim2.fromScale(1, 1)
+		tint.BackgroundColor3 = if disaster then Color3.fromRGB(60, 8, 6) else Color3.fromRGB(120, 86, 20)
+		tint.BackgroundTransparency = 0.62
+		tint.BorderSizePixel = 0
+		tint.ZIndex = 3
+		tint.Parent = root
+		local tag = Instance.new("TextLabel")
+		tag.AnchorPoint = Vector2.new(0.5, 1)
+		tag.Position = UDim2.fromScale(0.5, 0.7)
+		tag.Size = UDim2.new(0.9, 0, 0, 30)
+		tag.BackgroundTransparency = 1
+		tag.Font = Enum.Font.GothamBold
+		tag.TextSize = 18
+		tag.TextColor3 = if disaster then Color3.fromRGB(255, 140, 120) else Color3.fromRGB(255, 220, 140)
+		tag.Text = (if disaster then "⚠ 세계 재해 · " else "✦ 세계 행운 · ") .. tostring(a.region or "")
+		tag.ZIndex = 5
+		tag.Parent = root
+		local title = Instance.new("TextLabel")
+		title.AnchorPoint = Vector2.new(0.5, 0)
+		title.Position = UDim2.fromScale(0.5, 0.7)
+		title.Size = UDim2.new(0.9, 0, 0, 44)
+		title.BackgroundTransparency = 1
+		title.Font = Enum.Font.GothamBlack
+		title.TextSize = 34
+		title.TextColor3 = Color3.fromRGB(255, 244, 220)
+		title.TextStrokeTransparency = 0.4
+		title.Text = tostring(a.title or "")
+		title.ZIndex = 5
+		title.Parent = root
+		local body = Instance.new("TextLabel")
+		body.AnchorPoint = Vector2.new(0.5, 0)
+		body.Position = UDim2.new(0.5, 0, 0.7, 50)
+		body.Size = UDim2.new(0.82, 0, 0, 50)
+		body.BackgroundTransparency = 1
+		body.Font = Enum.Font.Gotham
+		body.TextSize = 17
+		body.TextWrapped = true
+		body.TextColor3 = Color3.fromRGB(240, 230, 210)
+		body.ZIndex = 5
+		body.Parent = root
+		H.typewrite(body, tostring(a.text or ""), 0.02)
+		H.cinemaBars(g, 3.2)
+		Sfx.play(if disaster then "sfx_horn" else "sfx_fanfare", 0.4, if disaster then 0.8 else 1, "sfx_bell")
+		TS:Create(art, TweenInfo.new(0.5), { ImageTransparency = 0 }):Play()
+		TS:Create(art, TweenInfo.new(4, Enum.EasingStyle.Linear), { Size = UDim2.fromScale(1.0, 1.0) }):Play()
+		if disaster and not game:GetService("GuiService").ReducedMotionEnabled then
+			task.spawn(function()
+				for i = 1, 6 do
+					if not art.Parent then return end
+					art.Position = UDim2.new(0.5, math.random(-6, 6), 0.46, math.random(-4, 4))
+					task.wait(0.04)
+				end
+				if art.Parent then art.Position = UDim2.fromScale(0.5, 0.46) end
+			end)
+		end
+		local function close()
+			if not g.Parent then return end
+			TS:Create(root, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
+			TS:Create(art, TweenInfo.new(0.3), { ImageTransparency = 1 }):Play()
+			task.delay(0.32, function() if g.Parent then g:Destroy() end end)
+		end
+		root.Activated:Connect(close)
+		task.delay(3.6, close)
+	end
+
+	-- 새로 시작된 세계 사건만 감지(첫 화면은 기준선). 다른 장면 중이면 기다렸다가 보여 준다.
+	function H.checkWorldEvents()
+		local active = view and view.world and view.world.active
+		if type(active) ~= "table" then return end
+		local first = H.seenWorldEvents == nil
+		H.seenWorldEvents = H.seenWorldEvents or {}
+		local fresh = {}
+		for _, a in active do
+			local key = tostring(a.id or "") .. "|" .. tostring(a.title) .. "|" .. tostring(a.region)
+			if not H.seenWorldEvents[key] then
+				H.seenWorldEvents[key] = true
+				if not first then table.insert(fresh, a) end
+			end
+		end
+		if #fresh == 0 then return end
+		task.spawn(function()
+			local pg = player:WaitForChild("PlayerGui")
+			for _, a in fresh do
+				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
+					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)
+					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")) do
+					task.wait(0.3)
+				end
+				if not player.Parent then return end
+				H.showWorldEventScene(a)
+				task.wait(3.9)
+			end
+		end)
+	end
+
+	-- [개발 촬영] FxCheck:<legend|epic|rare|fan|plus|set|world|disaster>
+	function H.fxCheck(what)
+		local cards = (view and view.codex and view.codex.cards) or {}
+		local function pick(rarity)
+			for _, c in cards do
+				if (rarity == nil or c.rarity == rarity) and AssetIds["CardArt/" .. tostring(c.id)] then
+					return { id = c.id, name = if c.name ~= "???" then c.name else c.id, rarity = c.rarity, image = c.image, found = true, worldGroup = c.worldGroup }
+				end
+			end
+			return { id = "dev", name = "점검 카드", rarity = rarity or "Common", found = true }
+		end
+		if what == "legend" then H.showCardGain(pick("Legendary") or pick(nil), 0)
+		elseif what == "epic" then H.showCardGain(pick("Epic"), 0)
+		elseif what == "rare" then H.showCardGain(pick("Rare"), 0)
+		elseif what == "fan" then H.showCardFan({ { card = pick("Common") }, { card = pick("Uncommon") }, { card = pick("Rare") }, { card = pick("Epic") } })
+		elseif what == "plus" then H.showCardPlusOne(pick(nil), 2)
+		elseif what == "set" then H.showSetComplete("점검 묶음", 6)
+		elseif what == "world" then H.showWorldEventScene({ id = "bumper_harvest", kind = "fortune", title = "유럽 대풍작", region = "유럽", text = "올해는 햇볕과 비가 맞아떨어졌다. 곡식과 설탕이 넘쳐 값이 내린다." })
+		elseif what == "disaster" then H.showWorldEventScene({ id = "fx_vesuvius", kind = "disaster", title = "베수비오 화산 분화", region = "지중해", text = "하늘이 잿빛으로 덮였다. 나폴리 항구가 멈췄다." })
+		end
+		return what
+	end
+end
+
 function H.checkNewCards()
 	local cards = view and view.codex and view.codex.cards
 	local owned = view and view.cardbook and view.cardbook.owned
@@ -10801,15 +11428,53 @@ function H.checkNewCards()
 	task.spawn(function()
 		while #H.cardGainQueue > 0 and player.Parent do
 			local pg = player:WaitForChild("PlayerGui")
-			while player.Parent and (newGameMode or inField or sceneHold or H.sceneBusy
+			-- [연결 수정 · 2026-11-28] 지상 탐험 중 발견한 카드도 바로 보여 준다(예전엔 탐험이 끝날 때까지 밀렸다).
+			while player.Parent and (newGameMode or sceneHold or H.sceneBusy
 				or H.questScenesPlaying or pg:FindFirstChild("StoryScene", true)
 				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)) do
 				task.wait(0.2)
 			end
 			if not player.Parent then break end
+			-- [여러 장 한꺼번에] 새 카드 3장 이상이면 부채꼴로 한 번에 펼친 뒤, 영웅급 이상만 따로 크게 보여 준다.
+			local freshCount = 0
+			for _, entry in H.cardGainQueue do
+				if not entry.card.isDuplicate and not entry.card.fanShown then freshCount += 1 end
+			end
+			if freshCount >= 3 and H.showCardFan then
+				local batch = {}
+				for i = #H.cardGainQueue, 1, -1 do
+					local entry = H.cardGainQueue[i]
+					if not entry.card.isDuplicate and not entry.card.fanShown and #batch < 5 then
+						table.insert(batch, 1, entry)
+						table.remove(H.cardGainQueue, i)
+					end
+				end
+				H.showCardFan(batch)
+				task.wait(3.3)
+				for _, entry in batch do
+					local lv = ({ Epic = 3, Legendary = 4 })[entry.card.rarity] or (if entry.card.isHero then 4 else 0)
+					entry.card.fanShown = true
+					if lv >= 3 then table.insert(H.cardGainQueue, 1, entry) end
+					if H.checkSetComplete then H.checkSetComplete(entry.card) end
+				end
+				continue
+			end
 			local found = table.remove(H.cardGainQueue, 1)
-			H.showCardGain(found.card, found.extra)
-			task.wait(3.14)
+			if found.card.isDuplicate and H.showCardPlusOne then
+				-- [중복 카드] 흐름을 끊지 않는 작은 '+N' 알림만
+				H.showCardPlusOne(found.card, 1 + (found.extra or 0))
+				task.wait(1.3)
+			else
+				H.showCardGain(found.card, found.extra)
+				task.wait(3.14)
+				if H.checkSetComplete then H.checkSetComplete(found.card) end
+				-- [원더 첫 습득] 불가사의 카드를 처음 얻으면 원더 연출씬을 한 번 자동 재생(이후엔 '다시 보기')
+				local okW, WS = pcall(function() return require(Shared:WaitForChild("WonderScenes")) end)
+				if okW and WS and WS.Scenes and WS.Scenes[found.card.id] and H.playWonderScene then
+					H.playWonderScene(found.card.id)
+					while player.Parent and pg:FindFirstChild("WonderScene", true) do task.wait(0.3) end
+				end
+			end
 		end
 		H.cardGainPlaying = false
 	end)
@@ -15579,6 +16244,23 @@ do
 		list.Padding = UDim.new(0, 10)
 		list.SortOrder = Enum.SortOrder.LayoutOrder
 		list.Parent = win
+		-- [역사 사건 원화 · 2026-11-28] 맞는 사건 원화(없으면 세계 해도)를 창 맨 위에 띄우고 영화 띠를 두른다.
+		if H.eventArtFor then
+			local artId = H.eventArtFor(ev.art or ev.id, ev.tag, ev.title, ev.kind)
+			if artId then
+				local banner = Instance.new("ImageLabel")
+				banner.Name = "HistoryEventArt"
+				banner.Size = UDim2.new(1, 0, 0, 150)
+				banner.BackgroundColor3 = Color3.fromRGB(20, 18, 16)
+				banner.BorderSizePixel = 0
+				banner.Image = "rbxassetid://" .. tostring(artId)
+				banner.ScaleType = Enum.ScaleType.Crop
+				banner.LayoutOrder = 0
+				banner.Parent = win
+				corner(banner, 10)
+			end
+		end
+		if H.cinemaBars then H.cinemaBars(layer, 0.9) end
 		mkLabel(win, string.format("%d년 · %s", ev.year, ev.tag or "역사"), 13, COLORS.muted, false, 1)
 		mkLabel(win, ev.title, 22, Color3.fromRGB(246, 208, 130), true, 2)
 		mkLabel(win, ev.text, 15, COLORS.text, false, 3)
@@ -16412,6 +17094,13 @@ task.spawn(function()
 			if H.playQuestScenes then
 				H.playQuestScenes({ { kind = "start", name = "연출 점검 의뢰", text = "항구에 낯선 배가 들어왔다. 선장은 비밀 지도를 들고 있다고 한다. 그를 찾아 이야기를 들어 보자.", summary = "연출 점검", portId = "lisbon", mood = "war", long = true } })
 			end
+		end
+		local fx = workspace:GetAttribute("DevCall")
+		if type(fx) == "string" and fx:sub(1, 8) == "FxCheck:" and H.fxCheck then
+			-- 개발 캡처용: 카드 습득·부채꼴·+1·세트 완성·세계 사건 연출을 강제로 띄워 촬영한다(저장 변경 없음)
+			workspace:SetAttribute("DevCall", nil)
+			local okFx, errFx = pcall(H.fxCheck, fx:sub(9))
+			workspace:SetAttribute("DevResult", "FX " .. tostring(okFx) .. " " .. tostring(errFx))
 		end
 		if workspace:GetAttribute("DevCall") == "Hall" then
 			workspace:SetAttribute("DevCall", nil)
