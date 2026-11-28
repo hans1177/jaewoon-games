@@ -90,3 +90,26 @@ test("전면 재구성 메뉴: 가로 기능 레일, 세로 탭, 장식 전시�
   assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.menuHomeStrip()"));
   assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.firstTimeCoach(currentTab)"));
 });
+
+test('항해·연구 선택과 상세를 분리하고 실제 서버 행동을 하단에 둔다', () => {
+  const route = game.split('function RENDERERS.route()')[1].split('local openYardHall')[0];
+  const tech = game.split('function RENDERERS.tech()')[1].split('function RENDERERS.quest()')[0];
+  for (const [body, prefix, list] of [[route, 'Route', 'RouteDestinationList'], [tech, 'Research', 'ResearchTechnologyList']]) {
+    assert.ok(body.includes('"' + list + '"'));
+    for (const suffix of ['Decision', 'ActionBar', 'Select']) assert.ok(body.includes('"' + prefix + suffix + '"'));
+    assert.match(body, /root\.AbsoluteSize\.X >= 640/);
+    assert.match(body, /list\.Visible = wide or selected == nil/);
+    assert.match(body, /detail\.Visible = wide or selected ~= nil/);
+    assert.match(body, /footer\.Size = UDim2\.new\(if wide then 0\.57 else 1, if wide then -5 else 0, 0, 48\)/);
+    assert.match(body, /root\.Destroying:Connect\(function\(\) resize:Disconnect\(\) end\)/);
+  }
+  for (const name of ['RouteMiniChartMap', 'RouteSupplyMeter', 'RouteCoalMeter', 'RouteCargoProfit']) assert.ok(route.includes(name));
+  assert.match(route, /confirmSail\(selected\)/);
+  assert.match(route, /call\("WaitDay", \{\}\)/);
+  assert.match(route, /if selected and not selected\.locked then/);
+  assert.match(route, /H\.routeListScroll = list\.CanvasPosition\.Y/);
+  assert.match(tech, /ResearchProgress/);
+  assert.match(tech, /ResearchBudgetMeter/);
+  assert.match(tech, /not selected\.owned and selected\.blocked == nil and \(selected\.cost or 0\) <= coins/);
+  assert.match(tech, /call\("Research", \{ techId = selected\.id \}\)/);
+});
