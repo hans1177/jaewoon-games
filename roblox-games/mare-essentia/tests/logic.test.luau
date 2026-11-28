@@ -5359,6 +5359,12 @@ local function testHaggleGames()
 		local expectedPct = if trade.auction then trade.rounds[#trade.rounds].bids[trade.rounds[#trade.rounds].answer] else 12
 		check("교역 협상 할인 및 거래 불변: " .. mode, math.abs(st.haggle.deal.mult - (1 - expectedPct / 100)) < 0.00001 and st.coins == coins and st.cargo[goodId] == owned)
 		check("교역 협상 재시도 차단: " .. mode, not act(st, "HaggleStart", { goodId = goodId, game = mode }))
+		if mode == "contract" then
+			st.coins = 10000
+			local amountBefore = st.cargo[goodId] or 0
+			check("실제 계약 구매", act(st, "Buy", { goodId = goodId, amount = 1, haggleConfirm = true }))
+			check("계약 결제 재전송 차단", not act(st, "Buy", { goodId = goodId, amount = 1, haggleConfirm = true }) and st.cargo[goodId] == amountBefore + 1)
+		end
 	end
 	-- 실제 물물교환은 서버에서 기존 판매/구매를 한 요청으로 확정하고 미검증 제안을 거절한다.
 	do

@@ -12767,25 +12767,25 @@ do
 						end
 						task.delay(1.6, function() if g.Parent then g:Destroy() end end)
 					else
-						settling = false
+						settling = result == nil -- 결과가 불명확하면 동일 창에서 재결제하지 않는다.
 						receipt.Text = tostring(result and result.message or "거래 결과를 확인하지 못했어. 거래 화면에서 다시 확인해.")
 					end
 				end
 				local buy = mkButton(stage, "계약 확정 · 실제 구매", COLORS.gold, UDim2.new(1, -8, 0, 48), function()
-					confirm("Buy", { goodId = goodId, amount = amount })
+					confirm("Buy", { goodId = goodId, amount = amount, haggleConfirm = true })
 				end, true)
 				buy.Position = UDim2.fromOffset(4, 250)
 				if deal.exchange then
 					local ex = deal.exchange
 					local exchange = mkButton(stage, string.format("%s %d개 교환 · %d코인 공제", ex.name, ex.amount, ex.value), COLORS.green, UDim2.new(1, -8, 0, 48), function()
-						confirm("Buy", { goodId = goodId, amount = amount, exchange = true })
+						confirm("Buy", { goodId = goodId, amount = amount, exchange = true, haggleConfirm = true })
 					end, true)
 					exchange.Position = UDim2.fromOffset(4, 306)
 					exchange.TextWrapped = true
 				elseif deal.mode == "secret" and view.tradeFun and view.tradeFun.lot and not view.tradeFun.lot.bought then
 					local lot = view.tradeFun.lot
 					local rare = mkButton(stage, string.format("희귀 %s %d개 · %d코인", lot.good, lot.qty, lot.total), COLORS.green, UDim2.new(1, -8, 0, 48), function()
-						confirm("BuyRareLot", {})
+						confirm("BuyRareLot", { haggleConfirm = true, contractGoodId = goodId, expectedGoodId = lot.goodId, expectedTotal = lot.total })
 					end, true)
 					rare.Position = UDim2.fromOffset(4, 306)
 					rare.TextWrapped = true
@@ -12834,11 +12834,11 @@ do
 			-- [교역 협상] 기존 화면·서버 요청·상품 원본을 재사용한다. 정답/할인은 서버가 정한다.
 			local tradePanel = Instance.new("Frame")
 			tradePanel.Name = "TradeNegotiationRounds"
-			tradePanel.Size = UDim2.new(1, 0, 0, 480)
+			tradePanel.Size = UDim2.new(1, 0, 0, 530)
 			tradePanel.BackgroundTransparency = 1
 			tradePanel.Parent = stage
-			stage.Size = UDim2.new(1, -6, 0, 530)
-			scroll.CanvasSize = UDim2.fromOffset(0, 530)
+			stage.Size = UDim2.new(1, -6, 0, 590)
+			scroll.CanvasSize = UDim2.fromOffset(0, 590)
 			hint.Text = "협상 연습 · 실제 구매는 거래 화면에서 확정"
 			renderTradeRound = function(trade)
 				tradePanel:ClearAllChildren()
@@ -12850,7 +12850,15 @@ do
 				local gi = GOOD_ICON[goodId]
 				local artId = AssetIds["Goods/" .. goodId]
 				local top = 30
-				if not RESTRICTED_CARGO_ICON[goodId] and (gi or artId) then
+				if trade.auction or pend.game == "negotiation" or pend.game == "secret" then
+					local portrait = Instance.new("Frame")
+					portrait.Position = UDim2.fromOffset(0, 26)
+					portrait.Size = UDim2.new(1, 0, 0, 184)
+					portrait.BackgroundTransparency = 1
+					portrait.Parent = tradePanel
+					merchantFace(portrait, if trade.feedback == "현재 최고 입찰" then "smile" elseif trade.feedback then "frown" else "think")
+					top = 210
+				elseif not RESTRICTED_CARGO_ICON[goodId] and (gi or artId) then
 					local specimen = if gi then modelIcon(tradePanel, gi[1], gi[2], nil, 144, goodName, gi[4]) else modelIcon(tradePanel, "Goods", goodId, nil, 144, goodName)
 					specimen.Name = "TradeNegotiationSpecimen"
 					specimen.Position = UDim2.new(0.5, -72, 0, 26)
@@ -12873,6 +12881,24 @@ do
 					button.TextSize = 15
 				end
 				hint.Text = trade.support or (if trade.auction then "경쟁 상인보다 높은 가격으로 입찰해. 마지막 입찰에 성공하면 구매 조건 확정." else "협상 완료 후 실제 계약을 선택해.")
+				if trade.auction and trade.deadline then
+					local clock = mkLabel(tradePanel, "", 14, INK, true)
+					clock.Position = UDim2.fromOffset(4, top + 68 + #trade.options * 52)
+					clock.Size = UDim2.new(1, -8, 0, 32)
+					clock.AutomaticSize = Enum.AutomaticSize.None
+					task.spawn(function()
+						while clock.Parent and g.Parent and not finished and not selecting do
+							local remaining = math.max(0, math.ceil(trade.deadline - workspace:GetServerTimeNow()))
+							clock.Text = string.format("%s · %d초 남음", trade.feedback or "입찰 대기", remaining)
+							if remaining <= 0 then
+								selecting = true
+								finish({ pick = #trade.options, round = trade.round })
+								break
+							end
+							task.wait(0.25)
+						end
+					end)
+				end
 				scroll.CanvasPosition = Vector2.zero
 			end
 			renderTradeRound(pend.trade)

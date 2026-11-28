@@ -178,6 +178,12 @@ return function(D, S)
 		end
 		-- [실물 교환] 협상으로 발급된 서버 제안만 허용한다. 판매·구매 양쪽을 먼저 검사한다.
 		local exchange, exchangeQuote = nil, nil
+		if p.haggleConfirm == true then
+			local h = state.haggle
+			if not h or h.portId ~= state.portId or not h.deal or h.deal.goodId ~= goodId or not h.deal.mode then
+				return false, "이미 처리됐거나 계약을 찾을 수 없어요"
+			end
+		end
 		if p.exchange == true then
 			local h = state.haggle
 			local deal = h and h.portId == state.portId and h.deal
@@ -362,7 +368,7 @@ return function(D, S)
 			if support then break end
 		end
 		if not support and state.careers.trade.level >= 5 then support = "교역 숙련 · 실제 조건과 총액을 함께 확인해." end
-		return { title = title, persona = persona, rounds = rounds, round = 1, correct = 0, support = support, auction = auction }
+		return { title = title, persona = persona, rounds = rounds, round = 1, correct = 0, support = support, auction = auction, deadline = if auction then os.time() + 12 else nil }
 	end
 	local function haggleState(state)
 		local h = state.haggle
@@ -460,12 +466,14 @@ return function(D, S)
 			if not current or p.round ~= trade.round or type(p.pick) ~= "number" or p.pick ~= math.floor(p.pick) or p.pick < 1 or p.pick > #current.options then return false, "현재 협상 차례를 확인해요" end
 			if trade.auction then
 				local bid = current.bids[p.pick]
-				trade.bid = if bid and bid < current.rivalPct then bid else 0
+				trade.bid = if os.time() < trade.deadline and bid and bid < current.rivalPct then bid else 0
+				trade.feedback = if trade.bid > 0 then "현재 최고 입찰" else "경쟁 상인이 앞섰어요"
 			else
 				if p.pick == current.answer then trade.correct += 1 end
 			end
 			if trade.round < #trade.rounds then
 				trade.round += 1
+				if trade.auction then trade.deadline = os.time() + 12 end
 				return true, "다음 협상 조건을 확인해요"
 			end
 			pct = if trade.auction then trade.bid or 0 elseif trade.correct == #trade.rounds then 12 elseif trade.correct > 0 then math.floor(4 + 4 * trade.correct / #trade.rounds) else 0
@@ -556,12 +564,18 @@ return function(D, S)
 	end
 
 	-- [교역 재미 7] 희귀 화물: 이 항구에 뜬 한정 화물을 통째로 산다. 지정 항구에 팔아야 이익.
-	function handlers.BuyRareLot(state, _p, _ctx)
+	function handlers.BuyRareLot(state, p, _ctx)
 		local TF = D.TradeFun
 		if not TF then return false, "지금은 살 수 없어요" end
 		local lot: any = TF.rareLot(D.Ports, D.Regions, state.portId, state.day or 0)
 		if not lot then return false, "이 항구에는 지금 희귀 화물이 없어요" end
 		if TF.get(state).lots[lot.key] then return false, "이미 산 화물이에요" end
+		if p and p.haggleConfirm == true then
+			local h = state.haggle
+			if not h or h.portId ~= state.portId or not h.deal or h.deal.mode ~= "secret" or h.deal.goodId ~= p.contractGoodId
+				or p.expectedGoodId ~= lot.goodId or p.expectedTotal ~= lot.unitPrice * lot.qty then return false, "희귀 화물 계약이 변경됐어요" end
+			if embargoed(state) or lockOf(state, state.portId, lot.goodId) then return false, "거래 허가가 필요해요" end
+		end
 		if lot.qty > S.State.cargoCapacity(state) - S.State.cargoUsed(state) then return false, "화물칸이 부족해요" end
 		local total: number = math.floor(tonumber(lot.unitPrice * lot.qty) or 0)
 		if total > state.coins then return false, "코인이 부족해요" end
