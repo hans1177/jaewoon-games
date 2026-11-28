@@ -5016,3 +5016,11 @@ test('교역과 항해의 승인 아이콘 및 실제 수치 막대 유지',()=>
  assert.match(source,/math\.clamp\(data\[3\] \/ math\.max\(1, data\[2\]\), 0, 1\)/);
  assert.match(source,/Create\(H\.galleryBackdrop,/);
 });
+
+test('선장 현황 및 진행 일지는 문자 그림 대신 등록 아이콘과 실제 진행 막대를 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ assert.match(source,/icon\.Name = "StatusMetricArt"/);
+ assert.match(source,/meter\.Name = "QuestProgressMeter"/);
+ assert.match(source,/math\.clamp\(done \/ total, 0, 1\)/);
+ assert.doesNotMatch(source,/string\.rep\("▰", filled\)/);
+});
