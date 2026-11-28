@@ -182,3 +182,25 @@ test('숙련 시연은 기존 실전 무기 장착 책임 함수와 실제 단�
   assert.match(game,/MasterySelectionRim/);
   assert.match(field,/showCombo\(string.format\("%s 숙련 %d단! · %s 해금", wpn.name, rank, unlocked\), true/);
 });
+
+
+test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순서를 표시한다',()=>{
+  const cabin=game.slice(game.indexOf('function H.openCabin()'),game.indexOf('-- [방문 단일화]'));
+  for(const name of ['CabinStationBoard','CabinCompanionRoster','StationMatched','SelectedCompanionFits','FieldSupportOrder','CurrentStation','CabinSupportSkills']) assert.ok(cabin.includes(name),name);
+  assert.match(cabin,/c\.joined and supportCount < 2/);
+  assert.match(cabin,/jobs\.Categories\[c\.role or ""\]/);
+  assert.match(cabin,/skill\.name \.\. " " \.\. tostring\(skill\.cooldown\)/);
+  assert.match(cabin,/call\("Station", \{ companionId = id, station = stationId \}\)/);
+  assert.match(cabin,/call\("AutoStations"\)/);
+  assert.match(cabin,/root\.ScrollingEnabled = true/);
+  assert.match(cabin,/local slotColumns = if availableWidth >= 338 then 2 else 1/);
+  for(const width of [320,375,568,760,1024]){
+    const wide=width>=760;
+    const available=wide?width*.58-12:width-16;
+    const slots=available>=338?2:1;
+    const columns=Math.max(1,Math.floor((available-4)/150));
+    assert.ok((available-12)/slots-10>120);
+    assert.ok(Math.ceil(6/slots)*112+42>Math.ceil(6/slots)*104+34);
+    assert.ok((available-12)/columns-8>=130);
+  }
+});
