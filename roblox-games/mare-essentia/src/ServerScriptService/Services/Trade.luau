@@ -1,7 +1,7 @@
 --!nonstrict
 -- 교역: 사고팔기. 평균 매입가 대비 이익이 교역 경험치가 된다.
 
-return function(D, S)
+return function(D: any, S: any)
 	local T = D.TradeMath
 	local handlers: { [string]: (any, any, any) -> (boolean, string) } = {}
 	local MAX_AMOUNT = 20

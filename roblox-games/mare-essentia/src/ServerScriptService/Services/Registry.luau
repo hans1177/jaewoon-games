@@ -2,7 +2,7 @@
 -- 모든 서비스를 만들어 하나의 액션 표(handlers)로 묶는다.
 -- 서비스는 Roblox API를 쓰지 않으므로 서버 밖(Luau CLI)에서도 테스트할 수 있다.
 
-return function(D)
+return function(D: any)
 	local S = {}
 	S.State = require(script.Parent.State)(D)
 	S.MarketClass = require(script.Parent.Market)(D)
