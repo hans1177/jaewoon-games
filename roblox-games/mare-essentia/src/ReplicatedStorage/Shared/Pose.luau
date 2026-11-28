@@ -1558,6 +1558,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					target.Size.Y * hairHeightAllowance / ext.Y,
 					target.Size.Z * spec[5] / ext.Z)
 			end
+			-- [주민 복식 절대 배율] 경계 크기로 구한 값은 현재 모델에 대한 상대 배율이다.
+			-- ScaleTo는 절대 배율이므로 기존 수입 배율을 반영해 소매·겉옷·헤어의 과대/과소 장착을 방지한다.
+			-- 전투 몬스터와 직업 도구의 기존 크기는 보존한다.
+			if npcOutfit and not jobProp then ratio *= skin:GetScale() end
 			if ratio <= 0 or ratio ~= ratio or ratio > 100 then error("invalid scale") end
 			skin:ScaleTo(ratio)
 			-- [Roblox API] GetBoundingBox() 첫 반환값은 CFrame, 둘째 반환값이 Vector3 크기다.
