@@ -1,0 +1,87 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "capture",
+  "name": "flow_hud_nextstep"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:board') task.wait(2.2) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(pg:GetDescendants()) do if d.Name=='MenuHomeStrip' or d.Name=='FirstTimeCoach' or d.Name=='QuestCauseCard' or d.Name=='StatusAtAGlance' then n+=1 end end return 'TAB board cards='..n"
+ },
+ {
+  "type": "capture",
+  "name": "flow_tab_board"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:quest') task.wait(2.2) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(pg:GetDescendants()) do if d.Name=='MenuHomeStrip' or d.Name=='FirstTimeCoach' or d.Name=='QuestCauseCard' or d.Name=='StatusAtAGlance' then n+=1 end end return 'TAB quest cards='..n"
+ },
+ {
+  "type": "capture",
+  "name": "flow_tab_quest"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:route') task.wait(2.2) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(pg:GetDescendants()) do if d.Name=='MenuHomeStrip' or d.Name=='FirstTimeCoach' or d.Name=='QuestCauseCard' or d.Name=='StatusAtAGlance' then n+=1 end end return 'TAB route cards='..n"
+ },
+ {
+  "type": "capture",
+  "name": "flow_tab_route"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:status') task.wait(2.2) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(pg:GetDescendants()) do if d.Name=='MenuHomeStrip' or d.Name=='FirstTimeCoach' or d.Name=='QuestCauseCard' or d.Name=='StatusAtAGlance' then n+=1 end end return 'TAB status cards='..n"
+ },
+ {
+  "type": "capture",
+  "name": "flow_tab_status"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:trade') task.wait(2.2) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(pg:GetDescendants()) do if d.Name=='MenuHomeStrip' or d.Name=='FirstTimeCoach' or d.Name=='QuestCauseCard' or d.Name=='StatusAtAGlance' then n+=1 end end return 'TAB trade cards='..n"
+ },
+ {
+  "type": "capture",
+  "name": "flow_tab_trade"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:battle') task.wait(2.2) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n=0 for _,d in ipairs(pg:GetDescendants()) do if d.Name=='MenuHomeStrip' or d.Name=='FirstTimeCoach' or d.Name=='QuestCauseCard' or d.Name=='StatusAtAGlance' then n+=1 end end return 'TAB battle cards='..n"
+ },
+ {
+  "type": "capture",
+  "name": "flow_tab_battle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local pg=game:GetService('Players').LocalPlayer.PlayerGui local c=pg:FindFirstChild('NextStepChip',true) return 'CHIP '..tostring(c and c.Visible)..' '..tostring(c and c:FindFirstChild('StepText') and c.StepText.Text)"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local L=game:GetService('LogService'):GetLogHistory() local e={} for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError or string.find(m.message,'CardGain') then table.insert(e,m.message) end end return 'LOG '..table.concat(e,' | ')"
+ }
+]

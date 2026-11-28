@@ -650,9 +650,15 @@ H.facilityIconCells = {
 }
 -- [청동 아이콘 통일] 기존 승인 청동 예비 시트(768px, 4×4)에서 도형 대신 쓸 칸.
 -- {시트 번호, 칸}: 1 = ui_reserve_icons(닻·지도·두루마리…), 2 = ui_reserve_icons_2(선원·망원경·육분의…)
-H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"] }
-H.reserveIconRowH = { 184, 189 } -- 시트 세로 739/758px ÷ 4
+H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"], AssetIds["CardArt/ui_menu_icons_3"] }
+H.reserveIconRowH = { 184, 189, 192 } -- 시트 세로 739/758/768px ÷ 4
+-- [메뉴 5묶음 청동 아이콘 · 2026-11-28] docs/MENU_UI_BRIEF.md 의 768px 4×4 시트(CardArt/ui_menu_icons_3)가 등록되면 자동 사용.
+-- 칸 번호: 0 항해 1 교역 2 모험 3 성장 4 기록 5 다음할일 6 보상 7 추천 8 장도장 9 문제 10 원인 11 할일 12 결과 13 지난이야기 14 처음안내 15 패배조언
+H.MENU_SHEET_CELLS = { nav = 0, tradeg = 1, adventure = 2, growth = 3, records = 4, nextstep = 5, reward = 6, recommend = 7,
+	chapter = 8, problem = 9, cause = 10, todo = 11, result = 12, recap = 13, coach = 14, defeat = 15 }
 H.reserveIconCells = {
+	nav = { 3, 0 }, tradeg = { 3, 1 }, adventure = { 3, 2 }, growth = { 3, 3 }, records = { 3, 4 },
+	nextstep = { 3, 5 }, reward = { 3, 6 }, recommend = { 3, 7 }, chapter = { 3, 8 },
 	diplomacy = { 2, 5 }, quest = { 1, 8 }, recruit = { 2, 0 }, crew = { 2, 0 }, explore = { 2, 4 },
 	harbor = { 1, 0 }, war = { 2, 8 }, scholar = { 2, 14 }, tech = { 2, 6 }, chart = { 1, 2 },
 }
@@ -3086,8 +3092,12 @@ end
 -- [시설 목차] 외교 포함 기존 8곳. 별도의 아이콘 아틀라스나 메뉴 구조를 만들지 않는다.
 -- [하단 5묶음] 항해·교역·모험·성장·기록. 버튼 id 는 각 묶음의 첫 탭.
 H.DOCK = {
-	{ "route", "항해", "route" }, { "trade", "교역", "trade" }, { "board", "모험", "battle" },
-	{ "status", "성장", "yard" }, { "scholar", "기록", "codex" },
+	-- 새 청동 시트(ui_menu_icons_3)가 등록되면 묶음 전용 아이콘, 없으면 기존 시설 아이콘을 쓴다.
+	{ "route", "항해", if H.reserveIconAtlas[3] then "nav" else "route" },
+	{ "trade", "교역", if H.reserveIconAtlas[3] then "tradeg" else "trade" },
+	{ "board", "모험", if H.reserveIconAtlas[3] then "adventure" else "battle" },
+	{ "status", "성장", if H.reserveIconAtlas[3] then "growth" else "yard" },
+	{ "scholar", "기록", if H.reserveIconAtlas[3] then "records" else "codex" },
 }
 H.dockButtons = {}
 H.dockNotices = {}

@@ -709,7 +709,7 @@ return function(D, S)
 						-- 따로 적은 문제가 없으면 사연의 첫 문장을 '왜?'로 쓴다
 						local hook = S.Quest.storyOf(q)
 						hook = string.gsub(tostring(hook or ""), "^제%d+장%. ", "")
-						local cut = string.find(hook, "[%.%?!]%s") or string.find(hook, "다%. ")
+						local cut = string.find(hook, ". ", 1, true) or string.find(hook, "? ", 1, true) or string.find(hook, "! ", 1, true)
 						return if cut then string.sub(hook, 1, cut) elseif #hook > 0 then hook else nil
 					end)(),
 					cause = q.cause, result = q.result,
