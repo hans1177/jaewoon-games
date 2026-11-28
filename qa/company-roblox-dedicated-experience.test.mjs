@@ -1648,7 +1648,8 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/function FX\.flame\(pos, scale, profile\)[\s\S]*?FX\.burst\(/,'sinking flames use profile-based particles');
 
   assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
-  assert.match(battle,/local bpos = from:Lerp\(to, u\) \+ Vector3\.new\(0, math\.sin\(u \* math\.pi\) \* nc\.arc, 0\)/,'actual ballistic arc remains consistent');
+  assert.match(battle,/local angle = u \* math\.pi\s+local bpos = from:Lerp\(to, u\) \+ Vector3\.new\(0, math\.sin\(angle\) \* nc\.arc, 0\)/,'actual ballistic arc remains consistent');
+  assert.match(battle,/local velocity = flightDelta \+ Vector3\.new\(0, math\.cos\(angle\) \* nc\.arc \* math\.pi, 0\)/,'projectile orientation follows the same arc');
   assert.doesNotMatch(battle,/shadow\.CFrame/,'removed fake water shadow does not obstruct projectile');
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
   assert.match(battle,/vent\.Position = root\.CFrame:PointToObjectSpace\(origin\)/,'damage fire follows actual moving ships');
@@ -1838,7 +1839,8 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   assert.match(discovered,/while player\.Parent and \(newGameMode or sceneHold or H\.sceneBusy/,'field discoveries reveal immediately (2026-11-28 owner)');
   assert.match(discovered,/local found = table\.remove\(H\.cardGainQueue, 1\)/);
   assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
-  assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
+  assert.match(game,/H\.dockButtons and \(H\.dockButtons\.scholar or H\.dockButtons\.codex\)/,'card shrinks to real library dock icon');
+  assert.match(game,/icon:IsDescendantOf\(dock\)/,'mobile card reveal follows the actual dock');
   assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
   assert.match(game,/Name = "DiscoveryHalo"/,'card acquisition light rings');
   assert.match(game,/local previous = pg:FindFirstChild\("CardGain"\)/,'Studio card preview remains opt-in');
@@ -1886,7 +1888,9 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
   assert.match(battle,/local density = if MOBILE_VFX then 0\.56 else 1/,'mobile cannon particle budget stays below desktop');
   assert.match(battle,/local density = if MOBILE_VFX then 0\.5 else 1/,'secondary mobile particle budget remains at half desktop');
-  assert.match(battle,/FX\.wake\(me, "me", now\)/,'existing wake loop remains in place');
+  assert.match(battle,/local waveBoost = if wakeMood == "storm" then 1\.45 elseif wakeMood == "rain" then 1\.18 else 1/,'wake strength follows weather');
+  assert.match(battle,/FX\.wake\(me, "me", now, waveBoost\)/,'existing wake loop remains in place');
+  assert.match(battle,/FX\.wake\(foe, "foe", now, waveBoost\)/,'enemy wake uses the same weather');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun range remains untouched');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'actual damage computation remains untouched');
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution remains unchanged');
