@@ -5361,6 +5361,14 @@ local function testHaggleGames()
 		check("잘못된 협상 차례 거절: " .. mode, not act(st, "HagglePlay", { goodId = goodId, round = 99, pick = 1 }))
 		for i, row in trade.rounds do
 			check("교역 단계 응답: " .. mode, act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }))
+			if i < #trade.rounds then
+				if trade.auction then
+					local nextRow = trade.rounds[i + 1]
+					check("경쟁 상인 응답 입찰과 가격 범위: " .. mode, nextRow.rivalPct <= row.rivalPct and nextRow.rivalPct >= 5 and nextRow.bids[nextRow.answer] < nextRow.rivalPct)
+				elseif mode == "negotiation" then
+					check("성향 협상 긍정 표정", trade.mood == "smile" and type(trade.feedback) == "string")
+				end
+			end
 		end
 		local expectedPct = if trade.auction then trade.rounds[#trade.rounds].bids[trade.rounds[#trade.rounds].answer] else 12
 		check("교역 협상 할인 및 거래 불변: " .. mode, math.abs(st.haggle.deal.mult - (1 - expectedPct / 100)) < 0.00001 and st.coins == coins and st.cargo[goodId] == owned)

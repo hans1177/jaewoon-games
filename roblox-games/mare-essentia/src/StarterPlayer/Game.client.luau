@@ -12902,7 +12902,7 @@ do
 					portrait.Size = UDim2.new(1, 0, 0, 184)
 					portrait.BackgroundTransparency = 1
 					portrait.Parent = tradePanel
-					merchantFace(portrait, if trade.feedback == "현재 최고 입찰" then "smile" elseif trade.feedback then "frown" else "think")
+					merchantFace(portrait, trade.mood or (if trade.feedback == "현재 최고 입찰" then "smile" elseif trade.feedback then "frown" else "think"))
 					top = 210
 				elseif not RESTRICTED_CARGO_ICON[goodId] and (gi or artId) then
 					local specimen = if gi then modelIcon(tradePanel, gi[1], gi[2], nil, 144, goodName, gi[4]) else modelIcon(tradePanel, "Goods", goodId, nil, 144, goodName)
@@ -12942,7 +12942,7 @@ do
 				tradePanel.Size = UDim2.new(1, 0, 0, requiredHeight - 60)
 				stage.Size = UDim2.new(1, -6, 0, requiredHeight)
 				scroll.CanvasSize = UDim2.fromOffset(0, requiredHeight)
-				hint.Text = trade.support or (if trade.auction then "경쟁 상인보다 높은 가격으로 입찰해. 마지막 입찰에 성공하면 구매 조건 확정." else "협상 완료 후 실제 계약을 선택해.")
+				hint.Text = (if trade.feedback and not trade.auction then trade.feedback .. "\n" else "") .. (trade.support or (if trade.auction then "경쟁 상인보다 높은 가격으로 입찰해. 마지막 입찰에 성공하면 구매 조건 확정." else "협상 완료 후 실제 계약을 선택해."))
 				if trade.auction and trade.deadline then
 					local clock = mkLabel(tradePanel, "", 14, INK, true)
 					clock.Position = UDim2.fromOffset(4, top + 68 + #trade.options * 52)

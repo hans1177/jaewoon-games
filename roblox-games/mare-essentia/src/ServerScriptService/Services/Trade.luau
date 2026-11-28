@@ -292,17 +292,26 @@ return function(D, S)
 		local fee = math.max(2, math.floor(price * 0.1))
 		if game == "negotiation" then
 			title = "심리 흥정"
-			local preferred = ({ ["욕심 많은 상인"] = "수량을 늘리는 조건 제안", ["신중한 상인"] = "견본과 거래 기록 제시", ["자존심 강한 상인"] = "상품의 장점부터 인정", ["호의적인 상인"] = "장기 거래 약속 제안", ["교활한 상인"] = "수량과 총액을 서면 확인" })[persona]
-			add(persona .. "이 거래 조건을 살핀다. 어떤 접근이 적합할까?", preferred, "근거 없이 큰 할인 요구", "상인을 모욕하며 재촉")
-			add("상인이 망설이며 거래 조건을 다시 확인한다.", "조건을 확인하고 절충안 제시", "일방적으로 가격을 확정", "확인하지 않고 서명")
+			local profile = ({
+				["욕심 많은 상인"] = { "창고 물량을 한꺼번에 넘기고 싶어 한다.", "수량별 견적 요청", "품질 보증만 요구", "다음 방문을 약속", "추가 수량 조건의 총액을 확인" },
+				["신중한 상인"] = { "불량품 반환 분쟁을 걱정한다.", "견본과 거래 기록 제시", "장기 거래만 약속", "즉시 대량 주문 제안", "검수와 반품 조건을 문서로 확인" },
+				["자존심 강한 상인"] = { "자신의 공방과 상품 솜씨를 자랑한다.", "상품의 장점부터 인정", "경쟁 상단 가격만 강조", "수량부터 늘리기", "품질의 가치를 인정하며 가격 조율" },
+				["호의적인 상인"] = { "한 번의 이익보다 단골 거래를 바란다.", "다음 항로의 거래 가능성 제시", "일회성 대량 구매 제안", "당장 최저가만 요구", "지킬 수 있는 거래 조건만 약속" },
+				["교활한 상인"] = { "싼 단가를 내세우며 별도 비용은 말하지 않는다.", "수량과 총액을 서면 확인", "단가만 보고 동의", "장기 거래를 먼저 제안", "추가 비용 없는 최종 견적 확인" },
+			})[persona]
+			add("상인의 말을 듣고 거래 방식을 골라.", profile[2], profile[3], profile[4], profile[1])
+			add("상인이 조건을 바꾸려 한다. 무엇을 확인할까?", profile[5], "구두 조건만 믿고 서명", "확인하지 않고 선금 지급", profile[1])
+			add("협상을 끝내기 전에 마지막 확인을 해.", "실제 재고·잔액·계약 총액 확인", "할인율만 확인", "상인 기분에 맞춰 즉시 결제")
 		elseif game == "auction" or game == "antique" then
 			title = if game == "auction" then "경쟁 상인 경매" else "골동품 경매 감정"
 			local rivalName = "경쟁 상인"
 			local rival = D.TradeFun and D.TradeFun.rival(D.Ports, D.Regions, D.Regions.of(port).id, state.day or 0)
 			if rival then rivalName = rival.name end
 			local opening = 13 + math.floor(rng() * 3)
+			local rivalStyle = ({ "신중한 입찰", "적극적인 입찰", "막판 추격" })[math.floor(rng() * 3) + 1]
 			for round = 1, 3 do
-				local rivalPct = math.max(5, opening - (round - 1) * (1 + math.floor(rng() * 3)))
+				local step = if rivalStyle == "신중한 입찰" then 1 elseif rivalStyle == "적극적인 입찰" then 3 else (if round == 3 then 3 else 1)
+				local rivalPct = math.max(5, opening - (round - 1) * step)
 				local bids = { 12, 8, 4 }
 				local options = {}
 				local best = nil
@@ -311,8 +320,8 @@ return function(D, S)
 					if not best and pct < rivalPct then best = i end
 				end
 				options[4] = "입찰 포기"
-				table.insert(rounds, { question = string.format("%s의 입찰 · 기준가 %s / 경쟁가 %s", rivalName, money(price), money(math.max(1, math.floor(price * (1 - rivalPct / 100))))),
-					options = options, answer = best or 3, bids = bids, rivalPct = rivalPct })
+				table.insert(rounds, { question = string.format("%s의 입찰 · 기준가 %s / 경쟁가 %s (할인 %d%%)", rivalName, money(price), money(math.max(1, math.floor(price * (1 - rivalPct / 100)))), rivalPct),
+					options = options, answer = best or 3, bids = bids, rivalPct = rivalPct, rivalName = rivalName, price = price, evidence = rivalStyle })
 			end
 		elseif game == "appraisal" or game == "inspection" then
 			title = if game == "appraisal" then "상품 감정" else "견본 검사"
@@ -485,11 +494,21 @@ return function(D, S)
 				trade.bid = if os.time() < trade.deadline and bid and bid < current.rivalPct then bid else 0
 				trade.feedback = if trade.bid > 0 then "현재 최고 입찰" else "경쟁 상인이 앞섰어요"
 			else
-				if p.pick == current.answer then trade.correct += 1 end
+				local accepted = p.pick == current.answer
+				if accepted then trade.correct += 1 end
+				if pend.game == "negotiation" then trade.feedback = if accepted then "상인이 조건을 긍정적으로 검토해요" else "상인이 조건을 다시 확인해 달래요"; trade.mood = if accepted then "smile" else "frown" end
 			end
 			if trade.round < #trade.rounds then
 				trade.round += 1
-				if trade.auction then trade.deadline = os.time() + 12 end
+				if trade.auction then
+					-- 직전 입찰에 반응해 경쟁 상단의 다음 제안을 조정한다. 기존 4~12% 범위 유지.
+					local nextRow = trade.rounds[trade.round]
+					local response = if trade.bid > 0 then 1 else 0
+					nextRow.rivalPct = math.max(5, math.min(current.rivalPct, nextRow.rivalPct - response))
+					for i, bid in nextRow.bids do if bid < nextRow.rivalPct then nextRow.answer = i; break end end
+					nextRow.question = string.format("%s의 입찰 · 기준가 %d코인 / 경쟁가 %d코인 (할인 %d%%)", nextRow.rivalName, nextRow.price, math.max(1, math.floor(nextRow.price * (1 - nextRow.rivalPct / 100))), nextRow.rivalPct)
+					trade.deadline = os.time() + 12
+				end
 				return true, "다음 협상 조건을 확인해요"
 			end
 			pct = if trade.auction then trade.bid or 0 elseif trade.correct == #trade.rounds then 12 elseif trade.correct > 0 then math.floor(4 + 4 * trade.correct / #trade.rounds) else 0

@@ -175,7 +175,7 @@ return function(D, S)
 						end)(),
 						question = pend.quiz and pend.quiz.question, options = pend.quiz and pend.quiz.options,
 						trade = if pend.trade and pend.trade.rounds[pend.trade.round] then {
-							title = pend.trade.title, persona = pend.trade.persona, support = pend.trade.support, auction = pend.trade.auction, deadline = pend.trade.deadline, feedback = pend.trade.feedback,
+							title = pend.trade.title, persona = pend.trade.persona, support = pend.trade.support, auction = pend.trade.auction, deadline = pend.trade.deadline, feedback = pend.trade.feedback, mood = pend.trade.mood,
 							round = pend.trade.round, total = #pend.trade.rounds,
 							question = pend.trade.rounds[pend.trade.round].question,
 							evidence = pend.trade.rounds[pend.trade.round].evidence,
