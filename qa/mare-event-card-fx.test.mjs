@@ -53,3 +53,18 @@ test('카드 습득: 세로축 양면 회전·큰 원화·기존 음향·수납 
     assert.ok(h * .46 + height / 2 + 43 <= h, 'title fits');
   }
 });
+
+test('장 완료 배너와 큰 실행 버튼은 등록 원화만 사용하고 원래 동작 유지', () => {
+  const button = game.split('local function mkButton(')[1].split('local function mkRow(')[0];
+  assert.match(button, /AssetIds\["CardArt\/ui_button_" \.\. skinKey\]/);
+  assert.match(button, /parent ~= H\.tabStrip/);
+  assert.match(button, /grain\.SliceCenter = Rect\.new\(24, 24, 232, 72\)/);
+  assert.match(button, /if b\.BackgroundColor3 == initialColor then 0 else 1/);
+  assert.match(button, /b\.Activated:Connect/);
+  const result = game.split('function H.showQuestResult(d)')[1].split('function H.checkQuestResults')[0];
+  assert.match(result, /if chapterEnd then AssetIds\["CardArt\/ui_banner_chapter"\]/);
+  assert.match(result, /box\.Size = UDim2\.new\(1, -24, 0, 0\)/);
+  assert.match(result, /banner\.Name = "ChapterCompletionBanner"/);
+  assert.match(result, /root\.Activated:Connect\(close\)/);
+  assert.match(result, /sfx_fanfare/);
+});
