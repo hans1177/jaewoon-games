@@ -2702,7 +2702,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				end
 			end
 			local requiredLegs = if biped then 2 else 4
-			local canWalk = legCount == requiredLegs
+			local canWalk = facingKnown and legCount == requiredLegs
+			m:SetAttribute("AnimalFacing", if facingKnown then "ANATOMICAL_FORWARD" else "UNVERIFIED_STATIC")
 			m:SetAttribute("AnimalLegGroups", legCount)
 			m:SetAttribute("AnimalRequiredLegGroups", requiredLegs)
 			m:SetAttribute("AnimalMotionRig", if canWalk and #animalJoints > 0 then "JOINTED_WALK"
@@ -2712,6 +2713,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				akind = k[2], phase = rng:NextNumber(0, 10), gait = gaitOf[species] or 7,
 				stepSize = stepOf[species] or 2.5, hd = 0, animalType = species,
 				animalJoints = animalJoints, animalParts = animalParts, canWalk = canWalk, homeFloor = pos.Y,
+				forward = rigForward,
 				groundOffset = 0, groundTarget = 0, groundCheckAt = 0, travelPhase = 0 })
 		end
 		local lay = zoneLayout(info.portId, lvl, info.hasShipyard, info.sim and info.sim.buildings)
@@ -8107,9 +8109,12 @@ function PortScene.build(info, onFacility)
 					local u = if w.span then t * w.rate else 0
 					-- [스키 이동 방지] 사지 리그 없는 원본은 통째로 미끄러지게 이동시키지 않는다.
 					local hasGait = w.canWalk == true
-					local targetD = if w.span and hasGait then -math.sin(u) * w.span else 0
-					local want = if not hasGait then 0 elseif math.cos(u) < -0.06 then math.pi
-						elseif math.cos(u) > 0.06 then 0 else w.targetHd or 0
+					local targetD = if w.span and hasGait then math.sin(u) * w.span else 0
+					-- 실제 남은 이동량과 몸의 정면이 일치해야 한다. 최초 위치에서 시작해 순간 이동을 막는다.
+					local d = w.travelD or 0
+					local delta = targetD - d
+					local want = if not hasGait then 0 elseif delta < -0.025 then math.pi
+						elseif delta > 0.025 then 0 else w.targetHd or 0
 					w.targetHd = want
 					if not w.headingStarted then
 						w.hd, w.headingStarted = want, true
@@ -8117,13 +8122,12 @@ function PortScene.build(info, onFacility)
 					local turn = math.atan2(math.sin(want - w.hd), math.cos(want - w.hd))
 					w.hd += turn * (1 - math.exp(-5.5 * dt))
 					-- [뒤돌기/접지] 실제 몸 방향이 반대로 돌아가는 동안 뒷걸음질하거나 미끄러지지 않도록 감속.
-					local alignment = math.clamp(1 - math.abs(turn) / 1.25, 0, 1)
-					local d = w.travelD or targetD
+					local alignment = if math.abs(turn) < 0.12 then 1 else 0
 					if w.span then
-						d += (targetD - d) * (1 - math.exp(-8 * dt)) * alignment
+						d += delta * (1 - math.exp(-8 * dt)) * alignment
 						w.travelD = d
 					end
-					local walked = math.abs(d - (w.lastD or d))
+					local walked = math.abs(d - (w.lastD or 0))
 					w.lastD = d
 					local speed = if dt > 0 then walked / dt else 0
 					local moving = hasGait and w.span ~= nil and alignment > 0.25 and speed > 0.08
@@ -8153,7 +8157,7 @@ function PortScene.build(info, onFacility)
 						w.lastAnimalAction = action
 						w.model:SetAttribute("AnimalActivity", action)
 					end
-					local destination = (w.base * CFrame.new(0, 0, d)).Position
+					local destination = w.base.Position + w.forward * d
 					local close = not motionEye or (motionEye - destination).Magnitude < (if UserInputService.TouchEnabled then 105 else 155)
 					-- [지면 접촉] 타일·경사·부두 높이를 0.18초마다 확인하고 실제 높이로 지수 보간한다.
 					-- 원본 모델 발-몸통 간격과 축은 그대로 보존한다. 레이캐스트 실패 시 원래 높이를 따른다.
@@ -8174,7 +8178,8 @@ function PortScene.build(info, onFacility)
 						elseif action == "peck" then math.sin(t * 5) * 0.009
 						elseif action == "shake" then math.sin(t * 9) * 0.013
 						else math.sin(t * 1.3) * 0.009
-					local pivot = w.base * CFrame.new(0, w.groundOffset + bob, d) * CFrame.Angles(0, w.hd, 0)
+					local pivot = CFrame.new(destination + Vector3.new(0, w.groundOffset + bob, 0))
+						* CFrame.Angles(0, w.hd, 0) * w.base.Rotation
 					w.model:PivotTo(pivot)
 					if close then
 						-- [원본 관절] 다리·목·꼬리·귀·날개가 실제로 분리된 가축만 별도 움직임을 준다.

@@ -484,16 +484,27 @@ jobs:
           registry=json.loads((root/'assets-registered.json').read_text(encoding='utf-8'))['assets']
           # 승인된 화면 PNG도 이전 번호를 보존한 채 동일 등록기로 재시도한다.
           for card,digest in doc.get('approved',{}).items():
-              if not re.fullmatch(r'CardArt/ui_[a-z0-9_]+',card):
+              if not re.fullmatch(r'CardArt/(?:ui_[a-z0-9_]+|event_title_(?:ship|parchment)|history_(?:open|map|record))',card):
                   continue
               old=registry.get(card,{})
               if not old.get('sourceSha256') or old.get('sourceSha256')==digest or old.get('assetType')!='Image' or old.get('usePermissionGranted') is not True:
                   continue
-              source=root/'assets/cardart'/(card.split('/')[1]+'.png')
-              if old.get('source')!=str(source) or not source.is_file() or source.stat().st_size>20*1024*1024:
-                  continue
-              raw=source.read_bytes()
-              if len(raw)<33 or raw[:8]!=b'\x89PNG\r\n\x1a\n' or raw[12:16]!=b'IHDR' or raw[24]!=8 or raw[25] not in (2,6) or hashlib.sha256(raw).hexdigest()!=digest:
+              name=card.split('/')[1]
+              valid=False
+              for suffix in ('.png','.jpg'):
+                  source=root/'assets/cardart'/(name+suffix)
+                  if not source.is_file() or source.stat().st_size>20*1024*1024:
+                      continue
+                  raw=source.read_bytes()
+                  if hashlib.sha256(raw).hexdigest()!=digest:
+                      continue
+                  if suffix=='.png':
+                      valid=len(raw)>=33 and raw[:8]==b'\x89PNG\r\n\x1a\n' and raw[12:16]==b'IHDR' and raw[24]==8 and raw[25] in (2,6)
+                  elif not name.startswith('ui_'):
+                      valid=raw[:3]==b'\xff\xd8\xff'
+                  if valid:
+                      break
+              if not valid:
                   continue
               with open(os.environ['GITHUB_ENV'],'a') as out: out.write('MARE_MODELS_ONLY=false\n')
               with open(os.environ['GITHUB_OUTPUT'],'a') as out: out.write('pending=true\n')
