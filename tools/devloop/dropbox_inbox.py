@@ -291,6 +291,23 @@ def main():
                     rec.update(status="pending_review", file=out_name, sha256=digest, reason="기존 원본 승격 등록기 대기")
                     state["files"][path] = rec
                     continue
+            # 해전 원형 버튼은 승인된 512px 원본을 자동 인입으로 덮어쓰지 않는다.
+            if kind == "Icons" and fn in {"naval_skill.png", "naval_fire.png", "naval_speed.png"}:
+                icon = "Menu/" + os.path.splitext(fn)[0]
+                target = os.path.join(GAME, "assets", "icons", out_name)
+                if os.path.isfile(target):
+                    with open(target, "rb") as f:
+                        current_digest = hashlib.sha256(f.read()).hexdigest()
+                    if digest == current_digest == approved_doc.get("approved", {}).get(icon):
+                        rec.update(status="already_approved", file=out_name, sha256=digest, reason="동일 승인 원본 보존")
+                    else:
+                        rec.update(status="pending_review", file=out_name, sha256=digest, reason="기존 해전 원형 버튼 원본 보존; 정식 교체 검수 대기")
+                    state["files"][path] = rec
+                    continue
+                if approved_doc.get("approved", {}).get(icon) != digest:
+                    rec.update(status="pending_review", file=out_name, sha256=digest, reason="해전 원형 버튼 승인 해시 불일치")
+                    state["files"][path] = rec
+                    continue
             if blob_sha(data) in known:
                 why = f"중복(이미 {known[blob_sha(data)]})"
             else:

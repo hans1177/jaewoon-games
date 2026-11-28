@@ -23,19 +23,19 @@
 | 2026-11-28T04:19Z | `/Vibe2Transfer/inbox/CardArt/me_20.png` | 등록 |  |
 | 2026-11-28T04:19Z | `/Vibe2Transfer/inbox/CardArt/menu_recruit_01.jpg` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/field_dodge.png` | 등록 |  |
-| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_fire.png` | 등록 |  |
+| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_fire.png` | 검수 대기 | 기존 승인 원본 복구, 신규 원본 보관 |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/field_weapon_swap.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/action_dodge.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/field_weapon.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/vfx_spark.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/field_attack.png` | 등록 |  |
-| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_skill.png` | 등록 |  |
+| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_skill.png` | 검수 대기 | 기존 승인 원본 복구, 신규 원본 보관 |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/vfx_ring.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/parchment_grain.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/vfx_slash.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/action_fist.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/leather_grain.png` | 등록 |  |
-| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_speed.png` | 등록 |  |
+| 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/Icons/naval_speed.png` | 검수 대기 | 기존 승인 원본 복구, 신규 원본 보관 |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_32.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_33.png` | 등록 |  |
 | 2026-11-28T04:18Z | `/Vibe2Transfer/inbox/CardArt/ea_34.png` | 재검사 | 기존 승인 원본과 등록번호 보존; 드롭박스 원본 재검사 대기 |

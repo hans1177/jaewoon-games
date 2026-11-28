@@ -2412,7 +2412,7 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `cardart/` | ui_score_player.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_score_player.png |
 | `cardart/` | ui_card_vault_album.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_card_vault_album.png |
 | `cardart/` | ea_19.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ea_19.png |
-| `cardart/` | eu_37.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/eu_37.png |
+| `inbox-hold/CardArt/` | eu_37.png | hans1177 (owner) · PROJECT_ORIGINAL_ART · 교체 검수 대기 | dropbox:/Vibe2Transfer/inbox/CardArt/eu_37.png |
 | `cardart/` | ui_icon_hourglass.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_icon_hourglass.png |
 | `cardart/` | ui_ops_depart.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_ops_depart.png |
 | `cardart/` | ui_frame_europe.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_frame_europe.png |
@@ -2424,19 +2424,19 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `materials/` | mat_wall_plaster_beige_bc.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Materials/mat_wall_plaster_beige_bc.png |
 | `cardart/` | ea_31.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ea_31.png |
 | `icons/` | field_dodge.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/field_dodge.png |
-| `icons/` | naval_fire.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/naval_fire.png |
+| `inbox-hold/Icons/` | naval_fire.png | hans1177 (owner) · PROJECT_ORIGINAL_ART · 교체 검수 대기 | dropbox:/Vibe2Transfer/inbox/Icons/naval_fire.png |
 | `icons/` | field_weapon_swap.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/field_weapon_swap.png |
 | `icons/` | action_dodge.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/action_dodge.png |
 | `icons/` | field_weapon.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/field_weapon.png |
 | `icons/` | vfx_spark.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/vfx_spark.png |
 | `icons/` | field_attack.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/field_attack.png |
-| `icons/` | naval_skill.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/naval_skill.png |
+| `inbox-hold/Icons/` | naval_skill.png | hans1177 (owner) · PROJECT_ORIGINAL_ART · 교체 검수 대기 | dropbox:/Vibe2Transfer/inbox/Icons/naval_skill.png |
 | `icons/` | vfx_ring.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/vfx_ring.png |
 | `icons/` | parchment_grain.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/parchment_grain.png |
 | `icons/` | vfx_slash.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/vfx_slash.png |
 | `icons/` | action_fist.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/action_fist.png |
 | `icons/` | leather_grain.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/leather_grain.png |
-| `icons/` | naval_speed.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/Icons/naval_speed.png |
+| `inbox-hold/Icons/` | naval_speed.png | hans1177 (owner) · PROJECT_ORIGINAL_ART · 교체 검수 대기 | dropbox:/Vibe2Transfer/inbox/Icons/naval_speed.png |
 | `cardart/` | ea_32.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ea_32.png |
 | `cardart/` | ea_33.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ea_33.png |
 | `cardart/` | ea_34.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ea_34.png |
@@ -2478,3 +2478,10 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `cardart/` | me_20.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/me_20.png |
 | `cardart/` | menu_recruit_01.jpg | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/menu_recruit_01.jpg |
 | `animals/` | cat_v2.glb | drummyfish · CC0-1.0 | https://opengameart.org/content/simple-cat |
+
+### 기존 승인 원본 복구 (2026-11-29)
+- 드롭박스 자동 반입 이전 Git 원본 `9591bbfb551a580bd9e2fdc5fca468a6ce524010`에서 등록 ID와 기존 승인 기록을 보존한다. 신규 후보 4개는 `inbox-hold`에 원본·라이선스를 함께 보존한다.
+- `CardArt/eu_37`: 기존 승인 SHA-256 `09b3aa5dbe1fcb1bb39c6368c8a2f0e1b5c5e47addbb6c844da384738cb45628`, 복구 Git blob `1a6ec63384d0bea30531dffede6b7fe1de11642b`.
+- `Menu/naval_skill`: 기존 승인 SHA-256 `1ac3baa8fc3d21676e62d2699142ac560d6f69f2cfa3f8c8b9069edc5e8616e2`, 복구 Git blob `dc806b5290de8ea971ba18ffb295f4f3175f50b6`.
+- `Menu/naval_fire`: 기존 승인 SHA-256 `831f3e8eb98346071a141a1e46b7ae6418816b1a283135147896a8003481c811`, 복구 Git blob `45175532af019083ef6fed73ab97467a5d4719d0`.
+- `Menu/naval_speed`: 기존 승인 SHA-256 `aecdf9d4f72b6ef98becbf9b04f326b97c861178a88c442397a354d577017e98`, 복구 Git blob `d6035498af7bc71773a81f951a19279e3054ad6e`.
