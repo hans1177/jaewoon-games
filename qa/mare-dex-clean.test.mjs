@@ -10,7 +10,12 @@ test('원화 격자 + 큰 원화 + 자세히 접기', () => {
   assert.match(game, /if H\.dexClean ~= false then[\s\S]*?H\.renderDex\(found, current, article, category, cx/);
 });
 test('도감 탭은 위 원화 배너를 겹치지 않음', () => {
-  assert.match(game, /and not newGameMode and not dexTab/);
+  const layout = game.split('function H.layoutBook()')[1].split('mainInner:GetPropertyChangedSignal')[0];
+  assert.match(layout, /portraitImage\.Visible = false/);
+  assert.match(layout, /portraitFrame\.Visible = false/);
+  assert.match(layout, /local bodyY = headerH \+ 6/);
+  assert.match(layout, /content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - bottomInset\)/);
+  assert.doesNotMatch(game, /function H\.renderFacilityGallery|H\.facilityGallery/);
 });
 test('책갈피·검색 유지', () => {
   assert.ok(game.includes('call("SetEncyclopediaBookmark", { id = current.id })'));
