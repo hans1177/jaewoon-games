@@ -1,24 +1,24 @@
 {
-  "runId": "46184760834",
+  "runId": "46186508337",
   "kind": "studio",
   "portBatch": null,
-  "sourceRevision": "b9eb8db8cda7dce64d2f1858ceb9e96678d9ecfc",
-  "result": "PASS",
+  "sourceRevision": "fad68519d3a012068f411ed57c0dae5403578cb5",
+  "result": "FAIL",
   "captureArtifact": {
-    "name": "studio-frames-46184760834",
+    "name": "studio-frames-46186508337",
     "retentionDays": 1,
-    "runId": "46184760834"
+    "runId": "46186508337"
   },
-  "failureStage": null,
-  "failureSignature": null,
+  "failureStage": "STUDIO_GAME_RUNTIME",
+  "failureSignature": "STUDIO_OBSERVED_RUNTIME_WARNINGS",
   "summary": {
-    "plannedSteps": 248,
-    "completedSteps": 248,
+    "plannedSteps": 176,
+    "completedSteps": 176,
     "plannedClicks": 0,
     "successfulClicks": 0,
     "skippedOptionalClicks": 0,
-    "plannedFrames": 72,
-    "capturedFrames": 72,
+    "plannedFrames": 48,
+    "capturedFrames": 48,
     "abortedEarly": false
   },
   "errors": [],
@@ -342,7 +342,7 @@
     },
     {
       "step": 41,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -363,34 +363,20 @@
     },
     {
       "step": 44,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 45,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 46,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 47,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 48,
+      "step": 46,
       "type": "capture",
       "name": "istanbul_top",
       "status": "PASS",
@@ -399,21 +385,21 @@
       ]
     },
     {
-      "step": 49,
+      "step": 47,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 50,
+      "step": 48,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 51,
+      "step": 49,
       "type": "capture",
       "name": "istanbul_oblique_sea",
       "status": "PASS",
@@ -422,21 +408,21 @@
       ]
     },
     {
-      "step": 52,
+      "step": 50,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 53,
+      "step": 51,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 54,
+      "step": 52,
       "type": "capture",
       "name": "istanbul_oblique_land",
       "status": "PASS",
@@ -445,21 +431,21 @@
       ]
     },
     {
-      "step": 55,
+      "step": 53,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 56,
+      "step": 54,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 57,
+      "step": 55,
       "type": "capture",
       "name": "istanbul_plaza_eye",
       "status": "PASS",
@@ -468,21 +454,21 @@
       ]
     },
     {
-      "step": 58,
+      "step": 56,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 59,
+      "step": 57,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 60,
+      "step": 58,
       "type": "capture",
       "name": "istanbul_street",
       "status": "PASS",
@@ -491,21 +477,21 @@
       ]
     },
     {
-      "step": 61,
+      "step": 59,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 62,
+      "step": 60,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 63,
+      "step": 61,
       "type": "capture",
       "name": "istanbul_houses",
       "status": "PASS",
@@ -514,21 +500,21 @@
       ]
     },
     {
-      "step": 64,
+      "step": 62,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 65,
+      "step": 63,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 66,
+      "step": 64,
       "type": "capture",
       "name": "istanbul_harbor",
       "status": "PASS",
@@ -537,21 +523,21 @@
       ]
     },
     {
-      "step": 67,
+      "step": 65,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 68,
+      "step": 66,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 69,
+      "step": 67,
       "type": "capture",
       "name": "istanbul_ranch",
       "status": "PASS",
@@ -560,21 +546,21 @@
       ]
     },
     {
-      "step": 70,
+      "step": 68,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 71,
+      "step": 69,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 72,
+      "step": 70,
       "type": "capture",
       "name": "istanbul_animal_side",
       "status": "PASS",
@@ -583,21 +569,21 @@
       ]
     },
     {
-      "step": 73,
+      "step": 71,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 74,
+      "step": 72,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 75,
+      "step": 73,
       "type": "capture",
       "name": "istanbul_animal_front",
       "status": "PASS",
@@ -606,21 +592,21 @@
       ]
     },
     {
-      "step": 76,
+      "step": 74,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 77,
+      "step": 75,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 78,
+      "step": 76,
       "type": "capture",
       "name": "istanbul_resident",
       "status": "PASS",
@@ -629,21 +615,21 @@
       ]
     },
     {
-      "step": 79,
+      "step": 77,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 80,
+      "step": 78,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 81,
+      "step": 79,
       "type": "capture",
       "name": "istanbul_edge",
       "status": "PASS",
@@ -652,32 +638,48 @@
       ]
     },
     {
-      "step": 82,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 83,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 84,
+      "step": 80,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 85,
+      "step": 81,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
+    },
+    {
+      "step": 82,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 83,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 84,
+      "type": "wait",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
+    },
+    {
+      "step": 85,
+      "type": "capture",
+      "name": "busan_top",
+      "status": "PASS",
+      "screenshots": [
+        "busan_top-0.jpg"
+      ]
     },
     {
       "step": 86,
@@ -688,279 +690,277 @@
     },
     {
       "step": 87,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 88,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_oblique_sea",
+      "status": "PASS",
+      "screenshots": [
+        "busan_oblique_sea-0.jpg"
+      ]
+    },
+    {
+      "step": 89,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 89,
-      "type": "capture",
-      "name": "calicut_top",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_top-0.jpg"
-      ]
-    },
-    {
       "step": 90,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 91,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_oblique_land",
+      "status": "PASS",
+      "screenshots": [
+        "busan_oblique_land-0.jpg"
+      ]
+    },
+    {
+      "step": 92,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 92,
-      "type": "capture",
-      "name": "calicut_oblique_sea",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_oblique_sea-0.jpg"
-      ]
-    },
-    {
       "step": 93,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 94,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_plaza_eye",
+      "status": "PASS",
+      "screenshots": [
+        "busan_plaza_eye-0.jpg"
+      ]
+    },
+    {
+      "step": 95,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 95,
-      "type": "capture",
-      "name": "calicut_oblique_land",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_oblique_land-0.jpg"
-      ]
-    },
-    {
       "step": 96,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 97,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_street",
+      "status": "PASS",
+      "screenshots": [
+        "busan_street-0.jpg"
+      ]
+    },
+    {
+      "step": 98,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 98,
-      "type": "capture",
-      "name": "calicut_plaza_eye",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_plaza_eye-0.jpg"
-      ]
-    },
-    {
       "step": 99,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 100,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_houses",
+      "status": "PASS",
+      "screenshots": [
+        "busan_houses-0.jpg"
+      ]
+    },
+    {
+      "step": 101,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 101,
-      "type": "capture",
-      "name": "calicut_street",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_street-0.jpg"
-      ]
-    },
-    {
       "step": 102,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 103,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_harbor",
+      "status": "PASS",
+      "screenshots": [
+        "busan_harbor-0.jpg"
+      ]
+    },
+    {
+      "step": 104,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 104,
-      "type": "capture",
-      "name": "calicut_houses",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_houses-0.jpg"
-      ]
-    },
-    {
       "step": 105,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 106,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_ranch",
+      "status": "PASS",
+      "screenshots": [
+        "busan_ranch-0.jpg"
+      ]
+    },
+    {
+      "step": 107,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 107,
-      "type": "capture",
-      "name": "calicut_harbor",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_harbor-0.jpg"
-      ]
-    },
-    {
       "step": 108,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 109,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_animal_side",
+      "status": "PASS",
+      "screenshots": [
+        "busan_animal_side-0.jpg"
+      ]
+    },
+    {
+      "step": 110,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 110,
-      "type": "capture",
-      "name": "calicut_ranch",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_ranch-0.jpg"
-      ]
-    },
-    {
       "step": 111,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 112,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_animal_front",
+      "status": "PASS",
+      "screenshots": [
+        "busan_animal_front-0.jpg"
+      ]
+    },
+    {
+      "step": 113,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 113,
-      "type": "capture",
-      "name": "calicut_animal_side",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_animal_side-0.jpg"
-      ]
-    },
-    {
       "step": 114,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 115,
-      "type": "wait",
+      "type": "capture",
+      "name": "busan_resident",
+      "status": "PASS",
+      "screenshots": [
+        "busan_resident-0.jpg"
+      ]
+    },
+    {
+      "step": 116,
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 116,
-      "type": "capture",
-      "name": "calicut_animal_front",
-      "status": "PASS",
-      "screenshots": [
-        "calicut_animal_front-0.jpg"
-      ]
-    },
-    {
       "step": 117,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 118,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 119,
       "type": "capture",
-      "name": "calicut_resident",
+      "name": "busan_edge",
       "status": "PASS",
       "screenshots": [
-        "calicut_resident-0.jpg"
+        "busan_edge-0.jpg"
       ]
     },
     {
-      "step": 120,
+      "step": 119,
       "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 121,
+      "step": 120,
       "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
-      "step": 122,
-      "type": "capture",
-      "name": "calicut_edge",
+      "step": 121,
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "calicut_edge-0.jpg"
-      ]
+      "screenshots": []
+    },
+    {
+      "step": 122,
+      "type": "luau",
+      "name": "",
+      "status": "PASS",
+      "screenshots": []
     },
     {
       "step": 123,
@@ -971,10 +971,12 @@
     },
     {
       "step": 124,
-      "type": "wait",
-      "name": "",
+      "type": "capture",
+      "name": "zanzibar_top",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "zanzibar_top-0.jpg"
+      ]
     },
     {
       "step": 125,
@@ -992,10 +994,12 @@
     },
     {
       "step": 127,
-      "type": "luau",
-      "name": "",
+      "type": "capture",
+      "name": "zanzibar_oblique_sea",
       "status": "PASS",
-      "screenshots": []
+      "screenshots": [
+        "zanzibar_oblique_sea-0.jpg"
+      ]
     },
     {
       "step": 128,
@@ -1014,10 +1018,10 @@
     {
       "step": 130,
       "type": "capture",
-      "name": "nagasaki_top",
+      "name": "zanzibar_oblique_land",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_top-0.jpg"
+        "zanzibar_oblique_land-0.jpg"
       ]
     },
     {
@@ -1037,10 +1041,10 @@
     {
       "step": 133,
       "type": "capture",
-      "name": "nagasaki_oblique_sea",
+      "name": "zanzibar_plaza_eye",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_oblique_sea-0.jpg"
+        "zanzibar_plaza_eye-0.jpg"
       ]
     },
     {
@@ -1060,10 +1064,10 @@
     {
       "step": 136,
       "type": "capture",
-      "name": "nagasaki_oblique_land",
+      "name": "zanzibar_street",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_oblique_land-0.jpg"
+        "zanzibar_street-0.jpg"
       ]
     },
     {
@@ -1083,10 +1087,10 @@
     {
       "step": 139,
       "type": "capture",
-      "name": "nagasaki_plaza_eye",
+      "name": "zanzibar_houses",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_plaza_eye-0.jpg"
+        "zanzibar_houses-0.jpg"
       ]
     },
     {
@@ -1106,10 +1110,10 @@
     {
       "step": 142,
       "type": "capture",
-      "name": "nagasaki_street",
+      "name": "zanzibar_harbor",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_street-0.jpg"
+        "zanzibar_harbor-0.jpg"
       ]
     },
     {
@@ -1129,10 +1133,10 @@
     {
       "step": 145,
       "type": "capture",
-      "name": "nagasaki_houses",
+      "name": "zanzibar_ranch",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_houses-0.jpg"
+        "zanzibar_ranch-0.jpg"
       ]
     },
     {
@@ -1152,10 +1156,10 @@
     {
       "step": 148,
       "type": "capture",
-      "name": "nagasaki_harbor",
+      "name": "zanzibar_animal_side",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_harbor-0.jpg"
+        "zanzibar_animal_side-0.jpg"
       ]
     },
     {
@@ -1175,10 +1179,10 @@
     {
       "step": 151,
       "type": "capture",
-      "name": "nagasaki_ranch",
+      "name": "zanzibar_animal_front",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_ranch-0.jpg"
+        "zanzibar_animal_front-0.jpg"
       ]
     },
     {
@@ -1198,10 +1202,10 @@
     {
       "step": 154,
       "type": "capture",
-      "name": "nagasaki_animal_side",
+      "name": "zanzibar_resident",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_animal_side-0.jpg"
+        "zanzibar_resident-0.jpg"
       ]
     },
     {
@@ -1221,10 +1225,10 @@
     {
       "step": 157,
       "type": "capture",
-      "name": "nagasaki_animal_front",
+      "name": "zanzibar_edge",
       "status": "PASS",
       "screenshots": [
-        "nagasaki_animal_front-0.jpg"
+        "zanzibar_edge-0.jpg"
       ]
     },
     {
@@ -1243,12 +1247,10 @@
     },
     {
       "step": 160,
-      "type": "capture",
-      "name": "nagasaki_resident",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "nagasaki_resident-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 161,
@@ -1266,16 +1268,14 @@
     },
     {
       "step": 163,
-      "type": "capture",
-      "name": "nagasaki_edge",
+      "type": "luau",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "nagasaki_edge-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 164,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -1296,14 +1296,14 @@
     },
     {
       "step": 167,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 168,
-      "type": "luau",
+      "type": "wait",
       "name": "",
       "status": "PASS",
       "screenshots": []
@@ -1317,19 +1317,17 @@
     },
     {
       "step": 170,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 171,
-      "type": "capture",
-      "name": "dakar_top",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "dakar_top-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 172,
@@ -1340,19 +1338,17 @@
     },
     {
       "step": 173,
-      "type": "wait",
+      "type": "luau",
       "name": "",
       "status": "PASS",
       "screenshots": []
     },
     {
       "step": 174,
-      "type": "capture",
-      "name": "dakar_oblique_sea",
+      "type": "wait",
+      "name": "",
       "status": "PASS",
-      "screenshots": [
-        "dakar_oblique_sea-0.jpg"
-      ]
+      "screenshots": []
     },
     {
       "step": 175,
@@ -1360,1494 +1356,634 @@
       "name": "",
       "status": "PASS",
       "screenshots": []
-    },
-    {
-      "step": 176,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 177,
-      "type": "capture",
-      "name": "dakar_oblique_land",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_oblique_land-0.jpg"
-      ]
-    },
-    {
-      "step": 178,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 179,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 180,
-      "type": "capture",
-      "name": "dakar_plaza_eye",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_plaza_eye-0.jpg"
-      ]
-    },
-    {
-      "step": 181,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 182,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 183,
-      "type": "capture",
-      "name": "dakar_street",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_street-0.jpg"
-      ]
-    },
-    {
-      "step": 184,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 185,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 186,
-      "type": "capture",
-      "name": "dakar_houses",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_houses-0.jpg"
-      ]
-    },
-    {
-      "step": 187,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 188,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 189,
-      "type": "capture",
-      "name": "dakar_harbor",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_harbor-0.jpg"
-      ]
-    },
-    {
-      "step": 190,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 191,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 192,
-      "type": "capture",
-      "name": "dakar_ranch",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_ranch-0.jpg"
-      ]
-    },
-    {
-      "step": 193,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 194,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 195,
-      "type": "capture",
-      "name": "dakar_animal_side",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_animal_side-0.jpg"
-      ]
-    },
-    {
-      "step": 196,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 197,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 198,
-      "type": "capture",
-      "name": "dakar_animal_front",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_animal_front-0.jpg"
-      ]
-    },
-    {
-      "step": 199,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 200,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 201,
-      "type": "capture",
-      "name": "dakar_resident",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_resident-0.jpg"
-      ]
-    },
-    {
-      "step": 202,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 203,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 204,
-      "type": "capture",
-      "name": "dakar_edge",
-      "status": "PASS",
-      "screenshots": [
-        "dakar_edge-0.jpg"
-      ]
-    },
-    {
-      "step": 205,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 206,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 207,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 208,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 209,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 210,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 211,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 212,
-      "type": "capture",
-      "name": "havana_top",
-      "status": "PASS",
-      "screenshots": [
-        "havana_top-0.jpg"
-      ]
-    },
-    {
-      "step": 213,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 214,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 215,
-      "type": "capture",
-      "name": "havana_oblique_sea",
-      "status": "PASS",
-      "screenshots": [
-        "havana_oblique_sea-0.jpg"
-      ]
-    },
-    {
-      "step": 216,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 217,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 218,
-      "type": "capture",
-      "name": "havana_oblique_land",
-      "status": "PASS",
-      "screenshots": [
-        "havana_oblique_land-0.jpg"
-      ]
-    },
-    {
-      "step": 219,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 220,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 221,
-      "type": "capture",
-      "name": "havana_plaza_eye",
-      "status": "PASS",
-      "screenshots": [
-        "havana_plaza_eye-0.jpg"
-      ]
-    },
-    {
-      "step": 222,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 223,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 224,
-      "type": "capture",
-      "name": "havana_street",
-      "status": "PASS",
-      "screenshots": [
-        "havana_street-0.jpg"
-      ]
-    },
-    {
-      "step": 225,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 226,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 227,
-      "type": "capture",
-      "name": "havana_houses",
-      "status": "PASS",
-      "screenshots": [
-        "havana_houses-0.jpg"
-      ]
-    },
-    {
-      "step": 228,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 229,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 230,
-      "type": "capture",
-      "name": "havana_harbor",
-      "status": "PASS",
-      "screenshots": [
-        "havana_harbor-0.jpg"
-      ]
-    },
-    {
-      "step": 231,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 232,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 233,
-      "type": "capture",
-      "name": "havana_ranch",
-      "status": "PASS",
-      "screenshots": [
-        "havana_ranch-0.jpg"
-      ]
-    },
-    {
-      "step": 234,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 235,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 236,
-      "type": "capture",
-      "name": "havana_animal_side",
-      "status": "PASS",
-      "screenshots": [
-        "havana_animal_side-0.jpg"
-      ]
-    },
-    {
-      "step": 237,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 238,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 239,
-      "type": "capture",
-      "name": "havana_animal_front",
-      "status": "PASS",
-      "screenshots": [
-        "havana_animal_front-0.jpg"
-      ]
-    },
-    {
-      "step": 240,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 241,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 242,
-      "type": "capture",
-      "name": "havana_resident",
-      "status": "PASS",
-      "screenshots": [
-        "havana_resident-0.jpg"
-      ]
-    },
-    {
-      "step": 243,
-      "type": "luau",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 244,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 245,
-      "type": "capture",
-      "name": "havana_edge",
-      "status": "PASS",
-      "screenshots": [
-        "havana_edge-0.jpg"
-      ]
-    },
-    {
-      "step": 246,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
-    },
-    {
-      "step": 247,
-      "type": "wait",
-      "name": "",
-      "status": "PASS",
-      "screenshots": []
     }
   ],
   "screenshotComparison": [
     {
-      "name": "calicut_animal_front-0.jpg",
-      "sha256": "80d0d61c580f5122c608c6d1a45ee031a178dde4f02b3fb137062ce87140594e",
+      "name": "busan_animal_front-0.jpg",
+      "sha256": "2d6b30d05f7fc2d8cd506bd2e790a2e72956d788b2a5349569ddc164c24bc182",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_animal_side-0.jpg",
-      "sha256": "b6fb59c41b914960fdc4e2d0a3b0024dadc1a5f2ef28ed984adb10c69c47fe32",
+      "name": "busan_animal_side-0.jpg",
+      "sha256": "540fd9c8e146dded3cfa253f8955f431aad3efb0566c8392634772cf1abd3421",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_edge-0.jpg",
-      "sha256": "860969fa3e528859d29c75b7eb640705e6cdc41bccb219ca6d9485ab9a1091cc",
+      "name": "busan_edge-0.jpg",
+      "sha256": "5912ed8441ae0a19e1fa13394353fa234c69be102fb0c8c48f620f5fa6ad2e0d",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_harbor-0.jpg",
-      "sha256": "0f8162f07bb0dfb8bccbb3013372ebfe7a3e3436410b8fba04a1283bf06aaf3a",
+      "name": "busan_harbor-0.jpg",
+      "sha256": "b226762be19ca640adfa4850bda1f1a3fd6403e3e6bb8bcd6bdcd0aee4adb41b",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_houses-0.jpg",
-      "sha256": "b0828a09fec197e69b02e2aaf90adf8c77243edaee39388f2abfd84420197195",
+      "name": "busan_houses-0.jpg",
+      "sha256": "8e2f182caaf19e47d57c29a21c015460c6842b9bde0413ef3b88e2a11a519054",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_oblique_land-0.jpg",
-      "sha256": "29cf803d1da7d3cc1b9d9a7054b20d6eb78a9af073166ce54b61f337d9dde7dc",
+      "name": "busan_oblique_land-0.jpg",
+      "sha256": "2d938dc5833fa66115dab8052160b9909bb6c82d14f41577a1c719e3ce5c58e1",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_oblique_sea-0.jpg",
-      "sha256": "9a6e8b07b0ca90f5f287086e5e20d3565a92899d0019b09343775287b830f17f",
+      "name": "busan_oblique_sea-0.jpg",
+      "sha256": "214f62aa322316d6feb8d40a65bbe787b9f155233a6ae7c052841409a0da590a",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_plaza_eye-0.jpg",
-      "sha256": "0a2ada894c5ee28c82e5c1789151b1f36aaebfa8ab38c222b430fa0acc498c7c",
+      "name": "busan_plaza_eye-0.jpg",
+      "sha256": "6c7fd25a2d3c4f8f228983ea9aa62de702e083d4dc5dc705046520d37241a4fe",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_ranch-0.jpg",
-      "sha256": "4f70240f1a7fe68f4484d20f925fc6e718d650bc395e39742eeb347da3294628",
+      "name": "busan_ranch-0.jpg",
+      "sha256": "34587f2ab0395bee48406b69d5213c69699455ce2bda6b126ee5471ccda169ba",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_resident-0.jpg",
-      "sha256": "edb98378403f381be9538152dc4020ebafa90cfbb5272b5ae033fba9b6443406",
+      "name": "busan_resident-0.jpg",
+      "sha256": "ab4b7da6047e05569b538488b8bbb59a53f462061253216aba25d24e4d150779",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_street-0.jpg",
-      "sha256": "2402e920c70af7c91b0a95d78f71417984954919605c97b1bebff991bb700799",
+      "name": "busan_street-0.jpg",
+      "sha256": "737e0116f92bfb3089119d50bbbe3eab27b5e64e8cb8074cd4796a20f9830124",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "calicut_top-0.jpg",
-      "sha256": "3c268e9b0cff1128cba1081e6d87d0cdaf7448558ff41e248d8a9893afd379b1",
+      "name": "busan_top-0.jpg",
+      "sha256": "e5cffc657fce5b859058de75d8a2b0db09a29273a7dd14c08c8d2c41c75f67b5",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_animal_front-0.jpg",
-      "sha256": "1173687b1741e208b72c3edc7496c2319aa7c664f9051aa1007da8e8ced2c636",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_animal_side-0.jpg",
-      "sha256": "a69e2719f7b38ea99e90dc50234662bcde8f3079d9e0146624df008baf8d911c",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_edge-0.jpg",
-      "sha256": "759d727e8b39a748ae0b724fec2e26edbd14a9c139e85debe099cb2d45f8741f",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_harbor-0.jpg",
-      "sha256": "0856bd03764f6752b0e5cc4267c301b66b4ea2388f36586d9b767d51e1833311",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_houses-0.jpg",
-      "sha256": "e74980fddce448442d98de71bebec97c59c56d4a5ff3b377d44134df2ed1c577",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_oblique_land-0.jpg",
-      "sha256": "952637d97136c904bc40ea8ac28e1932e09b2d05eea19914286b109677bc3518",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_oblique_sea-0.jpg",
-      "sha256": "63f6aac03bfe2ea5692ee4cae61dbc4f056680cf1cf49e475b7cd95fd8149965",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_plaza_eye-0.jpg",
-      "sha256": "92a6507fe9833ca473d6ae386d31fba01a3b684383ff3e79da438e35b7332c73",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_ranch-0.jpg",
-      "sha256": "dd33ff8f95a17405808c702b014442247ac0a659df579c61f08a182c9d6a3832",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_resident-0.jpg",
-      "sha256": "ee3aebf7aab8141425b2ff0da7b7b9ded270560c2555adae2284b3ad96f69527",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_street-0.jpg",
-      "sha256": "0b1a9871654db04a06624ecf2d520129b7722a639738acc21e05ae8259ab3fbb",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "dakar_top-0.jpg",
-      "sha256": "f5a449020f901ffff4e085a456f9fe7aa243d7f05c40edc1056779e0e77511ee",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_animal_front-0.jpg",
-      "sha256": "8e841598a0c42ee8af0a56e16c02ca59328e0db9e666793f6f393fdff9cf9dc8",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_animal_side-0.jpg",
-      "sha256": "ea0610f36ee548dd825e3919df3d311fc173532a8b07dd589a62ba79ae57fed7",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_edge-0.jpg",
-      "sha256": "48a381b04c25efe4781374e0748a361e7a344d5c46864c099a359bcbc165a2df",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_harbor-0.jpg",
-      "sha256": "fdc014f2fae325737af21f95138f6029672d598d2641cb7de4efffc5f22bd643",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_houses-0.jpg",
-      "sha256": "011a0913b384c26064e12eed434578318f3d27d1d75fdfb4d718eb7954e430c2",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_oblique_land-0.jpg",
-      "sha256": "a6b201b5b2dcac374c28ad5847e2869f53fbede47929f5673a8993406bae53fe",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_oblique_sea-0.jpg",
-      "sha256": "ed0d3926b2e50e352ffbf05d3fabda34668646d6eb33e7089552c3b2d819dafc",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_plaza_eye-0.jpg",
-      "sha256": "c2acc3ce86cd4e79d5ddc96b25f482c1b37144ebfb0ea830e39adb20b8cb0201",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_ranch-0.jpg",
-      "sha256": "3ce0e88518bc3907ef970bffb002dac4b32523ed94c39b1b1f4c82c58845efc5",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_resident-0.jpg",
-      "sha256": "b4c6ec4765f7979f6a6a07400b986c775eecc018ab1875598d1f97f7cfea8a73",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_street-0.jpg",
-      "sha256": "2528185ae577c90c326db2736346e5f31f5894756527f603b9d80303d9a7b77b",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
-    },
-    {
-      "name": "havana_top-0.jpg",
-      "sha256": "b5f218e33230bba57e7db46e2a0bbaf92762e03d1e6dce5a2410f0ddc4a73a9d",
-      "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_animal_front-0.jpg",
-      "sha256": "472e2109f6943f3255457304b9346a23a35878c999e3f41f0c3c4508b515d092",
+      "sha256": "32790f6120d107027bd09d90d5b09c6e94e7d8d617ade3d606d107e9d5e7e695",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_animal_side-0.jpg",
-      "sha256": "d5e1a4e2adbd8a681618d7d9093489a3ce9090bbd2ff003826618b9c44479ee7",
+      "sha256": "88e6a3722e2ee95f82d51f29a7d0408a9fe5b9b26807d621fa5ef5c3e7c25344",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_edge-0.jpg",
-      "sha256": "579fd0d9045efe28e75a0d4eab0d4cd71cf2946761b68d9e85373fc1a229c917",
+      "sha256": "b94e6e8d93a7c7b2ccda9e37f5f2847419232d64c6e3fa268710ca3006f26bd7",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_harbor-0.jpg",
-      "sha256": "4e939ac5545a0d3881f047a7ab5c673bd7bd1ffaed02098dd55911dc1336c975",
+      "sha256": "5e895dfb67bfcb5358d32b8b86e48eb93f662c8cd1767cd424ed57bfb277111f",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_houses-0.jpg",
-      "sha256": "739e9686663d81b006dd95c59ff312b44e67da4783f128316be9ad7fb2d451d7",
+      "sha256": "1ae973e402e3ef48254fb872a80e361e9363497788aa39251b012668e813aaba",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_oblique_land-0.jpg",
-      "sha256": "21c7640098802655eae0e74a868bfe25d20015c6f129c07475b19f606abd02ef",
+      "sha256": "26f40f35ccc6ea69eaf5757e68d3af1751e87434f6c7b91d54c51922dc48c381",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_oblique_sea-0.jpg",
-      "sha256": "4ef684fae6e564ccb96c767bfc06b630c69625195fb8adba0c2efab57d909ca3",
+      "sha256": "0290e6f58c4a40bdde81afe175d26fb2227a1660474bc826ee675eca4dd50f2f",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_plaza_eye-0.jpg",
-      "sha256": "10582a7483e02ba015a8b4f0c497e21e36e71201575b3f159012ee928612303f",
+      "sha256": "0709b4a105ba28c0530f3d7dde9a8cdb566b261d58411c613e724b20ce1682a3",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_ranch-0.jpg",
-      "sha256": "de67ebe0f0f4cc6a948e0ac303a2d872f5fc7d3c60c936e8928d2eb922f96a9f",
+      "sha256": "256cfd856ac44ceb5db49ef46f647ce8f348adb5e489f84310e48c4c3b0fdbf8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_resident-0.jpg",
-      "sha256": "a9e4ff1dd6330949c45de87fe9dd59e5ccb6c14bc2aa5730c3948197a1f86b24",
+      "sha256": "e8dbfe833e6313a89de31e6fbca914cf3195d104cc19ba58dcc890ee4fef42bf",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_street-0.jpg",
-      "sha256": "7fba0f7fb9a51a05b3bcc30066379f3383b2559b4876c1b9bd0bce6729dd4a9a",
+      "sha256": "b4b44e08c25d998a7901f8229255e2a5b20c5b0da79adcb9dbf0a54ce5442fd6",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "istanbul_top-0.jpg",
-      "sha256": "2dd8d76ac793dc778a8a73f9c181b9bc9a0fd42181acf925db4fe1424eefa50c",
+      "sha256": "73b74071cb851efef31f975fe30ed6349eec066787ebe9a1bfcb320358c4a038",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_animal_front-0.jpg",
-      "sha256": "9a93c9cb0e5f75592dc9f842e2a97ba68418b49c405b7559afd2a8728d149c6f",
+      "sha256": "ff3727f153e12936e27e1ff02a03b2f80921a2f87f7e6c76d5f87b23eb4ec695",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_animal_side-0.jpg",
-      "sha256": "9a93c9cb0e5f75592dc9f842e2a97ba68418b49c405b7559afd2a8728d149c6f",
+      "sha256": "ff3727f153e12936e27e1ff02a03b2f80921a2f87f7e6c76d5f87b23eb4ec695",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_edge-0.jpg",
-      "sha256": "1e73922868199baa0bdee4ddf979d6986e7e1c681a388b9c5d63ce6cf217e233",
+      "sha256": "4904e86afdd7b0dbb4cca2e08b35677d6dd9e19658b25bb8831c9c6085581f5e",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_harbor-0.jpg",
-      "sha256": "d62a62d69156658e7780f6ac3d2dfeb51dbd6dad3e6f79a82ae69e183d61ec9c",
+      "sha256": "8c521db666faf4731834101a8e07fe3cfa9576022081066e7029a27ce818c70a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_houses-0.jpg",
-      "sha256": "15bbdd170a4dcf6a5e06697b97d9f9bde89727b15005f0fbc6c6f2da39c2a357",
+      "sha256": "9279d1e6144efd7b36c037d2baae18ca07a9e7a4a19914c43e6654c70bf3fb00",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_oblique_land-0.jpg",
-      "sha256": "d36bd063f11aa065d41db4e59e731e478266dbcda79516675a2a25bbe0a11f8e",
+      "sha256": "63e5657856255c21cb4528c95420bf6514ad79684933831555b635c27c61d55b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_oblique_sea-0.jpg",
-      "sha256": "790117c7ef3a9ef4c7a76056fa29c4e49fb34af7d7f4798943dbf11f4b3641fd",
+      "sha256": "1a9166ab8d524ac92e91d98ec6c15c61807b3c12531d700d0919625b80aa7bad",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_plaza_eye-0.jpg",
-      "sha256": "e4e501d003c818b8999f901315b02980bed4ba31c5275040132c03c912bb4485",
+      "sha256": "b607daabf5f8404d3e0d3392160546daf0dc21e8857c854e59d090f7b04975b0",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_ranch-0.jpg",
-      "sha256": "9a93c9cb0e5f75592dc9f842e2a97ba68418b49c405b7559afd2a8728d149c6f",
+      "sha256": "ff3727f153e12936e27e1ff02a03b2f80921a2f87f7e6c76d5f87b23eb4ec695",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_resident-0.jpg",
-      "sha256": "d149d88828ac64f26fa51f5f6dd2fb8b87db88df3782da9836db16578cda095e",
+      "sha256": "5573d4080393e4393e55b509dd80b51bd677de7459d8a9f28522b7329b6050d3",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_street-0.jpg",
-      "sha256": "0e76db26cee829901280fc543e0460197b6954f4b073fbb7908ae170560b356a",
+      "sha256": "79d6ab0f79c245d8cc79b1d8e8d566ba2dc2cb6ec91755cd387d9581c641a7bb",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
       "name": "london_top-0.jpg",
-      "sha256": "78e51c3c89bead07390db6892bcb0498f0595aa3f086de449af9143cfc4b1cf8",
+      "sha256": "48cf34f88e2d4c05e42bad454e01ca28f640ed4142732a586dd489edf1b9bd01",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_animal_front-0.jpg",
-      "sha256": "032d47e03ba7625bcecd1c76f8d3d924287a6ac1be0eb1bf4d65850cabfa1eb7",
+      "name": "zanzibar_animal_front-0.jpg",
+      "sha256": "5e965d4816713c1d342eb927293424a5127a52e98cfe5e8e5ff46ab9e97349cb",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_animal_side-0.jpg",
-      "sha256": "b7cb1cddefffce062f25f8fd4d2d61c6764d68a1becc6ab9b5ad73b72250700d",
+      "name": "zanzibar_animal_side-0.jpg",
+      "sha256": "28c8b3afd1f46b5e46c45f6f0bff78c5d9c5fefb4baeb0dad0e3bfeef2147f6e",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_edge-0.jpg",
-      "sha256": "d5f6994d1580f41e7349f26b0b1cd930e9660d1ee83d72291c6907e84a46cc2e",
+      "name": "zanzibar_edge-0.jpg",
+      "sha256": "e142979007bccba70ef89f429c61adcbf472fad6c52409b5b19bb6bbdc62a496",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_harbor-0.jpg",
-      "sha256": "36bd90df758e07f9bf4297840e5cd173a92f4ab6466deff2181e2ac7357b7100",
+      "name": "zanzibar_harbor-0.jpg",
+      "sha256": "8bbddeb16e48c3c2bf4d0761e6bac5b1825674f361a51c7a2586e42a9761950b",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_houses-0.jpg",
-      "sha256": "917f3ebedd2df158eec3e09f8e9e02591dedddce86a9d0feaa3bcf67d98a1111",
+      "name": "zanzibar_houses-0.jpg",
+      "sha256": "c728b5c09f9d305f3c8d8bb5c4ea9b945d60076f584541f81c6a36559738ba48",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_oblique_land-0.jpg",
-      "sha256": "cad12c1e9ad0128f947b0d90f5e11293b0f71b3b3aad9c4fa52c705b47aeeae0",
+      "name": "zanzibar_oblique_land-0.jpg",
+      "sha256": "4129462011501fa88dd62e322cbc894d290e7c8b5f8eb2c32e8053dc6cc93bb0",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_oblique_sea-0.jpg",
-      "sha256": "4297e5b1d1a262f5da7b1be007b9351ccd38f6938872bb3145d32365ede919bd",
+      "name": "zanzibar_oblique_sea-0.jpg",
+      "sha256": "663a85f4781841eb274d1edd2bfa5244834d4c5746ced08e9da0d65e9c121c62",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_plaza_eye-0.jpg",
-      "sha256": "b27d4c4dbc23d764f1867378cec204ee7cc8f1ceffaa8b53577f200d1b6e6aaf",
+      "name": "zanzibar_plaza_eye-0.jpg",
+      "sha256": "37899cfc8497b18b14fd55a91e36bc717bee0dddddb7da1f7112b525f0ee7521",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_ranch-0.jpg",
-      "sha256": "b5836d0e0f171cb31b76376ea2f9d2081cd332a2d466e0575ed860445abc71ab",
+      "name": "zanzibar_ranch-0.jpg",
+      "sha256": "45d8a34f7bc5c6a0af6bd53970c9ac1b25223949e677cbcef47022c7adc86987",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_resident-0.jpg",
-      "sha256": "b4ca512e637f8a26692a94594d92e6debfc7f65660ed0dd344cf551f039989f5",
+      "name": "zanzibar_resident-0.jpg",
+      "sha256": "6cdcb49b66dd83a2ae2825ad1eb8f049ce5211fcd3de0039f1d4ae480ae79e5f",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_street-0.jpg",
-      "sha256": "2b146264aaf8f0b3f8f21ca080c94445e71c585cb20a3a2283e9b6012ef39ff9",
+      "name": "zanzibar_street-0.jpg",
+      "sha256": "165049153c852c807c3bfb5baa7ec87737b34a40e954ee113300180443920d7b",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     },
     {
-      "name": "nagasaki_top-0.jpg",
-      "sha256": "c9cb4505f56df2086879fb2073c8fef7af27678d64113272111f1ad97505eb47",
+      "name": "zanzibar_top-0.jpg",
+      "sha256": "aca386dd0dfb3dada566fc9716be49b068261e9b8383114bb405ec528b094440",
       "comparison": "NO_BASELINE",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46184760834"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46186508337"
     }
   ],
   "screenshotFrameAudit": {
-    "checked": 72,
+    "checked": 48,
     "invalid": 0,
     "images": [
       {
-        "name": "calicut_animal_front-0.jpg",
-        "bytes": 253708,
+        "name": "busan_animal_front-0.jpg",
+        "bytes": 269275,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_animal_side-0.jpg",
-        "bytes": 215606,
+        "name": "busan_animal_side-0.jpg",
+        "bytes": 177630,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_edge-0.jpg",
-        "bytes": 124083,
+        "name": "busan_edge-0.jpg",
+        "bytes": 146020,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_harbor-0.jpg",
-        "bytes": 265905,
+        "name": "busan_harbor-0.jpg",
+        "bytes": 267760,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_houses-0.jpg",
-        "bytes": 201021,
+        "name": "busan_houses-0.jpg",
+        "bytes": 244561,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_oblique_land-0.jpg",
-        "bytes": 164161,
+        "name": "busan_oblique_land-0.jpg",
+        "bytes": 163145,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_oblique_sea-0.jpg",
-        "bytes": 203383,
+        "name": "busan_oblique_sea-0.jpg",
+        "bytes": 186431,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_plaza_eye-0.jpg",
-        "bytes": 209863,
+        "name": "busan_plaza_eye-0.jpg",
+        "bytes": 198097,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_ranch-0.jpg",
-        "bytes": 145972,
+        "name": "busan_ranch-0.jpg",
+        "bytes": 160771,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_resident-0.jpg",
-        "bytes": 98252,
+        "name": "busan_resident-0.jpg",
+        "bytes": 169129,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_street-0.jpg",
-        "bytes": 211335,
+        "name": "busan_street-0.jpg",
+        "bytes": 229534,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "calicut_top-0.jpg",
-        "bytes": 133417,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_animal_front-0.jpg",
-        "bytes": 427643,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_animal_side-0.jpg",
-        "bytes": 245321,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_edge-0.jpg",
-        "bytes": 113070,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_harbor-0.jpg",
-        "bytes": 262584,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_houses-0.jpg",
-        "bytes": 175517,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_oblique_land-0.jpg",
-        "bytes": 146917,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_oblique_sea-0.jpg",
-        "bytes": 191952,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_plaza_eye-0.jpg",
-        "bytes": 194459,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_ranch-0.jpg",
-        "bytes": 148178,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_resident-0.jpg",
-        "bytes": 215925,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_street-0.jpg",
-        "bytes": 204402,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "dakar_top-0.jpg",
-        "bytes": 114603,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_animal_front-0.jpg",
-        "bytes": 303484,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_animal_side-0.jpg",
-        "bytes": 243111,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_edge-0.jpg",
-        "bytes": 119662,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_harbor-0.jpg",
-        "bytes": 267353,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_houses-0.jpg",
-        "bytes": 229286,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_oblique_land-0.jpg",
-        "bytes": 149741,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_oblique_sea-0.jpg",
-        "bytes": 184908,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_plaza_eye-0.jpg",
-        "bytes": 162124,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_ranch-0.jpg",
-        "bytes": 156631,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_resident-0.jpg",
-        "bytes": 112252,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_street-0.jpg",
-        "bytes": 250920,
-        "width": 1311,
-        "height": 475,
-        "status": "PASS"
-      },
-      {
-        "name": "havana_top-0.jpg",
-        "bytes": 115248,
+        "name": "busan_top-0.jpg",
+        "bytes": 106004,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_animal_front-0.jpg",
-        "bytes": 174781,
+        "bytes": 160757,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_animal_side-0.jpg",
-        "bytes": 182090,
+        "bytes": 144856,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_edge-0.jpg",
-        "bytes": 135648,
+        "bytes": 172251,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_harbor-0.jpg",
-        "bytes": 255523,
+        "bytes": 254261,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_houses-0.jpg",
-        "bytes": 217032,
+        "bytes": 234553,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_oblique_land-0.jpg",
-        "bytes": 175579,
+        "bytes": 177656,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_oblique_sea-0.jpg",
-        "bytes": 209225,
+        "bytes": 204573,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_plaza_eye-0.jpg",
-        "bytes": 164522,
+        "bytes": 171724,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_ranch-0.jpg",
-        "bytes": 147289,
+        "bytes": 135297,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_resident-0.jpg",
-        "bytes": 213307,
+        "bytes": 200926,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_street-0.jpg",
-        "bytes": 204429,
+        "bytes": 225228,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "istanbul_top-0.jpg",
-        "bytes": 154719,
+        "bytes": 147664,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_animal_front-0.jpg",
-        "bytes": 149511,
+        "bytes": 151135,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_animal_side-0.jpg",
-        "bytes": 149511,
+        "bytes": 151135,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_edge-0.jpg",
-        "bytes": 127775,
+        "bytes": 156905,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_harbor-0.jpg",
-        "bytes": 256405,
+        "bytes": 252996,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_houses-0.jpg",
-        "bytes": 157516,
+        "bytes": 226064,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_oblique_land-0.jpg",
-        "bytes": 155025,
+        "bytes": 158982,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_oblique_sea-0.jpg",
-        "bytes": 200335,
+        "bytes": 192966,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_plaza_eye-0.jpg",
-        "bytes": 177864,
+        "bytes": 200400,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_ranch-0.jpg",
-        "bytes": 149511,
+        "bytes": 151135,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_resident-0.jpg",
-        "bytes": 258729,
+        "bytes": 267930,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_street-0.jpg",
-        "bytes": 235050,
+        "bytes": 206325,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "london_top-0.jpg",
-        "bytes": 126520,
+        "bytes": 130397,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_animal_front-0.jpg",
-        "bytes": 153328,
+        "name": "zanzibar_animal_front-0.jpg",
+        "bytes": 155756,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_animal_side-0.jpg",
-        "bytes": 96164,
+        "name": "zanzibar_animal_side-0.jpg",
+        "bytes": 144872,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_edge-0.jpg",
-        "bytes": 107857,
+        "name": "zanzibar_edge-0.jpg",
+        "bytes": 131578,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_harbor-0.jpg",
-        "bytes": 262895,
+        "name": "zanzibar_harbor-0.jpg",
+        "bytes": 275514,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_houses-0.jpg",
-        "bytes": 243334,
+        "name": "zanzibar_houses-0.jpg",
+        "bytes": 220344,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_oblique_land-0.jpg",
-        "bytes": 151715,
+        "name": "zanzibar_oblique_land-0.jpg",
+        "bytes": 156467,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_oblique_sea-0.jpg",
-        "bytes": 198846,
+        "name": "zanzibar_oblique_sea-0.jpg",
+        "bytes": 179707,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_plaza_eye-0.jpg",
-        "bytes": 189601,
+        "name": "zanzibar_plaza_eye-0.jpg",
+        "bytes": 176156,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_ranch-0.jpg",
-        "bytes": 136557,
+        "name": "zanzibar_ranch-0.jpg",
+        "bytes": 138221,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_resident-0.jpg",
-        "bytes": 39990,
+        "name": "zanzibar_resident-0.jpg",
+        "bytes": 190505,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_street-0.jpg",
-        "bytes": 219865,
+        "name": "zanzibar_street-0.jpg",
+        "bytes": 229459,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
-        "name": "nagasaki_top-0.jpg",
-        "bytes": 112444,
+        "name": "zanzibar_top-0.jpg",
+        "bytes": 97509,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -2856,5 +1992,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "46182509531"
+  "previousRunId": "46184760834"
 }
