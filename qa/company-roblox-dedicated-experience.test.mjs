@@ -1383,7 +1383,8 @@ test('Mare donkey rig candidate keeps original geometry and has real skinned joi
 test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
-  assert.match(pose,/decal = head:FindFirstChildWhichIsA\("Decal"\)/);
+  assert.match(pose,/for _, child in head:GetChildren\(\) do\s*if child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front then/);
+  assert.match(pose,/if child ~= decal and child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front then\s*child.Transparency = 1/);
   assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
   assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
   assert.match(pose,/pcall\(drawFace, headPart\)/);
@@ -1438,7 +1439,9 @@ test('Mare exploration preserves combat rules while preserving noncombat party a
   for(const habitat of ['coast','forest','ruins','highland','desert','plains','mine']){
     assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
   }
-  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
+  assert.match(field,/local enemyCount, bossCount = AC\.fieldEnemyCounts\(danger0\)/);
+  const actionCombat=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ActionCombat.luau','utf8');
+  assert.match(actionCombat,/return math\.clamp\(20 \+ \(danger - 1\) \* 6, 20, 100 - bossCount\), bossCount/);
   assert.doesNotMatch(field,/local pos0 = Vector3\.new\(footX|pcall\(Pose\.createR15, folder, pos0/,'no combat companion spawn in solo field');
   assert.match(field,/local companionRows: \{ any \} = \{\}/);
   assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);
@@ -1482,7 +1485,9 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/if not finished and found >= nodeCount then completePopup\.Visible = true end/);
   assert.match(field,/completeBtn\.Activated:Connect\(function\(\)\s*if not finished and found >= nodeCount then finish\("clear"\) end/);
   assert.match(field,/FieldExitReason/);
-  assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
+  assert.match(field,/local function castEffect\(sk, name, ch, hp0, supportRole\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
+  assert.match(field,/castEffect\(sk, card\.name, ch, hp0\)/);
+  assert.match(field,/castEffect\(id, member\.name, ctx\.ch, ctx\.root, member\.role\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
   // [자동 5타 강타] 수동 스킬 버튼이 아닌 기본 공격·회피 전용 입력과 자동 강타 경로를 검사한다.
   assert.match(field,/pl\.autoHeavyFire == pl\.autoNormalHits/);
@@ -1497,8 +1502,9 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/attackBtn\.Position\.X\.Offset - 146/);
   assert.match(field,/local dodgeIcon = if AssetIds\["Menu\/field_dodge"\] then addIcon\(b, "Menu\/field_dodge"\)/);
   assert.doesNotMatch(field,/slotPos\("heavy"\), skillSize/);
-  assert.match(field,/local observedCardId = nil/);
-  assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
+  assert.match(field,/local observedCardId = if found > 0 then opts\.fieldCheckpoint\.cardId else nil/);
+  assert.ok(field.indexOf('local observedCardId = if found > 0') < field.indexOf('local function finish(result)'));
+  assert.match(field,/local recorded = not opts\.onCheckpoint or opts\.onCheckpoint\(i, recordCard\)/);
   assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice, fieldStreakResult\)/);
   assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
   assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
@@ -1634,7 +1640,7 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
 test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets', () => {
   const battle=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   assert.match(battle,/local MOBILE_VFX = game:GetService\("UserInputService"\)\.TouchEnabled/);
-  assert.match(battle,/local rangeRing = \{ segments = \{\}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 \}/,'range remains a segmented outline with newer impact radar states, not a solid sea disk');
+  assert.match(battle,/local rangeRing = \{ segments = \{\}, radials = \{\}, angles = \{\}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 \}/,'range remains a segmented outline with newer impact radar states, not a solid sea disk');
   assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
   assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
   assert.match(battle,/FX\.projectile\(ball, nc, style\)/,'the existing cannon routine gets culture-stage trails');
@@ -1642,19 +1648,31 @@ test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets'
   assert.match(battle,/function FX\.flame\(pos, scale, profile\)[\s\S]*?FX\.burst\(/,'sinking flames use profile-based particles');
 
   assert.match(battle,/trail\.Attachment0, trail\.Attachment1 = a0, a1/,'trajectory has a continuous trail');
-  assert.match(battle,/local bpos = from:Lerp\(to, u\) \+ Vector3\.new\(0, math\.sin\(u \* math\.pi\) \* nc\.arc, 0\)/,'actual ballistic arc remains consistent');
+  assert.match(battle,/local angle = u \* math\.pi\s+local bpos = from:Lerp\(to, u\) \+ Vector3\.new\(0, math\.sin\(angle\) \* nc\.arc, 0\)/,'actual ballistic arc remains consistent');
+  assert.match(battle,/local velocity = flightDelta \+ Vector3\.new\(0, math\.cos\(angle\) \* nc\.arc \* math\.pi, 0\)/,'projectile orientation follows the same arc');
   assert.doesNotMatch(battle,/shadow\.CFrame/,'removed fake water shadow does not obstruct projectile');
   assert.match(battle,/function FX\.shipFire\(sh, key, hp, now\)/,'ship damage keeps attached flames/smoke');
-  assert.match(battle,/vent\.Position = root\.CFrame:PointToObjectSpace\(origin\)/,'damage fire follows actual moving ships');
-  assert.match(battle,/vent\.fire\.Rate = if hp < 0\.42/,'fire intensity must reflect the unchanged hull fraction');
-  assert.match(battle,/vent\.fire\.Enabled = vent\.fire\.Rate > 0/,'damage-driven fire emitter must actually ignite');
-  assert.match(battle,/vent\.soot\.Enabled = vent\.soot\.Rate > 0/,'damage smoke must actually turn on');
+  const shipFire=battle.slice(battle.indexOf('function FX.shipFire('),battle.indexOf('function FX.boarding()'));
+  assert.match(shipFire,/local root = sh\.model\.PrimaryPart or sh\.model:FindFirstChildWhichIsA\("BasePart", true\)/);
+  assert.match(shipFire,/local rootFrame = root\.CFrame/);
+  assert.match(shipFire,/vent\.Position = rootFrame:PointToObjectSpace\(origin\)\s+vent\.Parent = root/,'damage fire follows actual moving ships');
+  assert.match(shipFire,/local fire = emitterOn\(vent,/);
+  assert.match(shipFire,/local soot = emitterOn\(vent,/);
+  assert.match(shipFire,/local severity = math\.clamp\(\(0\.62 - hp\) \/ 0\.62, 0, 1\)/);
+  assert.match(shipFire,/local sootRate = math\.floor\(severity \* \(if MOBILE_VFX then 10 else \(7 \+ stage \* 3\)\)\)/);
+  assert.match(shipFire,/local fireRate = if hp < 0\.42 then math\.floor\(\(0\.42 - hp\) \* \(if MOBILE_VFX then 46 else \(38 \+ stage \* 9\)\)\) else 0/,'unchanged hull fraction and emission budget');
+  assert.match(shipFire,/local sootEnabled, fireEnabled = sootRate > 0, fireRate > 0/);
+  assert.match(shipFire,/if vent\.fire\.Rate ~= fireRate then vent\.fire\.Rate = fireRate end/);
+  assert.match(shipFire,/if vent\.soot\.Rate ~= sootRate then vent\.soot\.Rate = sootRate end/);
+  assert.match(shipFire,/if vent\.fire\.Enabled ~= fireEnabled then vent\.fire\.Enabled = fireEnabled end/,'damage-driven fire emitter must actually ignite');
+  assert.match(shipFire,/if vent\.soot\.Enabled ~= sootEnabled then vent\.soot\.Enabled = sootEnabled end/,'damage smoke must actually turn on');
   assert.doesNotMatch(battle,/FX\.boardingCrewSpawned = true/,'real boarding must not spawn floating R15 character puppets');
   assert.match(battle,/if opts\.card then\s+task\.spawn\(function\(\)/,'card-only battle keeps its original crew actors');
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 2 else 4\) do/,'card-only mobile crew remains bounded');
   assert.match(battle,/function FX\.boarding\(\)/);
   assert.match(battle,/FX\.boardZoom \+=/,'boarding cinematic transitions smoothly');
-  assert.match(battle,/cam\.FieldOfView = \(if opts\.cardOnly then \(if MOBILE_VFX then 73 else 75\) else \(if MOBILE_VFX then 69 else 71\)\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
+  assert.match(battle,/local cameraFov = \(if opts\.cardOnly then \(if MOBILE_VFX then 73 else 75\) else \(if MOBILE_VFX then 69 else 71\)\) - kick \* 0\.6 \+ math\.min\(shake, 2\.5\) \* 2 \+ \(me\.speed \/ myTop\) \* 5 \+ killZoom - FX\.boardZoom \* \(17 \+ math\.clamp\(me\.fx\.stage or 2, 1, 6\) \* 0\.6\)/,'boarding zoom stays tier-scaled while mobile and desktop preserve independent camera limits');
+  assert.match(battle,/if cam\.FieldOfView ~= cameraFov then cam\.FieldOfView = cameraFov end/);
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/,'mobile deck fires stay capped and desktop ship tiers scale');
   assert.match(battle,/if MOBILE_VFX then 28 else 40/,'mobile range outline has bounded parts');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun-fire range is unchanged');
@@ -1715,9 +1733,14 @@ test('Mare naval steering, sixteen regional coasts, dynamic weather, mobile HUD,
   assert.match(src,/steerDir = if math\.abs\(nx\) < 0\.12 then 0 else nx/);
   assert.match(src,/local turnSign = if rightTurn:Dot\(cam\.CFrame\.RightVector\) < -0\.05 then -1 else 1/);
   assert.match(src,/me\.theta \+= steerDir \* turnSign \*/);
-  assert.match(src,/adviceLine\.Visible = battleViewport\.X >= 1000/);
+  assert.match(src,/adviceLine\.Visible = true/);
+  assert.match(src,/adviceLine\.Position = UDim2\.new\(0\.5, 0, 0, 112\)/);
+  assert.match(src,/adviceLine\.TextSize = if battleViewport\.X < 480 then 16 else 20/);
   assert.match(src,/if battleViewport\.X < 720 then 173 else 122/);
-  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(168, math\.floor\(battleViewport\.X \* 0\.42\), if battleViewport\.X < 480 then math\.max\(80, battleViewport\.X - 206\) else 168\), 26\)/);
+  assert.match(src,/tactic\.AnchorPoint = Vector2\.new\(0\.5, 0\)/);
+  assert.match(src,/tactic\.Position = UDim2\.new\(0\.5, 0, 0, 4\)/);
+  assert.match(src,/tactic\.Size = UDim2\.fromOffset\(math\.min\(320, math\.floor\(battleViewport\.X \* \(if battleViewport\.X < 480 then 0\.54 elseif battleViewport\.X < 720 then 0\.46 else 0\.34\)\) - 36\), 30\)/);
+  assert.match(src,/tactic\.TextSize = if battleViewport\.X < 480 then 18 else 22/);
   assert.match(src,/tactic\.TextScaled = false/,'mobile HUD must retain readable fixed-size type');
   assert.match(src,/l\.TextStrokeTransparency = 1/);
   for(const key of ['east-bamboo-grove','greek-ruins-a','haunted-pine-crooked','cliff-waterfall-rock']){
@@ -1760,16 +1783,28 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   for(const token of [
     'local skip = mkBtn("건너뛰기", UDim2.new(0, 12, 0, if battleViewport.X < 480 then 181 else 119)',
     'if battleViewport.X < 480 then 56 else 96',
-    'sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)',
+    'sailLabel.Position = UDim2.new(0.5, 0, 0, 69)',
+    'wind.Position = UDim2.new(0.5, 0, 0, 38)',
     'f.Visible = star or battleViewport.X >= 720',
     'navalHitCue.Visible = false',
     'navalHitCue.Name = "NavalHitStreak"',
-    'navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)',
-    'math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08)))',
-    'navalHitCueScale.Scale = 1.08',
+    'navalHitCue.AnchorPoint = Vector2.new(0.5, 0.5)',
+    'navalHitCue.Position = UDim2.fromScale(0.5, 0.27)',
+    'navalHitCue.Size = UDim2.new(0.82, 0, 0, math.min(112, math.floor(battleViewport.Y * 0.18)))',
+    'navalHitCue.Font = Enum.Font.Bangers',
+    'navalHitCue.BackgroundTransparency = 1',
+    'navalHitCue.Active = false',
+    'navalHitCueScale.Scale = if milestone then 1.20 else 1.13',
+    'local centerY = if battleViewport.Y < 480 then 0.43 else (if milestone then 0.245 else 0.27)',
+    'popText(string.format("포격 %d연타!", navalHitStreak), accent, navalHitStreak % 5 == 0, true)',
+    'skillPop = popText',
+    'navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1',
+    'navalCue.fade:Play()',
     'subtitle.Visible = opts.cardOnly or battleViewport.X >= 1000',
-    'tactic.Position = UDim2.fromOffset(16, 126)',
-    'math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168)',
+    'tactic.Position = UDim2.new(0.5, 0, 0, 4)',
+    'tactic.TextSize = if battleViewport.X < 480 then 18 else 22',
+    'tactic.Active = false',
+    'math.min(320, math.floor(battleViewport.X * (if battleViewport.X < 480 then 0.54 elseif battleViewport.X < 720 then 0.46 else 0.34)) - 36)',
     'panel.Position = UDim2.new(1, -16, 0, if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 173 else 122)',
     'local availableHeight = if battleViewport.X < 480 then math.max(34, battleViewport.Y - 482)',
     'sk.x = -72',
@@ -1790,25 +1825,34 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'reloadBack.Parent = if compactReload then skillBtn.fire else gui',
     'reloadBack.Position = if compactReload then UDim2.new(0.5, 0, 0, 12)',
     'reloadBack.Size = if compactReload then UDim2.new(1, -42, 0, 19)',
-    'reloadText.Text = if not inRange then "사거리 밖"',
+    'local reloadCaption = if not inRange then "사거리 밖"',
+    'if reloadText.Text ~= reloadCaption then reloadText.Text = reloadCaption end',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
-  // [휴대전화 세로] 실제 104/86/76px 버튼, 전술판·카드 지원판·연타 확대 좌표를 검증한다.
+  assert.doesNotMatch(battle,/navalHitCue\.Position = UDim2\.fromOffset|navalHitCueStroke|NavalBattleAnnouncement/,'left announcement panels must not return');
+  // [휴대전화 세로] 조작 안전 영역 및 중앙 알림의 화면 경계를 검증한다.
   for(const w of [320,360,390,430]) for(const h of [520,560,640,844,932]) for(const entries of [1,4,12]){
     const stick={x:28,y:h-198,w:170,h:170};
     const speed={x:w-100,y:h-100,w:76,h:76};
     const fire={x:w-124,y:h-352,w:104,h:104};
     const special={x:w-115,y:h-227,w:86,h:86};
     const skip={x:12,y:181,w:56,h:36};
-    const tactic={x:16,y:126,w:Math.min(168,Math.floor(w*0.42),Math.max(80,w-206)),h:26};
+    const guideWidth=Math.min(320,Math.floor(w*0.54)-36);
+    const tactic={x:(w-guideWidth)/2,y:4,w:guideWidth,h:30};
+    const hullLeft={x:16,y:12,w:w*0.23,h:44},hullRight={x:w-16-w*0.23,y:12,w:w*0.23,h:44};
+    const weather={x:(w-120)/2,y:38,w:120,h:28};
     const fleetLeft={x:16,y:66,w:96,h:46},fleetRight={x:w-112,y:66,w:96,h:46};
     const wind={x:(w-Math.max(80,w-240))/2,y:69,w:Math.max(80,w-240),h:20};
     const reload={x:fire.x+21,y:fire.y+12,w:62,h:19};
     const panel={x:w-182,y:120,w:166,h:Math.min(24+entries*30,Math.max(34,h-482))};
-    const cue={x:16,y:225,w:Math.min(182,Math.max(80,Math.floor((w-206)/1.08)))*1.08,h:46*1.08};
+    const cueWidth=w*0.82*1.20, cueHeight=Math.min(112,Math.floor(h*0.18))*1.20;
+    for(const y of [0.20,0.245,0.27]){
+      const cue={x:(w-cueWidth)/2,y:h*y-cueHeight/2,w:cueWidth,h:cueHeight};
+      assert.ok(cue.x>=0&&cue.y>=0&&cue.x+cue.w<=w&&cue.y+cue.h<=h,'central transient cue stays inside screen');
+    }
     assert.ok(reload.x>=fire.x&&reload.x+reload.w<=fire.x+fire.w&&reload.y>=fire.y&&reload.y+reload.h<=fire.y+fire.h,'reload gauge must stay inside fire button');
     assert.ok(fire.y-(panel.y+panel.h)>=10,'scrolling panel must leave at least 10px before fire button');
-    for(const [left,right] of [[stick,speed],[stick,fire],[stick,special],[speed,fire],[speed,special],[fire,special],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,special],[reload,panel],[panel,fire],[panel,special],[panel,speed],[panel,stick],[panel,tactic],[panel,skip],[cue,skip],[cue,panel],[cue,fire],[cue,stick]]){
+    for(const [left,right] of [[stick,speed],[stick,fire],[stick,special],[speed,fire],[speed,special],[fire,special],[skip,tactic],[wind,fleetLeft],[wind,fleetRight],[reload,stick],[reload,special],[reload,panel],[panel,fire],[panel,special],[panel,speed],[panel,stick],[panel,tactic],[panel,skip],[tactic,hullLeft],[tactic,hullRight],[tactic,weather],[weather,hullLeft],[weather,hullRight]]){
       assert.equal(intersects(left,right),false,'phone HUD overlap at '+w+'x'+h+': '+JSON.stringify([left,right]));
     }
   }
@@ -1831,7 +1875,8 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
   assert.match(discovered,/while player\.Parent and \(newGameMode or sceneHold or H\.sceneBusy/,'field discoveries reveal immediately (2026-11-28 owner)');
   assert.match(discovered,/local found = table\.remove\(H\.cardGainQueue, 1\)/);
   assert.match(game,/g:SetAttribute\("NonBlockingCardNotice", true\)/,'card reveal is cosmetic and nonblocking');
-  assert.match(game,/H\.dockButtons and H\.dockButtons\.codex/,'card shrinks to real library dock icon');
+  assert.match(game,/H\.dockButtons and \(H\.dockButtons\.scholar or H\.dockButtons\.codex\)/,'card shrinks to real library dock icon');
+  assert.match(game,/icon:IsDescendantOf\(dock\)/,'mobile card reveal follows the actual dock');
   assert.match(game,/Name = "CardSparkle"/,'rarity-colored sparkles');
   assert.match(game,/Name = "DiscoveryHalo"/,'card acquisition light rings');
   assert.match(game,/local previous = pg:FindFirstChild\("CardGain"\)/,'Studio card preview remains opt-in');
@@ -1870,7 +1915,7 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/blueprint\.existingId and not FX_PROFILES\[blueprint\.existingId\]/,'legacy save id is preserved');
   assert.match(battle,/AssetIds\["Naval\/" \.\. shipId \.\. "-v5"\]/,'only registered V5 IDs can select combat models');
   assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
-  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
+  assert.match(battle,/local flightDelta = to - from\s*FX\.muzzle\(from, flightDelta\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
   assert.match(battle,/FX\.impact\(to, nc\.ball, style, nc\)/,'impact uses current weapon profile');
   assert.match(battle,/local power = nc\.ball \* \(splashScale or 1\)\s*if MOBILE_VFX and splashScale and splashScale < 0\.8 then\s*FX\.waterColumn\(Vector3\.new\(to\.X, ORIGIN\.Y \+ 0\.35, to\.Z\), style, power\)\s*else\s*local flight = Vector3\.new\(velocity\.X, 0, velocity\.Z\)\s*FX\.splash\(to, style, power, if flight\.Magnitude > 0 then flight\.Unit else nil\)/);
   assert.match(battle,/FX\.flame\(ORIGIN \+ sunk\.pos \+ Vector3\.new\(0, 6 - k \* 8, 0\), 4\.8, sunk\.fx\)/);
@@ -1879,7 +1924,9 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/for i = 1, \(if MOBILE_VFX then 1 elseif stage <= 2 then 1 elseif stage <= 4 then 2 else 3\) do/);
   assert.match(battle,/local density = if MOBILE_VFX then 0\.56 else 1/,'mobile cannon particle budget stays below desktop');
   assert.match(battle,/local density = if MOBILE_VFX then 0\.5 else 1/,'secondary mobile particle budget remains at half desktop');
-  assert.match(battle,/FX\.wake\(me, "me", now\)/,'existing wake loop remains in place');
+  assert.match(battle,/local waveBoost = if wakeMood == "storm" then 1\.45 elseif wakeMood == "rain" then 1\.18 else 1/,'wake strength follows weather');
+  assert.match(battle,/FX\.wake\(me, "me", now, waveBoost\)/,'existing wake loop remains in place');
+  assert.match(battle,/FX\.wake\(foe, "foe", now, waveBoost\)/,'enemy wake uses the same weather');
   assert.match(battle,/local inRange = d < cannon\.range/,'live gun range remains untouched');
   assert.match(battle,/rtDamage\(false, base \* acc\)/,'actual damage computation remains untouched');
   assert.match(battle,/local r2 = Combat\.board\(fa, fb, seed\)/,'boarding resolution remains unchanged');
@@ -2777,7 +2824,8 @@ test('Mare naval battle uses three approved original circular HUD images without
   assert.match(naval,/if sk\.id == "fire" then "Menu\/naval_fire" else "Menu\/naval_skill"/);
   assert.match(naval,/speedBtn\.Activated:Connect\(function\(\)/);
   assert.match(naval,/throttle = if throttle >= 1 then 0\.45 elseif throttle > 0\.4 then 0 else 1/);
-  assert.match(naval,/b\.Interactable = ready and phase == "duel" and not opts\.cardOnly and not opts\.card/);
+  assert.match(naval,/local interactable = ready and phase == "duel" and not opts\.cardOnly and not opts\.card/);
+  assert.match(naval,/if b\.Interactable ~= interactable then b\.Interactable = interactable end/);
   assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
   assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
 });

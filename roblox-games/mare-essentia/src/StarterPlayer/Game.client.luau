@@ -4339,6 +4339,8 @@ local function call(action, payload)
 				return names
 			end)(),
 			weatherName = view.weather and view.weather.name,
+			weatherId = view.weather and view.weather.id,
+			clockTime = game:GetService("Lighting").ClockTime,
 			-- [해역별 해전 연출] 기존 항구 좌표를 배경 선택에만 전달한다. 서버 전투·저장 불변.
 			portId = view.player and view.player.portId,
 			portLat = view.player and PortData.Ports[view.player.portId] and PortData.Ports[view.player.portId].lat,
@@ -6661,7 +6663,17 @@ function RENDERERS.harbor()
 			else
 				btn = { text = "수락", color = COLORS.blue, onClick = function() call("AcceptBounty", { bountyId = b.id }) end }
 			end
-			local brow = mkRow(content, b.title, sub, { btn }, 60)
+			local buttons = { btn }
+			if b.loreCardId and view.codex then
+				for _, card in view.codex.cards or {} do
+					if card.id == b.loreCardId and card.found then
+						table.insert(buttons, { text = "백과", color = COLORS.gold, onClick = function() H.showCardDetail(card) end })
+						break
+					end
+				end
+			end
+			local detail = (b.ending or b.story or "") .. (if b.loreName then "\n관련 백과: " .. b.loreName else "")
+			local brow = mkRow(content, b.title, sub .. (if detail ~= "" then "\n" .. detail else ""), buttons, 126)
 			withIcon(brow, "Cargo", if b.kind == "hunt" then "box-open" else "crate" , nil, 44)
 			return brow
 		end)
@@ -6965,6 +6977,25 @@ end
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
 	H.counselRows(1)
+	-- [캐릭터 성장] 실제 서버 숙련 경험치 및 무기 정의를 표시한다. 독립 스킬 경험치는 생성하지 않는다.
+	add(function() return mkHeader(content, "캐릭터 · 무기 숙련과 스킬") end)
+	for _, weapon in Weapons.playerChoices() do
+		add(function()
+			local xp = math.max(0, math.floor(tonumber((view.weaponPractice or {})[weapon.id]) or 0))
+			local rank = Weapons.masteryRank(xp)
+			local nextXp = Weapons.MasteryXp[rank + 1]
+			local design = Weapons.actionDesign(weapon)
+			local stages = string.split(design.cadence, "·")
+			local progress = if nextXp then string.format("경험치 %d/%d · 다음 %d타까지 %d", xp, nextXp, rank + 1, nextXp - xp) else string.format("경험치 %d · 최고 단계", xp)
+			local skills = (if rank >= 2 then design.heavyName else "강타 잠김(2단)") .. " · " .. (if rank >= 4 then design.sweepName else "회전기 잠김(4단)")
+				.. " · " .. (if rank >= 8 then "필살기" else "필살기 잠김(8단)") .. " · " .. (if rank >= 9 then "동료 연계" else "동료 연계 잠김(9단)")
+			local item = mkRow(content, string.format("%s · 숙련 %d단 · %d타", weapon.name, rank, rank), progress .. "\n" .. table.concat(stages, "·", 1, math.min(rank, #stages)) .. "\n" .. skills, nil, 108)
+			item.Name = "CharacterWeaponMastery_" .. weapon.id
+			item:SetAttribute("WeaponMasteryRank", rank)
+			item:SetAttribute("WeaponMasteryExperience", xp)
+			return item
+		end)
+	end
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
 		{ "선체", string.format("%d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
@@ -9479,7 +9510,21 @@ function H.startField(s)
 	end
 	-- [무기 숙련] 기존 서버 탐험 자격을 확인하고 이번 탐험의 정산 시작 시각을 기록한다.
 	local beginResult = call("FieldPracticeBegin", { siteId = s.id })
-	local practiceAllowed = beginResult ~= nil and beginResult.ok == true
+	local fieldRunId = beginResult and beginResult.fieldRunId
+	local practiceAllowed = beginResult ~= nil and beginResult.ok == true and type(fieldRunId) == "number"
+	if not practiceAllowed then
+		inField = false
+		applyView()
+		main.Visible = true
+		workspace:SetAttribute("FieldEntryStage", "FAILED")
+		message, messageOk = "탐험 기록을 연결하지 못했어요. 다시 시도해 주세요", false
+		render()
+		return
+	end
+	-- 서버 입장 확인에서 다시 읽은 현재 탐험 진행만 복원한다.
+	for _, site in (view and view.sites or {}) do
+		if site.id == s.id then s = site break end
+	end
 	workspace:SetAttribute("FieldEntryStage", "BUILDING")
 	local startOk, startResult = pcall(FieldScene.start, {
 		battleLevel = battleLevel,
@@ -9501,8 +9546,17 @@ function H.startField(s)
 		name = s.name,
 		portId = s.portId,
 		siteId = s.id, -- 기존 Sites의 지역·도감 후보를 탐험 시각 연출에 그대로 연결한다.
+		clockTime = game:GetService("Lighting").ClockTime,
+		weatherId = view and view.weather and view.weather.id,
 		portScenery = PortScene and PortScene.Signatures and PortScene.Signatures[s.portId], -- 항구 경관 정본, 시각 전용
 		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
+		fieldStory = s.fieldStory, -- 현재 현장 의뢰와 다음 이야기의 정본 연결
+		fieldCheckpoint = s.fieldCheckpoint,
+		fieldEncounter = beginResult.fieldEncounter, -- 서버가 검증한 탐험지 편성
+		onCheckpoint = function(stage, cardId)
+			local response = call("FieldCheckpoint", { siteId = s.id, stage = stage, observedCardId = cardId, runId = fieldRunId })
+			return response ~= nil and response.ok == true
+		end,
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
 		seed = #s.id * 31 + s.days,
@@ -9513,14 +9567,16 @@ function H.startField(s)
 			-- [귀환 저장] 클리어·패배·철수 모두 기존 저장 흐름에 숙련 경험치만 기록한다.
 			-- 기존 Explore 보상은 이 기록과 무관하게 원래 서버 판정으로만 지급한다.
 			if practiceAllowed then
-				call("FieldPracticeCommit", { siteId = s.id, hits = gainedPractice or {},
+				call("FieldPracticeCommit", { siteId = s.id, runId = fieldRunId, hits = gainedPractice or {},
 					record = streakRecord and streakRecord.hits or 0 })
 			end
 			if result == "clear" then
 				-- [현장 관찰] 서버가 기존 탐험지 pool·시대·미발견 상태를 재검증한 뒤 카드 후보를 선택한다.
-				call("Explore", { siteId = s.id, observedCardId = observedCardId })
+				call("Explore", { siteId = s.id, observedCardId = observedCardId, fieldCheckpoint = true, runId = fieldRunId })
 			else
-				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "탐험을 중단하고 항구로 돌아왔어요"
+				message = if result == "defeat" then "탐험에서 패배했어요. 저장된 구역부터 재도전할 수 있어요" else "항구로 돌아왔어요. 저장된 구역부터 이어갈 수 있어요"
+				-- 미완료 보스는 중간 체력을 복원하지 않는다. 완료 구역은 기존 서버 기록을 유지한다.
+				if s.minLevel >= 3 then message ..= " · 미완료 두목은 만피로 재시작" end
 				messageOk = false
 				render()
 			end
@@ -9668,7 +9724,7 @@ function RENDERERS.explore()
 				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일%s", math.clamp(s.minLevel or 1, 1, 5), s.left, s.days,
 					if s.fieldQuest then "\n현장 의뢰: " .. s.fieldQuest else ""),
 				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
-				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else "지상맵 입장",
+				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else (if s.fieldCheckpoint then "탐험 이어하기" else "지상맵 입장"),
 				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 		end
 		-- [모바일 클릭 영역] 아이콘(86)·이름(26)·설명(20)·버튼(44)을 겹치지 않는 높이에 배치한다.
@@ -12512,7 +12568,7 @@ do
 				end
 			end
 		end
-		local hint = mkLabel(box, if d.boss then "카드 보상은 기존 카드 메뉴에서 선택해 줘." elseif chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
+		local hint = mkLabel(box, if d.boss then "카드 보상은 기존 카드 메뉴에서 선택해 줘." elseif chapterEnd and d.hasNext then "다음 장은 일지에서 확인해 줘." elseif chapterEnd then "이야기의 결말을 항해 일지에 남겼어요." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) elseif d.hasNext then "다음 이야기의 선택지를 일지에서 확인해 줘." else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
 		local epic = chapterEnd or grade >= 4
@@ -16125,7 +16181,8 @@ function RENDERERS.quest()
 		return mkRow(content, "일지", "", {
 			{ text = string.format("진행 %d", #view.quests.active), color = if section == "active" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "active"; H.questDetailId = nil; render() end },
 			{ text = string.format("목표 %d", #autos), color = if section == "auto" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "auto"; render() end },
-			{ text = "탐험", color = if section == "field" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "field"; render() end },
+			{ text = "지상 탐험", color = if section == "field" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "field"; render() end },
+			{ text = "해상 전투", color = if section == "sea" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "sea"; render() end },
 			{ text = string.format("완료 %d", #view.quests.done), color = if section == "done" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "done"; render() end },
 		}, 78)
 	end)
@@ -16183,7 +16240,8 @@ function RENDERERS.quest()
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
 			local compact = (if q.chapter and not string.find(q.summary, tostring(q.chapter), 1, true) then tostring(q.chapter) .. "\n" else "") .. q.summary
 			local row = mkRow(content, q.name, if expanded then strandText(q) .. (if q.problem or q.chapter or q.prevEnding then "" else said) else compact, buttons, 92)
-			local stamp = if q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
+			local stamp = if q.kind == "win" then "battle" elseif q.kind == "war_clear" then "war"
+				elseif q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
 			if H.hasIconArt(stamp) then withIcon(row, "FacilityArt", stamp, nil, 44) end
 			local textBox = row:FindFirstChild("RowText")
 			if textBox then
@@ -16247,6 +16305,64 @@ function RENDERERS.quest()
 		end
 	else
 		add(function() return mkLabel(content, "기록된 탐험 항로 없음", 14, INK_SOFT, true) end)
+	end
+	elseif section == "sea" then
+	-- [해상 일지] 지상 탐험과 같은 승인 원화 카드·직접 진입 버튼을 사용한다.
+	-- 기존 서버 Hunt/WarStart/WarNext만 호출하며 의뢰 진행·보상·해금은 그대로.
+	local tiles, seen = {}, {}
+	local function navalTile(q, active)
+		if seen[q.id] or (q.kind ~= "win" and q.kind ~= "war_clear") then return end
+		seen[q.id] = true
+		local done = math.min(q.progress or 0, q.amount or 1)
+		local total = math.max(1, q.amount or 1)
+		local w = view.war
+		local targetId = q.warId or (q.story2 and q.story2.warId)
+		if not targetId and q.regionId then targetId = "war_" .. q.regionId end
+		local operation
+		for _, candidate in view.wars or {} do
+			if targetId and candidate.id == targetId then operation = candidate; break end
+		end
+		local caption, enabled, action = "출격", true, nil
+		local detail = string.format("%d/%d · 난이도 %d/5", done, total, math.clamp(q.grade or 1, 1, 5))
+		if done >= total then
+			caption, enabled = "목표 달성", false
+		elseif not active and not q.auto then
+			caption, action = "의뢰 확인", function() openTab("board") end
+		elseif q.portId and q.portId ~= view.player.portId then
+			caption, action = "항해 지도", function() openTab("map") end
+			detail ..= " · " .. (q.portName or "목적지")
+		elseif q.kind == "war_clear" then
+			if w then
+				if w.id == targetId then
+					caption, enabled, action = "해전 이어하기", w.next == true, function() call("WarNext") end
+					detail ..= string.format(" · %d/%d파도", w.wave, w.total)
+				else
+					caption, enabled = "다른 작전 진행 중", false
+				end
+			elseif operation then
+				caption, enabled, action = "해상맵 입장", operation.blocked == nil, function() call("WarStart", { id = operation.id }) end
+				detail ..= if operation.blocked then " · " .. operation.blocked else string.format(" · %d파도", operation.waves)
+			else
+				caption, action = "작전 확인", function() openTab("war") end
+			end
+		elseif w then
+			-- Hunt는 진행 중인 함대전을 종료하므로 일지에서 실수로 포기하지 않게 한다.
+			caption, enabled = "함대전 진행 중", false
+		elseif view.ship.hull < view.ship.maxHull * 0.3 then
+			caption, enabled = "선체 수리 필요", false
+		else
+			caption, action = "해상맵 입장", function() call("Hunt") end
+		end
+		table.insert(tiles, { kind = "FacilityArt", icon = if q.kind == "war_clear" then "war" else "battle",
+			title = q.name, sub = detail, btn = caption, color = COLORS.red, enabled = enabled and action ~= nil, onClick = action,
+			btn2 = if operation and operation.blocked and not w and done < total then { text = "해도", color = COLORS.blue, onClick = function() openTab("map") end } else nil })
+	end
+	for _, q in view.quests.active do navalTile(q, true) end
+	for _, q in view.quests.available do navalTile(q, false) end
+	if #tiles > 0 then
+		add(function() return H.tileGrid(tiles, content, 176, 210) end)
+	else
+		add(function() return mkLabel(content, "진행 가능한 해상 전투 의뢰 없음", 14, INK_SOFT, true) end)
 	end
 	elseif section == "done" then
 	if #view.quests.done == 0 then
@@ -19343,10 +19459,22 @@ function H.openCabin()
 		title.Position = UDim2.fromOffset(12, 6)
 		title.Size = UDim2.new(1, -184, 0, 24)
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local hint = mkLabel(top, "직책을 고르고 동료 선택", 12, Color3.fromRGB(90, 70, 50), false)
-		hint.Position = UDim2.fromOffset(12, 32)
-		hint.Size = UDim2.new(1, -184, 0, 20)
-		hint.AutomaticSize = Enum.AutomaticSize.None
+		-- [선장실 성장 요약] 출신 무기의 실제 저장 경험치와 해금 단계를 표시하고 캐릭터 상세로 연결한다.
+		local mainWeapon = Weapons.originWeapon(view.captain and view.captain.origin and view.captain.origin.id, view.player and view.player.year)
+		local xp = math.max(0, math.floor(tonumber((view.weaponPractice or {})[mainWeapon.id]) or 0))
+		local rank = Weapons.masteryRank(xp)
+		local nextXp = Weapons.MasteryXp[rank + 1]
+		local masteryText = string.format("%s %d단 · %s · %s", mainWeapon.name, rank, if nextXp then tostring(xp) .. "/" .. tostring(nextXp) else "최고", if rank >= 8 then "필살기" else tostring(rank) .. "타")
+		local hint = mkButton(top, masteryText, COLORS.leather, UDim2.new(1, -184, 0, 22), function()
+			close()
+			openTab("status")
+		end, true)
+		hint.Name = "CabinWeaponMastery"
+		hint.Position = UDim2.fromOffset(12, 31)
+		hint.TextSize = 12
+		hint.TextTruncate = Enum.TextTruncate.AtEnd
+		hint:SetAttribute("WeaponMasteryRank", rank)
+		hint:SetAttribute("WeaponMasteryExperience", xp)
 		local closeBtn = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(70, 40), close, true)
 		closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 		closeBtn.Position = UDim2.new(1, -8, 0.5, 0)

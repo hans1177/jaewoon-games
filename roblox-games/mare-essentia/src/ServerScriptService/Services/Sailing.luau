@@ -380,6 +380,16 @@ return function(D, S)
 
 		-- 연출용 기록(저장 안 함): 3D 항해 장면이 사건을 그린다
 		state.voyageEvent = { kind = event.kind, all = (function() local k = {} for _, e in events do table.insert(k, e.kind) end return k end)(), won = event.kind == "pirates" and not avoidedPirates and state.lastBattle ~= nil and state.lastBattle.winner == "a" or nil }
+		-- 실제 발생한 사건의 참고 기록만 안내한다. 동일 카드 안내는 항해당 한 번.
+		local mentioned = {}
+		for _, occurred in events do
+			local record = D.Voyage.EventRecords[occurred.kind]
+			local card = record and D.Cards.ById[record.cardId]
+			if card and not mentioned[card.id] then
+				mentioned[card.id] = true
+				table.insert(msgs, string.format("항해 기록 · %s → %s: %s / 관련 백과: %s", from.name, to.name, record.title, card.name))
+			end
+		end
 
 		-- 바다에서 만난 생물·현상·전설 (해상 도감 카드)
 		do

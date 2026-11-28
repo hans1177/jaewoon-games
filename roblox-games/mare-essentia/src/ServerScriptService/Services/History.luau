@@ -182,6 +182,10 @@ return function(D, S)
 			table.insert(msgs, string.format("%s 일대에서 %s 값이 %d일 동안 %s", regionNames(ch.price.regions), table.concat(names, "·"), ch.price.days, if ch.price.mult > 1 then "오른다" else "내린다"))
 		end
 		h.seen[ev.id] = math.floor(idx)
+		local related = ev.insight and D.Cards.ById[ev.insight.node]
+		if related then
+			table.insert(msgs, "관련 백과: " .. related.name .. (if state.discovered[related.id] then " · 역사 선택 기록" else " · 발견 후 선택 기록 열람"))
+		end
 		h.pending = nil
 		h.count = nil
 		-- [도시 자동 사건] 방금 역사 선택을 끝냈다면 다른 자동 사건은 다음 방문에 노출한다.
@@ -244,7 +248,7 @@ return function(D, S)
 		for id, idx in h.seen do
 			local e = E.ById[id]
 			if e then
-				table.insert(seenList, { year = e.year, title = e.title, choice = e.choices[idx] and e.choices[idx].label or "" })
+				table.insert(seenList, { year = e.year, title = e.title, choice = if e.choices[idx] then e.choices[idx].label elseif idx == #e.choices + 1 and e.insight then "★ " .. e.insight.label else "" })
 			end
 		end
 		table.sort(seenList, function(a, b)

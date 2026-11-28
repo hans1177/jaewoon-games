@@ -669,11 +669,7 @@ function FieldScene.start(opts)
 	local comboRng = Random.new() -- [연타 난수] 지역 맵·보상 추첨 RNG와 별개로 실제 무작위 시각 발동
 	-- [무기별 영구 숙련] 서버 저장본에서 단계를 복원하고 이번 탐험에서 획득한 경험치만 별도 정산한다.
 	local weaponPractice, earnedPractice = {}, {}
-	local function practiceRank(xp)
-		return if xp >= 720 then 10 elseif xp >= 530 then 9 elseif xp >= 380 then 8
-			elseif xp >= 260 then 7 elseif xp >= 170 then 6 elseif xp >= 100 then 5
-			elseif xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1
-	end
+	local practiceRank = Weapons.masteryRank
 	if type(opts.weaponPractice) == "table" then
 		for id, xp in opts.weaponPractice do
 			if type(id) == "string" and Weapons.get(id).id == id and type(xp) == "number" and xp == xp then
@@ -859,6 +855,7 @@ function FieldScene.start(opts)
 			bergen_whale = "coast",
 			bergen_kelp_coast = "coast",
 			venice_lagoon = "coast",
+			venice_murano = "coast",
 			stockholm_woods = "forest",
 			antwerp_willow_river = "lake",
 			seville_groves = "lake",
@@ -3350,9 +3347,9 @@ function FieldScene.start(opts)
 	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
 	local slowedHumanoid, originalFieldWalkSpeed = nil, nil
 	local fieldStreakResult = { hits = 0, speed = 0, accuracy = 100, credited = {} }
-	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
-	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
+	local found = if type(opts.fieldCheckpoint) == "table" then math.clamp(math.floor(tonumber(opts.fieldCheckpoint.stage) or 0), 0, nodeCount) else 0
+	local observedCardId = if found > 0 then opts.fieldCheckpoint.cardId else nil -- 서버가 복원한 현장 카드
 	local finished = false
 	local enemies = {}
 	local conns = {}
@@ -3537,6 +3534,56 @@ function FieldScene.start(opts)
 		magicAmount.ZIndex = 6
 	end
 
+	-- [두목 체력 HUD] 기존 필드 GUI 생명주기 안에서 실제 전투 체력과 기술 단계만 표시한다.
+	do
+		local panel = Instance.new("Frame")
+		panel.Name = "FieldBossHud"
+		panel.AnchorPoint = Vector2.new(0.5, 0)
+		panel.Position = UDim2.new(0.5, 0, 0, if compactTouch then 54 else 70)
+		panel.Size = if compactTouch then UDim2.new(1, -24, 0, 19) else UDim2.new(1, -440, 0, 36)
+		local limit = Instance.new("UISizeConstraint")
+		limit.MinSize = Vector2.new(80, 0)
+		limit.MaxSize = Vector2.new(320, 36)
+		limit.Parent = panel
+		panel.BackgroundColor3 = Color3.fromRGB(29, 23, 24)
+		panel.BackgroundTransparency = 0.15
+		panel.BorderSizePixel = 0
+		panel.Visible = false
+		panel.Parent = gui
+		local caption = label(panel, "", if compactTouch then 10 else 14, Color3.fromRGB(255, 224, 168))
+		caption.Name = "FieldBossCaption"
+		caption.Size = UDim2.new(1, -8, 0, if compactTouch then 12 else 21)
+		caption.Position = UDim2.fromOffset(4, 0)
+		caption.TextScaled = true
+		local textLimit = Instance.new("UITextSizeConstraint")
+		textLimit.MaxTextSize = if compactTouch then 10 else 14
+		textLimit.Parent = caption
+		local back = Instance.new("Frame")
+		back.Name = "FieldBossHealth"
+		back.Size = UDim2.new(1, -12, 0, if compactTouch then 5 else 10)
+		back.Position = UDim2.fromOffset(6, if compactTouch then 13 else 23)
+		back.BackgroundColor3 = Color3.fromRGB(56, 41, 42)
+		back.BorderSizePixel = 0
+		back.Parent = panel
+		local fill = Instance.new("Frame")
+		fill.Name = "FieldBossHealthFill"
+		fill.Size = UDim2.fromScale(1, 1)
+		fill.BackgroundColor3 = Color3.fromRGB(201, 70, 65)
+		fill.BorderSizePixel = 0
+		fill.Parent = back
+		for _, boundary in { 0.70, 0.40, 0.15 } do
+			local mark = Instance.new("Frame")
+			mark.Name = "FieldBossPhaseMark"
+			mark.Size = UDim2.new(0, 2, 1, 0)
+			mark.Position = UDim2.new(boundary, -1, 0, 0)
+			mark.BackgroundColor3 = Color3.fromRGB(255, 223, 157)
+			mark.BorderSizePixel = 0
+			mark.ZIndex = fill.ZIndex + 1
+			mark.Parent = back
+		end
+		pl.bossHud = { panel = panel, caption = caption, fill = fill, nextAt = 0 }
+	end
+
 	-- [상호작용 안내] 평소 전투 HUD 배치는 유지하고 긴 유적 조사 기록만 별도 영역에 펼친다.
 	local note = label(gui, "", 14, Color3.fromRGB(255, 220, 160))
 	note.Name = "FieldInteractionNote"
@@ -3709,10 +3756,14 @@ function FieldScene.start(opts)
 			end
 		end
 		table.clear(enemies)
+		local previousFieldMusic = folder:GetAttribute("FieldPreviousMusic")
 		gui:Destroy()
 		folder:Destroy()
 		-- [현장 음향 복구] 항구·전투 화면에 탐험 풍향/폭풍 루프가 남지 않도록 원래 음향 관리자로 반환한다.
-		pcall(function() Sfx.ambient(nil) end)
+		pcall(function()
+			Sfx.ambient(nil)
+			if previousFieldMusic then Sfx.music(previousFieldMusic) end
+		end)
 		if opts.onFinish then
 			local ok, err = pcall(opts.onFinish, result, observedCardId, earnedPractice, fieldStreakResult)
 			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
@@ -3821,9 +3872,19 @@ function FieldScene.start(opts)
 		end
 	end
 	local targetCard = if #availableCards > 0 then KnowledgeCards.ById[availableCards[rng:NextInteger(1, #availableCards)]] else nil
+	-- [의뢰 대상 우선] 이미 저장된 카드는 최우선, 신규 입장은 서버가 검증해 전달한 현장 의뢰 카드 우선. 원래 RNG 호출/서버 보상 판정은 보존한다.
+	if observedCardId and table.find(availableCards, observedCardId) then
+		targetCard = KnowledgeCards.ById[observedCardId]
+	elseif type(opts.fieldStory) == "table" and table.find(availableCards, opts.fieldStory.cardId) then
+		targetCard = KnowledgeCards.ById[opts.fieldStory.cardId]
+	end
+	folder:SetAttribute("FieldRouteStep", found)
+	folder:SetAttribute("FieldRouteTotal", nodeCount)
 	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
 	local rareTrace = targetCard and (targetCard.rarity == "Rare" or targetCard.rarity == "Epic" or targetCard.rarity == "Legendary") == true
 	folder:SetAttribute("FieldTargetCard", targetCard and targetCard.id or "")
+	-- [신화 기록] 실제 기존 전설 카드만 선택한다. 승인되지 않은 괴물 외형은 생성하지 않는다.
+	folder:SetAttribute("FieldMythRoute", targetCard ~= nil and string.sub(targetCard.id, 1, 5) == "myth_")
 	folder:SetAttribute("FieldRareTraceTotal", if rareTrace then 2 else 0)
 	folder:SetAttribute("FieldRareTraceFound", 0)
 
@@ -3835,14 +3896,33 @@ function FieldScene.start(opts)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
-		questHint.Text = if rareTrace then "희귀 조사: 흔적 0/2 → " .. targetCard.name
+		questHint.Text = if folder:GetAttribute("FieldMythRoute") then (if rareTrace then "전설의 증거 0/2 · " else "전설 기록 조사 · ") .. targetCard.name
+			elseif rareTrace then "희귀 조사: 흔적 0/2 → " .. targetCard.name
 			else (if isWildlife then "지역 동물 관찰: " else "지식 단서 조사: ") .. targetCard.name
 	end
 
-	-- 기존 발견물 수/발견 완료 기준은 그대로 둔다. 첫 발견 지점만 지역 도감 실물/기록으로 연출한다.
+	-- [구역 경로] 기존 조사 수·보상은 유지한다. 위험 유적/기록 탐험은 잠입·돌파 후 입구까지 탈출한다.
+	folder:SetAttribute("FieldEscapeRoute", nodeCount == 3 and (opts.danger or 1) >= 3 and targetCard ~= nil
+		and not isWildlife and (targetCard.field == "Relic" or targetCard.field == "Site"
+			or targetCard.field == "Mystery" or targetCard.field == "Language" or targetCard.field == "Architecture"))
+	folder:SetAttribute("FieldPursuitRoute", folder:GetAttribute("FieldEscapeRoute") == true and targetCard ~= nil and targetCard.field == "Mystery")
+	if found > 0 then
+		questHint.Text = if found == 1 and folder:GetAttribute("FieldPursuitRoute") then "이어하기 · 기록을 빼앗은 척후병 추적"
+			elseif found == 2 and folder:GetAttribute("FieldEscapeRoute") then "이어하기 · 입구 탈출 지점으로 이동"
+			else string.format("이어하기 · 구역 %d/%d 완료", found, nodeCount)
+	end
+	-- 현재 조사 구역의 장식만 생성하며 완료된 구역은 서버 접수 후 정리한다.
+	local zoneSceneryBuilders = {}
 	for i = 1, nodeCount do
-		local pos = ORIGIN + scatter(30)
+		local offset = scatter(30)
+		local pos = ORIGIN + (if nodeCount > 1 then Vector3.new(math.clamp(offset.X, -half * 0.24, half * 0.24), 0,
+			half - 40 - (2 * half - 80) * (i - 1) / (nodeCount - 1)) else offset)
 		local special = i == 1 and targetCard ~= nil
+		local extraction = folder:GetAttribute("FieldEscapeRoute") == true and i == nodeCount
+		local guardedTransit = folder:GetAttribute("FieldEscapeRoute") == true and i == 2
+		-- [실제 이동] 중간 목표는 맵 깊은 곳, 탈출 목표는 기존 입구. 새 모델이나 별도 씬을 생성하지 않는다.
+		if guardedTransit then pos = ORIGIN + Vector3.new(math.clamp(offset.X, -half * 0.24, half * 0.24), 0, -half + 40) end
+		if extraction then pos = ORIGIN + Vector3.new(0, 0, half - 14) end
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon, Enum.PartType.Ball)
 		-- [발견 표시] 조사 판정 크기는 유지하고 네모난 발광 상자만 구형으로 바꾼다.
 		-- [발견물 외형] 금빛 공 표식(기본 도형) 대신 보이지 않는 기준점만 두고, 실물·소품 모델로 보여 준다.
@@ -3850,6 +3930,98 @@ function FieldScene.start(opts)
 		anchor.CanCollide = false
 		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
+		anchor:SetAttribute("FieldRouteStep", i)
+		anchor:SetAttribute("FieldObjectiveKind", if extraction then "escape" elseif guardedTransit then "infiltrate" else "survey")
+		-- [장소별 조사 구획] 기존 완료 단계와 적 배치 유지. 실내 원본이 없는 곳을 실내로 사칭하지 않는다.
+		do
+			local zoneName = if extraction then "귀환 입구" elseif i == 1 then "외곽 조사 구역" else "기록 조사 구역"
+			local props = nil
+			if not extraction and not isWildlife then
+				if opts.siteId == "alexandria_library" then
+					zoneName = if i == 1 then "옛 도서관터 외곽" else "문헌 발굴 구역"
+					props = { {"Relics", "journal-closed", 1.6}, {"Relics", "pot", 1.7} }
+				elseif opts.siteId == "split_palace" then
+					zoneName = "궁전 외곽 조사 구역"
+					props = { {"Relics", "pot", 1.7} }
+				elseif opts.siteId == "antwerp_monastery_herbs" then
+					zoneName = "수도원 약초원"
+				elseif questTerrain == "mine" then
+					zoneName = if i == 1 then "광산 진입부" else "채굴 기록 구역"
+					props = { {"Cargo", "wood-planks-stack-small", 4}, {"Cargo", "barrel", 2.2} }
+				elseif questTerrain == "fort" then
+					zoneName = if i == 1 then "성채 외곽" else "성채 보급 구역"
+					props = { {"Naval", "crate", 3}, {"Cargo", "barrel", 2.2} }
+				elseif questTerrain == "archive" and opts.siteId == "hamburg_docks" then
+					zoneName = if i == 1 then "항구 도서관 앞 조사대" else "문헌 기록 구역"
+					props = { {"Interior", "tablecross", 3.5}, {"Interior", "bookcaseopenlow", 3.2} }
+				elseif questTerrain == "ruins" then
+					zoneName = if i == 1 then "유적 외곽" else "유적 발굴 구역"
+					props = { {"Relics", "pot", 1.7}, {"Cargo", "wood-planks-stack-small", 3.2} }
+				elseif questTerrain == "coast" and targetCard and targetCard.field == "Shipbuilding" then
+					zoneName = if i == 1 then "해안 조사 구역" else "선박 기록 구역"
+					props = { {"Naval", "crate", 3}, {"Cargo", "wood-planks-stack-small", 3.5} }
+				end
+			end
+			anchor:SetAttribute("FieldZoneName", zoneName)
+			if i == found + 1 then folder:SetAttribute("FieldCurrentZoneName", zoneName) end
+			-- [승인 소품] 완료 구역 재접속 시에도 동일 배치. 기존 난수·전투 물리에는 관여하지 않는다.
+			-- 중앙 동선에서 벗어난 평탄한 지면만 사용하고 수면/겹침/미등록 원본은 건너뛴다.
+			if (props or (not special and not extraction)) and i > found then
+				zoneSceneryBuilders[i] = function()
+				if finished or not folder.Parent or not anchor.Parent or i ~= found + 1 then return end
+				if folder:FindFirstChild("FieldZoneScenery" .. i) then return end
+				local group = Instance.new("Folder")
+				group.Name = "FieldZoneScenery" .. i
+				group.Parent = folder
+				for index, spec in props or {} do
+					if visualMobile and index > 1 then break end
+					if not AssetIds[spec[1] .. "/" .. spec[2]] then continue end
+					local x = pos.X + (if index == 1 then -1 else 1) * 15
+					local z = pos.Z - 5
+					if math.abs(x - ORIGIN.X) > half - 10 or math.abs(z - ORIGIN.Z) > half - 10 then continue end
+					local hit = workspace:Raycast(Vector3.new(x, ORIGIN.Y + 55, z), Vector3.new(0, -100, 0), groundRay)
+					if not hit or hit.Normal.Y < 0.88 then continue end
+					local waterRay = RaycastParams.new()
+					waterRay.FilterType = Enum.RaycastFilterType.Include
+					waterRay.FilterDescendantsInstances = {workspace.Terrain, ground}
+					local surface = workspace:Raycast(Vector3.new(x, ORIGIN.Y + 55, z), Vector3.new(0, -100, 0), waterRay)
+					if not surface or surface.Material == Enum.Material.Water then continue end
+					local overlap = OverlapParams.new()
+					overlap.FilterType = Enum.RaycastFilterType.Include
+					overlap.FilterDescendantsInstances = {folder}
+					local blocked = false
+					for _, piece in workspace:GetPartBoundsInBox(CFrame.new(hit.Position + Vector3.new(0, 2, 0)), Vector3.new(5, 4, 5), overlap) do
+						if piece ~= ground and piece ~= anchor and piece.Transparency < 0.95 then blocked = true; break end
+					end
+					if blocked then continue end
+					local model = placeModel(group, spec[1], spec[2], hit.Position, spec[3], false, nil, "near")
+					if model then model:SetAttribute("FieldZoneProp", true) end
+				end
+				-- 일반 조사 실물도 활성 구역에만 배치하고 완료 시 같은 그룹에서 정리한다.
+				if not special and not extraction then
+						-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
+						local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
+						local pick = if i == 2 and targetCard and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding") and (opts.danger or 1) >= 3
+							then props[1] else props[(i - 1) % #props + 1]
+						if not placeModel(group, pick[1], pick[2], pos, pick[3], false) then
+							placeModel(group, "Naval", "chest", pos, 3.2, false)
+						end
+				end
+				if #group:GetChildren() == 0 then group:Destroy() end
+				end
+				if i == found + 1 then
+					zoneSceneryBuilders[i]()
+					zoneSceneryBuilders[i] = nil
+				end
+			end
+		end
+		if i <= found then
+			-- [재개 좌표] 서버의 완료 단계만 사용하고 실제 월드 좌표는 현재 맵에서 다시 계산한다.
+			if i == found then folder:SetAttribute("FieldResumeAnchor", pos) end
+			if special and rareTrace then for _ = 1, 2 do scatter(36) end end
+			anchor:Destroy()
+			continue
+		end
 		if special then
 			anchor:SetAttribute("ObservationCardId", targetCard.id)
 			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
@@ -3878,27 +4050,21 @@ function FieldScene.start(opts)
 			tag.Position = UDim2.fromOffset(0, if artId then 117 else 45)
 			tag.Size = UDim2.fromOffset(154, 28)
 			tag.TextWrapped = true
-		else
-			-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
-			local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
-			local pick = props[(i - 1) % #props + 1]
-			if not placeModel(folder, pick[1], pick[2], pos, pick[3], false) then
-				placeModel(folder, "Naval", "chest", pos, 3.2, false)
-			end
 		end
 		local light = Instance.new("PointLight")
 		light.Color = Color3.fromRGB(255, 214, 120)
 		light.Range = 18
 		light.Brightness = 2
+		light.Enabled = i == found + 1
 		light.Parent = anchor
 		local pp = Instance.new("ProximityPrompt")
-		pp.ActionText = if special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
+		pp.ActionText = if extraction then "탈출 확인" elseif guardedTransit then "기록 확보" elseif special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
 		pp.KeyboardKeyCode = Enum.KeyCode.T -- 회전 스킬 E와 구분
-		pp.ObjectText = if special then targetCard.name else "발견물"
+		pp.ObjectText = if extraction then "탐험 입구" elseif guardedTransit then tostring(anchor:GetAttribute("FieldZoneName") or "경계 구역") elseif special then targetCard.name else tostring(anchor:GetAttribute("FieldZoneName") or "발견물")
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
 		pp.RequiresLineOfSight = false
-		pp.Enabled = not (special and rareTrace)
+		pp.Enabled = i == found + 1 and not (special and rareTrace)
 		pp.Parent = anchor
 		-- [발견물 외형] 대표 모양 실물·실루엣·조건·동물 반응·조사 방법
 		local stage = if special and DiscoveryStage then DiscoveryStage.setup({
@@ -3922,7 +4088,7 @@ function FieldScene.start(opts)
 					clue.Destroying:Connect(function() if clueModel.Parent then clueModel:Destroy() end end)
 				end
 				local cluePrompt = Instance.new("ProximityPrompt")
-				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
+				cluePrompt.ActionText = if folder:GetAttribute("FieldMythRoute") then "전설 증거 조사" elseif isWildlife then "동물 흔적 조사" else "현장 단서 조사"
 				cluePrompt.ObjectText = targetCard.name
 				cluePrompt.KeyboardKeyCode = Enum.KeyCode.T
 				cluePrompt.HoldDuration = 0.5
@@ -3934,28 +4100,137 @@ function FieldScene.start(opts)
 					clues += 1
 					folder:SetAttribute("FieldRareTraceFound", clues)
 					clue:Destroy()
-					questHint.Text = string.format("희귀 조사: 흔적 %d/2 → %s", clues, targetCard.name)
+					questHint.Text = string.format(if folder:GetAttribute("FieldMythRoute") then "전설의 증거 %d/2 · %s" else "희귀 조사: 흔적 %d/2 → %s", clues, targetCard.name)
 					if clues >= 2 then
 						pp.Enabled = true
 						say("희귀 단서 확보! 지도에 표시된 " .. targetCard.name .. "을(를) 관찰해.")
 					else
-						say("흔적을 찾았어. 한 곳 더 확인해.")
+						say(if isWildlife then "첫 생태 흔적을 확인했어. 다른 흔적과 비교하자." else "첫 기록의 출처를 찾았어. 두 번째 단서와 대조하자.")
 					end
 				end)
 			end
 		end
 		pp.Triggered:Connect(function()
+			if finished or not anchor.Parent or i ~= found + 1 or anchor:GetAttribute("FieldCheckpointPending")
+				or workspace:GetAttribute("FieldCombatReady") ~= true then return end
+			if special then
+				if folder:GetAttribute("FieldBossClueState") == "guarded" then
+					for _, enemy in enemies do
+						if not enemy.ac.dead and enemy.model:GetAttribute("FieldBossProtectsClue") then
+							say(if folder:GetAttribute("FieldMythRoute") then "전설 기록을 빼앗은 두목을 물리쳐야 해." else "두목이 기록을 막고 있어. 공격을 피한 뒤 빈틈을 노려.", 3.5)
+							return
+						end
+					end
+				end
+			end
+			-- [잠입·탈출] 실제 캐릭터 이동 및 주변 적 상태를 확인한다. 싸워서 돌파하거나 피해 지나갈 수 있다.
+			-- 클라이언트 전투이므로 서버 전투 입증으로 사용하지 않으며 기존 단계 저장/보상 경로를 유지한다.
+			if guardedTransit and folder:GetAttribute("FieldPursuitPending") then
+				say("기록을 가져간 척후병을 먼저 따라잡아.", 3.5)
+				return
+			end
+			if i == 2 and folder:GetAttribute("FieldStrongholdRoute") then
+				local remaining = 0
+				for _, enemy in enemies do
+					if not enemy.ac.dead and enemy.model:GetAttribute("FieldStrongholdGuard") then remaining += 1 end
+				end
+				if remaining > 0 then
+					say(string.format("거점 수비병 %d명 남음 · 먼저 물리쳐.", remaining), 3.5)
+					return
+				end
+			end
+			if i == 2 and folder:GetAttribute("FieldInterceptRoute") then
+				if not folder:GetAttribute("FieldInterceptStartedAt") then say("경계 구역에 접근해 적의 움직임을 확인해.", 3); return end
+				local remaining = 0
+				for _, enemy in enemies do
+					if not enemy.ac.dead and enemy.model:GetAttribute("FieldInterceptWave") then remaining += 1 end
+				end
+				if folder:GetAttribute("FieldInterceptRoute") == "survival" then
+					if not folder:GetAttribute("FieldDefenseComplete") then
+						say("적을 모두 물리쳐도 지정 구역을 20초 지켜야 해.", 3); return
+					end
+				elseif remaining > 0 then say(string.format("적 %d명 남음 · 전투를 끝내야 기록을 확보할 수 있어.", remaining), 3); return end
+			end
+			if guardedTransit or extraction or (i == 2 and (folder:GetAttribute("FieldStrongholdRoute") or folder:GetAttribute("FieldInterceptRoute"))) then
+				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
+				if folder:GetAttribute("FieldRescueRoute") then
+					if i == 2 and folder:GetAttribute("FieldEmergencyRescue") then
+						local deadline = folder:GetAttribute("FieldRescueDeadline")
+						if not deadline or os.clock() >= deadline then
+							say("구조 시간이 끝났어. 위험 구역 밖으로 물러나 다시 접근해.", 3.5); return
+						end
+					end
+					local survivor = folder:FindFirstChild("FieldRescueResident")
+					local survivorRoot = survivor and survivor:FindFirstChild("HumanoidRootPart")
+					if not survivorRoot or not survivorRoot:IsA("BasePart") or (survivorRoot.Position - currentRoot.Position).Magnitude > 16 then
+						say(if extraction then "구출한 조사원이 도착할 때까지 기다려." else "고립된 조사원에게 가까이 가.", 3.5)
+						return
+					end
+				end
+				for _, enemy in enemies do
+					if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - currentRoot.Position).Magnitude < 16
+						and not (i == 2 and folder:GetAttribute("FieldDefenseComplete") and enemy.model:GetAttribute("FieldInterceptWave")) then
+						say(if extraction then "추격하는 적과 거리를 벌린 뒤 탈출해." else "경계병을 피해 접근하거나 물리친 뒤 기록을 확보해.", 3.5)
+						return
+					end
+				end
+			end
+			-- 서버 응답 전에는 다음 구역을 열지 않는다. 응답 유실 시 같은 단계로 재시도한다.
+			anchor:SetAttribute("FieldCheckpointPending", true)
+			local recordCard = if special then targetCard.id else observedCardId
+			local requestOk, recorded = pcall(function()
+				local recorded = not opts.onCheckpoint or opts.onCheckpoint(i, recordCard)
+				return recorded
+			end)
 			if finished or not anchor.Parent then return end
+			anchor:SetAttribute("FieldCheckpointPending", nil)
+			recorded = requestOk and recorded == true
+			if not recorded then say("진행 기록을 연결하지 못했어. 다시 조사해.", 3.5); return end
 			if special then
 				observedCardId = targetCard.id
+				folder:SetAttribute("FieldBossClueState", "observed")
 				questHint.Text = "현장 기록 완료: " .. targetCard.name
 				if stage then pcall(stage.onObserved) end
 			end
 			found += 1
+			folder:SetAttribute("FieldRouteStep", found)
+			local completedScenery = folder:FindFirstChild("FieldZoneScenery" .. i)
+			if completedScenery then completedScenery:Destroy() end
+			zoneSceneryBuilders[i] = nil
 			anchor:Destroy()
-			say(string.format(if special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
+			if zoneSceneryBuilders[found + 1] then
+				zoneSceneryBuilders[found + 1]()
+				zoneSceneryBuilders[found + 1] = nil
+			end
+			local nextAnchor = folder:FindFirstChild("Discovery" .. (found + 1))
+			local nextPrompt = nextAnchor and nextAnchor:FindFirstChildOfClass("ProximityPrompt")
+			if nextPrompt then
+				nextPrompt.Enabled = true
+				local nextLight = nextAnchor:FindFirstChildOfClass("PointLight")
+				if nextLight then nextLight.Enabled = true end
+				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
+				folder:SetAttribute("FieldCurrentZoneName", nextAnchor:GetAttribute("FieldZoneName"))
+				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
+					elseif found == 1 and folder:GetAttribute("FieldInterceptRoute") then
+						if folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 탈환 · 상자와 경비병을 찾아"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 · 지정 구역으로 이동"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵 저지 · 동물 대신 밀렵단을 물리쳐"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 · 지정 적을 추적해"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 · 지정 상대에게 접근해"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bossrush" then "연속 두목전 · 경계 구역으로 이동" else "경계 구역 · 적의 움직임을 살펴"
+					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
+					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then
+						if folder:GetAttribute("FieldEmergencyRescue") then "긴급 구조 · 위험 구역으로 접근" else "고립된 조사원 구출 · 경계 구역으로 이동"
+					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
+					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldPursuitPending") then "척후병 추적 · 미니맵의 청록색 적을 따라가"
+					elseif nextKind == "infiltrate" then "경계 구역 · 잠입하거나 적을 돌파해"
+					else string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
+			end
+			say(string.format(if extraction and folder:GetAttribute("FieldRescueRoute") then "조사원 호위 완료 (%d/%d)" elseif guardedTransit and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 (%d/%d)" elseif extraction then "안전 지점 도착 (%d/%d)" elseif i == 2 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 기록 확보 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
+				folder:SetAttribute("FieldCurrentZoneName", "조사 완료")
 				showCompletion()
 				say("조사 완료! 항구로 귀환하거나 현장을 더 둘러볼 수 있어.")
 			end
@@ -3967,8 +4242,11 @@ function FieldScene.start(opts)
 	-- 적: 가까이 오면 쫓아와 때린다
 	-- 적: 최소 20명, 위험할수록 늘어 최대 100명(두목 포함). 무리를 지어 맵 곳곳에 흩어져 있다.
 	local danger0 = opts.danger or 1
-	local bossCount = if danger0 < 3 then 0 else math.clamp(math.floor(danger0 / 2), 1, 8)
-	local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)
+	local enemyCount, bossCount = AC.fieldEnemyCounts(danger0)
+	-- 정상 입장은 서버가 확정한 편성을 사용한다. 독립 장면 검사는 동일 공용 규칙을 사용한다.
+	if type(opts.fieldEncounter) == "table" then
+		enemyCount, bossCount = opts.fieldEncounter.enemyCount, opts.fieldEncounter.bossCount
+	end
 	-- [몹 다양화] 규칙(HP/속도/피해/드롭)은 원본 그대로, 색상·복식·관절 액션만 직군별 3종으로 구분한다.
 	-- [실물 병종] 기존 승인된 Relics 무기·방패만 연결한다. 원본 적 수/HP/피해/드롭은 유지한다.
 	-- 병종 외형: 직업 명칭, 복식 원형, 외투색, Weapons ID, 왼손 방패(있을 때).
@@ -4075,6 +4353,37 @@ function FieldScene.start(opts)
 		if ac.kind == "archer" and (opts.year or 1517) >= 1650
 			and bombReady and math.floor((i - 1) / 4) % 6 == 4 then styleN = 7 end
 		local style = looks[ac.kind][styleN]
+		-- [현장 사건의 두목] 승인된 인간형 리그만 사용한다. 미등록 짐승·석상은 대체하지 않는다.
+		local bossRole = nil
+		if isBoss then
+			local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+			bossRole = if theme == "ruins" or theme == "archive" then "looter"
+				elseif theme == "coast" then "pirate"
+				elseif theme == "fort" then "warden"
+				elseif theme == "jungle" or theme == "swamp" then "hunter"
+				elseif theme == "desert" then "caravan"
+				elseif theme == "mine" or theme == "volcanic" then "mine"
+				elseif theme == "glacier" or theme == "highland" then "mountain"
+				elseif theme == "forest" then "bandit"
+				else "giant"
+			if bossRole == "looter" then
+				style = { "유적 약탈단 수장", "Knight", Color3.fromRGB(99, 84, 67), "mace" }
+			elseif bossRole == "pirate" then
+				style = { "밀수단 선장", "Rogue", Color3.fromRGB(62, 92, 124), "sword" }
+			elseif bossRole == "bandit" then
+				style = { "길목 산적 두목", "Rogue_Hooded", Color3.fromRGB(84, 91, 70), "axe" }
+			elseif bossRole == "warden" then
+				style = { "요새 용병 지휘관", "Knight", Color3.fromRGB(91, 86, 78), "sword", "shield-rectangle" }
+			elseif bossRole == "hunter" then
+				style = { "밀림 밀렵단 수장", "Rogue_Hooded", Color3.fromRGB(65, 89, 60), "spear" }
+			elseif bossRole == "caravan" then
+				style = { "대상로 약탈단 수장", "Rogue", Color3.fromRGB(145, 110, 72), "sword" }
+			elseif bossRole == "mine" then
+				style = { "광맥 점거단 수장", "Barbarian", Color3.fromRGB(108, 74, 63), "warhammer" }
+			elseif bossRole == "mountain" then
+				style = { "고갯길 용병 두목", "Barbarian", Color3.fromRGB(90, 110, 127), "axe" }
+			end
+		end
 		if style[6] == "bomb" and ((opts.year or 1517) < 1650 or not bombReady) then
 			styleN = 1
 			style = looks.archer[1]
@@ -4119,13 +4428,10 @@ function FieldScene.start(opts)
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		if weapon.family == "bow" then individualDef.range = math.min(individualDef.range, weapon.range) end
-		-- [전투 지속력] 장면 전용 최대 체력만 증가. 공용 ActionCombat/공격력/보상/드롭/저장은 불변.
-		-- 일반 2.35배(검병 94·궁수 66), 방패·돌격 2.55배(179·128), 두목 2.75배(825).
-		-- 적이 강타 후 기상·막기·회피 동작을 충분히 보여 주도록 한다.
-		individualDef.hp = math.floor(individualDef.hp *
-			(if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35) + 0.5)
+		-- [전투 지속력] 기존 장면 배율을 공용 정본에서 적용한다. 공격력·드롭·저장은 불변.
+		individualDef.hp = if isBoss and type(opts.fieldEncounter) == "table" then opts.fieldEncounter.bossMaxHp else AC.fieldEnemyMaxHp(ac.kind)
 		ac.def = individualDef
-		ac.hp = individualDef.hp
+		ac.hp = individualDef.hp -- 재입장·재도전도 항상 만피. 저장된 구역과 전투 중 체력은 분리한다.
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
 		-- [병종 실루엣] 기존 R15 리그·실제 손 장착 메시 재사용. 키/체형/바지색으로 원거리·투척·방패·돌격을 구분.
 		-- [초급 적 실루엣] 1단은 검병·궁수만 나오므로 검병도 기존 복식 원형에 맞춰 체형을 나눈다.
@@ -4147,7 +4453,7 @@ function FieldScene.start(opts)
 			elseif isBoss then Color3.fromRGB(53, 41, 41) else Color3.fromRGB(65, 58, 52)
 		-- [승인 R15 몹 외형] 기존 적의 병종·시대·무기를 따라 부위별 실물 복식을 선택한다.
 		-- 몬스터 원본을 통째로 고정하지 않고 R15 관절·원본 전투 판정은 유지한다.
-		local mobProfile = if isBoss then "warlord"
+		local mobProfile = if isBoss then (if bossRole == "pirate" then "pirate" elseif bossRole == "bandit" or bossRole == "hunter" or bossRole == "caravan" then "rogue" else "warlord")
 			elseif throwAsset == "bomb" then "bombard"
 			elseif weapon.id == "ship_pistol" or weapon.id == "cutlass" then (if styleN % 2 == 0 then "pirate_female" else "pirate")
 			elseif ac.kind == "shield" then "knight"
@@ -4209,7 +4515,23 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
+		model:SetAttribute("FieldEnemyId", i) -- 기존 편성 슬롯: 격파·재입장 후에도 다른 적과 혼동하지 않는다.
 		model:SetAttribute("FieldDifficultyGrade", math.clamp(danger0, 1, 5))
+		if isBoss then
+			model:SetAttribute("FieldBossRole", bossRole)
+			model:SetAttribute("FieldBossPhase", 1)
+			-- 위험 지역의 유물·문헌·광물 기록을 지키는 첫 두목만 조사와 연결한다.
+			-- 살아 있는 동식물 관찰에는 격파를 요구하지 않는다.
+			if i == enemyCount + 1 and found == 0 and targetCard and not isWildlife
+				and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
+					or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture" or folder:GetAttribute("FieldMythRoute"))
+				and bossRole ~= "giant" then
+				model:SetAttribute("FieldBossProtectsClue", true)
+				folder:SetAttribute("FieldBossClueState", "guarded")
+				questHint.Text = style[1] .. "이(가) " .. targetCard.name .. " 기록을 지키고 있다"
+				if folder:GetAttribute("FieldMythRoute") then model:SetAttribute("FieldMythRecordGuard", true) end
+			end
+		end
 		model:SetAttribute("EnemyWeaponId", weapon.id)
 		model:SetAttribute("EnemyShieldModel", style[5] or "")
 		model:SetAttribute("MotionRole", if isBoss then "boss" elseif throwAsset then "thrower" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
@@ -4226,6 +4548,27 @@ function FieldScene.start(opts)
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
+		-- [추적 대상] 새 적이나 보상을 만들지 않고 기존 사수 한 명을 기록 탈취자로 지정한다.
+		if folder:GetAttribute("FieldPursuitRoute") and found < 2 and not isBoss and ac.kind == "archer"
+			and not folder:GetAttribute("FieldPursuitAssigned") then
+			model:SetAttribute("FieldPursuitTarget", true)
+			folder:SetAttribute("FieldPursuitAssigned", true)
+			folder:SetAttribute("FieldPursuitPending", true)
+			tag.Text = "기록 탈취 척후병 · 추적"
+		end
+		-- [보스전 재개] 서버에 접수된 첫 관찰은 해당 기록을 지키던 두목의 구역도 완료한 것으로 취급한다.
+		-- 미완료 구역의 두목과 일반 적은 기존 체력/배치로 재시작한다. 정산·경험치·드롭은 지급하지 않는다.
+		-- 기존 난수 소비와 나머지 적 배치를 보존하도록 생성 직후 해당 두목만 정리한다.
+		if found > 0 and isBoss and i == enemyCount + 1 and targetCard and not isWildlife
+			and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
+				or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture" or folder:GetAttribute("FieldMythRoute"))
+			and bossRole ~= "giant" then
+			if fm then FM.destroy(fm) end
+			table.remove(enemies)
+			model:Destroy()
+			folder:SetAttribute("FieldBossClueState", "observed")
+			folder:SetAttribute("FieldBossCheckpointRestored", true)
+		end
 	end
 	-- [전투 목표 · 2026-11-28 오너 지시] 매번 다른 목표 하나(속도·무피해·두목 먼저·약점 5번). 별 3개 평가(표시용).
 	do
@@ -4247,6 +4590,264 @@ function FieldScene.start(opts)
 
 	end
 
+	-- [구출·호위] 기존 승인 주민 R15/걷기 모션과 현재 탐험 장면 수명주기를 재사용한다.
+	-- 전 세계 고위험 유적·문헌 탐험의 가상 현장 사건. 지점별 고정 분기로 재접속해도 유형이 바뀌지 않는다.
+	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		local siteChoice = 0
+		for i = 1, #(opts.siteId or "") do
+			siteChoice = (siteChoice * 31 + string.byte(opts.siteId, i)) % 997
+		end
+		-- 기존 세 사건은 보존하고, 나머지는 지형에 맞는 지점의 일부만 선택해 거점 탈환·잠입과 차별화한다.
+		local existingRescue = table.find({ "pompeii_ruins", "auto_site_naples_high", "alexandria_library" }, opts.siteId) ~= nil
+		if folder:GetAttribute("FieldEscapeRoute") and not folder:GetAttribute("FieldPursuitRoute") and found < nodeCount
+			and (existingRescue or ((theme == "ruins" or theme == "archive" or theme == "fort") and siteChoice % 3 == 0)) then
+			local rescueAnchor = folder:FindFirstChild("Discovery2")
+			local rescuePoint = if rescueAnchor and rescueAnchor:IsA("BasePart") then rescueAnchor.Position else folder:GetAttribute("FieldResumeAnchor")
+			local surface = RaycastParams.new()
+			surface.FilterType = Enum.RaycastFilterType.Include
+			surface.FilterDescendantsInstances = { workspace.Terrain, ground }
+			surface.IgnoreWater = false
+			if typeof(rescuePoint) == "Vector3" then
+				local clearance = OverlapParams.new()
+				clearance.FilterType = Enum.RaycastFilterType.Include
+				clearance.FilterDescendantsInstances = { folder }
+				clearance.RespectCanCollide = true
+				local hit = nil
+				for _, offset in { Vector3.zero, Vector3.new(6, 0, 0), Vector3.new(-6, 0, 0),
+					Vector3.new(0, 0, 6), Vector3.new(0, 0, -6), Vector3.new(6, 0, 6), Vector3.new(-6, 0, 6) } do
+					local point = rescuePoint + offset
+					if math.abs(point.X - ORIGIN.X) > half - 8 or math.abs(point.Z - ORIGIN.Z) > half - 8 then continue end
+					local candidate = workspace:Raycast(point + Vector3.new(0, 100, 0), Vector3.new(0, -140, 0), surface)
+					if not candidate or candidate.Material == Enum.Material.Water or candidate.Normal.Y < 0.8 then continue end
+					if #workspace:GetPartBoundsInBox(CFrame.new(candidate.Position + Vector3.new(0, 3.5, 0)), Vector3.new(4, 5, 4), clearance) > 0 then continue end
+					hit = candidate
+					break
+				end
+				if hit then
+					local ok, resident = pcall(Pose.createR15, folder, hit.Position, 0, Color3.fromRGB(111, 98, 72),
+						Random.new((opts.seed or 7) + 8431), "Mage", 5.6, { motionStyle = "civilian", profession = "scholar", year = opts.year })
+					if finished or not folder.Parent then
+						if ok and resident then resident:Destroy() end
+						return { finish = finish, cancelled = true }
+					end
+					local residentRoot = ok and resident and resident:FindFirstChild("HumanoidRootPart")
+					if residentRoot and residentRoot:IsA("BasePart") then
+						resident.Name = "FieldRescueResident"
+						local pivotHeight = resident:GetPivot().Position.Y - hit.Position.Y
+						folder:SetAttribute("FieldRescueRoute", true)
+						-- [긴급 구조] 고위험 구출의 일부만 제한시간을 적용. 이미 저장된 구출 단계는 반복하지 않는다.
+						folder:SetAttribute("FieldEmergencyRescue", (opts.danger or 1) >= 4 and siteChoice % 2 == 0)
+						local marker = Instance.new("BillboardGui")
+						marker.Adornee, marker.AlwaysOnTop, marker.MaxDistance = residentRoot, true, 80
+						marker.Size, marker.StudsOffset, marker.Parent = UDim2.fromOffset(160, 24), Vector3.new(0, 4, 0), residentRoot
+						local residentName = label(marker, "고립된 조사원", 14, Color3.fromRGB(129, 232, 206))
+						residentName.Size = UDim2.fromScale(1, 1)
+						if rescueAnchor then
+							local prompt = rescueAnchor:FindFirstChildOfClass("ProximityPrompt")
+							if prompt then
+								prompt.ActionText, prompt.ObjectText = "조사원 구출", "고립된 조사원"
+								if folder:GetAttribute("FieldEmergencyRescue") then prompt.ActionText = "긴급 구조" end
+							end
+						end
+						if found == 1 then questHint.Text = if folder:GetAttribute("FieldEmergencyRescue") then "긴급 구조 · 위험 구역으로 접근" else "이어하기 · 고립된 조사원 구출" end
+						if found == 2 then questHint.Text = "이어하기 · 조사원과 함께 입구로 이동" end
+						local obstacle = RaycastParams.new()
+						obstacle.FilterType = Enum.RaycastFilterType.Exclude
+						obstacle.RespectCanCollide, obstacle.IgnoreWater = true, false
+						local elapsed, phase = 0, 0
+						table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+							if finished or not resident.Parent then return end
+							elapsed += dt
+							if elapsed < 0.1 then return end
+							local step = math.min(elapsed, 0.2)
+							elapsed = 0
+							local moving = false
+							if found == 1 and folder:GetAttribute("FieldEmergencyRescue") and workspace:GetAttribute("FieldCombatReady") == true then
+								local character = player.Character
+								local leader = character and character:FindFirstChild("HumanoidRootPart")
+								if leader and leader:IsA("BasePart") then
+									local distance = (leader.Position - residentRoot.Position).Magnitude
+									local now = os.clock()
+									local deadline = folder:GetAttribute("FieldRescueDeadline")
+									if not deadline and distance <= 50 then
+										deadline = now + 90
+										folder:SetAttribute("FieldRescueDeadline", deadline)
+										say("긴급 구조 시작! 90초 안에 조사원에게 접근해.", 3)
+									elseif deadline and now >= deadline and distance >= 65 then
+										folder:SetAttribute("FieldRescueDeadline", nil)
+										folder:SetAttribute("FieldRescueSeconds", nil)
+										deadline = nil
+										questHint.Text = "긴급 구조 · 다시 접근해"
+										residentName.Text = "고립된 조사원"
+									end
+									if deadline then
+										local seconds = math.max(0, math.ceil(deadline - now))
+										if folder:GetAttribute("FieldRescueSeconds") ~= seconds then
+											folder:SetAttribute("FieldRescueSeconds", seconds)
+											questHint.Text = if seconds > 0 then string.format("긴급 구조 · %d초 남음", seconds) else "시간 초과 · 위험 구역 밖으로 후퇴"
+											residentName.Text = if seconds > 0 then "조사원 · 구조 요청" else "조사원 · 구조 재시도"
+										end
+									end
+								end
+							end
+							if found == 2 then
+								local character = player.Character
+								local leader = character and character:FindFirstChild("HumanoidRootPart")
+								local threatened = false
+								for _, enemy in enemies do
+									if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - residentRoot.Position).Magnitude < 10 then threatened = true; break end
+								end
+								residentName.Text = if threatened then "조사원 · 위험" else "조사원 · 호위 중"
+								if leader and leader:IsA("BasePart") and not threatened then
+									local pivot = resident:GetPivot()
+									local delta = (leader.Position - pivot.Position) * Vector3.new(1, 0, 1)
+									if delta.Magnitude > 5 and delta.Magnitude < 30 then
+										local nextPosition = pivot.Position + delta.Unit * math.min(11 * step, delta.Magnitude - 5)
+										local floor = workspace:Raycast(nextPosition + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), surface)
+										obstacle.FilterDescendantsInstances = { resident, character }
+										local blocked = workspace:Raycast(pivot.Position, nextPosition - pivot.Position, obstacle)
+										if floor and floor.Material ~= Enum.Material.Water and floor.Normal.Y >= 0.8 and not blocked
+											and math.abs(floor.Position.Y + pivotHeight - pivot.Position.Y) <= 2 then
+											local position = Vector3.new(nextPosition.X, floor.Position.Y + pivotHeight, nextPosition.Z)
+											resident:PivotTo(CFrame.lookAt(position, position + delta.Unit))
+											moving = true
+										end
+									end
+								end
+							end
+							if moving then phase += step * 8 end
+							Pose.walkR15(resident, phase, moving)
+						end))
+					elseif ok and resident then resident:Destroy() end
+				end
+			end
+			if not folder:GetAttribute("FieldRescueRoute") then warn("[MareEssentia] 구출 조사원 배치 불가", opts.siteId) end
+		end
+	end
+
+	-- [전 세계 거점 탈환] 지점 목록이 아니라 기존 지형·카드·위험도·구역 조건으로 선택한다.
+	-- 구출·호위·추격 우선. 기존 적, 보상, 난수, 저장 필드를 보존하고 서버 판정 권한은 확대하지 않는다.
+	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		local field = targetCard and targetCard.field
+		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
+			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
+			and (theme == "fort" or ((theme == "ruins" or theme == "archive") and
+				(field == "Site" or field == "Relic" or field == "Architecture" or field == "Language"))) then
+			local anchor = folder:FindFirstChild("Discovery2")
+			if anchor and anchor:IsA("BasePart") then
+				local guards = {}
+				for _, enemy in enemies do
+					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(guards, enemy) end
+				end
+				table.sort(guards, function(a, b)
+					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
+				end)
+				local count = math.min(math.clamp((opts.danger or 1), 3, 5), #guards)
+				if count > 0 then
+					folder:SetAttribute("FieldStrongholdRoute", true)
+					folder:SetAttribute("FieldStrongholdRemaining", count)
+					for i = 1, count do
+						local enemy = guards[i]
+						enemy.model:SetAttribute("FieldStrongholdGuard", true)
+						enemy.tag.Text = "거점 수비병 · " .. enemy.tag.Text
+					end
+					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
+					if prompt then prompt.ActionText, prompt.ObjectText = "거점 탈환 확인", "점거된 기록 보관소" end
+					if found == 1 then questHint.Text = string.format("이어하기 · 거점 수비병 %d명 격파 후 기록 확보", count) end
+				else
+					warn("[MareEssentia] 거점 수비병 배치 불가", opts.siteId)
+				end
+			end
+		end
+	end
+
+	-- [전 세계 매복·증원 차단] 기존 적 중 경계 지점에 가까운 병력을 두 차례로 움직인다.
+	-- 기존 적 수·체력·공격 간격·보상·저장은 그대로이며 앞서 격파한 적을 다시 만들지 않는다.
+	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		if nodeCount >= 2 and (found < 2 or found >= 2 and type(opts.fieldCheckpoint) == "table") and (opts.danger or 1) >= 3 and targetCard
+			and (not isWildlife or portVisualSeed % 2 == 0)
+			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
+			and not folder:GetAttribute("FieldStrongholdRoute")
+			and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding"
+				or table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme) or isWildlife) then
+			local anchor = folder:FindFirstChild("Discovery2")
+			-- 완료한 단계에는 조사 앵커가 없다. 연속 두목전의 전원 격파만 기존 서버 단계로 복원한다.
+			if (anchor and anchor:IsA("BasePart")) or found >= 2 then
+				local mode = if targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"
+					elseif isWildlife then "poacher"
+					elseif (opts.danger or 1) >= 4 and portVisualSeed % 3 == 1 then "bounty"
+					elseif (opts.danger or 1) >= 4 and portVisualSeed % 3 == 2 and (theme == "highland" or theme == "coast" or theme == "plains") then "duel"
+					elseif (theme == "plains" or theme == "desert" or theme == "coast") and (opts.danger or 1) >= 4 then "survival"
+					elseif theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
+				local troops = {}
+				for _, enemy in enemies do
+					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(troops, enemy) end
+				end
+				-- [연속 두목전] 기존 첫 관찰 수호 두목과 충돌하지 않는 고위험 지점만 선택한다.
+				-- 첫 관찰에서 제거되는 두목 유형은 제외하여 저장 단계 재개 시 편성이 바뀌지 않는다.
+				if not isWildlife and not folder:GetAttribute("FieldMythRoute") and mode ~= "supply" and (opts.danger or 1) >= 4 and portVisualSeed % 5 == 0
+					and not table.find({ "Relic", "Site", "Mystery", "Mineral", "Language", "Architecture" }, targetCard.field) then
+					local bosses = {}
+					for _, enemy in enemies do
+						if enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(bosses, enemy) end
+					end
+					if #bosses >= 2 then mode, troops = "bossrush", bosses end
+				end
+				if found >= 2 then
+					if mode == "bossrush" then
+						for _, enemy in troops do
+							if enemy.fm then FM.destroy(enemy.fm) end
+							local index = table.find(enemies, enemy)
+							if index then table.remove(enemies, index) end
+							enemy.model:Destroy()
+						end
+						folder:SetAttribute("FieldBossRushCheckpointRestored", true)
+					end
+				elseif anchor and anchor:IsA("BasePart") then
+				table.sort(troops, function(a, b)
+					if (mode == "bounty" or mode == "duel") and a.elite ~= b.elite then return a.elite == true end
+					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
+				end)
+				local count = math.min(if mode == "bounty" or mode == "duel" then 1 elseif mode == "poacher" then 3 else 4, #troops)
+				if count >= (if mode == "bounty" or mode == "duel" then 1 else 2) then
+					if mode == "bossrush" then
+						count = #troops
+						folder:SetAttribute("FieldBossRushTotal", count)
+						folder:SetAttribute("FieldBossRushNext", 1)
+					end
+					folder:SetAttribute("FieldInterceptRoute", mode)
+					folder:SetAttribute("FieldInterceptRemaining", count)
+					for i = 1, count do
+						local enemy = troops[i]
+						if mode == "bossrush" then
+							enemy.model:SetAttribute("FieldBossRushOrder", i)
+							enemy.model:SetAttribute("FieldInterceptWave", i)
+							enemy.tag.Text = string.format("연속 두목 %d/%d · ", i, count) .. enemy.tag.Text
+						else enemy.model:SetAttribute("FieldInterceptWave", if i <= 2 then 1 else 2) end
+						if mode == "poacher" then enemy.tag.Text = "밀렵단 · " .. enemy.tag.Text
+						elseif mode == "bounty" then enemy.tag.Text = "현상 수배 대상 · " .. enemy.tag.Text
+						elseif mode == "duel" then enemy.tag.Text = "결투 상대 · " .. enemy.tag.Text end
+					end
+					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
+					if prompt then
+						prompt.ActionText = if mode == "supply" then "보급품 회수" elseif mode == "survival" then "방어 완료 확인" elseif mode == "poacher" then "밀렵 저지 확인" elseif mode == "bounty" then "수배 대상 격파 확인" elseif mode == "duel" then "결투 승리 확인" elseif mode == "bossrush" then "연속 두목전 승리 확인" elseif mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인"
+						if mode == "supply" then prompt.ObjectText = "탈환할 보급품 상자" end
+					end
+					if found == 1 then questHint.Text = if mode == "supply" then "이어하기 · 보급품 상자 탈환"
+						elseif mode == "survival" then "이어하기 · 생존 방어 구역으로 이동"
+						elseif mode == "poacher" then "이어하기 · 밀렵단 저지"
+						elseif mode == "bounty" then "이어하기 · 현상 수배 대상 추적"
+						elseif mode == "duel" then "이어하기 · 결투 구역으로 이동"
+						elseif mode == "bossrush" then "이어하기 · 연속 두목전 구역으로 이동" else "이어하기 · 경계 구역으로 이동" end
+				end
+				end -- 완료 구역과 활성 구역은 별도 처리
+			end
+		end
+	end
+
 	-- [탐험 시간·날씨·실물 동물] 이번 현장에만 존재하는 비저장 환경 연출.
 	-- 기존 퀘스트 목표·전투 수치·보상·드롭·데이터 저장에는 간섭하지 않는다.
 	do
@@ -4255,12 +4856,22 @@ function FieldScene.start(opts)
 		local snowy = winterScene or questTerrain == "glacier" or (region == "nordic" and season ~= "여름")
 		local dry = arid or biome.kind == "mine"
 		-- [기후별 기상] 북방 설기·온대 봄비·열대 우기·사막 건기를 구별한다.
+		-- 항구에서 넘어온 시간은 유지하고 이후 기존 12분 순환을 사용한다.
+		if type(opts.clockTime) == "number" and opts.clockTime >= 0 and opts.clockTime < 24 then
+			biome.clock = opts.clockTime
+		end
 		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
 			elseif monsoon then { "흐림", "비", "소나기", "옅은 안개", "비" }
 			elseif dry then { "맑음", "흐림", "옅은 안개" }
 			elseif season == "봄" then { "맑음", "흐림", "비", "옅은 안개", "비" }
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		-- 항구 예보를 지역에서 가능한 기상으로만 변환한다. 이후 기존 기후 순환 유지.
+		local initialWeather = if opts.weatherId == "rain" or opts.weatherId == "storm" then
+			(if snowy then "눈" elseif dry then "흐림" elseif opts.weatherId == "storm" and not monsoon then "소나기" else "비")
+			elseif opts.weatherId == "clear" or opts.weatherId == "tail" then "맑음"
+			elseif opts.weatherId == "head" or opts.weatherId == "calm" then "흐림" else nil
+		if initialWeather and table.find(weatherOptions, initialWeather) then weather = initialWeather end
 		-- [Studio 기후 촬영] 해당 지형에서 실제 허용되는 기상만 선택한다. 실제 플레이의 난수·시간·보상은 유지.
 		if RunService:IsStudio() then
 			if type(opts.studioCaptureWeather) == "table" then
@@ -4928,7 +5539,7 @@ function FieldScene.start(opts)
 				end
 				local nearbyDiscovery, nearestDistance = nil, math.huge
 				for _, point in folder:GetChildren() do
-					if point:IsA("BasePart") and string.sub(point.Name, 1, 9) == "Discovery" then
+					if point:IsA("BasePart") and string.sub(point.Name, 1, 9) == "Discovery" and point:GetAttribute("FieldRouteStep") == found + 1 then
 						local distance = (point.Position - p0).Magnitude
 						if distance < nearestDistance then
 							nearbyDiscovery, nearestDistance = point, distance
@@ -5002,16 +5613,31 @@ function FieldScene.start(opts)
 				return true
 			end
 			for _, ch in folder:GetChildren() do
-				if ch:IsA("BasePart") and string.sub(ch.Name, 1, 9) == "Discovery" then
+				if ch:IsA("BasePart") and string.sub(ch.Name, 1, 9) == "Discovery" and ch:GetAttribute("FieldRouteStep") == found + 1 then
 					place(ch.Position, Color3.fromRGB(255, 214, 120), 8, true)
 				elseif ch:IsA("BasePart") and string.sub(ch.Name, 1, 13) == "FieldEvidence" then
 					-- [희귀 동물/지식 퀘스트] 추적해야 할 흔적은 미니맵에 청록색으로 표시한다.
 					place(ch.Position, Color3.fromRGB(98, 232, 203), 7, true)
 				end
 			end
+			if folder:GetAttribute("FieldRescueRoute") and found >= 1 and found < nodeCount then
+				local resident = folder:FindFirstChild("FieldRescueResident")
+				local root = resident and resident:FindFirstChild("HumanoidRootPart")
+				if root and root:IsA("BasePart") then place(root.Position, Color3.fromRGB(98, 232, 203), 9, true) end
+			end
 			for _, e in enemies do
 				if e.root and e.root.Parent then
-					place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
+					if found == 1 and e.model:GetAttribute("FieldStrongholdGuard") then
+						place(e.root.Position, Color3.fromRGB(255, 192, 70), 9, true)
+					elseif found == 1 and folder:GetAttribute("FieldInterceptStartedAt") and e.model:GetAttribute("FieldInterceptWave") then
+						if not e.model:GetAttribute("FieldBossRushOrder") or e.model:GetAttribute("FieldBossRushOrder") == folder:GetAttribute("FieldBossRushNext") then
+							place(e.root.Position, Color3.fromRGB(255, 150, 70), 9, true)
+						end
+					elseif found == 1 and e.model:GetAttribute("FieldPursuitTarget") then
+						place(e.root.Position, Color3.fromRGB(98, 232, 203), 9, true)
+					else
+						place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
+					end
 				end
 			end
 			for i = used + 1, #dots do
@@ -7179,6 +7805,10 @@ function FieldScene.start(opts)
 	end
 
 	local function strikeEnemy(e, mult: number, hrpPos: Vector3, knock: number, stagger: boolean?, quiet: boolean?, ownerAttack: boolean?, actionSeq: number?, attackerWeapon, basicAttack: boolean?, impactBeat: number?)
+		-- [연속 두목전] 대기 중인 두목은 광역기·동료 공격을 포함한 기존 공통 타격 경로에서 보호한다.
+		local rushOrder = e.model:GetAttribute("FieldBossRushOrder")
+		if rushOrder and (not folder:GetAttribute("FieldInterceptStartedAt") or rushOrder ~= folder:GetAttribute("FieldBossRushNext")
+			or os.clock() < (folder:GetAttribute("FieldBossRushNextAt") or 0)) then return nil end
 		-- [동료 무기음] 실제 공격자의 장비를 따라가고 피해·보상은 기존 공식 그대로 둔다.
 		local impactWeapon = attackerWeapon or wpn
 		-- [병종별 실전 방어] 궁수·투척병은 뒤로 미끄러지고 검병은 측면 회피,
@@ -7256,7 +7886,7 @@ function FieldScene.start(opts)
 		-- 무기 없는 적/원거리 탄환/강타에는 무기 막기를 적용하지 않는다.
 		local parryRole = e.ac.kind == "grunt" or e.ac.kind == "charger" or e.boss
 		local weaponParry = not quiet and not stagger and not impactWeapon.ranged and not shieldBlocked
-			and parryRole and approach.Magnitude > 0.1
+			and parryRole and evadeAt >= (e.disarmedUntil or 0) and approach.Magnitude > 0.1
 			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.22
 			and (e.ac.state == "chase" or e.ac.state == "recover")
 			and evadeAt >= (e.nextParryAt or 0)
@@ -7279,13 +7909,57 @@ function FieldScene.start(opts)
 		-- [약점·반격 · 2026-11-28] 적마다 노릴 곳(AC.weakness) + 완벽 회피 직후 1.6초 반격 ×2.
 		local inFront = approach.Magnitude > 0.1 and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
 		local weakMult, weakLabel = AC.weakness(e.ac, inFront, approach.Magnitude / 2)
+		if e.boss and os.clock() < (e.bossWeakUntil or 0) then
+			weakMult, weakLabel = math.max(weakMult, 1.8), "두목 기술 후 빈틈"
+		end
 		local counterHit = ownerAttack ~= false and not quiet and os.clock() < (pl.counterUntil or 0)
 		if counterHit then pl.counterUntil = 0 end
 		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
-			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
-			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1)
-			* (if e.boss and os.clock() < (e.armorUntil or 0) then 0.6 else 1), mult, shieldBlocked == true, stagger)
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG, mult, shieldBlocked == true, stagger,
+			if quiet then 1 else wpn.power, os.clock() < (pl.buffUntil or 0), weaponParry == true,
+			weakMult, counterHit, e.boss == true and os.clock() < (e.armorUntil or 0))
+		-- [방패 파괴·무장 견제] 실제 명중한 강타와 약점 공격만 내구도에 반영한다.
+		if not died and dealt > 0 and not quiet and ownerAttack ~= false then
+			if e.shieldModel and e.model:FindFirstChild("FieldShield") and (stagger or shieldBlocked) then
+				e.shieldDurability = (e.shieldDurability or (if e.boss then 5 else 3)) - 1
+				e.model:SetAttribute("FieldShieldDurability", math.max(0, e.shieldDurability))
+				if e.shieldDurability <= 0 then
+					e.model.FieldShield:Destroy()
+					e.shieldModel = nil
+					e.model:SetAttribute("EnemyShieldModel", "")
+					e.model:SetAttribute("EquippedShieldModel", "")
+					e.model:SetAttribute("FieldShieldBroken", true)
+					e.guardUntil = 0
+					e.ac.def = table.clone(e.ac.def)
+					e.ac.def.frontGuard = false
+					showCombo("방패 파괴!", true, Color3.fromRGB(255, 215, 125))
+					shards(e.root.Position, 12, Color3.fromRGB(255, 215, 125), 9)
+					sfx("sfx_metal_clash", 0.85, 0.72)
+				end
+			end
+			if e.boss and not shieldBlocked and not weaponParry and weakMult >= 1.8 then
+				e.weakPartHits = (e.weakPartHits or 0) + 1
+				if e.weakPartHits >= 4 and not e.weakPartBroken then
+					e.weakPartBroken = true
+					e.armorUntil = 0
+					e.model:SetAttribute("FieldBossArmorBroken", true)
+					e.bossWeakUntil = math.max(e.bossWeakUntil or 0, evadeAt + 2.5)
+					showCombo("두목 방어구 파괴!", true, Color3.fromRGB(255, 210, 110))
+					shards(e.root.Position, 16, Color3.fromRGB(255, 210, 110), 12)
+					sfx("sfx_metal_clash", 0.85, 0.65)
+				end
+			end
+			if stagger and not e.boss and e.weapon and not e.weapon.ranged and not shieldBlocked
+				and evadeAt >= (e.nextDisarmAt or 0) then
+				e.disarmHits = (e.disarmHits or 0) + 1
+				if e.disarmHits >= 2 then
+					e.disarmHits, e.disarmedUntil, e.nextDisarmAt = 0, evadeAt + 3, evadeAt + 12
+					e.model:SetAttribute("FieldDisarmedUntil", e.disarmedUntil)
+					e.parryUntil, e.counterUntil = 0, 0
+					showCombo("무기 방어 무력화!", true, Color3.fromRGB(145, 225, 245))
+				end
+			end
+		end
 		if counterHit then
 			showCombo("반격 ×2!", true, Color3.fromRGB(122, 240, 246))
 		elseif weakLabel then
@@ -7293,29 +7967,26 @@ function FieldScene.start(opts)
 			e.model:SetAttribute("FieldWeakHit", weakLabel)
 			if pl.fieldChallenge then pl.fieldChallenge.weakHits = (pl.fieldChallenge.weakHits or 0) + 1 end
 		end
-		-- [두목 단계 · 2026-11-28] 체력 2/3 아래 분노(빨라짐), 1/3 아래 최후의 일격(사거리↑·빈틈 길어짐)
+		-- [두목 능력 변화] 공용 ActionCombat에서 체력 기반 능력을 한 번만 적용한다. 이곳은 연출만 담당한다.
 		if e.boss and not died then
-			local ratio = e.ac.hp / math.max(1, e.maxHp)
-			if ratio < 0.66 and not e.bossPhase2 then
-				e.bossPhase2 = true
-				e.ac.def = table.clone(e.ac.def)
-				e.ac.def.speed *= 1.25
-				e.ac.def.windup *= 0.85
+			local faster, reach, rage = AC.advanceBossAbilities(e.ac, e.maxHp)
+			if faster then
 				e.speed = e.ac.def.speed
-				e.model:SetAttribute("FieldBossPhase", 2)
-				showCombo("두목 분노! · 2단계 — 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
+				showCombo("두목 분노! · 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
 				screenFlash(Color3.fromRGB(255, 90, 60), 0.82)
 				sfx("sfx_horn", 0.5, 0.8)
-			elseif ratio < 0.33 and not e.bossPhase3 then
-				e.bossPhase3 = true
-				e.ac.def = table.clone(e.ac.def)
-				e.ac.def.range *= 1.2
-				e.ac.def.recover *= 1.6
-				e.model:SetAttribute("FieldBossPhase", 3)
+			end
+			if reach then
 				showCombo("최후의 일격! · 크게 내려친 뒤가 빈틈", true, Color3.fromRGB(255, 70, 60))
 				screenFlash(Color3.fromRGB(255, 60, 40), 0.78)
 				shakeUntil, shakeAmp = os.clock() + 0.4, 1.4
 				sfx("sfx_event_danger", 0.6, 0.75)
+			end
+			if rage then
+				say("두목이 격분했다!")
+				sfx("sfx_event_war", 0.7, 1)
+				hurtReact(1.5)
+				burst(e.root.Position + Vector3.new(0, 3, 0), 40, true)
 			end
 		end
 		e.hp = e.ac.hp
@@ -7622,19 +8293,6 @@ function FieldScene.start(opts)
 				punchCam.FieldOfView = 70
 			end)
 		end
-		-- 두목은 체력이 절반 아래로 내려가면 격분한다(더 빠르고 공격 준비가 짧아진다)
-		if e.ac.def.boss and not e.enraged and not died and e.ac.hp <= e.maxHp * 0.5 then
-			e.enraged = true
-			local d2 = table.clone(e.ac.def)
-			d2.windup = d2.windup * 0.7
-			d2.recover = d2.recover * 0.7
-			d2.speed = d2.speed * 1.3
-			e.ac.def = d2
-			say("두목이 격분했다!")
-			sfx("sfx_event_war", 0.7, 1)
-			hurtReact(1.5)
-			burst(e.root.Position + Vector3.new(0, 3, 0), 40, true)
-		end
 		if died then
 			local idx = table.find(enemies, e)
 			if idx then
@@ -7681,6 +8339,49 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = os.clock() + 0.5, 2.2
 				end
 			end
+			if e.model:GetAttribute("FieldStrongholdGuard") then
+				local remaining = 0
+				for _, guard in enemies do
+					if not guard.ac.dead and guard.model:GetAttribute("FieldStrongholdGuard") then remaining += 1 end
+				end
+				folder:SetAttribute("FieldStrongholdRemaining", remaining)
+				if found == 1 then
+					questHint.Text = if remaining == 0 then "거점 확보 · 기록 보관소 조사" else string.format("거점 수비병 %d명 남음", remaining)
+				end
+				say(if remaining == 0 then "수비병을 모두 물리쳤다. 기록을 확보하자." else string.format("거점 수비병 %d명 남음", remaining), 3)
+			elseif e.model:GetAttribute("FieldInterceptWave") then
+				local remaining = 0
+				for _, guard in enemies do
+					if not guard.ac.dead and guard.model:GetAttribute("FieldInterceptWave") then remaining += 1 end
+				end
+				folder:SetAttribute("FieldInterceptRemaining", remaining)
+				if e.model:GetAttribute("FieldBossRushOrder") then
+					folder:SetAttribute("FieldBossRushNext", (folder:GetAttribute("FieldBossRushTotal") or 0) - remaining + 1)
+					folder:SetAttribute("FieldBossRushNextAt", os.clock() + 1.5)
+				end
+				if found == 1 and folder:GetAttribute("FieldInterceptStartedAt") then
+					questHint.Text = if folder:GetAttribute("FieldInterceptRoute") == "survival" and not folder:GetAttribute("FieldDefenseComplete") then
+						string.format("생존 방어 · %d초 · 구역 유지", folder:GetAttribute("FieldDefenseSeconds") or 20)
+						elseif remaining == 0 then
+						(if folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵단 저지 · 생태 기록 확보"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "수배 대상 격파 · 현장 기록 확보"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 승리 · 현장 기록 확보"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bossrush" then "연속 두목전 승리 · 기록 확보" else "전투 종료 · 기록 확보")
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bossrush" then string.format("다음 두목 %d/%d · 전투 준비", folder:GetAttribute("FieldBossRushNext"), folder:GetAttribute("FieldBossRushTotal"))
+						else string.format("경계 전투 · 적 %d명 남음", remaining)
+					say(questHint.Text, 3)
+				end
+			elseif e.model:GetAttribute("FieldPursuitTarget") then
+				folder:SetAttribute("FieldPursuitPending", false)
+				if found == 1 then questHint.Text = "추적 완료 · 깊은 경계 구역에서 기록 확보" end
+				say("척후병을 따라잡았다. 경계 구역의 기록을 확인해.", 3.5)
+			elseif e.boss and e.model:GetAttribute("FieldBossProtectsClue") then
+				folder:SetAttribute("FieldBossClueState", "released")
+				questHint.Text = "길이 열렸다 · " .. (targetCard and targetCard.name or "현장 기록") .. " 조사"
+				say("두목을 물리쳐 기록으로 가는 길이 열렸어. 현장 단서를 조사하자.", 3.5)
+			else
+				if not e.boss then say("적을 물리쳤다!") end
+			end
 			if e.boss then
 				-- [지상 보스 격파] 기존 사망 모션과 전리품 판정을 유지하는 비차단 승리 띠.
 				folder:SetAttribute("FieldBossDefeatedCount", (folder:GetAttribute("FieldBossDefeatedCount") or 0) + 1)
@@ -7716,8 +8417,6 @@ function FieldScene.start(opts)
 					TweenService:Create(scale, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { Scale = 1 }):Play()
 				end
 				task.delay(2.8, function() if band.Parent then band:Destroy() end end)
-			else
-				say("적을 물리쳤다!")
 			end
 			-- [전투 목표 · 2026-11-28] 모두 쓰러뜨리면 이번 목표 달성 별(표시용, 보상·저장 불변)
 			if pl.fieldChallenge and not pl.fieldChallenge.done then
@@ -8951,8 +9650,34 @@ function FieldScene.start(opts)
 					showCombo(string.format("%s 숙련 %d단! · %s", wpn.name, rank,
 						if rank == 2 then "2연타·자동 강타 해금" elseif rank == 4 then "회전 베기 해금"
 						elseif rank == 8 then "무기 필살기 해금" elseif rank == 9 then "동료 연계 해금"
-						elseif rank == 10 then "10연타·궁극 연계 해금" else string.format("%d연타 해금", rank)))
-					sfx("sfx_coin", 0.55, 1.3)
+						elseif rank == 10 then "10연타·궁극 연계 해금" else string.format("%d연타 해금", rank)), true,
+						if rank >= 8 then Color3.fromRGB(255, 218, 133) elseif rank >= 6 then Color3.fromRGB(139, 222, 255) else Color3.fromRGB(255, 235, 169))
+					-- [최초 해금] 기존 시각 이펙트만 재생. 카메라 고정·시간 정지·추가 타격 판정 없음.
+					local tint = if rank >= 8 then Color3.fromRGB(255, 195, 91) elseif rank >= 6 then Color3.fromRGB(120, 211, 250) else Color3.fromRGB(255, 226, 143)
+					shockRing(hrp.Position - Vector3.new(0, 2.5, 0), if rank >= 8 then 18 else 9, tint, 0.4)
+					pulseAt("BUFF_PULSE", hrp.CFrame * CFrame.new(0, -2, 0), tint, Color3.fromRGB(255, 246, 211), if rank >= 8 then 12 else 6, if visualMobile then 3 else 6)
+					if rank >= 8 then screenFlash(tint, 0.94) end
+					sfx(if rank >= 8 then "sfx_fanfare" else "sfx_card_ring", if visualMobile then 0.35 else 0.5, 1.05 + rank * 0.025)
+					-- [해금 시범] 일반 확률 연타가 이미 보여 준 동작은 반복하지 않는다. 새 단계의 자세만 한 번 시연한다.
+					-- 공격/회피/무기교체가 우선이며 피해·경험치·기력·쿨타임을 소비하지 않는다.
+					if rank > chain then
+						local demoWeapon, demoSerial = wpn.id, chainMotionSerial
+						local demoName = string.split(Weapons.actionDesign(wpn).cadence, "·")[rank] or string.format("%d타", rank)
+						task.delay(if chain > 1 then 0.95 else 0.48, function()
+							if finished or pl.hp <= 0 or not folder.Parent or not hrp.Parent or wpn.id ~= demoWeapon or chainMotionSerial ~= demoSerial then return end
+							if pl.guarding or os.clock() - swingT0 < 0.28 then return end
+							startSwing("slash", 0.4, rank, true)
+							if not wpn.ranged then
+								slashArc(hrp, tint, math.max(7, wpn.range * STUD), if wpn.family == "spear" then 55 else 100, if rank % 2 == 0 then 25 else -25)
+							else
+								-- [원거리 시범] 총구/활 손에서만 빛을 내고 적에게 탄도나 피해를 생성하지 않는다.
+								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.2, -2.4), tint, Color3.fromRGB(255, 248, 229), 4, if visualMobile then 2 else 4)
+							end
+							if rank >= 6 then trailsOn(player.Character, TRAIL_LIMBS, tint, 0.22, 0.42) end
+							if rank >= 8 and not visualMobile then afterimage(player.Character, tint, 2, 0.055) end
+							showCombo("새 동작 · " .. demoName, true, tint)
+						end)
+					end
 				end
 				if chain > 1 then
 					local activeWeapon, activeSerial = wpn.id, chainMotionSerial
@@ -9087,26 +9812,106 @@ function FieldScene.start(opts)
 	-- [레지스터 200 한도] 이 큰 함수에 지역 이름을 늘리지 않게 두목 스킬 묶음을 즉시 실행 함수 하나로 감싼다.
 	local bossSkillTick = (function()
 		local BOSS_SKILLS = {
-			{ id = "wave", phase = 1, name = "대지 충격파", warn = 1.1, cd = 9 },
-			{ id = "charge", phase = 2, name = "돌진", warn = 0.85, cd = 8 },
-			{ id = "roar", phase = 3, name = "포효", warn = 0.7, cd = 11 },
-			{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.5, cd = 14 },
+			giant = {
+				{ id = "wave", phase = 1, name = "대지 충격파", warn = 1.1, cd = 9 },
+				{ id = "charge", phase = 2, name = "돌진", warn = 0.85, cd = 8 },
+				{ id = "roar", phase = 3, name = "포효", warn = 0.7, cd = 11 },
+				{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.5, cd = 14 },
+			},
+			bandit = {
+				{ id = "ambush", phase = 1, name = "매복 기습", warn = 0.85, cd = 8 },
+				{ id = "charge", phase = 2, name = "길목 돌격", warn = 1, cd = 9 },
+				{ id = "rally", phase = 3, name = "산적 포위 신호", warn = 1.1, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.7, cd = 14 },
+			},
+			pirate = {
+				{ id = "volley", phase = 1, name = "삼방위 투척", warn = 1.1, cd = 10 },
+				{ id = "crossfire", phase = 2, name = "갑판 교차 투척", warn = 1.1, cd = 10 },
+				{ id = "roar", phase = 3, name = "위협의 고함", warn = 0.9, cd = 11 },
+				{ id = "frenzy", phase = 4, name = "선장 광폭 연타", warn = 0.7, cd = 14 },
+			},
+			looter = {
+				{ id = "wave", phase = 1, name = "철퇴 내려찍기", warn = 1.1, cd = 9 },
+				{ id = "rupture", phase = 2, name = "연속 지면 강타", warn = 1.2, cd = 10 },
+				{ id = "volley", phase = 3, name = "삼방위 투척", warn = 1.1, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "수장 광폭 연타", warn = 0.7, cd = 14 },
+			},
+			warden = {
+				{ id = "guard", phase = 1, name = "방패 방진", warn = 1.2, cd = 9 },
+				{ id = "charge", phase = 2, name = "방진 돌파", warn = 1.2, cd = 10 },
+				{ id = "rally", phase = 3, name = "용병 진형 재편", warn = 1.2, cd = 12 },
+				{ id = "sweep", phase = 4, name = "최후의 원형 베기", warn = 1.2, cd = 14 },
+			},
+			hunter = {
+				{ id = "snare", phase = 1, name = "사냥꾼 덫", warn = 1.2, cd = 9 },
+				{ id = "ambush", phase = 2, name = "수풀 매복", warn = 1.2, cd = 10 },
+				{ id = "crossfire", phase = 3, name = "포획망 포위", warn = 1.2, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "사냥꾼 연격", warn = 0.7, cd = 14 },
+			},
+			caravan = {
+				{ id = "sweep", phase = 1, name = "모래바람 회전 베기", warn = 1.2, cd = 9 },
+				{ id = "charge", phase = 2, name = "대상로 돌격", warn = 1.2, cd = 10 },
+				{ id = "crossfire", phase = 3, name = "사방의 매복", warn = 1.2, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "약탈단 최후 연격", warn = 0.7, cd = 14 },
+			},
+			mine = {
+				{ id = "rupture", phase = 1, name = "광맥 지면 강타", warn = 1.2, cd = 9 },
+				{ id = "wave", phase = 2, name = "광산 충격파", warn = 1.2, cd = 10 },
+				{ id = "crossfire", phase = 3, name = "낙석 위험 지대", warn = 1.2, cd = 12 },
+				{ id = "sweep", phase = 4, name = "전투망치 회전", warn = 1.2, cd = 14 },
+			},
+			mountain = {
+				{ id = "volley", phase = 1, name = "고갯길 투척", warn = 1.2, cd = 9 },
+				{ id = "charge", phase = 2, name = "내리막 돌진", warn = 1.2, cd = 10 },
+				{ id = "snare", phase = 3, name = "발목을 노린 덫", warn = 1.2, cd = 12 },
+				{ id = "sweep", phase = 4, name = "고개를 지키는 회전 베기", warn = 1.2, cd = 14 },
+			},
 		}
-		local function bossPhaseOf(e)
-			local r = e.ac.hp / math.max(1, e.maxHp)
-			return if r < 0.15 then 4 elseif r < 0.4 then 3 elseif r < 0.7 then 2 else 1
-		end
 		local function bossFeet(e)
 			return e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0)
 		end
 		return function(e, now: number, hrp: BasePart?, dist: number)
-			if not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
-			local phase = bossPhaseOf(e)
+			if finished or not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
+			local phase = AC.bossPhase(e.ac.hp, e.maxHp)
+			local role = e.model:GetAttribute("FieldBossRole")
+			local accent = if role == "hunter" then Color3.fromRGB(113, 218, 114)
+				elseif role == "mountain" then Color3.fromRGB(143, 214, 255)
+				elseif role == "pirate" then Color3.fromRGB(255, 174, 72)
+				elseif role == "looter" then Color3.fromRGB(202, 157, 255)
+				elseif role == "warden" then Color3.fromRGB(232, 218, 151)
+				else Color3.fromRGB(255, 109, 72)
+			if not e.bossIntroduced and dist <= 18 then
+				e.bossIntroduced = true
+				e.model:SetAttribute("FieldBossIntroPlayed", true)
+				if not folder:GetAttribute("FieldBossMusicActive") then
+					folder:SetAttribute("FieldBossMusicActive", true)
+					pcall(function()
+						folder:SetAttribute("FieldPreviousMusic", Sfx.currentName())
+						Sfx.music(if role == "pirate" then "music_pirate" elseif role == "looter" then "music_story_ruins"
+							elseif role == "warden" then "music_history_war" elseif role == "mountain" then "music_story_storm" else "music_battle")
+					end)
+				end
+				showCombo(e.tag.Text .. " 등장!", true, accent)
+				shockRing(bossFeet(e), 12, accent, 0.7)
+				auraOn(e.model, accent, Color3.fromRGB(255, 242, 200), 0.8)
+				sfx("sfx_horn", 0.75, 0.7)
+				shakeUntil, shakeAmp = now + 0.22, if visualMobile then 0.3 else 0.7
+			end
+			-- [단계 표시 정본] 기존 기술 개방 기준 70%/40%/15%를 유지한다.
+			if e.model:GetAttribute("FieldBossPhase") ~= phase then
+				e.model:SetAttribute("FieldBossPhase", phase)
+			end
+			if phase > (e.lastSkillPhase or 1) then
+				e.lastSkillPhase = phase
+				shockRing(bossFeet(e), 14, accent, 0.65)
+				shards(e.root.Position, if visualMobile then 6 else 14, accent, 12)
+				auraOn(e.model, accent, Color3.fromRGB(255, 232, 180), 0.75)
+				sfx("sfx_event_war", 0.65, 0.7 + phase * 0.08)
+			end
 			if phase >= 4 and not e.bossPhase4 then
 				e.bossPhase4 = true
-				e.armorUntil = now + 6
-				e.model:SetAttribute("FieldBossPhase", 4)
-				showCombo("두목 최후 발악! · 6초간 단단해짐 — 피하며 버텨라", true, Color3.fromRGB(255, 60, 60))
+				e.armorUntil = if e.weakPartBroken then now else now + 6
+				showCombo(if e.weakPartBroken then "두목 최후 발악! · 방어구 파괴 상태" else "두목 최후 발악! · 6초간 단단해짐", true, Color3.fromRGB(255, 60, 60))
 				screenFlash(Color3.fromRGB(255, 50, 40), 0.8)
 				sfx("sfx_event_war", 0.8, 0.7)
 			end
@@ -9114,13 +9919,62 @@ function FieldScene.start(opts)
 			if cast then
 				if now < cast.at then return end
 				e.bossCast = nil
+				if e.ac.stagger > 0 or now < (e.riseUntil or 0) then return end
+				e.bossWeakUntil = now + (if cast.id == "charge" then 1.9 else 1.3)
+				e.ac.state, e.ac.t = "recover", 0
+				e.model:SetAttribute("FieldBossWeakUntil", e.bossWeakUntil)
+				e.nextBossSkillAt = math.max(e.nextBossSkillAt or 0, e.bossWeakUntil)
 				local dmg = e.ac.def.dmg
+				e.swingAt = now
+				e.bossImpactUntil = now + 0.38
+				e.model:SetAttribute("FieldBossImpactSkill", cast.id)
+				pulseAt(if cast.id == "guard" or cast.id == "rally" then "BUFF_PULSE" else "CRITICAL_BURST",
+					CFrame.new(cast.origin + Vector3.new(0, 1.2, 0)), accent, Color3.fromRGB(255, 235, 185),
+					if visualMobile then 9 else 15, if visualMobile then 3 else 9)
+				if cast.id == "wave" or cast.id == "sweep" or cast.id == "rupture" then
+					shards(e.root.Position, if visualMobile then 5 else 12, accent, 13)
+					screenFlash(accent, if visualMobile then 0.96 else 0.91)
+				end
 				local flatTo = (hrp.Position - cast.origin) * Vector3.new(1, 0, 1)
 				if cast.id == "wave" then
 					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 90, 60), 0.45)
 					shakeUntil, shakeAmp = now + 0.35, 1.2
 					sfx("sfx_cannon", 0.5, 0.55)
 					if flatTo.Magnitude <= cast.radius then hurtPlayerBy(dmg * 0.9) end
+				elseif cast.id == "sweep" then
+					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 175, 95), 0.45)
+					sfx("sfx_event_danger", 0.5, 0.8)
+					if flatTo.Magnitude <= cast.radius and flatTo.Magnitude >= cast.inner then hurtPlayerBy(dmg * 0.95) end
+				elseif cast.id == "guard" then
+					if not e.weakPartBroken then e.armorUntil = math.max(e.armorUntil or 0, now + 0.65) end
+					shockRing(cast.origin, 5 * STUD, Color3.fromRGB(205, 196, 150), 0.4)
+					sfx("sfx_horn", 0.5, 0.9)
+				elseif cast.id == "rally" then
+					-- 기존 생존 병력만 진형 재편. 적 수와 공격 토큰은 유지.
+					for _, mate in enemies do
+						if mate ~= e and not mate.boss and not mate.ac.dead and mate.root.Parent
+							and (mate.root.Position - e.root.Position).Magnitude <= 32 then
+							mate.tacticSide = -(mate.tacticSide or 1)
+							mate.tacticAt = 0
+						end
+					end
+					sfx("sfx_horn", 0.7, 0.8)
+					shockRing(cast.origin, 10 * STUD, Color3.fromRGB(255, 215, 120), 0.5)
+				elseif cast.id == "ambush" or cast.id == "volley" or cast.id == "rupture" or cast.id == "crossfire" or cast.id == "snare" then
+					local hit = false
+					for _, point in cast.points do
+						shockRing(point, cast.radius, accent, 0.45)
+						pulseAt("IMPACT_FLASH", CFrame.new(point + Vector3.new(0, 1, 0)), accent, Color3.fromRGB(255, 240, 205), 5, if visualMobile then 1 else 3)
+						if ((hrp.Position - point) * Vector3.new(1, 0, 1)).Magnitude <= cast.radius then hit = true end
+					end
+					sfx("sfx_event_danger", 0.55, 0.8)
+					if hit then
+						if cast.id == "snare" and not AC.isInvulnerable(pl, now) then
+							eliteSlowUntil = math.max(eliteSlowUntil, now + 2)
+							say("덫에 걸렸다! 2초 둔화")
+						end
+						hurtPlayerBy(dmg * (if cast.id == "rupture" then 1.05 elseif cast.id == "snare" then 0.55 else 0.85))
+					end
 				elseif cast.id == "roar" then
 					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 200, 90), 0.4)
 					sfx("sfx_horn", 0.7, 0.6)
@@ -9131,12 +9985,13 @@ function FieldScene.start(opts)
 					end
 				elseif cast.id == "charge" then
 					local dir = cast.dir
+					e.holdUntil = math.max(e.holdUntil or 0, now + 0.5)
 					local hitDone = false
 					local start = e.model:GetPivot()
 					local t0 = os.clock()
 					sfx("sfx_event_danger", 0.6, 0.8)
 					task.spawn(function()
-						while e.root.Parent and not e.ac.dead and os.clock() - t0 < 0.45 do
+						while not finished and e.root.Parent and not e.ac.dead and os.clock() - t0 < 0.45 do
 							local k = (os.clock() - t0) / 0.45
 							local pos = start.Position + dir * cast.length * k
 							e.model:PivotTo(CFrame.lookAt(pos, pos + dir))
@@ -9162,21 +10017,56 @@ function FieldScene.start(opts)
 				return
 			end
 			if e.ac.state ~= "chase" and e.ac.state ~= "idle" then return end
+			if now < (e.bossWeakUntil or 0) or now < (pl.nextEnemyTurnAt or 0)
+				or AC.attackersCount(enemies) >= AC.MELEE_TOKENS then return end
 			if dist > 28 or now < (e.nextBossSkillAt or 2) then return end
 			e.skillReady = e.skillReady or {}
 			local options = {}
-			for _, sk in BOSS_SKILLS do
+			for _, sk in (BOSS_SKILLS[e.model:GetAttribute("FieldBossRole")] or BOSS_SKILLS.giant) do
 				if sk.phase <= phase and now >= (e.skillReady[sk.id] or 0) then table.insert(options, sk) end
 			end
 			if #options == 0 then return end
+			-- 새 단계의 새 기술은 최소 한 번 반드시 보여 준 뒤 기존 기술과 섞는다.
 			local sk = options[math.random(1, #options)]
+			for _, candidate in options do
+				if candidate.phase == phase and not e.skillReady[candidate.id] then sk = candidate break end
+			end
 			e.skillReady[sk.id] = now + sk.cd
 			e.nextBossSkillAt = now + (if phase >= 4 then 3.5 elseif phase == 3 then 5 elseif phase == 2 then 6.5 else 8)
 			local origin = bossFeet(e)
-			local c = { id = sk.id, at = now + sk.warn, origin = origin }
+			local c = { id = sk.id, at = now + sk.warn, started = now, origin = origin }
 			if sk.id == "wave" then
 				c.radius = 9 * STUD
 				groundRing(origin, c.radius, sk.warn)
+			elseif sk.id == "sweep" then
+				c.radius, c.inner = 9 * STUD, 3 * STUD
+				groundRing(origin, c.radius, sk.warn)
+				shockRing(origin, c.inner, Color3.fromRGB(115, 225, 160), sk.warn)
+			elseif sk.id == "guard" or sk.id == "rally" then
+				shockRing(origin, 6 * STUD, Color3.fromRGB(255, 215, 120), sk.warn)
+			elseif sk.id == "ambush" or sk.id == "volley" or sk.id == "rupture" or sk.id == "crossfire" or sk.id == "snare" then
+				local aim = Vector3.new(hrp.Position.X, origin.Y, hrp.Position.Z)
+				c.radius = if sk.id == "ambush" then 5 * STUD else 3.5 * STUD
+				c.points = { aim }
+				if sk.id == "crossfire" then
+					local to = (aim - origin) * Vector3.new(1, 0, 1)
+					local dir = if to.Magnitude > 0.1 then to.Unit else Vector3.new(1, 0, 0)
+					local side = Vector3.new(-dir.Z, 0, dir.X) * c.radius * 1.8
+					table.insert(c.points, aim + side)
+					table.insert(c.points, aim - side)
+					table.insert(c.points, aim + dir * c.radius * 1.8)
+					table.insert(c.points, aim - dir * c.radius * 1.8)
+				elseif sk.id == "volley" then
+					local side = e.root.CFrame.RightVector * Vector3.new(1, 0, 1) * (c.radius * 1.5)
+					table.insert(c.points, aim + side)
+					table.insert(c.points, aim - side)
+				elseif sk.id == "rupture" then
+					local to = (aim - origin) * Vector3.new(1, 0, 1)
+					local dir = if to.Magnitude > 0.1 then to.Unit else Vector3.new(1, 0, 0)
+					table.insert(c.points, aim + dir * c.radius * 1.5)
+					table.insert(c.points, aim - dir * c.radius * 1.5)
+				end
+				for _, point in c.points do groundRing(point, c.radius, sk.warn) end
 			elseif sk.id == "roar" then
 				c.radius = 6 * STUD
 				groundRing(origin, c.radius, sk.warn)
@@ -9184,10 +10074,17 @@ function FieldScene.start(opts)
 				local to = (hrp.Position - e.root.Position) * Vector3.new(1, 0, 1)
 				c.dir = if to.Magnitude > 0.1 then to.Unit else e.root.CFrame.LookVector
 				c.length = math.clamp(to.Magnitude + 6, 12, 34)
-				groundRing(e.root.Position + c.dir * c.length - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), 4, sk.warn)
+				for along = 0, c.length, 5 do
+					groundRing(origin + c.dir * along, 5, sk.warn)
+				end
+				groundRing(origin + c.dir * c.length, 5, sk.warn)
 			end
 			e.bossCast = c
+			pl.nextEnemyTurnAt = math.max(pl.nextEnemyTurnAt or 0, now + sk.warn + 0.2)
+			e.warnUntil = now + sk.warn
 			e.model:SetAttribute("FieldBossSkill", sk.id)
+			auraOn(e.model, accent, Color3.fromRGB(255, 110, 75), sk.warn)
+			sfx("sfx_event_danger", 0.45, 0.8)
 			showCombo("⚠ " .. sk.name .. "!", true, Color3.fromRGB(255, 120, 70))
 			burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 		end
@@ -9285,6 +10182,14 @@ function FieldScene.start(opts)
 		end)
 	end
 	local function mineEvent()
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		local effect = if theme == "volcanic" then "용암 분출" elseif theme == "glacier" then "얼음 균열"
+			elseif theme == "swamp" then "습지 수렁" elseif theme == "jungle" or theme == "forest" then "덩굴 함정"
+			elseif theme == "coast" then "밀물 충격" elseif theme == "desert" then "모래 돌풍"
+			elseif theme == "ruins" or theme == "archive" then "유적 낙하물" else "낙석 위험"
+		local color = if theme == "glacier" or theme == "coast" then Color3.fromRGB(128, 207, 255)
+			elseif theme == "swamp" or theme == "jungle" or theme == "forest" then Color3.fromRGB(116, 194, 99)
+			elseif theme == "desert" then Color3.fromRGB(222, 178, 98) else Color3.fromRGB(255, 120, 60)
 		local _, hrp = char3()
 		if not hrp then
 			return
@@ -9292,17 +10197,23 @@ function FieldScene.start(opts)
 		local at = hrp.Position + Vector3.new(rng:NextNumber(-22, 22), 0, rng:NextNumber(-22, 22))
 		at = Vector3.new(math.clamp(at.X, ORIGIN.X - half + 8, ORIGIN.X + half - 8), ORIGIN.Y, math.clamp(at.Z, ORIGIN.Z - half + 8, ORIGIN.Z + half - 8))
 		groundRing(at, 9, 1.6)
+		say("⚠ " .. effect .. " — 경고 범위에서 벗어나라")
+		folder:SetAttribute("FieldEnvironmentAttack", effect)
 		task.delay(1.6, function()
 			if finished then
 				return
 			end
 			burst(at + Vector3.new(0, 1.5, 0), 50, true)
-			shockRing(at, 10, Color3.fromRGB(255, 120, 60), 0.5)
+			shockRing(at, 10, color, 0.5)
+			pulseAt("SHAPE_BURST", CFrame.new(at + Vector3.new(0, 1, 0)), color, Color3.fromRGB(255, 240, 205), 10, if visualMobile then 3 else 8)
 			sfx("sfx_naval_cannon", 0.7, 1.2)
 			shakeUntil, shakeAmp = os.clock() + 0.3, 1.2
 			local _, h3 = char3()
 			if h3 and ((h3.Position - at) * Vector3.new(1, 0, 1)).Magnitude < 9 then
 				hurtPlayerBy(10)
+				if not AC.isInvulnerable(pl, os.clock()) and (theme == "glacier" or theme == "swamp" or theme == "jungle") then
+					eliteSlowUntil = math.max(eliteSlowUntil, os.clock() + 2)
+				end
 			end
 			for _, e in table.clone(enemies) do
 				if e.root.Parent and ((e.root.Position - at) * Vector3.new(1, 0, 1)).Magnitude < 9 then
@@ -9316,7 +10227,8 @@ function FieldScene.start(opts)
 		local k = 0
 		while not finished do
 			k += 1
-			if k % 2 == 1 then
+			local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+			if k % 2 == 1 and (theme == "highland" or theme == "mine" or theme == "ruins" or theme == "glacier" or theme == "volcanic") then
 				boulderEvent()
 			else
 				mineEvent()
@@ -10046,6 +10958,7 @@ function FieldScene.start(opts)
 		end
 	end))
 	workspace:SetAttribute("FieldCombatReady", true)
+	if found >= nodeCount then showCompletion() end -- 마지막 구역 기록이 있는 경우 귀환 정산을 이어간다
 
 	-- [적 R15 관절·전술 통합 루프] Animator 갱신 뒤 PreSimulation에서 모터를 적용해야 팔·무릎 자세가 사라지지 않는다.
 	-- 기존 적 공격·피해·스폰은 동일한 단일 업데이트 경로를 그대로 사용한다.
@@ -10064,13 +10977,94 @@ function FieldScene.start(opts)
 		local enemyDt = dtc * (if now < (pl.matrixSlowUntil or 0) then 0.24 else 1)
 		-- [전투 프레임] 적 상태는 기존 ActionCombat 집계 함수가 원본 배열에서 직접 확인한다.
 		-- 매 프레임 임시 31개 엔트리 배열을 만들지 않으며 공격 순서/판정은 동일하다.
+		-- [경계 사건 발동] 실제 구역 접근으로 한 번만 시작. 기존 적 루프에서 두 번째 병력이 늦게 합류한다.
+		if found == 1 and folder:GetAttribute("FieldInterceptRoute") and not folder:GetAttribute("FieldInterceptStartedAt") then
+			local destination = folder:FindFirstChild("Discovery2")
+			if destination and destination:IsA("BasePart") and (hrp.Position - destination.Position).Magnitude <= 28 then
+				folder:SetAttribute("FieldInterceptStartedAt", now)
+				local remaining = folder:GetAttribute("FieldInterceptRemaining") or 0
+				questHint.Text = if remaining == 0 then "경계 확보 · 기록 조사" else
+					(if folder:GetAttribute("FieldInterceptRoute") == "ambush" then "매복 발생"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 경비병 접근"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 시작"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵단 발견"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 대상 발견"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 시작 · 회피와 반격"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bossrush" then "연속 두목전 시작" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
+				say(questHint.Text, 3.5)
+			end
+		end
+		-- [생존 방어] 기존 전투 루프에서 실제 구역 체류를 누적한다. 이탈하면 방어 시간을 다시 계산한다.
+		if found == 1 and folder:GetAttribute("FieldInterceptRoute") == "survival"
+			and folder:GetAttribute("FieldInterceptStartedAt") and not folder:GetAttribute("FieldDefenseComplete") then
+			local destination = folder:FindFirstChild("Discovery2")
+			if destination and destination:IsA("BasePart") then
+				local inside = (hrp.Position - destination.Position).Magnitude <= 28
+				local started = folder:GetAttribute("FieldDefenseHoldAt")
+				if inside and not started then folder:SetAttribute("FieldDefenseHoldAt", now); started = now
+				elseif not inside and started then folder:SetAttribute("FieldDefenseHoldAt", nil); started = nil end
+				local seconds = if started then math.max(0, math.ceil(20 - (now - started))) else 20
+				if seconds == 0 then
+					folder:SetAttribute("FieldDefenseSeconds", 0)
+					folder:SetAttribute("FieldDefenseComplete", true)
+					questHint.Text = "방어 성공 · 안전 지점 확인"
+					say(questHint.Text, 3)
+				elseif folder:GetAttribute("FieldDefenseSeconds") ~= seconds then
+					folder:SetAttribute("FieldDefenseSeconds", seconds)
+					questHint.Text = string.format("생존 방어 · %d초 · 구역 유지", seconds)
+				end
+			end
+		end
+		-- [결투] 실제 구역 안에서 지정 상대만 새 공격을 시작한다. 이미 발동한 공격은 취소하지 않는다.
+		-- 이탈하거나 상대를 격파하면 기존 전투 루프로 즉시 돌아간다.
+		local duelActive = false
+		if found == 1 and folder:GetAttribute("FieldInterceptRoute") == "duel"
+			and folder:GetAttribute("FieldInterceptStartedAt") and (folder:GetAttribute("FieldInterceptRemaining") or 0) > 0 then
+			local destination = folder:FindFirstChild("Discovery2")
+			duelActive = destination ~= nil and destination:IsA("BasePart") and (hrp.Position - destination.Position).Magnitude <= 28
+		end
+		-- [두목 HUD 갱신] 기존 전투 루프에서 10Hz로 현재 활성 두목만 선택한다.
+		do
+			local hud = pl.bossHud
+			if now >= hud.nextAt then
+				hud.nextAt = now + 0.1
+				local target, nearest = nil, 90
+				for _, enemy in enemies do
+					if enemy.boss and enemy.bossIntroduced and not enemy.ac.dead and enemy.root.Parent
+						and (not duelActive or enemy.model:GetAttribute("FieldInterceptWave")) then
+						local order = enemy.model:GetAttribute("FieldBossRushOrder")
+						local active = not order or (folder:GetAttribute("FieldInterceptStartedAt")
+							and order == folder:GetAttribute("FieldBossRushNext")
+							and now >= (folder:GetAttribute("FieldBossRushNextAt") or 0))
+						local distance = (enemy.root.Position - hrp.Position).Magnitude
+						if active and distance < nearest then target, nearest = enemy, distance end
+					end
+				end
+				if target then
+					local hp = math.clamp(target.ac.hp, 0, target.maxHp)
+					local ratio = hp / target.maxHp
+					local phase = AC.bossPhase(hp, target.maxHp)
+					local name = target.tag.Text
+					if hud.target ~= target or hud.hp ~= hp or hud.phase ~= phase or hud.name ~= name then
+						hud.target, hud.hp, hud.phase, hud.name = target, hp, phase, name
+						hud.fill.Size = UDim2.fromScale(ratio, 1)
+						hud.fill.BackgroundColor3 = if phase == 4 then Color3.fromRGB(246, 126, 61) else Color3.fromRGB(201, 70, 65)
+						hud.caption.Text = string.format("%s · %d단계 · %d/%d", name, phase, math.ceil(hp), target.maxHp)
+					end
+					if not hud.panel.Visible then hud.panel.Visible = true end
+				else
+					if hud.panel.Visible then hud.panel.Visible = false end
+					hud.target = nil
+				end
+			end
+		end
 		local attackers = AC.attackersCount(enemies)
 		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.
 		-- 기존 동시 공격 상한·실제 예고시간·개인 공격 간격은 그대로 둔다.
 		local nextCounter = nil
 		if now >= (pl.nextEnemyTurnAt or 0) and attackers < AC.MELEE_TOKENS then
 			for _, o in enemies do
-				if not o.ac.dead and o.ac.state == "chase" and now >= (o.counterReadyAt or math.huge)
+				if not o.ac.dead and (not duelActive or o.model:GetAttribute("FieldInterceptWave")) and o.ac.state == "chase" and now >= (o.counterReadyAt or math.huge)
 					and now < (o.counterUntil or 0) and now >= (o.nextDuelAt or 0)
 					and now >= (o.riseUntil or 0) and now >= (o.parryUntil or 0)
 					and (o.root.Position - hrp.Position).Magnitude <= o.ac.def.range * STUD + 5 then
@@ -10085,7 +11079,11 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
-			if e.boss then bossSkillTick(e, now, hrp, dist) end
+			-- [연속 두목전] 순서가 오기 전에는 AI·기술·이동을 실행하지 않는다. 기존 두목 모델과 체력은 유지한다.
+			local rushOrder = e.model:GetAttribute("FieldBossRushOrder")
+			if rushOrder and (not folder:GetAttribute("FieldInterceptStartedAt") or rushOrder ~= folder:GetAttribute("FieldBossRushNext")
+				or now < (folder:GetAttribute("FieldBossRushNextAt") or 0)) then continue end
+			if e.boss and (not duelActive or e.model:GetAttribute("FieldInterceptWave") or e.bossCast ~= nil) then bossSkillTick(e, now, hrp, dist) end
 			-- [모바일 원거리 그림자] 일반 적의 실제 원본 그림자만 거리별로 관리한다.
 			-- 100/80스터드 히스테리시스로 경계 반복 갱신 방지. 근접·정예·두목·공격 모션은 보존.
 			if visualMobile and not e.elite and not e.ac.dead then
@@ -10110,6 +11108,18 @@ function FieldScene.start(opts)
 					end
 				end
 			end
+			-- [매복·증원 대기] 이미 교전한 적은 그대로 두고 대기 중인 기존 병력만 시간차로 합류시킨다.
+			if not e.ac.dead and e.ac.state == "idle" and found < 2 then
+				local wave = e.model:GetAttribute("FieldInterceptWave")
+				if wave and not rushOrder then
+					local startedAt = folder:GetAttribute("FieldInterceptStartedAt")
+					if not startedAt or now < startedAt + (wave - 1) * 4 then
+						if flat.Magnitude > 18 then continue end -- 가까이 발견한 병력은 선제 교전 가능
+					elseif dist <= e.ac.def.aggro * 1.5 then
+						e.ac.state, e.ac.t = "chase", 0
+					end
+				end
+			end
 			-- 멀리서 자고 있는 적은 계산을 쉰다(적이 100명이어도 가볍게)
 			if flat.Magnitude > 120 and e.ac.state == "idle" and not e.ac.dead then
 				continue
@@ -10122,7 +11132,7 @@ function FieldScene.start(opts)
 				e.ac.state = "stagger"
 			end
 			local frozen = knocked or now < (e.holdUntil or 0)
-				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0)
+				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0) or e.bossCast ~= nil
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local duration = math.max(e.kbUntil - e.kbT0, 0.05)
 				local k = 1 - (now - e.kbT0) / duration
@@ -10135,7 +11145,8 @@ function FieldScene.start(opts)
 				-- 공격권 대기 중에도 chase는 유지하고, 다음 공격권은 병종별 과거 공격 시각으로 분산한다.
 				e.waiting = e.ac.state == "chase" and (others >= AC.MELEE_TOKENS
 					or now < (pl.nextEnemyTurnAt or 0) or now < (e.nextDuelAt or 0)
-					or (nextCounter ~= nil and nextCounter ~= e))
+					or (nextCounter ~= nil and nextCounter ~= e)
+					or (duelActive and not e.model:GetAttribute("FieldInterceptWave")))
 				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, not e.waiting)
 			end
 			if event == "telegraph" then
@@ -10543,6 +11554,18 @@ function FieldScene.start(opts)
 					desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))
 					facing = remaining.Unit
 				end
+			elseif found == 1 and e.model:GetAttribute("FieldPursuitTarget") and not frozen
+				and (e.ac.state == "idle" or e.ac.state == "chase") and flat.Magnitude < 65 then
+				-- [추적 이동] 기존 적의 이동/접지 루프에서 기록 구역까지 도주한다. 도착하면 원래 전투로 복귀한다.
+				local destination = folder:FindFirstChild("Discovery2")
+				local route = if destination and destination:IsA("BasePart") then (destination.Position - pv.Position) * Vector3.new(1, 0, 1) else Vector3.zero
+				if route.Magnitude > 5 then
+					desired = route.Unit * math.min(e.ac.def.speed * 0.85, route.Magnitude / math.max(dtc, 0.016))
+					facing = route.Unit
+					wish = 0
+				elseif wish ~= 0 and flat.Magnitude > 0.1 then
+					desired = flat.Unit * wish * math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))
+				end
 			elseif e.waiting and not frozen and not e.ac.def.keepAway and e.ac.state == "chase"
 				and flat.Magnitude > 0.1 and flat.Magnitude < 40 then
 				-- [기다리는 적은 밖에서 견제] 플레이어에게 몸을 비비던 궤도를 반경 12~27 스터드로 유지한다.
@@ -10663,6 +11686,10 @@ function FieldScene.start(opts)
 					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.36, 0, 1)
 				elseif hurtProgress >= 0 and hurtProgress < 1 then
 					st, ph = "HIT", hurtProgress
+				elseif e.bossCast then
+					st, ph = "ANTICIPATION", math.clamp((now - e.bossCast.started) / math.max(0.05, e.bossCast.at - e.bossCast.started), 0, 1)
+				elseif now < (e.bossImpactUntil or 0) then
+					st, ph = "ATTACK", math.clamp(1 - (e.bossImpactUntil - now) / 0.38, 0, 1)
 				elseif acs == "windup" then
 					st, ph = "ANTICIPATION", math.clamp(e.ac.t / math.max(e.ac.def.windup, 0.05), 0, 1)
 				elseif acs == "active" then
@@ -11110,6 +12137,47 @@ function FieldScene.start(opts)
 	end)()
 
 	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
+	-- [안전 구역 재개] 맵이 모두 만들어진 뒤 기존 지면·장애물·살아 있는 적을 확인한다.
+	-- 검증 가능한 위치가 없으면 기존 입구를 그대로 사용한다. 클라이언트 좌표는 저장하지 않는다.
+	;(function()
+		local resumeAnchor = folder:GetAttribute("FieldResumeAnchor")
+		if typeof(resumeAnchor) == "Vector3" then
+			local surfaceRay = RaycastParams.new()
+			surfaceRay.FilterType = Enum.RaycastFilterType.Include
+			surfaceRay.FilterDescendantsInstances = { workspace.Terrain, ground }
+			surfaceRay.IgnoreWater = false
+			local clearance = OverlapParams.new()
+			clearance.FilterType = Enum.RaycastFilterType.Include
+			clearance.FilterDescendantsInstances = { folder }
+			clearance.RespectCanCollide = true
+			local resumeCharacter = player.Character
+			local resumeRoot = resumeCharacter and resumeCharacter:FindFirstChild("HumanoidRootPart")
+			if resumeRoot and resumeRoot:IsA("BasePart") then
+				for _, offset in { Vector3.new(0, 0, 12), Vector3.new(-12, 0, 12), Vector3.new(12, 0, 12),
+					Vector3.new(0, 0, 24), Vector3.new(-24, 0, 24), Vector3.new(24, 0, 24), Vector3.new(0, 0, -12) } do
+					local point = resumeAnchor + offset
+					if math.abs(point.X - ORIGIN.X) > half - 8 or math.abs(point.Z - ORIGIN.Z) > half - 8 then continue end
+					local hit = workspace:Raycast(Vector3.new(point.X, ORIGIN.Y + 100, point.Z), Vector3.new(0, -140, 0), surfaceRay)
+					if not hit or hit.Material == Enum.Material.Water or hit.Normal.Y < 0.8 then continue end
+					local candidate = hit.Position + Vector3.new(0, 4, 0)
+					if #workspace:GetPartBoundsInBox(CFrame.new(candidate), Vector3.new(5, 6, 5), clearance) > 0 then continue end
+					local safe = true
+					for _, enemy in enemies do
+						if not enemy.ac.dead and enemy.root and enemy.root.Parent
+							and (enemy.root.Position - candidate).Magnitude < 36 then safe = false; break end
+					end
+					if not safe then continue end
+					spawn = candidate
+					resumeCharacter:PivotTo(CFrame.new(spawn))
+					resumeRoot.AssemblyLinearVelocity = Vector3.zero
+					resumeRoot.AssemblyAngularVelocity = Vector3.zero
+					folder:SetAttribute("FieldResumeRestored", true)
+					break
+				end
+			end
+			if not folder:GetAttribute("FieldResumeRestored") then folder:SetAttribute("FieldResumeRestored", false) end
+		end
+	end)()
 	local lastSafe = CFrame.new(spawn)
 	pcall(function()
 		local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()

@@ -104,6 +104,76 @@ do
 	check("사수는 가까우면 물러난다", A.moveWish((function() local a = A.newEnemy("archer"); a.state = "chase"; return a end)(), 5) == -1)
 	check("졸개는 멀면 다가온다", A.moveWish((function() local a = A.newEnemy("grunt"); a.state = "chase"; return a end)(), 20) == 1)
 end
+-- [필드 피해] 기존 곱셈 순서·반올림·방패·경직·격파를 모두 보존한다.
+do
+	local count, identical = 0, true
+	for _, kind in { "grunt", "archer", "shield", "charger", "boss" } do
+		for _, power in { 0.7, 1, 1.35 } do
+			for _, weak in { 1, 1.4, 1.8, 2 } do
+				for mask = 0, 31 do
+					local buff = bit32.band(mask, 1) ~= 0
+					local parry = bit32.band(mask, 2) ~= 0
+					local counter = bit32.band(mask, 4) ~= 0
+					local armor = bit32.band(mask, 8) ~= 0
+					local front = bit32.band(mask, 16) ~= 0
+					local old, new = A.newEnemy(kind), A.newEnemy(kind)
+					local base = 10 * power * (if buff then 1.3 else 1)
+						* (if parry then 0.52 else 1) * weak * (if counter then 2 else 1)
+						* (if armor then 0.6 else 1)
+					local dealtOld, deadOld = A.damageEnemy(old, base, 2.5, front, true)
+					local dealtNew, deadNew = A.damageEnemy(new, 10, 2.5, front, true,
+						power, buff, parry, weak, counter, armor)
+					identical = identical and dealtOld == dealtNew and deadOld == deadNew
+						and old.hp == new.hp and old.state == new.state and old.stagger == new.stagger
+					count += 1
+				end
+			end
+		end
+	end
+	check("공용 필드 피해 보정 조합 " .. count .. "개 일치", identical and count == 1920)
+	local b = A.newEnemy("boss")
+	A.damageEnemy(b, 10000, 1, false)
+	local dealt, died = A.damageEnemy(b, 10, 2, false, true, 1, true, false, 1.8, true, false)
+	check("이미 격파된 두목은 피해 중복 없음", dealt == 0 and not died and b.hp == 0)
+end
+-- 서버와 장면의 기존 편성/체력 일치 검사.
+do
+	local counts = { {20, 0}, {26, 0}, {32, 1}, {38, 2}, {44, 2} }
+	for danger, expected in counts do
+		local regular, bosses = A.fieldEnemyCounts(danger)
+		check("지상 편성 유지 " .. danger, regular == expected[1] and bosses == expected[2])
+	end
+	local regular, bosses = A.fieldEnemyCounts(99)
+	check("지상 적 수 상한 유지", regular + bosses == 100 and bosses == 8)
+	check("지상 기존 최대 체력", A.fieldEnemyMaxHp("grunt") == 94 and A.fieldEnemyMaxHp("archer") == 66
+		and A.fieldEnemyMaxHp("shield") == math.floor(70 * 2.55 + 0.5) and A.fieldEnemyMaxHp("charger") == math.floor(50 * 2.55 + 0.5)
+		and A.fieldEnemyMaxHp("boss") == 1980)
+	check("공용 적 정의 원본 체력 유지", A.Enemies.boss.hp == 720)
+end
+-- 두목의 현재 전투 중 기술 단계와 재도전 초기화.
+do
+	local b = A.newEnemy("boss")
+	local maxHp = b.hp
+	check("두목 기술 경계", A.bossPhase(70, 100) == 1 and A.bossPhase(69, 100) == 2 and A.bossPhase(40, 100) == 2 and A.bossPhase(39, 100) == 3 and A.bossPhase(15, 100) == 3 and A.bossPhase(14, 100) == 4)
+	A.damageEnemy(b, maxHp - 100, 1, false)
+	local f, r, g = A.advanceBossAbilities(b, maxHp)
+	check("큰 피해로 모든 능력 경계를 건너도 빠짐없이 반영", f and r and g)
+	local def = b.def
+	check("기존 두목 배율 유지", math.abs(def.speed - A.Enemies.boss.speed * 1.25 * 1.3) < 0.0001 and math.abs(def.windup - A.Enemies.boss.windup * 0.85 * 0.7) < 0.0001 and math.abs(def.range - A.Enemies.boss.range * 1.2) < 0.0001 and math.abs(def.recover - A.Enemies.boss.recover * 1.6 * 0.7) < 0.0001)
+	local f2, r2, g2 = A.advanceBossAbilities(b, maxHp)
+	check("같은 체력 반복 갱신은 배율 중복 없음", not f2 and not r2 and not g2 and b.def == def)
+	local restarted = A.newEnemy("boss")
+	local rf, rr, rg = A.advanceBossAbilities(restarted, maxHp)
+	check("재도전 두목 만피·첫 단계·초기 능력", restarted.hp == maxHp and A.bossPhase(restarted.hp, maxHp) == 1
+		and restarted.def == A.Enemies.boss and restarted.state == "idle" and restarted.t == 0
+		and not restarted.dead and not rf and not rr and not rg
+		and not restarted.bossPhase2 and not restarted.bossPhase3 and not restarted.enraged)
+	check("다른 두목과 원본 정의는 독립", A.newEnemy("boss").def.speed == 8 and A.newEnemy("boss").hp == maxHp)
+	local dead = A.newEnemy("boss")
+	A.damageEnemy(dead, maxHp, 1, false)
+	local df, dr, dg = A.advanceBossAbilities(dead, maxHp)
+	check("격파된 두목은 능력 재발동 없음", not df and not dr and not dg)
+end
 -- 범위 판정
 do
 	check("범위: 정면 안은 맞고 뒤는 빗나간다", A.inReach(5, 120, 3, 30) and not A.inReach(5, 120, 3, 100))

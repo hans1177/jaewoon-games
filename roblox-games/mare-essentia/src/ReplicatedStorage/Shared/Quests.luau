@@ -23,6 +23,7 @@ export type Quest = {
 	nation: string?, -- 이 시작 국가로 시작한 플레이어에게만 보인다 (서막 메인 퀘스트)
 	minAffinity: number?,
 	after: string?, -- 이 퀘스트를 먼저 끝내야 보인다 (연속 퀘스트)
+	afterAny: { string }?, -- 앞 장의 선택 분기 중 하나의 결말을 완료하면 열린다
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
 	strand: string?, -- 스토리 갈래: main(서막) | companion(동료) | history(역사) | person(인물)
 	story: string?, -- 왜 이 일을 하는가 (이야기)
@@ -31,6 +32,7 @@ export type Quest = {
 	leadSource: string?, -- 소문·발견·사건·기록 등 단서가 전해진 형태
 	-- [이야기 퀘스트 시스템] 내용은 나중에 채운다. 모두 선택 필드.
 	warId: string?, -- kind "war_clear": 이 함대전 id 완수 횟수
+	backdrop: string?, -- 기존 해역·탐험지 배경 식별자
 	leaderId: string?, -- kind "duel_leader": 이 지도자 덱을 카드 대결에서 이긴 횟수
 	duelFaction: string?, -- kind "duel_leader": 상대 진영(없으면 지도자 진영)
 	choiceKey: string?, -- kind "choice": 선택 결과 저장 키(없으면 퀘스트 id)
@@ -135,31 +137,40 @@ local Quests: { Quest } = {
 	{ id = "q_grand_tour_3", name = "북·서유럽 완전 일주", summary = "서로 다른 항구 18곳 방문", kind = "visit", amount = 18, rewardCoins = 3500, rewardFame = 100, rewardCareer = "adventure", rewardXp = 400 },
 	-- 스토리 퀘스트: 동료 이야기 / 역사 참여 / 인물과 연구
 	{ id = "cq_h_england", name = "바다가 내놓는 증거", summary = "도감 카드 8장 발견", kind = "discover", amount = 8, companionId = "h_england", minAffinity = 20, strand = "companion",
-		story = "엘리너의 논문 마감이 다가온다. 학회는 숫자와 표본을 원한다. 바다에서 건진 발견 하나하나가 그녀를 지켜 줄 증거가 된다.",
+		story = "엘리너는 학회에서 돌려받은 원고의 여백을 손가락으로 가린다. 예전에는 남의 이름으로 자신의 관찰을 발표해야 했지만, 이번에는 자기 이름으로 기록을 내고 싶다. \"선장, 제 편을 들 필요는 없어요. 틀린 곳도 찾아낼 수 있게 발견 기록을 모아 주세요.\"",
+		problem = "엘리너는 자신의 이름으로 연구를 발표할 근거가 부족하다.", cause = "과거의 관찰 기록이 다른 사람의 명성에 묻혔다.", result = "발견 기록이 독립적인 원고의 근거가 된다.",
 		rewardCoins = 1000, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_netherlands", name = "독립 상사의 첫 이문", summary = "증권 거래 3번", kind = "stock", amount = 3, companionId = "h_netherlands", minAffinity = 20, strand = "companion",
-		story = "얀은 길드의 독점에 맞서려 한다. 독립 상사로 인정받으려면 시장이 먼저 얀의 이름을 알아야 한다. 거래소에서 첫 거래를 쌓아 이름을 새기자.",
+		story = "얀은 견습 시절 장부를 베끼던 손으로 빈 거래 장부를 펼친다. 큰 길드의 이름이 없으면 계약 상대조차 만나기 어려웠고, 손실이 생길까 두려워 독립을 미뤄 왔다. \"이번에는 남의 도장이 아니라 제 판단으로 거래하겠소. 거래소에서 첫 기록을 함께 남겨 주시오.\"",
+		problem = "얀의 독립 상사에는 직접 거래한 기록이 없다.", cause = "오랫동안 길드의 이름과 보증에 의존했다.", result = "증권 거래 기록으로 자기 판단의 첫 근거를 만든다.",
 		rewardCoins = 1000, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_france", name = "깃발을 되찾는 설탕", summary = "설탕 8개를 루앙에 납품", kind = "deliver", goodId = "sugar", portId = "rouen", amount = 8, companionId = "h_france", minAffinity = 20, strand = "companion",
-		story = "마리온의 영지는 설탕 값으로 되찾을 수 있다. 루앙 부두에 닿는 첫 설탕 배는 그녀에게 깃발 한 조각이다.",
+		story = "마리온은 낡은 가문의 깃발을 접어 설탕 견본 옆에 놓는다. 예전 영지의 빚 때문에 집안을 떠났지만, 문장을 다시 얻으려다 일하는 사람들까지 잃고 싶지는 않다. \"루앙의 설탕 주문을 먼저 지켜 주세요. 우리 가문의 자랑보다 저 창고의 일손이 먼저예요.\"",
+		problem = "마리온은 영지의 빚을 갚을 거래 기반이 필요하다.", cause = "가문의 명예를 지키려다 거래와 일손을 잃었다.", result = "설탕 납품이 거래처의 신뢰를 되찾는 첫걸음이 된다.",
 		rewardCoins = 1300, rewardFame = 40, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_ottoman", name = "끊긴 향기의 길", summary = "후추 6개를 이스탄불에 납품", kind = "deliver", goodId = "pepper", portId = "istanbul", amount = 6, companionId = "h_ottoman", minAffinity = 20, strand = "companion",
-		story = "레일라의 가게는 선반이 비었다. 이스탄불에 후추가 다시 들어오는 날, 삼 대째 이어진 문이 다시 열린다.",
+		story = "레일라는 어머니가 쓰던 후추 저울의 접시를 닦는다. 가게를 물려받던 날 외상 장부가 더 두꺼웠고, 빈 선반을 이웃에게 보이는 일이 부끄러웠다. \"이스탄불에 후추를 들여와 주세요. 이번에는 오래된 단골에게 떳떳하게 무게를 달고 싶어요.\"",
+		problem = "레일라가 물려받은 향신료 가게에 후추가 부족하다.", cause = "외상 부담과 공급 부족으로 거래를 이어가기 어려웠다.", result = "후추 납품으로 가게의 거래를 재개할 발판을 마련한다.",
 		rewardCoins = 1300, rewardFame = 40, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_swahili", name = "바람의 이름을 찾아서", summary = "서로 다른 항구 8곳 방문", kind = "visit", amount = 8, companionId = "h_swahili", minAffinity = 20, strand = "companion",
-		story = "아민의 계절풍 표는 항구를 돌수록 한 장씩 채워진다. 낯선 바다의 바람에 이름을 붙이는 항해다.",
+		story = "아민은 바람의 방향을 적은 낡은 표를 펼친다. 어릴 적 어른들의 항해법을 외웠지만, 자기 판단이 틀릴까 두려워 한 항로만 고집했다. \"항구마다 바람을 읽는 말이 다르오. 여러 부두를 돌아 내가 아는 것과 모르는 것을 구별해 보겠소.\"",
+		problem = "아민의 항해 경험이 익숙한 항로에 치우쳐 있다.", cause = "실수를 두려워해 다른 항구의 지식을 배우지 못했다.", result = "새 항구 방문 기록으로 계절풍 지식을 넓힌다.",
 		rewardCoins = 1000, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_malabar", name = "제값을 받는 길", summary = "후추 8개를 암스테르담에 납품", kind = "deliver", goodId = "pepper", portId = "amsterdam", amount = 8, companionId = "h_malabar", minAffinity = 20, strand = "companion",
-		story = "라마의 마을은 후추를 제값에 판 적이 없다. 먼 시장에 직접 가져가 값을 받아 와야 마을이 숨을 쉰다.",
+		story = "라마는 후추 자루에 묶였던 농가의 낡은 표식을 꺼낸다. 어린 시절 풍작에도 중간 상인의 가격만 받아들여야 했던 기억이 남아 있다. \"암스테르담까지 직접 납품해 보세. 우리 손에서 자란 후추가 어느 시장에 닿는지부터 알아야 하네.\"",
+		problem = "라마의 농가는 먼 시장의 거래 정보를 얻기 어렵다.", cause = "중간 거래에 의존해 후추의 유통 경로를 알기 힘들었다.", result = "직접 납품 기록이 다음 가격 협상의 근거가 된다.",
 		rewardCoins = 1300, rewardFame = 40, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_japan", name = "바다 너머의 책장", summary = "식물 카드 3장 발견", kind = "field", fieldId = "Botany", amount = 3, companionId = "h_japan", minAffinity = 20, strand = "companion",
-		story = "하루카는 돌아가서 책 한 권을 쓰고 싶어 한다. 낯선 땅의 식물 한 포기가 그 책의 첫 장이 된다.",
+		story = "하루카는 집안 서재에서 베껴 온 약초 그림을 꺼낸다. 익숙한 식물의 이름은 줄줄 외웠지만 낯선 잎 앞에서는 틀릴까 두려워 책을 덮곤 했다. \"바다 건너 식물 기록을 찾아 주세요. 이름을 모른다는 것도 책에 적어도 되겠지요?\"",
+		problem = "하루카의 식물 기록에는 낯선 지역의 관찰이 부족하다.", cause = "기존 서적의 이름에 의존하고 실수를 두려워했다.", result = "식물 카드가 새로운 비교 연구의 첫 장을 이룬다.",
 		rewardCoins = 1000, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_new_spain", name = "마을로 돌아가는 은", summary = "은 5개를 세비야에 납품", kind = "deliver", goodId = "silver", portId = "seville", amount = 5, companionId = "h_new_spain", minAffinity = 20, strand = "companion",
-		story = "페르난도는 열한 명의 이름 앞에서 약속했다. 은이 마을로 돌아가는 길을 만들겠다고. 세비야에서 제값을 받아야 첫 길이 열린다.",
+		story = "페르난도는 마을 사람들의 이름이 적힌 종이를 은 견본 곁에 둔다. 은을 캐는 사람들의 몫이 장부에서 사라지는 모습을 보고도 어릴 때는 묻지 못했다. \"세비야까지 은을 보내 주시오. 적어도 이 은이 어디로 향하는지, 누구의 손에서 나왔는지는 잊지 맙시다.\"",
+		problem = "페르난도는 은을 생산한 마을의 몫을 확인하고 싶다.", cause = "먼 시장과 생산지가 분리되어 거래 기록이 불투명했다.", result = "은 납품의 경로를 기록해 다음 협상의 근거를 남긴다.",
 		rewardCoins = 1300, rewardFame = 40, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_h_portugal", name = "끊긴 일지의 다음 쪽", summary = "서로 다른 항구 12곳 방문", kind = "visit", amount = 12, companionId = "h_portugal", minAffinity = 20, strand = "companion",
-		story = "이네스의 일지는 서안에서 끊겨 있다. 항구를 하나씩 건널 때마다 빈 쪽이 채워지고, 선배들이 못 이룬 길이 이어진다.",
+		story = "이네스는 아버지의 항해 일지에서 끊긴 마지막 문장을 펼친다. 한때는 그가 남긴 길을 그대로 따라야만 약속을 지킬 수 있다고 믿었고, 다른 항구로 향하는 일도 두려웠다. \"선장, 여러 항구를 돌아 우리 시대의 항해를 적어 줘요. 아버지의 빈칸에 거짓말을 채우고 싶지는 않아요.\"",
+		problem = "이네스는 끝나지 않은 아버지의 항해 기록에 얽매여 있다.", cause = "과거의 약속을 지키려다 자신의 항로를 선택하지 못했다.", result = "새 항구 방문 기록이 이네스 자신의 항해 일지를 만든다.",
 		rewardCoins = 1300, rewardFame = 40, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "q_hist_1", name = "역사의 목격자", summary = "역사 사건 1번 겪기", kind = "history", amount = 1, strand = "history",
 		story = "역사는 항구에서 먼저 들린다. 한 번이라도 큰 사건의 한복판에 서 보면, 바다 위의 일이 곧 세상의 일임을 알게 된다.",
@@ -188,40 +199,52 @@ local Quests: { Quest } = {
 	-- 동료 전용 퀘스트 (호감도가 쌓이면 나타난다)
 	{ id = "cq_merian", name = "메리안의 스케치북", summary = "동물 카드 3장 발견", kind = "field", fieldId = "Zoology",
 		amount = 3, companionId = "c_merian", minAffinity = 20, rewardCardId = "zoo_surinam_insects",
+		problem = "곤충의 변태를 설명할 관찰 기록이 부족하다.", cause = "완성된 모습만으로는 성장 과정의 관계를 보여 주기 어렵다.", result = "동물 기록이 변태 연구의 비교 자료가 된다.",
 		rewardCoins = 800, rewardFame = 30, rewardCareer = "adventure", rewardXp = 150 },
 	{ id = "cq_halley", name = "혜성의 귀환", summary = "천문 카드 3장 발견", kind = "field", fieldId = "Astronomy",
 		amount = 3, companionId = "c_halley", minAffinity = 20, rewardCardId = "ast_halley_prediction",
+		problem = "핼리의 혜성 예측을 비교할 천문 기록이 부족하다.", cause = "서로 다른 시대의 관측을 연결해야 한다.", result = "천문 카드가 예측을 검토할 자료가 된다.",
 		rewardCoins = 900, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_leeuwenhoek", name = "렌즈와 빛", summary = "물리 카드 4장 발견", kind = "field", fieldId = "Physics",
 		amount = 4, companionId = "c_leeuwenhoek", minAffinity = 20, rewardCardId = "phy_lens_grinding",
+		problem = "레이우엔훅의 관찰을 전달할 물리적 설명이 부족하다.", cause = "정밀 렌즈의 관찰은 맨눈의 경험과 크게 다르다.", result = "물리 기록이 렌즈와 관찰 원리를 설명하는 근거가 된다.",
 		rewardCoins = 900, rewardFame = 35, rewardCareer = "adventure", rewardXp = 160 },
 	{ id = "cq_linnaeus", name = "자연의 체계", summary = "식물 카드 4장 발견", kind = "field", fieldId = "Botany",
 		amount = 4, companionId = "c_linnaeus", minAffinity = 20, rewardCardId = "bot_systema_naturae",
+		problem = "린네의 분류 체계에는 비교할 식물 기록이 더 필요하다.", cause = "지역마다 이름과 관찰 기준이 달라 혼동이 생긴다.", result = "식물 카드가 분류 기준을 검토하는 자료가 된다.",
 		rewardCoins = 1200, rewardFame = 45, rewardCareer = "adventure", rewardXp = 200 },
 	{ id = "cq_boyle", name = "공기 펌프 실험", summary = "유리 6개를 런던에 납품", kind = "deliver", goodId = "glass", portId = "london",
 		amount = 6, companionId = "c_boyle", minAffinity = 20, rewardCardId = "che_air_pump",
+		problem = "공기 펌프 실험에 필요한 유리가 모자란다.", cause = "실험 기구 제작에 필요한 재료 공급이 부족하다.", result = "유리 납품으로 실험 준비를 이어갈 수 있다.",
 		rewardCoins = 1000, rewardFame = 35, rewardCareer = "trade", rewardXp = 150 },
 	{ id = "cq_papin", name = "안전 밸브", summary = "증기 윈치 연구 완료", kind = "research", techId = "steam_winch",
 		amount = 1, companionId = "c_papin", minAffinity = 20, rewardCardId = "phy_safety_valve",
+		problem = "파팽은 증기 동력을 안전하게 이용할 연구 자료가 필요하다.", cause = "압력을 제어하지 못하면 기계의 활용이 어렵다.", result = "완료된 증기 윈치 연구가 안전 구상 검토의 근거가 된다.",
 		rewardCoins = 1000, rewardFame = 40, rewardCareer = "adventure", rewardXp = 170 },
 	-- 동료 전용 2단계 (호감도 50 이상)
 	{ id = "cq2_merian", name = "열대의 변태 기록", summary = "동물 카드 8장 발견", kind = "field", fieldId = "Zoology",
 		amount = 8, companionId = "c_merian", minAffinity = 50, after = "cq_merian",
+		problem = "메리안의 변태 기록을 넓은 생태 자료와 비교할 필요가 있다.", cause = "개별 곤충의 성장만으로 환경과의 관계를 설명하기 어렵다.", result = "동물 기록이 서로 다른 생태와 성장 과정을 비교할 자료가 된다.",
 		rewardCoins = 2500, rewardFame = 70, rewardCareer = "adventure", rewardXp = 400 },
 	{ id = "cq2_halley", name = "별 지도 완성", summary = "천문 카드 8장 발견", kind = "field", fieldId = "Astronomy",
 		amount = 8, companionId = "c_halley", minAffinity = 50, after = "cq_halley",
+		problem = "핼리는 여러 관측을 함께 검토할 추가 천문 자료가 필요하다.", cause = "한 시대와 한 지역의 관측만으로는 비교 범위가 좁다.", result = "새 천문 카드가 후속 별 지도 연구 자료가 된다.",
 		rewardCoins = 2600, rewardFame = 75, rewardCareer = "adventure", rewardXp = 420 },
 	{ id = "cq2_leeuwenhoek", name = "작은 세계", summary = "물리 카드 8장 발견", kind = "field", fieldId = "Physics",
 		amount = 8, companionId = "c_leeuwenhoek", minAffinity = 50, after = "cq_leeuwenhoek",
+		problem = "작은 세계의 관찰을 검토할 물리 지식이 더 필요하다.", cause = "관찰 결과와 관찰 방법을 함께 설명해야 재검토할 수 있다.", result = "새 물리 기록이 관찰법을 비교할 자료를 보완한다.",
 		rewardCoins = 2600, rewardFame = 75, rewardCareer = "adventure", rewardXp = 420 },
 	{ id = "cq2_linnaeus", name = "식물 대탐사", summary = "식물 카드 8장 발견", kind = "field", fieldId = "Botany",
 		amount = 8, companionId = "c_linnaeus", minAffinity = 50, after = "cq_linnaeus",
+		problem = "린네의 분류를 더 다양한 식물에 대조할 필요가 있다.", cause = "한정된 기록에서 만든 기준을 일반화할 위험이 있다.", result = "추가 식물 카드가 분류의 적용 범위를 검토할 자료가 된다.",
 		rewardCoins = 3000, rewardFame = 85, rewardCareer = "adventure", rewardXp = 480 },
 	{ id = "cq2_boyle", name = "항해자의 호위", summary = "해전에서 10번 승리", kind = "win",
 		amount = 10, companionId = "c_boyle", minAffinity = 50, after = "cq_boyle",
+		problem = "보일의 연구 재료는 위험한 해상 운송에 의존한다.", cause = "실험실은 항해자의 위험을 직접 겪지 않기 쉽다.", result = "해전 승리 기록이 항해 안전을 위한 노력의 근거가 된다.",
 		rewardCoins = 2800, rewardFame = 80, rewardCareer = "battle", rewardXp = 450 },
 	{ id = "cq2_papin", name = "증기 항로 개척", summary = "서로 다른 항구 25곳 방문", kind = "visit",
 		amount = 25, companionId = "c_papin", minAffinity = 50, after = "cq_papin",
+		problem = "파팽의 증기 기술 구상에는 항구의 실제 이용 조건이 부족하다.", cause = "기계 연구만으로는 부두와 보급 환경을 알 수 없다.", result = "항구 방문 기록이 증기 항로 구상의 조사 자료가 된다.",
 		rewardCoins = 3000, rewardFame = 85, rewardCareer = "adventure", rewardXp = 480 },
 	{ id = "q_cod_bergen", name = "대구 납품", summary = "생선 12개를 베르겐에 납품", kind = "deliver", goodId = "fish", portId = "bergen", amount = 12, rewardCoins = 700, rewardFame = 15, rewardCareer = "trade", rewardXp = 90 },
 	{ id = "q_linen_antwerp", name = "플랑드르 리넨", summary = "리넨 8개를 런던에 납품", kind = "deliver", goodId = "linen", portId = "london", amount = 8, rewardCoins = 800, rewardFame = 18, rewardCareer = "trade", rewardXp = 100 },
@@ -438,6 +461,19 @@ local RegionalChains: { { any } } = {
 	{ "east_asia", "동아시아", "canton", "silver", 6, "osaka", "silk", 8, "Art", "예술", { "site_himeji", "relic_zheng_he_fleet", "relic_scroll_painting" }, "site_forbidden_city" },
 	{ "americas", "아메리카", "havana", "cloth", 8, "portobelo", "iron", 8, "Mineral", "광물", { "site_tenochtitlan", "site_chichen_itza", "site_teotihuacan" }, "site_machu_picchu" },
 }
+-- 지역 대장정의 고유 사건 제목(기존 목표와 저장 키는 그대로).
+local RegionalStoryTitles: { [string]: string } = {
+	["north_sea"] = "거꾸로 그린 방벽",
+	["atlantic_europe"] = "물에 잠긴 종소리",
+	["mediterranean"] = "불에 남은 도면",
+	["red_sea"] = "등대지기의 빈 목록",
+	["west_africa"] = "지워진 이름의 장부",
+	["east_africa"] = "바람이 지운 날짜",
+	["south_asia"] = "녹슬지 않는 약속",
+	["southeast_asia"] = "해협의 세 번째 지도",
+	["east_asia"] = "은 장부의 빈 도장",
+	["americas"] = "황금이 아닌 도시",
+}
 for _, rc in RegionalChains do
 	local rid, rname, p1, g1, a1, p2, g2, a2, fld, fname, epics, legend = rc[1], rc[2], rc[3], rc[4], rc[5], rc[6], rc[7], rc[8], rc[9], rc[10], rc[11], rc[12]
 	local steps = {
@@ -452,7 +488,7 @@ for _, rc in RegionalChains do
 	for i, st in steps do
 		local id = "q_rg_" .. rid .. "_" .. i
 		local q: any = {
-			id = id, name = rname .. "의 " .. st[1], after = prev, rewardCareer = "adventure",
+			id = id, name = rname .. " · " .. RegionalStoryTitles[rid] .. " — " .. st[1], after = prev, rewardCareer = "adventure",
 			rewardCoins = if i == 6 then 8000 else 500 * i + 400, rewardFame = if i == 6 then 200 else 20 * i + 10,
 			rewardXp = if i == 6 then 500 else 70 + 40 * i,
 		}
@@ -749,27 +785,27 @@ end
 
 -- 동료 전용 퀘스트: 동료의 목소리로 쓴 사연(hook)과 결말(ending). 직접 쓴 것이라 틀 문장보다 우선한다.
 local HAND: { [string]: { string } } = {
-	cq_merian = { "메리안이 스케치북을 펼친다. \"애벌레가 나비가 되는 걸 아무도 믿지 않아요. 그림으로 보여 주면 믿겠죠. 살아 있는 걸 더 찾아 주세요.\"", "스케치북의 마지막 쪽에 나비가 날아올랐다. 메리안이 조용히 말했다. \"이제 아무도 이게 마법이라고 하지 못해요.\"" },
-	cq_halley = { "핼리가 밤하늘을 가리킨다. \"저 별은 76년 뒤 다시 옵니다. 내가 죽은 뒤일 테니, 당신이 증거를 모아 줘야 합니다.\"", "핼리가 별 지도를 접으며 웃었다. \"76년 뒤 누군가 이 지도를 펴고 내 이름을 부르겠군요. 고맙습니다, 선장.\"" },
-	cq_leeuwenhoek = { "레이우엔훅이 렌즈를 닦으며 속삭인다. \"물 한 방울 속에 도시가 있소. 아무도 내 말을 믿지 않으니 증거가 필요하오.\"", "렌즈 속에서 작은 생명이 헤엄쳤다. 레이우엔훅의 손이 떨렸다. \"보시오. 내가 미친 게 아니었소.\"" },
-	cq_linnaeus = { "린네가 이름표를 한 아름 안고 말한다. \"세상 모든 풀에 이름을 붙이겠습니다. 이름이 없으면 질서도 없지요. 표본이 더 필요합니다.\"", "마지막 이름표가 붙었다. 린네는 한동안 말이 없다가 말했다. \"혼돈에 질서가 생겼습니다. 당신 덕분에.\"" },
-	cq_boyle = { "보일이 유리 기구를 늘어놓으며 말한다. \"공기에도 무게가 있다고 하면 다들 웃습니다. 유리가 와야 증명할 수 있습니다.\"", "유리 종 속의 촛불이 꺼졌다. 보일이 눈을 빛냈다. \"공기가 없으면 불도 못 삽니다. 이제 아무도 웃지 못할 겁니다.\"" },
-	cq_papin = { "파팽이 증기 솥을 두드린다. \"압력을 못 다스리면 솥이 터집니다. 이 밸브만 완성되면 배가 바람 없이 가요. 도와주십시오.\"", "밸브가 칙 소리를 내며 증기를 뱉었다. 파팽이 웃었다. \"터지지 않는군요. 바람 없는 바다를 우리가 건널 겁니다.\"" },
-	cq2_merian = { "메리안이 열대의 일지를 가져온다. \"알에서 나비까지 한 줄로 이어 보고 싶어요. 빠진 칸이 아직 많아요.\"", "변태 기록이 한 권의 책이 되었다. 메리안이 속표지에 당신의 이름을 작게 적어 넣었다." },
-	cq2_halley = { "핼리가 빈 하늘 지도를 펼친다. \"남쪽 하늘은 아직 비어 있습니다. 그곳에 이름을 붙이는 것이 제 마지막 꿈입니다.\"", "남쪽 하늘이 지도 위에 채워졌다. 핼리가 말했다. \"별은 늘 거기 있었군요. 이제 우리가 알 뿐이지요.\"" },
-	cq2_leeuwenhoek = { "레이우엔훅이 새 렌즈를 내민다. \"더 작은 것이 있소. 눈에 안 보이는 곳에 세계가 있다는 걸 모두에게 보여 주고 싶소.\"", "수많은 작은 생명이 기록되었다. 레이우엔훅이 중얼거렸다. \"세상은 내가 생각한 것보다 훨씬 컸소.\"" },
-	cq2_linnaeus = { "린네가 지도를 펼친다. \"대륙마다 풀의 얼굴이 다릅니다. 모두 보고 싶습니다. 당신의 배가 저의 눈이 되어 주세요.\"", "식물 대탐사의 기록이 완성되었다. 린네가 이름을 하나씩 낭독했다. 그 목소리는 기도 같았다." },
-	cq2_boyle = { "보일이 정색하고 말한다. \"실험실은 안전한 바다가 있어야 돌아갑니다. 항로를 지켜 주세요. 호위가 곧 연구입니다.\"", "열 번째 승리의 소식이 실험실에 닿았다. 보일이 말없이 당신의 잔에 술을 따랐다." },
-	cq2_papin = { "파팽이 도면을 펼친다. \"증기선이 닿을 항구들이 이어져야 합니다. 길이 있어야 배도 의미가 있지요.\"", "증기 항로가 지도 위에 이어졌다. 파팽이 도면 위에 손을 얹고 눈을 감았다." },
-	cq_h_england = { "", "엘리너의 논문이 학회를 통과했다. \"증거가 이야기를 이겼어요. 당신 덕분이에요.\"" },
-	cq_h_netherlands = { "", "얀의 이름이 거래소 칠판에 올랐다. 길드의 노인들이 처음으로 모자를 벗었다." },
-	cq_h_france = { "", "루앙 부두에 설탕 배가 닿자 마리온이 깃발을 올렸다. 영지가 돌아왔다." },
-	cq_h_ottoman = { "", "이스탄불 시장에 후추 향이 돌아왔다. 레일라의 가게 문이 삼 대 만에 다시 활짝 열렸다." },
-	cq_h_swahili = { "", "계절풍 표의 마지막 칸이 채워졌다. 아민이 바다를 보며 낮게 바람의 이름을 불렀다." },
-	cq_h_malabar = { "", "제값을 받은 후추 자루 앞에서 상인이 처음으로 웃었다. \"이제 속지 않겠소.\"" },
-	cq_h_japan = { "", "책장에 바다 건너의 식물도감이 꽂혔다. 오래 닫혀 있던 서재가 환해졌다." },
-	cq_h_new_spain = { "", "은이 마을로 돌아가던 날, 광산 사람들이 길가에 서서 말없이 손을 흔들었다." },
-	cq_h_portugal = { "", "끊겼던 일지의 다음 쪽에 당신의 항해가 이어 적혔다. 아버지의 필체와 나란히." },
+	cq_merian = { "메리안은 알과 애벌레와 번데기를 그린 스케치북을 펼친다. 곤충의 변태를 기록하는 일에는 오랜 관찰이 필요하지만, 아름다운 그림만으로는 그 관계를 설명하기 어렵다. \"예쁜 모습만 남기면 중요한 과정이 사라져요. 동물 기록을 함께 모아 주세요.\"", "메리안은 새로운 동물 기록을 스케치 옆에 놓고 관찰하지 못한 부분을 빈칸으로 남겼다. \"이제 그림을 더 정확하게 그릴 수 있겠어요. 다음에는 곤충이 살아가는 환경까지 비교해 봐요.\"" },
+	cq_halley = { "핼리는 서로 다른 해의 혜성 기록을 책상 위에 나란히 놓는다. 과거 관측의 공통점을 계산해 같은 혜성이 다시 돌아올 수 있다고 예측했지만, 먼 미래의 귀환은 자신의 눈으로 확인하지 못할 수도 있다. \"제 말을 믿는 것으로 끝내지 맙시다. 천문 기록을 모아 다음 사람이 다시 계산할 수 있게 해 주세요.\"", "핼리는 새 천문 기록을 예측 계산과 함께 보관했다. \"결과를 볼 수 없더라도 검증할 길은 남길 수 있겠군요. 다음에는 더 넓은 하늘의 기록을 모읍시다.\"" },
+	cq_leeuwenhoek = { "레이우엔훅은 손바닥만 한 렌즈를 천으로 닦는다. 작은 유리알을 연마해 눈에 보이지 않던 세계를 관찰했지만, 보이는 것을 다른 사람이 이해할 수 있게 전달하는 일은 또 다른 문제였다. \"놀랐다는 말은 증거가 아니오. 빛과 렌즈에 관한 물리 기록을 모아 주시오.\"", "그는 렌즈 옆에 물리 기록을 펼쳐 관찰 조건을 다시 적었다. \"내 눈만 믿으라고 할 일이 아니었소. 이제 다른 눈으로도 확인할 방법을 더 찾아봅시다.\"" },
+	cq_linnaeus = { "린네는 같은 식물에 서로 다른 이름을 붙인 기록을 보여 준다. 자연을 일정한 체계로 정리하려 하지만, 이름이 정연해 보인다고 서로 다른 생물을 한데 묶을 수는 없다. \"표본에 먼저 귀 기울여야 합니다. 식물 기록을 더 모아 제가 세운 구분부터 시험해 주세요.\"", "린네는 식물 기록을 비교하며 구분하기 어려운 부분에 표시를 남겼다. \"질서를 만든다는 건 모르는 것을 지우는 일이 아니군요. 다음에는 더 먼 지역의 기록과 대조합시다.\"" },
+	cq_boyle = { "보일은 공기 펌프에 쓸 유리 기구의 설계 기록을 펼친다. 공기의 성질을 실험으로 설명하려면 투명하고 적합한 기구가 필요한데, 준비한 재료가 모자란다. \"훌륭한 가설도 기구 없이는 시험할 수 없습니다. 런던에 유리를 보내 실험 준비를 도와주십시오.\"", "유리가 런던에 도착하자 보일은 실험 준비 장부의 부족분을 지웠다. \"학문은 혼자 하는 일이 아니군요. 다음에는 이 기구를 나르는 항로가 안전해야겠습니다.\"" },
+	cq_papin = { "파팽은 증기의 압력과 밸브를 다룬 도면을 펼친다. 압력을 이용하는 기술은 유용하지만 통제하지 못한 힘은 작업자를 위험에 빠뜨릴 수 있다. \"힘을 키우는 것만 연구라고 부르지 맙시다. 증기 윈치 연구를 마쳐 제 구상을 다시 검토할 근거를 주세요.\"", "파팽은 완료된 연구 기록과 밸브 도면을 비교하며 안전 조건에 밑줄을 그었다. \"이제 힘의 크기보다 제어하는 법을 먼저 생각하겠소. 다음에는 그 기술이 쓰일 항구들을 알아봅시다.\"" },
+	cq2_merian = { "메리안은 앞서 모은 기록 곁에 곤충과 식물을 함께 그린 그림을 놓는다. 알에서 성충까지의 변화뿐 아니라 어떤 환경에서 살아가는지도 기록해야 한다고 말한다. \"제 그림을 믿으라고 강요하지 않을래요. 서로 다른 동물 기록을 더 모아 생명의 다양성을 비교해요.\"", "메리안은 새 동물 기록을 그림의 빈자리와 비교하고 아직 모르는 관계를 따로 표시했다. \"한 장의 그림으로 모든 생명을 설명할 수는 없군요. 그 사실을 숨기지 않는 기록을 남기겠어요.\"" },
+	cq2_halley = { "핼리는 이전 예측 자료를 묶은 뒤 새 천문 기록을 펼친다. 한 관측자의 기록만으로 하늘 전체를 이해했다고 말하는 대신 다른 시대와 장소의 관측을 함께 검토하려 한다. \"제가 그린 별자리보다 아직 모르는 하늘이 훨씬 넓습니다. 천문 기록을 더 모아 주세요.\"", "핼리는 추가 자료를 별 지도 작업 기록에 정리하며 서로 다른 관측을 대조할 자리를 남겼다. \"후대의 항해자가 우리 기록을 고칠 수 있다면, 그것도 성공이겠군요.\"" },
+	cq2_leeuwenhoek = { "레이우엔훅은 앞서 정리한 렌즈 연구를 다시 읽는다. 작은 세계를 발견하는 기쁨에만 매달리면 관찰의 한계와 오차를 지나치기 쉽다는 점을 깨달았다. \"물리 기록을 더 모으세. 우리가 보는 것뿐 아니라 왜 그렇게 보이는지도 설명해야 하오.\"", "레이우엔훅은 새 물리 기록을 관찰 노트와 나란히 묶었다. \"처음에는 남들이 내 발견을 믿기만 바랐소. 이제는 다른 사람도 의심하고 확인할 수 있기를 바라오.\"" },
+	cq2_linnaeus = { "린네는 첫 분류 기록의 여백을 다시 펼친다. 먼 지역의 식물을 한 번도 직접 보지 않고 익숙한 기준만으로 구분한다면 잘못된 이름을 남길 수 있다. \"이번에는 이름을 붙이는 속도보다 차이를 발견하는 일을 중시합시다. 식물 기록을 더 모아 주세요.\"", "린네는 새 식물 기록의 공통점과 차이를 나눠 적었다. \"분류는 끝난 책이 아니라 다음 관찰자가 고칠 수 있는 약속이어야 합니다.\"" },
+	cq2_boyle = { "보일은 유리 납품 장부를 덮지 못하고 그 옆에 항해 기록을 둔다. 바다에서 재료가 오지 않으면 실험실의 기구도 쓸 수 없는데, 연구자는 그 위험을 선원에게만 떠넘기기 쉽다. \"해전에서 맞서야 할 일이 있다면 연구실도 그 무게를 잊지 않겠습니다. 항로의 안전을 위해 싸워 주세요.\"", "보일은 해전 승리 기록을 실험실의 공급 장부 옆에 보관했다. \"승리의 횟수만으로 모든 바다가 안전해졌다고 말하지 않겠습니다. 우리가 기대는 사람들의 위험부터 기억하겠소.\"" },
+	cq2_papin = { "파팽은 안전 밸브와 증기 윈치 연구 기록을 접고 항구 지도를 펼친다. 기술이 작업장을 벗어나려면 실제 부두와 공급망을 먼저 이해해야 한다고 생각한다. \"증기만 있으면 어디든 갈 수 있다고 장담하지 않겠소. 여러 항구를 방문하며 기술을 쓸 곳부터 알아봅시다.\"", "파팽은 방문 기록을 지도와 함께 묶고 항구마다 검토할 조건을 남겼다. \"기계를 꿈꾸는 것과 사람들이 쓸 수 있는 기계를 만드는 것은 다르군요. 이제 그 차이를 잊지 않겠소.\"" },
+	cq_h_england = { "", "엘리너는 발견 기록을 원고 옆에 펼치고 확신할 수 없는 문장부터 지웠다. \"이름을 인정받는 것보다 제 이름으로 틀릴 용기를 얻은 게 더 기뻐요.\"" },
+	cq_h_netherlands = { "", "얀은 거래가 남긴 기록을 수익과 손실에 관계없이 장부에 옮겼다. \"독립이란 매번 이기는 게 아니었군. 내 판단의 결과를 숨기지 않는 거였소.\"" },
+	cq_h_france = { "", "루앙에 설탕 주문이 들어오자 마리온은 장부에 가문 이름보다 거래처 이름을 먼저 적었다. \"깃발은 아직 돌아오지 않았어요. 하지만 이제 무엇을 지켜야 할지는 알아요.\"" },
+	cq_h_ottoman = { "", "후추가 도착하자 레일라는 저울을 다시 맞추고 첫 거래 장부를 펼쳤다. \"문을 닫았던 날도 제 역사예요. 이제 그걸 숨기지 않고 다시 시작할래요.\"" },
+	cq_h_swahili = { "", "아민은 방문 기록을 계절풍 표 옆에 두고 서로 다른 항해법을 비교할 자리를 남겼다. \"스승에게 배운 길을 버리는 게 아니오. 그 길 밖에도 배울 것이 있음을 인정하는 거지.\"" },
+	cq_h_malabar = { "", "납품 기록을 본 라마는 농가 표식과 먼 시장의 이름을 한 장부에 적었다. \"이번 거래가 모두를 구했다는 말은 하지 않겠네. 하지만 다음 흥정에서 무엇을 물어야 할지는 알겠어.\"" },
+	cq_h_japan = { "", "하루카는 새 식물 기록 옆에 비교할 특징과 아직 모르는 부분을 적었다. \"이제 책은 제가 아는 것을 뽐내는 곳이 아니라 더 배울 자리가 되었어요.\"" },
+	cq_h_new_spain = { "", "세비야 납품 기록에 페르난도는 마을의 이름을 함께 적었다. \"이 장부 한 권으로 빚이 사라지지는 않소. 이제 침묵하지 않고 다음 거래의 몫을 물을 수 있겠군.\"" },
+	cq_h_portugal = { "", "이네스는 방문 기록을 아버지 일지의 빈칸이 아닌 새 장에 옮겨 적었다. \"아버지의 길을 대신 끝내는 게 아니었어요. 제가 살아갈 길을 찾는 일이었군요.\"" },
 }
 for hid, hand in Prologue.Hand do
 	HAND[hid] = hand
@@ -859,14 +895,41 @@ local CHAIN: { [string]: { { string } } } = {
 		{ "마지막 장이 열렸다. 처음 이 일을 맡을 때의 그 망설임이 지금은 아득하게 느껴진다.", "끝이 왔다. 되돌아보면 모든 길이 이곳으로 이어져 있었다." },
 	},
 }
+-- 후속 관계는 기존 after/afterAny 데이터에서 생성한다. 분기와 합류를 모두 보존한다.
 local NEXT_OF: { [string]: string } = {}
+local FOLLOWUPS: { [string]: { string } } = {}
 for _, qq in Quests do
-	if qq.after then
-		NEXT_OF[qq.after] = qq.id
+	local parents: { string } = if qq.after then { qq.after } else {}
+	for _, parent in qq.afterAny or {} do
+		if not table.find(parents, parent) then table.insert(parents, parent) end
+	end
+	for _, parent in parents do
+		local list = FOLLOWUPS[parent]
+		if not list then
+			list = {}
+			FOLLOWUPS[parent] = list
+		end
+		table.insert(list, qq.id)
+		-- 기존 단일 후속 참조는 호환용으로 유지한다.
+		if qq.after == parent then NEXT_OF[parent] = qq.id end
 	end
 end
+local CHAPTER_END: { [string]: boolean } = {}
+for _, chapter in Chapters.Chapters do
+	for _, id in chapter.last do CHAPTER_END[id] = true end
+end
 
+local StoryCardName: { [string]: string } = {}
 local function Story(q: Quest, goodName: string?, portName: string?): (string, string)
+	local related = StoryCardName[q.id]
+	local cardLine = if related then "\n관련 백과: " .. related .. " (참고 기록)." else ""
+	-- 허가증은 일반 납품 결말이 아니라 실제 특산품 거래 해금 결과를 보여 준다.
+	if q.rewardPermit then
+		local hand = HAND[q.id]
+		local hook = if hand and hand[1] ~= "" then hand[1] else (q.story or q.summary)
+		local ending = if hand and hand[2] ~= "" then hand[2] .. "\n길드 허가증을 획득했다." else (q.result or "길드 허가증을 획득했다.")
+		return hook .. cardLine, ending
+	end
 	local vars = { giver = pick(q.id, GIVERS), good = goodName or "물건", port = portName or "그 항구", n = tostring(q.amount) }
 	local set: { { string } } = STORY_KIND.default
 	if q.kind == "deliver" then
@@ -893,26 +956,132 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 		local list = CHAIN[role]
 		local c = list[h % #list + 1]
 		local base = q.story or fill(t[1], vars)
-		local tag = string.format("제%d장. ", depth)
+		local tag = if q.chapter then "" else string.format("제%d단계. ", depth)
 		if HAND[q.id] then
-			return tag .. (if HAND[q.id][1] ~= "" then HAND[q.id][1] else base), HAND[q.id][2]
+			return tag .. (if HAND[q.id][1] ~= "" then HAND[q.id][1] else base) .. cardLine, HAND[q.id][2]
 		end
-		return tag .. base, fill(c[2], vars)
+		return tag .. base .. cardLine, fill(c[2], vars)
 	end
 	local hand = HAND[q.id]
 	local hook = (if hand and hand[1] ~= "" then hand[1] else nil) or q.story or fill(t[1], vars)
-	return hook, (if hand then hand[2] else fill(t[2], vars))
+	return hook .. cardLine, (if hand then hand[2] else fill(t[2], vars))
+end
+
+-- [전체 의뢰·지식카드 연계] 기존 발견·보상·상품·지역·학문 데이터를 우선 사용한다.
+-- 관련 기록은 완료 조건이나 보상이 아니다. 기존 카드 상세의 이야기 색인으로만 연결한다.
+local CardsData = require(script.Parent.KnowledgeCards) :: any
+local PortsData = require(script.Parent.Ports) :: any
+local RegionCard: { [string]: string } = {
+	north_sea = "myth_selkie", atlantic_europe = "myth_ys", mediterranean = "myth_siren",
+	red_sea = "geo_red_sea", west_africa = "site_goree", east_africa = "site_kilwa",
+	south_asia = "geo_monsoon", southeast_asia = "geo_malacca_strait",
+	east_asia = "site_dejima", americas = "lost_el_dorado", pacific = "pac_navigation_stick",
+	europe = "nation_venice", w_africa = "site_elmina_castle", new_world = "geo_caribbean_sea",
+	indian = "geo_monsoon", far_east = "geo_malacca_strait",
+}
+local NationCard: { [string]: string } = {
+	england = "ast_halley_prediction", netherlands = "phy_pendulum", france = "ast_jupiter_moons",
+	portugal = "nav_cross_staff", ottoman = "lang_manuscript_reading", swahili = "geo_monsoon",
+	malabar = "bot_pepper_vine", japan = "math_place_value", china = "relic_woodblock",
+	spain = "nav_portolan", korea = "med_herb_garden", new_spain = "am_maya_stela",
+}
+local CompanionCard: { [string]: string } = {
+	h_england = "phi_scientific_method", h_netherlands = "finance_bill_exchange", h_france = "good_sugar",
+	h_ottoman = "good_pepper", h_swahili = "geo_monsoon", h_malabar = "bot_pepper_vine",
+	h_japan = "bot_herbarium", h_new_spain = "am_silver_ore_potosi", h_portugal = "relic_ship_log",
+	c_merian = "zoo_metamorphosis", c_halley = "ast_halley_prediction", c_leeuwenhoek = "phy_microscope",
+	c_linnaeus = "bot_systema_naturae", c_boyle = "phy_boyle_law", c_papin = "phy_papin_digester",
+}
+local SubjectCard: { [string]: string } = {
+	Botany = "bot_herbarium", Zoology = "zoo_metamorphosis", Mineral = "min_quartz", Relic = "relic_ship_log",
+	Site = "site_stonehenge", Geography = "nav_portolan", Myth = "myth_selkie", Mystery = "mys_voynich",
+	Lost = "lost_terra_australis", Astronomy = "ast_polaris", Physics = "phy_pendulum",
+	Architecture = "arch_arsenal", Language = "lang_translation", Medicine = "med_ship_surgeon", Art = "art_engraving",
+	astronomy = "ast_halley_prediction", medicine = "med_ship_surgeon", geography = "nav_portolan",
+	navigation = "nav_cross_staff", commerce = "finance_bill_exchange", history = "culture_oral_history",
+	architecture = "arch_gothic_arch", physics = "phy_pendulum", chemistry = "chem_distillation", art = "art_engraving",
+	explorer = "nav_portolan", science = "phi_scientific_method", merchant = "finance_bill_exchange",
+	pirate = "geo_pirate_waters", ruler = "pol_institution_records", letters = "lang_printing_press",
+}
+local SpecificCard: { [string]: string } = {
+	ch1_1 = "myth_selkie", ch1_3 = "geo_pirate_waters", ch1_4 = "law_code_interpretation",
+	ch1_5a = "finance_marine_insurance", ch1_5b = "myth_selkie",
+	ch2_1 = "chem_glass", ch2_3 = "nation_venice", ch2_4 = "institution_venetian_senate",
+	ch2_5a = "chem_glass", ch2_5b = "institution_venetian_senate",
+	ch3_1 = "good_pepper", ch3_3 = "geo_monsoon", ch3_4 = "finance_bill_exchange",
+	ch3_5a = "bot_pepper_vine", ch3_5b = "geo_monsoon",
+	ch4_1 = "site_dejima", ch4_3 = "geo_south_china_sea", ch4_4 = "lang_translation",
+	ch4_5a = "site_dejima", ch4_5b = "min_copper_ingot",
+	q_ch_nav_pirates = "geo_pirate_waters", q_ch_geo_spice = "good_pepper",
+	q_ch_steam_coal = "min_coal_seam", q_ch_alchemy_battle = "finance_marine_insurance",
+	q_ch_nature_explore = "bot_herbarium",
+	q_steam_dawn = "phy_savery_pump", q_steam_ship = "ship_steam_engine", q_steam_winch = "arch_harbor_crane",
+	q_grand_tour = "org_hanseatic_league", q_grand_tour_2 = "nav_portolan",
+	q_grand_tour_3 = "geo_north_notes", q_mediterranean = "geo_med_currents",
+	q_med_tour = "lang_lingua_franca", q_world_tour = "relic_world_map_old", q_world_tour2 = "nav_mercator",
+	q_west_africa_tour = "geo_guinea_gulf", q_indian_tour = "geo_monsoon",
+	q_east_asia_tour = "geo_south_china_sea", q_americas_tour = "geo_caribbean_sea", q_pacific_tour = "geo_pacific_vast",
+	q_stock_1 = "lang_ledger", q_stock_2 = "lang_ledger", q_stock_3 = "lang_ledger",
+	q_era_2 = "ship_caravel", q_era_3 = "phi_scientific_method", q_era_4 = "phi_enlightenment", q_era_5 = "phy_newcomen_engine",
+}
+local KindCard: { [string]: string } = {
+	deliver = "finance_bill_exchange", discover = "bot_herbarium", discover_card = "culture_oral_history",
+	win = "geo_pirate_waters", visit = "nav_portolan", research = "phi_scientific_method",
+	field = "bot_herbarium", chronicle = "culture_oral_history", chron_draft = "lang_manuscript_reading",
+	chron_paper = "lang_printing_press", war_clear = "finance_marine_insurance",
+	stock = "finance_bill_exchange", dividend = "lang_ledger", history = "culture_oral_history",
+	people = "culture_oral_history", people_talk = "lang_port_interview", present = "phi_scientific_method",
+	understand = "phi_scientific_method", understand_card = "phi_scientific_method",
+	expo = "art_engraving", joint = "phi_scientific_method", port_tech = "industry_watermill",
+	landmark = "arch_arsenal", launch = "finance_bill_exchange", order_patrol = "law_code_interpretation",
+	era = "phi_enlightenment", choice = "law_code_interpretation", duel_leader = "relic_ship_log",
+}
+local GoodCard: { [string]: string } = {
+	wool = "clothing_wool_cloak", fish = "zoo_cod", saffron = "chem_dye", carpet = "art_tapestry",
+	incense = "bot_sandalwood_tree", gum_arabic = "bot_acacia", camphor = "chem_distillation",
+	cochineal = "chem_dye", copper = "min_copper_ingot",
+}
+local PortCard: { [string]: string } = {}
+-- 실제 방문 등록 카드가 있는 항구만 사용한다. 임의 지역 매칭 금지.
+for _, card in CardsData.Cards do
+	if card.visitPort and not PortCard[card.visitPort] then PortCard[card.visitPort] = card.id end
+end
+for _, q in Quests do
+	local region = q.regionId or q.routeId or string.match(q.id, "^q_rg_(.+)_%d+$")
+	local good = q.goodId and PortsData.Goods[q.goodId]
+	local permitCard = if q.rewardPermit then PortCard[q.rewardPermit] else nil
+	local id = q.loreCardId or q.cardId or q.rewardCardId or SpecificCard[q.id]
+		or (region and RegionCard[region]) or (q.nation and NationCard[q.nation])
+		or (q.companionId and CompanionCard[q.companionId]) or permitCard
+		or (q.goodId and GoodCard[q.goodId]) or (good and good.knowledgeId)
+		or (q.fieldId and SubjectCard[q.fieldId]) or (q.disc and SubjectCard[q.disc])
+		or (q.cat and SubjectCard[q.cat]) or KindCard[q.kind]
+	local card = id and CardsData.ById[id]
+	if not card then
+		-- 기존 데이터의 관련 카드가 없을 때만 종류별 검증된 기록으로 연결한다.
+		id = KindCard[q.kind]
+		card = id and CardsData.ById[id]
+	end
+	assert(card and id, "퀘스트 관련 지식카드 누락: " .. q.id)
+	q.loreCardId = id
+	StoryCardName[q.id] = card.name
+	if not q.loreText then
+		local _, ending = Story(q, good and good.name, q.portId and PortsData.Ports[q.portId] and PortsData.Ports[q.portId].name)
+		q.loreText = ending
+	end
 end
 
 local Kit = require(script.Parent.StoryKit) :: any
-Kit.LORE = Kit.loreIndex(Quests)
+Kit.LORE = Kit.loreIndex(Quests, require(script.Parent.Story).Events, require(script.Parent.HistoryEvents).Events)
 
 return {
 	Quests = Quests,
 	ById = ById,
 	Grade = Grade,
 	Story = Story,
-	NextOf = NEXT_OF, -- [다음 이야기 미리보기] 앞 퀘스트 id → 다음 퀘스트 id
+	NextOf = NEXT_OF, -- 기존 단일 후속 참조 호환
+	Followups = FOLLOWUPS, -- 분기 및 합류 포함 전체 후속 관계
+	ChapterEnd = CHAPTER_END,
 	Chapters = Chapters.Chapters,
 	Kit = Kit, -- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전·카드 이야기·인물 말풍선
 }

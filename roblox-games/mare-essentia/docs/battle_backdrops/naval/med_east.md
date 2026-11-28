@@ -1,7 +1,7 @@
 # 동지중해·에게해 (`med_east`) — 해전 배경
 
 - 지역: `europe` · 문화권 기준: 오스만
-- 이 해역 항구: 나폴리(`naples`), 트리폴리(`tripoli`), 팔레르모(`palermo`), 발레타(`valletta`), 라구사(`ragusa`), 아테네(`athens`), 이스탄불(`istanbul`), 알렉산드리아(`alexandria`), 시라쿠사(`syracuse`), 테살로니키(`thessaloniki`), 칸디아(`candia`), 로도스(`rhodes`), 파마구스타(`famagusta`), 이즈미르(`smyrna`), 아크레(`acre`), 벵가지(`benghazi`), 메시나(`messina`), 코르푸(`corfu`), 베이루트(`beirut`), 다미에타(`damietta`)
+- 이 해역 항구: 나폴리(`naples`), 트리폴리(`tripoli`), 팔레르모(`palermo`), 발레타(`valletta`), 라구사(`ragusa`), 아테네(`athens`), 이스탄불(`istanbul`), 알렉산드리아(`alexandria`), 시라쿠사(`syracuse`), 테살로니키(`thessaloniki`), 칸디아(`candia`), 로도스(`rhodes`), 파마구스타(`famagusta`), 이즈미르(`smyrna`), 아크레(`acre`), 벵가지(`benghazi`), 메시나(`messina`), 코르푸(`corfu`), 베이루트(`beirut`), 다미에타(`damietta`), 베네치아(`venice`), 안코나(`ancona`), 스플리트(`split`), 트리에스테(`trieste`)
 
 ## 기본 모습
 

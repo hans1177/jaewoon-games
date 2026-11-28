@@ -347,6 +347,9 @@ return function(D, S)
 			local prog = state.bounty.taken[b.id]
 			table.insert(view.board, {
 				id = b.id, title = b.title, coins = b.coins, fame = b.fame, kind = b.kind,
+				story = b.story, ending = if state.bounty.done[b.id] then b.ending else nil,
+				loreCardId = if D.Cards.ById[b.loreCardId] then b.loreCardId else nil,
+				loreName = D.Cards.ById[b.loreCardId] and D.Cards.ById[b.loreCardId].name or nil,
 				state = if state.bounty.done[b.id] then "done" elseif prog ~= nil then "taken" else "open",
 				progress = if b.kind == "hunt" and prog ~= nil then math.min(b.count, state.stats.battlesWon - prog) else nil,
 				count = b.count,
@@ -626,12 +629,28 @@ return function(D, S)
 				local left = 0
 				-- [탐험 도감] 보상 규칙을 바꾸지 않고 서버가 이미 검증한 미발견 카드만 현장 연출에 전달한다.
 				local observableCards = {}
-				local fieldQuest
+				local fieldQuest, fieldStory, selectedQuest
 				for _, q in D.Quests.Quests do
-					if q.exploreSite == site.id and not state.quests.done[q.id] and S.Quest.visible(state, q) then
-						fieldQuest = string.format("%d/5단 · %s", D.Quests.Grade(q), q.name)
-						break
+					if q.exploreSite == site.id and not state.quests.done[q.id] and S.Quest.visible(state, q)
+						and q.cardId and not state.discovered[q.cardId]
+						and table.find(site.pool, q.cardId) and not S.Discovery.cardBlockReason(state, D.Cards.ById[q.cardId]) then
+						if not selectedQuest or state.quests.active[q.id] then selectedQuest = q end
+						if state.quests.active[q.id] then break end
 					end
+				end
+				if selectedQuest then
+					local q = selectedQuest
+					fieldQuest = string.format("%d/5단 · %s", D.Quests.Grade(q), q.name)
+					local nextName
+					for _, nextId in D.Quests.Followups[q.id] or {} do
+						local follow = D.Quests.ById[nextId]
+						if follow and not state.quests.done[nextId] and D.Quests.Kit.choiceMet(state, follow.needChoice) then
+							nextName = follow.name
+							break
+						end
+					end
+					fieldStory = { cardId = q.cardId, name = q.name, lead = q.leadSource or "현장 기록",
+						problem = q.problem or q.story or q.summary, nextName = nextName }
 				end
 				for _, cardId in site.pool do
 					if not state.discovered[cardId] then
@@ -649,7 +668,9 @@ return function(D, S)
 					days = site.days,
 					left = left,
 					fieldQuest = fieldQuest, -- 현지 퀘스트 조건을 통과한 진행 단계만 알린다.
+					fieldStory = fieldStory, -- 기존 퀘스트·카드·후속 의뢰에서 읽은 현장 정보, 저장 없음.
 					observableCards = observableCards, -- 저장 상태가 아닌 탐험 화면용 임시 후보
+					fieldCheckpoint = S.Discovery.checkpointOf(state, site), -- 동일 탐험의 마지막 서버 접수 단계
 					fromYear = site.fromYear,
 					locked = blocked,
 					unlocked = blocked == nil,
@@ -700,15 +721,35 @@ return function(D, S)
 				-- [장 완료·결과 연출] 장 제목과 그 장의 마지막 단계인지(다음 단계 없음) 함께 보낸다.
 				local chapterName = dq.chapter or (string.find(dq.summary or "", " — ", 1, true) and string.sub(dq.summary, 1, (string.find(dq.summary, " — ", 1, true) :: number) - 1)) or nil
 				table.insert(view.quests.done, { id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending,
-					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result,
+					chapter = chapterName, chapterEnd = D.Quests.ChapterEnd[dq.id] == true or (not dq.chapter and chapterName ~= nil and D.Quests.Followups[dq.id] == nil),
+					hasNext = D.Quests.Followups[dq.id] ~= nil, result = dq.result,
 					rewardCoins = dq.rewardCoins, rewardFame = dq.rewardFame, rewardXp = dq.rewardCareer and dq.rewardXp or nil, rewardCareer = dq.rewardCareer,
 					receipt = state._questRewards and state._questRewards[dq.id] or nil,
-					nextName = D.Quests.NextOf[dq.id] and D.Quests.ById[D.Quests.NextOf[dq.id]] and D.Quests.ById[D.Quests.NextOf[dq.id]].name or nil })
+					nextName = D.Quests.Followups[dq.id] and #D.Quests.Followups[dq.id] == 1 and D.Quests.ById[D.Quests.Followups[dq.id][1]].name or nil })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
 		for _, q in D.Quests.Quests do
 			if state.quests.active[q.id] then
+				local previousId = q.after
+				if not previousId and q.afterAny then
+					for _, id in q.afterAny do if state.quests.done[id] then previousId = id break end end
+				end
+				local previous = previousId and D.Quests.ById[previousId]
+				local nextNames = {}
+				local waitingChoice = false
+				for _, nextId in D.Quests.Followups[q.id] or {} do
+					local nextQuest = D.Quests.ById[nextId]
+					if nextQuest and not state.quests.done[nextId] then
+						if D.Quests.Kit.choiceMet(state, nextQuest.needChoice) then
+							table.insert(nextNames, nextQuest.name)
+						elseif nextQuest.needChoice then
+							local key = string.match(nextQuest.needChoice, "^([%w_]+)=")
+							if key and not D.Quests.Kit.choice(state, key) then waitingChoice = true end
+						end
+					end
+				end
+				local nextName = if #nextNames > 0 then table.concat(nextNames, " · ") elseif waitingChoice then "선택에 따라 달라지는 결말" else nil
 				table.insert(view.quests.active, {
 					id = q.id,
 					name = q.name,
@@ -743,7 +784,7 @@ return function(D, S)
 					-- [다음 할 일 안내 · 2026-11-28] 목적지·상품·인과(문제→원인→결과)·장 표시용. 판정·저장은 그대로.
 					portId = q.portId, portName = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or nil,
 					goodId = q.goodId, goodName = q.goodId and D.Ports.Goods[q.goodId] and D.Ports.Goods[q.goodId].name or nil,
-					exploreSite = q.exploreSite, warId = q.warId, leaderId = q.leaderId,
+					exploreSite = q.exploreSite, warId = q.warId, regionId = q.regionId, leaderId = q.leaderId,
 					problem = q.problem or (function()
 						-- 따로 적은 문제가 없으면 사연의 첫 문장을 '왜?'로 쓴다
 						local hook = S.Quest.storyOf(q)
@@ -755,9 +796,9 @@ return function(D, S)
 					chapter = q.chapter or (string.find(q.summary or "", " — ", 1, true) and string.sub(q.summary, 1, (string.find(q.summary, " — ", 1, true) :: number) - 1)) or nil,
 					guide = q.guide,
 					-- [지난 이야기·다음 이야기] 앞 단계의 결말과 다음 단계 이름
-					prevName = q.after and D.Quests.ById[q.after] and D.Quests.ById[q.after].name or nil,
-					prevEnding = q.after and D.Quests.ById[q.after] and select(2, S.Quest.storyOf(D.Quests.ById[q.after])) or nil,
-					nextName = D.Quests.NextOf[q.id] and D.Quests.ById[D.Quests.NextOf[q.id]] and D.Quests.ById[D.Quests.NextOf[q.id]].name or nil,
+					prevName = previous and previous.name or nil,
+					prevEnding = previous and select(2, S.Quest.storyOf(previous)) or nil,
+					nextName = nextName,
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
@@ -766,7 +807,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), kind = q.kind, warId = q.warId, regionId = q.regionId, portId = q.portId, portName = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or nil, progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 
@@ -776,7 +817,8 @@ return function(D, S)
 		local routeIds = {}
 		for _, q in D.Quests.Quests do
 			if q.routeId then routeIds[q.routeId] = true end
-			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after]) then
+			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after])
+				and (not q.chapter or S.Quest.visible(state, q)) then
 				local destination = D.Ports.Ports[q.portId]
 				table.insert(view.quests.fieldRoutes, {
 					name = q.name, grade = D.Quests.Grade(q),

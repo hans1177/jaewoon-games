@@ -114,6 +114,43 @@ local EVENT_WEIGHTS = {
 	{ "rival", 4 }, -- 라이벌 선장과 경주
 }
 
+-- 기존 항해 사건의 관련 백과 기록. 카드 지급이나 사건 발생 확률을 바꾸지 않는다.
+Voyage.EventRecords = {
+	calm = { title = "바람이 잦아든 항해", cardId = "nav_dead_reckoning" },
+	tailwind = { title = "바람을 이용한 항해", cardId = "geo_trade_winds" },
+	storm = { title = "폭풍과 선체의 위험", cardId = "wx_great_storm" },
+	pirates = { title = "해상 약탈과 항로 위험", cardId = "geo_pirate_waters" },
+	drift = { title = "표류물과 항해 기록", cardId = "relic_ship_log" },
+	fever = { title = "선원 질병과 선상 의료", cardId = "med_ship_surgeon" },
+	school = { title = "어군과 선박 식량", cardId = "zoo_herring" },
+	merchant = { title = "상선 교역과 신용", cardId = "finance_bill_exchange" },
+	fog = { title = "시야를 가리는 바다 안개", cardId = "geo_sea_fog" },
+	reef = { title = "암초와 수심 관측", cardId = "nav_lead_line" },
+	rescue = { title = "조난과 해상 위험", cardId = "finance_marine_insurance" },
+	island = { title = "미지의 땅과 해도", cardId = "lost_terra_incognita" },
+	ghost = { title = "유령선 전승을 바탕으로 한 가상 사건", cardId = "myth_dutchman" },
+	blockade = { title = "봉쇄와 해상 교역 규칙", cardId = "law_code_interpretation" },
+	dolphins = { title = "돌고래 관찰", cardId = "zoo_dolphin" },
+	whale = { title = "고래 관찰", cardId = "zoo_whale" },
+	current = { title = "해류에 따른 항법 오차", cardId = "nav_dead_reckoning" },
+	wreck = { title = "난파선과 해상 위험", cardId = "finance_marine_insurance" },
+	rainbow = { title = "무지개와 기상 관측", cardId = "wx_rainbow" },
+	mermaid = { title = "인어 전승을 바탕으로 한 가상 사건", cardId = "myth_mermaid" },
+	pigeon = { title = "항구 사이의 연락", cardId = "lang_ledger" },
+	bottle = { title = "바다에 떠온 편지", cardId = "relic_message_bottle" },
+	rats = { title = "선창 보급품 보존", cardId = "med_diet" },
+	vortex = { title = "물살과 소용돌이", cardId = "geo_maelstrom" },
+	fire = { title = "선박의 화재 위험", cardId = "finance_marine_insurance" },
+	mutiny = { title = "선원과 선장의 규율", cardId = "law_code_interpretation" },
+	shark = { title = "해상 사고와 선원 의료", cardId = "med_ship_surgeon" },
+	cursed = { title = "저주받은 보물의 가상 전승", cardId = "relic_treasure_map" },
+	phantom = { title = "바다의 불빛 전승을 바탕으로 한 가상 사건", cardId = "myth_ghost_light" },
+	kraken = { title = "북유럽 괴물 전승을 바탕으로 한 가상 사건", cardId = "myth_kraken" },
+	volcano = { title = "해저 화산과 섬의 형성", cardId = "geo_volcano_island" },
+	meteor = { title = "밤하늘의 관측", cardId = "ast_old_observer" },
+	rival = { title = "항해 경쟁과 선박 운용", cardId = "nav_dead_reckoning" },
+} :: { [string]: { title: string, cardId: string } }
+
 -- rng: 0~1 사이 값을 돌려주는 함수
 -- 날씨: 날짜와 항구로 정해지는 예보. 같은 날 같은 항구에서는 항상 같다.
 export type Weather = { id: string, name: string, wind: number, hint: string }

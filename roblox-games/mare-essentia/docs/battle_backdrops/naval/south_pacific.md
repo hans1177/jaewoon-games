@@ -1,7 +1,9 @@
 # 남태평양 (`south_pacific`) — 해전 배경
 
 - 지역: `pacific` · 문화권 기준: 태평양·오세아니아
-- 이 해역 항구: 세인트헬레나(`st_helena`), 시드니(`sydney`), 호바트(`hobart`), 오클랜드(`auckland`), 포트모르즈비(`port_moresby`), 수바(`suva`), 파페에테(`tahiti`), 호놀룰루(`honolulu`), 괌(`guam`)
+- 이 해역 항구: 시드니(`sydney`), 호바트(`hobart`), 오클랜드(`auckland`), 포트모르즈비(`port_moresby`), 수바(`suva`), 파페에테(`tahiti`), 퍼스(`perth`), 다윈(`darwin`), 호놀룰루(`honolulu`), 괌(`guam`)
+
+- 기존 27종 배경 슬롯에서는 호주 서·북부 및 북쪽 열대 섬도 오세아니아 계열을 공유한다. 전용 해안 원본은 별도 제작이 필요하며 실제 해역 좌표를 바꾸지 않는다.
 
 ## 기본 모습
 

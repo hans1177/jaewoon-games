@@ -1,7 +1,7 @@
 # 서지중해 (`med_west`) — 해전 배경
 
 - 지역: `europe` · 문화권 기준: 이탈리아·아드리아
-- 이 해역 항구: 세비야(`seville`), 마르세유(`marseille`), 리보르노(`livorno`), 바르셀로나(`barcelona`), 발렌시아(`valencia`), 알제(`algiers`), 튀니스(`tunis`), 탕헤르(`tangier`), 팔마(`palma`), 카글리아리(`cagliari`), 아자치오(`ajaccio`), 툴롱(`toulon`), 오랑(`oran`), 말라가(`malaga`), 지브롤터(`gibraltar`), 카르타헤나(`cartagena`), 본(`bone`)
+- 이 해역 항구: 세비야(`seville`), 마르세유(`marseille`), 리보르노(`livorno`), 바르셀로나(`barcelona`), 발렌시아(`valencia`), 알제(`algiers`), 튀니스(`tunis`), 탕헤르(`tangier`), 팔마(`palma`), 카글리아리(`cagliari`), 아자치오(`ajaccio`), 툴롱(`toulon`), 오랑(`oran`), 말라가(`malaga`), 지브롤터(`gibraltar`), 카르타헤나(`cartagena`), 본(`bone`), 제노바(`genoa`)
 
 ## 기본 모습
 

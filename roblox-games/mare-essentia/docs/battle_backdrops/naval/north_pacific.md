@@ -1,7 +1,9 @@
 # 북태평양 (`north_pacific`) — 해전 배경
 
 - 지역: `pacific` · 문화권 기준: 스칸디나비아
-- 이 해역 항구: 제노바(`genoa`), 베네치아(`venice`), 안코나(`ancona`), 스플리트(`split`), 트리에스테(`trieste`), 싯카(`sitka`), 밴쿠버(`vancouver`)
+- 이 해역 항구: 싯카(`sitka`), 밴쿠버(`vancouver`), 아카풀코(`acapulco`), 샌프란시스코(`san_francisco`)
+
+- 북미 태평양 연안의 아카풀코와 샌프란시스코도 이 슬롯을 공유한다. 열대 멕시코 및 온대 캘리포니아의 전용 경관은 별도 제작 대상이다.
 
 ## 기본 모습
 

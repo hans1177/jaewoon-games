@@ -29,6 +29,7 @@ local D = {
 	Careers = require(Shared:WaitForChild("Careers")),
 	Voyage = require(Shared:WaitForChild("Voyage")),
 	Combat = require(Shared:WaitForChild("Combat")),
+	ActionCombat = require(Shared:WaitForChild("ActionCombat")),
 	BoardingCards = require(Shared:WaitForChild("BoardingCards")),
 	CardBook = require(Shared:WaitForChild("CardBook")),
 	Bosses = require(Shared:WaitForChild("Bosses")),
@@ -254,7 +255,7 @@ end
 
 local function loadSession(player)
 	ReplicatedStorage:SetAttribute("MareCoreStartStage", "loading-save")
-	local session = { state = nil, lastAction = 0, canSave = true, ready = false }
+	local session = { state = nil, lastAction = 0, canSave = true, ready = false, dirty = false, saving = false, closing = false, finalSaved = false }
 	if store then
 		local ok, saved
 		for attempt = 1, 3 do
@@ -290,28 +291,46 @@ local function loadSession(player)
 	if player.Character then task.defer(applyCaptainAppearance, player, player.Character) end
 end
 
-local function saveSession(player)
+-- [자동저장·종료 저장] 같은 플레이어의 저장 요청은 한 번에 하나만 실행한다.
+-- 이전 스냅샷의 지연 완료가 더 최신 탐험 진행을 덮어쓰지 못하도록 기존 저장 함수에서 직렬화한다.
+local function saveSession(player, final)
 	local session = sessions[player]
 	if not session or not session.state or not session.canSave or not store then
 		return
 	end
-	session.dirty = false
-	-- 보류된 해전(도망 대기 중)은 저장 전에 확정한다: 접속을 끊어 패배를 피하지 못하게
-	if session.state.pendingBattle then
-		pcall(S.Battle.resolve, session.state, ctx, false)
+	if final then
+		session.closing = true
+		while session.saving and sessions[player] == session do
+			task.wait()
+		end
+		if sessions[player] ~= session or (session.finalSaved and not session.dirty) then return end
+	elseif session.saving or session.closing then
+		return -- dirty는 유지하고 기존 자동저장 주기에서 다시 시도한다.
 	end
-	local data = S.State.serialize(session.state)
+	session.saving = true
+	session.dirty = false
+	local fame
 	local ok, err = pcall(function()
+		-- 보류된 해전(도망 대기 중)은 저장 전에 확정한다: 접속을 끊어 패배를 피하지 못하게
+		if session.state.pendingBattle then
+			pcall(S.Battle.resolve, session.state, ctx, false)
+		end
+		local data = S.State.serialize(session.state)
+		fame = math.max(0, math.floor(session.state.fame))
 		store:SetAsync(keyFor(player), data)
 	end)
-	if rankStore then
+	if rankStore and fame ~= nil then
 		pcall(function()
-			rankStore:SetAsync(tostring(player.UserId), math.max(0, math.floor(session.state.fame)))
+			rankStore:SetAsync(tostring(player.UserId), fame)
 		end)
 	end
 	if not ok then
+		session.dirty = true -- 저장 실패 시 기존 15초 자동저장 루프에서 재시도
 		warn("[Core] save failed:", err)
+	elseif final then
+		session.finalSaved = true
 	end
+	session.saving = false -- 실패 또는 성공 모두 다음 저장을 허용한다.
 end
 
 local function reply(state, ok, message)
@@ -341,6 +360,9 @@ end
 
 local function onInvoke(player, action, payload)
 	local session = sessions[player]
+	if session and session.closing then
+		return { ok = false, message = "게임을 저장하고 있어요" }
+	end
 	if not session or not session.ready then
 		return { ok = false, message = "불러오는 중이에요", loading = true }
 	end
@@ -431,10 +453,16 @@ local function onInvoke(player, action, payload)
 		return reply(state, false, "알 수 없는 요청")
 	end
 
-	local ok, success, message = pcall(handler, state, payload, ctx)
+	local previousCheckpoint = if action == "FieldCheckpoint" then state.stats.fieldCheckpoint else nil
+	local ok, success, message, fieldRunId, fieldEncounter = pcall(handler, state, payload, ctx)
 	if not ok then
 		warn("[Core] handler error:", action, success)
 		return reply(state, false, "오류가 발생했어요")
+	end
+	if action == "FieldCheckpoint" then
+		-- 같은 단계의 재전송은 기존 서버 기록을 확인할 뿐, 추가 저장을 예약하지 않는다.
+		if success and state.stats.fieldCheckpoint ~= previousCheckpoint then session.dirty = true end
+		return { ok = success, message = message or "" } -- 기존 자동저장만 사용, 보상/세계 틱을 단계마다 실행하지 않음
 	end
 	if success then
 		-- [자산 우선순위] 서버가 확정한 항구 이동만 반영한다. 저장·원격 요청 계약은 그대로다.
@@ -458,7 +486,12 @@ local function onInvoke(player, action, payload)
 			message = (message and message ~= "" and (message .. "\n") or "") .. table.concat(extra, "\n")
 		end
 	end
-	return reply(state, success, message)
+	local response = reply(state, success, message)
+	if action == "FieldPracticeBegin" and success then
+		response.fieldRunId = fieldRunId
+		response.fieldEncounter = fieldEncounter
+	end
+	return response
 end
 remote.OnServerInvoke = onInvoke
 ReplicatedStorage:SetAttribute("MareCoreStartStage", "remote-ready")
@@ -525,7 +558,7 @@ Players.PlayerRemoving:Connect(function(player)
 	if lastPlayer and session and session.state then
 		S.Econ.sync(session.state, true)
 	end
-	saveSession(player)
+	saveSession(player, true)
 	sessions[player] = nil
 	script:SetAttribute("MareAssetPort_" .. player.UserId, nil)
 end)
@@ -538,7 +571,7 @@ game:BindToClose(function()
 			S.Econ.sync(session.state, true)
 			worldSaved = true
 		end
-		saveSession(player)
+		saveSession(player, true)
 	end
 end)
 
@@ -547,7 +580,7 @@ task.spawn(function()
 	while true do
 		task.wait(AUTOSAVE_INTERVAL)
 		for player, session in sessions do
-			if session.dirty then
+			if session.dirty and not session.saving and not session.closing then
 				task.spawn(saveSession, player)
 			end
 		end

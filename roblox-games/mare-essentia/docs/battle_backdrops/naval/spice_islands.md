@@ -1,7 +1,7 @@
 # 향료 제도 (`spice_islands`) — 해전 배경
 
 - 지역: `far_east` · 문화권 기준: 동남아
-- 이 해역 항구: 마카사르(`makassar`), 테르나테(`ternate`), 암본(`ambon`), 반다(`banda`), 퍼스(`perth`), 다윈(`darwin`)
+- 이 해역 항구: 마카사르(`makassar`), 테르나테(`ternate`), 암본(`ambon`), 반다(`banda`)
 
 ## 기본 모습
 

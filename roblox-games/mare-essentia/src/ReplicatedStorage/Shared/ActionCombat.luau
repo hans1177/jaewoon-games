@@ -89,6 +89,54 @@ function A.newEnemy(kind: string)
 	return { kind = kind, def = def, hp = def.hp, state = "idle", t = 0, struck = false, dead = false, stagger = 0 }
 end
 
+-- [지상 편성 정본] 서버 입장과 필드 생성에서 같은 기존 수치와 슬롯을 사용한다.
+function A.fieldEnemyCounts(danger: number): (number, number)
+	local bossCount = if danger < 3 then 0 else math.clamp(math.floor(danger / 2), 1, 8)
+	return math.clamp(20 + (danger - 1) * 6, 20, 100 - bossCount), bossCount
+end
+
+function A.fieldEnemyMaxHp(kind: string): number
+	local def = A.Enemies[kind]
+	if not def then error("알 수 없는 적: " .. tostring(kind)) end
+	assert(type(def.hp) == "number", "적 체력 정의 오류: " .. kind)
+	return math.floor(def.hp * (if kind == "boss" then 2.75 elseif kind == "shield" or kind == "charger" then 2.55 else 2.35) + 0.5)
+end
+
+-- [보스 전투 공용 규칙] 현재 전투 체력으로 기술 단계를 계산하고 기존 능력 변화를 한 번만 적용한다.
+-- 재도전은 newEnemy로 새 상태를 만들며 중간 체력·기술 단계는 저장하지 않는다.
+-- 호출자가 소유한 전투 상태만 변경한다. 이 함수 자체는 원격 요청이나 저장 권한을 부여하지 않는다.
+function A.bossPhase(hp: number, maxHp: number): number
+	local ratio = hp / math.max(1, maxHp)
+	return if ratio < 0.15 then 4 elseif ratio < 0.4 then 3 elseif ratio < 0.7 then 2 else 1
+end
+
+function A.advanceBossAbilities(e: any, maxHp: number): (boolean, boolean, boolean)
+	if e.dead or not e.def.boss then return false, false, false end
+	local ratio = e.hp / math.max(1, maxHp)
+	local faster = ratio < 0.66 and not e.bossPhase2
+	local reach = ratio < 0.33 and not e.bossPhase3
+	local rage = ratio <= 0.5 and not e.enraged
+	if not (faster or reach or rage) then return false, false, false end
+	e.def = table.clone(e.def)
+	if faster then
+		e.bossPhase2 = true
+		e.def.speed *= 1.25
+		e.def.windup *= 0.85
+	end
+	if reach then
+		e.bossPhase3 = true
+		e.def.range *= 1.2
+		e.def.recover *= 1.6
+	end
+	if rage then
+		e.enraged = true
+		e.def.windup *= 0.7
+		e.def.recover *= 0.7
+		e.def.speed *= 1.3
+	end
+	return faster == true, reach == true, rage == true
+end
+
 -- 적 한 틱. dist = 주인공과 거리. 돌려주는 값: 이벤트 문자열 ("telegraph" | "strike") 또는 nil,
 -- 그리고 "strike" 일 때 이번 공격이 닿았는지(hit). 닿는지는 공격이 시작되는 순간의 거리로 정한다.
 function A.stepEnemy(e: any, dt: number, dist: number, canAttack: boolean?): (string?, boolean?)
@@ -146,8 +194,16 @@ function A.attackersCount(list: {any}): number
 end
 
 -- 주인공이 적을 친다. fromFront 가 true 이고 방패병이면 피해가 줄어든다. 돌려주는 값: 들어간 피해, 쓰러졌는지.
-function A.damageEnemy(e: any, base: number, mult: number, fromFront: boolean, stagger: boolean?): (number, boolean)
+-- 필드 피해 보정은 동일한 소유 전투 상태에서 계산한 값만 호출자가 전달한다.
+-- 원격 요청 데이터 자체를 이 보정 인수로 넘기지 않는다. 기존 일반 전투 호출은 그대로 동작한다.
+function A.damageEnemy(e: any, base: number, mult: number, fromFront: boolean, stagger: boolean?,
+	fieldPower: number?, buffed: boolean?, parried: boolean?, weakMult: number?, counterHit: boolean?, armored: boolean?): (number, boolean)
 	if e.dead then return 0, false end
+	if fieldPower ~= nil then
+		base = base * fieldPower * (if buffed then 1.3 else 1)
+			* (if parried then 0.52 else 1) * (weakMult or 1) * (if counterHit then 2 else 1)
+			* (if armored then 0.6 else 1)
+	end
 	local d = base * mult
 	if fromFront and e.def.frontGuard then d *= (1 - e.def.frontGuard) end
 	d = math.max(1, math.floor(d + 0.5))

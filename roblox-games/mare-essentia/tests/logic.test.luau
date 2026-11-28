@@ -53,6 +53,8 @@ local D: { [string]: any } = {
 }
 -- [교역 재미] 타입 검사기 한도 때문에 D 표 밖에서 붙인다.
 ;(D :: any).TradeFun = require("./Shared/TradeFun")
+;(D :: any).ActionCombat = require("./Shared/ActionCombat")
+-- 서비스 등록 경계에서 이종 모듈 사전의 구조적 타입 확장을 제한한다. 기존 검사와 런타임 값은 유지한다.
 local Registry = (require("./Services/Registry") :: (any) -> any)(D)
 local S, handlers = Registry.S, Registry.handlers
 
@@ -2224,6 +2226,17 @@ do
 	local st = newState()
 	local b1 = D.Bounties.board(st.portId, st.day, D.Ports.Goods, (function() local t = {} for id in D.Ports.Goods do table.insert(t, id) end table.sort(t) return t end)())
 	check("board has 3", #b1 == 3 and b1[3].kind == "hunt")
+	local linked = true
+	for _, b in S.Harbor.boardHere(st) do
+		linked = linked and b.story ~= "" and b.ending ~= "" and D.Cards.ById[b.loreCardId] ~= nil
+	end
+	check("주간 의뢰: 지역 사연과 실제 지식카드", linked)
+	local eventRecords, eventLinks = 0, true
+	for _, record in D.Voyage.EventRecords do
+		eventRecords += 1
+		eventLinks = eventLinks and D.Cards.ById[record.cardId] ~= nil and record.title ~= ""
+	end
+	check("해상 사건 33종 백과 연결", eventLinks and eventRecords == 33)
 	local deliver = b1[1]
 	check("accept bounty", act(st, "AcceptBounty", { bountyId = deliver.id }))
 	check("no double accept", not act(st, "AcceptBounty", { bountyId = deliver.id }))
@@ -4953,7 +4966,7 @@ do
 	local sc = D.Quests.ById["q_order_2"]
 	if sc then
 		local hk = D.Quests.Story(sc, nil, nil)
-		check("연속 퀘스트는 장 번호가 붙는다", string.find(hk, "제", 1, true) ~= nil and string.find(hk, "장.", 1, true) ~= nil, hk)
+		check("연속 퀘스트는 정확한 단계 번호가 붙는다", string.sub(hk, 1, #"제2단계. ") == "제2단계. ", hk)
 	end
 	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
 end
@@ -5474,6 +5487,27 @@ testDiscoveryForms()
 	end
 end
 testTradeFun()
+
+-- [서버 편성] 입장 요청의 임의 체력·위험도·적 수는 무시하고 서버 탐험지 정의만 사용한다.
+do
+	local st: any = S.State.new("england", 1700)
+	st.portId = "london"
+	local ok, _, id, encounter = handlers.FieldPracticeBegin(st, {
+		siteId = "london_fields", danger = 99, enemyCount = 1, bossCount = 99, bossMaxHp = 1
+	})
+	check("서버 입장 편성 확정", ok and type(id) == "number" and encounter ~= nil
+		and encounter.enemyCount == 20 and encounter.bossCount == 0 and encounter.bossMaxHp == 1980)
+	check("서버 입장만으로 영구 진행 변경 없음", st.stats.fieldCheckpoint == nil)
+	local wrong = handlers.FieldPracticeBegin(st, { siteId = "amsterdam_gardens" })
+	check("타 항구 편성 요청 거절", wrong == false)
+	-- 저장된 정상 구역은 유지하고 중간 전투 정보는 복원하지 않는다.
+	st.stats.fieldCheckpoint = { version = 1, siteId = "london_fields", stage = 1, cardId = "bot_oak",
+		bossHp = 1, bossPhase = 4, bosses = { [1] = { hp = 1 } } }
+	local loaded = S.State.sanitize(S.State.serialize(st))
+	local cp = loaded.stats.fieldCheckpoint
+	check("탐험 구역·단서 복원", cp ~= nil and cp.stage == 1 and cp.cardId == "bot_oak")
+	check("보스 중간 전투 상태 저장 복원 금지", cp ~= nil and cp.bossHp == nil and cp.bossPhase == nil and cp.bosses == nil)
+end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then

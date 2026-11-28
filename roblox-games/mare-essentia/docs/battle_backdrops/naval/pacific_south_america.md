@@ -1,7 +1,7 @@
 # 남미 태평양 (`pacific_south_america`) — 해전 배경
 
 - 지역: `new_world` · 문화권 기준: 스페인·포르투갈 식민지
-- 이 해역 항구: 부에노스아이레스(`buenos_aires`), 과야킬(`guayaquil`), 카야오(`callao`), 발파라이소(`valparaiso`)
+- 이 해역 항구: 과야킬(`guayaquil`), 카야오(`callao`), 발파라이소(`valparaiso`)
 
 ## 기본 모습
 

@@ -293,6 +293,9 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(discovery,/handlers\.FieldPracticeCommit/);
   assert.match(discovery,/fieldRuns\[state\] = nil/);
   assert.match(discovery,/math\.min\(120,/);
+  assert.match(discovery,/run\.id ~= p\.runId/);
+  assert.match(discovery,/run\.committed = true/);
+  assert.match(client,/local fieldRunId = beginResult and beginResult\.fieldRunId/);
   assert.match(client,/call\("FieldPracticeBegin"/);
   assert.match(client,/call\("FieldPracticeCommit"/);
   // 탐험 종료의 기존 3개 반환값을 유지하고, 검증 대상인 연타 기록만 마지막 인자로 추가 전달한다.
@@ -301,6 +304,74 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(client,/record = streakRecord and streakRecord\.hits or 0/);
   assert.match(discovery,/local recordLimit = math\.min\(500,/);
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
+});
+
+test('밀렵 저지와 현상 수배는 기존 적과 지점별 유형을 재사용한다',()=>{
+  assert.match(field,/elseif isWildlife then "poacher"/);
+  assert.match(field,/portVisualSeed % 3 == 1 then "bounty"/);
+  assert.match(field,/\(mode == "bounty" or mode == "duel"\) and a.elite ~= b.elite/);
+  assert.match(field,/if mode == "bounty" or mode == "duel" then 1 elseif mode == "poacher" then 3 else 4/);
+  assert.match(field,/enemy.tag.Text = "밀렵단 · "/);
+  assert.match(field,/enemy.tag.Text = "현상 수배 대상 · "/);
+  assert.match(field,/and \(not isWildlife or portVisualSeed % 2 == 0\)/);
+  assert.match(field,/밀렵단 저지 · 생태 기록 확보/);
+  assert.match(field,/수배 대상 격파 · 현장 기록 확보/);
+});
+
+test('전 세계 생존 방어와 보급품 탈환은 실제 구역 유지와 경비병 격파를 사용한다',()=>{
+  assert.match(field,/FieldDefenseHoldAt", now/);
+  assert.match(field,/20 - \(now - started\)/);
+  assert.match(field,/not inside and started then folder:SetAttribute\("FieldDefenseHoldAt", nil\)/);
+  assert.match(field,/FieldDefenseComplete", true/);
+  assert.match(field,/targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"/);
+  assert.match(field,/prompt.ObjectText = "탈환할 보급품 상자"/);
+  assert.match(field,/then props\[1\] else props/);
+  assert.match(field,/FieldInterceptRoute"\) == "survival"/);
+  assert.match(field,/and \(targetCard.field == "Goods" or targetCard.field == "Shipbuilding"\s+or table.find/);
+});
+
+test('전 세계 매복과 증원 차단은 기존 병력의 시간차 교전과 단계 완료 조건을 사용한다',()=>{
+  assert.match(field,/FieldInterceptRoute", mode/);
+  assert.match(field,/FieldInterceptWave", if i <= 2 then 1 else 2/);
+  assert.match(field,/now < startedAt \+ \(wave - 1\) \* 4/);
+  assert.match(field,/flat.Magnitude > 18 then continue/);
+  assert.match(field,/Magnitude <= 28 then\s+folder:SetAttribute\("FieldInterceptStartedAt", now\)/);
+  assert.match(field,/if i == 2 and folder:GetAttribute\("FieldInterceptRoute"\) then/);
+  assert.match(field,/FieldInterceptRemaining", remaining/);
+  assert.match(field,/not folder:GetAttribute\("FieldStrongholdRoute"\)/);
+});
+
+test('전 세계 구출 호위는 지점별 고정 분기와 안전한 지면을 사용한다',()=>{
+  assert.match(field,/siteChoice = \(siteChoice \* 31 \+ string.byte\(opts.siteId, i\)\) % 997/);
+  assert.match(field,/existingRescue or \(\(theme == "ruins" or theme == "archive" or theme == "fort"\) and siteChoice % 3 == 0\)/);
+  assert.match(field,/not folder:GetAttribute\("FieldPursuitRoute"\) and found < nodeCount/);
+  assert.match(field,/candidate.Material == Enum.Material.Water or candidate.Normal.Y < 0.8/);
+  assert.match(field,/workspace:GetPartBoundsInBox\(CFrame.new\(candidate.Position \+ Vector3.new\(0, 3.5, 0\)\)/);
+  assert.match(field,/if found == 2 then\s+local character = player.Character/);
+  assert.match(field,/Pose.walkR15\(resident, phase, moving\)/);
+});
+
+test('전 세계 거점 탈환은 지형과 위험도로 선택하며 구출과 추격을 보존한다',()=>{
+  assert.match(field,/nodeCount >= 2 and found < 2 and \(opts.danger or 1\) >= 3/);
+  assert.match(field,/not folder:GetAttribute\("FieldRescueRoute"\) and not folder:GetAttribute\("FieldPursuitRoute"\)/);
+  assert.match(field,/theme == "fort" or \(\(theme == "ruins" or theme == "archive"\)/);
+  assert.match(field,/local count = math.min\(math.clamp\(\(opts.danger or 1\), 3, 5\), #guards\)/);
+  assert.match(field,/if i == 2 and folder:GetAttribute\("FieldStrongholdRoute"\) then/);
+  assert.match(field,/enemy.model:SetAttribute\("FieldStrongholdGuard", true\)/);
+  assert.match(field,/folder:SetAttribute\("FieldStrongholdRemaining", remaining\)/);
+  assert.ok(field.indexOf('-- [전 세계 거점 탈환]') > field.indexOf('-- [구출·호위]'));
+  assert.doesNotMatch(field,/and table\.find\(\{ "acre_crusader", "kingston_royal", "auto_architecture_antwerp_mid", "auto_site_stockholm_mid" \}, opts\.siteId\)/);
+});
+
+test('탐험 자동저장과 종료 저장은 동일 세션에서 겹치지 않는다',()=>{
+  assert.match(core,/if final then\s+session\.closing = true\s+while session\.saving and sessions\[player\] == session do/);
+  assert.match(core,/elseif session\.saving or session\.closing then\s+return/);
+  assert.match(core,/session\.saving = true\s+session\.dirty = false/);
+  assert.match(core,/if not ok then\s+session\.dirty = true/);
+  assert.match(core,/session\.saving = false -- 실패 또는 성공/);
+  assert.match(core,/if session\.dirty and not session\.saving and not session\.closing then/);
+  assert.match(core,/if session and session\.closing then/);
+  assert.equal((core.match(/saveSession\(player, true\)/g)||[]).length,2);
 });
 
 test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격은 추가하지 않는다',()=>{
@@ -315,7 +386,21 @@ test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격
   assert.match(field,/elseif wpn\.ranged then[\s\S]*?pulseAt\("SHAPE_BURST", hrp\.CFrame/);
   assert.match(field,/elseif family == "bow" then[\s\S]*?Color3\.fromRGB\(165, 231, 165\)/);
   assert.match(field,/-- 추가 공격은 R15 무기 자세와 이펙트뿐이다/);
-  assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId \}\)/);
+  assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId, fieldCheckpoint = true, runId = fieldRunId \}\)/);
+  assert.match(discovery,/checkpoint\.stage ~= math\.clamp\(site\.days, 1, 3\)/);
+  assert.match(discovery,/state\.stats\.fieldCheckpoint = nil/);
+  assert.match(field,/local recorded = not opts\.onCheckpoint or opts\.onCheckpoint\(i, recordCard\)/);
+  assert.match(field,/if not recorded then say/);
+  assert.match(field,/local requestOk, recorded = pcall\(function\(\)[\s\S]{0,220}?return recorded\s+end\)/);
+  assert.match(field,/anchor:SetAttribute\("FieldCheckpointPending", nil\)\s+recorded = requestOk and recorded == true\s+if not recorded then say/);
+  assert.match(core,/local previousCheckpoint = if action == "FieldCheckpoint" then state\.stats\.fieldCheckpoint else nil/);
+  assert.match(core,/if success and state\.stats\.fieldCheckpoint ~= previousCheckpoint then session\.dirty = true end/);
+  assert.match(field,/ch:GetAttribute\("FieldRouteStep"\) == found \+ 1/);
+  assert.match(field,/if i == found then folder:SetAttribute\("FieldResumeAnchor", pos\) end/);
+  assert.match(field,/hit\.Material == Enum\.Material\.Water or hit\.Normal\.Y < 0\.8/);
+  assert.match(field,/workspace:GetPartBoundsInBox\(CFrame\.new\(candidate\)/);
+  assert.match(field,/enemy\.root\.Position - candidate\)\.Magnitude < 36/);
+  assert.match(field,/spawn = candidate\s+resumeCharacter:PivotTo\(CFrame\.new\(spawn\)\)/);
   assert.doesNotMatch(discovery,/state\.coins\s*\+=\s*earned/);
 });
 
@@ -325,9 +410,10 @@ test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3�
   assert.match(field,/local lastMasteryComboAt = -100/);
   assert.match(field,/local baseChance = if rank == 2 then 0\.07 elseif rank == 3 then 0\.10/);
   assert.match(field,/rank == 4 then 0\.13 elseif rank >= 5 then math\.min\(0\.24, 0\.16 \+ \(rank - 5\) \* 0\.016\) else 0/);
-  assert.match(field,/xp >= 720 then 10 elseif xp >= 530 then 9 elseif xp >= 380 then 8/);
-  assert.match(field,/xp >= 260 then 7 elseif xp >= 170 then 6 elseif xp >= 100 then 5/);
-  assert.match(field,/xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1/);
+  const mastery = readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau');
+  assert.match(mastery,/Weapons\.MasteryXp = table\.freeze\(\{ 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 \}\)/);
+  assert.match(mastery,/for rank = #Weapons\.MasteryXp, 2, -1 do/);
+  assert.match(field,/local practiceRank = Weapons\.masteryRank/);
   assert.match(field,/local maxBeat = \(\{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 \}\)/);
   assert.match(field,/local weaponChance = if wpn\.family == "dagger" then 0\.02/);
   assert.match(field,/elseif wpn\.id == "crossbow" then -0\.025/);
@@ -654,7 +740,8 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
 // [스튜디오 실제 실패 복구] 초급 20마리에서 체형 2종으로 수렴했던 R15 실루엣을 검사한다.
 test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 이상을 실제 배정한다',()=>{
   assert.ok(field.includes('local kinds = if danger0 <= 1 then { "grunt", "grunt", "archer", "grunt" }'));
-  assert.ok(field.includes('local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)'));
+  assert.match(field,/local enemyCount, bossCount = AC\.fieldEnemyCounts\(danger0\)/);
+  assert.match(read('ReplicatedStorage/Shared/ActionCombat.luau'),/return math\.clamp\(20 \+ \(danger - 1\) \* 6, 20, 100 - bossCount\), bossCount/);
   const grunt=field.match(/\t\tgrunt = \{([\s\S]*?)\n\t\t\},/);
   assert.ok(grunt,'실제 검병 복식 정의 누락');
   const profiles=[...grunt[1].matchAll(/\{ ".*?", "(.*?)", Color3/g)].map(x=>x[1]);
@@ -1231,7 +1318,8 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
   // [실게임 권한 회귀] Studio 도구 권한으로 통과해도 클라이언트 RenderFidelity 쓰기는 탐험 입장을 중단시킨다.
   assert.doesNotMatch(placement,/\.RenderFidelity\s*=/,'게임 클라이언트의 제한된 메시 정밀도 변경 금지');
   assert.doesNotMatch(placement,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/,'건물 복구에 임시 도형 금지');
-  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6/);
+  assert.match(field,/local enemyCount, bossCount = AC\.fieldEnemyCounts\(danger0\)/);
+  assert.match(read('ReplicatedStorage/Shared/ActionCombat.luau'),/return math\.clamp\(20 \+ \(danger - 1\) \* 6, 20, 100 - bossCount\), bossCount/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, not e\.waiting\)/);
 });
 
@@ -1248,7 +1336,7 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
     'local sceneryHit = false', 'local visualObjectHits = 0',
     'local function breakCrate(c, strikePower: number?)',
     'local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?, strikePower: number?)',
-    'if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35',
+    'AC.fieldEnemyMaxHp(ac.kind)', 'opts.fieldEncounter.bossMaxHp',
     'e.knockUntil, e.riseUntil', 'e.ac.stagger = math.max(e.ac.stagger, 1.57)',
     'local knocked = now < (e.riseUntil or 0)', 'st, ph = "KNOCKDOWN"',
     'st, ph = "GETUP"', 'st, ph = "BLOCK"', 'st, ph = "PARRY"',
@@ -1264,6 +1352,7 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
     'e.tacticAt = now + 0.65',
     'Pose.dieR15(dying, p, deathVariant)'
   ]) assert.ok(field.includes(marker),'탐험 전술/전투 연결 누락: '+marker);
+  assert.ok(combat.includes('if kind == "boss" then 2.75 elseif kind == "shield" or kind == "charger" then 2.55 else 2.35'),'공용 최대 체력 배율 보존');
   for(const marker of [
     'state == "KNOCKDOWN"', 'state == "GETUP"', 'state == "BLOCK"',
     'state == "PARRY"', 'local fallSide =',
@@ -4221,7 +4310,7 @@ test('대항해시대 4차 하천·절벽·수관 CC0 등록 및 지형 시차 �
 test('Mare naval weather and distant merchants preserve cadence and restore the scene',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const env=naval.slice(naval.indexOf('local envConnection'),naval.indexOf('-- [후미 흰 포말]'));
-  for(const token of ['if tickSum < (if MOBILE_VFX then 0.20 else 0.10) then return end','elapsed += tickSum','tickSum = 0','local driftTime, bobTime = elapsed * 0.055, elapsed * 1.2','math.sin(driftTime + merchant.speed) * 50','math.sin(bobTime + merchant.speed) * 0.27','if merchant.model:GetPivot() ~= pivot then merchant.model:PivotTo(pivot) end','0.035 + math.sin(elapsed * (if mode == "storm" then 1.5 else 0.6)) * 0.012','if sea.Color ~= waterColor then sea.Color = waterColor end','local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994','local brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)','if colorGrade.Brightness ~= brightness then colorGrade.Brightness = brightness end','for _, anchor in oceanNodes do anchor:Destroy() end','for _, anchor in weatherNodes do anchor:Destroy() end','lighting.ClockTime, lighting.FogColor = savedLighting.clock, savedLighting.fogColor','bloom:Destroy()','sunRays:Destroy()','colorGrade:Destroy()']) assert.ok(env.includes(token),token);
+  for(const token of ['if tickSum < (if MOBILE_VFX then 0.20 else 0.10) then return end','elapsed += tickSum','tickSum = 0','local driftTime, bobTime = elapsed * 0.055, elapsed * 1.2','math.sin(driftTime + merchant.speed) * 50','math.sin(bobTime + merchant.speed) * 0.27','if merchant.model:GetPivot() ~= pivot then merchant.model:PivotTo(pivot) end','0.035 + math.sin(elapsed * (if mode == "storm" then 1.5 else 0.6)) * 0.012','if sea.Color ~= waterColor then sea.Color = waterColor end','local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994','local brightness = -0.12 + 0.145 * daylightMix + (if flash then 0.23 else 0)','if colorGrade.Brightness ~= brightness then colorGrade.Brightness = brightness end','for _, anchor in oceanNodes do anchor:Destroy() end','for _, anchor in weatherNodes do anchor:Destroy() end','lighting.ClockTime, lighting.FogColor = savedLighting.clock, savedLighting.fogColor','bloom:Destroy()','sunRays:Destroy()','colorGrade:Destroy()']) assert.ok(env.includes(token),token);
   assert.equal(env.split('envConnection:Disconnect()').length-1,2);
 });
 
@@ -4369,7 +4458,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
   const sourceIds=[...sitesSource.matchAll(/\{\s*id = "([^"]+)", name = "([^"]+)", portId = "([^"]+)"/g)].map(row=>row[1]);
-  assert.equal(sourceIds.length,592,'원본 탐험지 총수');
+  assert.equal(sourceIds.length,593,'기존 592곳과 신규 무라노 탐험지 1곳');
+  assert.ok(sourceIds.includes('venice_murano'),'무라노 원료 하역장 누락');
+  assert.ok(siteProfile.includes('venice_murano = "coast"'),'무라노 원료 하역장 해안 지형');
   assert.equal(new Set(sourceIds).size,sourceIds.length,'원본 탐험지 중복 금지');
   assert.deepEqual(profiles.map(row=>row[1]).sort(),sourceIds.sort(),'전체 탐험지 ID 정확히 일치');
   const validThemes=new Set(["archive","coast","swamp","ruins","fort","highland","mine","volcanic","plains","lake","forest","jungle","desert","farm","glacier"]);
@@ -4623,19 +4714,53 @@ test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 �
  const root='roblox-games/mare-essentia/';
  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
- const map=naval.match(/local briefPorts = \{([\s\S]*?)\n\s*\}/)[1];
- const held=new Set(["acapulco","san_francisco","buenos_aires","st_helena","genoa","venice","ancona","split","trieste","honolulu","guam","perth","darwin"]);
+ const seaAreas=readText(root+'src/ReplicatedStorage/Shared/SeaAreas.luau');
+ const portsSource=readText(root+'src/ReplicatedStorage/Shared/Ports.luau');
+ const map=seaAreas.match(/SeaAreas\.PORTS = \{([\s\S]*?)\n\}/)[1];
  const used=new Set();
  for(const [,sea,ports] of map.matchAll(/([a-z_]+) = "([^"]*)"/g)){
   const brief=readText(root+'docs/battle_backdrops/naval/'+sea+'.md');
   const line=brief.split('\n').find(x=>x.startsWith('- 이 해역 항구:'));
-  const expected=[...line.matchAll(/\x60([a-z0-9_]+)\x60/g)].map(m=>m[1]).filter(p=>!held.has(p));
+  const expected=[...line.matchAll(/\x60([a-z0-9_]+)\x60/g)].map(m=>m[1]);
   assert.deepEqual(ports.split(' ').filter(Boolean),expected);
   for(const p of expected){assert.ok(!used.has(p),p);used.add(p);}
  }
  assert.equal([...map.matchAll(/([a-z_]+) = "/g)].length,27);
+ const portIds=[...portsSource.matchAll(/id\s*=\s*"([a-z0-9_]+)"[^\n]*lat\s*=/g)].map(m=>m[1]);
+ assert.deepEqual([...used].sort(),portIds.sort());
+ assert.match(naval,/local briefSea = SeaAreas\.seaOf\(opts\.portId\)/);
+ assert.ok(!naval.includes('local briefPorts ='));
  for(const token of ['"sea_" .. briefSea .. "_" .. layer[1]','AssetIds["Naval/" .. asset]','AssetIds[kind .. "/" .. spec[1]]','NavalBriefAssetKey','NavalBriefPlaced_','node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'])assert.ok(naval.includes(token),token);
  for(const token of ['local asset = "field_" .. siteId','AssetIds["Terrain/" .. asset]','entry.band, entry.horizon, entry.briefBackdrop = "far", true, true','FieldBriefBackdropPlaced','FieldBriefAssetKey','stageFeature(entry)'])assert.ok(field.includes(token),token);
+});
+
+
+test('지상·해상 입장 시 현재 항구 시간과 예보를 연결하고 지역 기후를 유지한다',()=>{
+ const root='roblox-games/mare-essentia/src/';
+ const client=readText(root+'StarterPlayer/Game.client.luau');
+ const field=readText(root+'ReplicatedStorage/Shared/FieldScene.luau');
+ const naval=readText(root+'ReplicatedStorage/Shared/NavalBattle.luau');
+ assert.equal((client.match(/clockTime = game:GetService\("Lighting"\)\.ClockTime/g)||[]).length,2);
+ assert.match(client,/weatherId = view\.weather and view\.weather\.id/);
+ assert.match(client,/weatherId = view and view\.weather and view\.weather\.id/);
+ assert.match(field,/biome\.clock = opts\.clockTime/);
+ assert.match(field,/if initialWeather and table\.find\(weatherOptions, initialWeather\) then weather = initialWeather end/);
+ assert.match(field,/biome\.clock \+ \(now - clockStart\) \* \(24 \/ 720\)/);
+ assert.match(naval,/if not opts\.weatherId then\s+if mode == "fog"/);
+ assert.match(naval,/if not opts\.weatherId then\s+if coast\.id == "ghost"/);
+ assert.match(naval,/elseif opts\.clockTime < 8 then "dawn" elseif opts\.clockTime < 17 then "day" else "sunset"/);
+ assert.match(naval,/lighting\.ClockTime = if type\(opts\.clockTime\) == "number"/);
+ assert.match(naval,/local startClock = lighting\.ClockTime/);
+ assert.match(naval,/elapsed >= nextLightAt[\s\S]*?nextLightAt = elapsed \+ 0\.5/);
+ assert.match(naval,/\(startClock \+ elapsed \* \(24 \/ 720\)\) % 24/);
+ assert.match(naval,/folder:SetAttribute\("NavalClockTime", clock\)/);
+ assert.match(naval,/oceanTerrain\.WaterReflectance = 0\.08 \+ 0\.07 \* daylight/);
+ assert.match(naval,/local tideColor = coast\.water:Lerp\(Color3\.fromRGB\(17, 37, 54\), 0\.12 \+ \(1 - daylight\) \* 0\.24\)/);
+ assert.match(naval,/if oceanTerrain\.WaterColor ~= tideColor then oceanTerrain\.WaterColor = tideColor end/);
+ assert.match(naval,/daylightMix = daylight/);
+ assert.match(naval,/local brightness = -0\.12 \+ 0\.145 \* daylightMix \+ \(if flash then 0\.23 else 0\)/);
+ assert.match(naval,/oceanTerrain\.WaterColor = oldWater\.color/);
+ assert.match(naval,/lighting\.ClockTime, lighting\.FogColor = savedLighting\.clock, savedLighting\.fogColor/);
 });
 
 // [동물 지상 보행] 수입 회전축을 덮지 않고 실제 해부 방향·종별 보폭·발밑 지형을 사용한다.
@@ -4706,12 +4831,15 @@ test('Mare naval camera reuses interpolation state and fleet health only changes
 
 test('Mare naval announcements and damage cues release scheduled scene references',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
-  const pop=naval.slice(naval.indexOf('local function popText(text, color)'),naval.indexOf('-- [맵 보급 안내]'));
-  for(const token of ['local fadeTimer = task.delay(0.92, function()','local removeTimer = task.delay(1.28, function()','local fadeTimer = task.delay(1.8, function()','local hideTimer = task.delay(0.26, function()','local removeTimer = task.delay(1.2, function()','if finished or navalHitCueSerial ~= cueSerial or not navalHitCue.Parent then return end','if not finished and navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end','if currentAnnouncement == l then currentAnnouncement = nil end','navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1','TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)']) assert.ok(pop.includes(token),token);
-  assert.equal(pop.split('conns[coroutine.running()] = nil').length-1,5);
-  assert.equal(pop.split('conns[fadeTimer] = fadeTimer').length-1,2);
-  assert.equal(pop.split('conns[removeTimer] = removeTimer').length-1,2);
-  assert.equal(pop.split('conns[hideTimer] = hideTimer').length-1,1);
+  const pop=naval.slice(naval.indexOf('local function popText(text, color, milestone, isStreak)'),naval.indexOf('-- [맵 보급 안내]'));
+  for(const token of ['if finished or not navalHitCue.Parent then return end','navalCue.serial += 1','if navalCue.fade then navalCue.fade:Cancel() end','if navalCue.pop then navalCue.pop:Cancel() end','conns[navalCue.timer] = nil','task.cancel(navalCue.timer)','navalCue.timer = nil','navalCue.timer = task.delay(if milestone then 0.75 else 0.43, function()','if finished or navalCue.serial ~= serial or not navalHitCue.Parent then return end','conns[navalCue.timer] = navalCue.timer','if navalCue.streak then','navalHitCue.Visible = false','navalCue.streak = false','navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1','local removeTimer = task.delay(1.2, function()','if l.Parent then l:Destroy() end','conns[removeTimer] = removeTimer','TweenInfo.new(1.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)']) assert.ok(pop.includes(token),token);
+  assert.equal(pop.split('conns[coroutine.running()] = nil').length-1,2);
+  assert.equal(pop.split('task.cancel(navalCue.timer)').length-1,2);
+  assert.equal(pop.split('conns[navalCue.timer] = navalCue.timer').length-1,1);
+  assert.equal(pop.split('conns[removeTimer] = removeTimer').length-1,1);
+  const finish=naval.slice(naval.indexOf('local function finish(replay)'),naval.indexOf('-- [해전 원형 버튼]'));
+  for(const token of ['for _, c in conns do','coroutine.status(c) ~= "dead" then task.cancel(c) end','table.clear(conns)','gui:Destroy()','folder:Destroy()']) assert.ok(finish.includes(token),token);
+  assert.doesNotMatch(pop,/currentAnnouncement|navalHitCueStroke|navalHitCueSerial/);
 });
 
 test('Mare actor motion reuses sample options without changing role or state selection',()=>{
@@ -5275,6 +5403,123 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(source.includes('EncyclopediaBookmarkJump'));
  assert.ok(source.includes('H.encyclopediaTargetId = saved.id'));
  assert.ok(source.includes('ArtGallery = 10'));
+});
+
+test('선장실·캐릭터창과 전투는 동일한 무기별 숙련 경험치 정본을 사용한다',()=>{
+  const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const status=game.split('function RENDERERS.status()')[1].split('if view.village then')[0];
+  const cabin=game.split('function H.openCabin()')[1].split('-- 왼쪽: 큰 배 그림과 능력')[0];
+  for(const section of [status,cabin]){
+    assert.match(section,/view\.weaponPractice/);
+    assert.match(section,/Weapons\.masteryRank\(xp\)/);
+    assert.match(section,/Weapons\.MasteryXp\[rank \+ 1\]/);
+  }
+  assert.match(status,/CharacterWeaponMastery_/);
+  assert.match(status,/필살기 잠김\(8단\)/);
+  assert.match(cabin,/CabinWeaponMastery/);
+  const promotion=field.split('if promoted then')[1].split('\n\t\t\t\tif chain > 1 then')[0];
+  assert.match(promotion,/shockRing\(/);
+  assert.match(promotion,/pulseAt\("BUFF_PULSE"/);
+  assert.match(promotion,/sfx_fanfare/);
+  for(const check of [/if rank > chain then/,
+    /Weapons\.actionDesign\(wpn\)\.cadence/,
+    /wpn\.id ~= demoWeapon or chainMotionSerial ~= demoSerial/,
+    /pl\.guarding or os\.clock\(\) - swingT0 < 0\.28/,
+    /startSwing\("slash", 0\.4, rank, true\)/,
+    /if not wpn\.ranged then/,
+    /if rank >= 6 then trailsOn/,
+    /if rank >= 8 and not visualMobile then afterimage/,
+    /showCombo\("새 동작 · " \.\. demoName/]) assert.match(promotion,check);
+  assert.doesNotMatch(promotion,/strikeEnemy\(|damageEnemy\(|arrowTrail\(|useMove\(|earnedPractice\[/);
+});
+
+
+test('결투는 기존 정예 대상 한 명과 구역 내 신규 적 공격 제한을 사용하고 생존 방어는 20초를 요구한다',()=>{
+  assert.match(field,/portVisualSeed % 3 == 2 and .* then "duel"/);
+  assert.match(field,/mode == "duel" then enemy.tag.Text = "결투 상대 · "/);
+  assert.match(field,/local duelActive = false/);
+  assert.match(field,/not duelActive or o.model:GetAttribute\("FieldInterceptWave"\)/);
+  assert.match(field,/AC.stepEnemy\(e.ac, enemyDt, dist, not e.waiting\)/);
+  assert.match(field,/duelActive and not e.model:GetAttribute\("FieldInterceptWave"\)/);
+  assert.match(field,/결투 승리 · 현장 기록 확보/);
+  assert.match(field,/if not folder:GetAttribute\("FieldDefenseComplete"\) then/);
+  assert.match(field,/if seconds == 0 then\s+folder:SetAttribute\("FieldDefenseSeconds", 0\)/);
+  assert.doesNotMatch(field,/seconds == 0 or \(folder:GetAttribute\("FieldInterceptRemaining"\)/);
+});
+
+
+test('연속 두목전은 기존 두목을 순서대로 활성화하고 대기 중 공통 타격을 막는다',()=>{
+  assert.match(field,/if #bosses >= 2 then mode, troops = "bossrush", bosses end/);
+  assert.match(field,/FieldBossRushTotal", count/);
+  assert.match(field,/FieldBossRushOrder", i/);
+  assert.match(field,/rushOrder ~= folder:GetAttribute\("FieldBossRushNext"\)/);
+  assert.match(field,/os.clock\(\) < \(folder:GetAttribute\("FieldBossRushNextAt"\) or 0\)\) then return nil end/);
+  assert.match(field,/now < \(folder:GetAttribute\("FieldBossRushNextAt"\) or 0\)\) then continue end/);
+  assert.match(field,/FieldBossRushNextAt", os.clock\(\) \+ 1.5/);
+  assert.match(field,/if wave and not rushOrder then/);
+  assert.match(field,/연속 두목전 승리 · 기록 확보/);
+});
+
+
+test('긴급 구조는 기존 조사원 접근과 90초 제한 및 후퇴 재시도를 사용한다',()=>{
+  assert.match(field,/FieldEmergencyRescue", \(opts.danger or 1\) >= 4 and siteChoice % 2 == 0/);
+  assert.match(field,/found == 1 and folder:GetAttribute\("FieldEmergencyRescue"\)/);
+  assert.match(field,/deadline = now \+ 90/);
+  assert.match(field,/not deadline and distance <= 50/);
+  assert.match(field,/now >= deadline and distance >= 65/);
+  assert.match(field,/if not deadline or os.clock\(\) >= deadline then/);
+  assert.match(field,/if found == 2 then\s+local character = player.Character/);
+});
+test('신화 기록은 실제 카드와 기존 수호 두목을 연결하고 재개 규칙을 보존한다',()=>{
+  assert.match(field,/string.sub\(targetCard.id, 1, 5\) == "myth_"/);
+  assert.match(field,/전설 증거 조사/);
+  assert.match(field,/FieldMythRecordGuard", true/);
+  assert.equal((field.match(/targetCard.field == "Architecture" or folder:GetAttribute\("FieldMythRoute"\)/g)||[]).length,2);
+  assert.match(field,/not folder:GetAttribute\("FieldMythRoute"\) and mode ~= "supply"/);
+});
+
+
+test('연속 두목전은 서버에 접수된 두 번째 단계에서 이미 격파한 두목을 재생성하지 않는다',()=>{
+  const route=field.split('-- [전 세계 매복·증원 차단]')[1].split('-- [탐험 시간·날씨·실물 동물]')[0];
+  const restored=route.split('if found >= 2 then')[1].split('elseif anchor and anchor:IsA("BasePart") then')[0];
+  assert.match(route,/found >= 2 and type\(opts.fieldCheckpoint\) == "table"/);
+  assert.match(restored,/if mode == "bossrush" then/);
+  assert.match(restored,/FM.destroy\(enemy.fm\)/);
+  assert.match(restored,/table.remove\(enemies, index\)/);
+  assert.match(restored,/enemy.model:Destroy\(\)/);
+  assert.match(restored,/FieldBossRushCheckpointRestored", true/);
+  assert.doesNotMatch(restored,/strikeEnemy|damageEnemy|onCheckpoint|earnedPractice/);
+});
+
+
+test("탐험 장소별 구획과 승인 소품은 기존 저장 경계를 유지한다",()=>{
+ const field=read("ReplicatedStorage/Shared/FieldScene.luau");
+ assert.match(field,/anchor:SetAttribute\("FieldZoneName", zoneName\)/);
+ assert.match(field,/if \(props or \(not special and not extraction\)\) and i > found then/);
+ assert.match(field,/if not AssetIds\[spec\[1\] \.\. "\/" \.\. spec\[2\]\] then continue end/);
+ assert.match(field,/if visualMobile and index > 1 then break end/);
+ assert.match(field,/surface\.Material == Enum\.Material\.Water then continue end/);
+ assert.match(field,/placeModel\(group, spec\[1\], spec\[2\], hit\.Position, spec\[3\], false, nil, "near"\)/);
+ assert.match(field,/recorded = requestOk and recorded == true[\s\S]*?found \+= 1[\s\S]*?folder:SetAttribute\("FieldCurrentZoneName", nextAnchor:GetAttribute\("FieldZoneName"\)\)/);
+});
+
+
+test("현재 탐험 구역의 장식만 생성하고 서버 접수 이후 다음 구역을 로드한다",()=>{
+ const field=read("ReplicatedStorage/Shared/FieldScene.luau");
+ assert.match(field,/zoneSceneryBuilders\[i\] = function\(\)[\s\S]*?i ~= found \+ 1 then return end/);
+ assert.match(field,/if i == found \+ 1 then\s+zoneSceneryBuilders\[i\]\(\)/);
+ assert.match(field,/recorded = requestOk and recorded == true[\s\S]*?if not recorded then[\s\S]*?found \+= 1[\s\S]*?completedScenery:Destroy\(\)[\s\S]*?zoneSceneryBuilders\[found \+ 1\]\(\)/);
+ for(const site of ["alexandria_library","split_palace","antwerp_monastery_herbs"])assert.ok(field.includes(`opts.siteId == "${site}"`));
+});
+
+
+test("미래 탐험 구역의 일반 발견물과 조명은 서버 접수 전 노출하지 않는다",()=>{
+ const field=read("ReplicatedStorage/Shared/FieldScene.luau");
+ const zone=field.split("zoneSceneryBuilders[i] = function()")[1].split("if i <= found then")[0];
+ assert.match(zone,/if not special and not extraction then[\s\S]*?placeModel\(group, pick\[1\]/);
+ assert.match(field,/light.Enabled = i == found \+ 1/);
+ assert.match(field,/nextPrompt.Enabled = true\s+local nextLight = nextAnchor:FindFirstChildOfClass\("PointLight"\)\s+if nextLight then nextLight.Enabled = true end/);
+ assert.match(field,/point:GetAttribute\("FieldRouteStep"\) == found \+ 1 then/);
 });
 
  test('흥정은 확정 5종만 서버 출제하고 저울·화물·기억을 서버가 판정한다',()=>{

@@ -21,6 +21,7 @@ local D: { [string]: any } = {
 	Careers = require("./Shared/Careers"),
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
+	ActionCombat = require("./Shared/ActionCombat"),
 	BoardingCards = require("./Shared/BoardingCards"),
 	CardBook = require("./Shared/CardBook"),
 	Bosses = require("./Shared/Bosses"),
@@ -55,12 +56,60 @@ local D: { [string]: any } = {
 	PortBuildings = require("./Shared/PortBuildings"),
 	Economy = require("./Shared/Economy"),
 }
+-- 서비스 등록 경계에서 이종 모듈 사전의 구조적 타입 확장을 제한한다. 기존 검사와 런타임 값은 유지한다.
 local Registry = (require("./Services/Registry") :: (any) -> any)(D)
 local S = Registry.S
 local ctx = { rng = math.random, market = S.MarketClass.new() }
 local pass, fail = 0, 0
 local function check(name, ok)
 	if ok then pass += 1 else fail += 1 print("FAIL: " .. name) end
+end
+
+-- [탐험 저장] 기존 서비스의 실제 시작·단계 접수·세이브 복원·최종 보상을 연결한다.
+do
+	local st = S.State.new("england", 1700)
+	local site, cardId
+	st.careers.adventure.level = 30
+	for _, candidate in D.Sites.Sites do
+		st.portId = candidate.portId
+		if candidate.days >= 2 and not S.Discovery.siteBlockReason(st, candidate) then
+			for _, id in candidate.pool do
+				if not st.discovered[id] and not S.Discovery.cardBlockReason(st, D.Cards.ById[id]) then site, cardId = candidate, id break end
+			end
+		end
+		if site then break end
+	end
+	check("탐험 구역 저장: 유효한 다단계 탐험지", site ~= nil and cardId ~= nil)
+	if site and cardId then
+		st.ship.supplies = 10000
+		local H = Registry.handlers
+		local began, _, runId, encounter = H.FieldPracticeBegin(st, { siteId = site.id })
+		check("탐험 구역 저장: 입장", began == true and type(runId) == "number")
+		local expectedEnemies, expectedBosses = D.ActionCombat.fieldEnemyCounts(site.minLevel)
+		check("탐험 구역 저장: 서버 편성", encounter ~= nil and encounter.enemyCount == expectedEnemies and encounter.bossCount == expectedBosses and encounter.bossMaxHp == D.ActionCombat.fieldEnemyMaxHp("boss"))
+		check("탐험 구역 저장: 단계 건너뛰기 거부", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 2, observedCardId = cardId }) == false)
+		check("탐험 구역 저장: 1단계", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 1, observedCardId = cardId }) == true)
+		check("탐험 구역 저장: 재전송 멱등", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 1, observedCardId = cardId }) == true)
+		check("탐험 구역 저장: 중간 보상 거부", H.Explore(st, { siteId = site.id, fieldCheckpoint = true, runId = runId }, ctx) == false and st.stats.explored == 0)
+		local loaded = S.State.sanitize(S.State.serialize(st))
+		local cp = loaded and S.Discovery.checkpointOf(loaded, site)
+		check("탐험 구역 저장: 세이브 왕복", cp and cp.stage == 1 and cp.cardId == cardId)
+		if loaded and cp then
+			loaded.ship.supplies = 10000
+			local resumed, _, resumedId = H.FieldPracticeBegin(loaded, { siteId = site.id })
+			check("탐험 구역 저장: 재입장", resumed == true and resumedId ~= runId)
+			check("탐험 구역 저장: 이전 장면 단계 거부", H.FieldCheckpoint(loaded, { siteId = site.id, runId = runId, stage = 2, observedCardId = cardId }) == false)
+			check("탐험 구역 저장: 이전 장면 정산 거부", H.FieldPracticeCommit(loaded, { siteId = site.id, runId = runId, hits = {} }) == false)
+			for stage = 2, math.clamp(site.days, 1, 3) do
+				check("탐험 구역 저장: 후속 단계 " .. stage, H.FieldCheckpoint(loaded, { siteId = site.id, runId = resumedId, stage = stage, observedCardId = cardId }) == true)
+			end
+			check("탐험 구역 저장: 이전 장면 귀환 거부", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true, runId = runId }, ctx) == false)
+			check("탐험 구역 저장: 숙련 정산", H.FieldPracticeCommit(loaded, { siteId = site.id, runId = resumedId, hits = {} }) == true)
+			check("탐험 구역 저장: 숙련 중복 정산 거부", H.FieldPracticeCommit(loaded, { siteId = site.id, runId = resumedId, hits = {} }) == false)
+			check("탐험 구역 저장: 최종 정산", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true, runId = resumedId }, ctx) == true)
+			check("탐험 구역 저장: 중복 정산 차단", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true, runId = resumedId }, ctx) == false and loaded.stats.explored == 1)
+		end
+	end
 end
 
 local allOk, heroes, legend, melee, ranged, cannon, specials = true, 0, 0, 0, 0, 0, 0
@@ -1021,6 +1070,215 @@ do
 		if q.kind == "chronicle" and q.disc and not D.KnowledgeTree.DisciplineById[q.disc] then table.insert(qbad, q.id) end
 	end
 	check("연대기 퀘스트: 학문 연결이 맞다", #qbad == 0)
+end
+
+-- 제2~4장: 실제 서비스의 분기 해금·전투 진행·데이터 참조 검증
+do
+	local Q = D.Quests.ById
+	local siteById = {}
+	for _, site in D.Sites.Sites do siteById[site.id] = site end
+	local valid = #D.Quests.Chapters == 4
+	for n = 2, 4 do
+		for _, suffix in { "1", "2", "3", "4", "5a", "5b" } do
+			local q = Q["ch" .. tostring(n) .. "_" .. suffix]
+			valid = valid and q ~= nil and q.problem ~= nil and q.cause ~= nil and q.result ~= nil and q.speaker ~= nil and q.line ~= nil
+			if q then
+				if q.goodId then valid = valid and D.Ports.Goods[q.goodId] ~= nil end
+				if q.portId then valid = valid and D.Ports.Ports[q.portId] ~= nil end
+				if q.exploreSite then
+					local site = siteById[q.exploreSite]
+					valid = valid and site ~= nil and site.portId == q.portId and table.find(site.pool, q.cardId) ~= nil and D.Cards.ById[q.cardId] ~= nil
+				end
+				if q.leaderId then valid = valid and D.BoardingCards.Leaders[q.leaderId] ~= nil end
+			end
+		end
+		local st = S.State.new("england", 1700)
+		st.quests.done.pr_england_4 = true
+		local first = Q["ch" .. tostring(n) .. "_1"]
+		check("장 해금: 앞 장 미완료 차단 " .. n, not S.Quest.visible(st, first))
+		for _, id in first.afterAny do
+			st.quests.done[id] = true
+			check("장 해금: 선택 결말 " .. id, S.Quest.visible(st, first))
+			st.quests.done[id] = nil
+		end
+	end
+	check("제2~4장 실제 상품·항구·탐험지·카드 참조", valid)
+	local st = S.State.new("england", 1700)
+	st.quests.done.pr_england_4 = true
+	st.quests.done.ch2_2 = true
+	st.stats.warClears = { war_ch2 = 1 }
+	check("이야기 전용 함대전은 이전 승리로 자동 완료되지 않는다", S.Quest.progressAny(st, Q.ch2_3) == 0 and not S.Quest.isAuto(Q.ch2_3))
+	local accepted = Registry.handlers.Accept(st, { questId = "ch2_3" })
+	check("이야기 함대전 수락 시 기존 승수 제외", accepted and S.Quest.progress(st, Q.ch2_3) == 0)
+	D.Quests.Kit.recordWar(st, { id = "war_ch2", region = "europe" })
+	check("이야기 함대전 실제 새 승리만 진행", S.Quest.progress(st, Q.ch2_3) == 1)
+	local sd = S.State.new("england", 1700)
+	sd.quests.done.pr_england_4 = true
+	sd.quests.done.ch3_2 = true
+	sd.stats.duelWins = { rajaraja = 3 }
+	local duelAccepted = Registry.handlers.Accept(sd, { questId = "ch3_3" })
+	check("이야기 대결 수락 시 기존 승수 제외", duelAccepted and S.Quest.progress(sd, Q.ch3_3) == 0)
+	D.Quests.Kit.recordDuelWin(sd, "rajaraja")
+	check("이야기 대결 새 승리만 진행", S.Quest.progress(sd, Q.ch3_3) == 1)
+	local sb = S.State.new("england", 1700)
+	sb.quests.done.pr_england_4 = true
+	sb.quests.done.ch4_4 = true
+	sb.stats.storyChoices = { ch4_treaty = "permit" }
+	check("장 결말은 선택한 분기만 해금", S.Quest.visible(sb, Q.ch4_5b) and not S.Quest.visible(sb, Q.ch4_5a))
+end
+
+-- 모든 지상·해상·교역·연구·서막·허가증 의뢰는 실제 카드에 연결된다.
+do
+	local bad, count, fields, regions, permits = {}, 0, 0, 0, 0
+	for _, q in D.Quests.Quests do
+		count += 1
+		local card = q.loreCardId and D.Cards.ById[q.loreCardId]
+		local hook, ending = S.Quest.storyOf(q)
+		local entries = card and D.Quests.Kit.LORE[q.loreCardId]
+		local found = false
+		for _, entry in entries or {} do
+			if entry.questId == q.id and entry.text == q.loreText then found = true break end
+		end
+		if not card or not found or not q.loreText or q.loreText == "" or not hook or not ending
+			or not string.find(hook, "관련 백과: " .. (card and card.name or ""), 1, true) then
+			table.insert(bad, q.id)
+		end
+		if q.routeId then
+			fields += 1
+			if q.loreCardId ~= q.cardId then table.insert(bad, q.id) end
+		end
+		if string.sub(q.id, 1, 5) == "q_rg_" then regions += 1 end
+		if q.rewardPermit then permits += 1 end
+	end
+	check("전체 의뢰 지식카드 색인: " .. table.concat(bad, ","), count > 300 and #bad == 0 and fields == 50 and regions == 60 and permits > 0)
+	local st = S.State.new("england", 1700)
+	local q = D.Quests.ById.q_field_north_sea_1
+	check("미완료 의뢰의 카드 이야기는 숨긴다", D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, q.loreCardId) == nil)
+	st.quests.done[q.id] = true
+	local lore = D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, q.loreCardId)
+	check("완료 의뢰의 카드 이야기만 열림", lore ~= nil and #lore == 1 and lore[1].text == q.loreText)
+end
+
+-- 모든 항구 선택 사건은 기존 카드의 실제 선택 결과로 색인한다.
+do
+	local missing = {}
+	local count = 0
+	for _, e in D.Story.Events do
+		count += 1
+		for i, c in e.choices do
+			local id = c.effect.cardId or e.loreCardId
+			local found = false
+			for _, row in (id and D.Quests.Kit.LORE[id]) or {} do
+				if row.eventId == e.id and row.choice == i and row.text == c.result then found = true break end
+			end
+			if not id or not D.Cards.ById[id] or not found then table.insert(missing, e.id .. ":" .. i) end
+		end
+	end
+	check("항구 선택 사건 228개 전체 카드 연결: " .. table.concat(missing, ","), count == 228 and #missing == 0)
+	local st = S.State.new("england", 1700)
+	local e = D.Story.ById.lc_1
+	local id = e.loreCardId
+	check("미완료 숨겨진 해도 결말 차단", D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, id) == nil)
+	st.story[e.id] = 2
+	local lore = D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, id)
+	check("선택한 사건 결말만 표시", lore ~= nil and #lore == 1 and lore[1].text == e.choices[2].result)
+	check("거절한 해도 후속 사건 해금 차단", S.Story.blockReason(st, D.Story.ById.lc_2) ~= nil)
+end
+
+-- 역사 사건 전체와 인물 대화의 실데이터 연결 확인.
+do
+	local count, missing = 0, {}
+	for _, ev in D.HistoryEvents.Events do
+		count += 1
+		local id = ev.insight and ev.insight.node
+		for i = 1, #ev.choices + (if ev.insight then 1 else 0) do
+			local found = false
+			for _, row in (id and D.Quests.Kit.LORE[id]) or {} do
+				if row.historyId == ev.id and row.choice == i then found = true break end
+			end
+			if not id or not D.Cards.ById[id] or not found then table.insert(missing, ev.id .. ":" .. i) end
+		end
+	end
+	check("역사 사건 79개 모든 선택의 카드 색인: " .. table.concat(missing, ","), count == 79 and #missing == 0)
+	local st = S.State.new("england", 1700)
+	local ev = D.HistoryEvents.ById.principia
+	local card = ev.insight.node
+	local function matches()
+		local result = {}
+		for _, row in D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, card) or {} do
+			if row.title == ev.title then table.insert(result, row.text) end
+		end
+		return result
+	end
+	check("미완료 역사 선택 기록 비공개", #matches() == 0)
+	st.history = st.history or { seen = {}, fx = {} }
+	st.history.seen[ev.id] = #ev.choices + 1
+	local lore = matches()
+	check("실제 역사 지식 선택만 공개", #lore == 1 and string.find(lore[1], ev.insight.label, 1, true) ~= nil)
+	local npcCount, dialogueOK = 0, true
+	for _, event in D.Story.Events do
+		if string.sub(event.id, 1, 4) == "npc_" then
+			npcCount += 1
+			dialogueOK = dialogueOK and #event.lines >= 3
+		end
+	end
+	check("항구 인물 164개 실제 대화 배열 보완", npcCount == 164 and dialogueOK)
+end
+
+-- 선행·후속 그래프는 기존 판정과 일치하고 분기에서 덮어쓰기가 없어야 한다.
+do
+	local Q = D.Quests
+	local bad = {}
+	local visiting, visited = {}, {}
+	local function visit(id)
+		if visiting[id] then table.insert(bad, "순환:" .. id) return end
+		if visited[id] then return end
+		visiting[id] = true
+		for _, nextId in Q.Followups[id] or {} do
+			if not Q.ById[nextId] then table.insert(bad, nextId) else visit(nextId) end
+		end
+		visiting[id] = nil
+		visited[id] = true
+	end
+	for _, quest in Q.Quests do
+		local parents = table.clone(quest.afterAny or {})
+		if quest.after then table.insert(parents, quest.after) end
+		for _, parent in parents do
+			if not Q.ById[parent] or not table.find(Q.Followups[parent] or {}, quest.id) then
+				table.insert(bad, quest.id .. ":" .. parent)
+			end
+		end
+		visit(quest.id)
+	end
+	check("전체 퀘스트 선행·후속 그래프: " .. table.concat(bad, ","), #bad == 0)
+	for n = 1, 4 do
+		local prefix = "ch" .. tostring(n)
+		local list = Q.Followups[prefix .. "_4"] or {}
+		check(prefix .. " 두 결말 보존", #list == 2 and table.find(list, prefix .. "_5a") ~= nil and table.find(list, prefix .. "_5b") ~= nil)
+		for _, suffix in { "_5a", "_5b" } do
+			local id = prefix .. suffix
+			check(id .. " 장 완료 식별", Q.ChapterEnd[id] == true)
+			check(id .. " 다음 장 연결", if n < 4 then table.find(Q.Followups[id] or {}, "ch" .. tostring(n + 1) .. "_1") ~= nil else Q.Followups[id] == nil)
+		end
+	end
+end
+
+-- 네 장의 복선과 허가증 결말이 실제 사연 데이터에 연결되는지 확인한다.
+do
+	local linked = true
+	for _, chapter in D.Quests.Chapters do
+		local hook, ending = S.Quest.storyOf(D.Quests.ById[chapter.first])
+		linked = linked and string.find(hook .. ending, "파도", 1, true) ~= nil
+		for _, id in chapter.last do
+			local quest = D.Quests.ById[id]
+			local start, finish = S.Quest.storyOf(quest)
+			linked = linked and string.find(start .. finish, "파도", 1, true) ~= nil
+			if quest.rewardPermit then
+				check(id .. " 개별 결말 및 허가증 안내", string.find(finish, "편지", 1, true) ~= nil and string.find(finish, "길드 허가증", 1, true) ~= nil)
+			end
+		end
+	end
+	check("네 장 파도 인장 복선·결말 연결", linked)
 end
 
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
