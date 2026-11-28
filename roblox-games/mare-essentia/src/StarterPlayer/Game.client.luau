@@ -2279,7 +2279,7 @@ function H.renderFacilityGallery()
   local tab = currentTab
   if H.gallerySelectedTab ~= tab then
     H.gallerySelectedTab = tab
-    H.galleryIndex = nil -- [랜덤 시작] 메뉴를 열 때마다 다른 원화부터 보여 준다
+    H.galleryIndex = nil -- [시설 원화] 등록 전용 원화 우선, 미등록은 기존 무작위 시작
     H.gallerySelection = nil -- [시설 변경] 이전 국가·항구·항로 선택을 해제한다.
   end
   local focus = H.MENU_FOCUS[tab]
@@ -2298,6 +2298,12 @@ function H.renderFacilityGallery()
   end
   -- [현행 지식] 이미 발견한 카드만 사용하고 주제별 중복 카드를 제거한다.
   local matches, seen = {}, {}
+  -- [시설 전용 원화] 기존 시설표 첫 탭으로 등록된 가로 원화만 선택한다.
+  local facility = H.facilityOf(tab)
+  local stripId = AssetIds["CardArt/ui_strip_" .. facility.tabs[1]]
+  if stripId then
+    table.insert(matches, { image = "rbxassetid://" .. tostring(stripId), poolArt = true })
+  end
   for _, token in H.FACILITY_GALLERY_TOPICS[tab] or {} do
     for _, card in ((view and view.codex and view.codex.cards) or {}) do
       if card.found == true and type(card.image) == "string" and card.image ~= "" and not seen[card.id] then
@@ -2328,7 +2334,13 @@ function H.renderFacilityGallery()
     table.insert(matches, { image = "rbxassetid://" .. tostring(kv[2]), poolArt = true })
   end
   H.galleryMatches = matches
-  if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = math.random(1, #matches) end
+  if H.galleryIndex == nil and #matches > 0 then
+    if stripId then
+      H.galleryIndex = 1 -- 등록 시설 원화만 첫 화면 우선
+    else
+      H.galleryIndex = math.random(1, #matches) -- 미등록 시설의 기존 무작위 시작 유지
+    end
+  end
   H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
   local matched = if #matches > 0 then matches[H.galleryIndex] else nil
   -- [선택 원화] 클릭한 국가·항구·항로의 발견 카드/승인 해역도만 우선 전시한다.
