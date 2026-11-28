@@ -667,16 +667,16 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					local name = (asset .. " " .. p.Name):lower()
 					if architecture then
 						for _, key in { "glass", "windowpane", "glazing", "hinge", "iron", "metal", "latch",
-							"awning", "canvas", "cloth", "roof", "tile", "gable", "shingle", "wood", "timber",
-							"beam", "door", "frame", "floor", "stone", "column", "wall", "brick", "plaster",
-							"trunk", "bark", "leaf", "leaves", "foliage", "grass", "moss", "sand", "snow" } do
+							"awning", "canvas", "cloth", "fabric", "rug", "flag", "banner", "roof", "tile", "gable", "shingle", "wood", "timber",
+							"beam", "door", "frame", "fence", "bench", "cart", "table", "bookcase", "crate", "floor", "stone", "column", "wall", "brick", "plaster",
+							"trunk", "bark", "branch", "stump", "log", "leaf", "leaves", "foliage", "grass", "moss", "rock", "cliff", "sand", "snow" } do
 							if role:find(key, 1, true) then name = role; break end
 						end
 					end
 					local material, paint = Enum.Material.Brick, wallColor
 					if sandy or mediterranean then material = Enum.Material.Plaster end
 					if distantHills then
-						local stone = role:find("rock", 1, true) or role:find("stone", 1, true)
+						local stone = role:find("rock", 1, true) or role:find("stone", 1, true) or role:find("cliff", 1, true)
 						material = if stone then Enum.Material.Rock elseif sandy then Enum.Material.Sand else Enum.Material.Grass
 						paint = if stone then C(126, 126, 113) elseif sandy then C(173, 151, 112) else C(112, 133, 91)
 					elseif name:find("trunk", 1, true) or name:find("bark", 1, true) or name:find("branch", 1, true) or name:find("stump", 1, true) or name:find("log", 1, true) then
@@ -702,7 +702,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						-- [철물] 경첩/문고리/철제 난간은 저반사 철제 표면.
 						material, paint = Enum.Material.Metal, C(100, 105, 108)
 					elseif name:find("awning", 1, true) or name:find("canvas", 1, true)
-						or name:find("cloth", 1, true) then
+						or name:find("cloth", 1, true) or name:find("fabric", 1, true) then
 						material, paint = Enum.Material.Fabric, if tint then tint else C(171, 125, 88)
 					elseif name:find("roof", 1, true) or name:find("tile", 1, true)
 						or name:find("gable", 1, true) or name:find("shingle", 1, true) then
@@ -727,6 +727,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						material = if sandy then Enum.Material.Sandstone elseif mediterranean then Enum.Material.Limestone else Enum.Material.Cobblestone
 						paint = wallColor:Lerp(C(122, 119, 113), if sandy then 0.18 else 0.48)
 						if tint then paint = paint:Lerp(tint, 0.42) end
+					elseif name:find("plaster", 1, true) then
+						material, paint = Enum.Material.Plaster, wallColor
+					elseif name:find("brick", 1, true) then
+						material, paint = Enum.Material.Brick, wallColor
 					elseif kind == "Terrain" then
 						material, paint = Enum.Material.Ground, tint or C(137, 113, 78)
 					elseif kind == "Interior" then
