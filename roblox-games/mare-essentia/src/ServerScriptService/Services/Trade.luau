@@ -69,10 +69,11 @@ return function(D, S)
 	end
 
 	-- [특산품 단계 잠금 · 2026-11-28 오너 지시] 처음부터 특산품을 마음대로 살 수 없다.
-	-- 일반품: 언제나 · 특산품: 그 나라 우호도 15 이상 / 항구 투자 2단계 / 길드 허가증 / 이 항구에서 거래한 적 있음 / 시작 항구
-	-- 명품(그 항구 특산 중 가장 비싼 것, 특산 2개 이상일 때): (우호도 40 + 투자 2단계) 또는 길드 허가증
-	-- 허가증은 항구별 '길드 허가증' 의뢰(지역 문제 해결) 보상. 기존 저장은 그대로(거래 기록으로 이미 열린 항구 유지).
-	local SPECIAL_REP, PREMIUM_REP, PREMIUM_LEVEL = 15, 40, 2
+	-- [오너 결정 2026-11-28: 어렵게, 이야기를 진행할수록 열리게 · 기존 거래 기록 예외 없음(초기화)]
+	-- 일반품: 언제나 · 특산품: 우호도 25 이상 / 항구 투자 2단계 / 길드 허가증 중 하나 (시작 항구만 처음부터)
+	-- 명품(그 항구 특산 중 가장 비싼 것, 특산 2개 이상일 때): 길드 허가증 + (우호도 50 또는 투자 3단계)
+	-- 길드 허가증 의뢰는 시작 국가 서막을 마친 뒤 열린다(이야기 진행에 묶임).
+	local SPECIAL_REP, PREMIUM_REP, PREMIUM_LEVEL, SPECIAL_LEVEL = 25, 50, 3, 2
 	local function premiumOf(port)
 		if type(port.produces) ~= "table" or #port.produces < 2 then return nil end
 		local best, price = nil, -1
@@ -93,14 +94,13 @@ return function(D, S)
 		local permitQuest = D.Quests.ById["permit_" .. portId]
 		local questName = permitQuest and permitQuest.name or nil
 		if goodId == premiumOf(port) then
-			if permit or (rep >= PREMIUM_REP and level >= PREMIUM_LEVEL) then return nil end
+			if permit and (rep >= PREMIUM_REP or level >= PREMIUM_LEVEL) then return nil end
 			return { tier = "premium", tierName = "명품", rep = rep, needRep = PREMIUM_REP, level = level, needLevel = PREMIUM_LEVEL, quest = questName,
-				text = string.format("명품 · 우호도 %d/%d + 투자 %d/%d단계, 또는 길드 허가증", rep, PREMIUM_REP, level, PREMIUM_LEVEL) }
+				text = string.format("명품 · 길드 허가증%s + (우호도 %d/%d 또는 투자 %d/%d단계)", if permit then "✔" else "✘", rep, PREMIUM_REP, level, PREMIUM_LEVEL) }
 		end
-		local traded = state.harborTrade and (state.harborTrade[portId] or 0) > 0
-		if home or permit or traded or rep >= SPECIAL_REP or level >= PREMIUM_LEVEL then return nil end
-		return { tier = "special", tierName = "특산품", rep = rep, needRep = SPECIAL_REP, level = level, needLevel = PREMIUM_LEVEL, quest = questName,
-			text = string.format("특산품 · 우호도 %d/%d 또는 투자 %d단계 또는 길드 허가증", rep, SPECIAL_REP, PREMIUM_LEVEL) }
+		if home or permit or rep >= SPECIAL_REP or level >= SPECIAL_LEVEL then return nil end
+		return { tier = "special", tierName = "특산품", rep = rep, needRep = SPECIAL_REP, level = level, needLevel = SPECIAL_LEVEL, quest = questName,
+			text = string.format("특산품 · 우호도 %d/%d 또는 투자 %d단계 또는 길드 허가증", rep, SPECIAL_REP, SPECIAL_LEVEL) }
 	end
 
 	function handlers.Buy(state, p, ctx)

@@ -17831,7 +17831,25 @@ end
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
 		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
 		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
-		face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
+		-- [빈 초상 방지 · 2026-11-28] 새 개별 담당자 초상(npc_keeper_*)이 있으면 그것, 없고 칸도 못 찾으면 공용 초상 찾기
+		do
+			local keeperKey = if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" elseif tile ~= "hero" then tile else nil
+			local own = keeperKey and AssetIds["Portraits/npc_keeper_" .. keeperKey]
+			if own then
+				face.Image = "rbxassetid://" .. tostring(own)
+				face.ImageRectOffset, face.ImageRectSize = Vector2.zero, Vector2.zero
+			elseif not portraitId and H.portraitFor then
+				local img, off, size = H.portraitFor({ key = "keeper:" .. tostring(keeperKey or "tavern") })
+				if img then
+					face.Image = "rbxassetid://" .. tostring(img)
+					face.ImageRectOffset, face.ImageRectSize = off or Vector2.zero, size or Vector2.zero
+					face:SetAttribute("PortraitFallback", true)
+				end
+			end
+		end
+		if not face:GetAttribute("PortraitFallback") and not (tile ~= "hero" and AssetIds["Portraits/npc_keeper_" .. (if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" else tile)]) then
+			face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
+		end
 		face.ScaleType = Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		face.Visible = not narration

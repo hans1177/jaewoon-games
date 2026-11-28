@@ -11,9 +11,9 @@ const game = fs.readFileSync(`${root}/StarterPlayer/Game.client.luau`, 'utf8');
 const ac = fs.readFileSync(`${root}/ReplicatedStorage/Shared/ActionCombat.luau`, 'utf8');
 const field = fs.readFileSync(`${root}/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
 test('특산품 3단계: 일반·특산·명품 잠금 + 구매 차단', () => {
-  assert.match(trade, /local SPECIAL_REP, PREMIUM_REP, PREMIUM_LEVEL = 15, 40, 2/);
+  assert.match(trade, /local SPECIAL_REP, PREMIUM_REP, PREMIUM_LEVEL, SPECIAL_LEVEL = 25, 50, 3, 2/);
   assert.match(trade, /local lock = lockOf\(state, state\.portId, goodId\)/);
-  assert.match(trade, /home or permit or traded or rep >= SPECIAL_REP/);
+  assert.match(trade, /home or permit or rep >= SPECIAL_REP/);
 });
 test('길드 허가증 의뢰·보상·저장 복원', () => {
   assert.match(quests, /id = "permit_" \.\. portId/);

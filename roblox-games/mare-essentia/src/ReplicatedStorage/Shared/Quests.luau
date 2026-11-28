@@ -705,7 +705,7 @@ do
 				table.insert(Quests, {
 					id = "permit_" .. portId, name = port.name .. " 길드 허가증",
 					summary = string.format("길드 허가증 — %s 6개를 %s에 납품", goodName, port.name), kind = "deliver",
-					goodId = need, portId = portId, amount = 6, rewardPermit = portId,
+					goodId = need, portId = portId, amount = 6, rewardPermit = portId, afterPrologue = true,
 					problem = string.format("%s 상인 길드는 낯선 선장에게 %s 같은 특산품을 넘기지 않는다.", port.name, special),
 					cause = string.format("믿을 만한 거래 기록이 없다. 마침 길드는 %s이(가) 모자라 애를 먹고 있다.", goodName),
 					result = string.format("길드 허가증을 받아 %s의 특산품과 명품을 살 수 있다.", port.name),
