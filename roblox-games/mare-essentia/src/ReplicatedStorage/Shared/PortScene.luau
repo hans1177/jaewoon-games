@@ -577,7 +577,8 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				or surfaceHasMaps(surfaceMap))
 			if architecture and not preserveArchitectureTexture then
 				for _, mesh in p:GetChildren() do
-					if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then
+					if (mesh:IsA("SpecialMesh") and mesh.TextureId ~= "")
+						or ((mesh:IsA("Decal") or mesh:IsA("Texture")) and mesh.Texture ~= "") then
 						preserveArchitectureTexture = true
 						break
 					end
@@ -592,6 +593,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						or p.MaterialVariant ~= "" or surfaceHasMaps(sa)
 					for _, ch in p:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
+						if (ch:IsA("Decal") or ch:IsA("Texture")) and ch.Texture ~= "" then textured = true end
 					end
 					local partName = p.Name:lower()
 					local detail = partName:find("eye", 1, true) or partName:find("pupil", 1, true)
@@ -652,7 +654,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			if architecture and (importedWhite or importedGray or (distantHills and high - low <= 0.14
 				and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)))
 				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
-				and p.Material ~= Enum.Material.Neon then
+				and p.Material ~= Enum.Material.Neon and p.Transparency < 0.95 then
 				local sa = p:FindFirstChildOfClass("SurfaceAppearance")
 				local textured = preserveArchitectureTexture or (p:IsA("MeshPart") and p.TextureID ~= "")
 					or p.MaterialVariant ~= "" or surfaceHasMaps(sa)
