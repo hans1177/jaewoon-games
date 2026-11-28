@@ -12135,8 +12135,8 @@ end
 -- [첫 경험·실패 이유·한눈에 보기 · 2026-11-28 오너 지시] 글 설명 대신 3단계 그림 카드, 진 이유와 다음 할 일, 막대 그림 현황.
 do
 	local COACH = {
-		trade = { "처음 교역", { { "📊", "시세 보기", "초록 글씨 = 평균보다 싸다" }, { "🔢", "수량 고르기", "화물칸만큼만 실린다" }, { "💰", "사기 → 다른 항구에서 팔기", "항해 탭 '이익' 정렬로 팔 곳 찾기" } } },
-		route = { "처음 출항", { { "🗺", "목적지 고르기", "📜 표시 = 의뢰 목적지" }, { "🍞", "보급 확인", "빨간 글씨면 보급부터 채우기" }, { "⛵", "출항", "도착하면 그 항구 시세로 팔기" } } },
+		trade = { "처음 교역", { { "📊", "시세 보기", "파란 표시 = 평균보다 저렴" }, { "🔢", "수량 고르기", "화물칸만큼만 실린다" }, { "💰", "사기 → 다른 항구에서 팔기", "항해 탭 '이익' 정렬로 팔 곳 찾기" } } },
+		route = { "처음 출항", { { "🗺", "목적지 고르기", "의뢰 표시 = 목적지" }, { "🍞", "보급 확인", "빨간 글씨면 보급부터 채우기" }, { "⛵", "출항", "도착하면 그 항구 시세로 팔기" } } },
 		battle = { "처음 해전", { { "🎯", "옆으로 붙기", "대포는 배 옆면으로 쏜다" }, { "💥", "사거리 안에서 발사", "'사거리 밖'이면 더 다가가기" }, { "🏳", "위험하면 물러나기", "선체가 30% 아래면 후퇴도 작전" } } },
 		war = { "처음 함대전", { { "⚓", "작전 고르기", "추천 레벨을 먼저 확인" }, { "🌊", "파도마다 적 격파", "파도 사이엔 회복이 없다" }, { "🏆", "마지막 파도까지", "이기면 해역이 안전해진다" } } },
 		explore = { "처음 지상 탐험", { { "👣", "천천히 다가가기", "뛰면 동물이 달아난다" }, { "🔍", "길게 눌러 조사", "스케치·채집·탁본" }, { "📖", "카드로 기록", "발견하면 백과에 꽂힌다" } } },
@@ -12160,12 +12160,14 @@ do
 			local card = Instance.new("Frame")
 			card.Name = "FirstTimeCoach"
 			card.Size = UDim2.new(1, -6, 0, 132)
-			card.BackgroundColor3 = Color3.fromRGB(38, 60, 52)
+			card.BackgroundColor3 = COLORS.coverRaised
 			card.BorderSizePixel = 0
 			corner(card, 12)
-			local title = mkLabel(card, "✨ " .. spec[1] .. " — 이렇게 해 봐", 16, Color3.fromRGB(255, 230, 170), true)
-			title.Position = UDim2.fromOffset(12, 8)
-			title.Size = UDim2.new(1, -24, 0, 22)
+			local coachArt = modelIcon(card, "FacilityArt", "coach", nil, 24, "처음 안내")
+			coachArt.Position = UDim2.fromOffset(8, 6)
+			local title = mkLabel(card, spec[1], 16, Color3.fromRGB(255, 230, 170), true)
+			title.Position = UDim2.fromOffset(38, 8)
+			title.Size = UDim2.new(1, -50, 0, 22)
 			title.AutomaticSize = Enum.AutomaticSize.None
 			local row = Instance.new("Frame")
 			row.Position = UDim2.fromOffset(8, 36)
@@ -12180,14 +12182,18 @@ do
 			for i, step in spec[2] do
 				local cell = Instance.new("Frame")
 				cell.LayoutOrder = i
-				cell.BackgroundColor3 = Color3.fromRGB(56, 84, 72)
+				cell.BackgroundColor3 = COLORS.leather
 				cell.BorderSizePixel = 0
 				cell.Parent = row
 				corner(cell, 8)
-				local icon = mkLabel(cell, string.format("%d %s", i, step[1]), 20, Color3.new(1, 1, 1), true)
-				icon.Position = UDim2.fromOffset(6, 4)
-				icon.Size = UDim2.new(1, -12, 0, 26)
-				icon.AutomaticSize = Enum.AutomaticSize.None
+				local keys = ({ trade = {"trade", "cargo", "coin"}, route = {"map", "supply", "route"}, battle = {"route", "battle", "hull"}, war = {"harbor", "war", "reward"}, explore = {"explore", "scholar", "codex"}, gwent = {"gwent", "battle", "status"} })[tab]
+				local icon = modelIcon(cell, "FacilityArt", keys[i], nil, 28, step[2])
+				icon.Name = "CoachStepArt"
+				icon.Position = UDim2.new(0.5, -14, 0, 2)
+				local stepNumber = mkLabel(cell, tostring(i), 14, Color3.fromRGB(255, 236, 196), true)
+				stepNumber.Position = UDim2.fromOffset(6, 5)
+				stepNumber.Size = UDim2.fromOffset(16, 20)
+				stepNumber.AutomaticSize = Enum.AutomaticSize.None
 				local head = mkLabel(cell, step[2], 13, Color3.fromRGB(255, 236, 196), true)
 				head.Position = UDim2.fromOffset(6, 32)
 				head.Size = UDim2.new(1, -12, 0, 18)
@@ -17902,7 +17908,8 @@ function render()
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
 	-- [메뉴 첫 줄 · 2026-11-28] 지금 할 일 / 추천 / 보상 받기 3칸 + 처음 해 보는 기능이면 3단계 그림 안내
-	if H.menuHomeStrip then H.menuHomeStrip() end
+	-- [중복 안내 제거] 묶음 첫 화면에만 전체 목표 요약을 표시하고 세부 탭은 고유 정보부터 보여 준다.
+	if H.menuHomeStrip and (currentTab == grp.tabs[1] or currentTab == "market") then H.menuHomeStrip() end
 	if H.firstTimeCoach then H.firstTimeCoach(currentTab) end
 	if currentTab == "status" and H.visualStatus then H.visualStatus() end
 	-- [오른쪽 상단 판단 정보] 교역소 기준: 실제 서버 값 → 조건 → 실행을 순서대로 읽는다.
@@ -17910,7 +17917,7 @@ function render()
 	local focus = if currentTab == "trade" or currentTab == "yard" or currentTab == "gwent" then nil else H.MENU_FOCUS[currentTab]
 	H.menuPrimaryRoute = nil
 	if focus then
-		local fact, context, urgent = "현재 항구 " .. tostring(p.portName), "실제 진행 상태와 조건을 아래에서 확인해.", false
+		local fact, context, urgent = "", "", false
 		local actionText = focus[3] or "첫 동작 확인"
 		if currentTab == "board" then
 			-- [주점] 주점 전용 의뢰가 일지 의뢰와 다르므로 tavernQ의 보상·제한을 표시한다.
@@ -17981,8 +17988,8 @@ function render()
 			actionText = if currentTab == "crew" or currentTab == "status" then "동료 직책 배치"
 				elseif currentTab == "yard" then "조선소 관리 열기" else "동료 영입 조건 확인"
 		elseif currentTab == "trade" or currentTab == "harbor" then
-			fact = "시세 비교 · 실제 판매손익 확인"
-			context = "자금·화물은 상단에서, 매입·판매가는 장부에서 확인해."
+			-- 항구 정보 본문과 공통 자금 헤더가 이미 표시하므로 반복 안내는 만들지 않는다.
+			fact, context = "", ""
 		elseif currentTab == "battle" or currentTab == "war" then
 			-- [전투 본부] 적 전력을 공개하지 않은 경우 임의 수치를 만들지 않는다.
 			local mission = (view.wars or {})[1]
@@ -18053,7 +18060,7 @@ function render()
 		H.menuActionButton.Name = "MenuPrimaryAction_" .. currentTab -- [기존 런타임 QA 이름 계약 유지]
 		H.menuActionButton.Text = actionText
 		-- [서재 중복 제거] 백과 표지에 발견 진행도가 있으므로 같은 숫자·설명 배너를 다시 넣지 않는다.
-		if currentTab ~= "codex" then
+		if currentTab ~= "codex" and currentTab ~= "encyclopedia" and currentTab ~= "status" and (fact ~= "" or context ~= "") then
 		add(function()
 			-- [전 시설 공통 첫 카드] 제목 → 핵심 수치 → 조건 → 정본 실행 버튼 순으로 읽는다.
 			local wide = mainInner.AbsoluteSize.X >= 740
