@@ -1520,6 +1520,11 @@ test('경제 공사 종류·건축자 모션·도시 장식 성장 모두 기존
  assert.match(scene,/mark:SetAttribute\("EconomicConstructionNeed"/);
  assert.match(scene,/"stoop" else "hammer"/);
  assert.match(scene,/"carry", 1\.7, \{ role = "Barbarian", hat = "cap" \}/);
+ const carryPose=read('ReplicatedStorage/Shared/Pose.luau');
+ const carryBlock=carryPose.slice(carryPose.indexOf('if kind == "carry" then'),carryPose.indexOf('elseif kind == "look" then',carryPose.indexOf('if kind == "carry" then')));
+ assert.ok(carryBlock.includes('set(m.waist, A(if moving then 0.16 else 0.10, 0, 0))'));
+ assert.ok(carryBlock.includes('set(m.neck, A(if moving then -0.08 else -0.04, 0, 0))'));
+ assert.doesNotMatch(carryBlock,/set\(m\.(?:leftLeg|rightLeg|leftKnee|rightKnee|leftAnkle|rightAnkle|root),/);
  assert.match(plan,/function B\.decorativeVisual\(level, buildings, prosperity\)/);
  assert.match(plan,/count >= 12 and healthy/);
  for(const kind of ['market','religious','farm','industry','civic']) assert.ok(plan.includes(kind + ' = grade('),kind);
@@ -2072,7 +2077,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/for colorIndex = 1, 3, 2 do/);
   assert.match(pose,/local sourceColor = candidate\[colorIndex\]/);
   assert.match(pose,/if bestError < 0\.0064 then/);
-  assert.match(pose,/elseif fallback and color\.R > 0\.80 and color\.G > 0\.80 and color\.B > 0\.80/);
+  assert.match(pose,/elseif fallback and \(defaultImportGray or \(color\.R > 0\.80 and color\.G > 0\.80 and color\.B > 0\.80/);
   assert.match(pose,/math\.max\(color\.R, color\.G, color\.B\) - math\.min\(color\.R, color\.G, color\.B\) < 0\.09/);
   // [실물 스크린샷 회귀] 얼굴·치마·허리띠·중첩 상의가 다시 원통/흰 갑옷으로 돌아가지 않도록 고정.
   assert.doesNotMatch(pose,/MareFaceSurface/);
@@ -3801,7 +3806,7 @@ test('주민 계절 외투와 개별 비옷은 현재 착용 목록을 기준으
   assert.ok(cleanup.includes('wanted = spec[1]'),'현재 필요 상의를 기준으로 판정');
   assert.ok(!cleanup.includes('if winterCoat then'),'항구 겨울 플래그로 개별 비옷을 제거하는 오류 방지');
   assert.ok(cleanup.includes('part.Transparency < 0.95'),'숨겨진/투명 상의를 착용 성공으로 오판하지 않음');
-  assert.ok(cleanup.includes('part.LocalTransparencyModifier < 0.99'),'모바일 LOD 숨김 상의를 성공으로 오판하지 않음');
+  assert.ok(cleanup.includes('part.LocalTransparencyModifier < 0.95'),'모바일 LOD 숨김 상의를 성공으로 오판하지 않음');
   assert.ok(cleanup.includes('if visible then'),'실제 보이는 상의가 확인된 뒤만 옛 상의 제거');
   assert.ok(!cleanup.includes('male_peasant_body'),'원본 전신복 보존');
   assert.ok(pose.includes('model:GetAttribute("NpcWeatherLayer") == "outer_coat"'),'개별 날씨 외투 선택 보존');
