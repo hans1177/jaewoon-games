@@ -539,6 +539,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
 			or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
 		or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
+		or kind == "Town" or kind == "Terrain" or kind == "Interior"
 	local east = currentKey == "japan" or currentKey == "china" or currentKey == "seasia"
 	local sandy = currentKey == "desert" or currentKey == "ottoman"
 		or currentKey == "swahili" or currentKey == "wafrica" or currentKey == "malabar"
@@ -564,6 +565,9 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 			local low = math.min(p.Color.R, p.Color.G, p.Color.B)
 			local high = math.max(p.Color.R, p.Color.G, p.Color.B)
 			local importedWhite = low >= 0.78 and high - low <= 0.14
+			-- 기본 회색 플라스틱도 복원한다. 정상 회색 석재·금속은 보호한다.
+			local importedGray = low >= 0.35 and high - low <= 0.10
+				and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)
 			-- [원본 재질 우선] 이미 텍스처/법선/거칠기/MaterialVariant를 가진 건축 메시에는
 			-- 강제 단색 Tint를 곱하지 않는다. 판넬·기와·벽화의 명암과 원래 광택을 보존한다.
 			local surfaceMap = p:FindFirstChildOfClass("SurfaceAppearance")
@@ -645,7 +649,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 				end
 			end
 			-- [원경 언덕] 무채색 기본 플라스틱만 자연 지형 재질로 복원하며 원본 텍스처는 유지한다.
-			if architecture and (importedWhite or (distantHills and high - low <= 0.14
+			if architecture and (importedWhite or importedGray or (distantHills and high - low <= 0.14
 				and (p.Material == Enum.Material.Plastic or p.Material == Enum.Material.SmoothPlastic)))
 				and p.Material ~= Enum.Material.Glass and p.Material ~= Enum.Material.Metal
 				and p.Material ~= Enum.Material.Neon then
@@ -661,10 +665,11 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 					-- 예: 목조 주택의 석조 기단·벽돌 외벽, 지붕 자산의 목조 들보를 같은 재질로 덮지 않는다.
 					local role = p.Name:lower()
 					local name = (asset .. " " .. p.Name):lower()
-					if kind == "Town" then
+					if architecture then
 						for _, key in { "glass", "windowpane", "glazing", "hinge", "iron", "metal", "latch",
 							"awning", "canvas", "cloth", "roof", "tile", "gable", "shingle", "wood", "timber",
-							"beam", "door", "frame", "floor", "stone", "column", "wall", "brick", "plaster" } do
+							"beam", "door", "frame", "floor", "stone", "column", "wall", "brick", "plaster",
+							"trunk", "bark", "leaf", "leaves", "foliage", "grass", "moss", "sand", "snow" } do
 							if role:find(key, 1, true) then name = role; break end
 						end
 					end
@@ -674,6 +679,20 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						local stone = role:find("rock", 1, true) or role:find("stone", 1, true)
 						material = if stone then Enum.Material.Rock elseif sandy then Enum.Material.Sand else Enum.Material.Grass
 						paint = if stone then C(126, 126, 113) elseif sandy then C(173, 151, 112) else C(112, 133, 91)
+					elseif name:find("trunk", 1, true) or name:find("bark", 1, true) or name:find("branch", 1, true) or name:find("stump", 1, true) or name:find("log", 1, true) then
+						material, paint = Enum.Material.Wood, C(116, 83, 53)
+					elseif name:find("leaf", 1, true) or name:find("leaves", 1, true) or name:find("foliage", 1, true) or name:find("tree", 1, true) or name:find("bush", 1, true) or name:find("grass", 1, true) or name:find("moss", 1, true) or name:find("plant", 1, true) then
+						material, paint = Enum.Material.Grass, tint or C(87, 137, 65)
+					elseif name:find("snow", 1, true) or name:find("ice", 1, true) then
+						material, paint = Enum.Material.Snow, C(225, 234, 239)
+					elseif name:find("sand", 1, true) then
+						material, paint = Enum.Material.Sand, tint or C(194, 168, 122)
+					elseif name:find("rock", 1, true) or name:find("cliff", 1, true) then
+						material, paint = Enum.Material.Rock, tint or C(137, 126, 105)
+					elseif name:find("fence", 1, true) or name:find("bench", 1, true) or name:find("cart", 1, true) or name:find("table", 1, true) or name:find("bookcase", 1, true) or name:find("crate", 1, true) then
+						material, paint = Enum.Material.WoodPlanks, tint or C(129, 91, 60)
+					elseif name:find("rug", 1, true) or name:find("flag", 1, true) or name:find("banner", 1, true) then
+						material, paint = Enum.Material.Fabric, tint or C(144, 75, 55)
 					elseif name:find("glass", 1, true) or name:find("windowpane", 1, true)
 						or name:find("glazing", 1, true) then
 						-- [유리] 무늬가 없는 수입 흰 창만 원재질을 살린다.
@@ -708,6 +727,10 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 						material = if sandy then Enum.Material.Sandstone elseif mediterranean then Enum.Material.Limestone else Enum.Material.Cobblestone
 						paint = wallColor:Lerp(C(122, 119, 113), if sandy then 0.18 else 0.48)
 						if tint then paint = paint:Lerp(tint, 0.42) end
+					elseif kind == "Terrain" then
+						material, paint = Enum.Material.Ground, tint or C(137, 113, 78)
+					elseif kind == "Interior" then
+						material, paint = Enum.Material.WoodPlanks, tint or C(126, 92, 64)
 					elseif tint then
 						paint = paint:Lerp(tint, 0.86)
 					end

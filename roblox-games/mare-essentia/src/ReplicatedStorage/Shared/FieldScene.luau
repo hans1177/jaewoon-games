@@ -388,7 +388,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 					d.Material = Enum.Material.Fabric
 				end
-			elseif tint then
+			elseif tint and kind ~= "Town" and kind ~= "Castle" and kind ~= "Terrain" and kind ~= "Interior" then
 				-- [지상전 PBR 재질] 계절색은 무늬 없는 표면에만 약하게 섞는다.
 				-- 승인 메시의 ColorMap/TextureID/UV·원본 색을 강제로 덮지 않는다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
@@ -414,6 +414,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
 					or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
 					or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
+					or kind == "Town" or kind == "Terrain" or kind == "Interior"
 				if named then
 					local sa = d:FindFirstChildOfClass("SurfaceAppearance")
 					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
@@ -422,11 +423,36 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 					end
 					local light = math.min(d.Color.R, d.Color.G, d.Color.B)
 					local chroma = math.max(d.Color.R, d.Color.G, d.Color.B) - light
-					if not textured and light >= 0.80 and chroma <= 0.13 then
+					local gray = light >= 0.35 and chroma <= 0.10
+						and (d.Material == Enum.Material.Plastic or d.Material == Enum.Material.SmoothPlastic)
+					if not textured and d.MaterialVariant == "" and (light >= 0.80 and chroma <= 0.13 or gray)
+						and d.Material ~= Enum.Material.Glass and d.Material ~= Enum.Material.Metal and d.Material ~= Enum.Material.Neon then
+						local role = d.Name:lower()
 						local name = (asset .. " " .. d.Name):lower()
-						local mat, color = Enum.Material.Cobblestone, Color3.fromRGB(145, 139, 123)
-						if name:find("roof", 1, true) or name:find("tile", 1, true) then
-							mat, color = Enum.Material.Slate, Color3.fromRGB(117, 107, 100)
+						for _, key in { "roof", "tile", "wood", "beam", "door", "stone", "wall", "glass", "metal", "trunk", "bark", "leaf", "leaves", "grass", "foliage", "moss" } do
+							if role:find(key, 1, true) then name = role; break end
+						end
+						local mat, color = Enum.Material.Cobblestone, Color3.fromRGB(160, 141, 117)
+						if name:find("trunk", 1, true) or name:find("bark", 1, true) or name:find("branch", 1, true) or name:find("stump", 1, true) or name:find("log", 1, true) then
+							mat, color = Enum.Material.Wood, Color3.fromRGB(116, 83, 53)
+						elseif name:find("leaf", 1, true) or name:find("leaves", 1, true) or name:find("foliage", 1, true) or name:find("tree", 1, true) or name:find("bush", 1, true) or name:find("grass", 1, true) or name:find("moss", 1, true) or name:find("plant", 1, true) then
+							mat, color = Enum.Material.Grass, tint or Color3.fromRGB(87, 137, 65)
+						elseif name:find("snow", 1, true) or name:find("ice", 1, true) then
+							mat, color = Enum.Material.Snow, Color3.fromRGB(225, 234, 239)
+						elseif name:find("sand", 1, true) then
+							mat, color = Enum.Material.Sand, tint or Color3.fromRGB(194, 168, 122)
+						elseif name:find("rock", 1, true) or name:find("cliff", 1, true) then
+							mat, color = Enum.Material.Rock, tint or Color3.fromRGB(137, 126, 105)
+						elseif name:find("fence", 1, true) or name:find("bench", 1, true) or name:find("cart", 1, true) or name:find("table", 1, true) or name:find("bookcase", 1, true) or name:find("crate", 1, true) then
+							mat, color = Enum.Material.WoodPlanks, tint or Color3.fromRGB(129, 91, 60)
+						elseif name:find("rug", 1, true) or name:find("flag", 1, true) or name:find("banner", 1, true) then
+							mat, color = Enum.Material.Fabric, tint or Color3.fromRGB(144, 75, 55)
+						elseif name:find("glass", 1, true) then
+							mat, color = Enum.Material.Glass, Color3.fromRGB(194, 218, 222)
+						elseif name:find("metal", 1, true) or name:find("iron", 1, true) then
+							mat, color = Enum.Material.Metal, Color3.fromRGB(100, 105, 108)
+						elseif name:find("roof", 1, true) or name:find("tile", 1, true) then
+							mat, color = Enum.Material.Slate, Color3.fromRGB(122, 85, 63)
 						elseif name:find("wood", 1, true) or name:find("beam", 1, true)
 							or name:find("dock", 1, true) or name:find("platform", 1, true) then
 							mat, color = Enum.Material.WoodPlanks, Color3.fromRGB(128, 97, 69)
@@ -434,7 +460,11 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 							mat, color = Enum.Material.Ground, Color3.fromRGB(135, 119, 91)
 						elseif name:find("house", 1, true) or name:find("church", 1, true)
 							or name:find("temple", 1, true) or name:find("wall", 1, true) then
-							mat, color = Enum.Material.Brick, Color3.fromRGB(163, 139, 116)
+							mat, color = Enum.Material.Brick, tint or Color3.fromRGB(181, 157, 128)
+						elseif kind == "Terrain" then
+							mat, color = Enum.Material.Ground, tint or Color3.fromRGB(135, 119, 91)
+						elseif kind == "Interior" then
+							mat, color = Enum.Material.WoodPlanks, tint or Color3.fromRGB(126, 92, 64)
 						end
 						d.Material, d.Color, d.Reflectance = mat, color, 0
 						if sa then sa.Color = color end

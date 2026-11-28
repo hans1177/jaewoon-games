@@ -2814,7 +2814,7 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(block,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
  assert.match(block,/surfaceHasMaps\(sa\)/);
  assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
- assert.match(block,/if architecture and \(importedWhite or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
+ assert.match(block,/if architecture and \(importedWhite or importedGray or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
  assert.match(block,/local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80/);
  assert.match(block,/local role = p\.Name:lower\(\)/);
  assert.match(block,/if role:find\(key, 1, true\) then name = role; break end/);
@@ -2831,7 +2831,13 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(field,/asset:find\("kenney_", 1, true\)/);
  assert.match(field,/asset:find\("eastasia", 1, true\)/);
  assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\)/);
- assert.match(field,/if not textured and light >= 0\.80 and chroma <= 0\.13 then/);
+ assert.match(field,/if not textured and d\.MaterialVariant == "" and \(light >= 0\.80 and chroma <= 0\.13 or gray\)/);
+ assert.match(block,/local importedGray = low >= 0\.35 and high - low <= 0\.10/);
+ assert.match(field,/local gray = light >= 0\.35 and chroma <= 0\.10/);
+ for (const [rgb,plastic,expected] of [[[163,163,163],true,true],[[100,100,100],true,true],[[163,163,163],false,false],[[160,100,70],true,false]]) {
+   const low=Math.min(...rgb)/255, high=Math.max(...rgb)/255;
+   assert.equal(low>=0.35 && high-low<=0.10 && plastic,expected);
+ }
  assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
 });
 
