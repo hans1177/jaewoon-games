@@ -8136,11 +8136,12 @@ function FieldScene.start(opts)
 	local STUD = 2 -- 규칙의 거리 1 = 2 스터드
 	-- 장착한 스킬만 쓴다(주인공 스킬은 최대 3개). 공격·회피는 기본 행동이라 늘 쓸 수 있다.
 	local equipped = { heavy = true, sweep = true }
-	local function useMove(moveId: string)
+	local function useMove(moveId: string, ultimateCast: boolean?)
 		if finished then
 			return
 		end
-		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] then
+		if ultimateCast and ((pl.masteryRank or 1) < 8 or (moveId ~= "heavy" and moveId ~= "sweep")) then return end
+		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] and not ultimateCast then
 			say("장착한 스킬이 아니에요")
 			return
 		end
@@ -8665,6 +8666,15 @@ function FieldScene.start(opts)
 					else Color3.fromRGB(235, 245, 255)
 				slashArc(hrp, colour, reachV, if wpn.family == "spear" then 55 elseif wpn.family == "dagger" then 75 else 110, if combo0 % 2 == 0 then 25 else -25)
 			end
+		end
+		-- 필살기와 실제 연속 명중 보너스도 기존 단일 피해 판정에서만 처리한다.
+		if ultimateCast then
+			mult *= (if (pl.masteryRank or 1) >= 10 then 1.5 else 1.35)
+			screenFlash(Color3.fromRGB(255, 224, 145), if visualMobile then 0.91 else 0.82)
+			shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 218, 140), 0.65)
+			sfx("sfx_card_ring", 0.7, 0.85)
+		elseif moveId == "rush" and basicBeat >= 3 and streakN >= basicBeat - 1 and os.clock() - streakT <= 1.1 then
+			mult *= 1 + math.min(0.12, (basicBeat - 2) * 0.015)
 		end
 		local combo = pl.combo
 		local hitActionSeq = streakActionSeq -- 지연된 타격 판정도 원래 누른 공격의 식별값을 사용한다.
@@ -10707,7 +10717,7 @@ function FieldScene.start(opts)
 
 	-- [직업 지원 파티] 상시 동료 모델/추적 AI는 만들지 않는다. 기존 영입 명단과 직업별 스킬만 사용한다.
 	-- 호출/자동지원/필살 게이지는 이번 탐험 한정이며 저장 키를 추가하지 않는다.
-	do
+	(function()
 		local party = if type(opts.allies) == "table" then opts.allies else {}
 		local seen = {}
 		local count = 0
@@ -10770,16 +10780,14 @@ function FieldScene.start(opts)
 			UDim2.fromOffset(80, 42), UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
 		ultimate.Name = "FieldUltimate"
 		ultimate.TextSize = 13
+		ultimate.TextYAlignment = Enum.TextYAlignment.Center
 		ultimate:SetAttribute("SkillFullName", "무기 필살기")
 		bindPress(ultimate, function()
 			if finished or pl.hp <= 0 or (pl.masteryRank or 1) < 8 or support.ultimate < 100 or os.clock() < support.nextUltimate then return end
 			local ctx = context()
 			if not ctx or ctx.ranged == 0 then return end
 			local move = if not wpn.ranged and ctx.close >= 2 then "sweep" else "heavy"
-			local before = equipped[move]
-			equipped[move] = true
-			local success = useMove(move)
-			equipped[move] = before
+			local success = useMove(move, true)
 			if not success then return end
 			support.ultimate, support.nextUltimate = 0, os.clock() + 18
 			showCombo(wpn.name .. " · 필살기!", true, Color3.fromRGB(255, 219, 135))
@@ -10854,6 +10862,8 @@ function FieldScene.start(opts)
 				local call = btn(status, "호출", Color3.fromRGB(44, 98, 108), UDim2.fromOffset(66, 38), UDim2.new(1, -3, 0.5, 0), Vector2.new(1, 0.5))
 				call.Name = "FieldAllyCall" .. count
 				call.TextSize = 12
+				call.TextYAlignment = Enum.TextYAlignment.Center
+				call.ZIndex = status.ZIndex + 3
 				call:SetAttribute("SkillFullName", "동료 호출")
 				entry.button = call
 				table.insert(support.members, entry)
@@ -10879,7 +10889,9 @@ function FieldScene.start(opts)
 			if not ctx then return end
 			local event = gain > 0 or damage > 0 or (ctx.warning and not support.threat)
 			support.threat = ctx.warning
-			if event and now >= support.nextAt and support.gauge >= 35 then
+			-- 수동 호출 준비가 되면 자동 지원은 게이지를 선점하지 않는다. 위기에서만 예외.
+			if event and now >= support.nextAt and support.gauge >= 35
+				and (support.gauge < 60 or pl.hp / math.max(1, pl.maxHp) <= 0.35) then
 				local best, skill, value = nil, nil, 0
 				for _, member in support.members do
 					local id, n = choose(member, ctx, true)
@@ -10902,12 +10914,14 @@ function FieldScene.start(opts)
 				member.button:SetAttribute("SupportReady", ready)
 				member.button:SetAttribute("SupportGauge", support.gauge)
 				member.outline.Color = if ready then Color3.fromRGB(255, 222, 124) else Color3.fromRGB(105, 200, 223)
+				member.button:SetAttribute("SupportNextSkill", id or "")
+				member.button:SetAttribute("SkillFullName", if id then JobSkills.Skills[id].name else "동료 호출")
 			end
 			ultimate.Text = if (pl.masteryRank or 1) < 8 then "필살기 8단" elseif support.ultimate >= 100 and now >= support.nextUltimate then "필살기!" else string.format("필살기 %d%%", math.floor(support.ultimate))
 			ultimate:SetAttribute("UltimateGauge", support.ultimate)
 			ultimate:SetAttribute("UltimateReady", (pl.masteryRank or 1) >= 8 and support.ultimate >= 100 and now >= support.nextUltimate)
 		end))
-	end
+	end)()
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
 	-- [Luau 200레지스터 제한] 모바일 패드 초기화는 원래 기능을 그대로 별도 실행 프레임에서 처리한다.
