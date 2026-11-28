@@ -2029,7 +2029,7 @@ local function penAt(i, n)
 	return Vector3.new(rural.centerX, 0, (i - (n + 1) / 2) * rural.penSpacing)
 end
 
-local function spawnJobs(folder, info, rng, lvl, walkers, key)
+local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 	local year = info.year or currentYear
 	local o = OUTFIT[key] or OUTFIT.north or {}
 	local function person(pos, facing, spec, profession)
@@ -2220,6 +2220,37 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			else Vector3.new(-18 - i * 2, 0, -24)
 		-- [귀가] 작업장과 분리된 근처 주거 골목. 기존 도로를 횡단하지 않는 같은 쪽 동선.
 		local home = work + Vector3.new(0, 0, side * 10)
+		-- [각자의 생활 · 2026-11-29 오너: "중앙 광장에만 모여 있다, 주민들 각자 생활하라고, 현실처럼"]
+		-- 예전엔 모든 주민의 일터·시장·저녁·집이 광장 옆 좁은 칸(x -18~-116, z ±24)에 몰렸다.
+		-- 이제 집 = 실제 지어진 집 앞 골목, 일터 = 직업별 실제 장소(부두·교역소·항만청·길드·서재·마을 가장자리 밭),
+		-- 저녁 = 주점 앞, 시장 = 광장 가장자리 원 위 각자 다른 자리. 같은 장소도 사람마다 몇 걸음씩 다르게.
+		do
+			local function fac(tab: string): Vector3?
+				local v = folder:GetAttribute("CityFacilityPosition_" .. tab)
+				return if typeof(v) == "Vector3" then v else nil
+			end
+			local jitter = Vector3.new(rng:NextNumber(-5, 5), 0, rng:NextNumber(-5, 5))
+			local dock = Vector3.new(rng:NextNumber(24, 66), 0, rng:NextNumber(-26, 26))
+			local edgeX = -120 - lvl * 18
+			local workAt = {
+				merchant = fac("trade"), sailor = dock, fisher = dock + Vector3.new(0, 0, 8), laborer = dock,
+				guard = fac("route"), official = fac("harbor") or fac("route"), craftsman = fac("market"),
+				clergy = fac("codex") or fac("tech"), farmer = Vector3.new(edgeX, 0, side * rng:NextNumber(30, 90)),
+			}
+			local w = workAt[duty.job]
+			if w then work = w + jitter end
+			local angle = (i * 2.399) % (2 * math.pi) -- 황금각: 시장 원 위에 겹치지 않게 흩어짐
+			market = Vector3.new(-6 + math.cos(angle) * 31, 0, math.sin(angle) * 31)
+			local tavern = fac("board")
+			if tavern then evening = tavern + Vector3.new(rng:NextNumber(-7, 7), 0, rng:NextNumber(4, 9) * (if tavern.Z >= 0 then -1 else 1)) end
+			local spots = houseSpots or {}
+			if #spots > 0 then
+				local spot = spots[(i - 1) % #spots + 1]
+				-- 집 앞 골목(길 가장자리)에 선다. 집 몸체 안으로 들어가지 않는다.
+				local doorZ = spot.side * (spot.laneZ + spot.laneW * 0.5 + 1)
+				home = Vector3.new(spot.pos.X + rng:NextNumber(-3, 3), 0, doorZ)
+			end
+		end
 		local shift = rng:NextNumber(-0.32, 0.32)
 		local marketAt = duty.market + shift
 		local marketEnd = duty.leave + shift
@@ -4242,6 +4273,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
 	local residentialDecorationPlaced = false
+	local homeRejectRoad, homeRejectStreet, homeRejectReserved = 0, 0, 0
+	local houseSpots = {}
 	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
 		local slotIndex, rowPlaced = 0, 0
@@ -4373,14 +4406,32 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local laneFar = 152 + laneOffset + (laneIndex + 1) * laneL + farBend
 						local chosenShift
 						-- 원래 자리에서 시작해 같은 필지 안에서만 조금 이동한다. 다른 건물은 건드리지 않는다.
+						-- [집 배치 실패 수정 · 2026-11-29 오너: "중앙 광장만 모여 있다"] 예전엔 ±2.4만 옮겨 보고 길에 닿으면 포기해
+						-- L3~L4 항구에 집이 3~6채만 지어졌다(목표 14~18). 이제 두 길 사이 남는 폭 안에서 필요한 만큼 밀어 넣는다.
+						local nearLimit = laneNear + laneWidth * 0.5 + 1.5
+						local farLimit = laneFar - laneWidth * 0.5 - 1.5
 						for _, direction in homeShifts do
 							local shift = Vector3.new(direction.X, 0, direction.Z * side)
 							local at = pos + shift
 							local signedZ = at.Z * side
-							local clearRoad = signedZ - measuredHalfZ > laneNear + laneWidth * 0.5 + 1.5
-								and signedZ + measuredHalfZ < laneFar - laneWidth * 0.5 - 1.5
-							if clearRoad and not onStreet(at.X, measuredHalfX)
-								and not reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
+							if 2 * measuredHalfZ <= farLimit - nearLimit then
+								local dz = 0
+								if signedZ - measuredHalfZ <= nearLimit then dz = nearLimit - (signedZ - measuredHalfZ) + 0.1
+								elseif signedZ + measuredHalfZ >= farLimit then dz = farLimit - (signedZ + measuredHalfZ) - 0.1 end
+								if dz ~= 0 then
+									shift += Vector3.new(0, 0, dz * side)
+									at = pos + shift
+									signedZ = at.Z * side
+								end
+							end
+							local clearRoad = signedZ - measuredHalfZ > nearLimit and signedZ + measuredHalfZ < farLimit
+							if not clearRoad then
+								homeRejectRoad += 1
+							elseif onStreet(at.X, measuredHalfX) then
+								homeRejectStreet += 1
+							elseif reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
+								homeRejectReserved += 1
+							else
 								chosenShift = shift
 								break
 							end
@@ -4390,6 +4441,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							pos += chosenShift
 							for _, object in staged:GetChildren() do object.Parent = folder end
 							homePlaced += 1
+							table.insert(houseSpots, { pos = pos, side = side, laneZ = laneNear, laneW = laneWidth })
 							rowPlaced += 1
 							if chosenShift.Magnitude > 0 then homeShifted += 1 end
 							homeSizeCounts[sizeClass] += 1
@@ -4758,6 +4810,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityHousingPort", info.portId)
 	folder:SetAttribute("CityHousingCulture", key)
 	folder:SetAttribute("CityHousingCandidates", homeCandidates)
+	folder:SetAttribute("CityHousingRejectRoad", homeRejectRoad)
+	folder:SetAttribute("CityHousingRejectStreet", homeRejectStreet)
+	folder:SetAttribute("CityHousingRejectReserved", homeRejectReserved)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
 	folder:SetAttribute("CityOldTownHomes", oldTownHomes)
 	folder:SetAttribute("CityNewTownHomes", newTownHomes)
@@ -6061,7 +6116,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	importedModel(folder, "Terrain", "campfire-logs", Vector3.new(-80, 0, 30.5), 4, false)
 
 	-- 5) 움직임: 일하는 주민(직업별 모션)과 골목을 오가는 주민
-	spawnJobs(folder, info, rng, lvl, walkers, key)
+	spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 	local wanderers = ({ 4, 6, 8, 10, 12 })[lvl]
 	if info.sim and type(info.sim.residents) == "number" then
 		wanderers = math.clamp(math.floor(info.sim.residents / 6), 0, 14) -- 역병·기근 후 빈 거리도 실제로 표시한다
@@ -6207,31 +6262,51 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local WX = math.floor(math.min(X_END - 58, if isRoyalCity then -615 else -470) / wallStep) * wallStep
 	local walled = lvl >= 3
 	local wallSize = wallStep + 0.4
+	-- [문화권별 마을 경계 · 2026-11-29 오너: "마을 구조 항구마다 달라야 하는데 다 똑같다"]
+	-- 예전엔 모든 항구가 같은 석조 성벽 + 파란 지붕 감시탑이라 런던·나가사키·잔지바르가 같은 마을로 보였다.
+	-- stone: 유럽 석조 성벽(문화권 돌색·지붕색) · mud: 이슬람권 흙벽(모래색, 탑 없음) · earth: 조선·중국 회벽 담장(탑 없음)
+	-- palisade: 열대·신대륙·아프리카 나무 울타리(탑 없음) · open: 일본 무가 항구 — 성벽 없이 숲 경계.
+	local ENCLOSURE = {
+		britain = "stone", hanse = "stone", nordic = "stone", stone = "stone", france = "stone", north = "stone",
+		brick = "stone", italy = "stone", iberia = "stone", med = "stone",
+		ottoman = "mud", desert = "mud", korea = "earth", china = "earth", japan = "open",
+	}
+	local enclosure = ENCLOSURE[key] or "palisade"
+	local wallTint = if enclosure == "mud" then C(206, 176, 128) elseif enclosure == "earth" then C(214, 208, 196)
+		else (style.walls and style.walls[1] and style.walls[1]:Lerp(C(150, 146, 138), 0.55)) or nil
+	local roofTint = style.roofs and style.roofs[1] or nil
+	folder:SetAttribute("CityEnclosure", enclosure)
+	local function wallPiece(at: Vector3, rotate: boolean, gate: boolean)
+		local m
+		if enclosure == "palisade" then
+			m = importedModel(folder, "Town", if AssetIds["Town/fence_straight_long"] then "fence_straight_long" else "fence_rails_long", at, wallSize, true)
+		else
+			m = importedModel(folder, "Castle", if gate then "wall-narrow-gate" else "wall", at, wallSize, true, wallTint)
+			if not m then m = importedModel(folder, "Naval", "castle-wall", at, wallSize, true, wallTint) end
+		end
+		if m and rotate then rotateAround(m, at, math.pi / 2) end
+		return m
+	end
+	local useWall = walled and enclosure ~= "open"
 	for _, side in { 1, -1 } do
-		if walled then
+		if useWall then
 			local x = -22
 			while x > WX do
-				local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), wallSize, true)
-				if not m then importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), wallSize, true) end
+				wallPiece(Vector3.new(x, 0, side * WZ), false, false)
 				x -= wallStep
 			end
 		end
-		if lvl >= 2 then
+		if lvl >= 2 and enclosure == "stone" then
 			for _, tx in { -22, -140, WX } do
-				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
+				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true, roofTint)
 			end
 		end
 	end
-	if walled then
+	if useWall then
 		for z = -WZ, WZ, wallStep do
-			local at = Vector3.new(WX, 0, z)
-			-- 목장으로 나가는 출입문은 동쪽 마을에서 오갈 수 있도록 가운데에 배치.
-			local asset = if math.abs(z) <= wallStep / 2 then "wall-narrow-gate" else "wall"
-			local m = importedModel(folder, "Castle", asset, at, wallSize, true)
-			if not m then m = importedModel(folder, "Naval", "castle-wall", at, wallSize, true) end
-			rotateAround(m, at, math.pi / 2)
+			wallPiece(Vector3.new(WX, 0, z), true, math.abs(z) <= wallStep / 2)
 		end
-		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
+		if enclosure == "stone" then importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true, roofTint) end
 	end
 	-- [문화권별 대형 입체 원경] 기존 도시 경계·보행·주택 필지는 그대로 두고 바깥의 승인된 지형 메시만 대폭 확대한다.
 	-- 발헤임식 지형 높이층과 아노식 도시 발전 실루엣은 배치 원리만 참고한다. 타 게임 모델을 복제하지 않는다.
@@ -9340,6 +9415,7 @@ function PortScene.build(info, onFacility)
 			return false
 		end
 		local moved, hidden, checked = 0, 0, 0
+		local propBoxes, propSpread, propStackHidden = {}, 0, 0
 		for _, child in folder:GetChildren() do
 			if child:IsA("Model") and not child:FindFirstChildOfClass("Humanoid") and not skipName(child.Name) then
 				local okBox, cf, size = pcall(function() return child:GetBoundingBox() end)
@@ -9363,9 +9439,44 @@ function PortScene.build(info, onFacility)
 							hidden += 1
 						end
 					end
+					-- [소품끼리 겹침 · 2026-11-29 오너: "오브젝트 겹침"] 깔개 위 의자, 상자 속 상자처럼 작은 소품끼리
+					-- 바닥 면적이 40% 넘게 겹치면 뒤에 놓인 쪽을 옆 빈자리로 옮기고, 자리가 없으면 뺀다.
+					if child.Parent then
+						local p = child:GetPivot().Position
+						local hx, hz = size.X * 0.5, size.Z * 0.5
+						local function clash(cx: number, cz: number)
+							for _, o in propBoxes do
+								local ox = math.min(cx + hx, o[1] + o[3]) - math.max(cx - hx, o[1] - o[3])
+								local oz = math.min(cz + hz, o[2] + o[4]) - math.max(cz - hz, o[2] - o[4])
+								if ox > 0 and oz > 0 and ox * oz > 0.4 * math.min(4 * hx * hz, 4 * o[3] * o[4]) then return true end
+							end
+							return false
+						end
+						if clash(p.X, p.Z) then
+							local placed = false
+							for _, d in { Vector3.new(hx * 2 + 1, 0, 0), Vector3.new(-hx * 2 - 1, 0, 0),
+								Vector3.new(0, 0, hz * 2 + 1), Vector3.new(0, 0, -hz * 2 - 1) } do
+								if not clash(p.X + d.X, p.Z + d.Z) and not embedded(child, cf + d, size) then
+									child:PivotTo(child:GetPivot() + d)
+									p += d
+									placed = true
+									propSpread += 1
+									break
+								end
+							end
+							if not placed then
+								child:SetAttribute("PropStackHidden", true)
+								child.Parent = nil
+								propStackHidden += 1
+							end
+						end
+						if child.Parent then table.insert(propBoxes, { p.X, p.Z, hx, hz }) end
+					end
 				end
 			end
 		end
+		folder:SetAttribute("PropSpread", propSpread)
+		folder:SetAttribute("PropStackHidden", propStackHidden)
 		-- [같은 소품 개수 제한 · 2026-11-29 오너: "소품도 같은 종류 오브젝트 개수 제한"]
 		-- 같은 원본(ImportedAsset)이 한 항구에 너무 많으면 광장에서 먼 것부터 뺀다.
 		-- 건물(Town·Castle)·사람·동물·배는 대상 아님. 나무·풀 같은 자연물은 넉넉히, 통·상자 등 소품은 6개까지.
@@ -9407,6 +9518,142 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("PropOverlapHidden", hidden)
 	end)
 	folder:SetAttribute("PropOverlapAudit", if propOk then "PASS" else "FAIL:" .. tostring(propError))
+	-- [날씨·계절 땅 표현 · 2026-11-29 오너: "비·눈 땅에 표현, 날씨 계절 표현 다양하게 제대로"]
+	-- 예전엔 날씨가 항구 장면에 전달되지 않았고(info.weather 없음), 지시서 항구의 길 색만 바뀌었다.
+	-- 이제 날짜·위도·항구로 정해지는 날씨(Voyage.weather)와 계절(Voyage.season)을 모든 항구의 땅·길·지붕·나무에 입힌다.
+	-- 색·재질만 바꾸는 화면 효과(새 도형 없음). 저장·경제·충돌 불변.
+	local weatherOk, weatherError = pcall(function()
+		local port = PortData.Ports[info.portId] or {}
+		local lat = tonumber(port.lat) or 0
+		local day = tonumber(info.day) or 0
+		local season = Voyage.season(day, lat) -- 1 겨울 2 봄 3 여름 4 가을
+		local w = if type(info.weather) == "string" and info.weather ~= "" then info.weather else Voyage.weather(day, info.portId).id
+		local cold = math.abs(lat) >= 40
+		local tropical = math.abs(lat) < 23.5
+		local wet = w == "rain" or w == "storm"
+		local snow = (season == 1 and cold and (wet or math.abs(lat) >= 52)) or w == "snow"
+		local look = if snow then "snow" elseif wet then "wet"
+			elseif tropical then (if season == 3 then "monsoon_green" else "dry_bright")
+			elseif season == 4 then "autumn" elseif season == 2 then "spring"
+			elseif season == 3 and math.abs(lat) < 42 then "dry_summer" else "plain"
+		folder:SetAttribute("PortVisualWeather", if snow then "snow" else w)
+		folder:SetAttribute("PortSeason", season)
+		folder:SetAttribute("PortGroundLook", look)
+		if look == "plain" then return end
+		local SNOW, WET, DUST = Color3.fromRGB(236, 240, 246), Color3.fromRGB(58, 62, 66), Color3.fromRGB(206, 176, 130)
+		local AUTUMN = { Color3.fromRGB(196, 112, 44), Color3.fromRGB(214, 160, 52), Color3.fromRGB(150, 70, 40) }
+		local BLOSSOM = Color3.fromRGB(240, 186, 206)
+		local region = REGION[info.portId]
+		local eastAsia = region == "japan" or region == "korea" or region == "china"
+		local ground, roads, roofs, leaves = 0, 0, 0, 0
+		local function greenish(c: Color3)
+			return c.G > c.R * 1.05 and c.G > c.B * 1.05
+		end
+		for _, d in folder:GetDescendants() do
+			if d:IsA("BasePart") and d.Transparency < 0.95 then
+				local name = string.lower(d.Name)
+				local isGround = d.Name == "TownFloor" or d.Name == "Ground" or d.Name == "RuralGround"
+				local isRoad = d:GetAttribute("RoadStrip") == true
+				local model = d:FindFirstAncestorOfClass("Model")
+				local asset = model and model:GetAttribute("ImportedAsset")
+				local lowerAsset = if type(asset) == "string" then string.lower(asset) else ""
+				local plant = string.find(lowerAsset, "tree", 1, true) or string.find(lowerAsset, "bush", 1, true)
+					or string.find(lowerAsset, "plant", 1, true) or string.find(name, "leaf", 1, true)
+					or string.find(name, "foliage", 1, true) or string.find(name, "canopy", 1, true)
+				local roof = string.find(name, "roof", 1, true) ~= nil
+				if model and model:FindFirstChildOfClass("Humanoid") then
+					-- 사람은 옷 규칙(PortVisualWeather)으로 따로 처리
+				elseif isGround then
+					ground += 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.82) d.Material = Enum.Material.Snow
+					elseif look == "wet" then d.Color = d.Color:Lerp(WET, 0.28) d.Reflectance = 0.05
+					elseif look == "dry_summer" or look == "dry_bright" then d.Color = d.Color:Lerp(DUST, 0.22)
+					elseif look == "autumn" and d.Name == "RuralGround" then d.Color = d.Color:Lerp(AUTUMN[2], 0.35)
+					elseif look == "monsoon_green" and d.Name == "RuralGround" then d.Color = d.Color:Lerp(Color3.fromRGB(70, 140, 70), 0.3) end
+				elseif isRoad then
+					roads += 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.45)
+					elseif look == "wet" then d.Color = d.Color:Lerp(WET, 0.32) d.Reflectance = 0.09
+					elseif look == "dry_summer" or look == "dry_bright" then d.Color = d.Color:Lerp(DUST, 0.15) end
+				elseif roof then
+					roofs += 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.7)
+					elseif look == "wet" then d.Color = d.Color:Lerp(WET, 0.18) d.Reflectance = math.max(d.Reflectance, 0.06) end
+				elseif plant and greenish(d.Color) then
+					leaves += 1
+					local pick = (math.floor(d.Position.X * 7 + d.Position.Z * 3) % 3) + 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.55)
+					elseif look == "autumn" then d.Color = d.Color:Lerp(AUTUMN[pick], 0.62)
+					elseif look == "spring" and eastAsia and pick == 1 then d.Color = d.Color:Lerp(BLOSSOM, 0.7)
+					elseif look == "spring" then d.Color = d.Color:Lerp(Color3.fromRGB(120, 190, 90), 0.25)
+					elseif look == "dry_summer" then d.Color = d.Color:Lerp(Color3.fromRGB(120, 120, 60), 0.2)
+					elseif look == "wet" or look == "monsoon_green" then d.Color = d.Color:Lerp(Color3.fromRGB(40, 110, 50), 0.2) end
+				end
+			end
+		end
+		-- [내리는 비·눈 + 계절 입자] 지상전(FieldScene)의 투명 발원점 방식을 그대로 쓴다. 카메라 위를 따라다닌다.
+		-- 휴대폰은 입자 수 절반. 화면 효과일 뿐 판정·저장 없음.
+		local touch = game:GetService("UserInputService").TouchEnabled
+		local driftKind = if look == "autumn" then "낙엽" elseif look == "spring" then (if eastAsia then "꽃잎" else "꽃가루")
+			elseif look == "dry_summer" or look == "dry_bright" then "먼지" elseif look == "monsoon_green" then "수증기" else nil
+		if look == "snow" or look == "wet" or driftKind then
+			local source = part(folder, Vector3.new(90, 0.2, 90), CFrame.new(0, 40, 0), Color3.new(1, 1, 1))
+			source.Name = "PortPrecipitationSource"
+			source.Transparency = 1
+			source.CastShadow = false
+			source.CanCollide, source.CanTouch, source.CanQuery = false, false, false
+			local function emitter(name: string, color: Color3, rate: number, life: NumberRange, speed: NumberRange,
+				accel: Vector3, size: number, texture: string)
+				local e = Instance.new("ParticleEmitter")
+				e.Name = name
+				e.Texture = texture
+				e.Shape = Enum.ParticleEmitterShape.Box
+				e.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+				e.EmissionDirection = Enum.NormalId.Bottom
+				e.Lifetime, e.Speed, e.Acceleration = life, speed, accel
+				e.Size = NumberSequence.new(size)
+				e.Transparency = NumberSequence.new(0.35, 0.85)
+				e.Color = ColorSequence.new(color)
+				e.Rate = if touch then rate * 0.5 else rate
+				e.Parent = source
+				return e
+			end
+			if look == "snow" then
+				emitter("PortSnowfall", Color3.fromRGB(236, 244, 255), 120, NumberRange.new(4, 6), NumberRange.new(3, 6),
+					Vector3.new(1.4, -3.2, 0.8), 0.28, "rbxasset://textures/particles/smoke_main.dds")
+			elseif look == "wet" then
+				emitter("PortRainfall", Color3.fromRGB(176, 208, 236), if w == "storm" then 420 else 260,
+					NumberRange.new(0.7, 1.0), NumberRange.new(55, 70), Vector3.new(4, -20, 1), 0.08,
+					"rbxasset://textures/particles/sparkles_main.dds")
+			end
+			if driftKind then
+				local driftColor = if driftKind == "낙엽" then Color3.fromRGB(200, 116, 52)
+					elseif driftKind == "꽃잎" then Color3.fromRGB(244, 190, 210)
+					elseif driftKind == "꽃가루" then Color3.fromRGB(236, 212, 132)
+					elseif driftKind == "먼지" then Color3.fromRGB(212, 184, 132) else Color3.fromRGB(200, 222, 214)
+				local e = emitter("PortSeasonDrift", driftColor, if driftKind == "먼지" then 14 else 22,
+					NumberRange.new(5, 8), NumberRange.new(1, 3), Vector3.new(2.2, -1.2, 1.1), 0.35,
+					"rbxasset://textures/particles/smoke_main.dds")
+				e.EmissionDirection = Enum.NormalId.Front
+				e.RotSpeed = NumberRange.new(-60, 60)
+			end
+			folder:SetAttribute("PortWeatherParticles", if look == "snow" then "snow" elseif look == "wet" then "rain" else driftKind)
+			local follow
+			follow = RunService.Heartbeat:Connect(function()
+				if not source.Parent or not folder.Parent then
+					follow:Disconnect()
+					return
+				end
+				local cam = workspace.CurrentCamera
+				if cam then source.CFrame = CFrame.new(cam.CFrame.Position + Vector3.new(0, 26, 0)) end
+			end)
+		end
+		folder:SetAttribute("PortWeatherGroundParts", ground)
+		folder:SetAttribute("PortWeatherRoads", roads)
+		folder:SetAttribute("PortWeatherRoofs", roofs)
+		folder:SetAttribute("PortWeatherLeaves", leaves)
+	end)
+	folder:SetAttribute("PortWeatherAudit", if weatherOk then "PASS" else "FAIL:" .. tostring(weatherError))
 	-- [마을에 국가 표시 · 2026-11-29 오너: "항구별 국가별 연결"] 지금 주인 나라(점령·식민 반영, Econ.portNation)의
 	-- 국기 색을 마을 깃발에 입히고, 항만청 앞에 국기 2개. 식민지는 원래 나라 작은 깃발, 전쟁 중이면 붉은 전쟁 깃발.
 	-- 화면 표시만(저장·경제 판정 불변).
