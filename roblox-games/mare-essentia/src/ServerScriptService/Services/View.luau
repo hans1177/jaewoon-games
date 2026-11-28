@@ -628,12 +628,28 @@ return function(D, S)
 				local left = 0
 				-- [탐험 도감] 보상 규칙을 바꾸지 않고 서버가 이미 검증한 미발견 카드만 현장 연출에 전달한다.
 				local observableCards = {}
-				local fieldQuest
+				local fieldQuest, fieldStory, selectedQuest
 				for _, q in D.Quests.Quests do
-					if q.exploreSite == site.id and not state.quests.done[q.id] and S.Quest.visible(state, q) then
-						fieldQuest = string.format("%d/5단 · %s", D.Quests.Grade(q), q.name)
-						break
+					if q.exploreSite == site.id and not state.quests.done[q.id] and S.Quest.visible(state, q)
+						and q.cardId and not state.discovered[q.cardId]
+						and table.find(site.pool, q.cardId) and not S.Discovery.cardBlockReason(state, D.Cards.ById[q.cardId]) then
+						if not selectedQuest or state.quests.active[q.id] then selectedQuest = q end
+						if state.quests.active[q.id] then break end
 					end
+				end
+				if selectedQuest then
+					local q = selectedQuest
+					fieldQuest = string.format("%d/5단 · %s", D.Quests.Grade(q), q.name)
+					local nextName
+					for _, nextId in D.Quests.Followups[q.id] or {} do
+						local follow = D.Quests.ById[nextId]
+						if follow and not state.quests.done[nextId] and D.Quests.Kit.choiceMet(state, follow.needChoice) then
+							nextName = follow.name
+							break
+						end
+					end
+					fieldStory = { cardId = q.cardId, name = q.name, lead = q.leadSource or "현장 기록",
+						problem = q.problem or q.story or q.summary, nextName = nextName }
 				end
 				for _, cardId in site.pool do
 					if not state.discovered[cardId] then
@@ -651,6 +667,7 @@ return function(D, S)
 					days = site.days,
 					left = left,
 					fieldQuest = fieldQuest, -- 현지 퀘스트 조건을 통과한 진행 단계만 알린다.
+					fieldStory = fieldStory, -- 기존 퀘스트·카드·후속 의뢰에서 읽은 현장 정보, 저장 없음.
 					observableCards = observableCards, -- 저장 상태가 아닌 탐험 화면용 임시 후보
 					fromYear = site.fromYear,
 					locked = blocked,
