@@ -1,0 +1,64 @@
+{
+ "sourceRevision": "49aa96bd85740e72cf944d566c2a546d7b096116",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "DIAG \ntext"
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35007
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 101
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 8051
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 7002
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 158
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "errorCount": 0,
+  "warningCount": 0,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 5,
+  "completedSteps": 5,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 0,
+  "capturedFrames": 0,
+  "abortedEarly": false
+ }
+}
