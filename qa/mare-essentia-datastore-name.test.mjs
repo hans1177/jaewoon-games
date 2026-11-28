@@ -4727,6 +4727,25 @@ test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 �
  for(const token of ['local asset = "field_" .. siteId','AssetIds["Terrain/" .. asset]','entry.band, entry.horizon, entry.briefBackdrop = "far", true, true','FieldBriefBackdropPlaced','FieldBriefAssetKey','stageFeature(entry)'])assert.ok(field.includes(token),token);
 });
 
+
+test('지상·해상 입장 시 현재 항구 시간과 예보를 연결하고 지역 기후를 유지한다',()=>{
+ const root='roblox-games/mare-essentia/src/';
+ const client=readText(root+'StarterPlayer/Game.client.luau');
+ const field=readText(root+'ReplicatedStorage/Shared/FieldScene.luau');
+ const naval=readText(root+'ReplicatedStorage/Shared/NavalBattle.luau');
+ assert.equal((client.match(/clockTime = game:GetService\("Lighting"\)\.ClockTime/g)||[]).length,2);
+ assert.match(client,/weatherId = view\.weather and view\.weather\.id/);
+ assert.match(client,/weatherId = view and view\.weather and view\.weather\.id/);
+ assert.match(field,/biome\.clock = opts\.clockTime/);
+ assert.match(field,/if initialWeather and table\.find\(weatherOptions, initialWeather\) then weather = initialWeather end/);
+ assert.match(field,/biome\.clock \+ \(now - clockStart\) \* \(24 \/ 720\)/);
+ assert.match(naval,/if not opts\.weatherId then\s+if mode == "fog"/);
+ assert.match(naval,/if not opts\.weatherId then\s+if coast\.id == "ghost"/);
+ assert.match(naval,/elseif opts\.clockTime < 8 then "dawn" elseif opts\.clockTime < 17 then "day" else "sunset"/);
+ assert.match(naval,/lighting\.ClockTime = if type\(opts\.clockTime\) == "number"/);
+ assert.match(naval,/lighting\.ClockTime, lighting\.FogColor = savedLighting\.clock, savedLighting\.fogColor/);
+});
+
 // [동물 지상 보행] 수입 회전축을 덮지 않고 실제 해부 방향·종별 보폭·발밑 지형을 사용한다.
 test('마레 지상 동물은 실제 전방과 종별 보폭으로 움직이며 바닥에서 벗어나지 않는다',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
