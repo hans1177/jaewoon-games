@@ -5411,3 +5411,21 @@ test('연속 두목전은 기존 두목을 순서대로 활성화하고 대기 �
   assert.match(field,/if wave and not rushOrder then/);
   assert.match(field,/연속 두목전 승리 · 기록 확보/);
 });
+
+
+test('긴급 구조는 기존 조사원 접근과 90초 제한 및 후퇴 재시도를 사용한다',()=>{
+  assert.match(field,/FieldEmergencyRescue", \(opts.danger or 1\) >= 4 and siteChoice % 2 == 0/);
+  assert.match(field,/found == 1 and folder:GetAttribute\("FieldEmergencyRescue"\)/);
+  assert.match(field,/deadline = now \+ 90/);
+  assert.match(field,/not deadline and distance <= 50/);
+  assert.match(field,/now >= deadline and distance >= 65/);
+  assert.match(field,/if not deadline or os.clock\(\) >= deadline then/);
+  assert.match(field,/if found == 2 then\s+local character = player.Character/);
+});
+test('신화 기록은 실제 카드와 기존 수호 두목을 연결하고 재개 규칙을 보존한다',()=>{
+  assert.match(field,/string.sub\(targetCard.id, 1, 5\) == "myth_"/);
+  assert.match(field,/전설 증거 조사/);
+  assert.match(field,/FieldMythRecordGuard", true/);
+  assert.equal((field.match(/targetCard.field == "Architecture" or folder:GetAttribute\("FieldMythRoute"\)/g)||[]).length,2);
+  assert.match(field,/not folder:GetAttribute\("FieldMythRoute"\) and mode ~= "supply"/);
+});

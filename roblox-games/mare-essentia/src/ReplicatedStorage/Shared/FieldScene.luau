@@ -3876,6 +3876,8 @@ function FieldScene.start(opts)
 	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
 	local rareTrace = targetCard and (targetCard.rarity == "Rare" or targetCard.rarity == "Epic" or targetCard.rarity == "Legendary") == true
 	folder:SetAttribute("FieldTargetCard", targetCard and targetCard.id or "")
+	-- [신화 기록] 실제 기존 전설 카드만 선택한다. 승인되지 않은 괴물 외형은 생성하지 않는다.
+	folder:SetAttribute("FieldMythRoute", targetCard ~= nil and string.sub(targetCard.id, 1, 5) == "myth_")
 	folder:SetAttribute("FieldRareTraceTotal", if rareTrace then 2 else 0)
 	folder:SetAttribute("FieldRareTraceFound", 0)
 
@@ -3887,7 +3889,8 @@ function FieldScene.start(opts)
 	questHint.TextWrapped = true
 	questHint.TextXAlignment = Enum.TextXAlignment.Left
 	if targetCard then
-		questHint.Text = if rareTrace then "희귀 조사: 흔적 0/2 → " .. targetCard.name
+		questHint.Text = if folder:GetAttribute("FieldMythRoute") then (if rareTrace then "전설의 증거 0/2 · " else "전설 기록 조사 · ") .. targetCard.name
+			elseif rareTrace then "희귀 조사: 흔적 0/2 → " .. targetCard.name
 			else (if isWildlife then "지역 동물 관찰: " else "지식 단서 조사: ") .. targetCard.name
 	end
 
@@ -4000,7 +4003,7 @@ function FieldScene.start(opts)
 					clue.Destroying:Connect(function() if clueModel.Parent then clueModel:Destroy() end end)
 				end
 				local cluePrompt = Instance.new("ProximityPrompt")
-				cluePrompt.ActionText = if isWildlife then "동물 흔적 조사" else "현장 단서 조사"
+				cluePrompt.ActionText = if folder:GetAttribute("FieldMythRoute") then "전설 증거 조사" elseif isWildlife then "동물 흔적 조사" else "현장 단서 조사"
 				cluePrompt.ObjectText = targetCard.name
 				cluePrompt.KeyboardKeyCode = Enum.KeyCode.T
 				cluePrompt.HoldDuration = 0.5
@@ -4012,7 +4015,7 @@ function FieldScene.start(opts)
 					clues += 1
 					folder:SetAttribute("FieldRareTraceFound", clues)
 					clue:Destroy()
-					questHint.Text = string.format("희귀 조사: 흔적 %d/2 → %s", clues, targetCard.name)
+					questHint.Text = string.format(if folder:GetAttribute("FieldMythRoute") then "전설의 증거 %d/2 · %s" else "희귀 조사: 흔적 %d/2 → %s", clues, targetCard.name)
 					if clues >= 2 then
 						pp.Enabled = true
 						say("희귀 단서 확보! 지도에 표시된 " .. targetCard.name .. "을(를) 관찰해.")
@@ -4029,7 +4032,7 @@ function FieldScene.start(opts)
 				if folder:GetAttribute("FieldBossClueState") == "guarded" then
 					for _, enemy in enemies do
 						if not enemy.ac.dead and enemy.model:GetAttribute("FieldBossProtectsClue") then
-							say("두목이 기록을 막고 있어. 공격을 피한 뒤 빈틈을 노려.", 3.5)
+							say(if folder:GetAttribute("FieldMythRoute") then "전설 기록을 빼앗은 두목을 물리쳐야 해." else "두목이 기록을 막고 있어. 공격을 피한 뒤 빈틈을 노려.", 3.5)
 							return
 						end
 					end
@@ -4067,6 +4070,12 @@ function FieldScene.start(opts)
 				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
 				if folder:GetAttribute("FieldRescueRoute") then
+					if i == 2 and folder:GetAttribute("FieldEmergencyRescue") then
+						local deadline = folder:GetAttribute("FieldRescueDeadline")
+						if not deadline or os.clock() >= deadline then
+							say("구조 시간이 끝났어. 위험 구역 밖으로 물러나 다시 접근해.", 3.5); return
+						end
+					end
 					local survivor = folder:FindFirstChild("FieldRescueResident")
 					local survivorRoot = survivor and survivor:FindFirstChild("HumanoidRootPart")
 					if not survivorRoot or not survivorRoot:IsA("BasePart") or (survivorRoot.Position - currentRoot.Position).Magnitude > 16 then
@@ -4112,7 +4121,8 @@ function FieldScene.start(opts)
 						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 · 지정 상대에게 접근해"
 						elseif folder:GetAttribute("FieldInterceptRoute") == "bossrush" then "연속 두목전 · 경계 구역으로 이동" else "경계 구역 · 적의 움직임을 살펴"
 					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
-					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
+					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then
+						if folder:GetAttribute("FieldEmergencyRescue") then "긴급 구조 · 위험 구역으로 접근" else "고립된 조사원 구출 · 경계 구역으로 이동"
 					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldPursuitPending") then "척후병 추적 · 미니맵의 청록색 적을 따라가"
 					elseif nextKind == "infiltrate" then "경계 구역 · 잠입하거나 적을 돌파해"
@@ -4413,11 +4423,12 @@ function FieldScene.start(opts)
 			-- 살아 있는 동식물 관찰에는 격파를 요구하지 않는다.
 			if i == enemyCount + 1 and found == 0 and targetCard and not isWildlife
 				and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
-					or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture")
+					or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture" or folder:GetAttribute("FieldMythRoute"))
 				and bossRole ~= "giant" then
 				model:SetAttribute("FieldBossProtectsClue", true)
 				folder:SetAttribute("FieldBossClueState", "guarded")
 				questHint.Text = style[1] .. "이(가) " .. targetCard.name .. " 기록을 지키고 있다"
+				if folder:GetAttribute("FieldMythRoute") then model:SetAttribute("FieldMythRecordGuard", true) end
 			end
 		end
 		model:SetAttribute("EnemyWeaponId", weapon.id)
@@ -4449,7 +4460,7 @@ function FieldScene.start(opts)
 		-- 기존 난수 소비와 나머지 적 배치를 보존하도록 생성 직후 해당 두목만 정리한다.
 		if found > 0 and isBoss and i == enemyCount + 1 and targetCard and not isWildlife
 			and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
-				or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture")
+				or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture" or folder:GetAttribute("FieldMythRoute"))
 			and bossRole ~= "giant" then
 			if fm then FM.destroy(fm) end
 			table.remove(enemies)
@@ -4524,6 +4535,8 @@ function FieldScene.start(opts)
 						resident.Name = "FieldRescueResident"
 						local pivotHeight = resident:GetPivot().Position.Y - hit.Position.Y
 						folder:SetAttribute("FieldRescueRoute", true)
+						-- [긴급 구조] 고위험 구출의 일부만 제한시간을 적용. 이미 저장된 구출 단계는 반복하지 않는다.
+						folder:SetAttribute("FieldEmergencyRescue", (opts.danger or 1) >= 4 and siteChoice % 2 == 0)
 						local marker = Instance.new("BillboardGui")
 						marker.Adornee, marker.AlwaysOnTop, marker.MaxDistance = residentRoot, true, 80
 						marker.Size, marker.StudsOffset, marker.Parent = UDim2.fromOffset(160, 24), Vector3.new(0, 4, 0), residentRoot
@@ -4531,9 +4544,12 @@ function FieldScene.start(opts)
 						residentName.Size = UDim2.fromScale(1, 1)
 						if rescueAnchor then
 							local prompt = rescueAnchor:FindFirstChildOfClass("ProximityPrompt")
-							if prompt then prompt.ActionText, prompt.ObjectText = "조사원 구출", "고립된 조사원" end
+							if prompt then
+								prompt.ActionText, prompt.ObjectText = "조사원 구출", "고립된 조사원"
+								if folder:GetAttribute("FieldEmergencyRescue") then prompt.ActionText = "긴급 구조" end
+							end
 						end
-						if found == 1 then questHint.Text = "이어하기 · 고립된 조사원 구출" end
+						if found == 1 then questHint.Text = if folder:GetAttribute("FieldEmergencyRescue") then "긴급 구조 · 위험 구역으로 접근" else "이어하기 · 고립된 조사원 구출" end
 						if found == 2 then questHint.Text = "이어하기 · 조사원과 함께 입구로 이동" end
 						local obstacle = RaycastParams.new()
 						obstacle.FilterType = Enum.RaycastFilterType.Exclude
@@ -4546,6 +4562,34 @@ function FieldScene.start(opts)
 							local step = math.min(elapsed, 0.2)
 							elapsed = 0
 							local moving = false
+							if found == 1 and folder:GetAttribute("FieldEmergencyRescue") and workspace:GetAttribute("FieldCombatReady") == true then
+								local character = player.Character
+								local leader = character and character:FindFirstChild("HumanoidRootPart")
+								if leader and leader:IsA("BasePart") then
+									local distance = (leader.Position - residentRoot.Position).Magnitude
+									local now = os.clock()
+									local deadline = folder:GetAttribute("FieldRescueDeadline")
+									if not deadline and distance <= 50 then
+										deadline = now + 90
+										folder:SetAttribute("FieldRescueDeadline", deadline)
+										say("긴급 구조 시작! 90초 안에 조사원에게 접근해.", 3)
+									elseif deadline and now >= deadline and distance >= 65 then
+										folder:SetAttribute("FieldRescueDeadline", nil)
+										folder:SetAttribute("FieldRescueSeconds", nil)
+										deadline = nil
+										questHint.Text = "긴급 구조 · 다시 접근해"
+										residentName.Text = "고립된 조사원"
+									end
+									if deadline then
+										local seconds = math.max(0, math.ceil(deadline - now))
+										if folder:GetAttribute("FieldRescueSeconds") ~= seconds then
+											folder:SetAttribute("FieldRescueSeconds", seconds)
+											questHint.Text = if seconds > 0 then string.format("긴급 구조 · %d초 남음", seconds) else "시간 초과 · 위험 구역 밖으로 후퇴"
+											residentName.Text = if seconds > 0 then "조사원 · 구조 요청" else "조사원 · 구조 재시도"
+										end
+									end
+								end
+							end
 							if found == 2 then
 								local character = player.Character
 								local leader = character and character:FindFirstChild("HumanoidRootPart")
@@ -4642,7 +4686,7 @@ function FieldScene.start(opts)
 				end
 				-- [연속 두목전] 기존 첫 관찰 수호 두목과 충돌하지 않는 고위험 지점만 선택한다.
 				-- 첫 관찰에서 제거되는 두목 유형은 제외하여 저장 단계 재개 시 편성이 바뀌지 않는다.
-				if not isWildlife and mode ~= "supply" and (opts.danger or 1) >= 4 and portVisualSeed % 5 == 0
+				if not isWildlife and not folder:GetAttribute("FieldMythRoute") and mode ~= "supply" and (opts.danger or 1) >= 4 and portVisualSeed % 5 == 0
 					and not table.find({ "Relic", "Site", "Mystery", "Mineral", "Language", "Architecture" }, targetCard.field) then
 					local bosses = {}
 					for _, enemy in enemies do
