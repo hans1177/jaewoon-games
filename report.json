@@ -1,120 +1,579 @@
 {
- "sourceRevision": "9bc606e44063ba6840b44477ee77aed3ca7cd9a8",
+ "sourceRevision": "c4a04e201deb530152e284814cc12a5a11d3cae1",
  "log": [
   {
    "step": 1,
-   "ctx": "Client",
-   "out": "started\ntext"
+   "capture": "c00_start",
+   "files": 1
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "mobs=33 FieldEnemy@2991.9169921875, 3.187709093093872, 125.05812072753906;FieldEnemy@3026.460205078125, 3.1949639320373535, 135.97613525390625;FieldEnemy@2982.91015625, 3.214297294616699, 116.98019409179688;FieldEnemy@2899.24658203125, 9.127866744995117, -93.6639633178711;FieldEnemy@3120.358154296875, 3.9951610565185547, -91.5443344116211;FieldEnemy@2922.595458984375, 5.12762451171875, -83.47900390625;FieldEnemy@3118.013427734375, 5.374061584472656, -105.72590637207031;FieldEnemy@2870.314453125, 3.19539475440979, 35.229774475097656;FieldEnemy@3099.39013671875, 8.322077751159668, 45.78125;FieldEnemy@2912.62353515625, 3.589121103286743, -84.46024322509766;FieldEnemy@3120.22265625, 3.2133710384368896, -98.94854736328125;FieldEnemy@2915.54248046875, 3.208806276321411, -87.50984954833984;FieldEnemy@3107.758056640625, 6.396044731140137, -104.40177154541016;FieldEnemy@2880.33740234375, 3.1883533000946045, 26.610782623291016;FieldEnemy@3097.75341796875, 6.083461284637451, 53.6409912109375;FieldEnemy@2897.736328125, 9.700002670288086, -95.66654968261719;FieldEnemy@3107.953857421875, 7.932307243347168, -100.84931182861328;FieldEnemy@2920.53857421875, 4.1638689041137695, -96.71162414550781;FieldEnemy@3117.456298828125, 3.8987882137298584, -101.5819320678711;FieldEnemy@2886.111572265625, 3.2078864574432373, 28.91627311706543;FieldEnemy@3109.946044921875, 3.1875574588775635, 50.40739440917969;FieldEnemy@2905.427490234375, 8.493768692016602, -92.8258056640625;FieldEnemy@3111.62060546875, 8.69035816192627, -94.75132751464844;FieldEnemy@2920.336181640625, 3.208070755004883, -91.71903991699219;FieldEnemy@3107.73828125, 7.903472900390625, -101.02446746826172;FieldEnemy@2879.51708984375, 3.1937437057495117, 31.555822372436523;FieldEnemy@3099.310302734375, 5.951249122619629, 51.43537139892578;FieldEnemy@2899.318359375, 9.916518211364746, -95.64031219482422;FieldEnemy@3114.40234375, 7.25579833984375, -94.5254135131836;FieldEnemy@2927.79345703125, 3.195277214050293, -99.50769805908203;FieldEnemy@3110.401611328125, 7.264275074005127, -109.83364868164062;FieldEnemy@2883.911376953125, 3.208446979522705, 34.80183410644531;FieldEnemy@2916.97705078125, 8.09609603881836, -112.98980712890625\ntext"
+   "out": "QAAutoIntro on\ntext"
+  },
+  {
+   "step": 3,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
   },
   {
    "step": 4,
-   "capture": "f0_environment",
-   "files": 1
-  },
-  {
-   "step": 5,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
   },
   {
-   "step": 7,
-   "capture": "f1_start",
-   "files": 1
+   "step": 6,
+   "click": "title01",
+   "at": "922,84",
+   "out": "922,84 CLICK=프랑스\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 922,
+      "y": 84
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
   },
   {
    "step": 8,
-   "ctx": "Client",
-   "out": "err=true table: 0xad10e076ca57ff55 done=nil humanoids=33 models=967 parts=1587 lowPolyModels=6 lowPolyMeshes=0/1493 cam=2998.678466796875, 7.687708854675293, 145.93231201171875 hrp=2984.033203125, 2.9980251789093018, 161.06788635253906 shelves=0 ridges=4 near3D=5 placed3D=12 near=35 mid=209 far=10 port=reef quest=coast studioFPS=4 hiddenSceneryFPS=4 restoredFPS=4 sceneryFPSDelta=0 visualParts=742 enemyHiddenFPS=5 enemyVisualDelta=1 enemyVisualParts=795 sceneryOnly=true lodAssetSource=registered frameP50Ms=284.413 frameP95Ms=366.219 frameMaxMs=401.877 anchoredParts=825 dynamicParts=762 collidableParts=553 queryableParts=614 touchableParts=9 enemyDynamicParts=762 PhysicsStepTimeMs=1.867 PhysicsStepTimeSamples=30 RenderCPUFrameTimeMs=7.421 RenderCPUFrameTimeSamples=30 RenderGPUFrameTimeMs=0.001 RenderGPUFrameTimeSamples=30 HeartbeatTimeMs=0.716 HeartbeatTimeSamples=30\ntext"
+   "capture": "t01",
+   "files": 1
   },
   {
-   "step": 10,
-   "capture": "f2_later",
+   "step": 9,
+   "ctx": "Client",
+   "out": "SCROLLED 상인 집안\ntext"
+  },
+  {
+   "step": 11,
+   "click": "title02",
+   "at": "585,132",
+   "out": "585,132 CLICK=상인 집안\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 585,
+      "y": 132
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 13,
+   "capture": "t02",
+   "files": 1
+  },
+  {
+   "step": 14,
+   "ctx": "Client",
+   "out": "SCROLLED ⚓ 출항하기\ntext"
+  },
+  {
+   "step": 16,
+   "click": "title03",
+   "at": "730,206",
+   "out": "730,206 CLICK=⚓ 출항하기\ntext",
+   "inputAction": {
+    "datamodel_type": "Client",
+    "actions": [
+     {
+      "action": "mouseButtonClick",
+      "mouse_button": "left",
+      "x": 730,
+      "y": 206
+     }
+    ]
+   },
+   "status": "DISPATCHED",
+   "mouseResponse": "Success text"
+  },
+  {
+   "step": 18,
+   "capture": "intro_center_early",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "capture": "intro_center_next",
+   "files": 1
+  },
+  {
+   "step": 22,
+   "capture": "intro_center_late",
+   "files": 1
+  },
+  {
+   "step": 24,
+   "capture": "t03",
+   "files": 1
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "INTRO_OK\ntext"
+  },
+  {
+   "step": 26,
+   "ctx": "Client",
+   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+  },
+  {
+   "step": 28,
+   "capture": "intro_done",
+   "files": 1
+  },
+  {
+   "step": 29,
+   "ctx": "Client",
+   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 선장실 · 선장 | 성장 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | 선장 | 조선소 | 승조원 | 영입 | 연구 | 초상화가 완성되었다\ntext"
+  },
+  {
+   "step": 31,
+   "ctx": "Client",
+   "out": "tab harbor\ntext"
+  },
+  {
+   "step": 33,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:harbor\ntext"
+  },
+  {
+   "step": 34,
+   "capture": "tab_harbor",
    "files": 1
   }
  ],
- "errors": [],
+ "errors": [
+  "step35:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:11: FACILITY_ICON_SCALE:harbor | text"
+ ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 30002
+   "elapsedMs": 28007
   },
   {
    "step": 1,
-   "type": "luau",
-   "elapsedMs": 2050
+   "type": "capture",
+   "elapsedMs": 2522
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 806
+   "elapsedMs": 384
   },
   {
    "step": 3,
-   "type": "wait",
-   "elapsedMs": 11013
+   "type": "luau",
+   "elapsedMs": 349
   },
   {
    "step": 4,
-   "type": "capture",
-   "elapsedMs": 1640
+   "type": "luau",
+   "elapsedMs": 366
   },
   {
    "step": 5,
-   "type": "luau",
-   "elapsedMs": 327
+   "type": "wait",
+   "elapsedMs": 407
   },
   {
    "step": 6,
-   "type": "wait",
-   "elapsedMs": 9011
+   "type": "click_from_luau",
+   "elapsedMs": 1444
   },
   {
    "step": 7,
-   "type": "capture",
-   "elapsedMs": 1785
+   "type": "wait",
+   "elapsedMs": 2003
   },
   {
    "step": 8,
-   "type": "luau",
-   "elapsedMs": 31515
+   "type": "capture",
+   "elapsedMs": 1508
   },
   {
    "step": 9,
-   "type": "wait",
-   "elapsedMs": 6005
+   "type": "luau",
+   "elapsedMs": 305
   },
   {
    "step": 10,
+   "type": "wait",
+   "elapsedMs": 412
+  },
+  {
+   "step": 11,
+   "type": "click_from_luau",
+   "elapsedMs": 1293
+  },
+  {
+   "step": 12,
+   "type": "wait",
+   "elapsedMs": 2003
+  },
+  {
+   "step": 13,
    "type": "capture",
-   "elapsedMs": 759
+   "elapsedMs": 1109
+  },
+  {
+   "step": 14,
+   "type": "luau",
+   "elapsedMs": 267
+  },
+  {
+   "step": 15,
+   "type": "wait",
+   "elapsedMs": 410
+  },
+  {
+   "step": 16,
+   "type": "click_from_luau",
+   "elapsedMs": 1090
+  },
+  {
+   "step": 17,
+   "type": "wait",
+   "elapsedMs": 1705
+  },
+  {
+   "step": 18,
+   "type": "capture",
+   "elapsedMs": 1410
+  },
+  {
+   "step": 19,
+   "type": "wait",
+   "elapsedMs": 1808
+  },
+  {
+   "step": 20,
+   "type": "capture",
+   "elapsedMs": 3042
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 1814
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 3729
+  },
+  {
+   "step": 23,
+   "type": "wait",
+   "elapsedMs": 3706
+  },
+  {
+   "step": 24,
+   "type": "capture",
+   "elapsedMs": 2616
+  },
+  {
+   "step": 25,
+   "type": "luau",
+   "elapsedMs": 3583
+  },
+  {
+   "step": 26,
+   "type": "luau",
+   "elapsedMs": 528
+  },
+  {
+   "step": 27,
+   "type": "wait",
+   "elapsedMs": 2501
+  },
+  {
+   "step": 28,
+   "type": "capture",
+   "elapsedMs": 1928
+  },
+  {
+   "step": 29,
+   "type": "luau",
+   "elapsedMs": 1941
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 389
+  },
+  {
+   "step": 31,
+   "type": "luau",
+   "elapsedMs": 533
+  },
+  {
+   "step": 32,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 33,
+   "type": "luau",
+   "elapsedMs": 366
+  },
+  {
+   "step": 34,
+   "type": "capture",
+   "elapsedMs": 1633
+  },
+  {
+   "step": 35,
+   "type": "luau",
+   "elapsedMs": 1270
   }
  ],
  "consoleCapture": {
   "captured": true,
-  "errorCount": 1,
+  "errorCount": 0,
   "warningCount": 0,
-  "errors": [
-   {
-    "type": "studio-console-error",
-    "actionId": null,
-    "signature": "[MareEssentia] 모델 초기 로드 18개, 실패 0개, 대기 1092개, 필수 요청 종료 18/18, 경과 0.97초 [Game] call State true false 먼저 나라를 선택하세요 [QA] OK NewGame ottoman [QA] OK FEATURE Quest.Accept q_willow_field -> 퀘스트 수락: 강변의 버드나무 [QA] REJECTED Quest.Accept q_willow_notes -> 앞 단계 퀘스트를 먼저 끝내야 해요 [QA] REJECTED Quest.Accept q_willow_medicine -> 앞 단계 퀘스트를 먼저 끝내야 해요 [QA] OK FEATURE Quest.Accept q_first_trade -> 퀘스트 수락: 첫 납품 [QA] OK FEATURE Quest.Accept q_spices -> 퀘스트 수락: 향신료 주문 [QA] OK FEATURE Quest.Accept q_coal_run -> 퀘스트 수락: "
-   }
-  ]
+  "errors": []
  },
  "summary": {
-  "plannedSteps": 11,
-  "completedSteps": 11,
-  "plannedClicks": 0,
-  "successfulClicks": 0,
+  "plannedSteps": 1000,
+  "completedSteps": 36,
+  "plannedClicks": 12,
+  "successfulClicks": 3,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 3,
-  "capturedFrames": 3,
-  "abortedEarly": false
+  "plannedFrames": 70,
+  "capturedFrames": 9,
+  "abortedEarly": true
+ },
+ "visualSamples": [
+  {
+   "name": "c00_start",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 251329,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t01",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 250719,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "프랑스"
+  },
+  {
+   "name": "t02",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 195274,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "상인 집안"
+  },
+  {
+   "name": "intro_center_early",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 145220,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": false,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_next",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 157680,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_center_late",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 183454,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 1,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "t03",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 113774,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0236618518829346,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "intro_done",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 138149,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기",
+   "scene": {
+    "camera": true,
+    "sky": false,
+    "departing": false,
+    "atmosphere": true,
+    "brightness": 2.0302774906158447,
+    "voyageScene": false,
+    "voyageHud": false
+   }
+  },
+  {
+   "name": "tab_harbor",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 154032,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "⚓ 출항하기"
+  }
+ ],
+ "abortDiagnostics": {
+  "step": 35,
+  "type": "luau",
+  "elapsedMs": 453,
+  "context": "Client",
+  "lastScreenshot": "tab_harbor",
+  "lastClick": "title03",
+  "probes": {
+   "Client": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_CLIENT\ntext"
+   },
+   "Server": {
+    "reachable": true,
+    "output": "STUDIO_CONTEXT_SERVER\ntext"
+   }
+  }
+ },
+ "visualEvidence": {
+  "framesChecked": 9,
+  "framesWithInvalidSize": 0,
+  "voyageSceneObserved": false,
+  "departureObserved": false,
+  "voyageDiagnostics": [],
+  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
  }
 }
