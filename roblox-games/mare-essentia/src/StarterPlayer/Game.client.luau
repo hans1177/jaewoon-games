@@ -4313,6 +4313,8 @@ local function call(action, payload)
 				return names
 			end)(),
 			weatherName = view.weather and view.weather.name,
+			weatherId = view.weather and view.weather.id,
+			clockTime = game:GetService("Lighting").ClockTime,
 			-- [해역별 해전 연출] 기존 항구 좌표를 배경 선택에만 전달한다. 서버 전투·저장 불변.
 			portId = view.player and view.player.portId,
 			portLat = view.player and PortData.Ports[view.player.portId] and PortData.Ports[view.player.portId].lat,
@@ -9489,6 +9491,8 @@ function H.startField(s)
 		name = s.name,
 		portId = s.portId,
 		siteId = s.id, -- 기존 Sites의 지역·도감 후보를 탐험 시각 연출에 그대로 연결한다.
+		clockTime = game:GetService("Lighting").ClockTime,
+		weatherId = view and view.weather and view.weather.id,
 		portScenery = PortScene and PortScene.Signatures and PortScene.Signatures[s.portId], -- 항구 경관 정본, 시각 전용
 		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
 		fieldStory = s.fieldStory, -- 현재 현장 의뢰와 다음 이야기의 정본 연결
