@@ -1,795 +1,85 @@
 {
- "sourceRevision": "714bd65700430878c8ea737c6beb4fca3a8ec1fc",
+ "sourceRevision": "8d00376992123d5a7fea6d2ee7803f200509e58a",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "SHIP_36_PREVIEW_PREPARED\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "truenil\ntext"
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:europe:5\ntext"
   },
   {
    "step": 4,
-   "ctx": "Client",
-   "out": "truenil\ntext"
+   "capture": "ships_europe",
+   "files": 1
   },
   {
-   "step": 6,
+   "step": 5,
    "ctx": "Client",
-   "out": "ANIMAL london sheep 뼈변화=0.305 이동=0.37 | horsex5[JOINTED_WALK:5 관절14 조각0 뼈28 다리4/4:5 ANATOMICAL_FORWARD:5 세워짐의심5바로세움0] dogx6[JOINTED_WALK:6 관절10 조각0 뼈24 다리4/4:6 ANATOMICAL_FORWARD:6 세워짐의심6바로세움0] cowx6[JOINTED_WALK:6 관절14 조각0 뼈28 다리4/4:6 ANATOMICAL_FORWARD:6 세워짐의심6바로세움0] sheepx20[JOINTED_WALK:20 관절10 조각0 뼈24 다리4/4:20 ANATOMICAL_FORWARD:20 세워짐의심0바로세움0]\ntext"
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:east_asia:5\ntext"
   },
   {
    "step": 7,
-   "ctx": "Client",
-   "out": "SHOT london top\ntext"
+   "capture": "ships_east_asia",
+   "files": 1
   },
   {
-   "step": 9,
-   "capture": "london_top",
-   "files": 1
+   "step": 8,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:new_world:5\ntext"
   },
   {
    "step": 10,
-   "ctx": "Client",
-   "out": "SHOT london oblique_sea\ntext"
+   "capture": "ships_new_world",
+   "files": 1
   },
   {
-   "step": 12,
-   "capture": "london_oblique_sea",
-   "files": 1
+   "step": 11,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:middle_east:5\ntext"
   },
   {
    "step": 13,
-   "ctx": "Client",
-   "out": "SHOT london oblique_land\ntext"
+   "capture": "ships_middle_east",
+   "files": 1
   },
   {
-   "step": 15,
-   "capture": "london_oblique_land",
-   "files": 1
+   "step": 14,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:southeast_asia:5\ntext"
   },
   {
    "step": 16,
-   "ctx": "Client",
-   "out": "SHOT london plaza_eye\ntext"
+   "capture": "ships_southeast_asia",
+   "files": 1
   },
   {
-   "step": 18,
-   "capture": "london_plaza_eye",
-   "files": 1
+   "step": 17,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:africa:5\ntext"
   },
   {
    "step": 19,
-   "ctx": "Client",
-   "out": "SHOT london street\ntext"
+   "capture": "ships_africa",
+   "files": 1
   },
   {
-   "step": 21,
-   "capture": "london_street",
-   "files": 1
+   "step": 20,
+   "ctx": "Client",
+   "out": "SHIP_CONTINENT_RUNTIME_PASS:lost:6\ntext"
   },
   {
    "step": 22,
-   "ctx": "Client",
-   "out": "SHOT london houses\ntext"
-  },
-  {
-   "step": 24,
-   "capture": "london_houses",
-   "files": 1
-  },
-  {
-   "step": 25,
-   "ctx": "Client",
-   "out": "SHOT london harbor\ntext"
-  },
-  {
-   "step": 27,
-   "capture": "london_harbor",
-   "files": 1
-  },
-  {
-   "step": 28,
-   "ctx": "Client",
-   "out": "SHOT london ranch\ntext"
-  },
-  {
-   "step": 30,
-   "capture": "london_ranch",
-   "files": 1
-  },
-  {
-   "step": 31,
-   "ctx": "Client",
-   "out": "SHOT london animal_side\ntext"
-  },
-  {
-   "step": 33,
-   "capture": "london_animal_side",
-   "files": 1
-  },
-  {
-   "step": 34,
-   "ctx": "Client",
-   "out": "SHOT london animal_front\ntext"
-  },
-  {
-   "step": 36,
-   "capture": "london_animal_front",
-   "files": 1
-  },
-  {
-   "step": 37,
-   "ctx": "Client",
-   "out": "SHOT london resident\ntext"
-  },
-  {
-   "step": 39,
-   "capture": "london_resident",
-   "files": 1
-  },
-  {
-   "step": 40,
-   "ctx": "Client",
-   "out": "SHOT london edge\ntext"
-  },
-  {
-   "step": 42,
-   "capture": "london_edge",
-   "files": 1
-  },
-  {
-   "step": 45,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 47,
-   "ctx": "Client",
-   "out": "ANIMAL istanbul sheep 뼈변화=0.244 이동=0.30 | chickenx5[IDLE_ONLY:5 관절3 조각0 뼈6 다리0/2:5 UNVERIFIED_STATIC:5 세워짐의심0바로세움0] donkeyx9[JOINTED_WALK:9 관절7 조각0 뼈12 다리4/4:9 ANATOMICAL_FORWARD:9 세워짐의심0바로세움0] sheepx10[JOINTED_WALK:10 관절10 조각0 뼈24 다리4/4:10 ANATOMICAL_FORWARD:10 세워짐의심0바로세움0]\ntext"
-  },
-  {
-   "step": 48,
-   "ctx": "Client",
-   "out": "SHOT istanbul top\ntext"
-  },
-  {
-   "step": 50,
-   "capture": "istanbul_top",
-   "files": 1
-  },
-  {
-   "step": 51,
-   "ctx": "Client",
-   "out": "SHOT istanbul oblique_sea\ntext"
-  },
-  {
-   "step": 53,
-   "capture": "istanbul_oblique_sea",
-   "files": 1
-  },
-  {
-   "step": 54,
-   "ctx": "Client",
-   "out": "SHOT istanbul oblique_land\ntext"
-  },
-  {
-   "step": 56,
-   "capture": "istanbul_oblique_land",
-   "files": 1
-  },
-  {
-   "step": 57,
-   "ctx": "Client",
-   "out": "SHOT istanbul plaza_eye\ntext"
-  },
-  {
-   "step": 59,
-   "capture": "istanbul_plaza_eye",
-   "files": 1
-  },
-  {
-   "step": 60,
-   "ctx": "Client",
-   "out": "SHOT istanbul street\ntext"
-  },
-  {
-   "step": 62,
-   "capture": "istanbul_street",
-   "files": 1
-  },
-  {
-   "step": 63,
-   "ctx": "Client",
-   "out": "SHOT istanbul houses\ntext"
-  },
-  {
-   "step": 65,
-   "capture": "istanbul_houses",
-   "files": 1
-  },
-  {
-   "step": 66,
-   "ctx": "Client",
-   "out": "SHOT istanbul harbor\ntext"
-  },
-  {
-   "step": 68,
-   "capture": "istanbul_harbor",
-   "files": 1
-  },
-  {
-   "step": 69,
-   "ctx": "Client",
-   "out": "SHOT istanbul ranch\ntext"
-  },
-  {
-   "step": 71,
-   "capture": "istanbul_ranch",
-   "files": 1
-  },
-  {
-   "step": 72,
-   "ctx": "Client",
-   "out": "SHOT istanbul animal_side\ntext"
-  },
-  {
-   "step": 74,
-   "capture": "istanbul_animal_side",
-   "files": 1
-  },
-  {
-   "step": 75,
-   "ctx": "Client",
-   "out": "SHOT istanbul animal_front\ntext"
-  },
-  {
-   "step": 77,
-   "capture": "istanbul_animal_front",
-   "files": 1
-  },
-  {
-   "step": 78,
-   "ctx": "Client",
-   "out": "SHOT istanbul resident\ntext"
-  },
-  {
-   "step": 80,
-   "capture": "istanbul_resident",
-   "files": 1
-  },
-  {
-   "step": 81,
-   "ctx": "Client",
-   "out": "SHOT istanbul edge\ntext"
-  },
-  {
-   "step": 83,
-   "capture": "istanbul_edge",
-   "files": 1
-  },
-  {
-   "step": 86,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 88,
-   "ctx": "Client",
-   "out": "ANIMAL calicut cow 뼈변화=1.968 이동=0.48 | chickenx5[IDLE_ONLY:5 관절3 조각0 뼈6 다리0/2:5 UNVERIFIED_STATIC:5 세워짐의심0바로세움0] cowx13[JOINTED_WALK:13 관절14 조각0 뼈28 다리4/4:13 ANATOMICAL_FORWARD:13 세워짐의심13바로세움0] elephantx3[IDLE_ONLY:3 관절0 조각5 뼈0 다리4/4:3 UNVERIFIED_STATIC:3 세워짐의심3바로세움0]\ntext"
-  },
-  {
-   "step": 89,
-   "ctx": "Client",
-   "out": "SHOT calicut top\ntext"
-  },
-  {
-   "step": 91,
-   "capture": "calicut_top",
-   "files": 1
-  },
-  {
-   "step": 92,
-   "ctx": "Client",
-   "out": "SHOT calicut oblique_sea\ntext"
-  },
-  {
-   "step": 94,
-   "capture": "calicut_oblique_sea",
-   "files": 1
-  },
-  {
-   "step": 95,
-   "ctx": "Client",
-   "out": "SHOT calicut oblique_land\ntext"
-  },
-  {
-   "step": 97,
-   "capture": "calicut_oblique_land",
-   "files": 1
-  },
-  {
-   "step": 98,
-   "ctx": "Client",
-   "out": "SHOT calicut plaza_eye\ntext"
-  },
-  {
-   "step": 100,
-   "capture": "calicut_plaza_eye",
-   "files": 1
-  },
-  {
-   "step": 101,
-   "ctx": "Client",
-   "out": "SHOT calicut street\ntext"
-  },
-  {
-   "step": 103,
-   "capture": "calicut_street",
-   "files": 1
-  },
-  {
-   "step": 104,
-   "ctx": "Client",
-   "out": "SHOT calicut houses\ntext"
-  },
-  {
-   "step": 106,
-   "capture": "calicut_houses",
-   "files": 1
-  },
-  {
-   "step": 107,
-   "ctx": "Client",
-   "out": "SHOT calicut harbor\ntext"
-  },
-  {
-   "step": 109,
-   "capture": "calicut_harbor",
-   "files": 1
-  },
-  {
-   "step": 110,
-   "ctx": "Client",
-   "out": "SHOT calicut ranch\ntext"
-  },
-  {
-   "step": 112,
-   "capture": "calicut_ranch",
-   "files": 1
-  },
-  {
-   "step": 113,
-   "ctx": "Client",
-   "out": "SHOT calicut animal_side\ntext"
-  },
-  {
-   "step": 115,
-   "capture": "calicut_animal_side",
-   "files": 1
-  },
-  {
-   "step": 116,
-   "ctx": "Client",
-   "out": "SHOT calicut animal_front\ntext"
-  },
-  {
-   "step": 118,
-   "capture": "calicut_animal_front",
-   "files": 1
-  },
-  {
-   "step": 119,
-   "ctx": "Client",
-   "out": "SHOT calicut resident\ntext"
-  },
-  {
-   "step": 121,
-   "capture": "calicut_resident",
-   "files": 1
-  },
-  {
-   "step": 122,
-   "ctx": "Client",
-   "out": "SHOT calicut edge\ntext"
-  },
-  {
-   "step": 124,
-   "capture": "calicut_edge",
-   "files": 1
-  },
-  {
-   "step": 127,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 129,
-   "ctx": "Client",
-   "out": "ANIMAL nagasaki pig 뼈변화=0.676 이동=0.55 | chickenx3[IDLE_ONLY:3 관절3 조각0 뼈6 다리0/2:3 UNVERIFIED_STATIC:3 세워짐의심0바로세움0] pigx21[JOINTED_WALK:21 관절10 조각0 뼈24 다리4/4:21 ANATOMICAL_FORWARD:21 세워짐의심21바로세움0] dogx4[JOINTED_WALK:4 관절10 조각0 뼈24 다리4/4:4 ANATOMICAL_FORWARD:4 세워짐의심4바로세움0]\ntext"
-  },
-  {
-   "step": 130,
-   "ctx": "Client",
-   "out": "SHOT nagasaki top\ntext"
-  },
-  {
-   "step": 132,
-   "capture": "nagasaki_top",
-   "files": 1
-  },
-  {
-   "step": 133,
-   "ctx": "Client",
-   "out": "SHOT nagasaki oblique_sea\ntext"
-  },
-  {
-   "step": 135,
-   "capture": "nagasaki_oblique_sea",
+   "capture": "ships_lost",
    "files": 1
   },
   {
-   "step": 136,
+   "step": 23,
    "ctx": "Client",
-   "out": "SHOT nagasaki oblique_land\ntext"
-  },
-  {
-   "step": 138,
-   "capture": "nagasaki_oblique_land",
-   "files": 1
-  },
-  {
-   "step": 139,
-   "ctx": "Client",
-   "out": "SHOT nagasaki plaza_eye\ntext"
-  },
-  {
-   "step": 141,
-   "capture": "nagasaki_plaza_eye",
-   "files": 1
-  },
-  {
-   "step": 142,
-   "ctx": "Client",
-   "out": "SHOT nagasaki street\ntext"
-  },
-  {
-   "step": 144,
-   "capture": "nagasaki_street",
-   "files": 1
-  },
-  {
-   "step": 145,
-   "ctx": "Client",
-   "out": "SHOT nagasaki houses\ntext"
-  },
-  {
-   "step": 147,
-   "capture": "nagasaki_houses",
-   "files": 1
-  },
-  {
-   "step": 148,
-   "ctx": "Client",
-   "out": "SHOT nagasaki harbor\ntext"
-  },
-  {
-   "step": 150,
-   "capture": "nagasaki_harbor",
-   "files": 1
-  },
-  {
-   "step": 151,
-   "ctx": "Client",
-   "out": "SHOT nagasaki ranch\ntext"
-  },
-  {
-   "step": 153,
-   "capture": "nagasaki_ranch",
-   "files": 1
-  },
-  {
-   "step": 154,
-   "ctx": "Client",
-   "out": "SHOT nagasaki animal_side\ntext"
-  },
-  {
-   "step": 156,
-   "capture": "nagasaki_animal_side",
-   "files": 1
-  },
-  {
-   "step": 157,
-   "ctx": "Client",
-   "out": "SHOT nagasaki animal_front\ntext"
-  },
-  {
-   "step": 159,
-   "capture": "nagasaki_animal_front",
-   "files": 1
-  },
-  {
-   "step": 160,
-   "ctx": "Client",
-   "out": "SHOT nagasaki resident\ntext"
-  },
-  {
-   "step": 162,
-   "capture": "nagasaki_resident",
-   "files": 1
-  },
-  {
-   "step": 163,
-   "ctx": "Client",
-   "out": "SHOT nagasaki edge\ntext"
-  },
-  {
-   "step": 165,
-   "capture": "nagasaki_edge",
-   "files": 1
-  },
-  {
-   "step": 168,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 170,
-   "ctx": "Client",
-   "out": "ANIMAL dakar cow 뼈변화=2.656 이동=1.39 | chickenx2[IDLE_ONLY:2 관절3 조각0 뼈6 다리0/2:2 UNVERIFIED_STATIC:2 세워짐의심0바로세움0] dogx4[JOINTED_WALK:4 관절10 조각0 뼈24 다리4/4:4 ANATOMICAL_FORWARD:4 세워짐의심4바로세움0] catx2[IDLE_ONLY:2 관절0 조각5 뼈0 다리4/4:2 UNVERIFIED_STATIC:2 세워짐의심2바로세움0] sheepx10[JOINTED_WALK:10 관절10 조각0 뼈24 다리4/4:10 ANATOMICAL_FORWARD:10 세워짐의심0바로세움0] cowx13[JOINTED_WALK:13 관절14 조각0 뼈28 다리4/4:13 ANATOMICAL_FORWARD:13 세워짐의심13바로세움0]\ntext"
-  },
-  {
-   "step": 171,
-   "ctx": "Client",
-   "out": "SHOT dakar top\ntext"
-  },
-  {
-   "step": 173,
-   "capture": "dakar_top",
-   "files": 1
-  },
-  {
-   "step": 174,
-   "ctx": "Client",
-   "out": "SHOT dakar oblique_sea\ntext"
-  },
-  {
-   "step": 176,
-   "capture": "dakar_oblique_sea",
-   "files": 1
-  },
-  {
-   "step": 177,
-   "ctx": "Client",
-   "out": "SHOT dakar oblique_land\ntext"
-  },
-  {
-   "step": 179,
-   "capture": "dakar_oblique_land",
-   "files": 1
-  },
-  {
-   "step": 180,
-   "ctx": "Client",
-   "out": "SHOT dakar plaza_eye\ntext"
-  },
-  {
-   "step": 182,
-   "capture": "dakar_plaza_eye",
-   "files": 1
-  },
-  {
-   "step": 183,
-   "ctx": "Client",
-   "out": "SHOT dakar street\ntext"
-  },
-  {
-   "step": 185,
-   "capture": "dakar_street",
-   "files": 1
-  },
-  {
-   "step": 186,
-   "ctx": "Client",
-   "out": "SHOT dakar houses\ntext"
-  },
-  {
-   "step": 188,
-   "capture": "dakar_houses",
-   "files": 1
-  },
-  {
-   "step": 189,
-   "ctx": "Client",
-   "out": "SHOT dakar harbor\ntext"
-  },
-  {
-   "step": 191,
-   "capture": "dakar_harbor",
-   "files": 1
-  },
-  {
-   "step": 192,
-   "ctx": "Client",
-   "out": "SHOT dakar ranch\ntext"
-  },
-  {
-   "step": 194,
-   "capture": "dakar_ranch",
-   "files": 1
-  },
-  {
-   "step": 195,
-   "ctx": "Client",
-   "out": "SHOT dakar animal_side\ntext"
-  },
-  {
-   "step": 197,
-   "capture": "dakar_animal_side",
-   "files": 1
-  },
-  {
-   "step": 198,
-   "ctx": "Client",
-   "out": "SHOT dakar animal_front\ntext"
-  },
-  {
-   "step": 200,
-   "capture": "dakar_animal_front",
-   "files": 1
-  },
-  {
-   "step": 201,
-   "ctx": "Client",
-   "out": "SHOT dakar resident\ntext"
-  },
-  {
-   "step": 203,
-   "capture": "dakar_resident",
-   "files": 1
-  },
-  {
-   "step": 204,
-   "ctx": "Client",
-   "out": "SHOT dakar edge\ntext"
-  },
-  {
-   "step": 206,
-   "capture": "dakar_edge",
-   "files": 1
-  },
-  {
-   "step": 209,
-   "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 211,
-   "ctx": "Client",
-   "out": "ANIMAL havana horse 뼈변화=0.093 이동=0.01 | chickenx1[IDLE_ONLY:1 관절3 조각0 뼈6 다리0/2:1 UNVERIFIED_STATIC:1 세워짐의심0바로세움0] horsex17[JOINTED_WALK:17 관절14 조각0 뼈28 다리4/4:17 ANATOMICAL_FORWARD:17 세워짐의심17바로세움0] dogx3[JOINTED_WALK:3 관절10 조각0 뼈24 다리4/4:3 ANATOMICAL_FORWARD:3 세워짐의심3바로세움0]\ntext"
-  },
-  {
-   "step": 212,
-   "ctx": "Client",
-   "out": "SHOT havana top\ntext"
-  },
-  {
-   "step": 214,
-   "capture": "havana_top",
-   "files": 1
-  },
-  {
-   "step": 215,
-   "ctx": "Client",
-   "out": "SHOT havana oblique_sea\ntext"
-  },
-  {
-   "step": 217,
-   "capture": "havana_oblique_sea",
-   "files": 1
-  },
-  {
-   "step": 218,
-   "ctx": "Client",
-   "out": "SHOT havana oblique_land\ntext"
-  },
-  {
-   "step": 220,
-   "capture": "havana_oblique_land",
-   "files": 1
-  },
-  {
-   "step": 221,
-   "ctx": "Client",
-   "out": "SHOT havana plaza_eye\ntext"
-  },
-  {
-   "step": 223,
-   "capture": "havana_plaza_eye",
-   "files": 1
-  },
-  {
-   "step": 224,
-   "ctx": "Client",
-   "out": "SHOT havana street\ntext"
-  },
-  {
-   "step": 226,
-   "capture": "havana_street",
-   "files": 1
-  },
-  {
-   "step": 227,
-   "ctx": "Client",
-   "out": "SHOT havana houses\ntext"
-  },
-  {
-   "step": 229,
-   "capture": "havana_houses",
-   "files": 1
-  },
-  {
-   "step": 230,
-   "ctx": "Client",
-   "out": "SHOT havana harbor\ntext"
-  },
-  {
-   "step": 232,
-   "capture": "havana_harbor",
-   "files": 1
-  },
-  {
-   "step": 233,
-   "ctx": "Client",
-   "out": "SHOT havana ranch\ntext"
-  },
-  {
-   "step": 235,
-   "capture": "havana_ranch",
-   "files": 1
-  },
-  {
-   "step": 236,
-   "ctx": "Client",
-   "out": "SHOT havana animal_side\ntext"
-  },
-  {
-   "step": 238,
-   "capture": "havana_animal_side",
-   "files": 1
-  },
-  {
-   "step": 239,
-   "ctx": "Client",
-   "out": "SHOT havana animal_front\ntext"
-  },
-  {
-   "step": 241,
-   "capture": "havana_animal_front",
-   "files": 1
-  },
-  {
-   "step": 242,
-   "ctx": "Client",
-   "out": "SHOT havana resident\ntext"
-  },
-  {
-   "step": 244,
-   "capture": "havana_resident",
-   "files": 1
-  },
-  {
-   "step": 245,
-   "ctx": "Client",
-   "out": "SHOT havana edge\ntext"
-  },
-  {
-   "step": 247,
-   "capture": "havana_edge",
-   "files": 1
+   "out": "SHIP_36_PREVIEW_CLEAN_EXIT_PASS\ntext"
   }
  ],
  "errors": [],
@@ -797,1272 +87,138 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35013
+   "elapsedMs": 30014
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 590
+   "elapsedMs": 150
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 12095
+   "elapsedMs": 428
   },
   {
    "step": 3,
    "type": "wait",
-   "elapsedMs": 8010
+   "elapsedMs": 1813
   },
   {
    "step": 4,
-   "type": "luau",
-   "elapsedMs": 8212
+   "type": "capture",
+   "elapsedMs": 1501
   },
   {
    "step": 5,
-   "type": "wait",
-   "elapsedMs": 7007
+   "type": "luau",
+   "elapsedMs": 408
   },
   {
    "step": 6,
-   "type": "luau",
-   "elapsedMs": 2280
+   "type": "wait",
+   "elapsedMs": 1812
   },
   {
    "step": 7,
-   "type": "luau",
-   "elapsedMs": 266
+   "type": "capture",
+   "elapsedMs": 1377
   },
   {
    "step": 8,
-   "type": "wait",
-   "elapsedMs": 713
+   "type": "luau",
+   "elapsedMs": 719
   },
   {
    "step": 9,
-   "type": "capture",
-   "elapsedMs": 1207
+   "type": "wait",
+   "elapsedMs": 1809
   },
   {
    "step": 10,
-   "type": "luau",
-   "elapsedMs": 280
+   "type": "capture",
+   "elapsedMs": 1568
   },
   {
    "step": 11,
-   "type": "wait",
-   "elapsedMs": 713
+   "type": "luau",
+   "elapsedMs": 431
   },
   {
    "step": 12,
-   "type": "capture",
-   "elapsedMs": 1014
+   "type": "wait",
+   "elapsedMs": 1800
   },
   {
    "step": 13,
-   "type": "luau",
-   "elapsedMs": 288
+   "type": "capture",
+   "elapsedMs": 1681
   },
   {
    "step": 14,
-   "type": "wait",
-   "elapsedMs": 709
+   "type": "luau",
+   "elapsedMs": 700
   },
   {
    "step": 15,
-   "type": "capture",
-   "elapsedMs": 985
+   "type": "wait",
+   "elapsedMs": 1815
   },
   {
    "step": 16,
-   "type": "luau",
-   "elapsedMs": 297
+   "type": "capture",
+   "elapsedMs": 1577
   },
   {
    "step": 17,
-   "type": "wait",
-   "elapsedMs": 706
+   "type": "luau",
+   "elapsedMs": 341
   },
   {
    "step": 18,
-   "type": "capture",
-   "elapsedMs": 2200
+   "type": "wait",
+   "elapsedMs": 1814
   },
   {
    "step": 19,
-   "type": "luau",
-   "elapsedMs": 404
+   "type": "capture",
+   "elapsedMs": 1458
   },
   {
    "step": 20,
-   "type": "wait",
-   "elapsedMs": 705
+   "type": "luau",
+   "elapsedMs": 362
   },
   {
    "step": 21,
-   "type": "capture",
-   "elapsedMs": 2027
+   "type": "wait",
+   "elapsedMs": 1812
   },
   {
    "step": 22,
-   "type": "luau",
-   "elapsedMs": 326
+   "type": "capture",
+   "elapsedMs": 1308
   },
   {
    "step": 23,
-   "type": "wait",
-   "elapsedMs": 700
-  },
-  {
-   "step": 24,
-   "type": "capture",
-   "elapsedMs": 1339
-  },
-  {
-   "step": 25,
    "type": "luau",
-   "elapsedMs": 291
-  },
-  {
-   "step": 26,
-   "type": "wait",
-   "elapsedMs": 712
-  },
-  {
-   "step": 27,
-   "type": "capture",
-   "elapsedMs": 1434
-  },
-  {
-   "step": 28,
-   "type": "luau",
-   "elapsedMs": 244
-  },
-  {
-   "step": 29,
-   "type": "wait",
-   "elapsedMs": 708
-  },
-  {
-   "step": 30,
-   "type": "capture",
-   "elapsedMs": 1007
-  },
-  {
-   "step": 31,
-   "type": "luau",
-   "elapsedMs": 214
-  },
-  {
-   "step": 32,
-   "type": "wait",
-   "elapsedMs": 715
-  },
-  {
-   "step": 33,
-   "type": "capture",
-   "elapsedMs": 1114
-  },
-  {
-   "step": 34,
-   "type": "luau",
-   "elapsedMs": 227
-  },
-  {
-   "step": 35,
-   "type": "wait",
-   "elapsedMs": 710
-  },
-  {
-   "step": 36,
-   "type": "capture",
-   "elapsedMs": 1194
-  },
-  {
-   "step": 37,
-   "type": "luau",
-   "elapsedMs": 183
-  },
-  {
-   "step": 38,
-   "type": "wait",
-   "elapsedMs": 711
-  },
-  {
-   "step": 39,
-   "type": "capture",
-   "elapsedMs": 944
-  },
-  {
-   "step": 40,
-   "type": "luau",
-   "elapsedMs": 177
-  },
-  {
-   "step": 41,
-   "type": "wait",
-   "elapsedMs": 712
-  },
-  {
-   "step": 42,
-   "type": "capture",
-   "elapsedMs": 761
-  },
-  {
-   "step": 43,
-   "type": "wait",
-   "elapsedMs": 811
-  },
-  {
-   "step": 44,
-   "type": "wait",
-   "elapsedMs": 504
-  },
-  {
-   "step": 45,
-   "type": "luau",
-   "elapsedMs": 6133
-  },
-  {
-   "step": 46,
-   "type": "wait",
-   "elapsedMs": 7009
-  },
-  {
-   "step": 47,
-   "type": "luau",
-   "elapsedMs": 2066
-  },
-  {
-   "step": 48,
-   "type": "luau",
-   "elapsedMs": 180
-  },
-  {
-   "step": 49,
-   "type": "wait",
-   "elapsedMs": 709
-  },
-  {
-   "step": 50,
-   "type": "capture",
-   "elapsedMs": 1044
-  },
-  {
-   "step": 51,
-   "type": "luau",
-   "elapsedMs": 172
-  },
-  {
-   "step": 52,
-   "type": "wait",
-   "elapsedMs": 701
-  },
-  {
-   "step": 53,
-   "type": "capture",
-   "elapsedMs": 1165
-  },
-  {
-   "step": 54,
-   "type": "luau",
-   "elapsedMs": 192
-  },
-  {
-   "step": 55,
-   "type": "wait",
-   "elapsedMs": 713
-  },
-  {
-   "step": 56,
-   "type": "capture",
-   "elapsedMs": 829
-  },
-  {
-   "step": 57,
-   "type": "luau",
-   "elapsedMs": 169
-  },
-  {
-   "step": 58,
-   "type": "wait",
-   "elapsedMs": 702
-  },
-  {
-   "step": 59,
-   "type": "capture",
-   "elapsedMs": 804
-  },
-  {
-   "step": 60,
-   "type": "luau",
-   "elapsedMs": 160
-  },
-  {
-   "step": 61,
-   "type": "wait",
-   "elapsedMs": 716
-  },
-  {
-   "step": 62,
-   "type": "capture",
-   "elapsedMs": 868
-  },
-  {
-   "step": 63,
-   "type": "luau",
-   "elapsedMs": 176
-  },
-  {
-   "step": 64,
-   "type": "wait",
-   "elapsedMs": 699
-  },
-  {
-   "step": 65,
-   "type": "capture",
-   "elapsedMs": 854
-  },
-  {
-   "step": 66,
-   "type": "luau",
-   "elapsedMs": 153
-  },
-  {
-   "step": 67,
-   "type": "wait",
-   "elapsedMs": 714
-  },
-  {
-   "step": 68,
-   "type": "capture",
-   "elapsedMs": 809
-  },
-  {
-   "step": 69,
-   "type": "luau",
-   "elapsedMs": 160
-  },
-  {
-   "step": 70,
-   "type": "wait",
-   "elapsedMs": 706
-  },
-  {
-   "step": 71,
-   "type": "capture",
-   "elapsedMs": 682
-  },
-  {
-   "step": 72,
-   "type": "luau",
-   "elapsedMs": 83
-  },
-  {
-   "step": 73,
-   "type": "wait",
-   "elapsedMs": 700
-  },
-  {
-   "step": 74,
-   "type": "capture",
-   "elapsedMs": 670
-  },
-  {
-   "step": 75,
-   "type": "luau",
-   "elapsedMs": 89
-  },
-  {
-   "step": 76,
-   "type": "wait",
-   "elapsedMs": 713
-  },
-  {
-   "step": 77,
-   "type": "capture",
-   "elapsedMs": 696
-  },
-  {
-   "step": 78,
-   "type": "luau",
-   "elapsedMs": 146
-  },
-  {
-   "step": 79,
-   "type": "wait",
-   "elapsedMs": 701
-  },
-  {
-   "step": 80,
-   "type": "capture",
-   "elapsedMs": 630
-  },
-  {
-   "step": 81,
-   "type": "luau",
-   "elapsedMs": 67
-  },
-  {
-   "step": 82,
-   "type": "wait",
-   "elapsedMs": 705
-  },
-  {
-   "step": 83,
-   "type": "capture",
-   "elapsedMs": 450
-  },
-  {
-   "step": 84,
-   "type": "wait",
-   "elapsedMs": 811
-  },
-  {
-   "step": 85,
-   "type": "wait",
-   "elapsedMs": 504
-  },
-  {
-   "step": 86,
-   "type": "luau",
-   "elapsedMs": 3735
-  },
-  {
-   "step": 87,
-   "type": "wait",
-   "elapsedMs": 7013
-  },
-  {
-   "step": 88,
-   "type": "luau",
-   "elapsedMs": 2082
-  },
-  {
-   "step": 89,
-   "type": "luau",
-   "elapsedMs": 167
-  },
-  {
-   "step": 90,
-   "type": "wait",
-   "elapsedMs": 700
-  },
-  {
-   "step": 91,
-   "type": "capture",
-   "elapsedMs": 843
-  },
-  {
-   "step": 92,
-   "type": "luau",
-   "elapsedMs": 174
-  },
-  {
-   "step": 93,
-   "type": "wait",
-   "elapsedMs": 705
-  },
-  {
-   "step": 94,
-   "type": "capture",
-   "elapsedMs": 901
-  },
-  {
-   "step": 95,
-   "type": "luau",
-   "elapsedMs": 177
-  },
-  {
-   "step": 96,
-   "type": "wait",
-   "elapsedMs": 708
-  },
-  {
-   "step": 97,
-   "type": "capture",
-   "elapsedMs": 779
-  },
-  {
-   "step": 98,
-   "type": "luau",
-   "elapsedMs": 79
-  },
-  {
-   "step": 99,
-   "type": "wait",
-   "elapsedMs": 714
-  },
-  {
-   "step": 100,
-   "type": "capture",
-   "elapsedMs": 645
-  },
-  {
-   "step": 101,
-   "type": "luau",
-   "elapsedMs": 175
-  },
-  {
-   "step": 102,
-   "type": "wait",
-   "elapsedMs": 702
-  },
-  {
-   "step": 103,
-   "type": "capture",
-   "elapsedMs": 971
-  },
-  {
-   "step": 104,
-   "type": "luau",
-   "elapsedMs": 234
-  },
-  {
-   "step": 105,
-   "type": "wait",
-   "elapsedMs": 709
-  },
-  {
-   "step": 106,
-   "type": "capture",
-   "elapsedMs": 1072
-  },
-  {
-   "step": 107,
-   "type": "luau",
-   "elapsedMs": 178
-  },
-  {
-   "step": 108,
-   "type": "wait",
-   "elapsedMs": 700
-  },
-  {
-   "step": 109,
-   "type": "capture",
-   "elapsedMs": 785
-  },
-  {
-   "step": 110,
-   "type": "luau",
-   "elapsedMs": 208
-  },
-  {
-   "step": 111,
-   "type": "wait",
-   "elapsedMs": 710
-  },
-  {
-   "step": 112,
-   "type": "capture",
-   "elapsedMs": 931
-  },
-  {
-   "step": 113,
-   "type": "luau",
-   "elapsedMs": 190
-  },
-  {
-   "step": 114,
-   "type": "wait",
-   "elapsedMs": 712
-  },
-  {
-   "step": 115,
-   "type": "capture",
-   "elapsedMs": 758
-  },
-  {
-   "step": 116,
-   "type": "luau",
-   "elapsedMs": 211
-  },
-  {
-   "step": 117,
-   "type": "wait",
-   "elapsedMs": 700
-  },
-  {
-   "step": 118,
-   "type": "capture",
-   "elapsedMs": 857
-  },
-  {
-   "step": 119,
-   "type": "luau",
-   "elapsedMs": 315
-  },
-  {
-   "step": 120,
-   "type": "wait",
-   "elapsedMs": 708
-  },
-  {
-   "step": 121,
-   "type": "capture",
-   "elapsedMs": 1069
-  },
-  {
-   "step": 122,
-   "type": "luau",
-   "elapsedMs": 196
-  },
-  {
-   "step": 123,
-   "type": "wait",
-   "elapsedMs": 705
-  },
-  {
-   "step": 124,
-   "type": "capture",
-   "elapsedMs": 783
-  },
-  {
-   "step": 125,
-   "type": "wait",
-   "elapsedMs": 801
-  },
-  {
-   "step": 126,
-   "type": "wait",
-   "elapsedMs": 503
-  },
-  {
-   "step": 127,
-   "type": "luau",
-   "elapsedMs": 5629
-  },
-  {
-   "step": 128,
-   "type": "wait",
-   "elapsedMs": 7003
-  },
-  {
-   "step": 129,
-   "type": "luau",
-   "elapsedMs": 2259
-  },
-  {
-   "step": 130,
-   "type": "luau",
-   "elapsedMs": 240
-  },
-  {
-   "step": 131,
-   "type": "wait",
-   "elapsedMs": 707
-  },
-  {
-   "step": 132,
-   "type": "capture",
-   "elapsedMs": 1043
-  },
-  {
-   "step": 133,
-   "type": "luau",
-   "elapsedMs": 265
-  },
-  {
-   "step": 134,
-   "type": "wait",
-   "elapsedMs": 707
-  },
-  {
-   "step": 135,
-   "type": "capture",
-   "elapsedMs": 1265
-  },
-  {
-   "step": 136,
-   "type": "luau",
-   "elapsedMs": 241
-  },
-  {
-   "step": 137,
-   "type": "wait",
-   "elapsedMs": 704
-  },
-  {
-   "step": 138,
-   "type": "capture",
-   "elapsedMs": 1191
-  },
-  {
-   "step": 139,
-   "type": "luau",
-   "elapsedMs": 197
-  },
-  {
-   "step": 140,
-   "type": "wait",
-   "elapsedMs": 707
-  },
-  {
-   "step": 141,
-   "type": "capture",
-   "elapsedMs": 1178
-  },
-  {
-   "step": 142,
-   "type": "luau",
-   "elapsedMs": 206
-  },
-  {
-   "step": 143,
-   "type": "wait",
-   "elapsedMs": 711
-  },
-  {
-   "step": 144,
-   "type": "capture",
-   "elapsedMs": 1042
-  },
-  {
-   "step": 145,
-   "type": "luau",
-   "elapsedMs": 220
-  },
-  {
-   "step": 146,
-   "type": "wait",
-   "elapsedMs": 704
-  },
-  {
-   "step": 147,
-   "type": "capture",
-   "elapsedMs": 1057
-  },
-  {
-   "step": 148,
-   "type": "luau",
-   "elapsedMs": 178
-  },
-  {
-   "step": 149,
-   "type": "wait",
-   "elapsedMs": 713
-  },
-  {
-   "step": 150,
-   "type": "capture",
-   "elapsedMs": 1022
-  },
-  {
-   "step": 151,
-   "type": "luau",
-   "elapsedMs": 194
-  },
-  {
-   "step": 152,
-   "type": "wait",
-   "elapsedMs": 710
-  },
-  {
-   "step": 153,
-   "type": "capture",
-   "elapsedMs": 905
-  },
-  {
-   "step": 154,
-   "type": "luau",
-   "elapsedMs": 315
-  },
-  {
-   "step": 155,
-   "type": "wait",
-   "elapsedMs": 701
-  },
-  {
-   "step": 156,
-   "type": "capture",
-   "elapsedMs": 780
-  },
-  {
-   "step": 157,
-   "type": "luau",
-   "elapsedMs": 222
-  },
-  {
-   "step": 158,
-   "type": "wait",
-   "elapsedMs": 705
-  },
-  {
-   "step": 159,
-   "type": "capture",
-   "elapsedMs": 925
-  },
-  {
-   "step": 160,
-   "type": "luau",
-   "elapsedMs": 206
-  },
-  {
-   "step": 161,
-   "type": "wait",
-   "elapsedMs": 715
-  },
-  {
-   "step": 162,
-   "type": "capture",
-   "elapsedMs": 698
-  },
-  {
-   "step": 163,
-   "type": "luau",
-   "elapsedMs": 179
-  },
-  {
-   "step": 164,
-   "type": "wait",
-   "elapsedMs": 706
-  },
-  {
-   "step": 165,
-   "type": "capture",
-   "elapsedMs": 778
-  },
-  {
-   "step": 166,
-   "type": "wait",
-   "elapsedMs": 810
-  },
-  {
-   "step": 167,
-   "type": "wait",
-   "elapsedMs": 507
-  },
-  {
-   "step": 168,
-   "type": "luau",
-   "elapsedMs": 5256
-  },
-  {
-   "step": 169,
-   "type": "wait",
-   "elapsedMs": 7003
-  },
-  {
-   "step": 170,
-   "type": "luau",
-   "elapsedMs": 2155
-  },
-  {
-   "step": 171,
-   "type": "luau",
-   "elapsedMs": 182
-  },
-  {
-   "step": 172,
-   "type": "wait",
-   "elapsedMs": 705
-  },
-  {
-   "step": 173,
-   "type": "capture",
-   "elapsedMs": 821
-  },
-  {
-   "step": 174,
-   "type": "luau",
-   "elapsedMs": 208
-  },
-  {
-   "step": 175,
-   "type": "wait",
-   "elapsedMs": 706
-  },
-  {
-   "step": 176,
-   "type": "capture",
-   "elapsedMs": 781
-  },
-  {
-   "step": 177,
-   "type": "luau",
-   "elapsedMs": 164
-  },
-  {
-   "step": 178,
-   "type": "wait",
-   "elapsedMs": 715
-  },
-  {
-   "step": 179,
-   "type": "capture",
-   "elapsedMs": 887
-  },
-  {
-   "step": 180,
-   "type": "luau",
-   "elapsedMs": 215
-  },
-  {
-   "step": 181,
-   "type": "wait",
-   "elapsedMs": 712
-  },
-  {
-   "step": 182,
-   "type": "capture",
-   "elapsedMs": 782
-  },
-  {
-   "step": 183,
-   "type": "luau",
-   "elapsedMs": 175
-  },
-  {
-   "step": 184,
-   "type": "wait",
-   "elapsedMs": 702
-  },
-  {
-   "step": 185,
-   "type": "capture",
-   "elapsedMs": 859
-  },
-  {
-   "step": 186,
-   "type": "luau",
-   "elapsedMs": 174
-  },
-  {
-   "step": 187,
-   "type": "wait",
-   "elapsedMs": 706
-  },
-  {
-   "step": 188,
-   "type": "capture",
-   "elapsedMs": 880
-  },
-  {
-   "step": 189,
-   "type": "luau",
-   "elapsedMs": 164
-  },
-  {
-   "step": 190,
-   "type": "wait",
-   "elapsedMs": 714
-  },
-  {
-   "step": 191,
-   "type": "capture",
-   "elapsedMs": 792
-  },
-  {
-   "step": 192,
-   "type": "luau",
-   "elapsedMs": 191
-  },
-  {
-   "step": 193,
-   "type": "wait",
-   "elapsedMs": 704
-  },
-  {
-   "step": 194,
-   "type": "capture",
-   "elapsedMs": 838
-  },
-  {
-   "step": 195,
-   "type": "luau",
-   "elapsedMs": 198
-  },
-  {
-   "step": 196,
-   "type": "wait",
-   "elapsedMs": 702
-  },
-  {
-   "step": 197,
-   "type": "capture",
-   "elapsedMs": 765
-  },
-  {
-   "step": 198,
-   "type": "luau",
-   "elapsedMs": 173
-  },
-  {
-   "step": 199,
-   "type": "wait",
-   "elapsedMs": 704
-  },
-  {
-   "step": 200,
-   "type": "capture",
-   "elapsedMs": 1034
-  },
-  {
-   "step": 201,
-   "type": "luau",
-   "elapsedMs": 180
-  },
-  {
-   "step": 202,
-   "type": "wait",
-   "elapsedMs": 711
-  },
-  {
-   "step": 203,
-   "type": "capture",
-   "elapsedMs": 1124
-  },
-  {
-   "step": 204,
-   "type": "luau",
-   "elapsedMs": 169
-  },
-  {
-   "step": 205,
-   "type": "wait",
-   "elapsedMs": 713
-  },
-  {
-   "step": 206,
-   "type": "capture",
-   "elapsedMs": 782
-  },
-  {
-   "step": 207,
-   "type": "wait",
-   "elapsedMs": 808
-  },
-  {
-   "step": 208,
-   "type": "wait",
-   "elapsedMs": 501
-  },
-  {
-   "step": 209,
-   "type": "luau",
-   "elapsedMs": 5217
-  },
-  {
-   "step": 210,
-   "type": "wait",
-   "elapsedMs": 7015
-  },
-  {
-   "step": 211,
-   "type": "luau",
-   "elapsedMs": 2113
-  },
-  {
-   "step": 212,
-   "type": "luau",
-   "elapsedMs": 230
-  },
-  {
-   "step": 213,
-   "type": "wait",
-   "elapsedMs": 704
-  },
-  {
-   "step": 214,
-   "type": "capture",
-   "elapsedMs": 1133
-  },
-  {
-   "step": 215,
-   "type": "luau",
-   "elapsedMs": 221
-  },
-  {
-   "step": 216,
-   "type": "wait",
-   "elapsedMs": 699
-  },
-  {
-   "step": 217,
-   "type": "capture",
-   "elapsedMs": 1090
-  },
-  {
-   "step": 218,
-   "type": "luau",
-   "elapsedMs": 225
-  },
-  {
-   "step": 219,
-   "type": "wait",
-   "elapsedMs": 701
-  },
-  {
-   "step": 220,
-   "type": "capture",
-   "elapsedMs": 971
-  },
-  {
-   "step": 221,
-   "type": "luau",
-   "elapsedMs": 177
-  },
-  {
-   "step": 222,
-   "type": "wait",
-   "elapsedMs": 713
-  },
-  {
-   "step": 223,
-   "type": "capture",
-   "elapsedMs": 1048
-  },
-  {
-   "step": 224,
-   "type": "luau",
-   "elapsedMs": 201
-  },
-  {
-   "step": 225,
-   "type": "wait",
-   "elapsedMs": 705
-  },
-  {
-   "step": 226,
-   "type": "capture",
-   "elapsedMs": 969
-  },
-  {
-   "step": 227,
-   "type": "luau",
-   "elapsedMs": 210
-  },
-  {
-   "step": 228,
-   "type": "wait",
-   "elapsedMs": 701
-  },
-  {
-   "step": 229,
-   "type": "capture",
-   "elapsedMs": 1112
-  },
-  {
-   "step": 230,
-   "type": "luau",
-   "elapsedMs": 202
-  },
-  {
-   "step": 231,
-   "type": "wait",
-   "elapsedMs": 713
-  },
-  {
-   "step": 232,
-   "type": "capture",
-   "elapsedMs": 1046
-  },
-  {
-   "step": 233,
-   "type": "luau",
-   "elapsedMs": 187
-  },
-  {
-   "step": 234,
-   "type": "wait",
-   "elapsedMs": 706
-  },
-  {
-   "step": 235,
-   "type": "capture",
-   "elapsedMs": 1014
-  },
-  {
-   "step": 236,
-   "type": "luau",
-   "elapsedMs": 200
-  },
-  {
-   "step": 237,
-   "type": "wait",
-   "elapsedMs": 712
-  },
-  {
-   "step": 238,
-   "type": "capture",
-   "elapsedMs": 925
-  },
-  {
-   "step": 239,
-   "type": "luau",
-   "elapsedMs": 214
-  },
-  {
-   "step": 240,
-   "type": "wait",
-   "elapsedMs": 707
-  },
-  {
-   "step": 241,
-   "type": "capture",
-   "elapsedMs": 1100
-  },
-  {
-   "step": 242,
-   "type": "luau",
-   "elapsedMs": 195
-  },
-  {
-   "step": 243,
-   "type": "wait",
-   "elapsedMs": 712
-  },
-  {
-   "step": 244,
-   "type": "capture",
-   "elapsedMs": 1121
-  },
-  {
-   "step": 245,
-   "type": "luau",
-   "elapsedMs": 218
-  },
-  {
-   "step": 246,
-   "type": "wait",
-   "elapsedMs": 703
-  },
-  {
-   "step": 247,
-   "type": "capture",
-   "elapsedMs": 864
-  },
-  {
-   "step": 248,
-   "type": "wait",
-   "elapsedMs": 814
-  },
-  {
-   "step": 249,
-   "type": "wait",
-   "elapsedMs": 502
+   "elapsedMs": 614
   }
  ],
  "consoleCapture": {
   "captured": true,
-  "contexts": [
-   "Client",
-   "Server"
-  ],
   "errorCount": 0,
-  "warningCount": 12,
+  "warningCount": 0,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 250,
-  "completedSteps": 250,
+  "plannedSteps": 24,
+  "completedSteps": 24,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 72,
-  "capturedFrames": 72,
+  "plannedFrames": 7,
+  "capturedFrames": 7,
   "abortedEarly": false
  }
 }
