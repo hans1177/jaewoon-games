@@ -4322,7 +4322,9 @@ test('지상전 21종 무료 자연 모델과 대륙·항구·퀘스트별 환�
   const sitesSource=readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Sites.luau');
   const profiles=[...siteProfile.matchAll(/([a-z_0-9]+) = "([a-z]+)"/g)];
   const sourceIds=[...sitesSource.matchAll(/\{\s*id = "([^"]+)", name = "([^"]+)", portId = "([^"]+)"/g)].map(row=>row[1]);
-  assert.equal(sourceIds.length,592,'원본 탐험지 총수');
+  assert.equal(sourceIds.length,593,'기존 592곳과 신규 무라노 탐험지 1곳');
+  assert.ok(sourceIds.includes('venice_murano'),'무라노 원료 하역장 누락');
+  assert.ok(siteProfile.includes('venice_murano = "coast"'),'무라노 원료 하역장 해안 지형');
   assert.equal(new Set(sourceIds).size,sourceIds.length,'원본 탐험지 중복 금지');
   assert.deepEqual(profiles.map(row=>row[1]).sort(),sourceIds.sort(),'전체 탐험지 ID 정확히 일치');
   const validThemes=new Set(["archive","coast","swamp","ruins","fort","highland","mine","volcanic","plains","lake","forest","jungle","desert","farm","glacier"]);
