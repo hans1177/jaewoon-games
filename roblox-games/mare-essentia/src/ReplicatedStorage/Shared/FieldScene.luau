@@ -4412,10 +4412,17 @@ function FieldScene.start(opts)
 	end
 
 	-- [구출·호위] 기존 승인 주민 R15/걷기 모션과 현재 탐험 장면 수명주기를 재사용한다.
-	-- 일부 고위험 발굴지의 가상 현장 사건. 역사적 발견 내용·적 편성·보상은 바꾸지 않는다.
+	-- 전 세계 고위험 유적·문헌 탐험의 가상 현장 사건. 지점별 고정 분기로 재접속해도 유형이 바뀌지 않는다.
 	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		local siteChoice = 0
+		for i = 1, #(opts.siteId or "") do
+			siteChoice = (siteChoice * 31 + string.byte(opts.siteId, i)) % 997
+		end
+		-- 기존 세 사건은 보존하고, 나머지는 지형에 맞는 지점의 일부만 선택해 거점 탈환·잠입과 차별화한다.
+		local existingRescue = table.find({ "pompeii_ruins", "auto_site_naples_high", "alexandria_library" }, opts.siteId) ~= nil
 		if folder:GetAttribute("FieldEscapeRoute") and not folder:GetAttribute("FieldPursuitRoute") and found < nodeCount
-			and table.find({ "pompeii_ruins", "auto_site_naples_high", "alexandria_library" }, opts.siteId) then
+			and (existingRescue or ((theme == "ruins" or theme == "archive" or theme == "fort") and siteChoice % 3 == 0)) then
 			local rescueAnchor = folder:FindFirstChild("Discovery2")
 			local rescuePoint = if rescueAnchor and rescueAnchor:IsA("BasePart") then rescueAnchor.Position else folder:GetAttribute("FieldResumeAnchor")
 			local surface = RaycastParams.new()
@@ -4423,8 +4430,22 @@ function FieldScene.start(opts)
 			surface.FilterDescendantsInstances = { workspace.Terrain, ground }
 			surface.IgnoreWater = false
 			if typeof(rescuePoint) == "Vector3" then
-				local hit = workspace:Raycast(rescuePoint + Vector3.new(0, 100, 0), Vector3.new(0, -140, 0), surface)
-				if hit and hit.Material ~= Enum.Material.Water and hit.Normal.Y >= 0.8 then
+				local clearance = OverlapParams.new()
+				clearance.FilterType = Enum.RaycastFilterType.Include
+				clearance.FilterDescendantsInstances = { folder }
+				clearance.RespectCanCollide = true
+				local hit = nil
+				for _, offset in { Vector3.zero, Vector3.new(6, 0, 0), Vector3.new(-6, 0, 0),
+					Vector3.new(0, 0, 6), Vector3.new(0, 0, -6), Vector3.new(6, 0, 6), Vector3.new(-6, 0, 6) } do
+					local point = rescuePoint + offset
+					if math.abs(point.X - ORIGIN.X) > half - 8 or math.abs(point.Z - ORIGIN.Z) > half - 8 then continue end
+					local candidate = workspace:Raycast(point + Vector3.new(0, 100, 0), Vector3.new(0, -140, 0), surface)
+					if not candidate or candidate.Material == Enum.Material.Water or candidate.Normal.Y < 0.8 then continue end
+					if #workspace:GetPartBoundsInBox(CFrame.new(candidate.Position + Vector3.new(0, 3.5, 0)), Vector3.new(4, 5, 4), clearance) > 0 then continue end
+					hit = candidate
+					break
+				end
+				if hit then
 					local ok, resident = pcall(Pose.createR15, folder, hit.Position, 0, Color3.fromRGB(111, 98, 72),
 						Random.new((opts.seed or 7) + 8431), "Mage", 5.6, { motionStyle = "civilian", profession = "scholar", year = opts.year })
 					if finished or not folder.Parent then
