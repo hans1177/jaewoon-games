@@ -3912,7 +3912,8 @@ function FieldScene.start(opts)
 		elseif not extraction then
 			-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
 			local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
-			local pick = props[(i - 1) % #props + 1]
+			local pick = if i == 2 and targetCard and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding") and (opts.danger or 1) >= 3
+				then props[1] else props[(i - 1) % #props + 1]
 			if not placeModel(folder, pick[1], pick[2], pos, pick[3], false) then
 				placeModel(folder, "Naval", "chest", pos, 3.2, false)
 			end
@@ -4010,7 +4011,11 @@ function FieldScene.start(opts)
 				for _, enemy in enemies do
 					if not enemy.ac.dead and enemy.model:GetAttribute("FieldInterceptWave") then remaining += 1 end
 				end
-				if remaining > 0 then say(string.format("적 %d명 남음 · 전투를 끝내야 기록을 확보할 수 있어.", remaining), 3); return end
+				if folder:GetAttribute("FieldInterceptRoute") == "survival" then
+					if remaining > 0 and not folder:GetAttribute("FieldDefenseComplete") then
+						say("방어 구역을 지키거나 공격 병력을 모두 물리쳐.", 3); return
+					end
+				elseif remaining > 0 then say(string.format("적 %d명 남음 · 전투를 끝내야 기록을 확보할 수 있어.", remaining), 3); return end
 			end
 			if guardedTransit or extraction or (i == 2 and (folder:GetAttribute("FieldStrongholdRoute") or folder:GetAttribute("FieldInterceptRoute"))) then
 				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
@@ -4024,7 +4029,8 @@ function FieldScene.start(opts)
 					end
 				end
 				for _, enemy in enemies do
-					if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - currentRoot.Position).Magnitude < 16 then
+					if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - currentRoot.Position).Magnitude < 16
+						and not (i == 2 and folder:GetAttribute("FieldDefenseComplete") and enemy.model:GetAttribute("FieldInterceptWave")) then
 						say(if extraction then "추격하는 적과 거리를 벌린 뒤 탈출해." else "경계병을 피해 접근하거나 물리친 뒤 기록을 확보해.", 3.5)
 						return
 					end
@@ -4052,7 +4058,9 @@ function FieldScene.start(opts)
 				nextPrompt.Enabled = true
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
 				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
-					elseif found == 1 and folder:GetAttribute("FieldInterceptRoute") then "경계 구역 · 적의 움직임을 살펴"
+					elseif found == 1 and folder:GetAttribute("FieldInterceptRoute") then
+						if folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 탈환 · 상자와 경비병을 찾아"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 · 지정 구역으로 이동" else "경계 구역 · 적의 움직임을 살펴"
 					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
 					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
@@ -4577,7 +4585,9 @@ function FieldScene.start(opts)
 				table.sort(troops, function(a, b) return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude end)
 				local count = math.min(4, #troops)
 				if count >= 2 then
-					local mode = if theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
+					local mode = if targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"
+						elseif (theme == "plains" or theme == "desert" or theme == "coast") and (opts.danger or 1) >= 4 then "survival"
+						elseif theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
 					folder:SetAttribute("FieldInterceptRoute", mode)
 					folder:SetAttribute("FieldInterceptRemaining", count)
 					for i = 1, count do
@@ -4585,8 +4595,12 @@ function FieldScene.start(opts)
 						enemy.model:SetAttribute("FieldInterceptWave", if i <= 2 then 1 else 2)
 					end
 					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
-					if prompt then prompt.ActionText = if mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인" end
-					if found == 1 then questHint.Text = "이어하기 · 경계 구역으로 이동" end
+					if prompt then
+						prompt.ActionText = if mode == "supply" then "보급품 회수" elseif mode == "survival" then "방어 완료 확인" elseif mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인"
+						if mode == "supply" then prompt.ObjectText = "탈환할 보급품 상자" end
+					end
+					if found == 1 then questHint.Text = if mode == "supply" then "이어하기 · 보급품 상자 탈환"
+						elseif mode == "survival" then "이어하기 · 생존 방어 구역으로 이동" else "이어하기 · 경계 구역으로 이동" end
 				end
 			end
 		end
@@ -10658,8 +10672,30 @@ function FieldScene.start(opts)
 				folder:SetAttribute("FieldInterceptStartedAt", now)
 				local remaining = folder:GetAttribute("FieldInterceptRemaining") or 0
 				questHint.Text = if remaining == 0 then "경계 확보 · 기록 조사" else
-					(if folder:GetAttribute("FieldInterceptRoute") == "ambush" then "매복 발생" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
+					(if folder:GetAttribute("FieldInterceptRoute") == "ambush" then "매복 발생"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 경비병 접근"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 시작" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
 				say(questHint.Text, 3.5)
+			end
+		end
+		-- [생존 방어] 기존 전투 루프에서 실제 구역 체류를 누적한다. 이탈하면 방어 시간을 다시 계산한다.
+		if found == 1 and folder:GetAttribute("FieldInterceptRoute") == "survival"
+			and folder:GetAttribute("FieldInterceptStartedAt") and not folder:GetAttribute("FieldDefenseComplete") then
+			local destination = folder:FindFirstChild("Discovery2")
+			if destination and destination:IsA("BasePart") then
+				local inside = (hrp.Position - destination.Position).Magnitude <= 28
+				local started = folder:GetAttribute("FieldDefenseHoldAt")
+				if inside and not started then folder:SetAttribute("FieldDefenseHoldAt", now); started = now
+				elseif not inside and started then folder:SetAttribute("FieldDefenseHoldAt", nil); started = nil end
+				local seconds = if started then math.max(0, math.ceil(20 - (now - started))) else 20
+				if seconds == 0 or (folder:GetAttribute("FieldInterceptRemaining") or 0) == 0 then
+					folder:SetAttribute("FieldDefenseComplete", true)
+					questHint.Text = "방어 성공 · 안전 지점 확인"
+					say(questHint.Text, 3)
+				elseif folder:GetAttribute("FieldDefenseSeconds") ~= seconds then
+					folder:SetAttribute("FieldDefenseSeconds", seconds)
+					questHint.Text = string.format("생존 방어 · %d초 · 구역 유지", seconds)
+				end
 			end
 		end
 		local attackers = AC.attackersCount(enemies)
