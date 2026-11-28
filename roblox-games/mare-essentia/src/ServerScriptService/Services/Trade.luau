@@ -187,7 +187,8 @@ return function(D, S)
 	-- [흥정 미니게임 · 2026-11-28 오너 지시] 강제 아님. 물건마다 항구에서 한 번(자동 흥정과 같은 기회).
 	-- 저울 멈추기 · 상인 표정 읽기 · 진짜 동전 고르기 · 산지 퀴즈 중 하나. 판정은 서버가 한다.
 	-- 결과 할인 4~12%(완벽 12%), 실패하면 정가(손해 없음). 동료 장사 감각·우호도가 높으면 쉬워진다.
-	local HAGGLE_GAMES = { "scale", "face", "coin", "quiz" }
+	-- [저울 멈추기 제외 · 2026-11-29 오너: "교역소 미니게임 낚시처럼 멈추는 거 제거"] 타이밍 맞춰 멈추는 게임은 내지 않는다.
+	local HAGGLE_GAMES = { "face", "coin", "quiz" }
 	local function haggleState(state)
 		local h = state.haggle
 		if not h or h.portId ~= state.portId then
@@ -236,7 +237,7 @@ return function(D, S)
 		local ease = math.clamp(S.Harbor.intel(state) * 0.12 + (state.rep[port.country] or 0) / 100 * 0.15, 0, 0.4)
 		local game = if type(p.game) == "string" and table.find(HAGGLE_GAMES, p.game) then p.game else HAGGLE_GAMES[math.floor(ctx.rng() * #HAGGLE_GAMES) + 1]
 		local quiz = if game == "quiz" then quizFor(state, goodId, ctx.rng) else nil
-		if game == "quiz" and not quiz then game = "scale" end
+		if game == "quiz" and not quiz then game = "face" end
 		local pending = { goodId = goodId, game = game, ease = ease }
 		if game == "scale" then
 			-- 바늘: 0~1 을 왕복(주기 period 초). 금색 구간 중심 center, 반폭 width.
