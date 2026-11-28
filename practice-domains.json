@@ -1,7 +1,7 @@
 {
  "version": 1,
- "sessions": 4281,
- "lastSessionAt": "2026-11-28T16:22:29.614Z",
+ "sessions": 4282,
+ "lastSessionAt": "2026-11-28T16:30:58.198Z",
  "registryAssets": 160,
  "cataloguedAssets": 4630,
  "eligible3dAssets": 46,
@@ -9,8 +9,8 @@
   "MESH": {
    "catalogued": 2065,
    "eligible3d": 46,
-   "trials": 2,
-   "staticMeasured": 2,
+   "trials": 3,
+   "staticMeasured": 3,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -59,8 +59,8 @@
   "MATERIAL": {
    "catalogued": 2346,
    "eligible3d": 46,
-   "trials": 2,
-   "staticMeasured": 2,
+   "trials": 3,
+   "staticMeasured": 3,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -79,8 +79,8 @@
   "OBJECT": {
    "catalogued": 2127,
    "eligible3d": 36,
-   "trials": 2,
-   "staticMeasured": 2,
+   "trials": 3,
+   "staticMeasured": 3,
    "unverifiedOrFailed": 0,
    "state": "STATIC_PRACTICE_MEASURED",
    "runtimeVerified": false,
@@ -169,33 +169,33 @@
  },
  "cumulative": {
   "MESH": {
-   "trials": 16160,
-   "staticMeasured": 15986,
+   "trials": 16163,
+   "staticMeasured": 15989,
    "unverifiedOrFailed": 174
   },
   "RIG": {
-   "trials": 4273,
-   "staticMeasured": 4258,
+   "trials": 4274,
+   "staticMeasured": 4259,
    "unverifiedOrFailed": 15
   },
   "JOINT": {
-   "trials": 4273,
-   "staticMeasured": 4258,
+   "trials": 4274,
+   "staticMeasured": 4259,
    "unverifiedOrFailed": 15
   },
   "MOTION": {
-   "trials": 4273,
-   "staticMeasured": 4270,
+   "trials": 4274,
+   "staticMeasured": 4271,
    "unverifiedOrFailed": 3
   },
   "ACTION": {
-   "trials": 4273,
-   "staticMeasured": 4270,
+   "trials": 4274,
+   "staticMeasured": 4271,
    "unverifiedOrFailed": 3
   },
   "MATERIAL": {
-   "trials": 16190,
-   "staticMeasured": 16009,
+   "trials": 16193,
+   "staticMeasured": 16012,
    "unverifiedOrFailed": 179
   },
   "ENVIRONMENT": {
@@ -204,23 +204,23 @@
    "unverifiedOrFailed": 152
   },
   "OBJECT": {
-   "trials": 16184,
-   "staticMeasured": 16009,
+   "trials": 16187,
+   "staticMeasured": 16012,
    "unverifiedOrFailed": 175
   },
   "UI": {
-   "trials": 467675,
-   "staticMeasured": 467664,
+   "trials": 467783,
+   "staticMeasured": 467772,
    "unverifiedOrFailed": 11
   },
   "BUTTON": {
-   "trials": 467675,
-   "staticMeasured": 467664,
+   "trials": 467783,
+   "staticMeasured": 467772,
    "unverifiedOrFailed": 11
   },
   "ICON": {
-   "trials": 14171,
-   "staticMeasured": 12100,
+   "trials": 14173,
+   "staticMeasured": 12102,
    "unverifiedOrFailed": 2071
   },
   "VFX": {
@@ -239,8 +239,8 @@
    "unverifiedOrFailed": 0
   },
   "LIGHTING": {
-   "trials": 4281,
-   "staticMeasured": 4281,
+   "trials": 4282,
+   "staticMeasured": 4282,
    "unverifiedOrFailed": 0
   },
   "CAMERA": {
@@ -321,10 +321,10 @@
   "history": {
    "external-actor-barbarian": {
     "sourceSha256": "e01657fd65025192001a8f0770789a784a2679a18fa7ee14e41910e74702ec19",
-    "attempts": 700,
-    "passed": 698,
+    "attempts": 701,
+    "passed": 699,
     "failed": 2,
-    "measured": 700,
+    "measured": 701,
     "bones": 41,
     "meshParts": 13,
     "clipNamesObserved": 76,
@@ -334,7 +334,7 @@
     "lastLowestMesh": "Barbarian_LegLeft",
     "lastBoundGroundOffsetRatio": 0,
     "lastFailures": [],
-    "lastSession": "2026-11-28T16:22:29.614Z"
+    "lastSession": "2026-11-28T16:30:58.198Z"
    },
    "external-actor-skeleton-minion": {
     "sourceSha256": "b7f7fbd4b96af09b3aece2e1650d03fde9b471af32af2eb22ecf84267aebfa3b",
@@ -506,13 +506,13 @@
   "history": {
    "tycoon-arrowBlue_left": {
     "sourceSha256": "c31a3563b46295da4deafd0eb08882092492bc9b702df1c47555482de9e9a35e",
-    "attempts": 1232,
-    "measured": 1232,
-    "passed": 1232,
+    "attempts": 1233,
+    "measured": 1233,
+    "passed": 1233,
     "rejected": 0,
     "pixels64": 299,
     "contrast64": 0.165,
-    "lastSession": "2026-11-28T16:22:29.614Z"
+    "lastSession": "2026-11-28T16:30:58.198Z"
    },
    "tycoon-arrowBlue_right": {
     "sourceSha256": "8a720d8318c368505fa89b901f3f84a839b5fb27b134fed064ee5415d4739f19",
