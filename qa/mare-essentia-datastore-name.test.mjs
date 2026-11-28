@@ -1202,7 +1202,7 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
     'd.TextureID ~= ""', 'sa and surfaceHasColorMap(sa)', 'ch.TextureId ~= ""',
     'light >= 0.80 and chroma <= 0.13',
     'Enum.Material.Cobblestone', 'Enum.Material.WoodPlanks',
-    'Enum.Material.Slate', 'Enum.Material.Ground',
+    'Enum.Material.ClayRoofTiles', 'Enum.Material.Ground',
     'd.Material, d.Color, d.Reflectance = mat, color, 0',
     'm:ScaleTo(m:GetScale() * ratio)',
   ]) assert.ok(placement.includes(marker),'건축 메시 색상·배율 복구 누락: '+marker);
@@ -2814,7 +2814,7 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(block,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
  assert.match(block,/surfaceHasMaps\(sa\)/);
  assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
- assert.match(block,/if architecture and \(importedWhite or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
+ assert.match(block,/if architecture and \(importedWhite or importedGray or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
  assert.match(block,/local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80/);
  assert.match(block,/local role = p\.Name:lower\(\)/);
  assert.match(block,/if role:find\(key, 1, true\) then name = role; break end/);
@@ -2831,7 +2831,11 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(field,/asset:find\("kenney_", 1, true\)/);
  assert.match(field,/asset:find\("eastasia", 1, true\)/);
  assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\)/);
- assert.match(field,/if not textured and light >= 0\.80 and chroma <= 0\.13 then/);
+ assert.match(field,/if not textured and \(light >= 0\.80 and chroma <= 0\.13 or importedGray\)/);
+ assert.match(block,/local importedGray = low >= 0\.40 and high - low <= 0\.08/);
+ assert.match(field,/local importedGray = light >= 0\.40 and chroma <= 0\.08/);
+ assert.match(field,/elseif tint and not named then/);
+ assert.match(field,/or sa ~= nil or d\.MaterialVariant ~= ""/);
  assert.match(field,/status:SetAttribute\("CombatEnabled", false\)/);
 });
 

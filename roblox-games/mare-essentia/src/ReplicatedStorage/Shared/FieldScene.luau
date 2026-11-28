@@ -344,6 +344,19 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				d.CastShadow = false
 			end
 			local tint = tintOverride or FIELD_TINT[asset]
+			local named = (kind == "Town" and (asset:find("house", 1, true) or asset:find("church", 1, true)
+				or asset:find("temple", 1, true) or asset:find("tower", 1, true)
+				or asset:find("windmill", 1, true) or asset:find("kenney_", 1, true)
+				or asset:find("quaternius_", 1, true) or asset:find("eastasia", 1, true)
+				or asset:find("wall", 1, true) or asset:find("roof", 1, true)
+				or asset:find("floor", 1, true) or asset:find("arch", 1, true)
+				or asset:find("door", 1, true) or asset:find("stall", 1, true)
+					or asset:find("warehouse", 1, true) or asset:find("palace", 1, true)
+					or asset:find("market", 1, true) or asset:find("fort", 1, true) or asset:find("barn", 1, true)))
+				or (kind == "Castle" and not asset:find("flag", 1, true))
+				or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
+				or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
+				or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
 			if kind == "Animals" and tint then
 				-- [야생 생물 품종색] 원본 PBR 맵/무늬와 눈·발굽·뿔 등 세부색은 보존한다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
@@ -388,53 +401,69 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 				elseif not textured and not sa and (partName:find("mane", 1, true) or partName:find("tail", 1, true)) then
 					d.Material = Enum.Material.Fabric
 				end
-			elseif tint then
+			elseif tint and not named then
 				-- [지상전 PBR 재질] 계절색은 무늬 없는 표면에만 약하게 섞는다.
 				-- 승인 메시의 ColorMap/TextureID/UV·원본 색을 강제로 덮지 않는다.
 				local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
+				local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or sa ~= nil or d.MaterialVariant ~= ""
 				for _, ch in d:GetChildren() do
 					if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 				end
 				if not textured then
-					local strength = if kind == "Terrain" then 0.40 else 0.28
-					if sa then sa.Color = sa.Color:Lerp(tint, strength)
-					else d.Color = d.Color:Lerp(tint, strength) end
+					local low = math.min(d.Color.R, d.Color.G, d.Color.B)
+					local chroma = math.max(d.Color.R, d.Color.G, d.Color.B) - low
+					local gray = low >= 0.40 and chroma <= 0.08
+						and (d.Material == Enum.Material.Plastic or d.Material == Enum.Material.SmoothPlastic)
+					if gray and kind == "Terrain" then
+						local role = d.Name:lower()
+						local wood = role:find("trunk", 1, true) or role:find("branch", 1, true) or role:find("bark", 1, true)
+						local rock = asset:lower():find("rock", 1, true) or asset:lower():find("stone", 1, true)
+						d.Color = if wood then Color3.fromRGB(113, 83, 56) else tint
+						d.Material = if wood then Enum.Material.Wood elseif rock then Enum.Material.Rock else Enum.Material.Grass
+					else
+						local strength = if kind == "Terrain" then 0.40 else 0.28
+						d.Color = d.Color:Lerp(tint, strength)
+					end
 				end
 			else
 				-- [흰 건물·바닥 복구] 맵 있는 승인 메시/PBR은 보존하고, 색이 빠진 흰 면만 기존 재질로 복구한다.
-				local named = (kind == "Town" and (asset:find("house", 1, true) or asset:find("church", 1, true)
-					or asset:find("temple", 1, true) or asset:find("tower", 1, true)
-					or asset:find("windmill", 1, true) or asset:find("kenney_", 1, true)
-					or asset:find("quaternius_", 1, true) or asset:find("eastasia", 1, true)
-					or asset:find("wall", 1, true) or asset:find("roof", 1, true)
-					or asset:find("floor", 1, true) or asset:find("arch", 1, true)
-					or asset:find("door", 1, true) or asset:find("stall", 1, true)))
-					or (kind == "Castle" and not asset:find("flag", 1, true))
-					or (kind == "Terrain" and (asset:find("ground-", 1, true) or asset:find("ruins", 1, true)
-					or asset:find("bridge", 1, true) or asset:find("column", 1, true)))
-					or (kind == "Naval" and (asset:find("dock", 1, true) or asset:find("platform", 1, true)))
+
 				if named then
 					local sa = d:FindFirstChildOfClass("SurfaceAppearance")
-					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or (sa and surfaceHasColorMap(sa))
+					local textured = (d:IsA("MeshPart") and d.TextureID ~= "") or sa ~= nil or d.MaterialVariant ~= ""
 					for _, ch in d:GetChildren() do
 						if ch:IsA("SpecialMesh") and ch.TextureId ~= "" then textured = true end
 					end
 					local light = math.min(d.Color.R, d.Color.G, d.Color.B)
 					local chroma = math.max(d.Color.R, d.Color.G, d.Color.B) - light
-					if not textured and light >= 0.80 and chroma <= 0.13 then
+					local importedGray = light >= 0.40 and chroma <= 0.08
+						and (d.Material == Enum.Material.Plastic or d.Material == Enum.Material.SmoothPlastic)
+					if not textured and (light >= 0.80 and chroma <= 0.13 or importedGray)
+						and d.Material ~= Enum.Material.Metal and d.Material ~= Enum.Material.Glass and d.Material ~= Enum.Material.Neon then
+						local role = d.Name:lower()
 						local name = (asset .. " " .. d.Name):lower()
+						for _, key in { "glass", "windowpane", "metal", "iron", "awning", "cloth", "roof", "tile", "wood", "beam", "door", "stone", "wall", "brick" } do
+							if role:find(key, 1, true) then name = role; break end
+						end
 						local mat, color = Enum.Material.Cobblestone, Color3.fromRGB(145, 139, 123)
-						if name:find("roof", 1, true) or name:find("tile", 1, true) then
-							mat, color = Enum.Material.Slate, Color3.fromRGB(117, 107, 100)
+						if name:find("glass", 1, true) or name:find("windowpane", 1, true) then
+							mat, color = Enum.Material.Glass, Color3.fromRGB(194, 218, 222)
+						elseif name:find("metal", 1, true) or name:find("iron", 1, true) then
+							mat, color = Enum.Material.Metal, Color3.fromRGB(100, 105, 108)
+						elseif name:find("awning", 1, true) or name:find("cloth", 1, true) then
+							mat, color = Enum.Material.Fabric, tint or Color3.fromRGB(171, 125, 88)
+						elseif name:find("roof", 1, true) or name:find("tile", 1, true) then
+							mat, color = Enum.Material.ClayRoofTiles, Color3.fromRGB(146, 89, 67)
 						elseif name:find("wood", 1, true) or name:find("beam", 1, true)
-							or name:find("dock", 1, true) or name:find("platform", 1, true) then
+							or name:find("door", 1, true) or name:find("dock", 1, true) or name:find("platform", 1, true) then
 							mat, color = Enum.Material.WoodPlanks, Color3.fromRGB(128, 97, 69)
 						elseif name:find("path", 1, true) or name:find("ground-", 1, true) then
 							mat, color = Enum.Material.Ground, Color3.fromRGB(135, 119, 91)
 						elseif name:find("house", 1, true) or name:find("church", 1, true)
 							or name:find("temple", 1, true) or name:find("wall", 1, true) then
 							mat, color = Enum.Material.Brick, Color3.fromRGB(163, 139, 116)
+						elseif kind == "Terrain" and asset:find("ground-", 1, true) then
+							mat, color = Enum.Material.Ground, tint or Color3.fromRGB(135, 119, 91)
 						end
 						d.Material, d.Color, d.Reflectance = mat, color, 0
 						if sa then sa.Color = color end
