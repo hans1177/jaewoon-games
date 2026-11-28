@@ -182,8 +182,8 @@ function VoyageScene.play(info)
 	skip.Parent = gui
 	local title = Instance.new("TextLabel")
 	title.BackgroundTransparency = 1
-	title.Position = UDim2.new(0, 0, 0, 36)
-	title.Size = UDim2.new(1, 0, 0, 34)
+	title.Position = UDim2.new(0, 8, 0, 30)
+	title.Size = UDim2.new(1, -16, 0, 28)
 	title.Font = Enum.Font.GothamBold
 	title.TextSize = 24
 	title.TextColor3 = Color3.new(1, 1, 1)
@@ -191,9 +191,10 @@ function VoyageScene.play(info)
 	title.Text = string.format("%s  →  %s", info.fromName, info.toName)
 	title.ZIndex = 2
 	title.Parent = gui
+	title.TextTruncate = Enum.TextTruncate.AtEnd
 	local dayLabel = title:Clone()
-	dayLabel.Position = UDim2.new(0, 0, 0, 72)
-	dayLabel.Size = UDim2.new(1, 0, 0, 22)
+	dayLabel.Position = UDim2.new(0, 8, 0, 58)
+	dayLabel.Size = UDim2.new(1, -16, 0, 20)
 	dayLabel.TextSize = 16
 	dayLabel.TextScaled = true
 	local dayTextLimit = Instance.new("UITextSizeConstraint")
@@ -256,15 +257,21 @@ function VoyageScene.play(info)
 	local s_comboGlow = nil
 	local sideBtns = {}
 	local s_guide = nil
+	local nextStepLabel: TextLabel? = nil
 	local tally = Rings.newTally()
 	local autoRing = false -- 직접 항해 중 언제든 자동으로 바꿀 수 있다(처음 가는 항구는 제외)
 	if manual then
 		skip.Visible = false
-		hint.Text = "스틱·A/D·◀ ▶ 로 금색 바람 고리를 통과해요 · 연속 통과하면 빨라져요"
+		hint.Text = "좌우 조종 · 금빛 고리를 통과하면 가속"
 		local track = Instance.new("Frame")
 		track.AnchorPoint = Vector2.new(0.5, 1)
 		track.Position = UDim2.new(0.5, 0, 1, -86)
-		track.Size = UDim2.fromOffset(460, 18)
+		-- 좁은 화면에서도 좌우 64px 조종 버튼과 8px 간격을 확보한다.
+		track.Size = UDim2.new(1, -160, 0, 18)
+		track.ClipsDescendants = false
+		local trackLimit = Instance.new("UISizeConstraint")
+		trackLimit.MaxSize = Vector2.new(460, 18)
+		trackLimit.Parent = track
 		track.BackgroundColor3 = Color3.fromRGB(20, 40, 64)
 		track.BackgroundTransparency = 0.25
 		track.BorderSizePixel = 0
@@ -315,18 +322,23 @@ function VoyageScene.play(info)
 		scoreLabel = Instance.new("TextLabel")
 		scoreLabel.BackgroundTransparency = 1
 		scoreLabel.AnchorPoint = Vector2.new(0.5, 1)
-		scoreLabel.Position = UDim2.new(0.5, 0, 0, -4)
-		scoreLabel.Size = UDim2.fromOffset(300, 20)
+		scoreLabel.Position = UDim2.new(0.5, 0, 0, -16)
+		scoreLabel.Size = UDim2.new(1, 144, 0, 24)
 		scoreLabel.Font = Enum.Font.GothamBold
-		scoreLabel.TextSize = 14
+		scoreLabel.TextSize = 16
+		scoreLabel.TextScaled = true
+		local scoreLimit = Instance.new("UITextSizeConstraint")
+		scoreLimit.MinTextSize = 12
+		scoreLimit.MaxTextSize = 16
+		scoreLimit.Parent = scoreLabel
 		scoreLabel.TextColor3 = Color3.new(1, 1, 1)
 		scoreLabel.TextStrokeTransparency = 0.4
 		scoreLabel.ZIndex = 7
 		scoreLabel.Parent = track
 		for _, side in { "l", "r" } do
 			local b = Instance.new("TextButton")
-			b.AnchorPoint = Vector2.new(0.5, 1)
-			b.Position = UDim2.new(0.5, if side == "l" then -290 else 290, 1, -78)
+			b.AnchorPoint = Vector2.new(if side == "l" then 1 else 0, 0.5)
+			b.Position = UDim2.new(if side == "l" then 0 else 1, if side == "l" then -8 else 8, 0.5, 0)
 			b.Size = UDim2.fromOffset(64, 44)
 			b.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
 			b.BackgroundTransparency = 0.2
@@ -335,7 +347,7 @@ function VoyageScene.play(info)
 			b.TextColor3 = Color3.new(1, 1, 1)
 			b.Font = Enum.Font.GothamBold
 			b.ZIndex = 8
-			b.Parent = gui
+			b.Parent = track
 			sideBtns[side] = b
 			local c = Instance.new("UICorner")
 			c.Parent = b
@@ -603,29 +615,43 @@ function VoyageScene.play(info)
 			if info.tutorial and manual then
 				local g = Instance.new("TextLabel")
 				g.BackgroundTransparency = 1
-				g.AnchorPoint = Vector2.new(0.5, 0.5)
-				g.Position = UDim2.fromScale(0.5, 0.3)
-				g.Size = UDim2.fromOffset(360, 70)
+				g.AnchorPoint = Vector2.new(0, 0.5)
+				g.Position = UDim2.new(0, 4, 0.5, 0)
+				g.Size = UDim2.fromOffset(76, 46)
 				g.Font = Enum.Font.GothamBlack
-				g.TextSize = 54
+				g.TextSize = 28
 				g.TextColor3 = Color3.fromRGB(255, 226, 110)
 				g.TextStrokeTransparency = 0.3
 				g.ZIndex = 9
 				g.Text = ""
-				g.Parent = gui
 				local guideHint = Instance.new("TextLabel")
 				guideHint.BackgroundColor3 = Color3.fromRGB(12, 24, 40)
 				guideHint.BackgroundTransparency = 0.25
 				guideHint.AnchorPoint = Vector2.new(0.5, 0)
-				guideHint.Position = UDim2.new(0.5, 0, 0.3, 46)
-				guideHint.Size = UDim2.fromOffset(420, 52)
+				guideHint.Position = UDim2.new(0.5, 0, 0, 80)
+				guideHint.Size = UDim2.new(0.94, 0, 0, 48)
+				local guideLimit = Instance.new("UISizeConstraint")
+				guideLimit.MaxSize = Vector2.new(520, 48)
+				guideLimit.Parent = guideHint
 				guideHint.Font = Enum.Font.GothamMedium
-				guideHint.TextSize = 16
+				guideHint.TextSize = 18
 				guideHint.TextWrapped = true
 				guideHint.TextColor3 = Color3.fromRGB(255, 244, 214)
-				guideHint.Text = "첫 항해! 화살표 쪽으로 ◀ ▶ (또는 A·D, 화면 드래그)를 눌러\n금빛 고리 한가운데로 배를 보내세요"
+				guideHint.Text = ""
 				guideHint.ZIndex = 9
 				guideHint.Parent = gui
+				local guideText = Instance.new("TextLabel")
+				guideText.BackgroundTransparency = 1
+				guideText.Position = UDim2.fromOffset(84, 0)
+				guideText.Size = UDim2.new(1, -92, 1, 0)
+				guideText.Font = Enum.Font.GothamMedium
+				guideText.TextSize = 18
+				guideText.TextWrapped = true
+				guideText.TextColor3 = guideHint.TextColor3
+				guideText.Text = "화살표 방향으로 조종\n금빛 고리 가운데 통과"
+				guideText.ZIndex = 9
+				guideText.Parent = guideHint
+				g.Parent = guideHint
 				local guideCorner = Instance.new("UICorner")
 				guideCorner.Parent = guideHint
 				s_guide = { arrow = g, hint = guideHint }
@@ -667,14 +693,19 @@ function VoyageScene.play(info)
 		modeBadge = Instance.new("TextLabel")
 		modeBadge.Name = "SailModeBadge"
 		modeBadge.AnchorPoint = Vector2.new(0.5, 0)
-		modeBadge.Position = UDim2.new(0.5, 0, 1, -84)
-		modeBadge.Size = UDim2.fromOffset(230, 30)
+		modeBadge.Position = UDim2.new(0.5, 0, 1, if manual then -60 else -84)
+		modeBadge.Size = if manual then UDim2.new(0.45, 0, 0, 30) else UDim2.fromOffset(230, 30)
+		if manual then
+			local modeLimit = Instance.new("UISizeConstraint")
+			modeLimit.MaxSize = Vector2.new(230, 30)
+			modeLimit.Parent = modeBadge
+		end
 		modeBadge.BackgroundColor3 = Color3.fromRGB(18, 30, 48)
 		modeBadge.BackgroundTransparency = 0.2
 		modeBadge.Font = Enum.Font.GothamBold
 		modeBadge.TextSize = 15
 		modeBadge.TextColor3 = Color3.fromRGB(255, 232, 170)
-		modeBadge.Text = if manual then "🌊 직접 항해 (바람 고리)" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
+		modeBadge.Text = if manual then "직접 항해 · 바람 고리" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
 		modeBadge.ZIndex = 9
 		modeBadge.Parent = gui
 		local mc = Instance.new("UICorner")
@@ -721,7 +752,7 @@ function VoyageScene.play(info)
 	local helmShoals, helmCurrents = {}, {}
 	local d0n = Vector3.new(1, 0, 0)
 	local helmMsg, windLabel, speedLabel, distLabel, trimFill, mapFrame, mapShip, mapDest, windArrow, autoBtn
-	local MAP = 150
+	local MAP = if camera.ViewportSize.Y < 360 then 64 elseif camera.ViewportSize.Y < 420 or camera.ViewportSize.X < 420 then 80 else 150
 	local function wrapAngle(a)
 		return (a + math.pi) % (math.pi * 2) - math.pi
 	end
@@ -797,8 +828,8 @@ function VoyageScene.play(info)
 		local base = Instance.new("Frame")
 		base.Name = "HelmStick"
 		base.AnchorPoint = Vector2.new(0, 1)
-		base.Position = UDim2.new(0, 26, 1, -70)
-		base.Size = UDim2.fromOffset(150, 150)
+		base.Position = UDim2.new(0, 26, 1, if camera.ViewportSize.Y < 360 then -58 else -70)
+		base.Size = if camera.ViewportSize.Y < 360 then UDim2.fromOffset(64, 64) elseif camera.ViewportSize.Y < 420 then UDim2.fromOffset(88, 88) else UDim2.fromOffset(150, 150)
 		base.BackgroundColor3 = Color3.fromRGB(18, 38, 62)
 		base.BackgroundTransparency = 0.4
 		base.BorderSizePixel = 0
@@ -817,7 +848,7 @@ function VoyageScene.play(info)
 		local knob = Instance.new("Frame")
 		knob.AnchorPoint = Vector2.new(0.5, 0.5)
 		knob.Position = UDim2.fromScale(0.5, 0.5)
-		knob.Size = UDim2.fromOffset(62, 62)
+		knob.Size = UDim2.fromScale(0.41, 0.41)
 		knob.BackgroundColor3 = Color3.fromRGB(224, 170, 69)
 		knob.BackgroundTransparency = 0.1
 		knob.BorderSizePixel = 0
@@ -836,7 +867,7 @@ function VoyageScene.play(info)
 				v = v.Unit
 			end
 			stickX, stickY = v.X, -v.Y
-			knob.Position = UDim2.new(0.5, v.X * 44, 0.5, v.Y * 44)
+			knob.Position = UDim2.new(0.5 + v.X * 0.29, 0, 0.5 + v.Y * 0.29, 0)
 		end
 		local homeUDim = base.Position
 		local function resetStick()
@@ -877,18 +908,25 @@ function VoyageScene.play(info)
 			end
 		end))
 		-- 바람·속도·거리 표시
-		windLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 100), "바람", nil)
+		windLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 132), "바람", nil)
 		windLabel.TextXAlignment = Enum.TextXAlignment.Left
-		speedLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 122), "속도", nil)
+		speedLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 152), "속도", nil)
 		speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-		distLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 144), "거리", nil)
+		distLabel = mkLabel(UDim2.fromOffset(190, 20), UDim2.new(0, 16, 0, 172), "거리", nil)
 		distLabel.TextXAlignment = Enum.TextXAlignment.Left
-		helmMsg = mkLabel(UDim2.new(1, 0, 0, 24), UDim2.new(0, 0, 0.18, 0), "", nil)
-		helmMsg.TextSize = 20
+		helmMsg = mkLabel(UDim2.new(0.94, 0, 0, 48), UDim2.new(0.5, 0, 0, 80), "", Vector2.new(0.5, 0))
+		helmMsg.TextSize = 18
+		helmMsg.TextWrapped = true
+		helmMsg.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+		helmMsg.BackgroundTransparency = 0.2
+		helmMsg.Visible = false
+		local helmMsgLimit = Instance.new("UISizeConstraint")
+		helmMsgLimit.MaxSize = Vector2.new(520, 48)
+		helmMsgLimit.Parent = helmMsg
 		-- 미니맵 (오른쪽 위): 출발·목적지·내 배·바람 화살표
 		mapFrame = Instance.new("Frame")
 		mapFrame.AnchorPoint = Vector2.new(1, 0)
-		mapFrame.Position = UDim2.new(1, -16, 0, 100)
+		mapFrame.Position = UDim2.new(1, -16, 0, 132)
 		mapFrame.Size = UDim2.fromOffset(MAP, MAP)
 		mapFrame.BackgroundColor3 = Color3.fromRGB(226, 208, 168)
 		mapFrame.BackgroundTransparency = 0.12
@@ -927,8 +965,8 @@ function VoyageScene.play(info)
 		-- 돛 막대 (오른쪽 가운데): 위로 올리면 돛을 펴고 아래로 내리면 접는다
 		local trimBack = Instance.new("Frame")
 		trimBack.AnchorPoint = Vector2.new(1, 1)
-		trimBack.Position = UDim2.new(1, -22, 1, -70)
-		trimBack.Size = UDim2.fromOffset(16, 150)
+		trimBack.Position = UDim2.new(1, -22, 1, if camera.ViewportSize.Y < 360 then -60 else -70)
+		trimBack.Size = UDim2.fromOffset(16, if camera.ViewportSize.Y < 420 then 62 else 150)
 		trimBack.BackgroundColor3 = Color3.fromRGB(18, 38, 62)
 		trimBack.BackgroundTransparency = 0.35
 		trimBack.BorderSizePixel = 0
@@ -942,7 +980,7 @@ function VoyageScene.play(info)
 		trimFill.BorderSizePixel = 0
 		trimFill.ZIndex = 9
 		trimFill.Parent = trimBack
-		local trimTag = mkLabel(UDim2.fromOffset(40, 16), UDim2.new(1, -14, 1, -226), "돛", Vector2.new(1, 0))
+		local trimTag = mkLabel(UDim2.fromOffset(40, 16), UDim2.new(1, -14, 1, if camera.ViewportSize.Y < 420 then -58 else -238), "돛", Vector2.new(1, 0))
 		trimTag.TextSize = 13
 		-- 자동 항해 전환 버튼
 		autoBtn = Instance.new("TextButton")
@@ -967,9 +1005,7 @@ function VoyageScene.play(info)
 			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
 		end)
 		-- 목적지 깃발(멀리서도 보이는 빛기둥)
-		local beacon = part(folder, Vector3.new(5, 160, 5), CFrame.new(helmDest + Vector3.new(0, 80, 0)), Color3.fromRGB(255, 205, 90), Enum.Material.Neon)
-		beacon.Name = "DestBeacon"
-		beacon.Transparency = 0.35
+		-- 목적지 표지는 아래 공통 VoyageDestinationBeacon 하나만 사용한다.
 	end
 
 	-- 조명 저장 후 바다 분위기로 바꾼다
@@ -1358,40 +1394,35 @@ function VoyageScene.play(info)
 		island = "미지의 섬!", ghost = "유령선...", blockade = "해상 봉쇄!", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
 		current = "숨은 해류!", wreck = "침몰선 발견!", rainbow = "쌍무지개!", mermaid = "인어의 노래...", pigeon = "전서구 도착", bottle = "병 편지 발견", rats = "쥐떼 습격!", vortex = "소용돌이!", fire = "선상 화재!", mutiny = "선상 반란!", shark = "상어 떼!", cursed = "저주받은 보물", phantom = "유령선을 따라간다", kraken = "크라켄 출현!!", volcano = "바다 화산!", meteor = "별똥별!", rival = "라이벌과 경주!",
 	}
+	-- 기존 사건 알림을 상단 공용 안내 위치에서 한 번에 하나만 표시한다.
 	local banner = title:Clone()
-	banner.Position = UDim2.new(0, 0, 0.22, 0)
-	banner.Size = UDim2.new(1, 0, 0, 44)
-	banner.TextSize = 34
+	banner.AnchorPoint = Vector2.new(0.5, 0)
+	banner.Position = UDim2.new(0.5, 0, 0, 80)
+	banner.Size = UDim2.new(0.94, 0, 0, 48)
+	banner.TextSize = 22
+	banner.TextWrapped = true
 	banner.TextColor3 = Color3.fromRGB(255, 220, 120)
+	banner.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+	banner.BackgroundTransparency = 0.2
 	banner.Text = eventBanner[ev.kind] or ""
-	banner.TextTransparency = 1
-	banner.TextStrokeTransparency = 1
+	banner.Visible = false
+	banner.ZIndex = 9
 	banner.Parent = gui
-	-- 긴 항해의 추가 사건: 항해 진행도에 맞춰 차례로 알림이 뜬다
+	local eventLimit = Instance.new("UISizeConstraint", banner)
+	eventLimit.MaxSize = Vector2.new(520, 48)
+	local eventCorner = Instance.new("UICorner", banner)
+	eventCorner.CornerRadius = UDim.new(0, 10)
 	local extraKinds = {}
 	for i, kd in (ev.all or {}) do
-		if i > 1 then
-			table.insert(extraKinds, kd)
-		end
+		if i > 1 then table.insert(extraKinds, kd) end
 	end
 	local banner2 = banner:Clone()
-	banner2.Position = UDim2.new(0, 0, 0.30, 0)
-	banner2.TextSize = 26
+	banner2.TextSize = 19
 	banner2.TextColor3 = Color3.fromRGB(190, 225, 255)
 	banner2.Text = ""
 	banner2.Parent = gui
-	-- 수동 항해: 화면 한가운데(바람 고리·안내·콤보 팝업 자리)를 비우고, 이벤트 알림은 위쪽 띠로 옮긴다.
-	-- 날짜 줄 아래 가운데에 작은 알림 띠 두 줄(주 사건·추가 사건)만 쓰고, 좌우 HUD(지도·자동 전환·점수)는 피한다.
-	if manual then
-		banner.Position = UDim2.new(0.5, 0, 0, 100)
-		banner.AnchorPoint = Vector2.new(0.5, 0)
-		banner.Size = UDim2.new(0, 280, 0, 30)
-		banner.TextSize = 24
-		banner2.Position = UDim2.new(0.5, 0, 0, 132)
-		banner2.AnchorPoint = Vector2.new(0.5, 0)
-		banner2.Size = UDim2.new(0, 280, 0, 26)
-		banner2.TextSize = 19
-	end
+	local seaCaption: TextLabel? = nil
+	local departureSeaInfo, arrivalSeaInfo
 	-- [자동 배치 · 해역 배경] 목적지(없으면 출발지) 해역의 Naval/voyage_<해역>_near|mid|far 모델을 양옆에 띄운다.
 	-- 항해 전용 모델이 없으면 같은 해역의 해전 배경(Naval/sea_<해역>_*)을 다시 쓴다. 둘 다 없으면 아무것도 안 놓는다.
 	do
@@ -1411,31 +1442,20 @@ function VoyageScene.play(info)
 			end
 		end
 		folder:SetAttribute("VoyageSeaArea", sea or "")
-		-- [해역 이야기 자막 · 2026-11-28] 해역 이름과 한 줄 사연을 출항 직후 4초
-		local seaInfo = okSea and sea and SeaAreas.INFO and SeaAreas.INFO[sea]
-		if seaInfo and not info.intro then
-			local cap = Instance.new("TextLabel")
+		-- 실제 출발/목적지 항구의 해역을 사용한다. 외해 경계는 추정하지 않는다.
+		local fromSea = okSea and SeaAreas.seaOf(info.fromId)
+		local toSea = okSea and SeaAreas.seaOf(info.toId)
+		departureSeaInfo = fromSea and SeaAreas.INFO[fromSea]
+		arrivalSeaInfo = toSea and toSea ~= fromSea and SeaAreas.INFO[toSea]
+		if (departureSeaInfo or arrivalSeaInfo) and not info.intro then
+			local cap = banner:Clone()
 			cap.Name = "VoyageSeaCaption"
-			cap.AnchorPoint = Vector2.new(0.5, 0)
-			cap.Position = UDim2.new(0.5, 0, 0.16, 0)
-			cap.Size = UDim2.new(0.86, 0, 0, 64)
-			cap.BackgroundTransparency = 1
-			cap.Font = Enum.Font.GothamBlack
-			cap.TextSize = 26
-			cap.TextColor3 = Color3.fromRGB(255, 236, 190)
-			cap.TextStrokeTransparency = 0.35
-			cap.TextWrapped = true
 			cap.RichText = true
-			cap.Text = seaInfo[1] .. "<br/><font size=\"16\" face=\"Gotham\">" .. seaInfo[2] .. "</font>"
-			cap.TextTransparency = 1
+			cap.TextSize = 18
+			cap.TextColor3 = Color3.fromRGB(255, 236, 190)
+			cap.Text = ""
 			cap.Parent = gui
-			task.spawn(function()
-				task.wait(1.2)
-				for i = 1, 10 do if not cap.Parent then return end cap.TextTransparency = 1 - i / 10; cap.TextStrokeTransparency = 1 - i * 0.065; task.wait(0.03) end
-				task.wait(3.6)
-				for i = 1, 12 do if not cap.Parent then return end cap.TextTransparency = i / 12; cap.TextStrokeTransparency = 0.35 + i * 0.055; task.wait(0.04) end
-				cap:Destroy()
-			end)
+			seaCaption = cap
 		end
 		folder:SetAttribute("VoyageAutoSlotCount", placed)
 	end
@@ -1471,6 +1491,9 @@ function VoyageScene.play(info)
 		for i = 1, 4 do
 			addProp("Naval", "palm-detailed-straight", 16, 132 + i * 8, 0.12, i, -1, "mid")
 		end
+	elseif ev.kind == "wreck" then
+		-- 기존 등록 난파선 원본만 사용하고 보상·인양 판정은 서버 결과를 유지한다.
+		addProp("Naval", "ship-wreck", 18, 32, 0.5, math.pi / 2, -2)
 	elseif ev.kind == "ghost" then
 		addProp("Naval", "ship-ghost", 18, -80, 0.35, math.pi, 0)
 	elseif ev.kind == "blockade" then
@@ -1483,6 +1506,48 @@ function VoyageScene.play(info)
 			if m then
 				table.insert(fish, { m = m, side = 18 + (i % 4) * 9, phase = i * 0.8, along = (i - 4) * 14 })
 			end
+		end
+	end
+
+	-- 실제 사건 소품 위에만 표지를 붙인다. 모델이 없다면 기존 상단 사건 알림만 남긴다.
+	local eventMarker: BillboardGui? = nil
+	local markerTarget: BasePart? = nil
+	local markerKinds = { pirates = true, wreck = true, rescue = true, whale = true, reef = true, merchant = true, ghost = true, drift = true }
+	if not info.intro and markerKinds[ev.kind] then
+		if enemy then
+			markerTarget = enemy:FindFirstChildWhichIsA("BasePart", true)
+		elseif barrel then
+			markerTarget = barrel
+		else
+			for _, rec in props do
+				if not rec.always then
+					markerTarget = if rec.m:IsA("BasePart") then rec.m else rec.m:FindFirstChildWhichIsA("BasePart", true)
+					if markerTarget then break end
+				end
+			end
+		end
+		if markerTarget then
+			local mark = Instance.new("BillboardGui")
+			mark.Name = "VoyageSeaEventMarker"
+			mark.Adornee = markerTarget
+			mark.Size = UDim2.fromOffset(164, 36)
+			mark.StudsOffsetWorldSpace = Vector3.new(0, markerTarget.Size.Y / 2 + 5, 0)
+			mark.MaxDistance = 260
+			mark.AlwaysOnTop = true
+			mark.Enabled = false
+			mark.Parent = folder
+			local label = Instance.new("TextLabel", mark)
+			label.Size = UDim2.fromScale(1, 1)
+			label.Font = Enum.Font.GothamBold
+			label.TextSize = 17
+			label.TextColor3 = Color3.fromRGB(255, 232, 170)
+			label.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+			label.BackgroundTransparency = 0.2
+			label.Text = eventBanner[ev.kind] or ""
+			label.TextWrapped = true
+			local round = Instance.new("UICorner", label)
+			round.CornerRadius = UDim.new(0, 8)
+			eventMarker = mark
 		end
 	end
 
@@ -1669,7 +1734,7 @@ function VoyageScene.play(info)
 		beaconLabel.Size = UDim2.new(1, 0, 0, 40)
 		beaconLabel.BackgroundTransparency = 1
 		beaconLabel.Font = Enum.Font.GothamBlack
-		beaconLabel.TextSize = 16
+		beaconLabel.TextSize = 18
 		beaconLabel.TextColor3 = Color3.fromRGB(255, 236, 190)
 		beaconLabel.TextStrokeTransparency = 0.3
 		beaconLabel.TextWrapped = true
@@ -1677,11 +1742,18 @@ function VoyageScene.play(info)
 		edgeArrow = Instance.new("TextLabel")
 		edgeArrow.Name = "VoyageDestinationArrow"
 		edgeArrow.AnchorPoint = Vector2.new(0.5, 0.5)
-		edgeArrow.Size = UDim2.fromOffset(150, 46)
+		edgeArrow.Size = UDim2.fromOffset(152, 44)
 		edgeArrow.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
 		edgeArrow.BackgroundTransparency = 0.15
 		edgeArrow.Font = Enum.Font.GothamBold
-		edgeArrow.TextSize = 14
+		edgeArrow.TextSize = 17
+		edgeArrow.TextWrapped = true
+		edgeArrow.TextScaled = true
+		local edgeLimit = Instance.new("UITextSizeConstraint")
+		edgeLimit.MinTextSize = 12
+		edgeLimit.MaxTextSize = 17
+		edgeLimit.Parent = edgeArrow
+		edgeArrow.ZIndex = 6
 		edgeArrow.TextColor3 = Color3.fromRGB(255, 220, 130)
 		edgeArrow.Visible = false
 		edgeArrow.Parent = gui
@@ -1694,16 +1766,23 @@ function VoyageScene.play(info)
 		local ns = Instance.new("TextLabel")
 		ns.Name = "VoyageNextStep"
 		ns.AnchorPoint = Vector2.new(0.5, 0)
-		ns.Position = UDim2.new(0.5, 0, 0, 86)
-		ns.Size = UDim2.new(0.8, 0, 0, 30)
+		ns.Position = UDim2.new(0.5, 0, 0, 80)
+		ns.Size = UDim2.new(0.94, 0, 0, 48)
+		local nsLimit = Instance.new("UISizeConstraint")
+		nsLimit.MaxSize = Vector2.new(520, 48)
+		nsLimit.Parent = ns
 		ns.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
 		ns.BackgroundTransparency = 0.2
 		ns.Font = Enum.Font.GothamBold
-		ns.TextSize = 15
+		ns.TextSize = 18
+		ns.TextWrapped = true
+		ns.ZIndex = 9
 		ns.TextColor3 = Color3.fromRGB(255, 244, 222)
 		ns.TextTruncate = Enum.TextTruncate.AtEnd
 		ns.Text = "▶ 도착하면: " .. tostring(info.nextStep)
+		ns.Visible = not s_guide
 		ns.Parent = gui
+		nextStepLabel = ns
 		local nc = Instance.new("UICorner")
 		nc.CornerRadius = UDim.new(0, 10)
 		nc.Parent = ns
@@ -1732,8 +1811,11 @@ function VoyageScene.play(info)
 					local cx, cy = vp.X / 2, vp.Y / 2
 					local dx, dy = sp.X - cx, sp.Y - cy
 					if sp.Z < 0 then dx, dy = -dx, -dy end
-					local k = math.min((cx - 90) / math.max(1, math.abs(dx)), (cy - 40) / math.max(1, math.abs(dy)))
-					edgeArrow.Position = UDim2.fromOffset(cx + dx * k, cy + dy * k)
+					local k = math.min(math.max(0, cx - 84) / math.max(1, math.abs(dx)), math.max(0, cy - 24) / math.max(1, math.abs(dy)))
+					-- 상단 안내 및 하단 조종 영역을 피하고 화살표 방향은 원래 투영값을 유지한다.
+					local minY = math.min(cy, 152)
+					local maxY = math.max(minY, vp.Y - 168)
+					edgeArrow.Position = UDim2.fromOffset(cx + dx * k, math.clamp(cy + dy * k, minY, maxY))
 					local arrow = if math.abs(dx) > math.abs(dy) then (if dx > 0 then "▶" else "◀") else (if dy > 0 then "▼" else "▲")
 					edgeArrow.Text = arrow .. " " .. tostring(info.toName or "목적지") .. string.format(" · %d일", leftDays)
 				end
@@ -1795,7 +1877,9 @@ function VoyageScene.play(info)
 			distLabel.Text = string.format("목적지까지 %d", math.floor(remaining))
 			trimFill.Size = UDim2.fromScale(1, helmTrim)
 			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
-			helmMsg.Text = if seaNote ~= "" then seaNote elseif autoOn then "자동 항해 중" elseif relWind < math.rad(40) and not info.steam then "맞바람 — 방향을 옆으로 틀어요" else ""
+			helmMsg.Text = if seaNote ~= "" then seaNote elseif relWind < math.rad(40) and not info.steam and not autoOn then "맞바람 — 방향을 옆으로 틀어요" else ""
+			helmMsg.Visible = helmMsg.Text ~= ""
+			-- 다음 할 일 표시는 아래 공용 사건 안내에서 결정한다.
 			-- 미니맵: 동쪽=오른쪽, 북쪽(-Z)=위
 			local mid = (pts[1] + helmDest) / 2
 			local half = math.max(helmStartDist * 0.75, 260)
@@ -2040,9 +2124,9 @@ function VoyageScene.play(info)
 				fovBoost += (want - fovBoost) * math.min(1, dt * 3)
 				if s_guide then
 					if autoRing or tally.hits >= 4 then
-						s_guide.arrow:Destroy()
 						s_guide.hint:Destroy()
 						s_guide = nil
+						-- 다음 할 일 표시는 아래 공용 사건 안내에서 복구한다.
 						for _, sb in sideBtns do
 							sb.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
 						end
@@ -2058,7 +2142,7 @@ function VoyageScene.play(info)
 						if target then
 							local diff = target.lat - lat
 							local inside = math.abs(diff) <= Rings.radius(target) * 0.7
-							s_guide.arrow.Text = if inside then "✔ 좋아요!" elseif diff > 0 then "▶▶▶" else "◀◀◀"
+							s_guide.arrow.Text = if inside then "✔" elseif diff > 0 then "▶▶" else "◀◀"
 							s_guide.arrow.TextTransparency = 0.1 + 0.3 * pulse
 							for side, sb in sideBtns do
 								local need = (side == "r" and diff > 0 or side == "l" and diff < 0) and not inside
@@ -2318,21 +2402,32 @@ function VoyageScene.play(info)
 				f.m:PivotTo(CFrame.new(p.X, if jump >= 0 then jump * 7 + 0.5 else -500, p.Z) * CFrame.Angles(0, yaw + math.pi / 2, -(1 - jump) * 0.8))
 			end
 
+			if eventMarker then
+				eventMarker.Enabled = active and markerTarget ~= nil and markerTarget.Position.Y > -100
+			end
+			local guidance = s_guide ~= nil or (helmMsg ~= nil and helmMsg.Visible)
+			local mainEvent = active and eventBanner[ev.kind] ~= nil
+			banner.Visible = not guidance and mainEvent
+			local extraEvent = nil
 			if #extraKinds > 0 then
-				local slot = math.floor(k * (#extraKinds + 1) * 1.0)
+				local slot = math.floor(k * (#extraKinds + 1))
 				local within = (k * (#extraKinds + 1)) % 1
-				local kd = extraKinds[slot]
-				if kd and within > 0.15 and within < 0.55 then
-					banner2.Text = eventBanner[kd] or ""
-					banner2.TextTransparency = 0.1
-					banner2.TextStrokeTransparency = 0.4
-				else
-					banner2.TextTransparency = 1
-					banner2.TextStrokeTransparency = 1
+				if within > 0.15 and within < 0.55 then extraEvent = extraKinds[slot] end
+			end
+			banner2.Visible = not guidance and not mainEvent and extraEvent ~= nil and eventBanner[extraEvent] ~= nil
+			if banner2.Visible then banner2.Text = eventBanner[extraEvent] end
+			local captionInfo = if t < 5 and k < 0.25 then departureSeaInfo elseif k > 0.78 and k < 0.92 then arrivalSeaInfo else nil
+			if seaCaption then
+				seaCaption.Visible = not guidance and not banner.Visible and not banner2.Visible and captionInfo ~= nil
+				if seaCaption.Visible and captionInfo then
+					local heading = if captionInfo == departureSeaInfo then "출발 해역 · " else "도착 해역 · "
+					local captionText = heading .. captionInfo[1] .. "<br/><font size=\"16\">" .. captionInfo[2] .. "</font>"
+					if seaCaption.Text ~= captionText then seaCaption.Text = captionText end
 				end
 			end
-			banner.TextTransparency = 1 - math.clamp(intensity * 2.2, 0, 1)
-			banner.TextStrokeTransparency = 1 - math.clamp(intensity * 1.6, 0, 0.6)
+			if nextStepLabel then
+				nextStepLabel.Visible = not guidance and not banner.Visible and not banner2.Visible and not (seaCaption and seaCaption.Visible)
+			end
 		end
 		for i = #flashes, 1, -1 do
 			local f = flashes[i]
