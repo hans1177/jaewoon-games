@@ -1620,6 +1620,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				-- 수입된 SurfaceAppearance의 보조 색상만 약하게 조절해 헤어색과 직군별 천을 구분한다.
 				-- 장식 금속·진주·장화의 원본 광택 및 원형은 절대 변경하지 않는다.
 				if npcOutfit and surface and surfaceHasColorMap(surface) then
+					-- [복장 PBR] 컬러맵에는 원본 색이 이미 포함되어 있다. 흰 중립 배율에만 약한 개인색을 섞고 기존 유색/어두운 배율은 보존한다.
+					local sourceTint = surface.Color
+					local paleOutfitSurface = sourceTint.R >= 0.90 and sourceTint.G >= 0.90 and sourceTint.B >= 0.90
+						and math.max(sourceTint.R, sourceTint.G, sourceTint.B) - math.min(sourceTint.R, sourceTint.G, sourceTint.B) <= 0.08
 					if string.sub(assetName, 1, 5) == "hair_" then
 						local hairTint = model:GetAttribute("NpcHairTint")
 						if typeof(hairTint) == "Color3" then
@@ -1634,7 +1638,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								surface.Color = surface.Color:Lerp(softTint, 0.50)
 							end
 						end
-					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3" then
+					elseif detailAllowed and assetName == "outfit_cuff" and typeof(npcClothTint) == "Color3"
+						and paleOutfitSurface then
 						-- [원본 6부위 재질] 커프 GLB는 금속 단추와 직물 레이스가 같은 이름으로 수입된다.
 						-- 이름에 "metal"/"button"이 있는지로 판단하면 황동 버튼까지 천색으로 덮일 수 있다.
 						-- 기등록 원본 glTF의 선형색과 감마색 중 가까운 재질만 선정해 밝은 레이스만 염색한다.
@@ -1658,14 +1663,15 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						if part.Material ~= Enum.Material.Metal then
 							local linen = npcClothTint:Lerp(Color3.fromRGB(205, 192, 169), 0.42)
 							if bestError < 0.0064 and linenOnly then
-								surface.Color = surface.Color:Lerp(linen, 0.47)
+								surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.47)
 							elseif sourceColor.R > 0.83 and sourceColor.G > 0.81 and sourceColor.B > 0.77
 								and math.max(sourceColor.R, sourceColor.G, sourceColor.B)
 									- math.min(sourceColor.R, sourceColor.G, sourceColor.B) < 0.12 then
-								surface.Color = surface.Color:Lerp(linen, 0.78)
+								surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.78)
 							end
 						end
-					elseif detailAllowed and assetName == "outfit_boot" and typeof(npcTrouserTint) == "Color3" then
+					elseif detailAllowed and assetName == "outfit_boot" and typeof(npcTrouserTint) == "Color3"
+						and paleOutfitSurface then
 						-- [흰 장화 복구] 수입 시 기본 흰색으로 떨어진 가죽에만 바지색 기반 어두운 가죽톤을 입힌다.
 						-- 버클·리벳·금속 장식, 컬러맵 원본은 교체하지 않고 보조 색상만 조절한다.
 						local trim = part.Name:lower()
@@ -1677,9 +1683,9 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 								- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.12
 						if not metalTrim and pale then
 							local leather = npcTrouserTint:Lerp(Color3.fromRGB(56, 43, 34), 0.67)
-							surface.Color = surface.Color:Lerp(leather, 0.83)
+							surface.Color = surface.Color:Lerp(leather:Lerp(Color3.new(1, 1, 1), 0.70), 0.83)
 						end
-					elseif detailAllowed and (assetName == "outfit_vest" or assetName == "outfit_coat"
+					elseif detailAllowed and paleOutfitSurface and (assetName == "outfit_vest" or assetName == "outfit_coat"
 						or assetName == "outfit_guard" or assetName == "outfit_apron"
 						or assetName == "outfit_sash" or assetName == "outfit_stole") then
 						-- [원본 재질별 복장 보정] GLB의 섬유·피혁·황동 단추는 같은 outfit 메시라도 별도 재질이다.
@@ -1718,10 +1724,10 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 							end
 							if bestError < 0.0064 and bestMaterial == Enum.Material.SmoothPlastic then
 								-- [실제 PBR 천] ColorMap/Normal/Roughness를 그대로 사용하며 옷색만 약하게 반영한다.
-								surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)
+								surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), if assetName == "outfit_stole" then 0.16 else 0.27)
 							elseif pale and assetName ~= "outfit_guard" then
 								-- [수입 흰 옷 복구] 실제 GLB 원색에 없는 순백 기본 배율만 본래 직물 톤으로 되돌린다.
-								surface.Color = surface.Color:Lerp(dye, 0.75)
+								surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), 0.75)
 							end
 						end
 					elseif string.sub(assetName, 1, 4) == "acc_" and assetName ~= "acc_pearl_hairpin"

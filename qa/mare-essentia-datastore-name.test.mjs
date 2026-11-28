@@ -1718,7 +1718,7 @@ test('항구 주민은 실제 고용을 넘지 않고 개인별 출퇴근·점�
  ]) assert.ok(scene.includes(marker),'개별 시간표 연결 누락: '+marker);
  for(const marker of ['NPC_PROFESSION_ACCESSORY','NpcClothTint','NpcTrouserTint',
   'clothPersonality','outfit_apron','outfit_sash','Enum.Material.Fabric',
-  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)']){
+  'NPC_PROFESSION_GEAR[profession]','surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), if assetName == "outfit_stole" then 0.16 else 0.27)']){
    assert.ok(pose.includes(marker),'기등록 재단복 디테일 누락: '+marker);
  }
  for(const accessory of ['acc_sailor_headband','acc_guild_badge','acc_feather_hat','acc_pearl_hairpin']){
@@ -3747,9 +3747,18 @@ test('주민 복장 천·피혁·금속 재질과 계절 상의 교체는 원본
   assert.ok(pose.includes('or (bestError < 0.0064 and bestMaterial == Enum.Material.Metal)'), '황동/갑옷 금속 원재질 보존');
   assert.ok(pose.includes('or (bestError < 0.0064 and bestMaterial == Enum.Material.Leather)'), '가죽 장식 보존');
   assert.ok(pose.includes('if not metalTrim and not leatherTrim then'), '천 이외 재질 일괄 염색 금지');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye, if assetName == "outfit_stole" then 0.16 else 0.27)'), 'PBR 천은 원본 텍스처 유지');
+  assert.match(pose,/local paleOutfitSurface = sourceTint\.R >= 0\.90 and sourceTint\.G >= 0\.90 and sourceTint\.B >= 0\.90/);
+  assert.match(pose,/elseif detailAllowed and paleOutfitSurface and \(assetName == "outfit_vest"/);
+  assert.match(pose,/assetName == "outfit_cuff" and typeof\(npcClothTint\) == "Color3"\s+and paleOutfitSurface then/);
+  assert.match(pose,/assetName == "outfit_boot" and typeof\(npcTrouserTint\) == "Color3"\s+and paleOutfitSurface then/);
+  // 어두운 개인색에서도 PBR 색상 배율의 각 채널은 0.73 이상을 유지한다.
+  for (const strength of [0.16,0.27,0.47,0.75,0.78,0.83]) {
+    const outfitMultiplier=0.90*(1-strength)+0.70*strength;
+    assert.ok(outfitMultiplier>=0.73);
+  }
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), if assetName == "outfit_stole" then 0.16 else 0.27)'), 'PBR 천은 원본 텍스처 유지');
   assert.ok(pose.includes('elseif pale and assetName ~= "outfit_guard" then'), '갑옷의 은색 부분을 흰색으로 오진하지 않음');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye, 0.75)'), '실제 순백으로 유실된 직물만 복구');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(dye:Lerp(Color3.new(1, 1, 1), 0.70), 0.75)'), '실제 순백으로 유실된 직물만 복구');
   assert.ok(!pose.includes('surface.Color = surface.Color:Lerp(dye, 0.26)'), '옷 전체 파스텔 일괄 염색 금지');
   assert.ok(pose.includes('if not trim:find("button", 1, true) and not trim:find("buckle", 1, true)'), '무텍스처 직물에서도 단추는 보호');
   assert.ok(pose.includes('for _, spec in specs do'), '현재 직업/계절 의상 기준으로 검사');
@@ -3889,10 +3898,10 @@ test('항구 NPC의 커프·장화·장신구는 관절에 맞고 원본 금속 
   assert.ok(pose.includes('local boot = npcOutfit and assetName == "outfit_boot"'));
   assert.ok(pose.includes('elseif cuff then 0.36 elseif boot then 0.94'), '소매와 장화 높이를 관절 대비 축소');
   assert.ok(pose.includes('if cuff then -0.36 elseif boot then -0.15 elseif beard then -0.29 else hairOffsetY'), '손목/정강이/수염 위치를 각각 분리');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.47)'), '원본 린넨 색상 보존');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen, 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.47)'), '원본 린넨 색상 보존');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(linen:Lerp(Color3.new(1, 1, 1), 0.70), 0.78)'), 'PBR 흰 소매 밝은 무채색만 복구');
   assert.ok(pose.includes('if not metalTrim and pale then'), 'PBR 흰 장화만 보정, 금속 보호');
-  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(leather, 0.83)'), 'PBR 흰 장화 가죽염색');
+  assert.ok(pose.includes('surface.Color = surface.Color:Lerp(leather:Lerp(Color3.new(1, 1, 1), 0.70), 0.83)'), 'PBR 흰 장화 가죽염색');
   assert.ok(pose.includes('if assetName == "outfit_cuff" and neutral then 0.83'), '무텍스처 흰 소매 추가 보정');
   assert.ok(pose.includes('part.Color:Lerp(leather, if bright then 0.86 else 0.20)'), '무텍스처 흰 장화 추가 보정');
   assert.ok(pose.includes('linenOnly = candidate[2] ~= Enum.Material.Metal'));
