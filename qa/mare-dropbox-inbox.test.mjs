@@ -112,3 +112,17 @@ test('기존 실패가 있으면 승인된 카드배틀 화면 교체의 반복 
   assert.ok(review.includes('continue'));
   assert.ok(uploader.includes('ency_(?:bg_book|tab_sheet|map_world|scale_people)'));
 });
+
+
+test('기존 카드 후보 등록 통로가 신규 검수 원본과 고정 드롭박스 경로만 허용한다',()=>{
+  assert.ok(wf.includes("first_registration = (not ui and card not in registry and card not in doc['approved']"));
+  assert.ok(wf.includes("and 'replacesSha256' not in review"));
+  assert.ok(wf.includes("target.with_suffix('.jpg').exists()"));
+  assert.ok(wf.includes("inbox_path = '/Vibe2Transfer/inbox/CardArt/'+name+'.png'"));
+  assert.ok(wf.includes("source_path != original_path and (ui or source_path != inbox_path)"));
+  assert.ok(wf.includes("CARD_DROPBOX_NEW_SOURCE_CONFLICT"));
+  assert.ok(wf.includes("CARD_DROPBOX_REPLACEMENT_STALE"));
+  assert.ok(wf.includes("first_registration = card not in registry"));
+  assert.ok(wf.includes("len(raw)!=candidate['bytes']"));
+  assert.ok(wf.includes("CARD_DROPBOX_PR_ORIGINAL_MISMATCH"));
+});
