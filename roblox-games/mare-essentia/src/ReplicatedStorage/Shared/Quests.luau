@@ -23,6 +23,7 @@ export type Quest = {
 	nation: string?, -- 이 시작 국가로 시작한 플레이어에게만 보인다 (서막 메인 퀘스트)
 	minAffinity: number?,
 	after: string?, -- 이 퀘스트를 먼저 끝내야 보인다 (연속 퀘스트)
+	afterAny: { string }?, -- 앞 장의 선택 분기 중 하나의 결말을 완료하면 열린다
 	rewardCardId: string?, -- 완료 보상으로 받는 도감 카드
 	strand: string?, -- 스토리 갈래: main(서막) | companion(동료) | history(역사) | person(인물)
 	story: string?, -- 왜 이 일을 하는가 (이야기)
@@ -31,6 +32,7 @@ export type Quest = {
 	leadSource: string?, -- 소문·발견·사건·기록 등 단서가 전해진 형태
 	-- [이야기 퀘스트 시스템] 내용은 나중에 채운다. 모두 선택 필드.
 	warId: string?, -- kind "war_clear": 이 함대전 id 완수 횟수
+	backdrop: string?, -- 기존 해역·탐험지 배경 식별자
 	leaderId: string?, -- kind "duel_leader": 이 지도자 덱을 카드 대결에서 이긴 횟수
 	duelFaction: string?, -- kind "duel_leader": 상대 진영(없으면 지도자 진영)
 	choiceKey: string?, -- kind "choice": 선택 결과 저장 키(없으면 퀘스트 id)
