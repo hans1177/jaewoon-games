@@ -5490,3 +5490,12 @@ test("탐험 장소별 구획과 승인 소품은 기존 저장 경계를 유지
  assert.match(field,/placeModel\(group, spec\[1\], spec\[2\], hit\.Position, spec\[3\], false, nil, "near"\)/);
  assert.match(field,/recorded = requestOk and recorded == true[\s\S]*?found \+= 1[\s\S]*?folder:SetAttribute\("FieldCurrentZoneName", nextAnchor:GetAttribute\("FieldZoneName"\)\)/);
 });
+
+
+test("현재 탐험 구역의 장식만 생성하고 서버 접수 이후 다음 구역을 로드한다",()=>{
+ const field=read("ReplicatedStorage/Shared/FieldScene.luau");
+ assert.match(field,/zoneSceneryBuilders\[i\] = function\(\)[\s\S]*?i ~= found \+ 1 then return end/);
+ assert.match(field,/if i == found \+ 1 then\s+zoneSceneryBuilders\[i\]\(\)/);
+ assert.match(field,/recorded = requestOk and recorded == true[\s\S]*?if not recorded then[\s\S]*?found \+= 1[\s\S]*?completedScenery:Destroy\(\)[\s\S]*?zoneSceneryBuilders\[found \+ 1\]\(\)/);
+ for(const site of ["alexandria_library","split_palace","antwerp_monastery_herbs"])assert.ok(field.includes(`opts.siteId == "${site}"`));
+});

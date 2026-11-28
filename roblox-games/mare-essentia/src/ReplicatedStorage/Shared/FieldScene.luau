@@ -3904,6 +3904,8 @@ function FieldScene.start(opts)
 			elseif found == 2 and folder:GetAttribute("FieldEscapeRoute") then "이어하기 · 입구 탈출 지점으로 이동"
 			else string.format("이어하기 · 구역 %d/%d 완료", found, nodeCount)
 	end
+	-- 현재 조사 구역의 장식만 생성하며 완료된 구역은 서버 접수 후 정리한다.
+	local zoneSceneryBuilders = {}
 	for i = 1, nodeCount do
 		local offset = scatter(30)
 		local pos = ORIGIN + (if nodeCount > 1 then Vector3.new(math.clamp(offset.X, -half * 0.24, half * 0.24), 0,
@@ -3928,14 +3930,22 @@ function FieldScene.start(opts)
 			local zoneName = if extraction then "귀환 입구" elseif i == 1 then "외곽 조사 구역" else "기록 조사 구역"
 			local props = nil
 			if not extraction and not isWildlife then
-				if questTerrain == "mine" then
+				if opts.siteId == "alexandria_library" then
+					zoneName = if i == 1 then "옛 도서관터 외곽" else "문헌 발굴 구역"
+					props = { {"Relics", "journal-closed", 1.6}, {"Relics", "pot", 1.7} }
+				elseif opts.siteId == "split_palace" then
+					zoneName = "궁전 외곽 조사 구역"
+					props = { {"Relics", "pot", 1.7} }
+				elseif opts.siteId == "antwerp_monastery_herbs" then
+					zoneName = "수도원 약초원"
+				elseif questTerrain == "mine" then
 					zoneName = if i == 1 then "광산 진입부" else "채굴 기록 구역"
 					props = { {"Cargo", "wood-planks-stack-small", 4}, {"Cargo", "barrel", 2.2} }
 				elseif questTerrain == "fort" then
 					zoneName = if i == 1 then "성채 외곽" else "성채 보급 구역"
 					props = { {"Naval", "crate", 3}, {"Cargo", "barrel", 2.2} }
 				elseif questTerrain == "archive" and opts.siteId == "hamburg_docks" then
-					zoneName = if i == 1 then "도서관 앞 조사대" else "문헌 기록 구역"
+					zoneName = if i == 1 then "항구 도서관 앞 조사대" else "문헌 기록 구역"
 					props = { {"Interior", "tablecross", 3.5}, {"Interior", "bookcaseopenlow", 3.2} }
 				elseif questTerrain == "ruins" then
 					zoneName = if i == 1 then "유적 외곽" else "유적 발굴 구역"
@@ -3950,6 +3960,9 @@ function FieldScene.start(opts)
 			-- [승인 소품] 완료 구역 재접속 시에도 동일 배치. 기존 난수·전투 물리에는 관여하지 않는다.
 			-- 중앙 동선에서 벗어난 평탄한 지면만 사용하고 수면/겹침/미등록 원본은 건너뛴다.
 			if props and i > found then
+				zoneSceneryBuilders[i] = function()
+				if finished or not folder.Parent or not anchor.Parent or i ~= found + 1 then return end
+				if folder:FindFirstChild("FieldZoneScenery" .. i) then return end
 				local group = Instance.new("Folder")
 				group.Name = "FieldZoneScenery" .. i
 				group.Parent = folder
@@ -3978,6 +3991,11 @@ function FieldScene.start(opts)
 					if model then model:SetAttribute("FieldZoneProp", true) end
 				end
 				if #group:GetChildren() == 0 then group:Destroy() end
+				end
+				if i == found + 1 then
+					zoneSceneryBuilders[i]()
+					zoneSceneryBuilders[i] = nil
+				end
 			end
 		end
 		if i <= found then
@@ -4167,7 +4185,14 @@ function FieldScene.start(opts)
 			end
 			found += 1
 			folder:SetAttribute("FieldRouteStep", found)
+			local completedScenery = folder:FindFirstChild("FieldZoneScenery" .. i)
+			if completedScenery then completedScenery:Destroy() end
+			zoneSceneryBuilders[i] = nil
 			anchor:Destroy()
+			if zoneSceneryBuilders[found + 1] then
+				zoneSceneryBuilders[found + 1]()
+				zoneSceneryBuilders[found + 1] = nil
+			end
 			local nextAnchor = folder:FindFirstChild("Discovery" .. (found + 1))
 			local nextPrompt = nextAnchor and nextAnchor:FindFirstChildOfClass("ProximityPrompt")
 			if nextPrompt then
