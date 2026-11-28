@@ -11240,7 +11240,7 @@ function FieldScene.start(opts)
 	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
 	-- [안전 구역 재개] 맵이 모두 만들어진 뒤 기존 지면·장애물·살아 있는 적을 확인한다.
 	-- 검증 가능한 위치가 없으면 기존 입구를 그대로 사용한다. 클라이언트 좌표는 저장하지 않는다.
-	do
+	;(function()
 		local resumeAnchor = folder:GetAttribute("FieldResumeAnchor")
 		if typeof(resumeAnchor) == "Vector3" then
 			local surfaceRay = RaycastParams.new()
@@ -11278,7 +11278,7 @@ function FieldScene.start(opts)
 			end
 			if not folder:GetAttribute("FieldResumeRestored") then folder:SetAttribute("FieldResumeRestored", false) end
 		end
-	end
+	end)()
 	local lastSafe = CFrame.new(spawn)
 	pcall(function()
 		local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()

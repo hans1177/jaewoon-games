@@ -12091,9 +12091,9 @@ do
 					end)
 				end
 			end
-			cell(1, "▶ 지금 할 일", step and step.text or "자유롭게 교역해 봐", Color3.fromRGB(58, 98, 64), step and step.tab or nil)
-			cell(2, "★ 추천", counsel and tostring(counsel.text) or "시세가 싼 특산품을 찾아봐", Color3.fromRGB(64, 78, 112), counsel and counsel.tab or "trade")
-			cell(3, "🎁 보상 받기", if rewards > 0 then string.format("받을 보상 %d개", rewards) else "받을 보상 없음", if rewards > 0 then Color3.fromRGB(140, 98, 34) else Color3.fromRGB(90, 84, 76), if rewards > 0 then "quest" else nil)
+			cell(1, "지금 할 일", step and step.text or "자유롭게 교역해 봐", Color3.fromRGB(58, 98, 64), step and step.tab or nil)
+			cell(2, "추천", counsel and tostring(counsel.text) or "시세가 싼 특산품을 찾아봐", Color3.fromRGB(64, 78, 112), counsel and counsel.tab or "trade")
+			cell(3, "보상 받기", if rewards > 0 then string.format("받을 보상 %d개", rewards) else "받을 보상 없음", if rewards > 0 then Color3.fromRGB(140, 98, 34) else Color3.fromRGB(90, 84, 76), if rewards > 0 then "quest" else nil)
 			return row
 		end)
 	end
@@ -18320,6 +18320,54 @@ do
 		for _, line in lines do total += ulen(line) end
 		return total / #lines < 32
 	end
+	-- [청동 아이콘 통일 · 2026-11-28 오너: "메뉴창 아이콘 통일한 거 맞아?" → 아니었음]
+	-- 메뉴 글자 맨 앞 이모지를 승인 청동 아이콘 시트 칸으로 바꾼다. 맞는 칸이 없으면 이모지만 지운다.
+	-- 상태 점(🔴🟡🟢)·등급 별(★★★)·펼침 표시(▸▾)는 뜻이 있어 그대로 둔다.
+	local EMOJI_ICON = {
+		["▶"] = "nextstep", ["★"] = "recommend", ["🎁"] = "reward", ["🔒"] = "lock", ["⚓"] = "harbor",
+		["📜"] = "quest", ["⚔"] = "war", ["⛵"] = "nav", ["📦"] = "cargo", ["📖"] = "codex", ["🗺"] = "map",
+		["💡"] = "coach", ["⚠"] = "defeat", ["🔧"] = "shipyard", ["🌊"] = "nav", ["🏳"] = "diplomacy",
+		["📍"] = "map_pin", ["⏳"] = "chapter", ["🔖"] = "journal", ["💰"] = "coin", ["🍞"] = "supply",
+		["⚙"] = "gear", ["✦"] = false, ["💎"] = "fame", ["♛"] = "fame",
+	}
+	function H.bronzeEmoji(root)
+		local n = 0
+		for _, d in root:GetDescendants() do
+			if (d:IsA("TextLabel") or d:IsA("TextButton")) and not d.RichText and not d:GetAttribute("BronzeDone") then
+				local text = d.Text
+				local first, rest = nil, nil
+				for e in EMOJI_ICON do
+					local len = #e
+					if string.sub(text, 1, len) == e and string.sub(text, len + 1, len + 1) == " " then
+						first, rest = e, string.sub(text, len + 2)
+						break
+					end
+				end
+				if first and rest ~= "" then
+					d:SetAttribute("BronzeDone", true)
+					d.Text = rest
+					local key = EMOJI_ICON[first]
+					if key and d.TextXAlignment == Enum.TextXAlignment.Left and H.hasIconArt(key) then
+						local px = math.max(16, d.TextSize + 4)
+						local icon = modelIcon(d, "FacilityArt", key, nil, px, rest)
+						icon.Name = "BronzeEmojiIcon"
+						icon.AnchorPoint = Vector2.new(0, 0.5)
+						icon.Position = UDim2.new(0, -px - 4, 0.5, 0)
+						icon.ZIndex = d.ZIndex + 1
+						local pad = d:FindFirstChildOfClass("UIPadding")
+						if not pad then
+							pad = Instance.new("UIPadding")
+							pad.Parent = d
+						end
+						pad.PaddingLeft = UDim.new(pad.PaddingLeft.Scale, pad.PaddingLeft.Offset + px + 6)
+						icon.Position = UDim2.new(0, -px - 4, 0.5, 0)
+					end
+					n += 1
+				end
+			end
+		end
+		return n
+	end
 	function H.compactLongText(root)
 		if not root or currentTab == "codex" or currentTab == "encyclopedia" then return 0 end
 		local changed = 0
@@ -18711,6 +18759,7 @@ function render()
 		local n = H.compactLongText(content)
 		local detail = mainInner:FindFirstChild("FacilityDetail")
 		if detail then n += H.compactLongText(detail) end
+		H.bronzeEmoji(mainInner)
 		if n > 0 then H.layoutBook() end
 	end)
 	H.contentRenderedTab = currentTab

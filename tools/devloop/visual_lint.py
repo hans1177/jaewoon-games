@@ -8,7 +8,8 @@ prev = sys.argv[sys.argv.index("--prev") + 1] if "--prev" in sys.argv else None
 if prev: args.remove(prev)
 src = args[0]
 out = args[1] if len(args) > 1 else os.path.join(src, "contact_sheet.png")
-files = sorted(glob.glob(os.path.join(src, "*.png")))
+# Studio 캡처는 .jpg 로 저장된다. 예전엔 .png 만 읽어 jpg 화면 검수가 조용히 꺼져 있었다(2026-11-28).
+files = sorted(f for ext in ("png", "jpg", "jpeg") for f in glob.glob(os.path.join(src, "*." + ext)))
 files = [f for f in files if os.path.abspath(f) != os.path.abspath(out)]
 if not files:
     print("프레임 없음"); sys.exit(1)
@@ -17,6 +18,7 @@ rows = (len(files) + COLS - 1) // COLS
 sheet = Image.new("RGB", (W * COLS, (H + 18) * rows), (20, 20, 24))
 d = ImageDraw.Draw(sheet)
 bad = []
+warns = []
 for i, f in enumerate(files):
     im = Image.open(f).convert("RGB")
     st = ImageStat.Stat(im.convert("L"))
@@ -25,6 +27,15 @@ for i, f in enumerate(files):
     if mean < 25: flag = "너무 어두움"
     elif mean > 235: flag = "너무 밝음"
     elif std < 12: flag = "단색(장면 없음?)"
+    # [빈 영역 경고] 화면을 16×9 칸으로 나눠 무늬가 거의 없는 칸(밝기 편차 < 4) 비율을 잰다.
+    # 30% 이상이면 넓은 맨땅·빈 화면 구도를 경고(실패 아님: 바다가 넓은 장면은 정상일 수 있음).
+    # 2026-11-28 실측: 항구 위 시점 33~36%, 거리 시점 1~24%. 수정 전후 같은 장면 수치를 비교해 쓴다.
+    g = im.convert("L").resize((320, 180))
+    flat = sum(1 for ty in range(9) for tx in range(16)
+               if ImageStat.Stat(g.crop((tx * 20, ty * 20, tx * 20 + 20, ty * 20 + 20))).stddev[0] < 4) / 144
+    print(f"  빈 영역 {os.path.basename(f)}: {flat:.0%}")
+    if not flag and flat >= 0.3:
+        warns.append((os.path.basename(f), f"빈 영역 {flat:.0%} — 넓은 맨땅·빈 화면 구도 의심"))
     if prev and os.path.exists(os.path.join(prev, os.path.basename(f))):
         pi = Image.open(os.path.join(prev, os.path.basename(f))).convert("L").resize((160, 90))
         diff = ImageStat.Stat(ImageChops.difference(im.convert("L").resize((160, 90)), pi)).mean[0]
@@ -37,4 +48,5 @@ for i, f in enumerate(files):
 sheet.save(out)
 print(f"비교 시트: {out} ({len(files)}장)")
 for n, fl in bad: print(f"  이상: {n} — {fl}")
+for n, fl in warns: print(f"  경고: {n} — {fl}")
 sys.exit(1 if bad else 0)

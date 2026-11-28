@@ -2828,6 +2828,8 @@ export async function runStudioScript({mcpCommand='',expectedStudioName='',outDi
           }
           finally{client.timeoutMs=originalTimeoutMs;}
           report.log.push({step:n,ctx:st.ctx||'Client',out:out.slice(0,6000),...(report.recoveries?.at(-1)?.step===n?{recoveredAfterPlayClientUnreachable:true}:{})});
+          // [검증 증거] 스크립트가 돌려준 값(수치)을 Actions 로그에도 남긴다. 예전엔 report.json 에만 있어 확인 불가였다.
+          console.log('STUDIO_STEP_OUT='+n+':'+out.replace(/\s+/g,' ').slice(0,400));
         }else if(st.type==='click_text'||st.type==='click_from_luau'){
           const code=st.type==='click_text'
             ?'local p=game:GetService("Players").LocalPlayer.PlayerGui local out="NONE" local bestY=nil for _,d in ipairs(p:GetDescendants()) do if d:IsA("TextButton") and d.Text==\''+String(st.text).replace(/'/g,"")+'\' and d.Visible and d.AbsoluteSize.X>0 and (bestY==nil or d.AbsolutePosition.Y<bestY) then bestY=d.AbsolutePosition.Y out=string.format("%d,%d",math.floor(d.AbsolutePosition.X+d.AbsoluteSize.X/2),math.floor(d.AbsolutePosition.Y+d.AbsoluteSize.Y/2)) end end return out'
