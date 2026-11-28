@@ -263,9 +263,9 @@ test('재배치 이후 시설 이용 주민과 주택 골목도 새 좌표를 �
       facility + ' 방문 건물에 전문직 주민 연결');
     assert.ok(scene.includes('at = ' + role + ', prop ='), role + ' 실제 주민 좌표 사용');
   }
-  assert.match(scene, /local laneNear = 152 \+ laneOffset \+ laneIndex \* laneL \+ nearBend/);
-  assert.match(scene, /local laneFar = 152 \+ laneOffset \+ \(laneIndex \+ 1\) \* laneL \+ farBend/);
-  assert.match(scene, /strip\(folder, style, sx, 0, laneWidth, 2 \* \(152 \+ math\.abs\(laneOffset\) \+ pairsN \* laneL\) \+ 30\)/);
+  assert.match(scene, /local laneNear = LANE_BASE \+ laneOffset \+ laneIndex \* laneL \+ nearBend/);
+  assert.match(scene, /local laneFar = LANE_BASE \+ laneOffset \+ \(laneIndex \+ 1\) \* laneL \+ farBend/);
+  assert.match(scene, /strip\(folder, style, sx, 0, laneWidth, 2 \* \(LANE_BASE \+ math\.abs\(laneOffset\) \+ pairsN \* laneL\) \+ 30\)/);
   assert.match(scene, /local homeCandidates, homePlaced, homeShifted,/);
   assert.match(scene, /CityHousingLayoutState/);
   assert.match(scene, /CityPortPlannedPlots/);
