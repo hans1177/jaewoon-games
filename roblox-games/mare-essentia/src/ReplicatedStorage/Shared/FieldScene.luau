@@ -3819,7 +3819,12 @@ function FieldScene.start(opts)
 		end
 	end
 	local targetCard = if #availableCards > 0 then KnowledgeCards.ById[availableCards[rng:NextInteger(1, #availableCards)]] else nil
-	if observedCardId and table.find(availableCards, observedCardId) then targetCard = KnowledgeCards.ById[observedCardId] end
+	-- [의뢰 대상 우선] 이미 저장된 카드는 최우선, 신규 입장은 서버가 검증해 전달한 현장 의뢰 카드 우선. 원래 RNG 호출/서버 보상 판정은 보존한다.
+	if observedCardId and table.find(availableCards, observedCardId) then
+		targetCard = KnowledgeCards.ById[observedCardId]
+	elseif type(opts.fieldStory) == "table" and table.find(availableCards, opts.fieldStory.cardId) then
+		targetCard = KnowledgeCards.ById[opts.fieldStory.cardId]
+	end
 	folder:SetAttribute("FieldRouteStep", found)
 	folder:SetAttribute("FieldRouteTotal", nodeCount)
 	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
@@ -3844,8 +3849,10 @@ function FieldScene.start(opts)
 	folder:SetAttribute("FieldEscapeRoute", nodeCount == 3 and (opts.danger or 1) >= 3 and targetCard ~= nil
 		and not isWildlife and (targetCard.field == "Relic" or targetCard.field == "Site"
 			or targetCard.field == "Mystery" or targetCard.field == "Language" or targetCard.field == "Architecture"))
+	folder:SetAttribute("FieldPursuitRoute", folder:GetAttribute("FieldEscapeRoute") == true and targetCard ~= nil and targetCard.field == "Mystery")
 	if found > 0 then
-		questHint.Text = if found == 2 and folder:GetAttribute("FieldEscapeRoute") then "이어하기 · 입구 탈출 지점으로 이동"
+		questHint.Text = if found == 1 and folder:GetAttribute("FieldPursuitRoute") then "이어하기 · 기록을 빼앗은 척후병 추적"
+			elseif found == 2 and folder:GetAttribute("FieldEscapeRoute") then "이어하기 · 입구 탈출 지점으로 이동"
 			else string.format("이어하기 · 구역 %d/%d 완료", found, nodeCount)
 	end
 	for i = 1, nodeCount do
@@ -3983,6 +3990,10 @@ function FieldScene.start(opts)
 			end
 			-- [잠입·탈출] 실제 캐릭터 이동 및 주변 적 상태를 확인한다. 싸워서 돌파하거나 피해 지나갈 수 있다.
 			-- 클라이언트 전투이므로 서버 전투 입증으로 사용하지 않으며 기존 단계 저장/보상 경로를 유지한다.
+			if guardedTransit and folder:GetAttribute("FieldPursuitPending") then
+				say("기록을 가져간 척후병을 먼저 따라잡아.", 3.5)
+				return
+			end
 			if guardedTransit or extraction then
 				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
@@ -4015,6 +4026,7 @@ function FieldScene.start(opts)
 				nextPrompt.Enabled = true
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
 				questHint.Text = if nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
+					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldPursuitPending") then "척후병 추적 · 미니맵의 청록색 적을 따라가"
 					elseif nextKind == "infiltrate" then "경계 구역 · 잠입하거나 적을 돌파해"
 					else string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
 			end
@@ -4336,6 +4348,14 @@ function FieldScene.start(opts)
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
+		-- [추적 대상] 새 적이나 보상을 만들지 않고 기존 사수 한 명을 기록 탈취자로 지정한다.
+		if folder:GetAttribute("FieldPursuitRoute") and found < 2 and not isBoss and ac.kind == "archer"
+			and not folder:GetAttribute("FieldPursuitAssigned") then
+			model:SetAttribute("FieldPursuitTarget", true)
+			folder:SetAttribute("FieldPursuitAssigned", true)
+			folder:SetAttribute("FieldPursuitPending", true)
+			tag.Text = "기록 탈취 척후병 · 추적"
+		end
 		-- [보스전 재개] 서버에 접수된 첫 관찰은 해당 기록을 지키던 두목의 구역도 완료한 것으로 취급한다.
 		-- 미완료 구역의 두목과 일반 적은 기존 체력/배치로 재시작한다. 정산·경험치·드롭은 지급하지 않는다.
 		-- 기존 난수 소비와 나머지 적 배치를 보존하도록 생성 직후 해당 두목만 정리한다.
@@ -5134,7 +5154,11 @@ function FieldScene.start(opts)
 			end
 			for _, e in enemies do
 				if e.root and e.root.Parent then
-					place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
+					if found == 1 and e.model:GetAttribute("FieldPursuitTarget") then
+						place(e.root.Position, Color3.fromRGB(98, 232, 203), 9, true)
+					else
+						place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
+					end
 				end
 			end
 			for i = used + 1, #dots do
@@ -7849,7 +7873,11 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = os.clock() + 0.5, 2.2
 				end
 			end
-			if e.boss and e.model:GetAttribute("FieldBossProtectsClue") then
+			if e.model:GetAttribute("FieldPursuitTarget") then
+				folder:SetAttribute("FieldPursuitPending", false)
+				if found == 1 then questHint.Text = "추적 완료 · 깊은 경계 구역에서 기록 확보" end
+				say("척후병을 따라잡았다. 경계 구역의 기록을 확인해.", 3.5)
+			elseif e.boss and e.model:GetAttribute("FieldBossProtectsClue") then
 				folder:SetAttribute("FieldBossClueState", "released")
 				questHint.Text = "길이 열렸다 · " .. (targetCard and targetCard.name or "현장 기록") .. " 조사"
 				say("두목을 물리쳐 기록으로 가는 길이 열렸어. 현장 단서를 조사하자.", 3.5)
@@ -10870,6 +10898,18 @@ function FieldScene.start(opts)
 				else
 					desired = remaining.Unit * math.min(48, remaining.Magnitude / math.max(dtc, 0.016))
 					facing = remaining.Unit
+				end
+			elseif found == 1 and e.model:GetAttribute("FieldPursuitTarget") and not frozen
+				and (e.ac.state == "idle" or e.ac.state == "chase") and flat.Magnitude < 65 then
+				-- [추적 이동] 기존 적의 이동/접지 루프에서 기록 구역까지 도주한다. 도착하면 원래 전투로 복귀한다.
+				local destination = folder:FindFirstChild("Discovery2")
+				local route = if destination and destination:IsA("BasePart") then (destination.Position - pv.Position) * Vector3.new(1, 0, 1) else Vector3.zero
+				if route.Magnitude > 5 then
+					desired = route.Unit * math.min(e.ac.def.speed * 0.85, route.Magnitude / math.max(dtc, 0.016))
+					facing = route.Unit
+					wish = 0
+				elseif wish ~= 0 and flat.Magnitude > 0.1 then
+					desired = flat.Unit * wish * math.min(e.ac.def.speed * 0.8, flat.Magnitude / math.max(dtc, 0.016))
 				end
 			elseif e.waiting and not frozen and not e.ac.def.keepAway and e.ac.state == "chase"
 				and flat.Magnitude > 0.1 and flat.Magnitude < 40 then
