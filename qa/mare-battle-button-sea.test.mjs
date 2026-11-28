@@ -29,3 +29,15 @@ test('지상 전투: 연속 공격·스킬은 숙련(경험치)으로 해방, �
   assert.match(field, /pl\.autoSkillKind = if rankNow >= 4 and near >= 2/);
   assert.doesNotMatch(field, /if pl\.autoNormalHits % 5 == 0 then/);
 });
+
+
+test('전투 효과는 등록 원화만 사용하고 미등록 시 기존 도형 유지', () => {
+  assert.ok(fx.includes('AssetIds["CardArt/fx_button_ring"]'));
+  assert.ok(fx.includes('AssetIds["CardArt/fx_button_spark"]'));
+  assert.equal(fx.split('Instance.new(if art then "ImageLabel" else "Frame")').length - 1, 2);
+  assert.ok(fx.includes('ImageTransparency = 1'));
+  assert.ok(fx.includes('Instance.new("UIStroke")'));
+  assert.ok(fx.includes('BackgroundTransparency = 1'));
+  assert.ok(fx.includes('if not GuiService.ReducedMotionEnabled then'));
+  assert.ok(fx.includes('task.delay(0.5, function() o:Destroy() end)'));
+});
