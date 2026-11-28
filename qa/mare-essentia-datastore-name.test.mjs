@@ -1435,7 +1435,8 @@ test('선원·장인 직업별 실물 복장과 여성 헤어 스타일을 원�
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/elseif femaleLong and hairstyle == "long" then/);
   assert.match(pose,/elseif femaleLong and hairstyle == "bun" then/);
-  assert.match(pose,/elseif hair and model:GetAttribute\("NpcHairTint"\) then 0\.45/, '원본 헤어 색상 보존');
+  assert.match(pose,/if hair and faded then 0\.90/, '무채색 헤어만 복구');
+  assert.doesNotMatch(pose,/elseif hair and model:GetAttribute\("NpcHairTint"\) then 0\.45/, '유색 원본 헤어 중복 착색 금지');
   for(const mesh of ['hair_long','hair_simpleparted','hair_buzzed','hair_buzzedfemale']) {
     assert.ok(loader.includes('["People/'+mesh+'"] = true'),'로더 우선순위 누락: '+mesh);
   }
