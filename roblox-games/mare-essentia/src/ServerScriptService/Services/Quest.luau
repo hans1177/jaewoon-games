@@ -384,7 +384,7 @@ return function(D, S)
 				state.storySeen["route_clue:" .. quest.id] = true
 				state._scenes = state._scenes or {}
 				local source = quest.leadSource or "현지 제보"
-				local detail = quest.story or quest.summary
+				local detail = storyOf(quest)
 				table.insert(state._scenes, sceneMeta({
 					kind = "start", name = quest.name .. " · " .. source,
 					text = source .. ": " .. detail, summary = quest.summary,

@@ -891,7 +891,10 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 	local cardLine = if related then "\n관련 백과: " .. related .. " (참고 기록)." else ""
 	-- 허가증은 일반 납품 결말이 아니라 실제 특산품 거래 해금 결과를 보여 준다.
 	if q.rewardPermit then
-		return (q.story or q.summary) .. cardLine, q.result or "길드 허가증을 획득했다."
+		local hand = HAND[q.id]
+		local hook = if hand and hand[1] ~= "" then hand[1] else (q.story or q.summary)
+		local ending = if hand and hand[2] ~= "" then hand[2] .. "\n길드 허가증을 획득했다." else (q.result or "길드 허가증을 획득했다.")
+		return hook .. cardLine, ending
 	end
 	local vars = { giver = pick(q.id, GIVERS), good = goodName or "물건", port = portName or "그 항구", n = tostring(q.amount) }
 	local set: { { string } } = STORY_KIND.default
@@ -919,7 +922,7 @@ local function Story(q: Quest, goodName: string?, portName: string?): (string, s
 		local list = CHAIN[role]
 		local c = list[h % #list + 1]
 		local base = q.story or fill(t[1], vars)
-		local tag = string.format("제%d장. ", depth)
+		local tag = if q.chapter then "" else string.format("제%d단계. ", depth)
 		if HAND[q.id] then
 			return tag .. (if HAND[q.id][1] ~= "" then HAND[q.id][1] else base) .. cardLine, HAND[q.id][2]
 		end

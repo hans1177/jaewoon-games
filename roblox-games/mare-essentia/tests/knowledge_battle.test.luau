@@ -1215,5 +1215,23 @@ do
 	end
 end
 
+-- 네 장의 복선과 허가증 결말이 실제 사연 데이터에 연결되는지 확인한다.
+do
+	local linked = true
+	for _, chapter in D.Quests.Chapters do
+		local hook, ending = S.Quest.storyOf(D.Quests.ById[chapter.first])
+		linked = linked and string.find(hook .. ending, "파도", 1, true) ~= nil
+		for _, id in chapter.last do
+			local quest = D.Quests.ById[id]
+			local start, finish = S.Quest.storyOf(quest)
+			linked = linked and string.find(start .. finish, "파도", 1, true) ~= nil
+			if quest.rewardPermit then
+				check(id .. " 개별 결말 및 허가증 안내", string.find(finish, "편지", 1, true) ~= nil and string.find(finish, "길드 허가증", 1, true) ~= nil)
+			end
+		end
+	end
+	check("네 장 파도 인장 복선·결말 연결", linked)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
