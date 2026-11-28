@@ -8,7 +8,9 @@ test('기존 등록 워크플로의 한 단계로 연결', () => {
   assert.match(wf, /name: Import all Dropbox inbox assets \(auto-checked\)/);
   assert.match(wf, /python3 tools\/devloop\/dropbox_inbox\.py/);
   assert.match(wf, /github\.event_name == 'schedule' \|\| github\.event_name == 'repository_dispatch'/, '수동 재실행에서는 다시 돌지 않음');
-  assert.match(wf, /gh workflow run owner-mare-essentia-assets\.yml --ref main/);
+  assert.match(wf, /gh workflow run owner-mare-essentia-assets\.yml --repo "\$repo" --ref main/);
+  assert.match(wf, /git push -q origin "HEAD:refs\/heads\/\$branch"/, '후보 브랜치로만 push');
+  assert.doesNotMatch(wf, /git push -q origin HEAD:main/, 'main 직접 push 금지');
   assert.ok(!fs.existsSync('.github/workflows/mare-dropbox-inbox.yml'), '새 워크플로 금지');
 });
 test('자동 검사 규칙', () => {

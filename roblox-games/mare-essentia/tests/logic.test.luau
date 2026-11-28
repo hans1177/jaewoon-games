@@ -5311,6 +5311,45 @@ testCardsAndArt()
 -- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물
 local function testTradeFun()
 
+-- [흥정 미니게임] 저울·표정·동전·퀴즈: 서버 판정, 물건마다 항구에서 한 번, 할인 4~12%, 실패해도 손해 없음
+local function testHaggleGames()
+	local D: any = D
+	for _, game in { "scale", "face", "coin", "quiz" } do
+		local st = newState()
+		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
+		local ok = act(st, "HaggleStart", { goodId = goodId, game = game })
+		local pend = st.haggle and st.haggle.pending
+		check("흥정 게임 시작: " .. game, ok == true and pend ~= nil)
+		if pend then
+			local payload: any = { goodId = goodId }
+			if pend.game == "scale" then
+				payload.t = pend.center * pend.period -- 바늘이 금색 칸 한가운데 있는 순간
+			elseif pend.game == "face" then
+				payload.offer = pend.limit
+			elseif pend.game == "coin" then
+				payload.pick = pend.real
+			else
+				payload.pick = pend.quiz.answer
+			end
+			local won = act(st, "HagglePlay", payload)
+			local pct = st.haggle.deal and math.floor((1 - st.haggle.deal.mult) * 100 + 0.5) or 0
+			check("흥정 게임 정답 성공: " .. pend.game, won == true and pct >= 4 and pct <= 12)
+			check("흥정 게임 한 번만: " .. pend.game, act(st, "HaggleStart", { goodId = goodId }) == false)
+			check("흥정 게임 화면 문제에 정답 없음: " .. pend.game, (function()
+				local v = S.View.build(st, ctx)
+				return v.haggle == nil or v.haggle.pending == nil
+			end)())
+		end
+	end
+	local st = newState()
+	local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
+	act(st, "HaggleStart", { goodId = goodId, game = "face" })
+	local lost = act(st, "HagglePlay", { goodId = goodId, offer = 12 + 0 * st.haggle.pending.limit })
+	check("흥정 게임 실패는 정가(손해 없음)", (lost == false or st.haggle.pending == nil) and (st.haggle.deal == nil or st.haggle.deal.goodId == goodId))
+	check("흥정 게임 시작 없이 결과 못 냄", act(newState(), "HagglePlay", { goodId = goodId, pick = 1 }) == false)
+end
+testHaggleGames()
+
 -- [발견물 외형] 백과 실물 카드는 모두 대표 모양을 갖는다
 local function testDiscoveryForms()
 	local check: any = check

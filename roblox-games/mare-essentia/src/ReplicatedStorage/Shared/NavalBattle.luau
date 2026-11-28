@@ -290,7 +290,11 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 						d.Material, d.Color = Enum.Material.Fabric, Color3.fromRGB(216, 207, 182)
 					elseif role:find("cannon", 1, true) or role:find("iron", 1, true) or role:find("metal", 1, true) or role:find("anchor", 1, true) then
 						d.Material, d.Color = Enum.Material.Metal, Color3.fromRGB(84, 85, 83)
-					elseif role:find("hull", 1, true) or role:find("deck", 1, true) or role:find("mast", 1, true)
+					elseif role:find("rope", 1, true) or role:find("rigging", 1, true) then
+					d.Material, d.Color = Enum.Material.Fabric, Color3.fromRGB(144, 118, 80)
+				elseif role:find("glass", 1, true) or role:find("windowpane", 1, true) then
+					d.Material, d.Color = Enum.Material.Glass, Color3.fromRGB(177, 206, 214)
+				elseif role:find("hull", 1, true) or role:find("deck", 1, true) or role:find("mast", 1, true)
 						or role:find("wood", 1, true) or role:find("plank", 1, true) or role:find("rudder", 1, true) then
 						d.Material, d.Color = Enum.Material.WoodPlanks, tint or Color3.fromRGB(119, 85, 55)
 					elseif tint and d:IsA("MeshPart") then

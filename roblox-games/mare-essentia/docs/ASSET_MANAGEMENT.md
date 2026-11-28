@@ -61,3 +61,21 @@
 - **원본 보관:** 가공 전 원본은 지우지 않는다. `originalFiles` 에 경로·해시를 적는다.
 - **검수:** 등록 후 Studio 촬영으로 실제 화면에서 깨짐(흐림·계단 현상·잘림·색 띠)을 확인하기 전에는 "적용 완료"라고 보고하지 않는다.
 - **보고:** 등록 성공, 업로드 성공, 게임 적용, Studio 확인을 따로 적는다. 하나라도 확인 안 됐으면 "미확인"이라고 쓴다.
+
+## 5. 자동 채우기·자동 배치·자동 수정 (2026-11-28 오너 지시, 모두 필독)
+
+| # | 무엇 | 어디 | 사람이 할 일 |
+|---|---|---|---|
+| 1 | **오늘 만들 것 10개** (항구 4·해전 3·백과 2·지상 1, 많이 보이는 것부터) | `docs/assets/auto_fill_board.md` | 맨 위부터 이름 그대로 만들어 드롭박스에 올리기 |
+| 2 | **무료 원본(CC0) 자동 찾기** — 오늘 목록이 기존 부족 자산 장부에 `auto-slot-…` 로 들어감 | `assets-wanted.auto.json` → `tools/devloop/assets_wanted.py` | 없음 |
+| 3 | **문화권 공통 대체** — `<항구>_<슬롯>` 이 없으면 `<문화권>_<슬롯>` (예: `iberia_house_1`) 하나로 그 문화권 항구 전부 채움. **대표 경관(landmark)은 제외**(다른 곳 것 사칭 금지) | `PortScene.cultureSlot` | 문화권 키: britain, china, colonial, creole, desert, france, hanse, iberia, italy, japan, korea, malabar, med, nordic, north, ottoman, pacific, seasia, stone, swahili, tropic, wafrica |
+| 4 | **크기·바닥·방향 맞춤** — 배치 함수가 크기를 자리 크기에 맞추고 바닥에 붙임. 예외만 보정표에 `scale`·`yaw`·`y` | `Shared/PlacementOverrides.luau` | 원본은 정면이 -Z, 바닥이 원점 |
+| 5 | **겹침·길 피하기** — 이름 규칙 자동 슬롯이 건물·길과 겹치면 6스터드 안에서 비킴 | `PlacementOverrides.avoidOverlap` | 없음 |
+| 6 | **지역색** — 문화권 공통 모델을 항구마다 질감 없는 면만 12% 물들임 | `PlacementOverrides.regionTint` | 없음 |
+| 7 | **Studio 자동 판정** — 질감 없는 회색 덩어리는 배치 제외, 결과표 남김 | `tools/devloop/placement_autofix.py` + `studio-scripts/asset-autocheck.json` → `docs/assets/asset_autocheck.md` | 표에 뜬 것 다시 만들기 |
+| 8 | **모바일 경량** — 부품 300개 넘는 모델은 폰에서 숨김(기존 모델로 대체) | 같은 판정 → `mobileHide` | 가벼운 판(부품 300개 이하) 올리기 |
+| 9 | **안 쓰는 자산 찾기** | `docs/assets/unused_assets.md` | **지우기 전 오너 확인** |
+| 10 | **채움 현황판** — 장면별 채움 % | `docs/assets/auto_fill_board.md` 위쪽 | 없음 |
+
+- 갱신: `python3 tools/devloop/auto_placement_status.py` (드롭박스 인입 단계에서도 실행).
+- 보정표 AUTO 구역은 도구가 다시 쓴다. 사람이 고칠 항목은 AUTO 구역 **밖**에 넣는다.
