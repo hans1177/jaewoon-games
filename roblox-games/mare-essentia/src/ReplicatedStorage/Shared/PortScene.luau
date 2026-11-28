@@ -7658,6 +7658,20 @@ function PortScene.build(info, onFacility)
 		local motionRange = if UserInputService.TouchEnabled then 135 else 180
 		local fullMotion = RunService:IsStudio() or not motionEye
 		for _, w in walkers do
+			-- [주민 이동 접지] 생성 시 확인한 발판의 높이를 기준으로 근거리 이동 주민만 분산 질의한다.
+			-- 시간표·이동거리·회전의 원래 좌표에는 보정 높이를 누적하지 않는다.
+			if w.contactFloorY ~= nil and w.model.Parent then
+				local at = w.model:GetPivot().Position
+				if (fullMotion or (motionEye - at).Magnitude < motionRange) and now >= w.contactCheckAt then
+					w.contactCheckAt = now + 0.20 + (w.phase % 0.10)
+					local ground = workspace:Raycast(Vector3.new(at.X, w.contactFloorY + 3, at.Z),
+						Vector3.new(0, -6, 0), animalGround)
+					if ground and ground.Normal.Y > 0.7 and math.abs(ground.Position.Y - w.contactFloorY) <= 1.25 then
+						w.contactTarget = ground.Position.Y - w.contactFloorY
+					end
+				end
+				w.contactOffset += (w.contactTarget - w.contactOffset) * (1 - math.exp(-9 * dt))
+			end
 			if w.mode == "sparring" and w.model.Parent and sparring then
 				local side = if w == sparring[1] then -1 else 1
 				local center = folder:GetAttribute("R15SparringStage") or ((sparring[1].base.Position + sparring[2].base.Position) * 0.5)
@@ -7757,7 +7771,8 @@ function PortScene.build(info, onFacility)
 							facingPartner = true
 						end
 					end
-					w.model:PivotTo(CFrame.lookAt(where, where + forward))
+					local contact = Vector3.new(0, w.contactOffset or 0, 0)
+					w.model:PivotTo(CFrame.lookAt(where + contact, where + forward + contact))
 					w.lastPos = where
 					if w.lastRoutine ~= routine then
 						w.lastRoutine = routine
@@ -8097,7 +8112,7 @@ function PortScene.build(info, onFacility)
 				if w.model.Parent then
 					local a = (now + w.phase) * w.speed / w.r
 					-- [아이 발 접지] 분수 주변 달리기의 중심 Y를 바닥(0)이 아닌 최초 R15 리그 중심으로 유지한다.
-					local floorY = w.base.Position.Y
+					local floorY = w.base.Position.Y + (w.contactOffset or 0)
 					local pos = Vector3.new(w.cx + math.cos(a) * w.r, floorY, w.cz + math.sin(a) * w.r)
 					local hop = 0
 					local ahead = Vector3.new(w.cx + math.cos(a + 0.1) * w.r, floorY, w.cz + math.sin(a + 0.1) * w.r)
@@ -8123,7 +8138,7 @@ function PortScene.build(info, onFacility)
 						w.lastRoutine = "rest"
 						w.model:SetAttribute("DailyRoutine", "rest")
 					end
-					w.model:PivotTo(w.base)
+					w.model:PivotTo(w.base + Vector3.new(0, w.contactOffset or 0, 0))
 					if fullMotion or (motionEye - w.base.Position).Magnitude < motionRange then
 						Pose.makeR15Action(w.model, "idle", 0, now + w.phase)
 						Pose.work(w.model, "stretch", now + w.phase)
@@ -8153,7 +8168,7 @@ function PortScene.build(info, onFacility)
 				end
 				local rot = w.base - w.base.Position
 				local pos = w.base.Position + w.base.LookVector * d
-				local bob = 0 -- 위아래 흔들림은 걸음 모션(Pose)이 발걸음과 맞춰 처리한다
+				local bob = w.contactOffset or 0 -- 지면 높이만 보정하고 걸음 모션의 자체 높이는 보존한다
 				w.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * CFrame.Angles(0, yaw, 0) * rot)
 				-- [주민 출발·정지] 출발/도착 지점에서 실제로 멈췄으면 제자리 발질을 하지 않는다.
 				local walked = math.abs(d - (w.lastD or d))
@@ -9111,6 +9126,40 @@ function PortScene.build(info, onFacility)
 					walker.model:PivotTo(CFrame.new(walker.cx + walker.r, safe.Position.Y, walker.cz) * (safe - safe.Position))
 				else
 					walker.model:PivotTo(CFrame.new(startAt) * (safe - safe.Position))
+				end
+				-- [주민 최초 접지] 실제 회전된 양발 최저점과 승인된 바닥의 차이만 보정한다.
+				-- 기마·착석·높은 작업대와 대련은 원래 위치를 보존한다.
+				if walker.mode ~= "royal_rider" and walker.kind ~= "sit" then
+					local left = walker.model:FindFirstChild("LeftFoot")
+					local right = walker.model:FindFirstChild("RightFoot")
+					if left and right and left:IsA("BasePart") and right:IsA("BasePart") then
+						local bottom = math.huge
+						for _, foot in { left, right } do
+							local cf, half = foot.CFrame, foot.Size * 0.5
+							bottom = math.min(bottom, cf.Position.Y - math.abs(cf.RightVector.Y) * half.X
+								- math.abs(cf.UpVector.Y) * half.Y - math.abs(cf.LookVector.Y) * half.Z)
+						end
+						local at = walker.model:GetPivot().Position
+						local ground = workspace:Raycast(Vector3.new(at.X, bottom + 1.5, at.Z),
+							Vector3.new(0, -3, 0), animalGround)
+						if ground and ground.Normal.Y > 0.7 and math.abs(ground.Position.Y - bottom) <= 0.75 then
+							local lift = Vector3.new(0, ground.Position.Y - bottom + 0.015, 0)
+							walker.model:PivotTo(walker.model:GetPivot() + lift)
+							walker.base += lift
+							startAt += lift
+							if scheduled then
+								walker.morning += lift
+								walker.market += lift
+								walker.evening += lift
+								if walker.home then walker.home += lift end
+							end
+							if moving or scheduled or circling then
+								walker.contactFloorY = ground.Position.Y
+								walker.contactOffset, walker.contactTarget = 0, 0
+								walker.contactCheckAt = 0
+							end
+						end
+					end
 				end
 				walker.lastPos = startAt
 			else

@@ -4880,3 +4880,25 @@ test('광장 가장자리 장식과 시장 가판대의 보행 간섭을 검사�
  assert.match(scene,/hit:FindFirstAncestor\("CityMarketStall"\)/);
  assert.match(scene,/\(hit.CanCollide or visualMarket\)/);
 });
+
+ 
+// [주민 발 접지] 승인 지면만 사용하고 일과·동선의 기준 좌표에 높이가 누적되지 않는다.
+test('항구 주민 최초 발바닥과 이동 지면 높이를 분리하여 보정한다',()=>{
+ const scene=read('ReplicatedStorage/Shared/PortScene.luau');
+ assert.match(scene,/walker\.mode ~= "royal_rider" and walker\.kind ~= "sit"/);
+ assert.match(scene,/math\.abs\(cf\.RightVector\.Y\) \* half\.X/);
+ assert.match(scene,/math\.abs\(ground\.Position\.Y - bottom\) <= 0\.75/);
+ assert.match(scene,/walker\.contactOffset, walker\.contactTarget = 0, 0/);
+ assert.match(scene,/w\.contactCheckAt = now \+ 0\.20 \+ \(w\.phase % 0\.10\)/);
+ assert.match(scene,/Vector3\.new\(0, -6, 0\), animalGround/);
+ assert.match(scene,/w\.contactTarget = ground\.Position\.Y - w\.contactFloorY/);
+ assert.match(scene,/CFrame\.lookAt\(where \+ contact, where \+ forward \+ contact\)\)\s+w\.lastPos = where/);
+ assert.match(scene,/local floorY = w\.base\.Position\.Y \+ \(w\.contactOffset or 0\)/);
+ assert.match(scene,/local bob = w\.contactOffset or 0/);
+ const initial=(floor,bottom)=>Math.abs(floor-bottom)<=0.75?floor-bottom+0.015:0;
+ assert.ok(Math.abs(initial(0.17,0)-0.185)<1e-9);
+ assert.equal(initial(0,2),0);
+ const target=(floor,baseline,old)=>Math.abs(floor-baseline)<=1.25?floor-baseline:old;
+ assert.ok(Math.abs(target(0.42,0.17,0)-0.25)<1e-9);
+ assert.equal(target(8,0.17,0.25),0.25);
+});
