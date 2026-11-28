@@ -4743,6 +4743,11 @@ test('지상·해상 입장 시 현재 항구 시간과 예보를 연결하고 �
  assert.match(naval,/if not opts\.weatherId then\s+if coast\.id == "ghost"/);
  assert.match(naval,/elseif opts\.clockTime < 8 then "dawn" elseif opts\.clockTime < 17 then "day" else "sunset"/);
  assert.match(naval,/lighting\.ClockTime = if type\(opts\.clockTime\) == "number"/);
+ assert.match(naval,/local startClock = lighting\.ClockTime/);
+ assert.match(naval,/elapsed >= nextLightAt[\s\S]*?nextLightAt = elapsed \+ 0\.5/);
+ assert.match(naval,/\(startClock \+ elapsed \* \(24 \/ 720\)\) % 24/);
+ assert.match(naval,/folder:SetAttribute\("NavalClockTime", clock\)/);
+ assert.match(naval,/oceanTerrain\.WaterReflectance = 0\.08 \+ 0\.07 \* daylight/);
  assert.match(naval,/lighting\.ClockTime, lighting\.FogColor = savedLighting\.clock, savedLighting\.fogColor/);
 });
 
