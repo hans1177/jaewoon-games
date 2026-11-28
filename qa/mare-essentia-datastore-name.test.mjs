@@ -1309,7 +1309,9 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
   assert.match(motion,/model:SetAttribute\("FieldJointReady", if r6 then nj >= 6 else nj >= 12\)/);
   assert.match(pose,/function Pose\.dieR15\(model, alpha, variant\)/);
   assert.match(pose,/local fade = math\.clamp\(\(a - 0\.78\) \/ 0\.22/);
-  assert.match(field,/local duration = if visualMobile then 1\.35 else 1\.70/);
+  assert.match(field,/local duration = if e\.boss then 2\.5 elseif visualMobile then 1\.35 else 1\.70/);
+  assert.match(field,/FieldBossVictory/);
+  assert.match(field,/pl\.hp - previousHp/);
   assert.match(field,/if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak/);
   assert.match(field,/if result == "exploded" then hits \+= 1 end/);
   assert.match(field,/if breakCrate\(c, if moveId == "heavy" then 2 else 1\) then sceneryHit = true end/);
