@@ -11891,7 +11891,7 @@ do
 	function H.showWorldEventScene(a)
 		local pg = player:WaitForChild("PlayerGui")
 		local old = pg:FindFirstChild("WorldEventScene")
-		if old then old:Destroy() end
+		if old then return end
 		local g = overlayGui("WorldEventScene", 70)
 		local disaster = a.kind == "disaster"
 		local root = Instance.new("TextButton")
@@ -11924,7 +11924,7 @@ do
 		tint.Parent = root
 		local tag = Instance.new("TextLabel")
 		tag.AnchorPoint = Vector2.new(0.5, 1)
-		tag.Position = UDim2.fromScale(0.5, 0.7)
+		tag.Position = UDim2.fromScale(0.5, 0.55)
 		tag.Size = UDim2.new(0.9, 0, 0, 30)
 		tag.BackgroundTransparency = 1
 		tag.Font = Enum.Font.GothamBold
@@ -11935,8 +11935,14 @@ do
 		tag.Parent = root
 		local title = Instance.new("TextLabel")
 		title.AnchorPoint = Vector2.new(0.5, 0)
-		title.Position = UDim2.fromScale(0.5, 0.7)
-		title.Size = UDim2.new(0.9, 0, 0, 44)
+		title.Position = UDim2.fromScale(0.5, 0.55)
+		title.Size = UDim2.new(0.9, 0, 0, 52)
+		title.TextWrapped = true
+		title.TextScaled = true
+		local titleLimit = Instance.new("UITextSizeConstraint")
+		titleLimit.MinTextSize = 20
+		titleLimit.MaxTextSize = 34
+		titleLimit.Parent = title
 		title.BackgroundTransparency = 1
 		title.Font = Enum.Font.GothamBlack
 		title.TextSize = 34
@@ -11947,16 +11953,16 @@ do
 		title.Parent = root
 		local body = Instance.new("TextLabel")
 		body.AnchorPoint = Vector2.new(0.5, 0)
-		body.Position = UDim2.new(0.5, 0, 0.7, 50)
-		body.Size = UDim2.new(0.82, 0, 0, 50)
+		body.Position = UDim2.new(0.5, 0, 0.55, 54)
+		body.Size = UDim2.new(0.88, 0, 0.32, -12)
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = 17
+		body.TextSize = 21
 		body.TextWrapped = true
 		body.TextColor3 = Color3.fromRGB(240, 230, 210)
 		body.ZIndex = 5
 		body.Parent = root
-		H.typewrite(body, tostring(a.text or ""), 0.02)
+		body.Text = tostring(a.text or "")
 		H.cinemaBars(g, 3.2)
 		Sfx.play(if disaster then "sfx_horn" else "sfx_fanfare", 0.4, if disaster then 0.8 else 1, "sfx_bell")
 		TS:Create(art, TweenInfo.new(0.5), { ImageTransparency = 0 }):Play()
@@ -11971,14 +11977,16 @@ do
 				if art.Parent then art.Position = UDim2.fromScale(0.5, 0.46) end
 			end)
 		end
+		local closed = false
 		local function close()
-			if not g.Parent then return end
+			if closed or not g.Parent then return end
+			closed = true
 			TS:Create(root, TweenInfo.new(0.3), { BackgroundTransparency = 1 }):Play()
 			TS:Create(art, TweenInfo.new(0.3), { ImageTransparency = 1 }):Play()
 			task.delay(0.32, function() if g.Parent then g:Destroy() end end)
 		end
 		root.Activated:Connect(close)
-		task.delay(3.6, close)
+		task.delay(math.clamp((utf8.len(body.Text) or #body.Text) / 9 + 3, 6, 16), close)
 	end
 
 	-- 새로 시작된 세계 사건만 감지(첫 화면은 기준선). 다른 장면 중이면 기다렸다가 보여 준다.
@@ -11996,18 +12004,25 @@ do
 			end
 		end
 		if #fresh == 0 then return end
+		H.worldEventQueue = H.worldEventQueue or {}
+		for _, a in fresh do table.insert(H.worldEventQueue, a) end
+		if H.worldEventQueueRunning then return end
+		H.worldEventQueueRunning = true
 		task.spawn(function()
 			local pg = player:WaitForChild("PlayerGui")
-			for _, a in fresh do
+			while #H.worldEventQueue > 0 and player.Parent do
+				local a = table.remove(H.worldEventQueue, 1)
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)
-					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")) do
+					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")
+					or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene")) do
 					task.wait(0.3)
 				end
-				if not player.Parent then return end
+				if not player.Parent then break end
 				H.showWorldEventScene(a)
-				task.wait(3.9)
+				while player.Parent and pg:FindFirstChild("WorldEventScene") do task.wait(0.3) end
 			end
+			H.worldEventQueueRunning = false
 		end)
 	end
 
@@ -12500,7 +12515,10 @@ do
 
 	-- 결과 연출: 퀘스트를 끝내면 '당신 덕분에' 결말 + 장의 마지막이면 장 완료 장면
 	function H.showQuestResult(d)
+		local pg = player:WaitForChild("PlayerGui")
+		if pg:FindFirstChild("QuestResult") then return end
 		local g = overlayGui("QuestResult", 72)
+		local reduced = game:GetService("GuiService").ReducedMotionEnabled
 		local root = Instance.new("TextButton")
 		root.Size = UDim2.fromScale(1, 1)
 		root.AutoButtonColor = false
@@ -12509,11 +12527,15 @@ do
 		root.BackgroundTransparency = 0.45
 		root.BorderSizePixel = 0
 		root.Parent = g
-		local box = Instance.new("Frame")
+		local box = Instance.new("ScrollingFrame")
+		box.Name = "QuestRewardLedger"
+		box.ScrollBarThickness = 5
+		box.ScrollingDirection = Enum.ScrollingDirection.Y
+		box.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		box.CanvasSize = UDim2.fromOffset(0, 0)
 		box.AnchorPoint = Vector2.new(0.5, 0.5)
 		box.Position = UDim2.fromScale(0.5, 0.5)
-		box.Size = UDim2.new(1, -24, 0, 0)
-		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.Size = UDim2.new(1, -28, 0.86, 0)
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.Parent = root
@@ -12542,7 +12564,7 @@ do
 				local face = Instance.new("ImageLabel")
 				face.Name = "ResultSpeaker"
 				face.LayoutOrder = 0
-				face.Size = UDim2.fromOffset(96, 126)
+				face.Size = UDim2.fromOffset(76, 96)
 				face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
 				face.BorderSizePixel = 0
 				face.Image = "rbxassetid://" .. tostring(img)
@@ -12557,7 +12579,8 @@ do
 			end
 		end
 		local chapterArt = if chapterEnd then AssetIds["CardArt/ui_banner_chapter"] else nil
-		local heading = if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name)
+		local recap = d.id == nil
+		local heading = if recap then "지난 이야기" elseif chapterEnd then tostring(d.chapter) .. " 완료!" else "의뢰 완료 · " .. tostring(d.name)
 		if chapterArt then
 			local banner = Instance.new("ImageLabel")
 			banner.Name = "ChapterCompletionBanner"
@@ -12581,26 +12604,61 @@ do
 			fontLimit.MaxTextSize = 24
 			fontLimit.Parent = title
 		else
-			local head = mkLabel(box, heading, if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
+			local head = mkLabel(box, heading, if chapterEnd then 28 else 24, Color3.fromRGB(120, 70, 20), true, 1)
 			head.Size = UDim2.new(1, 0, 0, 0)
 			head.TextXAlignment = Enum.TextXAlignment.Center
 		end
 		if d.result then
-			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 15, Color3.fromRGB(40, 90, 50), true, 2)
+			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 20, Color3.fromRGB(40, 90, 50), true, 2)
 			res.Size = UDim2.new(1, 0, 0, 0)
 		end
-		local body = mkLabel(box, "", 15, Color3.fromRGB(52, 38, 24), false, 3)
+		local body = mkLabel(box, "", 20, Color3.fromRGB(52, 38, 24), false, 3)
 		body.Size = UDim2.new(1, 0, 0, 0)
-		if H.typewrite then H.typewrite(body, tostring(d.ending or ""), 0.018) else body.Text = tostring(d.ending or "") end
-		local hint = mkLabel(box, if chapterEnd then "다음 장이 주점 게시판과 일지에 열렸어요." else "화면을 누르면 닫혀요.", 12, Color3.fromRGB(110, 96, 76), false, 4)
+		body.Text = tostring(d.ending or "")
+		if not recap then
+			local reward = mkLabel(box, "획득 보상", 23, Color3.fromRGB(120, 70, 20), true, 4)
+			reward.Size = UDim2.new(1, 0, 0, 0)
+			local entries = {}
+			if (d.rewardCoins or 0) > 0 then table.insert(entries, {"coin", "코인", "+" .. tostring(d.rewardCoins)}) end
+			if (d.rewardFame or 0) > 0 then table.insert(entries, {"fame", "명성", "+" .. tostring(d.rewardFame)}) end
+			if (d.rewardXp or 0) > 0 then table.insert(entries, {"growth", "직업 경험치", "+" .. tostring(d.rewardXp)}) end
+			if d.rewardPermit then table.insert(entries, {"quest", "길드 허가증", tostring(d.rewardPermit)}) end
+			if d.rewardCard then table.insert(entries, {"codex", "지식카드", tostring(d.rewardCard)}) end
+			for i, entry in entries do
+				local row = Instance.new("Frame")
+				row.Name = "QuestReward_" .. entry[1]
+				row.LayoutOrder = 4 + i
+				row.Size = UDim2.new(1, 0, 0, 54)
+				row.BackgroundColor3 = Color3.fromRGB(230, 207, 158)
+				row.BorderSizePixel = 0
+				row.Parent = box
+				corner(row, 8)
+				if H.hasIconArt(entry[1]) then
+					local icon = modelIcon(row, "FacilityArt", entry[1], nil, 42, entry[2])
+					icon.Position = UDim2.fromOffset(5, 6)
+				end
+				local label = mkLabel(row, entry[2] .. "  " .. entry[3], 20, Color3.fromRGB(73, 48, 20), true)
+				label.Position = UDim2.fromOffset(52, 0)
+				label.Size = UDim2.new(1, -60, 1, 0)
+				label.AutomaticSize = Enum.AutomaticSize.None
+				label.TextWrapped = true
+				if not reduced then
+					row.BackgroundTransparency = 0.85
+					task.delay(i * 0.09, function()
+						if row.Parent then TS:Create(row, TweenInfo.new(0.25), { BackgroundTransparency = 0 }):Play() end
+					end)
+				end
+			end
+		end
+		local hint = mkLabel(box, if chapterEnd then "다음 장이 주점 게시판과 일지에 열렸어요." else "보상 내역을 확인해.", 16, Color3.fromRGB(110, 96, 76), false, 20)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
-		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end
+		if H.cinemaBars and not reduced then H.cinemaBars(g, 1.5) end
 		Sfx.play(if chapterEnd then "sfx_fanfare" else "sfx_bell", if chapterEnd then 0.55 else 0.35, 1, "sfx_card_coin")
 		local sc = Instance.new("UIScale")
-		sc.Scale = 0.85
+		sc.Scale = if reduced then 1 else 0.92
 		sc.Parent = box
-		TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		if not reduced then TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play() end
 		if chapterEnd and H.cardGainFlair then
 			pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 4, gold = Color3.fromRGB(255, 217, 124),
 				tone = Color3.fromRGB(255, 196, 92), w = 360, h = 220, reduced = game:GetService("GuiService").ReducedMotionEnabled,
@@ -12612,8 +12670,8 @@ do
 			closed = true
 			if g.Parent then g:Destroy() end
 		end
-		root.Activated:Connect(close)
-		task.delay(if chapterEnd then 9 else 6, close)
+		local confirm = mkButton(box, "확인", COLORS.gold, UDim2.new(1, 0, 0, 48), close, true)
+		confirm.LayoutOrder = 30
 	end
 
 	-- 새로 끝난 퀘스트 감지(첫 화면은 기준선) → 결과 장면을 차례로
@@ -12627,22 +12685,28 @@ do
 			local key = tostring(d.id or d.name)
 			if not H.seenDoneQuests[key] then
 				H.seenDoneQuests[key] = true
-				if not first and (d.result or d.chapter or d.strand == "main") then table.insert(fresh, d) end
+				if not first then table.insert(fresh, d) end
 			end
 		end
 		if #fresh == 0 then return end
+		H.questResultQueue = H.questResultQueue or {}
+		for _, d in fresh do table.insert(H.questResultQueue, d) end
+		if H.questResultQueueRunning then return end
+		H.questResultQueueRunning = true
 		task.spawn(function()
 			local pg = player:WaitForChild("PlayerGui")
-			for _, d in fresh do
+			while #H.questResultQueue > 0 and player.Parent do
+				local d = table.remove(H.questResultQueue, 1)
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
-					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult")) do
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("WorldEventScene") or pg:FindFirstChild("QuestTalk")) do
 					task.wait(0.3)
 				end
-				if not player.Parent then return end
+				if not player.Parent then break end
 				H.showQuestResult(d)
 				while player.Parent and pg:FindFirstChild("QuestResult") do task.wait(0.3) end
 			end
+			H.questResultQueueRunning = false
 		end)
 	end
 
@@ -13355,7 +13419,7 @@ do
 		box.Name = "TalkBox"
 		box.AnchorPoint = Vector2.new(0.5, 1)
 		box.Position = UDim2.new(0.5, 0, 1, -16)
-		box.Size = UDim2.new(1, -32, 0, if narrow then 150 else 132)
+		box.Size = UDim2.new(1, -32, 0, math.min(if narrow then 202 else 184, math.floor(vp.Y * 0.53)))
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.ZIndex = 6
@@ -13372,7 +13436,7 @@ do
 		nameTag.BackgroundColor3 = Color3.fromRGB(70, 44, 24)
 		nameTag.BorderSizePixel = 0
 		nameTag.Font = Enum.Font.GothamBlack
-		nameTag.TextSize = 16
+		nameTag.TextSize = 19
 		nameTag.TextColor3 = Color3.fromRGB(255, 230, 170)
 		nameTag.ZIndex = 7
 		nameTag.Parent = box
@@ -13383,7 +13447,7 @@ do
 		body.Size = UDim2.new(1, -36, 1, -48)
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = if narrow then 15 else 17
+		body.TextSize = if narrow then 20 else 22
 		body.TextWrapped = true
 		body.TextXAlignment = Enum.TextXAlignment.Left
 		body.TextYAlignment = Enum.TextYAlignment.Top
@@ -13396,12 +13460,12 @@ do
 		next.Size = UDim2.fromOffset(160, 20)
 		next.BackgroundTransparency = 1
 		next.Font = Enum.Font.GothamBold
-		next.TextSize = 12
+		next.TextSize = 16
 		next.TextXAlignment = Enum.TextXAlignment.Right
 		next.TextColor3 = Color3.fromRGB(130, 100, 60)
 		next.ZIndex = 7
 		next.Parent = box
-		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(120, 40), function() end, true)
+		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(128, 48), function() end, true)
 		skip.AnchorPoint = Vector2.new(1, 0)
 		skip.Position = UDim2.new(1, -16, 0, 70)
 		skip.ZIndex = 8
@@ -13439,7 +13503,8 @@ do
 				TS:Create(face, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = base }):Play()
 			end
 			lastFace = faceKey
-			if H.typewrite then H.typewrite(body, tostring(ln.text or ""), 0.02) else body.Text = tostring(ln.text or "") end
+			body.MaxVisibleGraphemes = -1
+			body.Text = tostring(ln.text or "")
 			Sfx.play("sfx_card_page", 0.25, 1)
 		end
 		dim.Activated:Connect(function()
