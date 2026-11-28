@@ -1,5 +1,7 @@
 # mare-essentia — 모든 작업자 필독 (READ FIRST)
 
+> 저장소 처음이면 루트 `START_HERE.md`부터(중앙정책 4종 위치·멈춤 금지 문장). 이 파일과 아래 지시서는 전부 raw 주소로도 읽힌다: `https://raw.githubusercontent.com/hans1177/jaewoon-games/main/roblox-games/mare-essentia/docs/<파일>`
+
 **ChatGPT·Claude·Codex·Copilot·Cursor·Gemini·바이브코딩 도구 등 누구든 `mare-essentia`를 만지기 전에 이 파일과 아래 해당 지시서를 반드시 읽고 그대로 따른다.**
 **아래 표의 모든 지시서는 필독이다.** 1절은 무엇을 하든 전부 읽고, 2절은 하는 작업에 해당하는 파일을 전부 읽는다.
 읽지 않았으면 읽었다고 말하지 않는다. 지시서와 다르게 만들면 되돌린다. 저장소 루트 `AGENTS.md`(전역 금지 규칙·중앙정책)가 항상 우선한다.
@@ -75,5 +77,6 @@
 - 결과·거부 이유: `docs/assets/dropbox_inbox_report.md`.
 
 ## 4. 끝내기 전에
+- **"중앙 검증기 실행 환경에 연결 못 해서 수정 보류"로 멈추지 않는다.** 사전점검은 중앙문서 4종을 읽고 main SHA를 적는 것이고, 검증은 PR의 기존 검사가 한다. 자세히: 루트 `AGENTS.md` '중앙 사전점검이 뜻하는 것'.
 - `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함).
 - Studio 촬영으로 확인하기 전에는 "완료"라고 보고하지 않는다. 병합·배포·Studio 확인은 따로 보고한다.
