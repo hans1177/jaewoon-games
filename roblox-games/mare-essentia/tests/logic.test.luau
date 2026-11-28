@@ -1754,6 +1754,15 @@ do
 	local c0 = st.coins
 	ok = act(st, "Claim", { questId = "q_first_trade" })
 	check("claim works", ok and st.coins == c0 + 150)
+	local receipt = (st :: any)._questRewards and (st :: any)._questRewards.q_first_trade
+	check("quest reward receipt uses actual payout", receipt and receipt.coins == 150 and receipt.fame == 5 and receipt.xp == 40 and receipt.showScene == true)
+	check("quest reward receipt not persisted", (S.State.serialize(st) :: any)._questRewards == nil)
+	local rewardView = S.View.build(st, ctx)
+	local rewardSeen = false
+	for _, d in rewardView.quests.done do
+		if d.id == "q_first_trade" and d.receipt and d.receipt.coins == 150 then rewardSeen = true end
+	end
+	check("quest reward receipt sent once", rewardSeen and (st :: any)._questRewards == nil)
 	check("quest marked done", st.quests.done.q_first_trade == true and st.quests.active.q_first_trade == nil)
 	ok = act(st, "Accept", { questId = "q_first_trade" })
 	check("cannot redo quest", ok == false)

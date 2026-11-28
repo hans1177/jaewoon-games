@@ -1303,7 +1303,9 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
   assert.match(motion,/model:SetAttribute\("FieldJointReady", if r6 then nj >= 6 else nj >= 12\)/);
   assert.match(pose,/function Pose\.dieR15\(model, alpha, variant\)/);
   assert.match(pose,/local fade = math\.clamp\(\(a - 0\.78\) \/ 0\.22/);
-  assert.match(field,/local duration = if visualMobile then 1\.35 else 1\.70/);
+  assert.match(field,/local duration = if e\.boss then 2\.5 elseif visualMobile then 1\.35 else 1\.70/);
+  assert.match(field,/FieldBossVictory/);
+  assert.match(field,/pl\.hp - previousHp/);
   assert.match(field,/if hits == 0 and not sceneryHit and hitActionSeq >= streakCountedSeq then endStreak/);
   assert.match(field,/if result == "exploded" then hits \+= 1 end/);
   assert.match(field,/if breakCrate\(c, if moveId == "heavy" then 2 else 1\) then sceneryHit = true end/);
@@ -5330,10 +5332,11 @@ test('의뢰 보상은 실제 수치 우선과 고정 확인 버튼을 유지한
  const reward=game.slice(game.indexOf('function H.showQuestResult(d)'),game.indexOf('function H.checkQuestResults()'));
  assert.ok(reward.includes('QuestRewardPanel') && reward.includes('QuestRewardLedger'));
  assert.ok(reward.includes('box.Size = UDim2.new(1, 0, 1, -70)'));
- assert.ok(reward.includes('row.LayoutOrder = 2 + i') && reward.includes('body.Size'));
- assert.ok(reward.includes('QuestRewardValue') && reward.includes('amountLimit.MaxTextSize = 24'));
+ assert.ok(reward.includes('row.LayoutOrder = 4 + i') && reward.includes('body.Size'));
+ assert.ok(reward.includes('QuestRewardValue') && reward.includes('amountLimit.MaxTextSize = 28'));
  assert.ok(reward.includes('QuestRewardConfirm') && reward.includes('UDim2.new(1, -36, 0, 48)'));
- for(const key of ['rewardCoins','rewardFame','rewardXp','rewardPermit','rewardCard']) assert.ok(reward.includes('d.'+key));
- assert.ok(reward.includes('if chapterEnd and not reduced and H.cardGainFlair then'));
+ for(const key of ['rewardCoins','rewardFame','rewardXp','receipt']) assert.ok(reward.includes('d.'+key));
+ for(const key of ['discovery','card','permit']) assert.ok(reward.includes('d.receipt.'+key));
+ assert.ok(reward.includes('if epic and not reduced then'));
  for(const h of [320,360,384,480,600,800]) assert.ok(Math.min(560,h*0.88)-70>=210);
 });
