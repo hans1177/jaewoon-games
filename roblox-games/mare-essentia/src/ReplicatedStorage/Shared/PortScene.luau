@@ -2029,7 +2029,7 @@ local function penAt(i, n)
 	return Vector3.new(rural.centerX, 0, (i - (n + 1) / 2) * rural.penSpacing)
 end
 
-local function spawnJobs(folder, info, rng, lvl, walkers, key)
+local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 	local year = info.year or currentYear
 	local o = OUTFIT[key] or OUTFIT.north or {}
 	local function person(pos, facing, spec, profession)
@@ -2220,6 +2220,37 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			else Vector3.new(-18 - i * 2, 0, -24)
 		-- [귀가] 작업장과 분리된 근처 주거 골목. 기존 도로를 횡단하지 않는 같은 쪽 동선.
 		local home = work + Vector3.new(0, 0, side * 10)
+		-- [각자의 생활 · 2026-11-29 오너: "중앙 광장에만 모여 있다, 주민들 각자 생활하라고, 현실처럼"]
+		-- 예전엔 모든 주민의 일터·시장·저녁·집이 광장 옆 좁은 칸(x -18~-116, z ±24)에 몰렸다.
+		-- 이제 집 = 실제 지어진 집 앞 골목, 일터 = 직업별 실제 장소(부두·교역소·항만청·길드·서재·마을 가장자리 밭),
+		-- 저녁 = 주점 앞, 시장 = 광장 가장자리 원 위 각자 다른 자리. 같은 장소도 사람마다 몇 걸음씩 다르게.
+		do
+			local function fac(tab: string): Vector3?
+				local v = folder:GetAttribute("CityFacilityPosition_" .. tab)
+				return if typeof(v) == "Vector3" then v else nil
+			end
+			local jitter = Vector3.new(rng:NextNumber(-5, 5), 0, rng:NextNumber(-5, 5))
+			local dock = Vector3.new(rng:NextNumber(24, 66), 0, rng:NextNumber(-26, 26))
+			local edgeX = -120 - lvl * 18
+			local workAt = {
+				merchant = fac("trade"), sailor = dock, fisher = dock + Vector3.new(0, 0, 8), laborer = dock,
+				guard = fac("route"), official = fac("harbor") or fac("route"), craftsman = fac("market"),
+				clergy = fac("codex") or fac("tech"), farmer = Vector3.new(edgeX, 0, side * rng:NextNumber(30, 90)),
+			}
+			local w = workAt[duty.job]
+			if w then work = w + jitter end
+			local angle = (i * 2.399) % (2 * math.pi) -- 황금각: 시장 원 위에 겹치지 않게 흩어짐
+			market = Vector3.new(-6 + math.cos(angle) * 31, 0, math.sin(angle) * 31)
+			local tavern = fac("board")
+			if tavern then evening = tavern + Vector3.new(rng:NextNumber(-7, 7), 0, rng:NextNumber(4, 9) * (if tavern.Z >= 0 then -1 else 1)) end
+			local spots = houseSpots or {}
+			if #spots > 0 then
+				local spot = spots[(i - 1) % #spots + 1]
+				-- 집 앞 골목(길 가장자리)에 선다. 집 몸체 안으로 들어가지 않는다.
+				local doorZ = spot.side * (spot.laneZ + spot.laneW * 0.5 + 1)
+				home = Vector3.new(spot.pos.X + rng:NextNumber(-3, 3), 0, doorZ)
+			end
+		end
 		local shift = rng:NextNumber(-0.32, 0.32)
 		local marketAt = duty.market + shift
 		local marketEnd = duty.leave + shift
@@ -4217,6 +4248,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- 한 줄 채우기: z = 줄의 중심, t = 0(항구 쪽)~1(성벽 쪽)
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
 	local residentialDecorationPlaced = false
+	local homeRejectRoad, homeRejectStreet, homeRejectReserved = 0, 0, 0
+	local houseSpots = {}
 	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
 		local slotIndex, rowPlaced = 0, 0
@@ -4348,14 +4381,32 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						local laneFar = 152 + laneOffset + (laneIndex + 1) * laneL + farBend
 						local chosenShift
 						-- 원래 자리에서 시작해 같은 필지 안에서만 조금 이동한다. 다른 건물은 건드리지 않는다.
+						-- [집 배치 실패 수정 · 2026-11-29 오너: "중앙 광장만 모여 있다"] 예전엔 ±2.4만 옮겨 보고 길에 닿으면 포기해
+						-- L3~L4 항구에 집이 3~6채만 지어졌다(목표 14~18). 이제 두 길 사이 남는 폭 안에서 필요한 만큼 밀어 넣는다.
+						local nearLimit = laneNear + laneWidth * 0.5 + 1.5
+						local farLimit = laneFar - laneWidth * 0.5 - 1.5
 						for _, direction in homeShifts do
 							local shift = Vector3.new(direction.X, 0, direction.Z * side)
 							local at = pos + shift
 							local signedZ = at.Z * side
-							local clearRoad = signedZ - measuredHalfZ > laneNear + laneWidth * 0.5 + 1.5
-								and signedZ + measuredHalfZ < laneFar - laneWidth * 0.5 - 1.5
-							if clearRoad and not onStreet(at.X, measuredHalfX)
-								and not reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
+							if 2 * measuredHalfZ <= farLimit - nearLimit then
+								local dz = 0
+								if signedZ - measuredHalfZ <= nearLimit then dz = nearLimit - (signedZ - measuredHalfZ) + 0.1
+								elseif signedZ + measuredHalfZ >= farLimit then dz = farLimit - (signedZ + measuredHalfZ) - 0.1 end
+								if dz ~= 0 then
+									shift += Vector3.new(0, 0, dz * side)
+									at = pos + shift
+									signedZ = at.Z * side
+								end
+							end
+							local clearRoad = signedZ - measuredHalfZ > nearLimit and signedZ + measuredHalfZ < farLimit
+							if not clearRoad then
+								homeRejectRoad += 1
+							elseif onStreet(at.X, measuredHalfX) then
+								homeRejectStreet += 1
+							elseif reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
+								homeRejectReserved += 1
+							else
 								chosenShift = shift
 								break
 							end
@@ -4365,6 +4416,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							pos += chosenShift
 							for _, object in staged:GetChildren() do object.Parent = folder end
 							homePlaced += 1
+							table.insert(houseSpots, { pos = pos, side = side, laneZ = laneNear, laneW = laneWidth })
 							rowPlaced += 1
 							if chosenShift.Magnitude > 0 then homeShifted += 1 end
 							homeSizeCounts[sizeClass] += 1
@@ -4723,6 +4775,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityHousingPort", info.portId)
 	folder:SetAttribute("CityHousingCulture", key)
 	folder:SetAttribute("CityHousingCandidates", homeCandidates)
+	folder:SetAttribute("CityHousingRejectRoad", homeRejectRoad)
+	folder:SetAttribute("CityHousingRejectStreet", homeRejectStreet)
+	folder:SetAttribute("CityHousingRejectReserved", homeRejectReserved)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
 	folder:SetAttribute("CityOldTownHomes", oldTownHomes)
 	folder:SetAttribute("CityNewTownHomes", newTownHomes)
@@ -6026,7 +6081,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	importedModel(folder, "Terrain", "campfire-logs", Vector3.new(-80, 0, 30.5), 4, false)
 
 	-- 5) 움직임: 일하는 주민(직업별 모션)과 골목을 오가는 주민
-	spawnJobs(folder, info, rng, lvl, walkers, key)
+	spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 	local wanderers = ({ 4, 6, 8, 10, 12 })[lvl]
 	if info.sim and type(info.sim.residents) == "number" then
 		wanderers = math.clamp(math.floor(info.sim.residents / 6), 0, 14) -- 역병·기근 후 빈 거리도 실제로 표시한다
@@ -9305,6 +9360,7 @@ function PortScene.build(info, onFacility)
 			return false
 		end
 		local moved, hidden, checked = 0, 0, 0
+		local propBoxes, propSpread, propStackHidden = {}, 0, 0
 		for _, child in folder:GetChildren() do
 			if child:IsA("Model") and not child:FindFirstChildOfClass("Humanoid") and not skipName(child.Name) then
 				local okBox, cf, size = pcall(function() return child:GetBoundingBox() end)
@@ -9328,9 +9384,44 @@ function PortScene.build(info, onFacility)
 							hidden += 1
 						end
 					end
+					-- [소품끼리 겹침 · 2026-11-29 오너: "오브젝트 겹침"] 깔개 위 의자, 상자 속 상자처럼 작은 소품끼리
+					-- 바닥 면적이 40% 넘게 겹치면 뒤에 놓인 쪽을 옆 빈자리로 옮기고, 자리가 없으면 뺀다.
+					if child.Parent then
+						local p = child:GetPivot().Position
+						local hx, hz = size.X * 0.5, size.Z * 0.5
+						local function clash(cx: number, cz: number)
+							for _, o in propBoxes do
+								local ox = math.min(cx + hx, o[1] + o[3]) - math.max(cx - hx, o[1] - o[3])
+								local oz = math.min(cz + hz, o[2] + o[4]) - math.max(cz - hz, o[2] - o[4])
+								if ox > 0 and oz > 0 and ox * oz > 0.4 * math.min(4 * hx * hz, 4 * o[3] * o[4]) then return true end
+							end
+							return false
+						end
+						if clash(p.X, p.Z) then
+							local placed = false
+							for _, d in { Vector3.new(hx * 2 + 1, 0, 0), Vector3.new(-hx * 2 - 1, 0, 0),
+								Vector3.new(0, 0, hz * 2 + 1), Vector3.new(0, 0, -hz * 2 - 1) } do
+								if not clash(p.X + d.X, p.Z + d.Z) and not embedded(child, cf + d, size) then
+									child:PivotTo(child:GetPivot() + d)
+									p += d
+									placed = true
+									propSpread += 1
+									break
+								end
+							end
+							if not placed then
+								child:SetAttribute("PropStackHidden", true)
+								child.Parent = nil
+								propStackHidden += 1
+							end
+						end
+						if child.Parent then table.insert(propBoxes, { p.X, p.Z, hx, hz }) end
+					end
 				end
 			end
 		end
+		folder:SetAttribute("PropSpread", propSpread)
+		folder:SetAttribute("PropStackHidden", propStackHidden)
 		-- [같은 소품 개수 제한 · 2026-11-29 오너: "소품도 같은 종류 오브젝트 개수 제한"]
 		-- 같은 원본(ImportedAsset)이 한 항구에 너무 많으면 광장에서 먼 것부터 뺀다.
 		-- 건물(Town·Castle)·사람·동물·배는 대상 아님. 나무·풀 같은 자연물은 넉넉히, 통·상자 등 소품은 6개까지.
