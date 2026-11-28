@@ -2204,6 +2204,12 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  // [실제 사지 보행] 한 다리의 무릎·발목을 별개 다리로 세지 않는다.
  assert.match(port,/local legGroups, legCount = \{\}, 0/);
  assert.match(port,/if limb\.group and not legGroups\[limb\.group\] then/);
+ // 양의 FBX 좌우 본 축 및 분리된 정강이/발굽의 공통 회전점 회귀.
+ assert.match(port,/sheepRight = sheepForward:Cross\(Vector3.yAxis\).Unit/);
+ assert.match(port,/if limb.sheepChild then 0 else pitch \* 0.65/);
+ assert.match(port,/pivot \* CFrame.new\(limb.sheepHinge\) \* limb.pose \* CFrame.new\(-limb.sheepHinge\) \* limb.base/);
+ assert.match(field,/pitch = if limb.sheepChild then 0 else math.sin\(a.step \+ limb.phase\)/);
+ assert.match(field,/pivot \* CFrame.new\(limb.sheepHinge\) \* CFrame.fromAxisAngle\(limb.sheepAxis, pitch\)/);
  assert.match(field,/local occupiedParts, drivenParts, legGroups = \{\}, \{\}, \{\}/);
  assert.match(field,/node:IsA\("Motor6D"\)/);
  assert.match(field,/node:IsA\("AnimationConstraint"\)/);

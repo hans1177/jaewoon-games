@@ -4530,6 +4530,7 @@ function FieldScene.start(opts)
 			-- 고정된 수입 모델은 Part1을 움직이고, 가동 관절은 원래 Transform으로만 구동한다.
 			local bones, parts, legCount = {}, {}, 0
 			local occupiedParts, drivenParts, legGroups = {}, {}, {}
+			local sheepHinges = {}
 			for _, node in model:GetDescendants() do
 				if node:IsA("Motor6D") and node.Part1 then
 					occupiedParts[node.Part1] = true
@@ -4565,25 +4566,39 @@ function FieldScene.start(opts)
 					local localRight = jointFrame:VectorToObjectSpace(right)
 					local localUp = jointFrame:VectorToObjectSpace(Vector3.yAxis)
 					local lower = name:find("lower", 1, true) or name:find("foot", 1, true) or name:find("toe", 1, true)
+					local sheepGroup, sheepChild
+					if species == "sheep" and kind == "leg" then
+						sheepGroup = (if rear then "rear" else "front") .. (if left then "_left" else "_right")
+						local ancestor = if node:IsA("Bone") then node.Parent
+							elseif node:IsA("Motor6D") then node.Part0
+							elseif node:IsA("AnimationConstraint") and node.Attachment0 then node.Attachment0.Parent else nil
+						while ancestor and ancestor ~= model do
+							local n = ancestor.Name:lower()
+							if n:find("leg", 1, true) or n:find("hoof", 1, true) or n:find("foot", 1, true)
+								or n:find("knee", 1, true) or n:find("hock", 1, true) then sheepChild = true; break end
+							if not ancestor:IsA("Bone") then break end
+							ancestor = ancestor.Parent
+						end
+					end
 					local accepted = false
 					if node:IsA("Bone") and #bones < 14 then
-						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower })
+						table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower, sheepGroup = sheepGroup, sheepChild = sheepChild })
 						accepted = true
 					elseif targetPart and targetPart:IsA("BasePart") then
 						if targetPart.Anchored and not drivenParts[targetPart] and #parts < 12
 							and math.max(targetPart.Size.X, targetPart.Size.Y, targetPart.Size.Z) < bodySize * 0.77 then
 							table.insert(parts, { part = targetPart, base = basePivot:ToObjectSpace(targetPart.CFrame),
-								kind = kind, phase = phase, axis = targetPart.CFrame:VectorToObjectSpace(right), up = targetPart.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
+								kind = kind, phase = phase, axis = targetPart.CFrame:VectorToObjectSpace(right), up = targetPart.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, sheepGroup = sheepGroup, hinge = math.min(targetPart.Size.Y * 0.34, 0.65) })
 							drivenParts[targetPart] = true
 							accepted = true
 						elseif not targetPart.Anchored and #bones < 14 then
-							table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower })
+							table.insert(bones, { joint = node, base = node.Transform, kind = kind, phase = phase, axis = localRight, up = localUp, lower = lower, sheepGroup = sheepGroup, sheepChild = sheepChild })
 							accepted = true
 						end
 					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
 						and #parts < 12 and math.max(node.Size.X, node.Size.Y, node.Size.Z) < bodySize * 0.77 then
 						table.insert(parts, { part = node, base = basePivot:ToObjectSpace(node.CFrame),
-							kind = kind, phase = phase, axis = node.CFrame:VectorToObjectSpace(right), up = node.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, hinge = math.min(node.Size.Y * 0.34, 0.65) })
+							kind = kind, phase = phase, axis = node.CFrame:VectorToObjectSpace(right), up = node.CFrame:VectorToObjectSpace(Vector3.yAxis), lower = lower, sheepGroup = sheepGroup, hinge = math.min(node.Size.Y * 0.34, 0.65) })
 						drivenParts[node] = true
 						accepted = true
 					end
@@ -4591,6 +4606,25 @@ function FieldScene.start(opts)
 						-- [발별 판정] 무릎과 정강이를 서로 다른 다리로 세지 않는다.
 						local group = (if rear then "rear" else "front") .. (if left then "_left" else "_right")
 						if not legGroups[group] then legGroups[group] = true; legCount += 1 end
+					end
+				end
+			end
+			-- 양의 분리된 발굽·정강이는 동일한 회전점을 사용해 접합 간격을 보존한다.
+			if species == "sheep" then
+				for _, limb in parts do
+					if limb.sheepGroup then
+						local part = limb.part
+						local cf, half = part.CFrame, part.Size * 0.5
+						local top = cf.Position + Vector3.yAxis * (math.abs(cf.RightVector.Y) * half.X
+							+ math.abs(cf.UpVector.Y) * half.Y + math.abs(cf.LookVector.Y) * half.Z)
+						local current = sheepHinges[limb.sheepGroup]
+						if not current or top.Y > current.Y then sheepHinges[limb.sheepGroup] = top end
+					end
+				end
+				for _, limb in parts do
+					if limb.sheepGroup then
+						limb.sheepHinge = basePivot:PointToObjectSpace(sheepHinges[limb.sheepGroup])
+						limb.sheepAxis = basePivot:VectorToObjectSpace(right)
 					end
 				end
 			end
@@ -4653,15 +4687,24 @@ function FieldScene.start(opts)
 						local pitch = if limb.kind == "leg" then math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * (if limb.lower then -0.38 else 1)
 							elseif limb.kind == "head" then (if moving then math.sin(a.step * 2) * a.profile[4] else math.sin(time * 1.4) * a.profile[4]) else 0
 						local wag = if limb.kind == "tail" then math.sin(time * 2.2) * a.profile[5] else 0
+						if limb.sheepGroup then
+							pitch = if limb.sheepChild then 0 else math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * 0.65
+						end
 						limb.joint.Transform = limb.base * CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag)
 					end
 					for _, limb in a.parts do
 						local pitch = if limb.kind == "leg" then math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * (if limb.lower then -0.38 else 1)
 							elseif limb.kind == "head" then (if moving then math.sin(a.step * 2) * a.profile[4] else math.sin(time * 1.4) * a.profile[4]) else 0
 						local wag = if limb.kind == "tail" then math.sin(time * 2.2) * a.profile[5] else 0
-						local hinge = limb.up * limb.hinge
-						limb.part.CFrame = pivot * limb.base * CFrame.new(hinge)
-							* CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag) * CFrame.new(-hinge)
+						if limb.sheepHinge then
+							pitch = math.sin(a.step + limb.phase) * a.profile[3] * a.stepWeight * 0.65
+							limb.part.CFrame = pivot * CFrame.new(limb.sheepHinge) * CFrame.fromAxisAngle(limb.sheepAxis, pitch)
+								* CFrame.new(-limb.sheepHinge) * limb.base
+						else
+							local hinge = limb.up * limb.hinge
+							limb.part.CFrame = pivot * limb.base * CFrame.new(hinge)
+								* CFrame.fromAxisAngle(limb.axis, pitch) * CFrame.fromAxisAngle(limb.up, wag) * CFrame.new(-hinge)
+						end
 					end
 					-- 분리된 실제 사지의 움직임 뒤에도 가장 낮은 가시 메시를 지면에 유지한다.
 					local low = math.huge
