@@ -5301,3 +5301,16 @@ test('모바일 사건과 의뢰 대사는 스크롤과 명시적 확인으로 �
   assert.ok(height*(short?0.70:0.58)-112>=112);
  }
 });
+
+test('의뢰 보상은 실제 수치 우선과 고정 확인 버튼을 유지한다',()=>{
+ const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const reward=game.slice(game.indexOf('function H.showQuestResult(d)'),game.indexOf('function H.checkQuestResults()'));
+ assert.ok(reward.includes('QuestRewardPanel') && reward.includes('QuestRewardLedger'));
+ assert.ok(reward.includes('box.Size = UDim2.new(1, 0, 1, -70)'));
+ assert.ok(reward.includes('row.LayoutOrder = 2 + i') && reward.includes('body.Size'));
+ assert.ok(reward.includes('QuestRewardValue') && reward.includes('amountLimit.MaxTextSize = 24'));
+ assert.ok(reward.includes('QuestRewardConfirm') && reward.includes('UDim2.new(1, -36, 0, 48)'));
+ for(const key of ['rewardCoins','rewardFame','rewardXp','rewardPermit','rewardCard']) assert.ok(reward.includes('d.'+key));
+ assert.ok(reward.includes('if chapterEnd and not reduced and H.cardGainFlair then'));
+ for(const h of [320,360,384,480,600,800]) assert.ok(Math.min(560,h*0.88)-70>=210);
+});

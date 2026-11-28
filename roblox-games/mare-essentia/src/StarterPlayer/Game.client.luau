@@ -12548,26 +12548,33 @@ do
 		root.BackgroundTransparency = 0.45
 		root.BorderSizePixel = 0
 		root.Parent = g
+		local shell = Instance.new("Frame")
+		shell.Name = "QuestRewardPanel"
+		shell.AnchorPoint = Vector2.new(0.5, 0.5)
+		shell.Position = UDim2.fromScale(0.5, 0.5)
+		shell.Size = UDim2.new(1, -28, 0.88, 0)
+		shell.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
+		shell.BorderSizePixel = 0
+		shell.Parent = root
+		corner(shell, 14)
 		local box = Instance.new("ScrollingFrame")
 		box.Name = "QuestRewardLedger"
 		box.ScrollBarThickness = 5
 		box.ScrollingDirection = Enum.ScrollingDirection.Y
 		box.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		box.CanvasSize = UDim2.fromOffset(0, 0)
-		box.AnchorPoint = Vector2.new(0.5, 0.5)
-		box.Position = UDim2.fromScale(0.5, 0.5)
-		box.Size = UDim2.new(1, -28, 0.86, 0)
-		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
+		box.Position = UDim2.fromOffset(0, 0)
+		box.Size = UDim2.new(1, 0, 1, -70)
+		box.BackgroundTransparency = 1
 		box.BorderSizePixel = 0
-		box.Parent = root
-		corner(box, 14)
+		box.Parent = shell
 		local lim = Instance.new("UISizeConstraint")
 		lim.MaxSize = Vector2.new(520, 560)
-		lim.Parent = box
+		lim.Parent = shell
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(196, 150, 70)
 		st.Thickness = 3
-		st.Parent = box
+		st.Parent = shell
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 16), UDim.new(0, 16), UDim.new(0, 18), UDim.new(0, 18)
 		pad.Parent = box
@@ -12584,8 +12591,8 @@ do
 			if img then
 				local face = Instance.new("ImageLabel")
 				face.Name = "ResultSpeaker"
-				face.LayoutOrder = 0
-				face.Size = UDim2.fromOffset(76, 96)
+				face.LayoutOrder = 12
+				face.Size = UDim2.fromOffset(60, 76)
 				face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
 				face.BorderSizePixel = 0
 				face.Image = "rbxassetid://" .. tostring(img)
@@ -12594,7 +12601,7 @@ do
 				face.ScaleType = Enum.ScaleType.Crop
 				face.Parent = box
 				corner(face, 10)
-				local who = mkLabel(box, tostring(talk.name) .. (if talk.role and talk.role ~= "" then " · " .. tostring(talk.role) else ""), 13, Color3.fromRGB(110, 80, 40), true, 0)
+				local who = mkLabel(box, tostring(talk.name) .. (if talk.role and talk.role ~= "" then " · " .. tostring(talk.role) else ""), 16, Color3.fromRGB(110, 80, 40), true, 13)
 				who.Size = UDim2.new(1, 0, 0, 0)
 				who.TextXAlignment = Enum.TextXAlignment.Center
 			end
@@ -12630,14 +12637,14 @@ do
 			head.TextXAlignment = Enum.TextXAlignment.Center
 		end
 		if d.result then
-			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 20, Color3.fromRGB(40, 90, 50), true, 2)
+			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 20, Color3.fromRGB(40, 90, 50), true, 11)
 			res.Size = UDim2.new(1, 0, 0, 0)
 		end
-		local body = mkLabel(box, "", 20, Color3.fromRGB(52, 38, 24), false, 3)
+		local body = mkLabel(box, "", 20, Color3.fromRGB(52, 38, 24), false, 14)
 		body.Size = UDim2.new(1, 0, 0, 0)
 		body.Text = tostring(d.ending or "")
 		if not recap then
-			local reward = mkLabel(box, "획득 보상", 23, Color3.fromRGB(120, 70, 20), true, 4)
+			local reward = mkLabel(box, "획득 보상", 23, Color3.fromRGB(120, 70, 20), true, 2)
 			reward.Size = UDim2.new(1, 0, 0, 0)
 			local entries = {}
 			if (d.rewardCoins or 0) > 0 then table.insert(entries, {"coin", "코인", "+" .. tostring(d.rewardCoins)}) end
@@ -12648,8 +12655,8 @@ do
 			for i, entry in entries do
 				local row = Instance.new("Frame")
 				row.Name = "QuestReward_" .. entry[1]
-				row.LayoutOrder = 4 + i
-				row.Size = UDim2.new(1, 0, 0, 54)
+				row.LayoutOrder = 2 + i
+				row.Size = UDim2.new(1, 0, 0, 64)
 				row.BackgroundColor3 = Color3.fromRGB(230, 207, 158)
 				row.BorderSizePixel = 0
 				row.Parent = box
@@ -12658,15 +12665,29 @@ do
 					local icon = modelIcon(row, "FacilityArt", entry[1], nil, 42, entry[2])
 					icon.Position = UDim2.fromOffset(5, 6)
 				end
-				local label = mkLabel(row, entry[2] .. "  " .. entry[3], 20, Color3.fromRGB(73, 48, 20), true)
-				label.Position = UDim2.fromOffset(52, 0)
-				label.Size = UDim2.new(1, -60, 1, 0)
+				local label = mkLabel(row, entry[2], 16, Color3.fromRGB(73, 48, 20), true)
+				label.Position = UDim2.fromOffset(56, 5)
+				label.Size = UDim2.new(1, -66, 0, 22)
 				label.AutomaticSize = Enum.AutomaticSize.None
-				label.TextWrapped = true
+				local amount = mkLabel(row, entry[3], 23, Color3.fromRGB(43, 92, 54), true)
+				amount.Name = "QuestRewardValue"
+				amount.Position = UDim2.fromOffset(56, 27)
+				amount.Size = UDim2.new(1, -66, 0, 32)
+				amount.AutomaticSize = Enum.AutomaticSize.None
+				amount.TextScaled = true
+				amount.TextWrapped = true
+				local amountLimit = Instance.new("UITextSizeConstraint")
+				amountLimit.MinTextSize = 14
+				amountLimit.MaxTextSize = 24
+				amountLimit.Parent = amount
 				if not reduced then
 					row.BackgroundTransparency = 0.85
-					task.delay(i * 0.09, function()
-						if row.Parent then TS:Create(row, TweenInfo.new(0.25), { BackgroundTransparency = 0 }):Play() end
+					amount.TextTransparency = 1
+					task.delay(i * 0.12, function()
+						if not g.Parent or not row.Parent then return end
+						TS:Create(row, TweenInfo.new(0.24), { BackgroundTransparency = 0 }):Play()
+						TS:Create(amount, TweenInfo.new(0.24), { TextTransparency = 0 }):Play()
+						if i == 1 then Sfx.play("sfx_card_coin", 0.28, 1.08) end
 					end)
 				end
 			end
@@ -12678,10 +12699,10 @@ do
 		Sfx.play(if chapterEnd then "sfx_fanfare" else "sfx_bell", if chapterEnd then 0.55 else 0.35, 1, "sfx_card_coin")
 		local sc = Instance.new("UIScale")
 		sc.Scale = if reduced then 1 else 0.92
-		sc.Parent = box
+		sc.Parent = shell
 		if not reduced then TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play() end
-		if chapterEnd and H.cardGainFlair then
-			pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 4, gold = Color3.fromRGB(255, 217, 124),
+		if chapterEnd and not reduced and H.cardGainFlair then
+			pcall(H.cardGainFlair, { g = g, frame = shell, center = UDim2.fromScale(0.5, 0.5), level = 4, gold = Color3.fromRGB(255, 217, 124),
 				tone = Color3.fromRGB(255, 196, 92), w = 360, h = 220, reduced = game:GetService("GuiService").ReducedMotionEnabled,
 				viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600), combat = false, hero = false })
 		end
@@ -12691,8 +12712,10 @@ do
 			closed = true
 			if g.Parent then g:Destroy() end
 		end
-		local confirm = mkButton(box, "확인", COLORS.gold, UDim2.new(1, 0, 0, 48), close, true)
-		confirm.LayoutOrder = 30
+		local confirm = mkButton(shell, "확인", COLORS.gold, UDim2.new(1, -36, 0, 48), close, true)
+		confirm.Name = "QuestRewardConfirm"
+		confirm.AnchorPoint = Vector2.new(0.5, 1)
+		confirm.Position = UDim2.new(0.5, 0, 1, -11)
 	end
 
 	-- 새로 끝난 퀘스트 감지(첫 화면은 기준선) → 결과 장면을 차례로
