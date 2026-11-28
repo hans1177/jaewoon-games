@@ -41,3 +41,14 @@
 | 태평양 원정 함대전 (`war_pacific`) | 함대전 | 전투 위치 해역의 `regional` 변형 |
 
 - 이야기 함대전(`questOnly`)·지도자 대결 퀘스트는 이야기 데이터에 `backdrop = "<해역 id 또는 지점 id>"`를 함께 적는다(StoryKit 연결 예정).
+
+## 장 이야기 추가 (제2~4장)
+
+| 이야기 단계 | 기존 배경 또는 필요한 자산 |
+|---|---|
+| ch2_2 무라노 유리 원료 하역장 | 신규 탐험 지점 venice_murano, 전용 원경 Terrain/field_venice_murano 필요. 기존 현장 탐험 사용; 전용 실물 배경 미검증 |
+| ch2_3 유리 항로 봉쇄전 (war_ch2) | 라구사 med_east, 기존 봉쇄 변형 |
+| ch3_2 말라바르 후추밭 | calicut_pepper, 기존 현장 탐험 |
+| ch3_3 해적 선장의 카드판 | malabar, 기존 지도자 카드 대결 |
+| ch4_2 데지마의 서적·지도 | nagasaki_dejima, 기존 현장 탐험 |
+| ch4_3 데지마 해협 수비전 (war_ch4) | east_china, 기존 봉쇄 변형 |
