@@ -133,6 +133,29 @@ def check_image(kind, fn, raw, tmp):
         return None, why
     im = Image.open(io.BytesIO(raw))
     w, h = im.size
+    # 백과사전 지시서: 정확한 네 파일의 PNG 원본과 투명 장식을 보존한다.
+    encyclopedia_size = {
+        "ency_bg_book": (1600, 1000),
+        "ency_tab_sheet": (1024, 1024),
+        "ency_map_world": (2048, 1024),
+        "ency_scale_people": (512, 512),
+    }.get(os.path.splitext(fn)[0]) if kind == "CardArt" else None
+    if encyclopedia_size is not None:
+        if (w, h) != encyclopedia_size:
+            return None, f"백과사전 크기 {w}×{h} (지시서 {encyclopedia_size[0]}×{encyclopedia_size[1]})"
+        if not fn.endswith(".png") or len(raw) < 33 or raw[24] != 8 or raw[25] not in (2, 6):
+            return None, "백과사전은 8비트 RGB/RGBA PNG 원본만 허용"
+        if fn in ("ency_tab_sheet.png", "ency_scale_people.png"):
+            if im.mode != "RGBA" or im.getchannel("A").getextrema()[0] != 0 or im.getchannel("A").getextrema()[1] == 0:
+                return None, "백과사전 문양·실루엣은 실제 투명 영역과 그림 필수"
+        if fn == "ency_tab_sheet.png":
+            alpha = im.getchannel("A")
+            for index in range(16):
+                x, y = (index % 4) * 256, (index // 4) * 256
+                bounds = alpha.crop((x, y, x + 256, y + 256)).getbbox()
+                if bounds is None or min(bounds[0], bounds[1], 256 - bounds[2], 256 - bounds[3]) < 21:
+                    return None, f"백과사전 문양 {index}칸 누락 또는 8% 여백 위반"
+        return (fn, raw), None
     # 메뉴/흥정 제작 지시서의 소형 UI 6종만 정확한 개별 규격으로 검사한다.
     # 일반 이미지 최소 크기와 256색 금지 조건은 완화하지 않는다.
     ui_size = {
@@ -214,7 +237,7 @@ def main():
                 continue
             card = "CardArt/" + os.path.splitext(fn)[0]
             if (approved_doc.get("approved", {}).get(card) != prev.get("sha256")
-                    or approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256")):
+                    or (fn != "ency_tab_sheet.png" and approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256"))):
                 continue
         rec = {"content_hash": e.get("content_hash"), "at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "kind": kind}
         why, result = None, None
@@ -240,6 +263,14 @@ def main():
         if result and not why:
             out_name, data = result
             digest = hashlib.sha256(data).hexdigest()
+            # 독립 원본 16종의 시각 검수와 합성 증빙 없이 기존 시트를 자동 승인하지 않는다.
+            if kind == "CardArt" and fn == "ency_tab_sheet.png":
+                card = "CardArt/ency_tab_sheet"
+                if approved_doc.get("approved", {}).get(card) != digest:
+                    rec.update(status="pending_review", file=out_name, sha256=digest, reason="독립 원본 16종 및 최종 합성 시각 검수·승인 대기")
+                    state["files"][path] = rec
+                    log("DROPBOX_INBOX_CARD_REVIEW_PENDING", card)
+                    continue
             # 대륙 원화는 기존 시각 검수/승인 해시를 자동 반입만으로 바꾸지 않는다.
             if kind == "CardArt" and CONTINENT.match(fn):
                 card = "CardArt/" + os.path.splitext(fn)[0]
