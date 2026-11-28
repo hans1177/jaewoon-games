@@ -366,7 +366,7 @@ function VoyageScene.play(info)
 				badge.BackgroundTransparency = 0.25
 				badge.AnchorPoint = Vector2.new(0, 0)
 				badge.Position = UDim2.new(0, 14, 0, 120)
-				badge.Size = UDim2.fromOffset(250, 28)
+				badge.Size = UDim2.fromOffset(260, 28)
 				badge.Font = Enum.Font.GothamBold
 				badge.TextSize = 15
 				badge.TextColor3 = Color3.fromRGB(190, 255, 200)

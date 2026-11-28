@@ -1805,7 +1805,7 @@ local function strip(folder, style, cx, cz, sx, sz)
 		local wet = string.find(condition, "rain", 1, true) or string.find(condition, "storm", 1, true)
 			or string.find(condition, "monsoon", 1, true)
 		if wet and (identity.weatherGround == "puddles" or identity.weatherGround == "monsoon_mud") then
-			p.Color = p.Color:Lerp(Color3.fromRGB(70, 81, 82), 0.27)
+			p.Color = p.Color:Lerp(Color3.fromRGB(70, 81, 82), 0.20)
 			p.Reflectance = 0.06
 			if identity.weatherGround == "monsoon_mud" and sceneLevel <= 2 then p.Material = Enum.Material.Mud end
 		elseif not wet and identity.weatherGround == "dust" and (condition == "clear" or condition == "sunny") then
