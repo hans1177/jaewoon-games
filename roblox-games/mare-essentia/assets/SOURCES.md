@@ -2477,3 +2477,4 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `cardart/` | menu_diplomacy_01.jpg | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/menu_diplomacy_01.jpg |
 | `cardart/` | me_20.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/me_20.png |
 | `cardart/` | menu_recruit_01.jpg | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/menu_recruit_01.jpg |
+| `animals/` | cat_v2.glb | drummyfish · CC0-1.0 | https://opengameart.org/content/simple-cat |
