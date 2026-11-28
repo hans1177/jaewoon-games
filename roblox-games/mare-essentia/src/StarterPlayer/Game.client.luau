@@ -12306,7 +12306,7 @@ do
 		local body = mkLabel(box, "", 15, Color3.fromRGB(52, 38, 24), false, 3)
 		body.Size = UDim2.new(1, 0, 0, 0)
 		if H.typewrite then H.typewrite(body, tostring(d.ending or ""), 0.018) else body.Text = tostring(d.ending or "") end
-		local hint = mkLabel(box, if chapterEnd then "다음 장이 주점 게시판과 일지에 열렸어요." else "화면을 누르면 닫혀요.", 12, Color3.fromRGB(110, 96, 76), false, 4)
+		local hint = mkLabel(box, if chapterEnd and d.hasNext then "다음 장의 단서를 주점 게시판과 일지에서 확인하세요." elseif chapterEnd then "이야기의 결말을 항해 일지에 남겼어요." else "화면을 누르면 닫혀요.", 12, Color3.fromRGB(110, 96, 76), false, 4)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
 		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end

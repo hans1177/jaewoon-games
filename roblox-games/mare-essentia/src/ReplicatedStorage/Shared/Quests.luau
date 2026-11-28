@@ -861,11 +861,28 @@ local CHAIN: { [string]: { { string } } } = {
 		{ "마지막 장이 열렸다. 처음 이 일을 맡을 때의 그 망설임이 지금은 아득하게 느껴진다.", "끝이 왔다. 되돌아보면 모든 길이 이곳으로 이어져 있었다." },
 	},
 }
+-- 후속 관계는 기존 after/afterAny 데이터에서 생성한다. 분기와 합류를 모두 보존한다.
 local NEXT_OF: { [string]: string } = {}
+local FOLLOWUPS: { [string]: { string } } = {}
 for _, qq in Quests do
-	if qq.after then
-		NEXT_OF[qq.after] = qq.id
+	local parents: { string } = if qq.after then { qq.after } else {}
+	for _, parent in qq.afterAny or {} do
+		if not table.find(parents, parent) then table.insert(parents, parent) end
 	end
+	for _, parent in parents do
+		local list = FOLLOWUPS[parent]
+		if not list then
+			list = {}
+			FOLLOWUPS[parent] = list
+		end
+		table.insert(list, qq.id)
+		-- 기존 단일 후속 참조는 호환용으로 유지한다.
+		if qq.after == parent then NEXT_OF[parent] = qq.id end
+	end
+end
+local CHAPTER_END: { [string]: boolean } = {}
+for _, chapter in Chapters.Chapters do
+	for _, id in chapter.last do CHAPTER_END[id] = true end
 end
 
 local StoryCardName: { [string]: string } = {}
@@ -1024,7 +1041,9 @@ return {
 	ById = ById,
 	Grade = Grade,
 	Story = Story,
-	NextOf = NEXT_OF, -- [다음 이야기 미리보기] 앞 퀘스트 id → 다음 퀘스트 id
+	NextOf = NEXT_OF, -- 기존 단일 후속 참조 호환
+	Followups = FOLLOWUPS, -- 분기 및 합류 포함 전체 후속 관계
+	ChapterEnd = CHAPTER_END,
 	Chapters = Chapters.Chapters,
 	Kit = Kit, -- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전·카드 이야기·인물 말풍선
 }

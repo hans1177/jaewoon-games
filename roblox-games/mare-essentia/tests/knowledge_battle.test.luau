@@ -1177,5 +1177,43 @@ do
 	check("항구 인물 164개 실제 대화 배열 보완", npcCount == 164 and dialogueOK)
 end
 
+-- 선행·후속 그래프는 기존 판정과 일치하고 분기에서 덮어쓰기가 없어야 한다.
+do
+	local Q = D.Quests
+	local bad = {}
+	local visiting, visited = {}, {}
+	local function visit(id)
+		if visiting[id] then table.insert(bad, "순환:" .. id) return end
+		if visited[id] then return end
+		visiting[id] = true
+		for _, nextId in Q.Followups[id] or {} do
+			if not Q.ById[nextId] then table.insert(bad, nextId) else visit(nextId) end
+		end
+		visiting[id] = nil
+		visited[id] = true
+	end
+	for _, quest in Q.Quests do
+		local parents = table.clone(quest.afterAny or {})
+		if quest.after then table.insert(parents, quest.after) end
+		for _, parent in parents do
+			if not Q.ById[parent] or not table.find(Q.Followups[parent] or {}, quest.id) then
+				table.insert(bad, quest.id .. ":" .. parent)
+			end
+		end
+		visit(quest.id)
+	end
+	check("전체 퀘스트 선행·후속 그래프: " .. table.concat(bad, ","), #bad == 0)
+	for n = 1, 4 do
+		local prefix = "ch" .. tostring(n)
+		local list = Q.Followups[prefix .. "_4"] or {}
+		check(prefix .. " 두 결말 보존", #list == 2 and table.find(list, prefix .. "_5a") ~= nil and table.find(list, prefix .. "_5b") ~= nil)
+		for _, suffix in { "_5a", "_5b" } do
+			local id = prefix .. suffix
+			check(id .. " 장 완료 식별", Q.ChapterEnd[id] == true)
+			check(id .. " 다음 장 연결", if n < 4 then table.find(Q.Followups[id] or {}, "ch" .. tostring(n + 1) .. "_1") ~= nil else Q.Followups[id] == nil)
+		end
+	end
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

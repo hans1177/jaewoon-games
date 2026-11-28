@@ -702,7 +702,8 @@ return function(D, S)
 				-- [장 완료·결과 연출] 장 제목과 그 장의 마지막 단계인지(다음 단계 없음) 함께 보낸다.
 				local chapterName = dq.chapter or (string.find(dq.summary or "", " — ", 1, true) and string.sub(dq.summary, 1, (string.find(dq.summary, " — ", 1, true) :: number) - 1)) or nil
 				table.insert(view.quests.done, { id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending,
-					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result })
+					chapter = chapterName, chapterEnd = D.Quests.ChapterEnd[dq.id] == true or (not dq.chapter and chapterName ~= nil and D.Quests.Followups[dq.id] == nil),
+					hasNext = D.Quests.Followups[dq.id] ~= nil, result = dq.result })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
@@ -713,9 +714,20 @@ return function(D, S)
 					for _, id in q.afterAny do if state.quests.done[id] then previousId = id break end end
 				end
 				local previous = previousId and D.Quests.ById[previousId]
-				local nextId = D.Quests.NextOf[q.id]
-				local nextName = nextId and D.Quests.ById[nextId] and D.Quests.ById[nextId].name or nil
-				if q.chapter and q.kind == "choice" then nextName = "선택에 따라 달라지는 결말" end
+				local nextNames = {}
+				local waitingChoice = false
+				for _, nextId in D.Quests.Followups[q.id] or {} do
+					local nextQuest = D.Quests.ById[nextId]
+					if nextQuest and not state.quests.done[nextId] then
+						if D.Quests.Kit.choiceMet(state, nextQuest.needChoice) then
+							table.insert(nextNames, nextQuest.name)
+						elseif nextQuest.needChoice then
+							local key = string.match(nextQuest.needChoice, "^([%w_]+)=")
+							if key and not D.Quests.Kit.choice(state, key) then waitingChoice = true end
+						end
+					end
+				end
+				local nextName = if #nextNames > 0 then table.concat(nextNames, " · ") elseif waitingChoice then "선택에 따라 달라지는 결말" else nil
 				table.insert(view.quests.active, {
 					id = q.id,
 					name = q.name,
