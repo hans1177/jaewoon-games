@@ -956,6 +956,8 @@ function NavalBattle.play(opts)
 		-- [연출 갱신] 움직이는 구름·거품·해무·번개만 저빈도로 갱신한다.
 		local tickSum = 0
 		local elapsed = 0
+		local startClock = lighting.ClockTime
+		local nextLightAt = 0
 		local envConnection
 		envConnection = RunService.Heartbeat:Connect(function(dt)
 			if not folder.Parent then
@@ -966,6 +968,44 @@ function NavalBattle.play(opts)
 			if tickSum < (if MOBILE_VFX then 0.20 else 0.10) then return end
 			elapsed += tickSum
 			tickSum = 0
+			-- [해상 시간 순환] 지상과 같은 12분 주기. 기존 환경 틱에서 0.5초마다 자연광만 갱신한다.
+			-- 촬영 등 시각 전달이 없는 기존 호출은 지정된 해역 분위기를 그대로 유지한다.
+			if opts.clockTime ~= nil and elapsed >= nextLightAt then
+				nextLightAt = elapsed + 0.5
+				local clock = (startClock + elapsed * (24 / 720)) % 24
+				local daylight = math.clamp(math.sin((clock - 6) * math.pi / 12) * 1.15 + 0.16, 0, 1)
+				local dawn = math.max(0, 1 - math.abs(clock - 6.5) / 2.5)
+				local dusk = math.max(0, 1 - math.abs(clock - 18.5) / 2.5)
+				local nextPhase = if clock < 5 or clock >= 20 then "night"
+					elseif clock < 8 then "dawn" elseif clock < 17 then "day" else "sunset"
+				if phase ~= nextPhase then
+					phase = nextPhase
+					folder:SetAttribute("NavalTimePhase", phase)
+				end
+				folder:SetAttribute("NavalClockTime", clock)
+				lighting.ClockTime = clock
+				local horizon = Color3.fromRGB(78, 99, 149):Lerp(Color3.fromRGB(210, 235, 249), daylight)
+					:Lerp(Color3.fromRGB(178, 199, 232), dawn * 0.65)
+					:Lerp(Color3.fromRGB(255, 190, 142), dusk * 0.65)
+				skyColor = coast.sky:Lerp(horizon, 0.60 - daylight * 0.28)
+				lighting.FogColor = skyColor
+				lighting.OutdoorAmbient = Color3.fromRGB(72, 96, 132):Lerp(
+					if mode == "storm" then Color3.fromRGB(101, 117, 130) else Color3.fromRGB(153, 174, 184), daylight)
+				atmosphere.Color = skyColor:Lerp(Color3.fromRGB(222, 231, 238), 0.20 + daylight * 0.15)
+				atmosphere.Decay = Color3.fromRGB(90, 125, 170):Lerp(coast.sky:Lerp(Color3.fromRGB(113, 154, 186), 0.39), daylight)
+					:Lerp(Color3.fromRGB(216, 153, 120), dusk * 0.65)
+				atmosphere.Glare = if mode == "storm" then 0 else daylight * 0.22
+				clouds.Color = if mode == "storm" then Color3.fromRGB(70, 78, 99)
+					else Color3.fromRGB(110, 124, 157):Lerp(Color3.fromRGB(233, 232, 220), daylight)
+						:Lerp(Color3.fromRGB(192, 192, 223), dawn * 0.65):Lerp(Color3.fromRGB(230, 171, 146), dusk * 0.65)
+				sunRays.Intensity = if mode == "storm" then 0 else daylight * (if MOBILE_VFX then 0.025 else 0.07)
+				colorGrade.TintColor = Color3.fromRGB(162, 181, 219):Lerp(Color3.fromRGB(241, 249, 255), daylight)
+					:Lerp(Color3.fromRGB(205, 219, 245), dawn * 0.65):Lerp(Color3.fromRGB(255, 220, 188), dusk * 0.65)
+				colorGrade.Saturation = if mode == "storm" then -0.24 else -0.12 * (1 - daylight)
+				if mode ~= "storm" then colorGrade.Brightness = -0.12 + 0.145 * daylight end
+				foamColor = Color3.fromRGB(123, 163, 198):Lerp(Color3.fromRGB(198, 238, 237), daylight)
+				if oceanReady then oceanTerrain.WaterReflectance = 0.08 + 0.07 * daylight end
+			end
 			-- 기본 파도·하늘은 엔진이 움직인다. 매 프레임 사각형/구체를 갱신하지 않는다.
 			if #distantShips > 0 then
 				-- [원경 항해선] 같은 시간축을 공유하고 기존 항로와 부유 모션은 유지한다.
