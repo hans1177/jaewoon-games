@@ -378893,11 +378893,155 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_3e1bf6e211a4acb40443c71d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15685",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "4c9cf9d483a3235a722a6cb299e5f1d06339fcad",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15685,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-auto-fill2",
+        "baseSha": "4c9cf9d483a3235a722a6cb299e5f1d06339fcad",
+        "headSha": "6c8aaa6a1f5205fb502e3fc8223975257e8ae572",
+        "mergeCommitSha": "9ef4a97e8e9de3875aa9ad0601954e54af141c5a",
+        "mergedAt": "2026-11-28T03:52:10Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5f988aa9e0329a5e11d2a8e10a28c5b1dd6c39d1ea56cf6996a748a538279dfc",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-auto-fill2",
+        "candidateSha": "6c8aaa6a1f5205fb502e3fc8223975257e8ae572"
+      },
+      "changeStats": {
+        "changedFileCount": 17,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 836,
+        "deletedLineCount": 42,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-auto-fill.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.auto.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/docs/ASSET_MANAGEMENT.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/assets/auto_fill_board.md",
+          "roblox-games/mare-essentia/docs/assets/unused_assets.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PlacementOverrides.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/asset-autocheck.json",
+          "tools/devloop/assets_wanted.py",
+          "tools/devloop/auto_placement_status.py",
+          "tools/devloop/placement_autofix.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-auto-fill.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.auto.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PlacementOverrides.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/asset-autocheck.json",
+          "tools/devloop/assets_wanted.py",
+          "tools/devloop/auto_placement_status.py",
+          "tools/devloop/placement_autofix.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15685",
+        "merge-commit:9ef4a97e8e9de3875aa9ad0601954e54af141c5a",
+        "base-main:4c9cf9d483a3235a722a6cb299e5f1d06339fcad"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2995
+    "total": 2996
   }
 }
