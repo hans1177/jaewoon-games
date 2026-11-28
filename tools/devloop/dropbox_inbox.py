@@ -150,6 +150,8 @@ def check_image(kind, fn, raw, tmp):
         "ui_button_green.png": (256, 96),
         "ui_button_grey.png": (256, 96),
         "ui_haggle_needle.png": (64, 256),
+        "fx_button_ring.png": (512, 512),
+        "fx_button_spark.png": (128, 128),
     }.get(fn) if kind == "CardArt" else None
     if ui_size is not None:
         if (w, h) != ui_size:
@@ -166,7 +168,7 @@ def check_image(kind, fn, raw, tmp):
             return None, f"대륙 카드는 세로 7:10, 1049×1499 이상 (지금 {w}×{h})"
         if len(raw) < 33 or raw[24] != 8 or raw[25] not in (2, 6):
             return None, "대륙 카드는 8비트 RGB/RGBA PNG 원본만 허용"
-    elif kind == "CardArt" and fn.endswith(".png") and not fn.startswith("ui_"):
+    elif kind == "CardArt" and fn.endswith(".png") and not fn.startswith("ui_") and fn not in ("fx_button_ring.png", "fx_button_spark.png"):
         # 기존 등록기는 그 밖의 카드 그림을 JPG 로 받는다(대륙 카드·UI 만 PNG)
         buf = io.BytesIO()
         im.convert("RGB").save(buf, "JPEG", quality=92, optimize=True)
