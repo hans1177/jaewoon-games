@@ -2106,12 +2106,14 @@ function H.layoutBook()
   local tabs = tabCount > 1 and tabBar.Visible
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
   local live = view ~= nil and not newGameMode
-  local rail = tabs and width >= 700 and width > height and not facilityDetail and currentTab ~= "route" and currentTab ~= "tech"
+  local compactLandscape = width >= 600 and width > height and height < 440
+  local rail = tabs and (compactLandscape or (width >= 700 and width > height and not facilityDetail and currentTab ~= "route" and currentTab ~= "tech"))
   local status = live and not facilityDetail
   local statusInline = status and width >= 520
-  local headerH = if status and not statusInline then 90 else 48
-  local railW = if rail then math.clamp(math.floor(width * 0.18), 120, 172) else 0
-  local tabH, gap = if rail then 50 else 62, 4
+  local headerH = if status and not statusInline then 96 else 52
+  local railW = if compactLandscape and rail then 88 elseif rail then math.clamp(math.floor(width * 0.18), 120, 172) else 0
+  local tabH, gap = if rail and not compactLandscape then 50 else 62, 4
+  local iconAbove = not rail or compactLandscape
   local bodyX = if rail then railW + 12 else 6
   local bodyY = headerH + 6
   local bottomInset = if tabs and not rail then tabH + 10 else 6
@@ -2133,7 +2135,7 @@ function H.layoutBook()
   H.menuStatusLabel.TextSize = 14
   H.menuRecentButton.Visible = not not showRecent
   H.menuRecentButton.Position = if statusInline then UDim2.new(1, -54 - recentW, 0, 4) else UDim2.new(1, -8 - recentW, 0, 46)
-  H.menuRecentButton.Size = UDim2.fromOffset(recentW, 40)
+  H.menuRecentButton.Size = UDim2.fromOffset(recentW, 44)
   H.headerTabs = statusInline
   -- [기능 아이콘만] 시설 주인 초상은 실제 대화/상세에서 보이고 공통 머리줄에서는 사용하지 않는다.
   portraitImage.Visible = false
@@ -2164,12 +2166,12 @@ function H.layoutBook()
       local caption = button:FindFirstChild("PrintedCaption")
       if icon then
         icon.Size = UDim2.fromOffset(32, 32)
-        icon.Position = if rail then UDim2.new(0, 6, 0.5, -16) else UDim2.new(0.5, -16, 0, 4)
+        icon.Position = if not iconAbove then UDim2.new(0, 6, 0.5, -16) else UDim2.new(0.5, -16, 0, 4)
       end
       if icon and caption then
-        caption.Position = if rail then UDim2.fromOffset(42, 0) else UDim2.fromOffset(3, 38)
-        caption.Size = if rail then UDim2.new(1, -48, 1, 0) else UDim2.new(1, -6, 0, 21)
-        caption.TextXAlignment = if rail then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
+        caption.Position = if not iconAbove then UDim2.fromOffset(42, 0) else UDim2.fromOffset(3, 38)
+        caption.Size = if not iconAbove then UDim2.new(1, -48, 1, 0) else UDim2.new(1, -6, 0, 21)
+        caption.TextXAlignment = if not iconAbove then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
         local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
         if limit then limit.MinTextSize = 13; limit.MaxTextSize = 16 end
       end
@@ -5932,28 +5934,68 @@ function RENDERERS.harbor()
 		local bar = Instance.new("Frame")
 		bar.Name = "HarborFacilityIndex"
 		bar.BackgroundTransparency = 1
-		bar.Size = UDim2.new(1, -6, 0, 100)
+		bar.Size = UDim2.new(1, -6, 0, 94)
 		local grid = Instance.new("UIGridLayout")
 		grid.CellPadding = UDim2.fromOffset(4, 4)
-		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 90)
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = bar
+		local metrics = { tostring(h.level) .. "단계", tostring(#(h.produces or {})) .. "종 특산", if table.find(view.facilities or {}, "bank") then "은행 운영" else "시설 확인", "건물·투자", "보급·의뢰", "소문·회식" }
 		for i, item in {{ "항구 현황", "overview", "harbor" }, { "교역 소식", "trade", "trade" }, { "금융 시설", "finance", "coin" }, { "건설·행정", "build", "yard" }, { "길드·출항", "depart", "route" }, { "주점", "tavern", "crew" }} do
-			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(100, 90), function()
 				H.harborPage = item[2]
 				content.CanvasPosition = Vector2.zero
 				render()
 			end, true)
 			button.LayoutOrder = i
+			button.Name = "VisualSection_" .. item[2]
+			button:SetAttribute("SelectedSection", page == item[2])
 			button.TextSize = 14
-			if H.hasIconArt(item[3]) then
-				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
-				icon.Position = UDim2.new(0, 4, 0.5, -12)
-				local pad = Instance.new("UIPadding")
-				pad.PaddingLeft = UDim.new(0, 28)
-				pad.Parent = button
+			for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
+				local decoration = button:FindFirstChild(name)
+				if decoration then decoration.Visible = false end
 			end
+			local key = item[3]
+			local icon
+			if H.hasIconArt(key) then
+				icon = modelIcon(button, "FacilityArt", key, nil, 42, item[1])
+				icon.Name = "SectionMedallion"
+				icon.Position = UDim2.new(0.5, -21, 0, 4)
+				icon.ZIndex = button.ZIndex + 2
+				icon.Active = false
+			end
+			local caption = button:FindFirstChild("PrintedCaption")
+			if not caption then
+				button.TextTransparency = 1
+				caption = mkLabel(button, item[1], 14, INK, true)
+				caption.Name = "PrintedCaption"
+			end
+			caption.AutomaticSize = Enum.AutomaticSize.None
+			caption.Position = UDim2.fromOffset(3, if icon then 47 else 22)
+			caption.Size = UDim2.new(1, -6, 0, 20)
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
+			caption.ZIndex = button.ZIndex + 2
+			local metric = mkLabel(button, metrics[i], 13, INK_SOFT, false)
+			metric.Name = "SectionLiveMetric"
+			metric.AutomaticSize = Enum.AutomaticSize.None
+			metric.TextXAlignment = Enum.TextXAlignment.Center
+			metric.TextTruncate = Enum.TextTruncate.AtEnd
+			metric.Position = UDim2.fromOffset(3, 68)
+			metric.Size = UDim2.new(1, -6, 0, 18)
+			metric.ZIndex = button.ZIndex + 2
 		end
+		local function fitIndex()
+			local width = bar.AbsoluteSize.X
+			if width <= 0 then return end
+			local cols = math.min(6, math.max(2, math.floor((width + 4) / 100)))
+			local rows = math.ceil(6 / cols)
+			grid.CellSize = UDim2.new(1 / cols, -4 * (cols - 1) / cols, 0, 90)
+			local height = rows * 90 + (rows - 1) * 4
+			if bar.Size.Y.Offset ~= height then bar.Size = UDim2.new(1, -6, 0, height) end
+		end
+		bar:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitIndex)
+		task.defer(fitIndex)
 		return bar
 	end)
 	H.walletBar("harbor")
@@ -6412,29 +6454,69 @@ function RENDERERS.crew()
 		local bar = Instance.new("Frame")
 		bar.Name = "CrewSectionIndex"
 		bar.BackgroundTransparency = 1
-		bar.Size = UDim2.new(1, -6, 0, 48)
+		bar.Size = UDim2.new(1, -6, 0, 94)
 		local grid = Instance.new("UIGridLayout")
 		grid.CellPadding = UDim2.fromOffset(4, 4)
-		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 90)
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = bar
+		local metrics = { tostring(joined) .. "명 합류", tostring(filled) .. "/" .. tostring(#(view.companions.stations or {})) .. " 배치", "영입 후보" }
 		for i, item in {{ "동료 명단", "roster", "crew" }, { "직책 배치", "station", "route" }, { "동료 영입", "recruit", "recruit" }} do
-			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(100, 90), function()
 				H.crewPage = item[2]
 				H.crewDetailId = nil
 				content.CanvasPosition = Vector2.zero
 				render()
 			end, true)
 			button.LayoutOrder = i
+			button.Name = "VisualSection_" .. item[2]
+			button:SetAttribute("SelectedSection", page == item[2])
 			button.TextSize = 14
-			if H.hasIconArt(item[3]) then
-				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
-				icon.Position = UDim2.new(0, 4, 0.5, -12)
-				local pad = Instance.new("UIPadding")
-				pad.PaddingLeft = UDim.new(0, 28)
-				pad.Parent = button
+			for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
+				local decoration = button:FindFirstChild(name)
+				if decoration then decoration.Visible = false end
 			end
+			local key = item[3]
+			local icon
+			if H.hasIconArt(key) then
+				icon = modelIcon(button, "FacilityArt", key, nil, 42, item[1])
+				icon.Name = "SectionMedallion"
+				icon.Position = UDim2.new(0.5, -21, 0, 4)
+				icon.ZIndex = button.ZIndex + 2
+				icon.Active = false
+			end
+			local caption = button:FindFirstChild("PrintedCaption")
+			if not caption then
+				button.TextTransparency = 1
+				caption = mkLabel(button, item[1], 14, INK, true)
+				caption.Name = "PrintedCaption"
+			end
+			caption.AutomaticSize = Enum.AutomaticSize.None
+			caption.Position = UDim2.fromOffset(3, if icon then 47 else 22)
+			caption.Size = UDim2.new(1, -6, 0, 20)
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
+			caption.ZIndex = button.ZIndex + 2
+			local metric = mkLabel(button, metrics[i], 13, INK_SOFT, false)
+			metric.Name = "SectionLiveMetric"
+			metric.AutomaticSize = Enum.AutomaticSize.None
+			metric.TextXAlignment = Enum.TextXAlignment.Center
+			metric.TextTruncate = Enum.TextTruncate.AtEnd
+			metric.Position = UDim2.fromOffset(3, 68)
+			metric.Size = UDim2.new(1, -6, 0, 18)
+			metric.ZIndex = button.ZIndex + 2
 		end
+		local function fitIndex()
+			local width = bar.AbsoluteSize.X
+			if width <= 0 then return end
+			local cols = math.min(3, math.max(2, math.floor((width + 4) / 100)))
+			local rows = math.ceil(3 / cols)
+			grid.CellSize = UDim2.new(1 / cols, -4 * (cols - 1) / cols, 0, 90)
+			local height = rows * 90 + (rows - 1) * 4
+			if bar.Size.Y.Offset ~= height then bar.Size = UDim2.new(1, -6, 0, height) end
+		end
+		bar:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitIndex)
+		task.defer(fitIndex)
 		return bar
 	end)
 	if page == "station" then
@@ -6585,28 +6667,68 @@ function RENDERERS.status()
 		local bar = Instance.new("Frame")
 		bar.Name = "CaptainSectionIndex"
 		bar.BackgroundTransparency = 1
-		bar.Size = UDim2.new(1, -6, 0, 100)
+		bar.Size = UDim2.new(1, -6, 0, 94)
 		local grid = Instance.new("UIGridLayout")
 		grid.CellPadding = UDim2.fromOffset(4, 4)
-		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 90)
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = bar
+		local metrics = { "명성 " .. tostring(p.fame or 0), tostring(#(view.gear.list or {})) .. "종 장비", "최고 " .. tostring(view.fieldStreakBest or 0) .. "연타", if view.village then tostring(view.village.level) .. "단계" else "발전 현황", "환경·조작", "명성 기록" }
 		for i, item in {{ "선장 현황", "captain", "status" }, { "장비", "gear", "cargo" }, { "성장·숙련", "skills", "tech" }, { "마을 발전", "village", "harbor" }, { "설정", "settings", "route" }, { "기록", "records", "codex" }} do
-			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(100, 90), function()
 				H.captainPage = item[2]
 				content.CanvasPosition = Vector2.zero
 				render()
 			end, true)
 			button.LayoutOrder = i
+			button.Name = "VisualSection_" .. item[2]
+			button:SetAttribute("SelectedSection", page == item[2])
 			button.TextSize = 14
-			if H.hasIconArt(item[3]) then
-				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
-				icon.Position = UDim2.new(0, 4, 0.5, -12)
-				local pad = Instance.new("UIPadding")
-				pad.PaddingLeft = UDim.new(0, 28)
-				pad.Parent = button
+			for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
+				local decoration = button:FindFirstChild(name)
+				if decoration then decoration.Visible = false end
 			end
+			local key = item[3]
+			local icon
+			if H.hasIconArt(key) then
+				icon = modelIcon(button, "FacilityArt", key, nil, 42, item[1])
+				icon.Name = "SectionMedallion"
+				icon.Position = UDim2.new(0.5, -21, 0, 4)
+				icon.ZIndex = button.ZIndex + 2
+				icon.Active = false
+			end
+			local caption = button:FindFirstChild("PrintedCaption")
+			if not caption then
+				button.TextTransparency = 1
+				caption = mkLabel(button, item[1], 14, INK, true)
+				caption.Name = "PrintedCaption"
+			end
+			caption.AutomaticSize = Enum.AutomaticSize.None
+			caption.Position = UDim2.fromOffset(3, if icon then 47 else 22)
+			caption.Size = UDim2.new(1, -6, 0, 20)
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
+			caption.ZIndex = button.ZIndex + 2
+			local metric = mkLabel(button, metrics[i], 13, INK_SOFT, false)
+			metric.Name = "SectionLiveMetric"
+			metric.AutomaticSize = Enum.AutomaticSize.None
+			metric.TextXAlignment = Enum.TextXAlignment.Center
+			metric.TextTruncate = Enum.TextTruncate.AtEnd
+			metric.Position = UDim2.fromOffset(3, 68)
+			metric.Size = UDim2.new(1, -6, 0, 18)
+			metric.ZIndex = button.ZIndex + 2
 		end
+		local function fitIndex()
+			local width = bar.AbsoluteSize.X
+			if width <= 0 then return end
+			local cols = math.min(6, math.max(2, math.floor((width + 4) / 100)))
+			local rows = math.ceil(6 / cols)
+			grid.CellSize = UDim2.new(1 / cols, -4 * (cols - 1) / cols, 0, 90)
+			local height = rows * 90 + (rows - 1) * 4
+			if bar.Size.Y.Offset ~= height then bar.Size = UDim2.new(1, -6, 0, height) end
+		end
+		bar:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitIndex)
+		task.defer(fitIndex)
 		return bar
 	end)
 	if page == "captain" or page == "gear" then
@@ -7512,7 +7634,8 @@ local function openTradeHall()
 		detail.BackgroundColor3 = COLORS.paper
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
-		local infoTop = 62
+		local specimenPx = if shortScreen then 56 else 96
+		local infoTop = specimenPx + 14
 		local detailHeight = infoTop + 536
 		detail.CanvasSize = UDim2.fromOffset(0, detailHeight)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
@@ -7529,33 +7652,38 @@ local function openTradeHall()
 			local hn = mkLabel(right, sel.name, 22, INK, true)
 			hn.RichText = true
 			hn.Text = '<font color="' .. (if diff > 0.5 then "#B12F39" elseif diff < -0.5 then "#236BAC" else "#655849") .. '"><b>' .. detailIcon .. '</b></font> ' .. hn.Text
-			hn.Position = UDim2.fromOffset(68, 4)
-			hn.Size = UDim2.new(1, -144, 0, 25)
+			hn.Position = UDim2.fromOffset(specimenPx + 18, 5)
+			hn.Size = UDim2.new(1, -specimenPx - 28, 0, 25)
 			hn.TextSize = 17
 			hn.TextTruncate = Enum.TextTruncate.AtEnd
 			hn.AutomaticSize = Enum.AutomaticSize.None
 			local note = sel.category or "교역품"
 			local hnote = mkLabel(right, note, 16, INK_SOFT, false)
-			hnote.Position = UDim2.fromOffset(68, 30)
-			hnote.Size = UDim2.new(1, -144, 0, 22)
+			hnote.Position = UDim2.fromOffset(specimenPx + 18, 30)
+			hnote.Size = UDim2.new(1, -specimenPx - 28, 0, 22)
 			hnote.TextSize = 13
 			hnote.TextTruncate = Enum.TextTruncate.AtEnd
 			hnote.AutomaticSize = Enum.AutomaticSize.None
 			-- 식별용 견본을 누르면 기존 백과 상세를 연다. 거래 화면에 긴 백과를 반복하지 않는다.
-			local icon = if gi then modelIcon(right, gi[1], gi[2], gi[3], 48, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, 48, sel.name)
-			icon.Position = UDim2.fromOffset(10, 6)
+			local icon = if gi then modelIcon(right, gi[1], gi[2], gi[3], specimenPx, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, specimenPx, sel.name)
+			icon.Name = "TradeSelectedSpecimen"
+			icon.Position = UDim2.fromOffset(8, 6)
 			local artTap = Instance.new("TextButton")
 			artTap.Name = "TradeArtToCodex"
 			artTap.Text = ""
 			artTap.BackgroundTransparency = 1
-			artTap.Size = UDim2.fromOffset(52, 52)
+			artTap.Size = UDim2.fromOffset(specimenPx, specimenPx)
 			artTap.Position = UDim2.fromOffset(8, 4)
 			artTap.ZIndex = icon.ZIndex + 2
 			artTap.Parent = right
 			artTap.Activated:Connect(openSelectedGoodEncyclopedia)
-			local bookButton = mkButton(right, "백과", COLORS.grey, UDim2.fromOffset(60, 44), openSelectedGoodEncyclopedia, true)
+			local bookButton = mkButton(right, "백과", COLORS.grey, UDim2.fromOffset(64, 44), openSelectedGoodEncyclopedia, true)
 			bookButton.AnchorPoint = Vector2.new(1, 0)
-			bookButton.Position = UDim2.new(1, -8, 0, 7)
+			bookButton.Position = UDim2.new(1, -8, 0, if shortScreen then 15 else 56)
+			if shortScreen then
+				hn.Size = UDim2.new(1, -specimenPx - 98, 0, 25)
+				hnote.Size = UDim2.new(1, -specimenPx - 98, 0, 22)
+			end
 			bookButton.TextSize = 14
 			local qty = math.clamp(hallQty, 1, 20)
 			local free = ship.cargoCapacity - ship.cargoUsed
@@ -9386,29 +9514,69 @@ function RENDERERS.explore()
 		local bar = Instance.new("Frame")
 		bar.Name = "ExploreFilterIndex"
 		bar.BackgroundTransparency = 1
-		bar.Size = UDim2.new(1, -6, 0, 100)
+		bar.Size = UDim2.new(1, -6, 0, 94)
 		local grid = Instance.new("UIGridLayout")
 		grid.CellPadding = UDim2.fromOffset(4, 4)
-		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 90)
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = bar
+		local metrics = { tostring(#view.sites) .. "곳", tostring(availableSites) .. "곳", tostring(pendingSites) .. "곳", tostring(math.max(0, #view.sites - availableSites - pendingSites)) .. "곳" }
 		for i, item in {{ "전체", "all", "explore" }, { "탐험 가능", "ready", "route" }, { "조건 잠김", "locked", "lock" }, { "조사 완료", "done", "cc0_yes" }} do
-			local button = mkButton(bar, item[1], if filter == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+			local button = mkButton(bar, item[1], if filter == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(100, 90), function()
 				H.exploreFilter = item[2]
 				H.exploreSiteId = nil
 				content.CanvasPosition = Vector2.zero
 				render()
 			end, true)
 			button.LayoutOrder = i
+			button.Name = "VisualSection_" .. item[2]
+			button:SetAttribute("SelectedSection", filter == item[2])
 			button.TextSize = 14
-			if H.hasIconArt(item[3]) then
-				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
-				icon.Position = UDim2.new(0, 4, 0.5, -12)
-				local pad = Instance.new("UIPadding")
-				pad.PaddingLeft = UDim.new(0, 28)
-				pad.Parent = button
+			for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
+				local decoration = button:FindFirstChild(name)
+				if decoration then decoration.Visible = false end
 			end
+			local key = item[3]
+			local icon
+			if H.hasIconArt(key) then
+				icon = modelIcon(button, "FacilityArt", key, nil, 42, item[1])
+				icon.Name = "SectionMedallion"
+				icon.Position = UDim2.new(0.5, -21, 0, 4)
+				icon.ZIndex = button.ZIndex + 2
+				icon.Active = false
+			end
+			local caption = button:FindFirstChild("PrintedCaption")
+			if not caption then
+				button.TextTransparency = 1
+				caption = mkLabel(button, item[1], 14, INK, true)
+				caption.Name = "PrintedCaption"
+			end
+			caption.AutomaticSize = Enum.AutomaticSize.None
+			caption.Position = UDim2.fromOffset(3, if icon then 47 else 22)
+			caption.Size = UDim2.new(1, -6, 0, 20)
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			caption.TextTruncate = Enum.TextTruncate.AtEnd
+			caption.ZIndex = button.ZIndex + 2
+			local metric = mkLabel(button, metrics[i], 13, INK_SOFT, false)
+			metric.Name = "SectionLiveMetric"
+			metric.AutomaticSize = Enum.AutomaticSize.None
+			metric.TextXAlignment = Enum.TextXAlignment.Center
+			metric.TextTruncate = Enum.TextTruncate.AtEnd
+			metric.Position = UDim2.fromOffset(3, 68)
+			metric.Size = UDim2.new(1, -6, 0, 18)
+			metric.ZIndex = button.ZIndex + 2
 		end
+		local function fitIndex()
+			local width = bar.AbsoluteSize.X
+			if width <= 0 then return end
+			local cols = math.min(4, math.max(2, math.floor((width + 4) / 100)))
+			local rows = math.ceil(4 / cols)
+			grid.CellSize = UDim2.new(1 / cols, -4 * (cols - 1) / cols, 0, 90)
+			local height = rows * 90 + (rows - 1) * 4
+			if bar.Size.Y.Offset ~= height then bar.Size = UDim2.new(1, -6, 0, height) end
+		end
+		bar:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitIndex)
+		task.defer(fitIndex)
 		return bar
 	end)
 
@@ -16743,7 +16911,7 @@ function H.renderTabs()
 	end
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local compactTabs = not (mainInner.AbsoluteSize.X >= 700 and mainInner.AbsoluteSize.X > mainInner.AbsoluteSize.Y and currentTab ~= "trade" and currentTab ~= "yard" and currentTab ~= "route" and currentTab ~= "tech")
+		local compactTabs = mainInner.AbsoluteSize.Y < 440 or not (mainInner.AbsoluteSize.X >= 700 and mainInner.AbsoluteSize.X > mainInner.AbsoluteSize.Y and currentTab ~= "trade" and currentTab ~= "yard" and currentTab ~= "route" and currentTab ~= "tech")
 		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 144, if compactTabs then 62 else 50), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
