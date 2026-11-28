@@ -58,7 +58,19 @@ test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 
   assert.doesNotMatch(trade, /TradeEncyclopediaGallery|TradeBookPage/);
   assert.match(trade, /row\.Size = UDim2\.new\(1, -8, 0, 116\)/);
   assert.match(trade, /hg = mkButton\(desk,/);
-  assert.match(trade, /hg\.Position = UDim2\.new\(1\/3,/);
+  // 승인된 흥정 42% 중앙 배치와 구매/판매 양쪽 29%를 실제 소스와 대조한다.
+  assert.match(trade, /buy = mkButton\(desk, "구매", COLORS\.gold, UDim2\.new\(0\.29, -8, 0, if shortScreen then 44 else 54\)/);
+  assert.match(trade, /sell = mkButton\(desk, "판매", COLORS\.green, UDim2\.new\(0\.29, -8, 0, if shortScreen then 44 else 54\)/);
+  assert.match(trade, /hg = mkButton\(desk,[^\n]+UDim2\.new\(0\.42, -8, 0, if shortScreen then 44 else 54\)/);
+  assert.match(trade, /buy\.Position = UDim2\.fromOffset\(4, if shortScreen then 73 else 100\)/);
+  assert.match(trade, /hg\.Position = UDim2\.new\(0\.29, 4, 0, if shortScreen then 73 else 100\)/);
+  assert.match(trade, /sell\.Position = UDim2\.new\(0\.71, 4, 0, if shortScreen then 73 else 100\)/);
+  for (const width of [200, 240, 280, 320, 384, 480, 640]) {
+    const boxes = [[4, width * 0.29 - 8], [width * 0.29 + 4, width * 0.42 - 8], [width * 0.71 + 4, width * 0.29 - 8]];
+    assert.ok(boxes.every(([x, w]) => x >= 0 && w >= 44 && x + w <= width));
+    assert.ok(boxes[0][0] + boxes[0][1] <= boxes[1][0]);
+    assert.ok(boxes[1][0] + boxes[1][1] <= boxes[2][0]);
+  }
   const qty = trade.split('local function setQuantity(value)')[1].split('local function quantityButton')[0];
   assert.match(qty, /refreshReceipt\(\)/);
   assert.doesNotMatch(qty, /build\(\)/);
