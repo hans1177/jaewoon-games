@@ -75,5 +75,6 @@
 - 결과·거부 이유: `docs/assets/dropbox_inbox_report.md`.
 
 ## 4. 끝내기 전에
+- **"중앙 검증기 실행 환경에 연결 못 해서 수정 보류"로 멈추지 않는다.** 사전점검은 중앙문서 4종을 읽고 main SHA를 적는 것이고, 검증은 PR의 기존 검사가 한다. 자세히: 루트 `AGENTS.md` '중앙 사전점검이 뜻하는 것'.
 - `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함).
 - Studio 촬영으로 확인하기 전에는 "완료"라고 보고하지 않는다. 병합·배포·Studio 확인은 따로 보고한다.
