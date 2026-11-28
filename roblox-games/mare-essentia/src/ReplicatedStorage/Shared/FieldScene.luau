@@ -4142,8 +4142,11 @@ function FieldScene.start(opts)
 	-- 적: 가까이 오면 쫓아와 때린다
 	-- 적: 최소 20명, 위험할수록 늘어 최대 100명(두목 포함). 무리를 지어 맵 곳곳에 흩어져 있다.
 	local danger0 = opts.danger or 1
-	local bossCount = if danger0 < 3 then 0 else math.clamp(math.floor(danger0 / 2), 1, 8)
-	local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)
+	local enemyCount, bossCount = AC.fieldEnemyCounts(danger0)
+	-- 정상 입장은 서버가 확정한 편성을 사용한다. 독립 장면 검사는 동일 공용 규칙을 사용한다.
+	if type(opts.fieldEncounter) == "table" then
+		enemyCount, bossCount = opts.fieldEncounter.enemyCount, opts.fieldEncounter.bossCount
+	end
 	-- [몹 다양화] 규칙(HP/속도/피해/드롭)은 원본 그대로, 색상·복식·관절 액션만 직군별 3종으로 구분한다.
 	-- [실물 병종] 기존 승인된 Relics 무기·방패만 연결한다. 원본 적 수/HP/피해/드롭은 유지한다.
 	-- 병종 외형: 직업 명칭, 복식 원형, 외투색, Weapons ID, 왼손 방패(있을 때).
@@ -4325,11 +4328,8 @@ function FieldScene.start(opts)
 			individualDef.range = math.min(individualDef.range, weapon.range)
 		end
 		if weapon.family == "bow" then individualDef.range = math.min(individualDef.range, weapon.range) end
-		-- [전투 지속력] 장면 전용 최대 체력만 증가. 공용 ActionCombat/공격력/보상/드롭/저장은 불변.
-		-- 일반 2.35배(검병 94·궁수 66), 방패·돌격 2.55배(179·128), 두목 2.75배(825).
-		-- 적이 강타 후 기상·막기·회피 동작을 충분히 보여 주도록 한다.
-		individualDef.hp = math.floor(individualDef.hp *
-			(if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35) + 0.5)
+		-- [전투 지속력] 기존 장면 배율을 공용 정본에서 적용한다. 공격력·드롭·저장은 불변.
+		individualDef.hp = if isBoss and type(opts.fieldEncounter) == "table" then opts.fieldEncounter.bossMaxHp else AC.fieldEnemyMaxHp(ac.kind)
 		ac.def = individualDef
 		ac.hp = individualDef.hp
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
@@ -4415,6 +4415,7 @@ function FieldScene.start(opts)
 		bar.BackgroundColor3 = Color3.fromRGB(214, 82, 76)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
+		model:SetAttribute("FieldEnemyId", i) -- 기존 편성 슬롯: 격파·재입장 후에도 다른 적과 혼동하지 않는다.
 		model:SetAttribute("FieldDifficultyGrade", math.clamp(danger0, 1, 5))
 		if isBoss then
 			model:SetAttribute("FieldBossRole", bossRole)

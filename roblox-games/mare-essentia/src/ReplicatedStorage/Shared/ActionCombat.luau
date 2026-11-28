@@ -89,6 +89,18 @@ function A.newEnemy(kind: string)
 	return { kind = kind, def = def, hp = def.hp, state = "idle", t = 0, struck = false, dead = false, stagger = 0 }
 end
 
+-- [지상 편성 정본] 서버 입장과 필드 생성에서 같은 기존 수치와 슬롯을 사용한다.
+function A.fieldEnemyCounts(danger: number): (number, number)
+	local bossCount = if danger < 3 then 0 else math.clamp(math.floor(danger / 2), 1, 8)
+	return math.clamp(20 + (danger - 1) * 6, 20, 100 - bossCount), bossCount
+end
+
+function A.fieldEnemyMaxHp(kind: string): number
+	local def = A.Enemies[kind]
+	if not def then error("알 수 없는 적: " .. tostring(kind)) end
+	return math.floor(def.hp * (if kind == "boss" then 2.75 elseif kind == "shield" or kind == "charger" then 2.55 else 2.35) + 0.5)
+end
+
 -- [보스 저장·복구 공용 규칙] 체력으로 기술 단계를 계산하고 기존 능력 변화를 한 번만 적용한다.
 -- 호출자가 소유한 전투 상태만 변경한다. 이 함수 자체는 원격 요청이나 저장 권한을 부여하지 않는다.
 function A.bossPhase(hp: number, maxHp: number): number

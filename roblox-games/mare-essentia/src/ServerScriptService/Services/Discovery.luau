@@ -191,8 +191,12 @@ return function(D, S)
 		if blocked then return false, blocked end
 		local cp = checkpointOf(state, site)
 		nextFieldRunId += 1
-		fieldRuns[state] = { id = nextFieldRunId, siteId = site.id, started = os.clock(), stage = if cp then cp.stage else 0, cardId = if cp then cp.cardId else nil }
-		return true, "", nextFieldRunId
+		-- [서버 편성] 클라이언트가 보낸 위험도·적 수·최대 체력은 읽지 않는다.
+		local enemyCount, bossCount = D.ActionCombat.fieldEnemyCounts(site.minLevel)
+		local encounter = { enemyCount = enemyCount, bossCount = bossCount, bossMaxHp = D.ActionCombat.fieldEnemyMaxHp("boss") }
+		fieldRuns[state] = { id = nextFieldRunId, siteId = site.id, started = os.clock(), stage = if cp then cp.stage else 0, cardId = if cp then cp.cardId else nil, encounter = encounter }
+		-- 편성만 확정한다. 현장 위치·공격 판정은 아직 서버에 이관하지 않았다.
+		return true, "", nextFieldRunId, table.clone(encounter)
 	end
 
 	-- [구역 통과] 클라이언트 필드의 진행 기록이므로 서버는 실제 이동/전투를 직접 입증하지 못한다.

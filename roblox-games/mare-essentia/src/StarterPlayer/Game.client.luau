@@ -9493,6 +9493,7 @@ function H.startField(s)
 		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
 		fieldStory = s.fieldStory, -- 현재 현장 의뢰와 다음 이야기의 정본 연결
 		fieldCheckpoint = s.fieldCheckpoint,
+		fieldEncounter = beginResult.fieldEncounter, -- 서버가 검증한 탐험지 편성
 		onCheckpoint = function(stage, cardId)
 			local response = call("FieldCheckpoint", { siteId = s.id, stage = stage, observedCardId = cardId, runId = fieldRunId })
 			return response ~= nil and response.ok == true

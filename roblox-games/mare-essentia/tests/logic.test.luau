@@ -53,6 +53,7 @@ local D = {
 }
 -- [교역 재미] 타입 검사기 한도 때문에 D 표 밖에서 붙인다.
 ;(D :: any).TradeFun = require("./Shared/TradeFun")
+;(D :: any).ActionCombat = require("./Shared/ActionCombat")
 -- 서비스 등록 경계에서 이종 모듈 사전의 구조적 타입 확장을 제한한다. 기존 검사와 런타임 값은 유지한다.
 local Registry = require("./Services/Registry")(D :: {[string]: any})
 local S, handlers = Registry.S, Registry.handlers
@@ -5424,6 +5425,20 @@ testDiscoveryForms()
 	end
 end
 testTradeFun()
+
+-- [서버 편성] 입장 요청의 임의 체력·위험도·적 수는 무시하고 서버 탐험지 정의만 사용한다.
+do
+	local st: any = S.State.new("england", 1700)
+	st.portId = "london"
+	local ok, _, id, encounter = handlers.FieldPracticeBegin(st, {
+		siteId = "london_fields", danger = 99, enemyCount = 1, bossCount = 99, bossMaxHp = 1
+	})
+	check("서버 입장 편성 확정", ok and type(id) == "number" and encounter ~= nil
+		and encounter.enemyCount == 20 and encounter.bossCount == 0 and encounter.bossMaxHp == 1980)
+	check("서버 입장만으로 영구 진행 변경 없음", st.stats.fieldCheckpoint == nil)
+	local wrong = handlers.FieldPracticeBegin(st, { siteId = "amsterdam_gardens" })
+	check("타 항구 편성 요청 거절", wrong == false)
+end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))
 if failed > 0 then

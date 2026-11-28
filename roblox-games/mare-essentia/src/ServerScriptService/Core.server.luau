@@ -29,6 +29,7 @@ local D = {
 	Careers = require(Shared:WaitForChild("Careers")),
 	Voyage = require(Shared:WaitForChild("Voyage")),
 	Combat = require(Shared:WaitForChild("Combat")),
+	ActionCombat = require(Shared:WaitForChild("ActionCombat")),
 	BoardingCards = require(Shared:WaitForChild("BoardingCards")),
 	CardBook = require(Shared:WaitForChild("CardBook")),
 	Bosses = require(Shared:WaitForChild("Bosses")),
@@ -450,7 +451,7 @@ local function onInvoke(player, action, payload)
 		return reply(state, false, "알 수 없는 요청")
 	end
 
-	local ok, success, message, fieldRunId = pcall(handler, state, payload, ctx)
+	local ok, success, message, fieldRunId, fieldEncounter = pcall(handler, state, payload, ctx)
 	if not ok then
 		warn("[Core] handler error:", action, success)
 		return reply(state, false, "오류가 발생했어요")
@@ -482,7 +483,10 @@ local function onInvoke(player, action, payload)
 		end
 	end
 	local response = reply(state, success, message)
-	if action == "FieldPracticeBegin" and success then response.fieldRunId = fieldRunId end
+	if action == "FieldPracticeBegin" and success then
+		response.fieldRunId = fieldRunId
+		response.fieldEncounter = fieldEncounter
+	end
 	return response
 end
 remote.OnServerInvoke = onInvoke

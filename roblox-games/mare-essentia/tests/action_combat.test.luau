@@ -104,6 +104,20 @@ do
 	check("사수는 가까우면 물러난다", A.moveWish((function() local a = A.newEnemy("archer"); a.state = "chase"; return a end)(), 5) == -1)
 	check("졸개는 멀면 다가온다", A.moveWish((function() local a = A.newEnemy("grunt"); a.state = "chase"; return a end)(), 20) == 1)
 end
+-- 서버와 장면의 기존 편성/체력 일치 검사.
+do
+	local counts = { {20, 0}, {26, 0}, {32, 1}, {38, 2}, {44, 2} }
+	for danger, expected in counts do
+		local regular, bosses = A.fieldEnemyCounts(danger)
+		check("지상 편성 유지 " .. danger, regular == expected[1] and bosses == expected[2])
+	end
+	local regular, bosses = A.fieldEnemyCounts(99)
+	check("지상 적 수 상한 유지", regular + bosses == 100 and bosses == 8)
+	check("지상 기존 최대 체력", A.fieldEnemyMaxHp("grunt") == 94 and A.fieldEnemyMaxHp("archer") == 66
+		and A.fieldEnemyMaxHp("shield") == math.floor(70 * 2.55 + 0.5) and A.fieldEnemyMaxHp("charger") == math.floor(50 * 2.55 + 0.5)
+		and A.fieldEnemyMaxHp("boss") == 1980)
+	check("공용 적 정의 원본 체력 유지", A.Enemies.boss.hp == 720)
+end
 -- 두목의 실제 피해·재개 체력에서 공용 능력과 기술 단계를 복구한다.
 do
 	local b = A.newEnemy("boss")
