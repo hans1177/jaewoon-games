@@ -186,7 +186,7 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
   assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
-  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 112 else 68/);
+  assert.match(layout,/local sectionTop = if not wide and not facilityDetail then 112 else 68/);
   assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, sectionTop\)/);
   assert.match(layout,/local bodyTop = if headerTabs then 68 else sectionTop \+ \(if tabs then tabHeight \+ 8 else 0\)/);
   assert.match(layout,/H\.tabWidth = tabWidth/);
@@ -5038,4 +5038,22 @@ test('공통 안내는 묶음 첫 화면에만 두고 초보 안내는 승인 �
  assert.match(source,/currentTab == grp\.tabs\[1\] or currentTab == "market"/);
  assert.match(source,/icon\.Name = "CoachStepArt"/);
  assert.ok(!source.includes('실제 진행 상태와 조건을 아래에서 확인해.'));
+});
+
+test('메뉴 글꼴과 실제 화물 막대 및 화면 비율별 탭 폭을 검증한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
+  assert.match(source,/headerLabel\.Font = Enum\.Font\.GothamBold/);
+  assert.match(source,/mastheadSize\.MinTextSize = 15/);
+  assert.match(layout,/local compactTabs = not wide and \(height <= 0 or height >= 430\)/);
+  assert.match(layout,/math\.clamp\(availableTabs, if compactTabs then 86 else 104, if compactTabs then 154 else 176\)/);
+  for (const [width,height,count] of [[320,600,6],[390,700,3],[740,390,6],[832,384,6],[1024,768,6]]) {
+    const compact=width<740&&height>=430, gap=width<340?4:6;
+    const available=Math.floor((width-16-(count-1)*gap)/count);
+    const tab=Math.max(compact?86:104,Math.min(compact?154:176,available));
+    assert.ok(tab>=86);
+    if(width>=740) assert.ok(count*tab+(count-1)*gap<=width-16);
+  }
+  assert.match(source,/H\.menuCargoFill\.Size = UDim2\.fromScale\(cargoRatio, 1\)/);
+  assert.doesNotMatch(source,/보급 %d개 · 석탄 %d개 · 해금된 항로 확인/);
 });
