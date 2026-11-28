@@ -303,6 +303,17 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
+test('탐험 자동저장과 종료 저장은 동일 세션에서 겹치지 않는다',()=>{
+  assert.match(core,/if final then\s+session\.closing = true\s+while session\.saving and sessions\[player\] == session do/);
+  assert.match(core,/elseif session\.saving or session\.closing then\s+return/);
+  assert.match(core,/session\.saving = true\s+session\.dirty = false/);
+  assert.match(core,/if not ok then\s+session\.dirty = true/);
+  assert.match(core,/session\.saving = false -- 실패 또는 성공/);
+  assert.match(core,/if session\.dirty and not session\.saving and not session\.closing then/);
+  assert.match(core,/if session and session\.closing then/);
+  assert.equal((core.match(/saveSession\(player, true\)/g)||[]).length,2);
+});
+
 test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격은 추가하지 않는다',()=>{
   assert.match(field,/stage < 2 or stage > 3/);
   assert.match(field,/if stage == chain then\s*masteryCinema\(hrp, stage, defeatedAt\)/);
