@@ -131,3 +131,20 @@ test('미스터리 탐험은 기존 척후병 추적을 실제 이동과 격파�
   assert.ok(field.indexOf('if observedCardId and table.find(availableCards, observedCardId)') < field.indexOf('elseif type(opts.fieldStory) == "table"'));
   assert.ok(field.indexOf('if guardedTransit and folder:GetAttribute("FieldPursuitPending")') < field.indexOf('opts.onCheckpoint(i, recordCard)'));
 });
+
+test('고립 조사원은 실제 주민 모델로 구출 후 동행하며 안전한 지면과 기존 단계 저장을 사용한다', () => {
+  const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  for (const check of [/table.find\(\{ "pompeii_ruins", "auto_site_naples_high", "alexandria_library" \}, opts.siteId\)/,
+    /local ok, resident = pcall\(Pose.createR15, folder, hit.Position/,
+    /resident.Name = "FieldRescueResident"/,
+    /folder:SetAttribute\("FieldRescueRoute", true\)/,
+    /if found == 2 then/,
+    /not enemy.ac.dead and enemy.root and enemy.root.Parent and \(enemy.root.Position - residentRoot.Position\).Magnitude < 10/,
+    /delta.Magnitude > 5 and delta.Magnitude < 30/,
+    /floor.Material ~= Enum.Material.Water and floor.Normal.Y >= 0.8 and not blocked/,
+    /resident:PivotTo\(CFrame.lookAt\(position, position \+ delta.Unit\)\)/,
+    /Pose.walkR15\(resident, phase, moving\)/,
+    /survivorRoot.Position - currentRoot.Position\).Magnitude > 16/,
+    /if not folder:GetAttribute\("FieldRescueRoute"\) then warn/]) assert.match(field, check);
+  assert.ok(field.indexOf('survivorRoot.Position - currentRoot.Position).Magnitude > 16') < field.indexOf('opts.onCheckpoint(i, recordCard)'));
+});
