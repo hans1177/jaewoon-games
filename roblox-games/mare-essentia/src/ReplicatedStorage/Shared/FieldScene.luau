@@ -4060,7 +4060,9 @@ function FieldScene.start(opts)
 				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
 					elseif found == 1 and folder:GetAttribute("FieldInterceptRoute") then
 						if folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 탈환 · 상자와 경비병을 찾아"
-						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 · 지정 구역으로 이동" else "경계 구역 · 적의 움직임을 살펴"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 · 지정 구역으로 이동"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵 저지 · 동물 대신 밀렵단을 물리쳐"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 · 지정 적을 추적해" else "경계 구역 · 적의 움직임을 살펴"
 					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
 					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
@@ -4572,36 +4574,46 @@ function FieldScene.start(opts)
 	-- 기존 적 수·체력·공격 간격·보상·저장은 그대로이며 앞서 격파한 적을 다시 만들지 않는다.
 	do
 		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
-		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
+		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard
+			and (not isWildlife or portVisualSeed % 2 == 0)
 			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
 			and not folder:GetAttribute("FieldStrongholdRoute")
 			and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding"
-				or table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme)) then
+				or table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme) or isWildlife) then
 			local anchor = folder:FindFirstChild("Discovery2")
 			if anchor and anchor:IsA("BasePart") then
+				local mode = if targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"
+					elseif isWildlife then "poacher"
+					elseif (opts.danger or 1) >= 4 and portVisualSeed % 3 == 1 then "bounty"
+					elseif (theme == "plains" or theme == "desert" or theme == "coast") and (opts.danger or 1) >= 4 then "survival"
+					elseif theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
 				local troops = {}
 				for _, enemy in enemies do
 					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(troops, enemy) end
 				end
-				table.sort(troops, function(a, b) return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude end)
-				local count = math.min(4, #troops)
-				if count >= 2 then
-					local mode = if targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"
-						elseif (theme == "plains" or theme == "desert" or theme == "coast") and (opts.danger or 1) >= 4 then "survival"
-						elseif theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
+				table.sort(troops, function(a, b)
+					if mode == "bounty" and a.elite ~= b.elite then return a.elite == true end
+					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
+				end)
+				local count = math.min(if mode == "bounty" then 1 elseif mode == "poacher" then 3 else 4, #troops)
+				if count >= (if mode == "bounty" then 1 else 2) then
 					folder:SetAttribute("FieldInterceptRoute", mode)
 					folder:SetAttribute("FieldInterceptRemaining", count)
 					for i = 1, count do
 						local enemy = troops[i]
 						enemy.model:SetAttribute("FieldInterceptWave", if i <= 2 then 1 else 2)
+						if mode == "poacher" then enemy.tag.Text = "밀렵단 · " .. enemy.tag.Text
+						elseif mode == "bounty" then enemy.tag.Text = "현상 수배 대상 · " .. enemy.tag.Text end
 					end
 					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
 					if prompt then
-						prompt.ActionText = if mode == "supply" then "보급품 회수" elseif mode == "survival" then "방어 완료 확인" elseif mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인"
+						prompt.ActionText = if mode == "supply" then "보급품 회수" elseif mode == "survival" then "방어 완료 확인" elseif mode == "poacher" then "밀렵 저지 확인" elseif mode == "bounty" then "수배 대상 격파 확인" elseif mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인"
 						if mode == "supply" then prompt.ObjectText = "탈환할 보급품 상자" end
 					end
 					if found == 1 then questHint.Text = if mode == "supply" then "이어하기 · 보급품 상자 탈환"
-						elseif mode == "survival" then "이어하기 · 생존 방어 구역으로 이동" else "이어하기 · 경계 구역으로 이동" end
+						elseif mode == "survival" then "이어하기 · 생존 방어 구역으로 이동"
+						elseif mode == "poacher" then "이어하기 · 밀렵단 저지"
+						elseif mode == "bounty" then "이어하기 · 현상 수배 대상 추적" else "이어하기 · 경계 구역으로 이동" end
 				end
 			end
 		end
@@ -8116,7 +8128,10 @@ function FieldScene.start(opts)
 				end
 				folder:SetAttribute("FieldInterceptRemaining", remaining)
 				if found == 1 and folder:GetAttribute("FieldInterceptStartedAt") then
-					questHint.Text = if remaining == 0 then "전투 종료 · 기록 확보" else string.format("경계 전투 · 적 %d명 남음", remaining)
+					questHint.Text = if remaining == 0 then
+						(if folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵단 저지 · 생태 기록 확보"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "수배 대상 격파 · 현장 기록 확보" else "전투 종료 · 기록 확보")
+						else string.format("경계 전투 · 적 %d명 남음", remaining)
 					say(questHint.Text, 3)
 				end
 			elseif e.model:GetAttribute("FieldPursuitTarget") then
@@ -10675,7 +10690,9 @@ function FieldScene.start(opts)
 				questHint.Text = if remaining == 0 then "경계 확보 · 기록 조사" else
 					(if folder:GetAttribute("FieldInterceptRoute") == "ambush" then "매복 발생"
 						elseif folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 경비병 접근"
-						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 시작" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
+						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 시작"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵단 발견"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 대상 발견" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
 				say(questHint.Text, 3.5)
 			end
 		end
