@@ -148,3 +148,16 @@ test('고립 조사원은 실제 주민 모델로 구출 후 동행하며 안전
     /if not folder:GetAttribute\("FieldRescueRoute"\) then warn/]) assert.match(field, check);
   assert.ok(field.indexOf('survivorRoot.Position - currentRoot.Position).Magnitude > 16') < field.indexOf('opts.onCheckpoint(i, recordCard)'));
 });
+
+test('두목 강타로 여러 체력 기준을 넘겨도 능력 변화를 누락하지 않고 기술 단계 표시는 한 곳에서 결정한다', () => {
+  const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  const block = field.split('-- [두목 능력 변화]')[1].split('\n\t\te.hp =')[0];
+  for (const check of [/if ratio < 0\.66 and not e\.bossPhase2 then/,
+    /end\s+if ratio < 0\.33 and not e\.bossPhase3 then/,
+    /e\.ac\.def\.speed \*= 1\.25/,
+    /e\.ac\.def\.windup \*= 0\.85/,
+    /e\.ac\.def\.range \*= 1\.2/,
+    /e\.ac\.def\.recover \*= 1\.6/]) assert.match(block, check);
+  assert.doesNotMatch(block, /FieldBossPhase/);
+  assert.match(field, /return if r < 0\.15 then 4 elseif r < 0\.4 then 3 elseif r < 0\.7 then 2 else 1/);
+});
