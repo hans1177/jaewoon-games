@@ -157833,7 +157833,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -157867,7 +157867,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 16,
-      "previousReservationId": "system-ai:46163758198:1",
+      "previousReservationId": "system-ai:46170034377:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -157875,12 +157875,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46170034377:1",
-      "reservedAt": "2026-11-28T17:26:25.191Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -158594,7 +158594,15 @@
         "repair-strategy-fingerprint:a2b8797949717e6f5c61ca7735a30953429d9b4fb15eddbca4e41020e3789f04",
         "failed-strategy-fingerprint:a2b8797949717e6f5c61ca7735a30953429d9b4fb15eddbca4e41020e3789f04",
         "model-output-sha256:f697f287b6fe80783c2316a10d9ceaaefffdc7ab76d02c1aff5cf7cd968d40d6",
-        "system-ai-handoff-to-reservation:system-ai:46170034377:1"
+        "system-ai-handoff-to-reservation:system-ai:46170034377:1",
+        "actions-run:46170034377",
+        "external-ai-raw-output-sha256:2562a1adca34817e04780c9fda733956c0c00e4b1765ffcd336d6338f4c9d79b",
+        "selected-strategy:strategy-json-marketing-generation",
+        "system-ai-critic-decision-sha256:05e8c7e0917385caecc95a11fe323abd4edfac2712a334c721a3f3e08df3f9e3",
+        "system-ai-applied-answer-sha256:cd30247c636303a6014a3235a621342d3ac73c7b108794b0f7b437c1a268be42",
+        "repair-strategy-fingerprint:326ecf5166594ea082ffb5142484ae1ed740011ca78d4137b92701d28b2a1d47",
+        "failed-strategy-fingerprint:326ecf5166594ea082ffb5142484ae1ed740011ca78d4137b92701d28b2a1d47",
+        "model-output-sha256:2562a1adca34817e04780c9fda733956c0c00e4b1765ffcd336d6338f4c9d79b"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -158609,11 +158617,11 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T17:26:25.191Z"
+      "updatedAt": "2026-11-28T17:38:30.631Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -158647,7 +158655,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 9,
-      "previousReservationId": "system-ai:46149552965:1",
+      "previousReservationId": "system-ai:46170034377:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -158655,12 +158663,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46170034377:1",
-      "reservedAt": "2026-11-28T17:26:25.191Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -159120,7 +159128,13 @@
         "system-ai-handoff-from-reservation:system-ai:46141098511:1",
         "system-ai-handoff-to-reservation:system-ai:46149552965:1",
         "actions-run:46149552965",
-        "system-ai-handoff-to-reservation:system-ai:46170034377:1"
+        "system-ai-handoff-to-reservation:system-ai:46170034377:1",
+        "actions-run:46170034377",
+        "external-ai-raw-output-sha256:ddcfdeaa3dd639514cfbf1c56a5665d7127da9f63e29a4a0dd1105042343bae1",
+        "system-ai-applied-answer-sha256:6c2dff1d0fd6e57d93385fa919e77d7a2af0ec590655176db68304341c4a6d8e",
+        "repair-strategy-fingerprint:8d59a13276c06a27bfd35782ccee00db212a6a7bf51fef466ffccdde1dd6eaa0",
+        "failed-strategy-fingerprint:8d59a13276c06a27bfd35782ccee00db212a6a7bf51fef466ffccdde1dd6eaa0",
+        "model-output-sha256:ddcfdeaa3dd639514cfbf1c56a5665d7127da9f63e29a4a0dd1105042343bae1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1890,
@@ -159135,7 +159149,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T17:26:25.191Z"
+      "updatedAt": "2026-11-28T17:38:30.631Z"
     },
     {
       "id": "marketing-seed-roblox-story-rpg-adventur-blox-fruits-pre-release-v1",
