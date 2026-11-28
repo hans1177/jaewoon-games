@@ -55,3 +55,15 @@ test('시설 원화는 정확한 규격 및 원본 시각 승인 없이는 반�
   assert.ok(py.includes('if approved_doc.get("approved", {}).get(card) != prev.get("sha256"):'));
   assert.ok(py.includes('if CONTINENT.match(fn) and approved_doc.get("modelOriginals"'));
 });
+
+
+test('전투 효과 원본은 투명 PNG로 등록하며 JPG 변환하지 않는다', () => {
+  assert.ok(py.includes('"fx_button_ring.png": (512, 512)'));
+  assert.ok(py.includes('"fx_button_spark.png": (128, 128)'));
+  assert.ok(py.includes('fn not in ("fx_button_ring.png", "fx_button_spark.png")'));
+  const upload = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  assert.ok(upload.includes("approvedCardNames.add(k.slice(8) + '.png')"));
+  assert.ok(upload.includes('BUTTON_FX_RGBA_PNG_REQUIRED'));
+  assert.ok(upload.includes('originalBytes[25] !== 6'));
+  assert.ok(upload.includes('approvedImages[id] !== sourceSha256'));
+});
