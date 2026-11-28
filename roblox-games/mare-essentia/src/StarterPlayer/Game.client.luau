@@ -8011,17 +8011,17 @@ local function openTradeHall()
 			quantityButton(2, "+", function() setQuantity(qty + 1) end)
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
-			buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() if maxBuy >= qty then call("Buy", { goodId = sel.id, amount = qty }) end end, true)
+			buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(0.29, -8, 0, if shortScreen then 52 else 60), function() if maxBuy >= qty then call("Buy", { goodId = sel.id, amount = qty }) end end, true)
 			buy.Position = UDim2.fromOffset(4, if shortScreen then 84 else 106)
 			buy.TextSize = if narrow then 15 else 17
-			sell = mkButton(desk, "판매", COLORS.green, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(2/3, 4, 0, if shortScreen then 84 else 106)
+			sell = mkButton(desk, "판매", COLORS.green, UDim2.new(0.29, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sell.Position = UDim2.new(0.71, 4, 0, if shortScreen then 84 else 106)
 			sell.TextSize = if narrow then 15 else 17
 			refreshReceipt()
-			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
+			-- [자동 흥정] 상인 전문/승선 동료가 구매 순간 협상한다. 수동 미니게임도 같은 기회를 쓴다.
 			local bargain = view.haggle or {}
 			local tried = bargain.tried and bargain.tried[sel.id]
-			local status = if not bargain.auto then "자동 흥정: 관련 능력 없음 · 정가 거래"
+			local status = if not bargain.auto then "직접 흥정 가능 · 자동 흥정 능력 없음"
 				elseif tried then "자동 흥정: 이번 항구·품목 협상 시도 완료"
 				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
 			local dealHere = bargain.deal and bargain.deal.goodId == sel.id
@@ -8036,11 +8036,12 @@ local function openTradeHall()
 			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			alert.TextWrapped = true
-			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			local hg = mkButton(desk, if sel.lock then "잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "흥정 게임", COLORS.grey, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			-- [흥정 미니게임] 표정·동전·산지 중 서버가 무작위 선택. 구매·판매 사이의 황동 주 행동 버튼.
+			local canHaggle = not sel.lock and not tried and not dealHere and H.openHaggle ~= nil
+			local hg = mkButton(desk, if sel.lock then "흥정 잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인 적용" elseif tried then "흥정 완료" else "흥정하기\n4~12% 할인", COLORS.gold, UDim2.new(0.42, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, canHaggle)
 			hg.Name = "HaggleGameButton"
-			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
-			hg.TextSize = if narrow then 14 else 16
+			hg.Position = UDim2.new(0.29, 4, 0, if shortScreen then 84 else 106)
+			hg.TextSize = if narrow then 18 else 20
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sm.Position = UDim2.fromOffset(12, infoTop + 456)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
