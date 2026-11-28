@@ -1982,7 +1982,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- [계절·날씨 상의 정리] 항구 겨울 상태와 개별 주민의 비옷 요구가 달라도,
 	-- 현재 specs가 요청한 상의만 정답으로 본다. 숨겨진/미장착 상의는 성공으로 세지 않는다.
 	-- 원본 전신복·소매·장화는 보존하고 조끼/외투 중 이전 슬롯만 정리한다.
-	if winterWardrobe then
+	if detailAllowed then
 		local wanted = nil
 		for _, spec in specs do
 			if spec[2] == "UpperTorso" and (spec[1] == "outfit_vest" or spec[1] == "outfit_coat") then
@@ -1996,7 +1996,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			if mounted then
 				for _, part in mounted:GetDescendants() do
 					if part:IsA("BasePart") and part.Transparency < 0.95
-						and part.LocalTransparencyModifier < 0.99 then
+						and part.LocalTransparencyModifier < 0.95 then
 						visible = true
 						break
 					end
@@ -2013,7 +2013,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- 미등록·모델 로딩 실패일 때는 기존 깃털모자·배지·머리핀을 보존한다.
 	if npcOutfit and accessory and AssetIds["People/" .. accessory[1]] then
 		local selectedSlot = "R15Asset_" .. accessory[1] .. "_" .. accessory[2]
-		if model:FindFirstChild(selectedSlot) then
+		local selected = model:FindFirstChild(selectedSlot)
+		local selectedVisible = false
+		if selected then
+			for _, mesh in selected:GetDescendants() do
+				if mesh:IsA("BasePart") and mesh.Transparency < 0.95
+					and mesh.LocalTransparencyModifier < 0.95 then
+					selectedVisible = true
+					break
+				end
+			end
+		end
+		if selectedVisible then
 			for _, worn in model:GetChildren() do
 				if worn:IsA("Model") and worn.Name ~= selectedSlot
 					and (string.sub(worn.Name, 1, 13) == "R15Asset_cc0_"
