@@ -8164,7 +8164,18 @@ end
 
 function RENDERERS.route()
 	local ship = view.ship
-if view.weather then
+	local selected
+	for _, r in view.routes do
+		if r.id == H.routeDetailId then selected = r; break end
+	end
+	if not selected then H.routeDetailId = nil end
+	if selected then
+		add(function()
+			return mkRow(content, "항로 상세", selected.name, {
+				{ text = "목록", color = COLORS.grey, onClick = function() H.routeDetailId = nil; render() end },
+			}, 78)
+		end)
+	elseif view.weather then
 		add(function()
 			local fc = ""
 			if view.forecast and #view.forecast > 0 then
@@ -8174,23 +8185,20 @@ if view.weather then
 				end
 				fc = "\n항해사의 예보: " .. table.concat(parts, " · ")
 			end
-			local weatherAlert = if view.weather.id == "storm" then "🔴 폭풍 접근 · 항해 지연·사고 주의"
-				elseif view.weather.id == "rain" then "🟡 비 · 안개·암초 주의"
-				elseif view.weather.id == "head" or view.weather.id == "calm" then "🟡 역풍·무풍 · 항해 지연 주의"
-				else "🟢 현재 날씨에 큰 기상 경보 없음"
-			return mkLabel(content, string.format("오늘 날씨: %s (바람 x%.2f)\n%s\n%s%s", view.weather.name, view.weather.wind, weatherAlert, view.weather.hint, fc), 15,
-				if view.weather.id == "storm" then COLORS.red else COLORS.gold, true)
-		end)
-		add(function()
-			return H.tileGrid({
-				{ icon = "route", title = "하루 기다리기", sub = "날씨가 나쁠 때 · 사기 +2", btn = "대기", color = COLORS.blue, onClick = function() call("WaitDay", {}) end },
-			}, content, 176, 150)
+			local weatherAlert = if view.weather.id == "storm" then "폭풍 · 지연·사고 주의"
+				elseif view.weather.id == "rain" then "비 · 안개·암초 주의"
+				elseif view.weather.id == "head" or view.weather.id == "calm" then "역풍·무풍 · 지연 주의"
+				else "기상 경보 없음"
+			return mkRow(content, "날씨 · " .. view.weather.name, string.format("%s · 바람 x%.2f%s", weatherAlert, view.weather.wind, fc), {
+				{ text = "하루 대기", color = COLORS.grey, onClick = function() call("WaitDay", {}) end },
+			}, 78)
 		end)
 	end
 	-- 정렬: 가까운 순(기본) · 의뢰 목적지 · 조선소 · 이름 · 해역
 	H.routeSort = H.routeSort or "near"
+	if not selected then
 	add(function()
-		local row = mkRow(content, "항로 정렬", "지금 선택: " .. ({ near = "가까운 순", quest = "의뢰 목적지 먼저", yard = "조선소 먼저", name = "이름순", region = "해역별", profit = "실은 화물 이익 큰 순" })[H.routeSort], {
+		local row = mkRow(content, "항로 정렬", "", {
 			{ text = "가까운 순", color = if H.routeSort == "near" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "near"; render() end },
 			{ text = "의뢰", color = if H.routeSort == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "quest"; render() end },
 			{ text = "조선소", color = if H.routeSort == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "yard"; render() end },
@@ -8200,9 +8208,10 @@ if view.weather then
 		return row
 	end)
 	add(function()
-		return mkLabel(content, "기상 경고는 현재 항구 날씨 기준이야. 해적·돌발 사건은 항해 중 발생하므로 미리 안전을 보장할 수 없어.", 12, COLORS.muted, false)
+		return mkLabel(content, "현재 항구 기상 기준 · 해적과 돌발 사건 별도", 13, COLORS.muted, false)
 	end)
-	local sorted = table.clone(view.routes)
+	end
+	local sorted = if selected then { selected } else table.clone(view.routes)
 	local mode = H.routeSort
 	table.sort(sorted, function(a, b)
 		if (a.locked ~= nil) ~= (b.locked ~= nil) then
@@ -8226,24 +8235,33 @@ if view.weather then
 		add(function()
 			local supplyLeft = ship.supplies - r.supplies
 			local coalLeft = (ship.coal or 0) - (r.coal or 0)
-			local warn = if supplyLeft < 0 then string.format("🔴 보급 %d 부족", -supplyLeft)
-				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("🔴 석탄 %d 부족", -coalLeft)
+			local warn = if supplyLeft < 0 then string.format("보급 %d 부족", -supplyLeft)
+				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("석탄 %d 부족", -coalLeft)
 				else string.format("출항 가능 · 보급 %d 남음", supplyLeft)
 			if view.weather and (view.weather.id == "storm" or view.weather.id == "rain") then
-				warn ..= if view.weather.id == "storm" then " · 🔴 현재 폭풍 주의" else " · 🟡 현재 비 주의"
+				warn ..= if view.weather.id == "storm" then " · 폭풍 주의" else " · 비 주의"
 			end
 			if r.locked then
-				return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
+				return mkRow(content, r.name, string.format("%s · 잠김: %s", r.region, r.locked), {
 					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
 				}, 56)
 			end
 			-- [교역 쉽게 보기] 실은 화물을 거기 팔면 예상 이익: 초록 ▲ / 빨강 ▼
 			local profitTag = if r.cargoProfit == nil then ""
-				elseif r.cargoProfit > 0 then string.format(" 🟢▲%s", H.commas(r.cargoProfit))
-				elseif r.cargoProfit < 0 then string.format(" 🔴▼%s", H.commas(-r.cargoProfit)) else " ⚪±0"
-			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "") .. profitTag
-			local row = mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if (r.coal or 0) > 0 then (" · 석탄 " .. r.coal) else "", warn), {
-				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.gold else COLORS.blue, onClick = function() confirmSail(r) end },
+				elseif r.cargoProfit > 0 then string.format(" · 이익 +%s", H.commas(r.cargoProfit))
+				elseif r.cargoProfit < 0 then string.format(" · 손해 -%s", H.commas(-r.cargoProfit)) else " · 손익 0"
+			local tags = (if r.yard then " · 조선소" else "") .. (if r.quest then " · " .. r.quest else "") .. profitTag
+			if not selected then
+				return mkRow(content, r.name, string.format("%d일 · %d km%s", r.days, r.distanceKm, tags), {
+					{ text = "상세", color = COLORS.grey, onClick = function()
+						H.routeDetailId = r.id
+						H.gallerySelection = { tab = "route", name = r.name, search = r.name, chart = H.chartForPort(r.id) }
+						render()
+					end },
+				}, 78)
+			end
+			local row = mkRow(content, r.name, string.format("%s · %d일 · %d km%s\n%s", r.region, r.days, r.distanceKm, tags, warn), {
+				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = COLORS.gold, onClick = function() confirmSail(r) end },
 			}, 104)
 			-- [항해 준비 시각화] 현재 보유량 대비 실제 항로 필요량. 부족하면 빨강으로 표시.
 			local textBox = row:FindFirstChild("RowText")
@@ -15340,7 +15358,19 @@ function RENDERERS.tech()
 end
 
 function RENDERERS.quest()
-	H.walletBar("tavern")
+	local autos = {}
+	for _, q in view.quests.available do
+		if q.auto then table.insert(autos, q) end
+	end
+	local section = H.questSection or "active"
+	add(function()
+		return mkRow(content, "일지", "", {
+			{ text = string.format("진행 %d", #view.quests.active), color = if section == "active" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "active"; H.questDetailId = nil; render() end },
+			{ text = string.format("목표 %d", #autos), color = if section == "auto" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "auto"; render() end },
+			{ text = "탐험", color = if section == "field" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "field"; render() end },
+			{ text = string.format("완료 %d", #view.quests.done), color = if section == "done" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "done"; render() end },
+		}, 78)
+	end)
 	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
 	local STRAND = { main = "서막", companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
 	local GRADE = { "입문", "일반", "숙련", "위험", "전설" }
@@ -15350,7 +15380,7 @@ function RENDERERS.quest()
 			.. (if q.strand then "[" .. (STRAND[q.strand] or "이야기") .. "] " else "")
 			.. q.summary .. (if q.story then "\n" .. q.story else "")
 	end
-	add(function() return mkHeader(content, string.format("일지 · 진행 중 %d", #view.quests.active)) end)
+	if section == "active" then
 	if #view.quests.active == 0 then
 		add(function() return mkLabel(content, "아직 기록이 없어요. 소문을 듣거나 사람과 이야기해 보세요.", 13, COLORS.muted, true) end)
 	end
@@ -15364,9 +15394,15 @@ function RENDERERS.quest()
 		return order[a] < order[b]
 	end)
 	for _, q in active do
-		if H.questCauseCard then H.questCauseCard(q) end
+		local expanded = H.questDetailId == q.id
 		add(function()
-			local buttons = {}
+			local buttons = {
+				{ text = if expanded then "접기" else "상세", color = COLORS.grey, onClick = function()
+					H.questDetailId = if expanded then nil else q.id
+					render()
+				end },
+			}
+			if expanded then
 			if q.kind == "deliver" then
 				table.insert(buttons, { text = "납품", color = COLORS.blue, onClick = function() call("TurnIn", { questId = q.id }) end })
 			end
@@ -15384,9 +15420,10 @@ function RENDERERS.quest()
 			elseif ex and ex.warId then
 				table.insert(buttons, { text = "작전", color = COLORS.red, onClick = function() openTab("war") end })
 			end
+			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
-			local row = mkRow(content, q.name, strandText(q) .. said, buttons, if q.story or said ~= "" then 136 else 92)
+			local row = mkRow(content, q.name, if expanded then strandText(q) .. said else q.summary, buttons, 92)
 			local textBox = row:FindFirstChild("RowText")
 			if textBox then
 				local meter = Instance.new("Frame")
@@ -15417,13 +15454,12 @@ function RENDERERS.quest()
 			end
 			return row
 		end)
+		if expanded and H.questCauseCard then H.questCauseCard(q) end
 	end
-	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
-	local autos = {}
-	for _, q in view.quests.available do
-		if q.auto then table.insert(autos, q) end
-	end
-	if #autos > 0 then
+	elseif section == "auto" then
+	if #autos == 0 then
+		add(function() return mkLabel(content, "기록 중인 목표 없음", 14, INK_SOFT, true) end)
+	else
 		add(function() return mkHeader(content, "자동 기록 중인 목표") end)
 		for _, q in autos do
 			add(function()
@@ -15431,6 +15467,7 @@ function RENDERERS.quest()
 			end)
 		end
 	end
+	elseif section == "field" then
 	-- [세계 현장 탐험] 10대 이야기 항로의 다음 1~5단 목적지와 단서 출처 표시.
 	-- 현지라면 탐험 탭으로, 먼 지역이면 기존 항해 지도로 안내한다.
 	if view.quests.fieldRoutes and #view.quests.fieldRoutes > 0 then
@@ -15445,6 +15482,10 @@ function RENDERERS.quest()
 			end)
 		end
 	end
+	elseif section == "done" then
+	if #view.quests.done == 0 then
+		add(function() return mkLabel(content, "완료한 기록 없음", 14, INK_SOFT, true) end)
+	end
 	if (view.quests.otherPortDeliver or 0) > 0 or #view.quests.available > #autos then
 		add(function()
 			return mkLabel(content, "다른 항구의 소문과 사람들에게서 더 많은 의뢰를 들을 수 있어요.", 12, COLORS.muted, true)
@@ -15457,6 +15498,7 @@ function RENDERERS.quest()
 				return mkLabel(content, string.format("(완료 · %d/5단) ", q.grade or 1) .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
 			end)
 		end
+	end
 	end
 end
 
