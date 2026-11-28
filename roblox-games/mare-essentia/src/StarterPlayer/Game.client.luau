@@ -2287,7 +2287,13 @@ function H.renderFacilityGallery()
     table.insert(matches, { image = "rbxassetid://" .. tostring(kv[2]), poolArt = true })
   end
   H.galleryMatches = matches
-  if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = if stripId then 1 else math.random(1, #matches) end
+  if H.galleryIndex == nil and #matches > 0 then
+    if stripId then
+      H.galleryIndex = 1 -- 등록 시설 원화만 첫 화면 우선
+    else
+      H.galleryIndex = math.random(1, #matches) -- 기존 미등록 시설의 무작위 시작 유지
+    end
+  end
   H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
   local matched = if #matches > 0 then matches[H.galleryIndex] else nil
   -- [선택 원화] 클릭한 국가·항구·항로의 발견 카드/승인 해역도만 우선 전시한다.
