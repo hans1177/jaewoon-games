@@ -670,7 +670,9 @@ function FieldScene.start(opts)
 	-- [무기별 영구 숙련] 서버 저장본에서 단계를 복원하고 이번 탐험에서 획득한 경험치만 별도 정산한다.
 	local weaponPractice, earnedPractice = {}, {}
 	local function practiceRank(xp)
-		return if xp >= 100 then 5 elseif xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1
+		return if xp >= 720 then 10 elseif xp >= 530 then 9 elseif xp >= 380 then 8
+			elseif xp >= 260 then 7 elseif xp >= 170 then 6 elseif xp >= 100 then 5
+			elseif xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1
 	end
 	if type(opts.weaponPractice) == "table" then
 		for id, xp in opts.weaponPractice do
@@ -5222,15 +5224,15 @@ function FieldScene.start(opts)
 	pulseRim.Transparency = 1
 	pulseRim.Parent = attackPulse
 	end
-	-- [자동 강타 충전] 공격 버튼 둘레에 명중 5칸만 표시한다. 신규 스킬 버튼·저장 키는 없다.
+	-- [무기 숙련] 공격 버튼 둘레에 10단계를 표시한다. 기존 경험치 저장 키를 유지한다.
 	local autoHitPips = {}
-	for i = 1, 5 do
+	for i = 1, 10 do
 		local pip = Instance.new("Frame")
 		pip.Name = "FieldAutoHit" .. i
 		pip.AnchorPoint = Vector2.new(0.5, 0.5)
-		local angle = math.rad(205 + (i - 1) * 32.5)
+		local angle = math.rad(205 + (i - 1) * 15)
 		pip.Position = UDim2.fromScale(0.5 + 0.445 * math.cos(angle), 0.5 + 0.445 * math.sin(angle))
-		pip.Size = UDim2.fromOffset(if visualMobile then 12 else 10, if visualMobile then 12 else 10)
+		pip.Size = UDim2.fromOffset(if visualMobile then 8 else 7, if visualMobile then 8 else 7)
 		pip.BorderSizePixel = 0
 		pip.ZIndex = attackBtn.ZIndex + 5
 		pip.Parent = attackBtn
@@ -5240,8 +5242,8 @@ function FieldScene.start(opts)
 		autoHitPips[i] = pip
 	end
 	local function refreshAutoHitPips()
-		-- [숙련 표시] 5칸 = 무기 숙련 1~5단(채운 칸 = 지금 단계). 스킬 자동 발동은 2단부터 확률.
-		local charged = math.clamp(pl.masteryRank or 1, 1, 5)
+		-- [숙련 표시] 10칸 = 무기 숙련 1~10단(채운 칸 = 지금 단계). 스킬 자동 발동은 2단부터 확률.
+		local charged = math.clamp(pl.masteryRank or 1, 1, 10)
 		for i, pip in autoHitPips do
 			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 233, 151) else Color3.fromRGB(91, 45, 35)
 			pip.BackgroundTransparency = if i <= charged then 0 else 0.15
@@ -7403,7 +7405,7 @@ function FieldScene.start(opts)
 		if e.boss and os.clock() < (e.bossWeakUntil or 0) then
 			weakMult, weakLabel = math.max(weakMult, 1.8), "두목 기술 후 빈틈"
 		end
-		local counterHit = not quiet and os.clock() < (pl.counterUntil or 0)
+		local counterHit = ownerAttack ~= false and not quiet and os.clock() < (pl.counterUntil or 0)
 		if counterHit then pl.counterUntil = 0 end
 		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
@@ -7540,10 +7542,11 @@ function FieldScene.start(opts)
 				-- 다음 공격이 먼저 입력돼도 0.14초 지연된 이전 평타의 명중은 정확하게 1회 기록한다.
 				if basicAttack == true then
 					pl.autoNormalHits = (pl.autoNormalHits or 0) + 1
+					pl.supportHits = (pl.supportHits or 0) + 1
 					-- [오너 지시 2026-11-28] 스킬은 처음부터 안 됨: 무기 숙련(경험치) 2단부터 열리고, 명중할 때 확률로 자동 발동.
 					-- 2단 8% · 3단 11% · 4단 14% · 5단 17%, 최소 4초 간격. 4단부터 적 2명 이상 가까우면 회전 베기도 확률 발동.
 					local rankNow = pl.masteryRank or 1
-					local chanceNow = if rankNow >= 5 then 0.17 elseif rankNow == 4 then 0.14 elseif rankNow == 3 then 0.11 elseif rankNow == 2 then 0.08 else 0
+					local chanceNow = if rankNow >= 5 then math.min(0.25, 0.17 + (rankNow - 5) * 0.016) elseif rankNow == 4 then 0.14 elseif rankNow == 3 then 0.11 elseif rankNow == 2 then 0.08 else 0
 					if chanceNow > 0 and hitAt - (pl.lastAutoSkillAt or -100) >= 4 and comboRng:NextNumber() < chanceNow then
 						pl.lastAutoSkillAt = hitAt
 						pl.autoHeavyFire = pl.autoNormalHits
@@ -8314,11 +8317,13 @@ function FieldScene.start(opts)
 	local STUD = 2 -- 규칙의 거리 1 = 2 스터드
 	-- 장착한 스킬만 쓴다(주인공 스킬은 최대 3개). 공격·회피는 기본 행동이라 늘 쓸 수 있다.
 	local equipped = { heavy = true, sweep = true }
-	local function useMove(moveId: string)
+	local function useMove(moveId: string, ultimateCast: boolean?)
 		if finished then
 			return
 		end
-		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] then
+		if ultimateCast and ((pl.masteryRank or 1) < 8 or (moveId ~= "heavy" and moveId ~= "sweep")) then return end
+		if (moveId == "heavy" or moveId == "sweep") and not equipped[moveId] and not ultimateCast
+			and not (moveId == "sweep" and (pl.masteryRank or 1) >= 4) then
 			say("장착한 스킬이 아니에요")
 			return
 		end
@@ -8555,8 +8560,8 @@ function FieldScene.start(opts)
 		if moveId == "rush" then
 			-- [연속 공격 10박자] 1회 입력당 피해 판정은 기존 1회. 무기별 전신 포즈만 10단 순환.
 			local pressedAt = os.clock()
-			-- [오너 지시 2026-11-28] 연속 공격은 처음부터 안 됨: 숙련 1단 단타(2자세 번갈아), 2단 3 · 3단 5 · 4단 7 · 5단 10박자
-			local maxBeat = ({ 2, 3, 5, 7, 10 })[math.clamp(pl.masteryRank or 1, 1, 5)]
+			-- [오너 지시 2026-11-28] 숙련 1~10단에 맞춰 입력 연속 자세를 1~10박자로 해금한다.
+			local maxBeat = ({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })[math.clamp(pl.masteryRank or 1, 1, 10)]
 			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % maxBeat + 1 else 1
 			swingBridge.basicBeat, swingBridge.basicAt = basicBeat, pressedAt
 		end
@@ -8844,6 +8849,15 @@ function FieldScene.start(opts)
 				slashArc(hrp, colour, reachV, if wpn.family == "spear" then 55 elseif wpn.family == "dagger" then 75 else 110, if combo0 % 2 == 0 then 25 else -25)
 			end
 		end
+		-- 필살기와 실제 연속 명중 보너스도 기존 단일 피해 판정에서만 처리한다.
+		if ultimateCast then
+			mult *= (if (pl.masteryRank or 1) >= 10 then 1.5 else 1.35)
+			screenFlash(Color3.fromRGB(255, 224, 145), if visualMobile then 0.91 else 0.82)
+			shockRing(hrp.Position - Vector3.new(0, 2.5, 0), 12, Color3.fromRGB(255, 218, 140), 0.65)
+			sfx("sfx_card_ring", 0.7, 0.85)
+		elseif moveId == "rush" and basicBeat >= 3 and streakN >= basicBeat - 1 and os.clock() - streakT <= 1.1 then
+			mult *= 1 + math.min(0.12, (basicBeat - 2) * 0.015)
+		end
 		local combo = pl.combo
 		local hitActionSeq = streakActionSeq -- 지연된 타격 판정도 원래 누른 공격의 식별값을 사용한다.
 		task.delay(if kind == "slash" then 0.14 elseif kind == "heavy" then 0.42 else 0.2, function()
@@ -9042,14 +9056,15 @@ function FieldScene.start(opts)
 				local promoted = rank > practice.rank
 				practice.rank = rank
 				pl.masteryRank = rank
+				refreshAutoHitPips()
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 				attackBtn:SetAttribute("WeaponMasteryRank", rank)
 				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
-				-- [숙련 연타 2~3타] 5단계 숙련 데이터는 유지한다. 전투 레벨 가산 최대 2%, 전 무기 공용 7초 제한.
+				-- [숙련 연타 2~3타] 기존 1~5단 경험치 기준을 보존하고 6~10단을 확장한다. 전투 레벨 가산 최대 2%, 전 무기 공용 7초 제한.
 				-- 민첩 무기는 발동·3타가 약간 유리하고, 도끼·철퇴·화기는 2타 위주로 묵직하게 표현한다.
 				-- 1단에서는 절대 발동하지 않으며 추가 타격 판정·피해·보상·드롭·재사용시간을 만들지 않는다.
 				local baseChance = if rank == 2 then 0.07 elseif rank == 3 then 0.10
-					elseif rank == 4 then 0.13 elseif rank == 5 then 0.16 else 0
+					elseif rank == 4 then 0.13 elseif rank >= 5 then math.min(0.24, 0.16 + (rank - 5) * 0.016) else 0
 				local weaponChance = if wpn.family == "dagger" then 0.02 elseif wpn.family == "fist" then 0.015
 					elseif wpn.family == "axe" then -0.015 elseif wpn.family == "blunt" then -0.01
 					elseif wpn.id == "crossbow" then -0.025 elseif wpn.family == "firearm" then -0.02
@@ -9070,7 +9085,9 @@ function FieldScene.start(opts)
 				end
 				if promoted then
 					showCombo(string.format("%s 숙련 %d단! · %s", wpn.name, rank,
-						if rank == 2 then "연속 공격 3박자·강타 자동 발동 열림" elseif rank == 3 then "연속 5박자" elseif rank == 4 then "연속 7박자·회전 베기 열림" else "연속 10박자·발동 확률 최고"))
+						if rank == 2 then "2연타·자동 강타 해금" elseif rank == 4 then "회전 베기 해금"
+						elseif rank == 8 then "무기 필살기 해금" elseif rank == 9 then "동료 연계 해금"
+						elseif rank == 10 then "10연타·궁극 연계 해금" else string.format("%d연타 해금", rank)))
 					sfx("sfx_coin", 0.55, 1.3)
 				end
 				if chain > 1 then
@@ -9945,7 +9962,7 @@ function FieldScene.start(opts)
 		combatBtns.dodge = { btn = b, label = "회피" }
 	end
 	-- 스킬 효과 하나: 주인공 카드 스킬과 동료 스킬이 같이 쓴다. caster = 시전자 모델·루트(주인공이면 내 캐릭터).
-	local function castEffect(sk, name, ch, hp0)
+	local function castEffect(sk, name, ch, hp0, supportRole)
 		-- [전투 스킬 안정성] 시전자의 이름/대상과 관계없이 시간 효과의 시각을 함수 안에서 계산한다.
 		local now = os.clock()
 		local pos = hp0.Position + Vector3.new(0, 2, 0)
@@ -9969,14 +9986,16 @@ function FieldScene.start(opts)
 			-- 명중 수/배율/사거리/쿨타임은 기존 카드 규칙을 그대로 유지한다.
 			local equippedId = ch and ch:GetAttribute("EquippedWeaponId")
 			local rangedWeapon = if type(equippedId) == "string" then Weapons.get(equippedId) else wpn
-			local motion = if rangedWeapon.ranged then rangedWeapon.motion else "BOW"
+			local motion = if supportRole == "gunner" then (if (opts.year or 1517) >= 1680 then "RIFLE" else "CROSSBOW")
+				elseif supportRole then "BOW" elseif rangedWeapon.ranged then rangedWeapon.motion else "BOW"
 			local spellColor = if motion == "CROSSBOW" then Color3.fromRGB(181, 217, 238)
 				elseif motion == "BOW" or motion == "LONGBOW" then Color3.fromRGB(162, 231, 173)
 				else Color3.fromRGB(255, 202, 140)
 			pulseAt(if sk == "snipe" then "CRITICAL_BURST" else "SHAPE_BURST",
 				hp0.CFrame * CFrame.new(0, 1.3, -2.2), spellColor, Color3.fromRGB(255, 243, 216),
 				if sk == "snipe" then 5.5 else 3.8, if visualMobile then 3 else 7)
-			local list = table.clone(enemies)
+			local list = {}
+			for _, e in enemies do if not e.ac.dead and e.root.Parent then table.insert(list, e) end end
 			table.sort(list, function(a, b)
 				return (a.root.Position - hp0.Position).Magnitude < (b.root.Position - hp0.Position).Magnitude
 			end)
@@ -9991,11 +10010,11 @@ function FieldScene.start(opts)
 				arrowTrail(pos, hitPos, nil, nil, motion, sk == "snipe")
 				pulseAt("IMPACT_FLASH", CFrame.new(hitPos), spellColor, Color3.fromRGB(251, 248, 229),
 					if sk == "snipe" then 5 else 3, if visualMobile then 2 else 4)
-				if strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe", false, ch == player.Character) then
+				if strikeEnemy(e, if sk == "snipe" then 3.0 else 1.2, hp0.Position, 1.5, sk == "snipe", false, not supportRole and ch == player.Character) then
 					hitLanded += 1
 				end
 			end
-			if ch == player.Character and hitLanded == 0 then endStreak("헛손질") end
+			if not supportRole and ch == player.Character and hitLanded == 0 then endStreak("헛손질") end
 			trailsOn(ch, { "RightHand", "RightLowerArm", "LeftHand", "LeftLowerArm" }, spellColor,
 				if sk == "snipe" then 0.42 else 0.25, if sk == "snipe" then 0.8 else 0.54)
 			say(name .. (if hitN > 0 then ": 원거리 공격!" else ": 맞힐 적이 없다"))
@@ -10027,18 +10046,18 @@ function FieldScene.start(opts)
 			local near, nd = nil, 12 * STUD
 			for _, e in enemies do
 				local d = (e.root.Position - hp0.Position).Magnitude
-				if d < nd then near, nd = e, d end
+				if not e.ac.dead and e.root.Parent and d < nd then near, nd = e, d end
 			end
 			if near then
-				if not strikeEnemy(near, 1.8, hp0.Position, 5, true, false, ch == player.Character) and ch == player.Character then endStreak("헛손질") end
-			elseif ch == player.Character then endStreak("헛손질") end
+				if not strikeEnemy(near, 1.8, hp0.Position, 5, true, false, not supportRole and ch == player.Character) and not supportRole and ch == player.Character then endStreak("헛손질") end
+			elseif not supportRole and ch == player.Character then endStreak("헛손질") end
 			say(name .. (if near then ": 강타!" else ": 맞힐 적이 없다"))
 			sfx("sfx_card_blade", 0.7, 0.9)
 			burst(pos, 22, true)
 		else
 			local n = 0
 			for _, e in enemies do
-				if (e.root.Position - hp0.Position).Magnitude <= 14 * STUD and not e.ac.def.boss then
+				if not e.ac.dead and e.root.Parent and (e.root.Position - hp0.Position).Magnitude <= 14 * STUD and not e.ac.def.boss then
 					e.ac.stagger = 1.5
 					n += 1
 				end
@@ -10664,6 +10683,7 @@ function FieldScene.start(opts)
 				elseif hit then
 					local dealt, parried = AC.takeHit(pl, e.ac.def.dmg, now, pl.parryAt)
 					if parried then
+						pl.supportDefense = (pl.supportDefense or 0) + 1
 						say("완벽 방어! 반격 기회")
 						sfx("sfx_metal_clash", 1, 1.1)
 						sfx("sfx_card_ring", 0.7, 1.2)
@@ -10717,6 +10737,7 @@ function FieldScene.start(opts)
 				if perfectDodge then
 					-- [매트릭스식 성공 연출] 피해/보상/시전 횟수 추가 없이 적 AI·이동만 0.72초 동안 24% 속도로 재생.
 					pl.matrixDodgeConsumed = true
+					pl.supportDefense = (pl.supportDefense or 0) + 1
 					pl.matrixSlowUntil = now + 0.72
 					pl.counterUntil = now + 1.6 -- [반격] 다음 한 방 ×2
 					showCombo("완벽 회피! · 지금 치면 반격 ×2", true, Color3.fromRGB(122, 240, 246))
@@ -11072,12 +11093,90 @@ function FieldScene.start(opts)
 		end
 	end))
 
-	-- [비전투 파티] 서버가 영입 완료로 보낸 명단만 표시한다. 지상전투에 동료 모델·무기·공격·지원 스킬은 생성하지 않는다.
-	-- 기존 파티 ID와 초상 시트를 그대로 사용하고, 실제 피해·승패·보상·저장에는 개입하지 않는다.
-	do
+	-- [직업 지원 파티] 상시 동료 모델/추적 AI는 만들지 않는다. 기존 영입 명단과 직업별 스킬만 사용한다.
+	-- 호출/자동지원/필살 게이지는 이번 탐험 한정이며 저장 키를 추가하지 않는다.
+	;(function()
 		local party = if type(opts.allies) == "table" then opts.allies else {}
 		local seen = {}
 		local count = 0
+		local support = { members = {}, gauge = 0, ultimate = 0, failed = 0, nextAt = 0, nextCheck = 0, nextUltimate = 0, hits = 0, defense = 0, hp = pl.hp, threat = false }
+		local function context()
+			local ch, root = char3()
+			if not root or not ch or pl.hp <= 0 then return nil end
+			local ctx = { ch = ch, root = root, close = 0, ranged = 0, regular = 0, boss = false, warning = false, weak = false }
+			for _, e in enemies do
+				if not e.ac.dead and e.root.Parent then
+					local d = (e.root.Position - root.Position).Magnitude
+					if d <= 30 * STUD then ctx.ranged += 1 end
+					if d <= 12 * STUD then ctx.close += 1 end
+					if d <= 14 * STUD and not e.boss then ctx.regular += 1 end
+					if e.boss and d <= 28 * STUD then
+						ctx.boss = true
+						ctx.warning = ctx.warning or e.ac.state == "windup" or e.bossCast ~= nil
+						ctx.weak = ctx.weak or os.clock() < (e.bossWeakUntil or 0) or e.ac.state == "recover"
+					end
+				end
+			end
+			return ctx
+		end
+		local function score(skill, ctx)
+			local hp = pl.hp / math.max(1, pl.maxHp)
+			if skill == "heal" then return if hp <= 0.45 then 100 elseif hp <= 0.75 then 55 else 0 end
+			if skill == "armor" then return if not pl.ward and ctx.warning then 95 elseif not pl.ward and ctx.close >= 2 then 45 else 0 end
+			if skill == "read" then return if ctx.regular >= 2 then 80 elseif ctx.regular > 0 then 45 else 0 end
+			if skill == "rally" then return if os.clock() >= (pl.buffUntil or 0) and ctx.ranged > 0 then (if streakN >= 4 or ctx.weak then 85 else 35) else 0 end
+			if skill == "luck" then return if pl.stamina < AC.STAMINA_MAX * 0.4 or hp < 0.65 then 80 else 0 end
+			if skill == "volley" then return if ctx.ranged >= 3 then 90 elseif ctx.ranged > 0 then 30 else 0 end
+			if skill == "snipe" then return if ctx.ranged > 0 then (if ctx.weak or ctx.warning then 90 else 45) else 0 end
+			if skill == "bash" then return if ctx.close > 0 then (if ctx.weak or streakN >= 3 then 85 else 45) else 0 end
+			return 0
+		end
+		local function choose(member, ctx, automatic)
+			local best, value = nil, 0
+			for _, id in member.skills do
+				local n = score(id, ctx)
+				if (member.ready[id] or 0) <= os.clock() and n > value and (not automatic or n >= 45) then best, value = id, n end
+			end
+			return best, value
+		end
+		local function invoke(member, id, ctx, automatic)
+			local now = os.clock()
+			local cost = if automatic then 35 else 60
+			if finished or pl.hp <= 0 or support.gauge < cost or now < support.nextAt or (member.ready[id] or 0) > now then return false end
+			support.gauge -= cost
+			support.nextAt, support.failed = now + (if automatic then 12 else 4), 0
+			member.ready[id] = now + JobSkills.Skills[id].cooldown
+			member.status:SetAttribute("FieldSupportSkill", id)
+			member.status:SetAttribute("FieldSupportMode", if automatic then "automatic" else "called")
+			showCombo(member.name .. " · " .. JobSkills.Skills[id].name, true, Color3.fromRGB(125, 228, 215))
+			member.outline.Color = Color3.fromRGB(255, 222, 124)
+			screenFlash(Color3.fromRGB(125, 228, 215), if visualMobile then 0.96 else 0.91)
+			castEffect(id, member.name, ctx.ch, ctx.root, member.role)
+			return true
+		end
+		local ultimate = btn(gui, "필살기 8단", Color3.fromRGB(99, 69, 119),
+			UDim2.fromOffset(88, 42), if compactTouch then UDim2.new(0, 12, 1, -226) else UDim2.new(1, -12, 0, 62),
+			if compactTouch then Vector2.zero else Vector2.new(1, 0))
+		ultimate.Name = "FieldUltimate"
+		ultimate.TextSize = 13
+		ultimate.TextYAlignment = Enum.TextYAlignment.Center
+		ultimate:SetAttribute("SkillFullName", "무기 필살기")
+		bindPress(ultimate, function()
+			if finished or pl.hp <= 0 or (pl.masteryRank or 1) < 8 or support.ultimate < 100 or os.clock() < support.nextUltimate then return end
+			local ctx = context()
+			if not ctx or ctx.ranged == 0 then return end
+			local move = if not wpn.ranged and ctx.close >= 2 then "sweep" else "heavy"
+			local success = useMove(move, true)
+			if not success then return end
+			support.ultimate, support.nextUltimate = 0, os.clock() + 18
+			showCombo(wpn.name .. " · 필살기!", true, Color3.fromRGB(255, 219, 135))
+			if (pl.masteryRank or 1) >= 9 then
+				for _, member in support.members do
+					local id = choose(member, ctx, false)
+					if id and invoke(member, id, ctx, false) then break end
+				end
+			end
+		end)
 		for _, member in party do
 			if count >= 2 then break end
 			if type(member) == "table" and type(member.id) == "string" and type(member.name) == "string"
@@ -11090,6 +11189,7 @@ function FieldScene.start(opts)
 				status.Name = "FieldAllyStatus" .. count
 				status:SetAttribute("CompanionId", member.id)
 				status:SetAttribute("CombatEnabled", false)
+				status:SetAttribute("SupportEnabled", true)
 				status.Position = UDim2.fromOffset(heroPanel.Position.X.Offset,
 					heroPanel.Position.Y.Offset + heroPanel.Size.Y.Offset + 6 + (count - 1) * (if visualMobile then 48 else 56))
 				status.Size = UDim2.fromOffset(heroPanel.Size.X.Offset, if visualMobile then 44 else 52)
@@ -11134,13 +11234,77 @@ function FieldScene.start(opts)
 				ui.statusText.Size = UDim2.fromOffset(if visualMobile then 151 else 143, 18)
 				ui.statusText.TextXAlignment = Enum.TextXAlignment.Left
 				ui.statusText.TextTruncate = Enum.TextTruncate.AtEnd
+				ui.nameText.Size = UDim2.fromOffset(if visualMobile then 83 else 77, 18)
+				ui.statusText.Size = ui.nameText.Size
+				local role = if JobSkills.Categories[ui.role] then ui.role else JobSkills.categoryOf(ui.role)
+				local entry = { name = member.name, role = role, skills = JobSkills.Categories[role].skills, ready = {}, status = status, outline = ui.outline }
+				local call = btn(status, "호출", Color3.fromRGB(44, 98, 108), UDim2.fromOffset(66, 38), UDim2.new(1, -3, 0.5, 0), Vector2.new(1, 0.5))
+				call.Name = "FieldAllyCall" .. count
+				call.TextSize = 12
+				call.TextYAlignment = Enum.TextYAlignment.Center
+				call.ZIndex = status.ZIndex + 3
+				call:SetAttribute("SkillFullName", "동료 호출")
+				entry.button = call
+				table.insert(support.members, entry)
+				bindPress(call, function()
+					local ctx = context()
+					if not ctx then return end
+					local id = choose(entry, ctx, false)
+					if id then invoke(entry, id, ctx, false) end
+				end)
 			end
 		end
-	end
+		table.insert(conns, RunService.Heartbeat:Connect(function()
+			local now = os.clock()
+			if finished or pl.hp <= 0 or now < support.nextCheck then return end
+			support.nextCheck = now + 0.25
+			local hits, defense = pl.supportHits or 0, pl.supportDefense or 0
+			local gain = math.max(0, hits - support.hits) * 7 + math.max(0, defense - support.defense) * 18
+			local damage = math.max(0, support.hp - pl.hp)
+			support.hits, support.defense, support.hp = hits, defense, pl.hp
+			support.gauge = math.min(100, support.gauge + gain)
+			if (pl.masteryRank or 1) >= 8 then support.ultimate = math.min(100, support.ultimate + gain) end
+			local ctx = context()
+			if not ctx then return end
+			local event = gain > 0 or damage > 0 or (ctx.warning and not support.threat)
+			support.threat = ctx.warning
+			-- 수동 호출 준비가 되면 자동 지원은 게이지를 선점하지 않는다. 위기에서만 예외.
+			if event and now >= support.nextAt and support.gauge >= 35
+				and (support.gauge < 60 or pl.hp / math.max(1, pl.maxHp) <= 0.35) then
+				local best, skill, value = nil, nil, 0
+				for _, member in support.members do
+					local id, n = choose(member, ctx, true)
+					if id and n > value then best, skill, value = member, id, n end
+				end
+				if best then
+					local chance = math.min(0.9, 0.12 + value * 0.003 + support.failed * 0.12)
+					if support.failed >= 5 or comboRng:NextNumber() < chance then
+						invoke(best, skill, ctx, true)
+					else
+						support.failed += 1
+						support.nextAt = now + 0.75
+					end
+				end
+			end
+			for _, member in support.members do
+				local id = choose(member, ctx, false)
+				local ready = id ~= nil and support.gauge >= 60 and now >= support.nextAt
+				member.button.Text = if ready then "호출!" else string.format("호출 %d%%", math.floor(support.gauge))
+				member.button:SetAttribute("SupportReady", ready)
+				member.button:SetAttribute("SupportGauge", support.gauge)
+				member.outline.Color = if ready then Color3.fromRGB(255, 222, 124) else Color3.fromRGB(105, 200, 223)
+				member.button:SetAttribute("SupportNextSkill", id or "")
+				member.button:SetAttribute("SkillFullName", if id then JobSkills.Skills[id].name else "동료 호출")
+			end
+			ultimate.Text = if (pl.masteryRank or 1) < 8 then "필살기 8단" elseif support.ultimate >= 100 and now >= support.nextUltimate then "필살기!" else string.format("필살기 %d%%", math.floor(support.ultimate))
+			ultimate:SetAttribute("UltimateGauge", support.ultimate)
+			ultimate:SetAttribute("UltimateReady", (pl.masteryRank or 1) >= 8 and support.ultimate >= 100 and now >= support.nextUltimate)
+		end))
+	end)()
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
 	-- [Luau 200레지스터 제한] 모바일 패드 초기화는 원래 기능을 그대로 별도 실행 프레임에서 처리한다.
-	(function()
+	;(function()
 		local UIS = game:GetService("UserInputService")
 		if UIS.TouchEnabled and not UIS.KeyboardEnabled then
 			local ctrl
@@ -11395,7 +11559,7 @@ function FieldScene.start(opts)
 	end))
 
 	refresh()
-	say("공격 F(기본 단타) · 무기 숙련 시 2~3연타 확률 발동 · 기술 Q/E · 회피 R")
+	say("공격 F · 회피 R · 방어 G · 숙련 연타 · 동료 호출 · 8단 필살기")
 	-- [필드 입장] 큰 탐험 맵의 생성 중 서버/항구 시점이 캐릭터를 되돌렸다면 기존 출발 좌표로 한 번 복구한다.
 	local readyCharacter = player.Character
 	local readyRoot = readyCharacter and readyCharacter:FindFirstChild("HumanoidRootPart")
