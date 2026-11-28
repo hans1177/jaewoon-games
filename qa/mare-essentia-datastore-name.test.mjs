@@ -303,6 +303,18 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
+test('전 세계 생존 방어와 보급품 탈환은 실제 구역 유지와 경비병 격파를 사용한다',()=>{
+  assert.match(field,/FieldDefenseHoldAt", now/);
+  assert.match(field,/20 - \(now - started\)/);
+  assert.match(field,/not inside and started then folder:SetAttribute\("FieldDefenseHoldAt", nil\)/);
+  assert.match(field,/FieldDefenseComplete", true/);
+  assert.match(field,/targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"/);
+  assert.match(field,/prompt.ObjectText = "탈환할 보급품 상자"/);
+  assert.match(field,/then props\[1\] else props/);
+  assert.match(field,/FieldInterceptRoute"\) == "survival"/);
+  assert.match(field,/and \(targetCard.field == "Goods" or targetCard.field == "Shipbuilding"\s+or table.find/);
+});
+
 test('전 세계 매복과 증원 차단은 기존 병력의 시간차 교전과 단계 완료 조건을 사용한다',()=>{
   assert.match(field,/FieldInterceptRoute", mode/);
   assert.match(field,/FieldInterceptWave", if i <= 2 then 1 else 2/);
