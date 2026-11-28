@@ -1438,7 +1438,9 @@ test('Mare exploration preserves combat rules while preserving noncombat party a
   for(const habitat of ['coast','forest','ruins','highland','desert','plains','mine']){
     assert.match(field,new RegExp('\\b'+habitat+'\\s*=\\s*\\{ Vector2\\.new'),habitat+' enemy habitat');
   }
-  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6, 20, 100 - bossCount\)/);
+  assert.match(field,/local enemyCount, bossCount = AC\.fieldEnemyCounts\(danger0\)/);
+  const actionCombat=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ActionCombat.luau','utf8');
+  assert.match(actionCombat,/return math\.clamp\(20 \+ \(danger - 1\) \* 6, 20, 100 - bossCount\), bossCount/);
   assert.doesNotMatch(field,/local pos0 = Vector3\.new\(footX|pcall\(Pose\.createR15, folder, pos0/,'no combat companion spawn in solo field');
   assert.match(field,/local companionRows: \{ any \} = \{\}/);
   assert.match(pose,/function Pose\.createR15\(parent, bottomPosition,/);

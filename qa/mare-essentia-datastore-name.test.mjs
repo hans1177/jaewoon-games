@@ -736,7 +736,8 @@ test('유적 상호작용과 발견 화면의 모바일 잘림·조사 키 충�
 // [스튜디오 실제 실패 복구] 초급 20마리에서 체형 2종으로 수렴했던 R15 실루엣을 검사한다.
 test('1단 검병·궁수 편성은 유지하면서 승인된 R15 체형 3종 이상을 실제 배정한다',()=>{
   assert.ok(field.includes('local kinds = if danger0 <= 1 then { "grunt", "grunt", "archer", "grunt" }'));
-  assert.ok(field.includes('local enemyCount = math.clamp(20 + (danger0 - 1) * 6, 20, 100 - bossCount)'));
+  assert.match(field,/local enemyCount, bossCount = AC\.fieldEnemyCounts\(danger0\)/);
+  assert.match(read('ReplicatedStorage/Shared/ActionCombat.luau'),/return math\.clamp\(20 \+ \(danger - 1\) \* 6, 20, 100 - bossCount\), bossCount/);
   const grunt=field.match(/\t\tgrunt = \{([\s\S]*?)\n\t\t\},/);
   assert.ok(grunt,'실제 검병 복식 정의 누락');
   const profiles=[...grunt[1].matchAll(/\{ ".*?", "(.*?)", Color3/g)].map(x=>x[1]);
@@ -1313,7 +1314,8 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
   // [실게임 권한 회귀] Studio 도구 권한으로 통과해도 클라이언트 RenderFidelity 쓰기는 탐험 입장을 중단시킨다.
   assert.doesNotMatch(placement,/\.RenderFidelity\s*=/,'게임 클라이언트의 제한된 메시 정밀도 변경 금지');
   assert.doesNotMatch(placement,/Instance\.new\("(?:Part|MeshPart|WedgePart)"\)/,'건물 복구에 임시 도형 금지');
-  assert.match(field,/local enemyCount = math\.clamp\(20 \+ \(danger0 - 1\) \* 6/);
+  assert.match(field,/local enemyCount, bossCount = AC\.fieldEnemyCounts\(danger0\)/);
+  assert.match(read('ReplicatedStorage/Shared/ActionCombat.luau'),/return math\.clamp\(20 \+ \(danger - 1\) \* 6, 20, 100 - bossCount\), bossCount/);
   assert.match(field,/AC\.stepEnemy\(e\.ac, enemyDt, dist, not e\.waiting\)/);
 });
 
@@ -1330,7 +1332,7 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
     'local sceneryHit = false', 'local visualObjectHits = 0',
     'local function breakCrate(c, strikePower: number?)',
     'local function explodeBarrel(b, hrp: BasePart, hitActionSeq: number?, strikePower: number?)',
-    'if isBoss then 2.75 elseif ac.kind == "shield" or ac.kind == "charger" then 2.55 else 2.35',
+    'AC.fieldEnemyMaxHp(ac.kind)', 'opts.fieldEncounter.bossMaxHp',
     'e.knockUntil, e.riseUntil', 'e.ac.stagger = math.max(e.ac.stagger, 1.57)',
     'local knocked = now < (e.riseUntil or 0)', 'st, ph = "KNOCKDOWN"',
     'st, ph = "GETUP"', 'st, ph = "BLOCK"', 'st, ph = "PARRY"',
@@ -1346,6 +1348,7 @@ test('디아블로식 사물 연타·병종 협동 AI·피격 기상 및 사망 
     'e.tacticAt = now + 0.65',
     'Pose.dieR15(dying, p, deathVariant)'
   ]) assert.ok(field.includes(marker),'탐험 전술/전투 연결 누락: '+marker);
+  assert.ok(combat.includes('if kind == "boss" then 2.75 elseif kind == "shield" or kind == "charger" then 2.55 else 2.35'),'공용 최대 체력 배율 보존');
   for(const marker of [
     'state == "KNOCKDOWN"', 'state == "GETUP"', 'state == "BLOCK"',
     'state == "PARRY"', 'local fallSide =',
@@ -2823,8 +2826,8 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.match(home,/measuredHalfX = math\.abs\(bounds\.Position\.X - pos\.X\) \+ worldHalfX \+ 2\.5/);
  assert.match(home,/measuredHalfZ = math\.abs\(bounds\.Position\.Z - pos\.Z\) \+ worldHalfZ \+ 2\.5/);
  assert.match(home,/local signedZ = at\.Z \* side/);
- assert.match(home,/clearRoad = signedZ - measuredHalfZ > laneNear \+ laneWidth \* 0\.5 \+ 1\.5/);
- assert.match(home,/signedZ \+ measuredHalfZ < laneFar - laneWidth \* 0\.5 - 1\.5/);
+ assert.match(home,/local nearLimit = laneNear \+ laneWidth \* 0\.5 \+ 1\.5[\s\S]*clearRoad = signedZ - measuredHalfZ > nearLimit and signedZ \+ measuredHalfZ < farLimit/);
+ assert.match(home,/local farLimit = laneFar - laneWidth \* 0\.5 - 1\.5/);
  assert.match(port,/local nextLaneZ = 152 \+ laneOffset \+ \(p \+ 1\) \* laneL \+ nextBend/);
  assert.match(port,/fillRow\(side \* \(nextLaneZ - laneWidth \/ 2 - 6 - S \/ 2\)/);
  const project=(axis,dims)=>axis.reduce((sum,v,i)=>sum+Math.abs(v)*dims[i],0)/2;
@@ -2836,8 +2839,8 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.equal(fits(160,1,10),false);
  assert.equal(fits(109,1,10),false);
  assert.match(home,/laneNear = 152 \+ laneOffset \+ laneIndex \* laneL/);
- assert.match(home,/clearRoad and not onStreet\(at\.X, measuredHalfX\)/);
- assert.match(home,/not reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\)/);
+ assert.match(home,/elseif onStreet\(at\.X, measuredHalfX\) then/);
+ assert.match(home,/elseif reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\) then/);
  assert.match(home,/if chosenShift then[\s\S]*?for _, object in staged:GetChildren\(\) do object\.Parent = folder end/);
  assert.match(home,/staged:Destroy\(\)/,'실패한 후보 자산 삭제');
  assert.match(home,/BuildingFootprintX", actualHalfX \* 2/);
@@ -3832,7 +3835,7 @@ test('항구 NPC 헤어 숱과 직업 모자·머리색·복식 대비가 실제
     '기존 지역·시대 허용 체계를 보존한다');
   assert.match(pose,/model:SetAttribute\("NpcHairTint", outfit\.hairColor\)/);
   assert.match(pose,/local hairPalette = \{/);
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/,
+  assert.match(pose,/surface\.Color = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.12\)/,
     '텍스처/원본 PBR을 유지하면서 밝게 로드된 머리색만 복구한다');
   assert.match(pose,/model:SetAttribute\("NpcAccentTint", accentTint\)/);
   assert.match(pose,/surface\.Color = surface\.Color:Lerp\(accent:Lerp\(/);
@@ -3970,9 +3973,9 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('target.Size.Y * hairHeightAllowance / ext.Y,'));
   assert.ok(pose.includes('target.Size.Z * spec[5] / ext.Z)'));
   assert.ok(pose.includes('if npcOutfit and not surface and part:IsA("MeshPart") and part.TextureID ~= ""'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+part\.Color = part\.Color:Lerp\(softTint, 0\.35\)/, '텍스처 머리 원본 색상 보존');
+  assert.match(pose,/part\.Color = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.12\)/, '흰 텍스처 머리는 정한 머리색(2026-11-29 오너: 다 흰색 문제)');
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
-  assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/, 'PBR 머리 원본 색상 보존');
+  assert.match(pose,/surface\.Color = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.12\)/, 'PBR 머리 원본 색상 보존');
   assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
   const fitting=pose.slice(pose.indexOf('local textured = surfaceHasMaps(surface)'),pose.indexOf('local weld = Instance.new("WeldConstraint")',pose.indexOf('local textured = surfaceHasMaps(surface)')));
   assert.ok(fitting.includes('child:IsA("SpecialMesh") and child.TextureId ~= ""'));
