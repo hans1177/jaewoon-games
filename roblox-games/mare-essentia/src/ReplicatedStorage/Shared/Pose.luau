@@ -113,7 +113,15 @@ end
 
 -- 주민 얼굴은 머리 메시의 원본 데칼을 사용한다.
 local function drawFace(head)
-	local decal = head:FindFirstChildWhichIsA("Decal")
+	-- [얼굴 단일 레이어] 머리의 임의 데칼을 정면으로 돌리지 않는다.
+	local decal = nil
+	for _, child in head:GetChildren() do
+		if child:IsA("Decal") and child.Face == Enum.NormalId.Front then
+			if not decal or child.Name:lower() == "face" then
+				decal = child
+			end
+		end
+	end
 	if not decal then
 		decal = Instance.new("Decal")
 		decal.Name = "face"
@@ -125,6 +133,12 @@ local function drawFace(head)
 	decal.Texture = "rbxasset://textures/face.png"
 	decal.Color3 = Color3.new(1, 1, 1)
 	decal.Transparency = 0
+	-- 정면 중복 데칼만 숨긴다. 옆면 장식은 보존하며 기본 머리 텍스처 처리는 생성 단계에서만 수행한다.
+	for _, child in head:GetChildren() do
+		if child ~= decal and child:IsA("Decal") and child.Face == Enum.NormalId.Front then
+			child.Transparency = 1
+		end
+	end
 end
 
 
@@ -407,6 +421,11 @@ function Pose.createR15(parent, bottomPosition, facing, coat, rng, role, height,
 			if descendant == root then
 				descendant.Transparency = 1
 			elseif n == "Head" then
+				-- [주민 얼굴 단일 표현] 기본 머리 텍스처와 정면 데칼의 중첩을 방지한다.
+				-- 주민 기본 머리만 대상으로 하며 미리보기·전투 리그·등록 복식은 보존한다.
+				if citizenCloth and not parent:IsA("WorldModel") and descendant:IsA("MeshPart") then
+					descendant.TextureID = ""
+				end
 				descendant.Color = skin
 				descendant.Material = Enum.Material.SmoothPlastic
 			elseif string.find(n, "Hand") then
@@ -1549,10 +1568,17 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			-- [헤어 두상 정렬] 긴 머리는 메시 전체 중심이 아니라 정수리 윗선을 기준으로 맞춘다.
 			-- 기존 헤어 크기·리그·장착 대상은 유지하고 뒤쪽 긴 머리의 공중부양만 방지한다.
 			local hairOffsetY = spec[6]
+			local hairOffsetZ = spec[8] or 0
 			if npcOutfit and string.sub(assetName, 1, 5) == "hair_" and assetName ~= "hair_beard" then
 				local hairStyle = model:GetAttribute("NpcHairStyle")
 				local crownY = if hairStyle == "bun" then 0.79 elseif hairStyle == "long" then 0.67 else 0.65
 				hairOffsetY = crownY - ext.Y * 0.5 / target.Size.Y
+				-- [짧은 머리 얼굴 간섭] 눈높이까지 내려온 넓은 머리만 제한적으로 뒤로 이동한다.
+				-- 긴 머리·쪽머리·수염은 원본 위치를 유지하고 정수리 높이는 바꾸지 않는다.
+				if hairStyle == "short" and crownY - ext.Y / target.Size.Y < 0.20 then
+					local frontOverlap = ext.Z * 0.5 / target.Size.Z - hairOffsetZ - 0.42
+					hairOffsetZ += math.clamp(frontOverlap, 0, 0.18)
+				end
 			elseif npcOutfit and assetName == "acc_sailor_headband" and boneName == "Head" then
 				-- 머리띠의 실제 아래 경계를 이마 위로 올려 눈과 얼굴 중앙을 가리지 않는다.
 				hairOffsetY = math.max(hairOffsetY, 0.30 + ext.Y * 0.5 / target.Size.Y)
@@ -1561,7 +1587,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			-- 실제 R15 Head 관절을 따라가는 용접은 유지하고 피부/얼굴 데칼을 가리지 않게 크기를 제한한다.
 			skin:PivotTo((target.CFrame * CFrame.new(target.Size.X * (spec[7] or 0),
 				target.Size.Y * (if cuff then -0.36 elseif boot then -0.15 elseif beard then -0.29 else hairOffsetY),
-				target.Size.Z * (if beard then -0.42 else (spec[8] or 0)))
+				target.Size.Z * (if beard then -0.42 else hairOffsetZ))
 				* CFrame.Angles(math.rad(spec[9] or 0), 0, 0)) * bounds:ToObjectSpace(skin:GetPivot()))
 			for _, part in parts do
 				part.Anchored, part.CanCollide, part.CanTouch, part.CanQuery = false, false, false, false

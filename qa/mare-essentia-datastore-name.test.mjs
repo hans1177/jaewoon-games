@@ -1853,7 +1853,9 @@ test('주민·동료 새 머리와 액세서리는 원본 11종이 검증되고 
  assert.match(pose,/if accessory and AssetIds\["People\/" \.\. accessory\[1\]\] then/);
  assert.match(pose,/specs = table\.clone\(specs\)/);
  assert.match(pose,/target\.Size\.X \* \(spec\[7\] or 0\)/);
- assert.match(pose,/target\.Size\.Z \* \(if beard then -0\.42 else \(spec\[8\] or 0\)\)/, '얼굴 앞쪽 수염 위치와 기존 액세서리 오프셋을 모두 보존');
+ assert.match(pose,/local hairOffsetZ = spec\[8\] or 0/, '기존 액세서리 깊이 오프셋 기본값 보존');
+ assert.match(pose,/target\.Size\.Z \* \(if beard then -0\.42 else hairOffsetZ\)/, '수염 전방 위치와 보정된 헤어 오프셋 적용');
+ assert.match(pose,/if hairStyle == "short" and crownY - ext\.Y \/ target\.Size\.Y < 0\.20 then[\s\S]*?hairOffsetZ \+= math\.clamp\(frontOverlap, 0, 0\.18\)/, '눈을 가리는 짧은 헤어에만 깊이 보정');
  assert.match(pose,/skin:ScaleTo\(ratio\)/);
  assert.match(pose,/weld\.Part0, weld\.Part1, weld\.Parent = target, part, part/);
  assert.match(pose,/part\.Anchored, part\.CanCollide, part\.CanTouch, part\.CanQuery = false, false, false, false/);
@@ -2879,6 +2881,22 @@ test('R15 주민 얼굴은 공식 Studio 흰 얼굴 회귀를 막도록 기본 �
   assert.match(face,/decal\.Texture\s*=\s*"rbxasset:\/\/textures\/face\.png"/);
   assert.match(face,/decal\.Transparency\s*=\s*0/);
   assert.doesNotMatch(face,/decal:Destroy\(\)/);
+  assert.match(face,/child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front/);
+  assert.match(face,/child ~= decal and child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front then\s+child.Transparency = 1/);
+  assert.doesNotMatch(face,/head\.TextureID\s*=/);
+  const generated=source.slice(source.indexOf("function Pose.createR15("),source.indexOf("local headPart = model:FindFirstChild"));
+  assert.match(generated,/if citizenCloth and not parent:IsA\("WorldModel"\) and descendant:IsA\("MeshPart"\) then\s+descendant.TextureID = ""\s+end\s+descendant.Color = skin/);
+  assert.equal((generated.match(/descendant\.TextureID = ""/g)||[]).length,1);
+  assert.match(source,/hairStyle == "short" and crownY - ext.Y \/ target.Size.Y < 0.20/);
+  assert.match(source,/hairOffsetZ \+= math.clamp\(frontOverlap, 0, 0.18\)/);
+  const shift=(style, height, depth, original=0)=>style==='short'&&0.65-height<0.20
+    ?original+Math.max(0,Math.min(0.18,depth/2-original-0.42)):original;
+  assert.ok(Math.abs(shift('short',1,1.1)-0.13)<1e-9);
+  assert.equal(shift('short',1,0.8),0);
+  assert.equal(shift('short',1,2),0.18);
+  assert.equal(shift('short',0.3,1.1),0);
+  assert.equal(shift('long',1.8,1.1),0);
+  assert.equal(shift('bun',1.4,1.1),0);
 });
 
 // [무료 네모트론 디자인 검증] Studio 사진과 책임 코드에서 전 시각 범주를 안전하게 수정한다.
@@ -3846,7 +3864,7 @@ test('항구 남성 주민 수염은 R15 Head 턱에 맞춰 1회 장착하고 �
   assert.ok(pose.includes('elseif beard then 0.58 else spec[4]'), '수염이 머리 전체를 덮지 않음');
   assert.ok(pose.includes('elseif beard then 0.74 else spec[5]'), '수염 깊이 과장 방지');
   assert.ok(pose.includes('elseif beard then -0.29 else hairOffsetY'), '수염은 정수리가 아닌 턱 아래');
-  assert.ok(pose.includes('if beard then -0.42 else (spec[8] or 0)'), '수염은 얼굴 전방으로 장착');
+  assert.ok(pose.includes('if beard then -0.42 else hairOffsetZ'), '수염은 얼굴 전방으로 장착');
   assert.ok(pose.includes('equipped:GetAttribute("NpcBeardFitVersion") ~= 1'), '기존 잘못 장착된 수염 1회 복구');
   assert.ok(pose.includes('if beard then skin:SetAttribute("NpcBeardFitVersion", 1) end'), '이미 정상 장착된 수염 재복제 방지');
   assert.ok(pose.includes('assetName == "hair_beard" or string.sub(assetName, 1, 4) == "acc_"'), '수염 액세서리 가시성 검사');
