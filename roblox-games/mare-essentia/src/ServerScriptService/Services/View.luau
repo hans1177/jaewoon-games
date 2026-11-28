@@ -227,6 +227,8 @@ return function(D, S)
 				supply = stockLimit.supply,
 				absorb = stockLimit.absorb,
 				owned = state.cargo[goodId] or 0,
+				-- [특산품 단계 잠금] 못 사는 이유와 여는 방법(우호도·투자·길드 허가증 의뢰)
+				lock = S.Trade.lockOf(state, port.id, goodId),
 			})
 		end
 

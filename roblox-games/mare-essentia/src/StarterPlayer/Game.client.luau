@@ -7542,7 +7542,8 @@ local function openTradeHall()
 			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
 			if g.tag and g.tag ~= "" then
                 local badge = Instance.new("TextLabel")
-				badge.Text = g.tag
+				-- [특산품 잠금] 아직 못 사는 특산품·명품은 자물쇠 도장
+				badge.Text = if g.lock then "🔒" .. tostring(g.lock.tierName or "잠김") else g.tag
 				badge.TextSize = 16
 				badge.Font = Enum.Font.GothamBold
 				-- [특산·수요 도장] 어두운 잉크/밝은 황동으로 밝은 양피지와 대비.
@@ -7748,7 +7749,7 @@ local function openTradeHall()
 			local unitBuy = unitBuyOf(sel)
 			-- [실제 수량 한도] 상품을 살수록 단가가 오르므로 단가×수량 추정으로 구매를 허용하지 않는다.
 			local maxBuy = 0
-			for n = 1, math.min(20, view.orderCap or 20, free, sel.supply or 20) do
+			for n = 1, if sel.lock then 0 else math.min(20, view.orderCap or 20, free, sel.supply or 20) do
 				local cost = if sel.buyTotals and sel.buyTotals[n] then sel.buyTotals[n] else unitBuy * n
 				if cost <= p.coins then maxBuy = n end
 			end
@@ -7869,12 +7870,17 @@ local function openTradeHall()
 				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
 			local dealHere = bargain.deal and bargain.deal.goodId == sel.id
 			if dealHere then status = string.format("흥정 성공 · 다음 구매 %d%% 할인 적용", bargain.deal.pct or 0) end
-			local alert = mkLabel(right, status, 14, if bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
+			-- [특산품 잠금 이유] 무엇이 모자란지 + 여는 의뢰(주점)
+			if sel.lock then
+				status = "🔒 " .. tostring(sel.lock.text) .. (if sel.lock.quest then " · 여는 의뢰: 「" .. sel.lock.quest .. "」(주점)" else "")
+				tried = true
+			end
+			local alert = mkLabel(right, status, 14, if sel.lock then Color3.fromRGB(150, 60, 40) elseif bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
 			alert.Position = UDim2.fromOffset(14, infoTop + 390)
 			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			local hg = mkButton(desk, if dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			local hg = mkButton(desk, if sel.lock then "🔒 잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
 			hg.Name = "HaggleGameButton"
 			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
 			hg.TextSize = if narrow then 14 else 16

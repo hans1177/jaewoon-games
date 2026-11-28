@@ -674,6 +674,14 @@ return function(D)
 			if projects then
 				(s.stats :: any).buildProjects = projects
 			end
+			-- [길드 허가증] 특산품·명품 거래가 열린 항구 목록 복원(실제 항구 id 만)
+			if type(saved.stats.permits) == "table" then
+				local permits = {}
+				for id, v in saved.stats.permits do
+					if v == true and type(id) == "string" and D.Ports.Ports[id] then permits[id] = true end
+				end
+				if next(permits) then (s.stats :: any).permits = permits end
+			end
 			-- [연타 기록 마이그레이션] 이전 저장은 0으로 복원하고, 개인 최고 기록은 보상과 독립해 보관한다.
 			s.stats.fieldStreakBest = math.floor(num(saved.stats.fieldStreakBest, 0, 0, 500))
 			if type(saved.stats.visited) == "table" then

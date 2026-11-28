@@ -4207,12 +4207,30 @@ function FieldScene.start(opts)
 		tag.Text = string.format("[%d단] ", math.clamp(danger0, 1, 5))
 			.. (if isBoss then "두목 " elseif isElite then "정예 " else "")
 			.. (if throwAsset then "투척 " else "") .. style[1]
+			.. (if AC.WEAK[ac.kind] then " · 약점: " .. AC.WEAK[ac.kind].label else "")
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
+	end
+	-- [전투 목표 · 2026-11-28 오너 지시] 매번 다른 목표 하나(속도·무피해·두목 먼저·약점 5번). 별 3개 평가(표시용).
+	do
+		local hasBoss = false
+		for _, o in enemies do if o.boss then hasBoss = true end end
+		local options = {
+			{ kind = "speed", text = "빨리 끝내기" }, { kind = "untouched", text = "체력 70% 이상 지키기" },
+			{ kind = "weak", text = "약점 5번 노리기" },
+		}
+		if hasBoss then table.insert(options, { kind = "boss", text = "두목부터 쓰러뜨리기" }) end
+		if #enemies > 0 then
+			local pick = options[math.random(1, #options)]
+			pl.fieldChallenge = { kind = pick.kind, text = pick.text, startAt = os.clock(), limit = 25 + #enemies * 8 }
+			if pick.kind == "speed" then pl.fieldChallenge.text = string.format("%d초 안에 끝내기", pl.fieldChallenge.limit) end
+			folder:SetAttribute("FieldChallenge", pick.kind)
+			task.delay(1.5, function() say("이번 목표: " .. pl.fieldChallenge.text, 3) end)
+		end
 	end
 
 	end
@@ -7243,9 +7261,47 @@ function FieldScene.start(opts)
 			end
 			e.model:SetAttribute("FieldEnemyReaction", "shield")
 		end
+		-- [약점·반격 · 2026-11-28] 적마다 노릴 곳(AC.weakness) + 완벽 회피 직후 1.6초 반격 ×2.
+		local inFront = approach.Magnitude > 0.1 and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
+		local weakMult, weakLabel = AC.weakness(e.ac, inFront, approach.Magnitude / 2)
+		local counterHit = not quiet and os.clock() < (pl.counterUntil or 0)
+		if counterHit then pl.counterUntil = 0 end
+		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
 			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
-			* (if weaponParry then 0.52 else 1), mult, shieldBlocked == true, stagger)
+			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1), mult, shieldBlocked == true, stagger)
+		if counterHit then
+			showCombo("반격 ×2!", true, Color3.fromRGB(122, 240, 246))
+		elseif weakLabel then
+			showCombo("약점! " .. weakLabel, true, Color3.fromRGB(255, 196, 90))
+			e.model:SetAttribute("FieldWeakHit", weakLabel)
+			if pl.fieldChallenge then pl.fieldChallenge.weakHits = (pl.fieldChallenge.weakHits or 0) + 1 end
+		end
+		-- [두목 단계 · 2026-11-28] 체력 2/3 아래 분노(빨라짐), 1/3 아래 최후의 일격(사거리↑·빈틈 길어짐)
+		if e.boss and not died then
+			local ratio = e.ac.hp / math.max(1, e.maxHp)
+			if ratio < 0.66 and not e.bossPhase2 then
+				e.bossPhase2 = true
+				e.ac.def = table.clone(e.ac.def)
+				e.ac.def.speed *= 1.25
+				e.ac.def.windup *= 0.85
+				e.speed = e.ac.def.speed
+				e.model:SetAttribute("FieldBossPhase", 2)
+				showCombo("두목 분노! · 2단계 — 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
+				screenFlash(Color3.fromRGB(255, 90, 60), 0.82)
+				sfx("sfx_horn", 0.5, 0.8)
+			elseif ratio < 0.33 and not e.bossPhase3 then
+				e.bossPhase3 = true
+				e.ac.def = table.clone(e.ac.def)
+				e.ac.def.range *= 1.2
+				e.ac.def.recover *= 1.6
+				e.model:SetAttribute("FieldBossPhase", 3)
+				showCombo("최후의 일격! · 크게 내려친 뒤가 빈틈", true, Color3.fromRGB(255, 70, 60))
+				screenFlash(Color3.fromRGB(255, 60, 40), 0.78)
+				shakeUntil, shakeAmp = os.clock() + 0.4, 1.4
+				sfx("sfx_event_danger", 0.6, 0.75)
+			end
+		end
 		e.hp = e.ac.hp
 		if died or stagger then e.counterUntil = 0 end -- 기절·쓰러진 몹은 방어 뒤 반격을 예약하지 않는다.
 		e.hurtAt = os.clock()
@@ -7598,6 +7654,27 @@ function FieldScene.start(opts)
 				end
 			end
 			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+			-- [전투 목표 · 2026-11-28] 모두 쓰러뜨리면 이번 목표 달성 별(표시용, 보상·저장 불변)
+			if pl.fieldChallenge and not pl.fieldChallenge.done then
+				local alive = 0
+				for _, o in enemies do if not o.ac.dead then alive += 1 end end
+				if pl.fieldChallenge.kind == "boss" and e.boss then pl.fieldChallenge.bossFirst = alive > 0 end
+				if alive == 0 then
+					pl.fieldChallenge.done = true
+					local elapsed = os.clock() - pl.fieldChallenge.startAt
+					local ok = (pl.fieldChallenge.kind == "speed" and elapsed <= pl.fieldChallenge.limit)
+						or (pl.fieldChallenge.kind == "untouched" and pl.hp / math.max(1, pl.maxHp) >= 0.7)
+						or (pl.fieldChallenge.kind == "boss" and pl.fieldChallenge.bossFirst == true)
+						or (pl.fieldChallenge.kind == "weak" and (pl.fieldChallenge.weakHits or 0) >= 5)
+					local stars = 1 + (if ok then 1 else 0) + (if elapsed <= pl.fieldChallenge.limit * 1.5 and pl.hp / math.max(1, pl.maxHp) >= 0.5 then 1 else 0)
+					folder:SetAttribute("FieldChallengeStars", stars)
+					task.delay(1.2, function()
+						showCombo(string.rep("★", stars) .. string.rep("☆", 3 - stars) .. "  " .. (if ok then "목표 달성! " else "목표 실패 · ") .. pl.fieldChallenge.text, true,
+							if ok then Color3.fromRGB(255, 214, 90) else Color3.fromRGB(200, 190, 170))
+						sfx(if ok then "sfx_fanfare" else "sfx_card_chain", 0.5, 1)
+					end)
+				end
+			end
 			sfx(if e.boss then "sfx_fanfare" else "sfx_card_chain", 0.6, 1)
 			-- 전리품: 쓰러뜨리면 체력 회복약을 줍는다 (두목은 항상, 졸개는 40%)
 			if e.boss or math.random() < 0.4 then
@@ -9867,6 +9944,9 @@ function FieldScene.start(opts)
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				sfx("sfx_event_danger", 0.35, 1.2)
+				-- [타이밍 안내] 처음 몇 번은 무엇을 해야 하는지 말해 준다
+				pl.fieldTeach = (pl.fieldTeach or 0) + 1
+				if pl.fieldTeach <= 3 then say("빨간 신호! 맞기 직전에 회피 → 반격 ×2", 1.6) end
 				if e.ac.def.aoe then
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
@@ -10122,7 +10202,8 @@ function FieldScene.start(opts)
 					-- [매트릭스식 성공 연출] 피해/보상/시전 횟수 추가 없이 적 AI·이동만 0.72초 동안 24% 속도로 재생.
 					pl.matrixDodgeConsumed = true
 					pl.matrixSlowUntil = now + 0.72
-					showCombo("완벽 회피! · 매트릭스 슬로모션", true, Color3.fromRGB(122, 240, 246))
+					pl.counterUntil = now + 1.6 -- [반격] 다음 한 방 ×2
+					showCombo("완벽 회피! · 지금 치면 반격 ×2", true, Color3.fromRGB(122, 240, 246))
 					screenFlash(Color3.fromRGB(122, 236, 248), if visualMobile then 0.91 else 0.82)
 					pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.2, 0),
 						Color3.fromRGB(98, 220, 242), Color3.fromRGB(238, 255, 255), 13, if visualMobile then 5 else 12)
