@@ -102,6 +102,20 @@ B.CityPlots = { plotScale = { 1.38, 1.46, 1.54, 1.62, 1.70 }, areaScale = { 1.0,
 B.RoyalCityPlots = { plotScale = { 1.12, 1.14, 1.16, 1.19, 1.22 }, districtScale = { 1.0, 1.04, 1.08, 1.12, 1.16 } }
 -- [농촌 필지 규격] 항구와 주거지 서쪽에 독립된 대형 농장·목장 구획을 둔다.
 -- 면적 확대는 화면과 향후 건축 필지 전용이다. 기존 실제 농업 생산·가축·저장·시설 수량은 변경하지 않는다.
+-- [발전도별 종합 필지표 · 2026-11-29 오너: "항구별 발전도에 따라 종합 필지가 정해져야"]
+-- 한 표에서 단계마다 마을 땅 크기·주택 줄 시작 위치를 정한다(docs/VILLAGE_LAYOUT_SPEC.md 3-1절).
+-- 집 수(PortIdentity.TIERS plots)·목장 수(zoneLayout pens)·요새(4단계)는 기존 규칙을 그대로 쓴다.
+-- landW: 해안(x=35)에서 안쪽으로 땅 폭, landD: 남북 깊이, rowStart: 주택 줄이 시작하는 x(광장 쪽).
+B.CityPlan = {
+	[1] = { landW = 230, landD = 420, rowStart = -45 },
+	[2] = { landW = 290, landD = 520, rowStart = -70 },
+	[3] = { landW = 360, landD = 640, rowStart = -110 },
+	[4] = { landW = 440, landD = 760, rowStart = -160 },
+	[5] = { landW = 510, landD = 884, rowStart = -210 },
+}
+function B.cityPlan(level)
+	return B.CityPlan[math.clamp(math.floor(tonumber(level) or 1), 1, 5)]
+end
 B.RuralPlots = {
 	centerX = -785, penSpacing = 280,
 	pastureHalfX = 130, pastureHalfZ = 104, pigHalfX = 88, pigHalfZ = 72,

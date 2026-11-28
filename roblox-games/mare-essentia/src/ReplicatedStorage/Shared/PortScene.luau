@@ -2498,10 +2498,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			dog = { animalVisual["dog-pug"].size, "tail" }, cat = { animalVisual.cat.size, "still" },
 		}
 		local list = SPECIES[key] or SPECIES.britain
+		-- [고양이 임시 제외 · 2026-11-29 오너: "고양이는 이상하고"] 지금 고양이 원본은 비율이 어색하다.
+		-- 새 원본(Animals/cat_v2, docs/discoveries/ANIMAL_RIG_MOTION.md 가축 재제작 절)이 등록되면 자동으로 다시 쓴다.
+		do
+			local filtered = {}
+			for _, sp in list do
+				if sp ~= "cat" or AssetIds["Animals/cat_v2"] then table.insert(filtered, sp) end
+			end
+			if #filtered > 0 then list = filtered end
+		end
 		local function animal(species, pos)
 			local k = KIND[species]
 			local asset = if species == "dog" then "dog-pug" else species
-			local skin = animalVisual[asset]
+			-- [가축 재제작 자동 교체] <종>_v2 원본이 등록되면 그것을 쓴다(실사풍 재제작 지시서).
+			if AssetIds["Animals/" .. species .. "_v2"] then asset = species .. "_v2" end
+			local skin = animalVisual[asset] or animalVisual[if species == "dog" then "dog-pug" else species]
 			-- [품종별 코트] 직업·서식지·사육량을 바꾸지 않도록 기존 RNG 소비 없이 좌표로만 품종을 선택한다.
 			local coatIndex = if skin then 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39 + #walkers * 0.67)) % #skin.coats else 0
 			local coat = if skin then Color3.fromRGB(table.unpack(skin.coats[coatIndex])) else nil
@@ -4563,6 +4574,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
 		end
 	end
+	-- [발전도별 종합 필지] 주택 줄 시작점: 1단계는 광장 바로 옆(-45), 5단계는 예전처럼 멀리(-210).
+	-- 예전엔 모든 단계가 -260 이라 광장과 집 사이 260 스터드가 빈 길·맨땅이었다. 겹침은 reserved() 가 그대로 막는다.
+	local cityRowStart = if isRoyalCity then -260 else PortBuildings.cityPlan(lvl).rowStart
 	for _, side in { 1, -1 } do
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
 		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
@@ -4599,11 +4613,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				-- [계단식·골목형] 동일한 주택 수를 유지한 채 행 시작점만 교차 배치한다.
 				local rowShift = if villageLayout == "terrace" and p % 2 == 1 then -4
 					elseif villageLayout == "organic" and p % 2 == 1 then 3 else 0
-				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260 + rowShift, side, p, 1)
+				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, cityRowStart + rowShift, side, p, 1)
 				local nextBend = if villageLayout == "organic" then (if (p + 1) % 2 == 0 then -3 else 3)
 					elseif villageLayout == "terrace" then (p + 1) * 2 else 0
 				local nextLaneZ = 152 + laneOffset + (p + 1) * laneL + nextBend
-				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
+				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, cityRowStart - rowShift, side, p, 2)
 			end
 		end
 	end
@@ -4624,7 +4638,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		-- 지시서 항구는 단계별 집 수 상한(6~24채)이 있는데 땅은 510×880 그대로라 텅 비었다.
 		-- 실제 놓인 집·시설·광장 범위 + 40 으로 땅을 줄이고, 그 밖으로 뻗은 빈 길 띠도 잘라낸다.
 		-- 왕궁 도시는 기존 최소 폭 유지. 농촌 바닥·집 배치·저장은 바꾸지 않는다(보이는 땅·길만).
-		if identity and not isRoyalCity and #placedLots > 0 then
+		-- [발전도별 땅 크기] 단계 표의 땅 크기를 기본으로 하되, 실제 놓인 집·시설은 항상 덮는다(아래 범위 계산).
+		local plan = PortBuildings.cityPlan(lvl)
+		local planLeft, planHalfZ = townRight - plan.landW, plan.landD / 2
+		if not isRoyalCity and #placedLots > 0 then
 			local bx0, bz0, bz1 = 0, -40, 40
 			for _, lot in placedLots do
 				local hx = lot.HX or lot.H or 8
@@ -4638,8 +4655,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				bz0 = math.min(bz0, at.Z - 24)
 				bz1 = math.max(bz1, at.Z + 24)
 			end
-			local compactLeft = math.max(townLeft, bx0 - 40)
-			local compactHalfZ = math.min(townHalfZ, math.max(-bz0, bz1) + 40)
+			-- 지시서 항구는 집 범위까지 더 줄이고, 그 외 항구는 단계 표 크기. 어느 쪽이든 집·시설은 덮는다.
+			local wantLeft = if identity then bx0 - 40 else math.min(planLeft, bx0 - 40)
+			local wantHalfZ = if identity then math.max(-bz0, bz1) + 40 else math.max(planHalfZ, math.max(-bz0, bz1) + 40)
+			local compactLeft = math.max(townLeft, wantLeft)
+			local compactHalfZ = math.min(townHalfZ, wantHalfZ)
+			folder:SetAttribute("CityPlanLevel", lvl)
 			if compactLeft > townLeft + 20 or compactHalfZ < townHalfZ - 20 then
 				townLeft, townHalfZ = compactLeft, compactHalfZ
 				local trimmed = 0
@@ -9546,7 +9567,7 @@ function PortScene.build(info, onFacility)
 			end
 			return false
 		end
-		local relocated, stopped, inspected = 0, 0, 0
+		local relocated, stopped, inspected, shortened = 0, 0, 0, 0
 		-- [주민끼리 겹침 방지] 제자리 주민은 서로 2.4스터드 안에 서지 않는다(한 몸에 두 사람 겹침 방지).
 		local claimed = {}
 		local function crowded(pos)
@@ -9602,6 +9623,21 @@ function PortScene.build(info, onFacility)
 						walker.home, walker.morning, walker.market, walker.evening = home, morning, market, evening
 						break
 					end
+					-- [짧은 하루 동선 · 2026-11-29 오너: "직업별 동선 다양하게"] 4곳을 다 돌 길이 막혔으면
+					-- 바로 서 버리지 말고 두 곳만 오가는 짧은 일과(일터↔시장, 집↔일터)로 줄여 계속 걷게 한다.
+					local shortPlans = { { morning, market }, { home, morning }, { market, evening } }
+					for _, pair in shortPlans do
+						local a, b = pair[1], pair[2]
+						if (b - a).Magnitude > 4 and not blocked(CFrame.new(a), 0, walker.model)
+							and not blocked(CFrame.new(b), 0, walker.model) and clearSegment(a, b) then
+							safe = candidate
+							walker.home, walker.morning, walker.market, walker.evening = a, a, b, b
+							walker.model:SetAttribute("DailyRouteShort", true)
+							shortened += 1
+							break
+						end
+					end
+					if safe then break end
 				elseif not blocked(candidate, if moving then walker.len else 0, walker.model)
 					and (moving or not crowded(candidate.Position)) then
 					safe = candidate
@@ -9614,7 +9650,9 @@ function PortScene.build(info, onFacility)
 					local candidate = original + offset
 					if not blocked(candidate, 0, walker.model) and not crowded(candidate.Position) then
 						safe = candidate
-						walker.mode, walker.kind = "stay", "look"
+						-- 제자리여도 직업 동작(망치질·쓸기·짐 나르기 자세 등)을 한다. 없으면 둘러보기.
+						local roster = walker.workKinds or walker.tradeKinds
+						walker.mode, walker.kind = "stay", (roster and roster[1]) or walker.socialKind or "look"
 						stopped += 1
 						break
 					end
@@ -9686,6 +9724,7 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("NpcRouteChecked", inspected)
 		folder:SetAttribute("NpcRouteRelocated", relocated)
 		folder:SetAttribute("NpcRouteBlocked", stopped)
+		folder:SetAttribute("NpcRouteShortened", shortened)
 	end)
 	-- [진단] 질의가 실패하면 성공으로 간주하지 않고 스튜디오에서 확인할 수 있게 보존한다.
 	folder:SetAttribute("NpcRouteAudit", if routeOk then "PASS" else "FAIL")
