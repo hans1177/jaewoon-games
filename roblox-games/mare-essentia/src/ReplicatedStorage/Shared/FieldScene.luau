@@ -4051,7 +4051,7 @@ function FieldScene.start(opts)
 					elseif nextKind == "infiltrate" then "경계 구역 · 잠입하거나 적을 돌파해"
 					else string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
 			end
-			say(string.format(if extraction and folder:GetAttribute("FieldRescueRoute") then "조사원 호위 완료 (%d/%d)" elseif guardedTransit and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 (%d/%d)" elseif extraction then "안전 지점 도착 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
+			say(string.format(if extraction and folder:GetAttribute("FieldRescueRoute") then "조사원 호위 완료 (%d/%d)" elseif guardedTransit and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 (%d/%d)" elseif extraction then "안전 지점 도착 (%d/%d)" elseif i == 2 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 기록 확보 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
 				showCompletion()
@@ -4411,40 +4411,6 @@ function FieldScene.start(opts)
 
 	end
 
-	-- [거점 탈환] 기존 2단계 성채 탐험의 실제 수비병을 격파하고 기록을 확보한다.
-	-- 별도 적, 보상, 난수, 저장 필드를 만들지 않는다. 클라이언트 전투 입증을 서버 권한으로 확대하지 않는다.
-	do
-		if nodeCount == 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
-			and (targetCard.field == "Site" or targetCard.field == "Relic" or targetCard.field == "Architecture")
-			and table.find({ "acre_crusader", "kingston_royal", "auto_architecture_antwerp_mid", "auto_site_stockholm_mid" }, opts.siteId) then
-			local anchor = folder:FindFirstChild("Discovery2")
-			if anchor and anchor:IsA("BasePart") then
-				local guards = {}
-				for _, enemy in enemies do
-					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(guards, enemy) end
-				end
-				table.sort(guards, function(a, b)
-					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
-				end)
-				local count = math.min(3, #guards)
-				if count > 0 then
-					folder:SetAttribute("FieldStrongholdRoute", true)
-					folder:SetAttribute("FieldStrongholdRemaining", count)
-					for i = 1, count do
-						local enemy = guards[i]
-						enemy.model:SetAttribute("FieldStrongholdGuard", true)
-						enemy.tag.Text = "거점 수비병 · " .. enemy.tag.Text
-					end
-					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
-					if prompt then prompt.ActionText, prompt.ObjectText = "거점 탈환 확인", "점거된 기록 보관소" end
-					if found == 1 then questHint.Text = "이어하기 · 거점 수비병 격파 후 기록 확보" end
-				else
-					warn("[MareEssentia] 거점 수비병 배치 불가", opts.siteId)
-				end
-			end
-		end
-	end
-
 	-- [구출·호위] 기존 승인 주민 R15/걷기 모션과 현재 탐험 장면 수명주기를 재사용한다.
 	-- 일부 고위험 발굴지의 가상 현장 사건. 역사적 발견 내용·적 편성·보상은 바꾸지 않는다.
 	do
@@ -4524,6 +4490,43 @@ function FieldScene.start(opts)
 				end
 			end
 			if not folder:GetAttribute("FieldRescueRoute") then warn("[MareEssentia] 구출 조사원 배치 불가", opts.siteId) end
+		end
+	end
+
+	-- [전 세계 거점 탈환] 지점 목록이 아니라 기존 지형·카드·위험도·구역 조건으로 선택한다.
+	-- 구출·호위·추격 우선. 기존 적, 보상, 난수, 저장 필드를 보존하고 서버 판정 권한은 확대하지 않는다.
+	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		local field = targetCard and targetCard.field
+		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
+			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
+			and (theme == "fort" or ((theme == "ruins" or theme == "archive") and
+				(field == "Site" or field == "Relic" or field == "Architecture" or field == "Language"))) then
+			local anchor = folder:FindFirstChild("Discovery2")
+			if anchor and anchor:IsA("BasePart") then
+				local guards = {}
+				for _, enemy in enemies do
+					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(guards, enemy) end
+				end
+				table.sort(guards, function(a, b)
+					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
+				end)
+				local count = math.min(math.clamp((opts.danger or 1), 3, 5), #guards)
+				if count > 0 then
+					folder:SetAttribute("FieldStrongholdRoute", true)
+					folder:SetAttribute("FieldStrongholdRemaining", count)
+					for i = 1, count do
+						local enemy = guards[i]
+						enemy.model:SetAttribute("FieldStrongholdGuard", true)
+						enemy.tag.Text = "거점 수비병 · " .. enemy.tag.Text
+					end
+					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
+					if prompt then prompt.ActionText, prompt.ObjectText = "거점 탈환 확인", "점거된 기록 보관소" end
+					if found == 1 then questHint.Text = string.format("이어하기 · 거점 수비병 %d명 격파 후 기록 확보", count) end
+				else
+					warn("[MareEssentia] 거점 수비병 배치 불가", opts.siteId)
+				end
+			end
 		end
 	end
 
