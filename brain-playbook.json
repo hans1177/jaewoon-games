@@ -244,6 +244,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1795899655321
+    },
+    "background:sky-missing:배경 연출 약함: 대기 없음, 하늘 없음#e4ac6aa6bf": {
+      "sig": "background:sky-missing:배경 연출 약함: 대기 없음, 하늘 없음",
+      "kind": "background",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "search": "H.startupCover.Parent = gui",
+          "replace": "H.startupCover.Parent = gui\n-- 임시 하늘 설정: 로딩 중 하늘이 없을 경우 기본 색상과 구름을 추가\nlocal Lighting = game:GetService(\"Lighting\")\nif not Lighting:FindFirstChildOfClass(\"Sky\") then\n    local sky = Instance.new(\"Sky\")\n    sky.Name = \"TempLoadingSky\"\n    sky.SkyboxBk = \"\"\n    sky.SkyboxDn = \"\"\n    sky.SkyboxFt = \"\"\n    sky.SkyboxLf = \"\"\n    sky.SkyboxRt = \"\"\n    sky.SkyboxUp = \"\"\n    sky.Parent = Lighting\nend"
+        }
+      ],
+      "summary": "로드 중 하늘이 없을 경우 임시 Sky를 생성해 배경을 보강합니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795901160875
     }
   }
 }
