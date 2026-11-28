@@ -6922,6 +6922,8 @@ function RENDERERS.status()
 	end
 	if page == "skills" then
 	add(function() return mkHeader(content, "무기 숙련 · 연속 공격") end)
+	-- 선택한 한 단계만 기존 전투 관절 모션으로 재생한다. 실제 캐릭터·전투 판정과 분리된 메뉴 전용 복제본.
+	local activePreview, activeStage
 	local origin = view.captain and view.captain.origin
 	local primary = Weapons.originWeapon(origin and origin.id, p.year)
 	local secondary = Weapons.originSidearm(origin and origin.id, p.year)
@@ -6951,20 +6953,129 @@ function RENDERERS.status()
 			if box then
 				local stages = Instance.new("Frame")
 				stages.Name = "WeaponMasteryStages"
-				stages.Size = UDim2.new(1, -4, 0, 56)
+				stages.Size = UDim2.new(1, -4, 0, 92)
 				stages.BackgroundTransparency = 1
 				stages.Parent = box
+				local design = Weapons.actionDesign(weapon)
+				local names = string.split(design.cadence, "·")
+				local grid = Instance.new("UIGridLayout")
+				grid.CellPadding = UDim2.fromOffset(4, 4)
+				grid.CellSize = UDim2.new(0.2, -4, 0, 44)
+				grid.SortOrder = Enum.SortOrder.LayoutOrder
+				grid.Parent = stages
+				local function fitStages()
+					local width = stages.AbsoluteSize.X
+					if width <= 0 then return end
+					local cols = math.clamp(math.floor((width + 4) / 48), 1, 5)
+					local height = math.ceil(10 / cols) * 48 - 4
+					grid.CellSize = UDim2.new(1 / cols, -4 * (cols - 1) / cols, 0, 44)
+					if stages.Size.Y.Offset ~= height then stages.Size = UDim2.new(1, -4, 0, height) end
+				end
+				stages:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitStages)
+				task.defer(fitStages)
 				for i, need in thresholds do
-					local stage = mkLabel(stages, tostring(i), 13, if i <= rank then INK else INK_SOFT, true)
-					stage.AutomaticSize = Enum.AutomaticSize.None
-					stage.TextXAlignment = Enum.TextXAlignment.Center
-					stage.BackgroundTransparency = 0
+					local stage = Instance.new("TextButton")
+					stage.Text = tostring(i) .. "단" .. (if i <= rank then "" else "\n잠김")
+					stage.TextSize = 14
+					stage.Font = Enum.Font.GothamBold
+					stage.TextColor3 = if i <= rank then INK else INK_SOFT
 					stage.BackgroundColor3 = if i <= rank then Color3.fromRGB(211, 173, 92) else Color3.fromRGB(192, 181, 164)
-					stage.Position = UDim2.new(((i - 1) % 5) / 5, 1, 0, math.floor((i - 1) / 5) * 28)
-					stage.Size = UDim2.new(1 / 5, -3, 0, 25)
+					stage.BorderSizePixel = 0
+					stage.LayoutOrder = i
 					stage.Name = "MasteryStage_" .. i
 					stage:SetAttribute("RequiredExperience", need)
+					stage:SetAttribute("MasteryUnlocked", i <= rank)
 					corner(stage, 3)
+					stage.Parent = stages
+					stage.Activated:Connect(function()
+						if activeStage and activeStage.Parent then activeStage:SetAttribute("PreviewSelected", false) end
+						if activePreview then activePreview:Destroy() end
+						activeStage = stage
+						stage:SetAttribute("PreviewSelected", true)
+						local panel = Instance.new("Frame")
+						panel.Name = "MasteryMotionPreview"
+						panel.Size = UDim2.new(1, -4, 0, 206)
+						panel.BackgroundColor3 = COLORS.paper
+						panel.BorderSizePixel = 0
+						panel.Parent = box
+						activePreview = panel
+						local label = mkLabel(panel, string.format("%d단 · %s · %s", i, names[i] or design.basic, if i <= rank then "해금" else "미해금"), 14, INK, true)
+						label.AutomaticSize = Enum.AutomaticSize.None
+						label.Size = UDim2.new(1, -8, 0, 24)
+						label.Position = UDim2.fromOffset(4, 2)
+						local preview = Instance.new("ViewportFrame")
+						preview.Name = "MasteryJointViewport"
+						preview.Size = UDim2.new(1, -8, 0, 144)
+						preview.Position = UDim2.fromOffset(4, 26)
+						preview.BackgroundColor3 = Color3.fromRGB(76, 59, 44)
+						preview.Ambient = Color3.fromRGB(180, 171, 153)
+						preview.LightColor = Color3.fromRGB(255, 240, 213)
+						preview.Parent = panel
+						corner(preview, 5)
+						local note = mkLabel(panel, string.format("필요 경험치 %d · 관절 동작만 재생", need), 13, INK_SOFT, false)
+						note.AutomaticSize = Enum.AutomaticSize.None
+						note.Size = UDim2.new(1, -8, 0, 32)
+						note.Position = UDim2.fromOffset(4, 174)
+						task.spawn(function()
+							local ok, fm = pcall(function() return require(Shared:WaitForChild("FieldMotion", 5)) end)
+							if not panel.Parent then return end
+							local character = player.Character
+							if not ok or not fm or not character then note.Text = "모션 또는 캐릭터 준비 중"; return end
+							local profile = if weapon.family == "fist" then "UNARMED_RUSH" else weapon.motion
+							local combo = fm.weaponCombo(profile, i)
+							if not combo then note.Text = "등록된 관절 동작 없음"; return end
+							local archivable = character.Archivable
+							character.Archivable = true
+							local cloned, model = pcall(function() return character:Clone() end)
+							character.Archivable = archivable
+							if not cloned or not model then note.Text = "캐릭터 복제 불가"; return end
+							local root = model:FindFirstChild("HumanoidRootPart")
+							if not root or not root:IsA("BasePart") then model:Destroy(); note.Text = "관절 모델 준비 불가"; return end
+							for _, d in model:GetDescendants() do
+								if d:IsA("LuaSourceContainer") or d:IsA("BillboardGui") or d:IsA("SurfaceGui") or d:IsA("Sound") or d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") then
+									d:Destroy()
+								elseif d:IsA("BasePart") then
+									d.Anchored = d == root
+									d.CanCollide = false
+									d.LocalTransparencyModifier = 0
+								end
+							end
+							local world = Instance.new("WorldModel")
+							world.Parent = preview
+							model.Parent = world
+							model:PivotTo(CFrame.new())
+							local cf, size = model:GetBoundingBox()
+							local cam = Instance.new("Camera")
+							cam.FieldOfView = 36
+							local distance = math.max(5, size.Y * 2.3, size.X * 2.6)
+							cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(distance * 0.38, size.Y * 0.08, -distance), cf.Position)
+							cam.Parent = preview
+							preview.CurrentCamera = cam
+							local rig = fm.new(model, false)
+							if not model:GetAttribute("FieldJointReady") then
+								fm.destroy(rig)
+								note.Text = "실제 관절 연결 부족 · 재생 불가"
+								return
+							end
+							local reduced = motionSettings.ReducedMotionEnabled
+							local duration = math.max(0.05, combo.duration + (combo.fadeDuration or 0))
+							local elapsed = 0
+							if reduced then
+								fm.sample(combo, combo.steps[1].contact, rig.canon)
+								fm.step(rig, 0.1, nil, 2)
+							else
+								while panel.Parent and main.Visible and elapsed < duration do
+									local dt = RunService.RenderStepped:Wait()
+									if not panel.Parent or not main.Visible then break end
+									elapsed += dt
+									table.clear(rig.canon)
+									fm.sample(combo, math.min(elapsed, duration), rig.canon)
+									fm.step(rig, math.min(dt, 0.1))
+								end
+							end
+							fm.destroy(rig)
+						end)
+					end)
 				end
 				local track = Instance.new("Frame")
 				track.Name = "WeaponMasteryExperience"
@@ -6979,7 +7090,7 @@ function RENDERERS.status()
 				fill.BorderSizePixel = 0
 				fill.Parent = track
 				corner(fill, 4)
-				local skillText = if rank == 1 then "기본 공격 · 자동 스킬 잠김" elseif rank < 4 then "자동 강타 해금" else "자동 강타·회전 기술 해금"
+				local skillText = if rank == 1 then "기본 공격 · 자동 스킬 잠김" elseif rank < 4 then design.heavyName .. " 해금" else design.heavyName .. "·" .. design.sweepName .. " 해금"
 				mkLabel(box, string.format("연속 공격 %d단 · %s", rank, skillText), 13, INK, true)
 				mkLabel(box, if rank >= 8 then "필살기 해금 · 전투 중 충전 필요" else "필살기 8단 해금 · 경험치 380 필요", 13, if rank >= 8 then Color3.fromRGB(47, 122, 58) else INK_SOFT, true)
 			end
