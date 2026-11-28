@@ -3101,26 +3101,11 @@ H.DOCK = {
 }
 H.dockButtons = {}
 H.dockNotices = {}
-H.dockBlooms = {}
 H.dockMotion = {}
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
 	H.dockButtons[d[1]] = b
-	-- [시설 신호] 기존 아이콘 위에 투명한 색광 두 겹을 한 번만 만든다. 메뉴·자산·터치 영역은 유지.
-	local halo = Instance.new("ImageLabel")
-	halo.Name = "SignalHalo"
-	halo.AnchorPoint = Vector2.new(0.5, 0.5)
-	halo.Position = UDim2.new(0.5, 0, 0, 23) -- [모바일] 셀 가운데에서만 빛이 퍼져 여섯 번째 열에서도 잘리지 않는다.
-	halo.Size = UDim2.fromOffset(28, 28)
-	halo.Image = "rbxasset://textures/particles/sparkles_main.dds"
-	halo.ImageColor3 = Color3.fromRGB(255, 204, 96)
-	halo.ImageTransparency = 0.58
-	halo.BackgroundTransparency = 1
-	halo.BorderSizePixel = 0
-	halo.ZIndex = 6
-	halo.Visible = false
-	halo.Parent = b
 	local notice = Instance.new("ImageLabel")
 	notice.Name = "FacilityNotice"
 	notice.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3139,33 +3124,6 @@ for i, d in H.DOCK do
 	notice.Visible = false
 	notice.Parent = b
 	H.dockNotices[d[1]] = notice
-	-- [긴급·저가·납품] 스크롤 잘림 밖 100px 둥근 그림자/빛 고리.
-	-- [시설 알림] 기존 알림 판정은 유지하되 100~128px 화면광 대신 아이콘 크기의 원형 음영을 쓴다.
-	local bloom = Instance.new("Frame")
-	bloom.Name = "SignalBloom_" .. d[1]
-	bloom.AnchorPoint = Vector2.new(0.5, 0.5)
-	bloom.Position = UDim2.new(0.5, 0, 0, 23)
-	bloom.Size = UDim2.fromOffset(46, 46)
-	bloom.BackgroundColor3 = Color3.fromRGB(255, 202, 92)
-	bloom.BackgroundTransparency = 0.77
-	bloom.BorderSizePixel = 0
-	bloom.Active = false
-	bloom.Visible = false
-	bloom.ZIndex = 1
-	bloom.Parent = b
-	local r = Instance.new("UICorner")
-	r.CornerRadius = UDim.new(1, 0)
-	r.Parent = bloom
-	local shade = Instance.new("UIGradient")
-	shade.Color = ColorSequence.new(Color3.fromRGB(255, 255, 237), Color3.fromRGB(145, 75, 40))
-	shade.Rotation = 90
-	shade.Parent = bloom
-	local rim = Instance.new("UIStroke")
-	rim.Name = "BloomEdge"
-	rim.Thickness = 2
-	rim.Transparency = 0.24
-	rim.Parent = bloom
-	H.dockBlooms[d[1]] = bloom
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
@@ -3735,7 +3693,7 @@ function H.updateHud(p, ship)
 		board = if readyDelivery then "납품"
 			elseif (ship.crew or 0) < (ship.maxCrew or 0) * 0.5 then "인원" else nil,
 	}
-	-- [알림 효과] 실제 게임 상태만 사용. 2겹 색광은 활성 알림에만 재생하고 상태 변경 시 기존 트윈을 정리한다.
+	-- [알림 효과] 실제 게임 상태만 사용. 상태 변경 시 기존 배지 트윈을 정리한다.
 	H.dockSignalTweens = H.dockSignalTweens or {}
 	local signalTweenService = game:GetService("TweenService")
 	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
@@ -3745,14 +3703,12 @@ function H.updateHud(p, ship)
 		local changed = (alert or "") ~= (previous or "")
 		local motionChanged = notice:GetAttribute("ReducedMotionLast") ~= reducedMotion
 		local button = H.dockButtons[id]
-		local halo = if button then button:FindFirstChild("SignalHalo") else nil
-		local bloom = H.dockBlooms[id]
-		-- [효과 정리] 반짝이·색광·파편 제거. 알림은 청동 느낌표 배지 + 아이콘 맥동만.
-		if bloom then bloom.Visible = false end
-		if halo then halo.Visible = false end
-		notice.Visible = alert ~= nil
-		notice.ImageColor3 = if alert == "긴급" then Color3.fromRGB(255, 205, 190) else Color3.new(1, 1, 1)
-		if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
+		-- [효과 정리] 숨겨진 광원 인스턴스 없이 청동 배지와 맥동만 사용한다.
+		if changed or motionChanged or previous == nil then
+			notice.Visible = alert ~= nil
+			notice.ImageColor3 = if alert == "긴급" then Color3.fromRGB(255, 205, 190) else Color3.new(1, 1, 1)
+			if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
+		end
 		if changed or motionChanged then
 			notice:SetAttribute("SignalKind", alert or "")
 			notice:SetAttribute("ReducedMotionLast", reducedMotion)
@@ -3765,8 +3721,10 @@ function H.updateHud(p, ship)
 			if alert and changed and not reducedMotion then
 				-- 새 알림 순간 배지가 한 번 톡 튀어나온다(반복 없음).
 				notice.Size = UDim2.fromOffset(8, 8)
-				signalTweenService:Create(notice, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-					{ Size = UDim2.fromOffset(20, 20) }):Play()
+				local tween = signalTweenService:Create(notice, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+					{ Size = UDim2.fromOffset(20, 20) })
+				H.dockSignalTweens[id] = { tween }
+				tween:Play()
 			end
 		end
 	end
@@ -3792,7 +3750,7 @@ function H.updateHud(p, ship)
 		local pulse = H.dockMotion["Menu_" .. destination]
 		if pulse and not game:GetService("GuiService").ReducedMotionEnabled then pulse:Play() end
 	end
-	-- [글씨 알림 제거] 저가·긴급·수리·보급·납품·추천 상태는 해당 아이콘의 색광·파티클만으로 표시한다.
+	-- [글씨 알림 제거] 저가·긴급·수리·보급·납품·추천 상태는 청동 배지와 아이콘 맥동으로 표시한다.
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
