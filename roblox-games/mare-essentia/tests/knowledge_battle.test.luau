@@ -1023,5 +1023,60 @@ do
 	check("연대기 퀘스트: 학문 연결이 맞다", #qbad == 0)
 end
 
+-- 제2~4장: 실제 서비스의 분기 해금·전투 진행·데이터 참조 검증
+do
+	local Q = D.Quests.ById
+	local siteById = {}
+	for _, site in D.Sites.Sites do siteById[site.id] = site end
+	local valid = #D.Quests.Chapters == 4
+	for n = 2, 4 do
+		for _, suffix in { "1", "2", "3", "4", "5a", "5b" } do
+			local q = Q["ch" .. tostring(n) .. "_" .. suffix]
+			valid = valid and q ~= nil and q.problem ~= nil and q.cause ~= nil and q.result ~= nil and q.speaker ~= nil and q.line ~= nil
+			if q then
+				if q.goodId then valid = valid and D.Ports.Goods[q.goodId] ~= nil end
+				if q.portId then valid = valid and D.Ports.Ports[q.portId] ~= nil end
+				if q.exploreSite then
+					local site = siteById[q.exploreSite]
+					valid = valid and site ~= nil and site.portId == q.portId and table.find(site.pool, q.cardId) ~= nil and D.Cards.ById[q.cardId] ~= nil
+				end
+				if q.leaderId then valid = valid and D.BoardingCards.Leaders[q.leaderId] ~= nil end
+			end
+		end
+		local st = S.State.new("england", 1700)
+		st.quests.done.pr_england_4 = true
+		local first = Q["ch" .. tostring(n) .. "_1"]
+		check("장 해금: 앞 장 미완료 차단 " .. n, not S.Quest.visible(st, first))
+		for _, id in first.afterAny do
+			st.quests.done[id] = true
+			check("장 해금: 선택 결말 " .. id, S.Quest.visible(st, first))
+			st.quests.done[id] = nil
+		end
+	end
+	check("제2~4장 실제 상품·항구·탐험지·카드 참조", valid)
+	local st = S.State.new("england", 1700)
+	st.quests.done.pr_england_4 = true
+	st.quests.done.ch2_2 = true
+	st.stats.warClears = { war_ch2 = 1 }
+	check("이야기 전용 함대전은 이전 승리로 자동 완료되지 않는다", S.Quest.progressAny(st, Q.ch2_3) == 0 and not S.Quest.isAuto(Q.ch2_3))
+	local accepted = Registry.handlers.Accept(st, { questId = "ch2_3" })
+	check("이야기 함대전 수락 시 기존 승수 제외", accepted and S.Quest.progress(st, Q.ch2_3) == 0)
+	D.Quests.Kit.recordWar(st, { id = "war_ch2", region = "europe" })
+	check("이야기 함대전 실제 새 승리만 진행", S.Quest.progress(st, Q.ch2_3) == 1)
+	local sd = S.State.new("england", 1700)
+	sd.quests.done.pr_england_4 = true
+	sd.quests.done.ch3_2 = true
+	sd.stats.duelWins = { rajaraja = 3 }
+	local duelAccepted = Registry.handlers.Accept(sd, { questId = "ch3_3" })
+	check("이야기 대결 수락 시 기존 승수 제외", duelAccepted and S.Quest.progress(sd, Q.ch3_3) == 0)
+	D.Quests.Kit.recordDuelWin(sd, "rajaraja")
+	check("이야기 대결 새 승리만 진행", S.Quest.progress(sd, Q.ch3_3) == 1)
+	local sb = S.State.new("england", 1700)
+	sb.quests.done.pr_england_4 = true
+	sb.quests.done.ch4_4 = true
+	sb.stats.storyChoices = { ch4_treaty = "permit" }
+	check("장 결말은 선택한 분기만 해금", S.Quest.visible(sb, Q.ch4_5b) and not S.Quest.visible(sb, Q.ch4_5a))
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end
