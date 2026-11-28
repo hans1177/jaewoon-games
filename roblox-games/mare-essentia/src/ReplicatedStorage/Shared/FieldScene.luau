@@ -10718,7 +10718,7 @@ function FieldScene.start(opts)
 
 	-- [직업 지원 파티] 상시 동료 모델/추적 AI는 만들지 않는다. 기존 영입 명단과 직업별 스킬만 사용한다.
 	-- 호출/자동지원/필살 게이지는 이번 탐험 한정이며 저장 키를 추가하지 않는다.
-	(function()
+	;(function()
 		local party = if type(opts.allies) == "table" then opts.allies else {}
 		local seen = {}
 		local count = 0
@@ -10927,7 +10927,7 @@ function FieldScene.start(opts)
 
 	-- 폰: 기본 터치 조이스틱이 막히는 경우가 있어, 탐험 중에는 직접 만든 이동 패드를 쓴다(왼쪽 아래 원판을 끌면 카메라 기준으로 걷는다).
 	-- [Luau 200레지스터 제한] 모바일 패드 초기화는 원래 기능을 그대로 별도 실행 프레임에서 처리한다.
-	(function()
+	;(function()
 		local UIS = game:GetService("UserInputService")
 		if UIS.TouchEnabled and not UIS.KeyboardEnabled then
 			local ctrl
