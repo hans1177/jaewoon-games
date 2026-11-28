@@ -4397,8 +4397,11 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			if m.turn == "me" and not m.over then
 				hints, bestHint = BC.hint(m, "me")
 			end
+			-- [손패 배치] 생성 순서가 곧 LayoutOrder이므로 별도 목록과 정렬은 필요 없다.
+			local handMid = (#m.hand.me + 1) / 2
 			for i, c in m.hand.me do
 				local b = Instance.new("TextButton")
+				b.Rotation = if opts.cardOnly then 0 else math.clamp((i - handMid) * 2.2, -9, 9)
 				b.Size = UDim2.new(0, if opts.cardOnly then handCardWidth else 140, 1, if opts.cardOnly then -(handPadding.PaddingTop.Offset + handPadding.PaddingBottom.Offset + handFrame.ScrollBarThickness) elseif compactCards then -3 else -10)
 				local cardRatio = Instance.new("UIAspectRatioConstraint")
 				cardRatio.AspectRatio = if opts.cardOnly then portraitCardRatio else 0.69
@@ -4698,22 +4701,6 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 					end))
 				end)
 				b.Destroying:Connect(function() endDrag(nil) end)
-			end
-			-- 부채꼴 손패: 가운데 카드는 곧게, 가장자리로 갈수록 기울인다
-			do
-				local cards = {}
-				for _, ch in handFrame:GetChildren() do
-					if ch:IsA("TextButton") then
-						table.insert(cards, ch)
-					end
-				end
-				table.sort(cards, function(a, b2) return a.LayoutOrder < b2.LayoutOrder end)
-				local mid = (#cards + 1) / 2
-				for idx, ch in cards do
-					if ch ~= selected then
-						ch.Rotation = if opts.cardOnly then 0 else math.clamp((idx - mid) * 2.2, -9, 9)
-					end
-				end
 			end
 			passBtn.BackgroundTransparency = if m.turn == "me" then 0 else 0.5
 			if opts.cardOnly then

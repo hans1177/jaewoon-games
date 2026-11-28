@@ -4793,12 +4793,25 @@ test('Mare naval tracking reuses trajectory appearance and skips unchanged coord
 
 test('Mare card drag and flight release scene work without changing card play',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
-  const drag=naval.slice(naval.indexOf('local dragSuppressUntil = 0'),naval.indexOf('-- 부채꼴 손패'));
+  const dragStart=naval.indexOf('local dragSuppressUntil = 0');
+  const dragEnd=naval.indexOf('passBtn.BackgroundTransparency = if m.turn',dragStart);
+  assert.ok(dragStart>=0 && dragEnd>dragStart);
+  const drag=naval.slice(dragStart,dragEnd);
   for(const token of ['if os.clock() < dragSuppressUntil then dragSuppressUntil = 0 return end','dragSuppressUntil = os.clock() + 0.25','for _, cn in dragConns do cn:Disconnect() end','table.clear(dragConns)','if ghost then ghost:Destroy() ghost = nil end','if not pos or not wasDragging or not b.Parent or finished or not g.Parent then return end','delta.Y > -18 or math.abs(delta.Y) < math.abs(delta.X)','if inside and not reason then','playChosenCard()','if ghost.Position ~= position then ghost.Position = position end','b.Destroying:Connect(function() endDrag(nil) end)']) assert.ok(drag.includes(token),token);
   assert.ok(!drag.includes('task.delay('));
   const flight=naval.slice(naval.indexOf('local function playChosenCard()'),naval.indexOf('local function blockedReason()'));
   for(const token of ['TweenInfo.new(0.34, Enum.EasingStyle.Quart','activeFlightTween = flightTween','local playbackState = flightTween.Completed:Wait()','flightTween:Destroy()','playbackState ~= Enum.PlaybackState.Completed','afterAction(mine(BC.play(m, "me", i)))']) assert.ok(flight.includes(token),token);
   assert.ok(naval.includes('if activeFlightTween then activeFlightTween:Cancel(); activeFlightTween = nil end'));
+});
+
+test('Mare hand layout applies original fan rotation during card creation',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const start=naval.indexOf('local handMid = (#m.hand.me + 1) / 2');
+  const end=naval.indexOf('passBtn.BackgroundTransparency = if m.turn',start);
+  assert.ok(start>=0 && end>start);
+  const hand=naval.slice(start,end);
+  for(const token of ['for i, c in m.hand.me do','b.Rotation = if opts.cardOnly then 0 else math.clamp((i - handMid) * 2.2, -9, 9)','b.LayoutOrder = i','b:SetAttribute("HandIdx", i)','afterAction(mine(BC.play(m, "me", i)))']) assert.ok(hand.includes(token),token);
+  assert.ok(!hand.includes('table.sort(cards'));
 });
 
 test('Mare naval fleet wake shares weather and alternation without changing particle cadence',()=>{
