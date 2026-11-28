@@ -32,3 +32,11 @@ test('지상 전투: 약점·반격·두목 단계·전투 목표', () => {
   assert.match(field, /pl\.fieldChallenge = \{ kind = pick\.kind/);
   assert.match(field, /" · 약점: " \.\. AC\.WEAK\[ac\.kind\]\.label/);
 });
+test('퀘스트 대화 연출: 말하는 사람·초상·사연 대화·결과 초상', () => {
+  const view = fs.readFileSync(`${root}/ServerScriptService/Services/View.luau`, 'utf8');
+  assert.match(view, /talk = \(function\(\)/);
+  for (const f of ['portraitFor', 'storyTalk', 'questTalkLines', 'checkQuestTalks']) assert.match(game, new RegExp(`function H\\.${f}\\(`));
+  assert.match(game, /if H\.checkQuestTalks then H\.checkQuestTalks\(\) end/);
+  assert.match(game, /face\.Name = "ResultSpeaker"/);
+  assert.match(game, /AssetIds\["Portraits\/comp_" \.\. id\]/);
+});
