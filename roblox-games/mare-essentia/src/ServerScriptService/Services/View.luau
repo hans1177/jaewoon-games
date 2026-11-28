@@ -1181,6 +1181,8 @@ return function(D, S)
 		state._questRewards = nil -- 일회성 보상 표시, 저장하지 않는다
 		view.bossReward = state._bossReward
 		state._bossReward = nil
+		view.fieldReward = state._fieldReward
+		state._fieldReward = nil
 		view.bosses = {}
 		for _, b in D.Bosses.Bosses do
 			local rec = state.bosses[b.id]

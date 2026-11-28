@@ -12304,7 +12304,7 @@ do
 			end
 		end
 		local chapterArt = if chapterEnd then AssetIds["CardArt/ui_banner_chapter"] else nil
-		local heading = if d.boss then "보스 격파 · " .. tostring(d.name) elseif chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" elseif d.name == "지난 이야기" then "지난 이야기" else "의뢰 완료 · " .. tostring(d.name)
+		local heading = if d.boss then "보스 격파 · " .. tostring(d.name) elseif d.field then "탐험 귀환 · " .. tostring(d.name) elseif chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" elseif d.name == "지난 이야기" then "지난 이야기" else "의뢰 완료 · " .. tostring(d.name)
 		if chapterArt then
 			local banner = Instance.new("ImageLabel")
 			banner.Name = "ChapterCompletionBanner"
@@ -12345,7 +12345,7 @@ do
 				art.Parent = box
 			end
 		end
-		if grade > 0 then
+		if grade > 0 and not d.field then
 			local seal = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 46), Color3.fromRGB(55, 37, 25))
 			seal.Name = "QuestRewardRank"
 			seal.LayoutOrder = 2
@@ -12529,6 +12529,7 @@ do
 		H.seenDoneQuests = H.seenDoneQuests or {}
 		local fresh = {}
 		if view.bossReward then table.insert(fresh, view.bossReward) end
+		if view.fieldReward then table.insert(fresh, view.fieldReward) end
 		for _, d in done do
 			local key = tostring(d.id or d.name)
 			if not H.seenDoneQuests[key] then
