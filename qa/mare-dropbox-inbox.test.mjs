@@ -48,9 +48,21 @@ test('승인된 카드 원본만 하나 선택하고 기존 ID에 다른 원본�
   assert.ok(uploader.includes('actual === approved'));
   assert.ok(uploader.includes('CARD_APPROVED_SOURCE_NOT_FOUND'));
   assert.ok(uploader.includes('item !== selected'));
-  assert.ok(uploader.includes("item.kind === 'CardArt' && !regionalCardArt && approvedImages[id]"));
+  assert.ok(uploader.includes("item.kind === 'CardArt' && !regionalCardArt && (approvedImages[id] ||"));
   assert.ok(uploader.includes('MODEL_ORIGINAL_REVIEW_REQUIRED'));
   assert.ok(uploader.includes('MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED'));
   assert.ok(wf.includes("event_title_(?:ship|parchment)|history_(?:open|map|record)"));
   assert.ok(wf.includes("hashlib.sha256(raw).hexdigest()!=digest"));
+});
+
+test('재질은 기존 실제 업로더의 CC0 출처 및 해시 조건을 먼저 검증한다', () => {
+  const register = fs.readFileSync('tools/devloop/register_asset.py', 'utf8');
+  const start = register.indexOf('if not why and kind == "Materials":');
+  assert.ok(start >= 0);
+  const guard = register.slice(start, register.indexOf('if not why and h in blocked', start));
+  assert.ok(guard.includes('m.get("license") != "CC0-1.0"'));
+  assert.ok(guard.includes('CC0_MATERIAL_SOURCE_METADATA_REQUIRED'));
+  assert.ok(guard.includes('m["sourceSha256"] != h'));
+  assert.ok(guard.includes('CC0_MATERIAL_SOURCE_HASH_MISMATCH'));
+  assert.ok(start < register.indexOf('shutil.move(src, dst)'));
 });

@@ -2451,7 +2451,7 @@ for (const item of plan) {
   }
   // [카드배틀 화면] 승인된 새 이미지의 사용 권한을 확인한 뒤에 기존 번호를 교체한다.
   const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && /^ui_[a-z0-9_]+$/.test(item.name);
-  if (item.kind === 'CardArt' && !regionalCardArt && approvedImages[id]) {
+  if (item.kind === 'CardArt' && !regionalCardArt && (approvedImages[id] || /^lo_\d{2}$/.test(item.name) || battleUiArt)) {
     const old = registry.assets[id];
     if (battleUiArt && old?.sourceSha256 !== sourceSha256 && approvedImages[id] === sourceSha256
       && (originalBytes.length < 33
@@ -2461,7 +2461,7 @@ for (const item of plan) {
       failures.push(id + ': CARD_BATTLE_UI_FULL_COLOR_PNG_REQUIRED');
       continue;
     }
-    if (old?.assetId && old.sourceSha256 !== sourceSha256) {
+    if (old?.assetId && old.sourceSha256 !== sourceSha256 && (approvedImages[id] || old.sourceSha256 || battleUiArt)) {
       if (approvedImages[id] !== sourceSha256) {
         failures.push(id + (battleUiArt ? ': CARD_BATTLE_UI_APPROVAL_HASH_MISMATCH' : ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH'));
         continue;
