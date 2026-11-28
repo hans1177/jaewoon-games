@@ -104,6 +104,28 @@ do
 	check("사수는 가까우면 물러난다", A.moveWish((function() local a = A.newEnemy("archer"); a.state = "chase"; return a end)(), 5) == -1)
 	check("졸개는 멀면 다가온다", A.moveWish((function() local a = A.newEnemy("grunt"); a.state = "chase"; return a end)(), 20) == 1)
 end
+-- 두목의 실제 피해·재개 체력에서 공용 능력과 기술 단계를 복구한다.
+do
+	local b = A.newEnemy("boss")
+	local maxHp = b.hp
+	check("두목 기술 경계", A.bossPhase(70, 100) == 1 and A.bossPhase(69, 100) == 2 and A.bossPhase(40, 100) == 2 and A.bossPhase(39, 100) == 3 and A.bossPhase(15, 100) == 3 and A.bossPhase(14, 100) == 4)
+	A.damageEnemy(b, maxHp - 100, 1, false)
+	local f, r, g = A.advanceBossAbilities(b, maxHp)
+	check("큰 피해로 모든 능력 경계를 건너도 빠짐없이 반영", f and r and g)
+	local def = b.def
+	check("기존 두목 배율 유지", math.abs(def.speed - A.Enemies.boss.speed * 1.25 * 1.3) < 0.0001 and math.abs(def.windup - A.Enemies.boss.windup * 0.85 * 0.7) < 0.0001 and math.abs(def.range - A.Enemies.boss.range * 1.2) < 0.0001 and math.abs(def.recover - A.Enemies.boss.recover * 1.6 * 0.7) < 0.0001)
+	local f2, r2, g2 = A.advanceBossAbilities(b, maxHp)
+	check("같은 체력 반복 갱신은 배율 중복 없음", not f2 and not r2 and not g2 and b.def == def)
+	local restored = A.newEnemy("boss")
+	restored.hp = b.hp -- 신뢰된 전투 상태를 재구성하는 순수 계산 검사. 저장 RPC는 아님.
+	A.advanceBossAbilities(restored, maxHp)
+	check("재구성 체력에서 동일한 기술 단계·능력", A.bossPhase(restored.hp, maxHp) == A.bossPhase(b.hp, maxHp) and restored.def.speed == def.speed and restored.def.range == def.range and restored.def.windup == def.windup and restored.def.recover == def.recover)
+	check("다른 두목과 원본 정의는 독립", A.newEnemy("boss").def.speed == 8 and A.newEnemy("boss").hp == maxHp)
+	local dead = A.newEnemy("boss")
+	A.damageEnemy(dead, maxHp, 1, false)
+	local df, dr, dg = A.advanceBossAbilities(dead, maxHp)
+	check("격파된 두목은 능력 재발동 없음", not df and not dr and not dg)
+end
 -- 범위 판정
 do
 	check("범위: 정면 안은 맞고 뒤는 빗나간다", A.inReach(5, 120, 3, 30) and not A.inReach(5, 120, 3, 100))

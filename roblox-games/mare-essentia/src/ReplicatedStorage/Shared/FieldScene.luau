@@ -7750,29 +7750,26 @@ function FieldScene.start(opts)
 			e.model:SetAttribute("FieldWeakHit", weakLabel)
 			if pl.fieldChallenge then pl.fieldChallenge.weakHits = (pl.fieldChallenge.weakHits or 0) + 1 end
 		end
-		-- [두목 능력 변화] 기존 66%/33% 수치와 배율 유지. 공식 4단계 기술 표시는 bossSkillTick 한 곳에서 결정한다.
-		-- 한 번의 강타로 두 임계값을 넘겨도 각 능력 변화는 정확히 한 번 적용한다.
+		-- [두목 능력 변화] 공용 ActionCombat에서 체력 기반 능력을 한 번만 적용한다. 이곳은 연출만 담당한다.
 		if e.boss and not died then
-			local ratio = e.ac.hp / math.max(1, e.maxHp)
-			if ratio < 0.66 and not e.bossPhase2 then
-				e.bossPhase2 = true
-				e.ac.def = table.clone(e.ac.def)
-				e.ac.def.speed *= 1.25
-				e.ac.def.windup *= 0.85
+			local faster, reach, rage = AC.advanceBossAbilities(e.ac, e.maxHp)
+			if faster then
 				e.speed = e.ac.def.speed
 				showCombo("두목 분노! · 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
 				screenFlash(Color3.fromRGB(255, 90, 60), 0.82)
 				sfx("sfx_horn", 0.5, 0.8)
 			end
-			if ratio < 0.33 and not e.bossPhase3 then
-				e.bossPhase3 = true
-				e.ac.def = table.clone(e.ac.def)
-				e.ac.def.range *= 1.2
-				e.ac.def.recover *= 1.6
+			if reach then
 				showCombo("최후의 일격! · 크게 내려친 뒤가 빈틈", true, Color3.fromRGB(255, 70, 60))
 				screenFlash(Color3.fromRGB(255, 60, 40), 0.78)
 				shakeUntil, shakeAmp = os.clock() + 0.4, 1.4
 				sfx("sfx_event_danger", 0.6, 0.75)
+			end
+			if rage then
+				say("두목이 격분했다!")
+				sfx("sfx_event_war", 0.7, 1)
+				hurtReact(1.5)
+				burst(e.root.Position + Vector3.new(0, 3, 0), 40, true)
 			end
 		end
 		e.hp = e.ac.hp
@@ -8078,19 +8075,6 @@ function FieldScene.start(opts)
 			task.delay(0.1, function()
 				punchCam.FieldOfView = 70
 			end)
-		end
-		-- 두목은 체력이 절반 아래로 내려가면 격분한다(더 빠르고 공격 준비가 짧아진다)
-		if e.ac.def.boss and not e.enraged and not died and e.ac.hp <= e.maxHp * 0.5 then
-			e.enraged = true
-			local d2 = table.clone(e.ac.def)
-			d2.windup = d2.windup * 0.7
-			d2.recover = d2.recover * 0.7
-			d2.speed = d2.speed * 1.3
-			e.ac.def = d2
-			say("두목이 격분했다!")
-			sfx("sfx_event_war", 0.7, 1)
-			hurtReact(1.5)
-			burst(e.root.Position + Vector3.new(0, 3, 0), 40, true)
 		end
 		if died then
 			local idx = table.find(enemies, e)
@@ -9629,16 +9613,12 @@ function FieldScene.start(opts)
 				{ id = "sweep", phase = 4, name = "고개를 지키는 회전 베기", warn = 1.2, cd = 14 },
 			},
 		}
-		local function bossPhaseOf(e)
-			local r = e.ac.hp / math.max(1, e.maxHp)
-			return if r < 0.15 then 4 elseif r < 0.4 then 3 elseif r < 0.7 then 2 else 1
-		end
 		local function bossFeet(e)
 			return e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0)
 		end
 		return function(e, now: number, hrp: BasePart?, dist: number)
 			if finished or not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
-			local phase = bossPhaseOf(e)
+			local phase = AC.bossPhase(e.ac.hp, e.maxHp)
 			local role = e.model:GetAttribute("FieldBossRole")
 			local accent = if role == "hunter" then Color3.fromRGB(113, 218, 114)
 				elseif role == "mountain" then Color3.fromRGB(143, 214, 255)

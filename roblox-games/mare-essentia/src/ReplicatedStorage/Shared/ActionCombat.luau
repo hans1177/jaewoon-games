@@ -89,6 +89,40 @@ function A.newEnemy(kind: string)
 	return { kind = kind, def = def, hp = def.hp, state = "idle", t = 0, struck = false, dead = false, stagger = 0 }
 end
 
+-- [보스 저장·복구 공용 규칙] 체력으로 기술 단계를 계산하고 기존 능력 변화를 한 번만 적용한다.
+-- 호출자가 소유한 전투 상태만 변경한다. 이 함수 자체는 원격 요청이나 저장 권한을 부여하지 않는다.
+function A.bossPhase(hp: number, maxHp: number): number
+	local ratio = hp / math.max(1, maxHp)
+	return if ratio < 0.15 then 4 elseif ratio < 0.4 then 3 elseif ratio < 0.7 then 2 else 1
+end
+
+function A.advanceBossAbilities(e: any, maxHp: number): (boolean, boolean, boolean)
+	if e.dead or not e.def.boss then return false, false, false end
+	local ratio = e.hp / math.max(1, maxHp)
+	local faster = ratio < 0.66 and not e.bossPhase2
+	local reach = ratio < 0.33 and not e.bossPhase3
+	local rage = ratio <= 0.5 and not e.enraged
+	if not (faster or reach or rage) then return false, false, false end
+	e.def = table.clone(e.def)
+	if faster then
+		e.bossPhase2 = true
+		e.def.speed *= 1.25
+		e.def.windup *= 0.85
+	end
+	if reach then
+		e.bossPhase3 = true
+		e.def.range *= 1.2
+		e.def.recover *= 1.6
+	end
+	if rage then
+		e.enraged = true
+		e.def.windup *= 0.7
+		e.def.recover *= 0.7
+		e.def.speed *= 1.3
+	end
+	return faster == true, reach == true, rage == true
+end
+
 -- 적 한 틱. dist = 주인공과 거리. 돌려주는 값: 이벤트 문자열 ("telegraph" | "strike") 또는 nil,
 -- 그리고 "strike" 일 때 이번 공격이 닿았는지(hit). 닿는지는 공격이 시작되는 순간의 거리로 정한다.
 function A.stepEnemy(e: any, dt: number, dist: number, canAttack: boolean?): (string?, boolean?)

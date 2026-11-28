@@ -149,15 +149,15 @@ test('고립 조사원은 실제 주민 모델로 구출 후 동행하며 안전
   assert.ok(field.indexOf('survivorRoot.Position - currentRoot.Position).Magnitude > 16') < field.indexOf('opts.onCheckpoint(i, recordCard)'));
 });
 
-test('두목 강타로 여러 체력 기준을 넘겨도 능력 변화를 누락하지 않고 기술 단계 표시는 한 곳에서 결정한다', () => {
+test('두목 능력 및 기술 단계는 공용 전투 상태로 계산하고 필드에서는 연출만 수행한다', () => {
   const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  const ac = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/ActionCombat.luau`, 'utf8');
   const block = field.split('-- [두목 능력 변화]')[1].split('\n\t\te.hp =')[0];
-  for (const check of [/if ratio < 0\.66 and not e\.bossPhase2 then/,
-    /end\s+if ratio < 0\.33 and not e\.bossPhase3 then/,
-    /e\.ac\.def\.speed \*= 1\.25/,
-    /e\.ac\.def\.windup \*= 0\.85/,
-    /e\.ac\.def\.range \*= 1\.2/,
-    /e\.ac\.def\.recover \*= 1\.6/]) assert.match(block, check);
-  assert.doesNotMatch(block, /FieldBossPhase/);
-  assert.match(field, /return if r < 0\.15 then 4 elseif r < 0\.4 then 3 elseif r < 0\.7 then 2 else 1/);
+  assert.match(block, /AC\.advanceBossAbilities\(e\.ac, e\.maxHp\)/);
+  assert.match(block, /if faster then/);
+  assert.match(block, /if reach then/);
+  assert.match(block, /if rage then/);
+  assert.doesNotMatch(block, /FieldBossPhase|\.def\.\w+\s*\*=/);
+  assert.match(field, /AC\.bossPhase\(e\.ac\.hp, e\.maxHp\)/);
+  for (const check of [/ratio < 0\.66/, /ratio < 0\.33/, /ratio <= 0\.5/, /e\.def\.speed \*= 1\.25/, /e\.def\.windup \*= 0\.85/, /e\.def\.range \*= 1\.2/, /e\.def\.recover \*= 1\.6/]) assert.match(ac, check);
 });
