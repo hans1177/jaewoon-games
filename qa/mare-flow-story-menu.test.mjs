@@ -170,3 +170,15 @@ test('의뢰 선택 시 실제 상세만 노출하고 탐험 경로를 단서와
   assert.match(quest,/route\.port/);
   assert.match(quest,/openTab\(targetTab\)/);
 });
+
+
+test('숙련 시연은 기존 실전 무기 장착 책임 함수와 실제 단계 해금 연출을 재사용한다',()=>{
+  const game=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.equal((field.match(/function FieldScene\.equipFieldWeapon\(/g)||[]).length,1);
+  assert.match(field,/FieldScene\.equipFieldWeapon\(player\.Character, wpn\)/);
+  assert.match(game,/pcall\(sceneModule\.equipFieldWeapon, model, weapon\)/);
+  assert.match(game,/equipped and source == "registered"/);
+  assert.match(game,/MasterySelectionRim/);
+  assert.match(field,/showCombo\(string.format\("%s 숙련 %d단! · %s 해금", wpn.name, rank, unlocked\), true/);
+});

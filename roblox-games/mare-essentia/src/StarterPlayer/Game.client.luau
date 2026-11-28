@@ -6988,10 +6988,19 @@ function RENDERERS.status()
 					corner(stage, 3)
 					stage.Parent = stages
 					stage.Activated:Connect(function()
-						if activeStage and activeStage.Parent then activeStage:SetAttribute("PreviewSelected", false) end
+						if activeStage and activeStage.Parent then
+							activeStage:SetAttribute("PreviewSelected", false)
+							local oldRim = activeStage:FindFirstChild("MasterySelectionRim")
+							if oldRim then oldRim:Destroy() end
+						end
 						if activePreview then activePreview:Destroy() end
 						activeStage = stage
 						stage:SetAttribute("PreviewSelected", true)
+						local rim = Instance.new("UIStroke")
+						rim.Name = "MasterySelectionRim"
+						rim.Color = UI_BRASS_DARK
+						rim.Thickness = 2
+						rim.Parent = stage
 						local panel = Instance.new("Frame")
 						panel.Name = "MasteryMotionPreview"
 						panel.Size = UDim2.new(1, -4, 0, 206)
@@ -7044,6 +7053,22 @@ function RENDERERS.status()
 							world.Parent = preview
 							model.Parent = world
 							model:PivotTo(CFrame.new())
+							-- 동일한 실전 장착 책임 함수로 복제 모델만 장착한다. 원본 장비나 저장은 변경하지 않는다.
+							local loaded, sceneModule = pcall(function() return FieldScene or require(Shared:WaitForChild("FieldScene", 5)) end)
+							if not panel.Parent then return end
+							if loaded and sceneModule and sceneModule.equipFieldWeapon then
+								local equipped = pcall(sceneModule.equipFieldWeapon, model, weapon)
+								local source = model:GetAttribute("WeaponVisualSource")
+								if weapon.family == "fist" and equipped then
+									note.Text = string.format("필요 경험치 %d · 맨손 관절 시연", need)
+								elseif equipped and source == "registered" then
+									note.Text = string.format("필요 경험치 %d · 등록 무기 장착", need)
+								else
+									note.Text = "무기 원본 준비 안 됨 · 관절만 시연"
+								end
+							else
+								note.Text = "무기 장착 모듈 준비 안 됨"
+							end
 							local cf, size = model:GetBoundingBox()
 							local cam = Instance.new("Camera")
 							cam.FieldOfView = 36
