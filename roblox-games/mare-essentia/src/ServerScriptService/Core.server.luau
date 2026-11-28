@@ -451,13 +451,15 @@ local function onInvoke(player, action, payload)
 		return reply(state, false, "알 수 없는 요청")
 	end
 
+	local previousCheckpoint = if action == "FieldCheckpoint" then state.stats.fieldCheckpoint else nil
 	local ok, success, message, fieldRunId, fieldEncounter = pcall(handler, state, payload, ctx)
 	if not ok then
 		warn("[Core] handler error:", action, success)
 		return reply(state, false, "오류가 발생했어요")
 	end
 	if action == "FieldCheckpoint" then
-		if success then session.dirty = true end
+		-- 같은 단계의 재전송은 기존 서버 기록을 확인할 뿐, 추가 저장을 예약하지 않는다.
+		if success and state.stats.fieldCheckpoint ~= previousCheckpoint then session.dirty = true end
 		return { ok = success, message = message or "" } -- 기존 자동저장만 사용, 보상/세계 틱을 단계마다 실행하지 않음
 	end
 	if success then
