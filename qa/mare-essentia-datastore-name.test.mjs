@@ -126,8 +126,8 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
 test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가 회귀', () => {
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
-  // 시설 원화 카드(7:10)는 모든 탭에 표시한다(9d6ab6fcf8). 예전 지도·서재 제외 조건 대신 카드 존재를 확인.
-  assert.match(source,/FacilityArtCard7x10/);
+  // 공통 장식 배너를 제거해 실제 백과·거래 본문을 확보한다.
+  assert.doesNotMatch(source,/H\.facilityGallery =/);
   assert.match(source,/CodexQuickNavigation/);
   assert.match(source,/ScholarTradeEncyclopediaBook/);
   assert.match(source,/CodexBookLeftPage/);
@@ -136,7 +136,7 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
   assert.match(source,/책 펼치기/);
   assert.match(source,/showingNotes = not showingNotes/);
   // 서재의 발견 현황은 백과 표지에만, 최근 메뉴는 다른 시설에서만 보여 준다.
-  assert.match(source,/H\.menuActionButton\.Text = actionText\n\s*-- \[서재 중복 제거\]/);
+  assert.match(source,/H\.menuRecentButton\.Visible = not not showRecent/);
   assert.match(source,/H\.menuRecentButton\.Name = "RecentFacilityShortcut"/);
   assert.match(source,/recentBtn\.Name = "TradeRecentFacility"/);
   assert.match(source,/recentBtn\.Name = "YardRecentFacility"/);
@@ -177,35 +177,26 @@ test('서재 백과 책 판면·모바일 넘기기·시설 내 교역 평균가
 });
 
 // [공통 시설 메뉴 회귀] 기존 게임 기능·본문 유지, 상단 오른쪽 가로탭과 모바일 전체폭을 확인한다.
-test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본문 공간을 복구한다', () => {
+test('시각 우선 메뉴는 하단 도크 또는 넓은 화면 기능 레일과 본문을 분리한다', () => {
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
   const tabs=source.slice(source.indexOf('function H.renderTabs()'),source.indexOf('-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼'));
   const capture=JSON.parse(readText('roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-qa-click.json'));
   assert.match(source,/tabBar\.Name = "FacilityTabBar"/);
-  assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
-  assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
-  assert.match(layout,/local sectionTop = if not wide and not facilityDetail then 112 else 68/);
-  assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, sectionTop\)/);
-  assert.match(layout,/local bodyTop = if headerTabs then 68 else sectionTop \+ \(if tabs then tabHeight \+ 8 else 0\)/);
+  assert.match(layout,/tabBar\.Position = if rail then UDim2\.fromOffset\(6, headerH \+ 4\) else UDim2\.new\(0, 6, 1, -tabH - 6\)/);
+  assert.match(layout,/local bottomInset = if tabs and not rail then tabH \+ 10 else 6/);
+  assert.match(layout,/content\.Position = UDim2\.fromOffset\(bodyX, bodyY\)/);
+  assert.match(layout,/content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - bottomInset\)/);
   assert.match(layout,/H\.tabWidth = tabWidth/);
-  assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
-  assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
-  assert.match(source,/tabLayout\.FillDirection = Enum\.FillDirection\.Horizontal/);
+  assert.match(layout,/H\.tabStrip\.CanvasSize = if rail then UDim2\.fromOffset\(0, total\) else UDim2\.fromOffset\(total, 0\)/);
+  assert.match(layout,/H\.tabStrip\.ScrollingEnabled = total > viewport/);
   assert.match(source,/tabLayout\.Wraps = false/);
-  assert.doesNotMatch(source,/local tabLayout = Instance\.new\("UIGridLayout"\)/);
-  assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
-  assert.match(layout,/content\.Size = UDim2\.new\(1, -16, 1, -bodyTop - 8\)/);
-  assert.match(layout,/H\.facilityGallery\.Position = UDim2\.fromOffset\(8, bodyTop\)/);
-  assert.match(layout,/content\.Position = UDim2\.fromOffset\(8, contentY\)/,'원화 배너 아래 본문 전체 폭');
-  assert.doesNotMatch(layout,/local navW\s*=/);
   assert.match(tabs,/mkButton\(H\.tabStrip, TAB_NAME\[id\]/);
+  assert.match(tabs,/openTab\(id\)/);
   assert.equal(capture.length,1000);
-  assert.equal(capture[88].name,'ui_mobile_tabs_topright');
-  for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_TABS_NOT_TOP_RIGHT','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_TABS_WRAPPED_TO_SECOND_ROW','MOBILE_LAST_TAB_NOT_REACHABLE']){
-    assert.ok(capture[87].code.includes(claim),claim);
-  }
+  assert.equal(capture[88].name,'ui_mobile_bottom_dock');
+  for(const claim of ['MOBILE_TABS_NOT_ONE_ROW','MOBILE_DOCK_NOT_BOTTOM','MOBILE_DOCK_BODY_OVERLAP','MOBILE_LEFT_SPACE_NOT_RECLAIMED','MOBILE_TABS_WRAPPED_TO_SECOND_ROW','MOBILE_LAST_TAB_NOT_REACHABLE','MENU_RAIL_BODY_OVERLAP']) assert.ok(capture[87].code.includes(claim),claim);
 });
 
 test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계약', () => {
@@ -219,7 +210,7 @@ test('새 항해 첫 카드 창 오발동 차단과 가죽·양피지 버튼 계
   assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 226, 177\)/);
   assert.doesNotMatch(buttonCode,/Color3\.fromRGB\(183, 215, 236\)/);
   assert.match(buttonCode,/elseif good or travel then Color3\.fromRGB\(251, 237, 208\)/);
-  assert.match(source,/local groupWidth = statusWidth \+ recentWidth \+ 8/);
+  assert.match(source,/local groupWidth = cashWidth \+ \(if showRecent then recentWidth \+ 8 else 0\)/);
   assert.equal(capture.length,1000);
 });
 
@@ -3574,74 +3565,36 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
   assert.match(source,/width < math\.max\(520, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
   assert.match(source,/local iconPx = if quick then 66 elseif it.portrait then 164 else 148/,'기존 모바일 한눈형은 유지하고 일반 시설 원화·초상 확대');
-  assert.match(trade,/art\.Name = "TradeHighResArt"/,'승인 고화질 교역품 원화 유지');
-  assert.match(trade,/local artId = AssetIds\["Goods\/" \.\. sel\.id\]/,'기존 등록 원화만 사용');
-  assert.match(trade,/modelIcon\(pages, gi\[1\], gi\[2\]/,'원화가 없는 교역품은 기존 3D 렌더러 유지');
-  assert.match(trade,/세계 교역 · 산업 백과/,'서재 백과사전 정보 연결 유지');
   assert.match(trade,/H\.marketPriceSignal\(sel\)/,'교역 판단 정보 연결 유지');
-  // [오너 카드 규격] 조선소 원화 카드가 7:10이어도 기존 등록 선박 모델·비교는 유지한다.
   assert.match(yard,/local cardW = math\.floor\(math\.max\(34, math\.min\(heroWidth - 20, availableArtH \* 0\.7\)\)\)/,'실제 창 높이를 기준으로 7:10 너비 계산');
   assert.match(yard,/local cardH = math\.floor\(cardW \* 10 \/ 7\)/,'선박 전시 카드비 7:10');
   assert.match(yard,/model = modelIcon\(card, shipArt\[1\], shipArt\[2\]/,'기존 등록 선박 모델 재사용');
   assert.match(yard,/model\.Size = UDim2\.fromScale\(1, 1\)/,'모델은 전시 카드 안에 맞춤');
   assert.match(yard,/YardArtToCodex/,'선박 원화 누르면 백과 이동');
-  // [메뉴별 원화] 발견된 지식만 연결하고 원본을 확대·자르지 않으며 기존 서버 구조를 보존한다.
-  assert.match(source,/FacilityArtCard7x10/,'시설별 원화 카드 슬롯');
-  assert.match(source,/H\.galleryImage = Instance\.new\("ImageButton"\)/,'왼쪽 원화 터치 반응');
-  assert.match(source,/H\.FACILITY_GALLERY_TOPICS/,'시설/탭별 관련 원화 전환');
-  assert.match(source,/H\.galleryImage\.Activated:Connect/,'원화 클릭 연결');
-  assert.match(source,/if entry\.id == target then H\.encyclopediaPage = index; break end/,'해당 백과 장 바로 열기');
-  assert.match(trade,/local heroH = math\.floor\(heroPx \* 10 \/ 7\)/,'가로 교역 원화 7:10');
-  assert.match(trade,/local bigH = math\.floor\(bigPx \* 10 \/ 7\)/,'모바일 교역 원화 7:10');
   assert.match(trade,/artTap\.Activated:Connect\(openSelectedGoodEncyclopedia\)/,'선택 상품 그림 눌러 백과 이동');
-  // [연속 제작] 원화 넘김·현재 지식 장·해역 선택·조선소 선택이 실제 전시 슬롯을 갱신한다.
-  assert.match(source,/PreviousFacilityArt/,'왼쪽 이전 원화 조작');
-  assert.match(source,/NextFacilityArt/,'왼쪽 다음 원화 조작');
-  assert.match(source,/H\.galleryIndex = \(\(H\.galleryIndex or 1\) - 1 \+ direction\) % total \+ 1/,'발견 원화 순환 인덱스');
-  assert.match(source,/H\.galleryMatches = matches/,'발견 원화만 사용');
-  assert.match(source,/H\.gallerySelectedTab ~= tab/,'탭 변경 시 원화 순서 초기화');
-  assert.match(source,/H\.galleryReadingCard = if current\.found/,'백과 현재 페이지 원화 동기화');
-  assert.match(source,/AssetIds\["CardArt\/event_chart_" \.\. H\.selectedChart\]/,'지도 선택과 원화 연동');
-  assert.match(source,/if chartName and not selection then matched = nil end/,'선택한 항구가 없으면 해역 지도를 우선');
-  assert.match(source,/H\.galleryPrev\.Position = UDim2\.new\(1, -96, 1, -48\)/,'배너 원화 넘김 좌표');
-  assert.match(source,/H\.FACILITY_GALLERY_POOL = \{/,'메뉴별 승인 원화 자동 순환 묶음');
-  assert.match(source,/H\.galleryIndex = math\.random\(1, #matches\)/,'메뉴 열 때 랜덤 시작');
-  assert.match(source,/FacilityArtBackdrop/,'반응형 배너 배경');
-  assert.match(source,/local inYardHall = H\.yardHallActive/,'선박 클릭 시 상세장부 소속 보존');
-  assert.match(source,/if inYardHall and tradeHallRefresh then tradeHallRefresh\(\) else render\(\) end/,
-    '조선소 중앙 선박 원화 즉시 갱신');
-  assert.match(source,/selectArea\.Size = UDim2\.new\(1, -4, 0, 78\)/,'구매 버튼과 선택 영역 분리');
-  assert.match(source,/H\.galleryImage\.ScaleType = Enum\.ScaleType\.Fit/,'기존 원화 강제 잘림 금지');
-  assert.match(source,/H\.galleryBookOpenRequested = H\.galleryLinkCardId/,'실제 지식 카드 ID 연결');
-  assert.match(source,/H\.gallerySearchTerm or \(\(H\.FACILITY_GALLERY_TOPICS\[currentTab\]/,'선택 대상을 우선 검색하고 그 외에는 시설 주제로 연결');
   assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
-  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 340 else 360\)/,'실행 버튼 높이를 제외한 본문이 충분할 때만 원화 표시');
-  assert.match(source,/local bodyH = height - bodyTop - dockH/);
-  assert.doesNotMatch(source,/local posterW =/);
-  assert.match(source,/H\.galleryCard\.Visible = true\s+H\.galleryImage\.ImageTransparency = 1/);
-  assert.match(source,/H\.menuActionButton\.Parent = H\.menuActionDock/);
   assert.match(source,/nav = 2, tradeg = 0, adventure = 4, growth = 6, records = 7/);
-  // [선택 대상과 원화] 실제 항로/국가/항구를 눌러도 기존 출항·외교·저장 흐름은 분리한다.
-  assert.match(source,/H\.gallerySelection = nil -- \[시설 변경\]/,'시설 변경 시 이전 선택 정리');
-  assert.match(source,/H\.gallerySearchTerm or/,'백과 링크에 선택 대상 검색어 전달');
-  assert.match(source,/H\.gallerySelection = \{ tab = "route"/,'항로 선택으로 원화 변경');
-  assert.match(source,/choose\.Name = "RouteArtwork_" \.\. tostring\(r\.id\)/,'항로 원화 터치 영역');
-  assert.match(source,/choose\.Size = UDim2\.new\(1, -124, 0, 42\)/,'항로 원화 터치와 실제 출항 버튼 분리');
-  assert.match(source,/H\.gallerySelection = \{ tab = "diplomacy"/,'외교 국가 선택으로 원화 변경');
-  assert.match(source,/choose\.Name = "DiplomacyArtwork_" \.\. tostring\(n\.id\)/,'외교 국가 터치 영역');
-  assert.match(source,/H\.gallerySelection = \{ tab = "map"/,'선택 항구에 연결된 원화 갱신');
-  assert.match(source,/chart = H\.chartForPort\(selectedPort\)/,'선택 항구는 기존 해역도 경로 사용');
-  assert.match(source,/AssetIds\["CardArt\/event_chart_" \.\. selection\.chart\]/,'승인 해역도만 사용');
-  assert.match(source,/AssetIds\["CardArt\/" \.\. selection\.art\]/,'승인 국가 관련 원화만 사용');
-  assert.match(source,/england = "event_royal_charter", netherlands = "event_anglo_dutch_war"/,'국가 관련 원본 카드');
-  assert.match(source,/H\.galleryArtTween:Cancel\(\)/,'원화 빠른 넘김 시 이전 효과 중복 중지');
-  assert.match(source,/H\.galleryArtTween:Play\(\)/,'새 원화 페이드 유지');
-  assert.match(source,/if card\.found == true and type\(card\.image\) == "string"/,'미발견 기록 원화 비공개');
-  for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies'])
-    assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
   assert.doesNotMatch(trade,/Instance\.new\("Part"\)/,'새 임시 3D 도형 금지');
+  // 공통 무관 원화 대신 선택 상품·선박·해도·백과 본문에 승인 원본을 직접 연결한다.
+  assert.match(trade,/local listArtId = AssetIds\["Goods\/" \.\. g\.id\]/);
+  assert.match(trade,/icon\.Name = "TradeIndexArt"/);
+  assert.match(trade,/icon\.Image = "rbxassetid:\/\/" \.\. tostring\(listArtId\)/);
+  assert.match(trade,/AssetIds\["Goods\/" \.\. sel\.id\]/);
+  assert.match(trade,/modelIcon\(right, gi\[1\], gi\[2\]/);
+  assert.match(trade,/not RESTRICTED_CARGO_ICON\[sel\.id\]/);
+  assert.match(trade,/card\.id == bookResource\.cardId and card\.found == true/);
+  assert.match(trade,/H\.galleryBookOpenRequested = bookCard\.id/);
+  assert.match(trade,/local bookButton = mkButton\(right, "백과"/);
+  assert.match(source,/if entry\.id == target then H\.encyclopediaPage = index; break end/);
+  assert.match(source,/function H\.chartForPort\(portId\)/);
+  assert.match(source,/SeaRoutes\.path\(view\.player\.portId, selected\.id, PortData\.Ports\)/);
+  assert.match(source,/AssetIds\["CardArt\/event_chart_world"\]/);
+  assert.match(source,/if card\.found and type\(card\.image\) == "string"/);
+  assert.doesNotMatch(source,/H\.facilityGallery =/);
+  assert.doesNotMatch(source,/H\.galleryIndex = math\.random/);
+  for(const action of ['Buy','Sell','BuyShip','Repair','BuySupplies']) assert.ok(source.includes('call("'+action+'"'),'기존 서버 호출 유지: '+action);
 });
 
 // [무료 AI 디자인 검수] 실제 스튜디오 화면의 시설 UI 범위를 빠짐없이 분류한다.
@@ -3683,8 +3636,9 @@ test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',
 // [시설 아이콘 회귀] 최초 생성과 반응형 갱신은 같은 모바일·데스크톱 좌표를 사용한다.
 test('항구 시설 아이콘은 최초 생성과 반응형 배치에서 같은 탭 내부 여백을 유지한다',()=>{
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)';
+  const expected='UDim2.new(0, 6, 0.5, -16) else UDim2.new(0.5, -16, 0, 4)';
   assert.equal(source.split(expected).length-1,2);
+  assert.match(source,/icon\.Size = UDim2\.fromOffset\(32, 32\)/);
 });
 
 // [조선소 실증 회귀] 정비와 선박 비교는 별도 페이지이며 실제 탭 클릭 후 비교를 검증한다.
@@ -5019,7 +4973,8 @@ test('교역과 항해의 승인 아이콘 및 실제 수치 막대 유지',()=>
  assert.match(source,/math\.clamp\(ship\.cargoUsed \/ math\.max\(1, ship\.cargoCapacity\), 0, 1\)/);
  assert.match(source,/local priceMax = math\.max\(1, unitBuy, sel\.sell\)/);
  assert.match(source,/math\.clamp\(data\[3\] \/ math\.max\(1, data\[2\]\), 0, 1\)/);
- assert.match(source,/Create\(H\.galleryBackdrop,/);
+ assert.match(source,/RouteMiniChartMap/);
+ assert.match(source,/SelectedGoodBookmark/);
 });
 
 test('선장 현황 및 진행 일지는 문자 그림 대신 등록 아이콘과 실제 진행 막대를 표시한다',()=>{
@@ -5040,7 +4995,8 @@ test('전체 메뉴 탭은 승인 청동 아이콘과 짧은 한글 이름으로
 
 test('공통 안내는 묶음 첫 화면에만 두고 초보 안내는 승인 원화로 보여 준다',()=>{
  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
- assert.match(source,/currentTab == grp\.tabs\[1\] or currentTab == "market"/);
+ assert.doesNotMatch(source,/H\.menuActionDock =/);
+ assert.match(source,/function H\.refreshNextStep\(\)/);
  assert.match(source,/icon\.Name = "CoachStepArt"/);
  assert.ok(!source.includes('실제 진행 상태와 조건을 아래에서 확인해.'));
 });
@@ -5050,14 +5006,17 @@ test('메뉴 글꼴과 실제 화물 막대 및 화면 비율별 탭 폭을 검�
   const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
   assert.match(source,/headerLabel\.Font = Enum\.Font\.GothamBold/);
   assert.match(source,/mastheadSize\.MinTextSize = 15/);
-  assert.match(layout,/local compactTabs = not wide and \(height <= 0 or height >= 430\)/);
-  assert.match(layout,/math\.clamp\(availableTabs, if compactTabs then 86 else 104, if compactTabs then 154 else 176\)/);
+  assert.match(layout,/local rail = tabs and width >= 700 and width > height/);
+  assert.match(layout,/math\.clamp\(math\.floor\(\(visibleW - \(tabCount - 1\) \* gap\) \/ math\.max\(1, tabCount\)\), 72, 176\)/);
   for (const [width,height,count] of [[320,600,6],[390,700,3],[740,390,6],[832,384,6],[1024,768,6]]) {
-    const compact=width<740&&height>=430, gap=width<340?4:6;
-    const available=Math.floor((width-16-(count-1)*gap)/count);
-    const tab=Math.max(compact?86:104,Math.min(compact?154:176,available));
-    assert.ok(tab>=86);
-    if(width>=740) assert.ok(count*tab+(count-1)*gap<=width-16);
+    const rail=width>=700&&width>height, gap=4;
+    const railW=rail?Math.max(120,Math.min(172,Math.floor(width*.18))):0;
+    const tab=rail?railW-5:Math.max(72,Math.min(176,Math.floor((width-12-(count-1)*gap)/count)));
+    assert.ok(tab>=44);
+    const total=count*(rail?50:tab)+(count-1)*gap;
+    const viewport=rail?height-48-10:width-12;
+    assert.ok(Math.max(0,total-viewport)+viewport>=total);
+    assert.ok(width-(rail?railW+18:12)>=200);
   }
   assert.match(source,/H\.menuCargoFill\.Size = UDim2\.fromScale\(cargoRatio, 1\)/);
   assert.doesNotMatch(source,/보급 %d개 · 석탄 %d개 · 해금된 항로 확인/);
@@ -5080,11 +5039,11 @@ test('교역·조선의 상세 메뉴는 중복 머리줄을 줄이고 승인 �
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('function openYardHall()'));
   const yard=source.slice(source.indexOf('function openYardHall()'));
-  assert.match(trade,/local narrow = width < 920/);
-  assert.match(trade,/local headH = if backToList or message ~= "" then 100 else 50/);
+  assert.match(trade,/local narrow = width < 640/);
+  assert.match(trade,/local headH = if message ~= "" then 84 else 44/);
   assert.doesNotMatch(trade,/local title = mkLabel\(top, "교역 장부 · "/);
-  assert.match(trade,/commonStatus\.Size = UDim2\.fromOffset\(cashWidth, 44\)/);
-  assert.match(trade,/local compactList = not narrow or listWidth < 420/);
+  assert.match(trade,/commonStatus\.Size = UDim2\.fromOffset\(if backToList then math\.max\(90, width - 112\) else cashWidth, 36\)/);
+  assert.match(trade,/local listWidth = if narrow then availableW else math\.floor\(availableW \* 0\.43\)/);
   assert.match(trade,/leave\.Visible = backToList/);
   assert.match(yard,/modelIcon\(button, "FacilityArt", entry\[3\], nil, 22, entry\[1\]\)/);
   assert.match(yard,/icon\.Name = "YardTabIcon"/);
@@ -5096,12 +5055,14 @@ test('항해 목록과 상세 및 일지 구획은 기존 행동과 실제 진�
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
   const route=source.slice(source.indexOf('function RENDERERS.route()'),source.indexOf('local openYardHall'));
   const quest=source.slice(source.indexOf('function RENDERERS.quest()'),source.indexOf('-- 주점의 지식 카드 배틀'));
-  assert.match(route,/local sorted = if selected then \{ selected \} else table\.clone\(view\.routes\)/);
+  assert.match(route,/local sorted = table\.clone\(view\.routes\)/);
   assert.match(route,/H\.routeDetailId = r\.id/);
-  assert.match(route,/H\.routeDetailId = nil; render\(\)/);
-  assert.match(route,/confirmSail\(r\)/);
+  assert.match(route,/H\.routeDetailId = nil/);
+  assert.match(route,/confirmSail\(selected\)/);
   assert.match(route,/call\("WaitDay", \{\}\)/);
   assert.match(route,/if r\.locked then/);
+  assert.match(quest,/JournalVisualSections/);
+  assert.match(quest,/FieldRoutePath/);
   for(const section of ['active','auto','field','done']) assert.ok(quest.includes('section == "'+section+'"'));
   assert.match(quest,/if expanded and H\.questCauseCard then H\.questCauseCard\(q\) end/);
   for(const action of ['TurnIn','StoryChoose']) assert.ok(quest.includes('call("'+action+'"'));
@@ -5223,7 +5184,7 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(route.includes('AssetIds["CardArt/event_chart_world"]'));
  assert.ok(route.includes('(b[2] - a[2] + 180) % 360 - 180'));
  assert.ok(route.includes('not selected.locked'));
- assert.ok(route.includes('confirmSail(r)'));
+ assert.ok(route.includes('confirmSail(selected)'));
  assert.ok(route.includes('if H.hasIconArt(key) then'));
 });
 
