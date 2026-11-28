@@ -104,6 +104,38 @@ do
 	check("사수는 가까우면 물러난다", A.moveWish((function() local a = A.newEnemy("archer"); a.state = "chase"; return a end)(), 5) == -1)
 	check("졸개는 멀면 다가온다", A.moveWish((function() local a = A.newEnemy("grunt"); a.state = "chase"; return a end)(), 20) == 1)
 end
+-- [필드 피해] 기존 곱셈 순서·반올림·방패·경직·격파를 모두 보존한다.
+do
+	local count, identical = 0, true
+	for _, kind in { "grunt", "archer", "shield", "charger", "boss" } do
+		for _, power in { 0.7, 1, 1.35 } do
+			for _, weak in { 1, 1.4, 1.8, 2 } do
+				for mask = 0, 31 do
+					local buff = bit32.band(mask, 1) ~= 0
+					local parry = bit32.band(mask, 2) ~= 0
+					local counter = bit32.band(mask, 4) ~= 0
+					local armor = bit32.band(mask, 8) ~= 0
+					local front = bit32.band(mask, 16) ~= 0
+					local old, new = A.newEnemy(kind), A.newEnemy(kind)
+					local base = 10 * power * (if buff then 1.3 else 1)
+						* (if parry then 0.52 else 1) * weak * (if counter then 2 else 1)
+						* (if armor then 0.6 else 1)
+					local dealtOld, deadOld = A.damageEnemy(old, base, 2.5, front, true)
+					local dealtNew, deadNew = A.damageEnemy(new, 10, 2.5, front, true,
+						power, buff, parry, weak, counter, armor)
+					identical = identical and dealtOld == dealtNew and deadOld == deadNew
+						and old.hp == new.hp and old.state == new.state and old.stagger == new.stagger
+					count += 1
+				end
+			end
+		end
+	end
+	check("공용 필드 피해 보정 조합 " .. count .. "개 일치", identical and count == 1920)
+	local b = A.newEnemy("boss")
+	A.damageEnemy(b, 10000, 1, false)
+	local dealt, died = A.damageEnemy(b, 10, 2, false, true, 1, true, false, 1.8, true, false)
+	check("이미 격파된 두목은 피해 중복 없음", dealt == 0 and not died and b.hp == 0)
+end
 -- 서버와 장면의 기존 편성/체력 일치 검사.
 do
 	local counts = { {20, 0}, {26, 0}, {32, 1}, {38, 2}, {44, 2} }

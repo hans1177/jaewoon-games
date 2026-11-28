@@ -192,8 +192,16 @@ function A.attackersCount(list: {any}): number
 end
 
 -- 주인공이 적을 친다. fromFront 가 true 이고 방패병이면 피해가 줄어든다. 돌려주는 값: 들어간 피해, 쓰러졌는지.
-function A.damageEnemy(e: any, base: number, mult: number, fromFront: boolean, stagger: boolean?): (number, boolean)
+-- 필드 피해 보정은 동일한 소유 전투 상태에서 계산한 값만 호출자가 전달한다.
+-- 원격 요청 데이터 자체를 이 보정 인수로 넘기지 않는다. 기존 일반 전투 호출은 그대로 동작한다.
+function A.damageEnemy(e: any, base: number, mult: number, fromFront: boolean, stagger: boolean?,
+	fieldPower: number?, buffed: boolean?, parried: boolean?, weakMult: number?, counterHit: boolean?, armored: boolean?): (number, boolean)
 	if e.dead then return 0, false end
+	if fieldPower ~= nil then
+		base = base * fieldPower * (if buffed then 1.3 else 1)
+			* (if parried then 0.52 else 1) * (weakMult or 1) * (if counterHit then 2 else 1)
+			* (if armored then 0.6 else 1)
+	end
 	local d = base * mult
 	if fromFront and e.def.frontGuard then d *= (1 - e.def.frontGuard) end
 	d = math.max(1, math.floor(d + 0.5))

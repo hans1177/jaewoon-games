@@ -7805,10 +7805,9 @@ function FieldScene.start(opts)
 		local counterHit = ownerAttack ~= false and not quiet and os.clock() < (pl.counterUntil or 0)
 		if counterHit then pl.counterUntil = 0 end
 		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
-		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
-			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
-			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1)
-			* (if e.boss and os.clock() < (e.armorUntil or 0) then 0.6 else 1), mult, shieldBlocked == true, stagger)
+		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG, mult, shieldBlocked == true, stagger,
+			if quiet then 1 else wpn.power, os.clock() < (pl.buffUntil or 0), weaponParry == true,
+			weakMult, counterHit, e.boss == true and os.clock() < (e.armorUntil or 0))
 		-- [방패 파괴·무장 견제] 실제 명중한 강타와 약점 공격만 내구도에 반영한다.
 		if not died and dealt > 0 and not quiet and ownerAttack ~= false then
 			if e.shieldModel and e.model:FindFirstChild("FieldShield") and (stagger or shieldBlocked) then
