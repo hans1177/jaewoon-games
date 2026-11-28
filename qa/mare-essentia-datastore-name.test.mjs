@@ -5126,7 +5126,14 @@ test('백과 필사본의 삽화 여백을 보존하고 모바일은 해상도 �
  assert.match(dex,/AssetIds\["CardArt\/ency_bg_book"\]/);
  assert.match(dex,/art\.Size = UDim2\.new\(2, 0, 1, -55\)/);
  assert.match(dex,/art\.Position = UDim2\.fromScale\(if H\.dexReading then -1 else 0, 0\)/);
- assert.match(dex,/leaf\.Position = UDim2\.new\(if wide then 0\.15 else 0\.17/);
+ assert.match(dex,/leaf\.Position = UDim2\.new\(if wide then 0\.15 elseif H\.dexReading then 0\.08 else 0\.27/);
+ assert.match(dex,/leaf\.Size = UDim2\.new\(if wide then 0\.70 else 0\.65/);
+ // 단면 좌우는 원본 책의 바깥쪽 장식 여백을 각각 남긴다.
+ for (const [left,width,outerSide] of [[0.15,0.70,"both"],[0.08,0.65,"right"],[0.27,0.65,"left"]]) {
+   assert.ok(left >= 0.08 && left + width <= 0.93);
+   if(outerSide === "left" || outerSide === "both") assert.ok(left >= 0.15);
+   if(outerSide === "right" || outerSide === "both") assert.ok(1-left-width >= 0.149);
+ }
  assert.match(dex,/plate\.BackgroundTransparency = if bookId then 1 else 0/);
  assert.match(dex,/page\.BackgroundTransparency = if bookId then 1 else 0/);
  assert.match(dex,/hero\.ScaleType = Enum\.ScaleType\.Fit/);
