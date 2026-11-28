@@ -699,7 +699,9 @@ return function(D, S)
 				-- [장 완료·결과 연출] 장 제목과 그 장의 마지막 단계인지(다음 단계 없음) 함께 보낸다.
 				local chapterName = dq.chapter or (string.find(dq.summary or "", " — ", 1, true) and string.sub(dq.summary, 1, (string.find(dq.summary, " — ", 1, true) :: number) - 1)) or nil
 				table.insert(view.quests.done, { id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending,
-					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result })
+					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result,
+					rewardCoins = dq.rewardCoins, rewardFame = dq.rewardFame, rewardXp = dq.rewardCareer and dq.rewardXp or nil, rewardCareer = dq.rewardCareer,
+					nextName = D.Quests.NextOf[dq.id] and D.Quests.ById[D.Quests.NextOf[dq.id]] and D.Quests.ById[D.Quests.NextOf[dq.id]].name or nil })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
