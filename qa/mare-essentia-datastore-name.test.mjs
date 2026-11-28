@@ -1199,7 +1199,7 @@ test('대항해시대 탐험의 흰 건물·바닥과 성탑 층 겹침 방지',
   for(const marker of [
     'local named = (kind == "Town"', 'kind == "Castle"',
     'kind == "Terrain"', 'kind == "Naval"',
-    'd.TextureID ~= ""', 'sa and surfaceHasColorMap(sa)', 'ch.TextureId ~= ""',
+    'd.TextureID ~= ""', 'or sa ~= nil', 'ch.TextureId ~= ""',
     'light >= 0.80 and chroma <= 0.13',
     'Enum.Material.Cobblestone', 'Enum.Material.WoodPlanks',
     'Enum.Material.Slate', 'Enum.Material.Ground',
@@ -2834,6 +2834,10 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(field,/if not textured and d\.MaterialVariant == "" and \(light >= 0\.80 and chroma <= 0\.13 or gray\)/);
  assert.match(block,/local importedGray = low >= 0\.35 and high - low <= 0\.10/);
  assert.match(field,/local gray = light >= 0\.35 and chroma <= 0\.10/);
+ assert.match(field,/local textured = \(d:IsA\("MeshPart"\) and d\.TextureID ~= ""\) or sa ~= nil/);
+ for(const role of ["windowpane","glazing","hinge","awning","canvas","cloth","door","frame","branch","fence"]){
+   assert.ok(field.includes('name:find("'+role+'", 1, true)'),"탐험 소재 분류 누락: "+role);
+ }
  for (const [rgb,plastic,expected] of [[[163,163,163],true,true],[[100,100,100],true,true],[[163,163,163],false,false],[[160,100,70],true,false]]) {
    const low=Math.min(...rgb)/255, high=Math.max(...rgb)/255;
    assert.equal(low>=0.35 && high-low<=0.10 && plastic,expected);
