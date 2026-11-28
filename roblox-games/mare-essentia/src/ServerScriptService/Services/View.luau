@@ -346,6 +346,9 @@ return function(D, S)
 			local prog = state.bounty.taken[b.id]
 			table.insert(view.board, {
 				id = b.id, title = b.title, coins = b.coins, fame = b.fame, kind = b.kind,
+				story = b.story, ending = if state.bounty.done[b.id] then b.ending else nil,
+				loreCardId = if D.Cards.ById[b.loreCardId] then b.loreCardId else nil,
+				loreName = D.Cards.ById[b.loreCardId] and D.Cards.ById[b.loreCardId].name or nil,
 				state = if state.bounty.done[b.id] then "done" elseif prog ~= nil then "taken" else "open",
 				progress = if b.kind == "hunt" and prog ~= nil then math.min(b.count, state.stats.battlesWon - prog) else nil,
 				count = b.count,

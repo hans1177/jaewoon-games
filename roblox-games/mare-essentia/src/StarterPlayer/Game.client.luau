@@ -6606,7 +6606,17 @@ function RENDERERS.harbor()
 			else
 				btn = { text = "수락", color = COLORS.blue, onClick = function() call("AcceptBounty", { bountyId = b.id }) end }
 			end
-			local brow = mkRow(content, b.title, sub, { btn }, 60)
+			local buttons = { btn }
+			if b.loreCardId and view.codex then
+				for _, card in view.codex.cards or {} do
+					if card.id == b.loreCardId and card.found then
+						table.insert(buttons, { text = "백과", color = COLORS.gold, onClick = function() H.showCardDetail(card) end })
+						break
+					end
+				end
+			end
+			local detail = (b.ending or b.story or "") .. (if b.loreName then "\n관련 백과: " .. b.loreName else "")
+			local brow = mkRow(content, b.title, sub .. (if detail ~= "" then "\n" .. detail else ""), buttons, 126)
 			withIcon(brow, "Cargo", if b.kind == "hunt" then "box-open" else "crate" , nil, 44)
 			return brow
 		end)

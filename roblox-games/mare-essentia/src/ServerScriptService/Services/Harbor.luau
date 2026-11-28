@@ -306,7 +306,12 @@ return function(D, S)
 		return ids
 	end
 	local function boardHere(state)
-		return D.Bounties.board(state.portId, state.day, D.Ports.Goods, sortedGoods())
+		local port = D.Ports.Ports[state.portId]
+		local board = D.Bounties.board(state.portId, state.day, D.Ports.Goods, sortedGoods(), D.Regions.tierOf(port.id, port.lat, port.lon), port.name, port.lat)
+		for _, b in board do
+			if not D.Cards.ById[b.loreCardId] then b.loreCardId = "finance_bill_exchange" end
+		end
+		return board
 	end
 	local function findBounty(state, id)
 		for _, b in boardHere(state) do
@@ -366,7 +371,7 @@ return function(D, S)
 		end
 		state.coins += b.coins
 		state.fame += b.fame
-		return true, string.format("의뢰 완료! +%d코인, 명성 +%d", b.coins, b.fame)
+		return true, string.format("의뢰 완료! +%d코인, 명성 +%d", b.coins, b.fame) .. "\n" .. b.ending
 	end
 
 	-- 주점 회식: 선원 수 × 3코인으로 사기 +30
