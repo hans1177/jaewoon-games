@@ -3858,6 +3858,13 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
   assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/, 'PBR 머리 원본 색상 보존');
   assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
+  const fitting=pose.slice(pose.indexOf('local textured = surfaceHasMaps(surface)'),pose.indexOf('local weld = Instance.new("WeldConstraint")',pose.indexOf('local textured = surfaceHasMaps(surface)')));
+  assert.ok(fitting.includes('child:IsA("SpecialMesh") and child.TextureId ~= ""'));
+  assert.ok(fitting.includes('child:IsA("Decal") or child:IsA("Texture")'));
+  assert.ok(fitting.includes('local defaultImportGray = npcOutfit and not textured'));
+  assert.ok(fitting.includes('math.abs(part.Color.R - 163 / 255) <= 1 / 255'));
+  assert.ok(fitting.includes('elseif fallback and (defaultImportGray or'));
+  assert.ok(fitting.includes('(hair and defaultImportGray)'));
   assert.match(pose,/and part\.MaterialVariant == "" and string\.sub\(assetName, 1, 5\) == "hair_" then/);
   assert.match(pose,/local pale = part\.Color\.R >= 0\.90 and part\.Color\.G >= 0\.90 and part\.Color\.B >= 0\.90/);
   assert.match(pose,/local pale = base\.R >= 0\.90 and base\.G >= 0\.90 and base\.B >= 0\.90/);
