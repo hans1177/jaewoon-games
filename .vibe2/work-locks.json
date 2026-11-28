@@ -1,5 +1,25 @@
 {
   "version": 1,
   "branch": "vibe2-work-locks",
-  "locks": []
+  "locks": [
+    {
+      "id": "wl-szp6ct",
+      "worker": "vibe2",
+      "taskId": "recovery-recovery-af3c05075f05af248977",
+      "gameId": "mare-essentia",
+      "files": [
+        "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau"
+      ],
+      "baseSha": "54a0d1498ca60f29720bdff87e5d801ed20d6a31",
+      "runId": "46165825203",
+      "runAttempt": "1",
+      "acquiredAt": "2026-11-28T16:49:48.322Z",
+      "expiresAt": "2026-11-28T17:34:48.322Z",
+      "status": "active",
+      "evidence": [
+        "compiled-central-work-contract",
+        "change-set:recovery-recovery-af3c05075f05af248977"
+      ]
+    }
+  ]
 }
