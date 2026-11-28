@@ -1,5 +1,7 @@
 # 항구 마을 구현 프롬프트 (항구 정체성 + 발전도 + 자원)
 
+> **배치 숫자(거리·간격·구도·길 폭)는 `docs/VILLAGE_LAYOUT_SPEC.md`가 우선한다.** 이 문서는 양식·재질·프롬프트.
+
 > **드롭박스 올리는 곳 (필독)**
 > - `/Vibe2Transfer/inbox/Town/<항구id>_<슬롯>.glb` (슬롯은 `docs/ports/README.md` 맨 위 참고)
 > - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.

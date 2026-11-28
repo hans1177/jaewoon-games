@@ -1238,6 +1238,34 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			end
 		end
 	end
+	-- [문화권 전용 복식 자동 연결 · 2026-11-28 오너: "주민 복장·헤어 미흡"]
+	-- 지금은 모든 문화권이 같은 서유럽 조각(조끼·장화·머리 13종)을 색만 바꿔 입는다.
+	-- docs/residents/OUTFIT_SPEC.md 이름대로 드롭박스에 올라와 등록되면(AssetIds) 그 조각으로 자동 교체한다:
+	--   outfit_<문화권>_<슬롯>.glb (슬롯 = vest·coat·apron·guard·belt·boot·cuff·sash·stole)
+	--   hair_<문화권>_<male|female>.glb (수염은 교체하지 않음)
+	-- 같은 부위·크기 비율을 그대로 써서 관절·판정·저장은 바뀌지 않는다. 없으면 기존 조각 그대로.
+	if npcOutfit and type(culture) == "string" and culture ~= "" then
+		local gender = string.match(tostring(npcProfile), "_(%a+)$")
+		local swapped = nil
+		for index, item in specs do
+			local name = item[1]
+			local slot = string.match(name, "^outfit_(%a+)$")
+			local alt = nil
+			if slot then
+				alt = "outfit_" .. culture .. "_" .. slot
+			elseif string.sub(name, 1, 5) == "hair_" and name ~= "hair_beard" and (gender == "male" or gender == "female") then
+				alt = "hair_" .. culture .. "_" .. gender
+			end
+			if alt and AssetIds["People/" .. alt] then
+				swapped = swapped or table.clone(specs)
+				swapped[index] = { alt, item[2], item[3], item[4], item[5], item[6] }
+			end
+		end
+		if swapped then
+			specs = swapped
+			model:SetAttribute("NpcCultureOutfit", culture)
+		end
+	end
 	local mobileEssentials = nil
 	if UserInputService.TouchEnabled and detailAllowed then
 		local camera, torso = workspace.CurrentCamera, model:FindFirstChild("UpperTorso")
