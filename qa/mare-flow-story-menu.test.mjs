@@ -102,6 +102,9 @@ test('항해·연구 선택과 상세를 분리하고 실제 서버 행동을 �
     assert.match(body, /detail\.Visible = wide or selected ~= nil/);
     assert.match(body, /footer\.Size = UDim2\.new\(if wide then 0\.57 else 1, if wide then -5 else 0, 0, 48\)/);
     assert.match(body, /root\.Destroying:Connect\(function\(\) resize:Disconnect\(\) end\)/);
+    assert.match(body, /bookmark\.Name = "SelectedBookmark"/);
+    assert.match(body, /ReducedMotionEnabled/);
+    assert.match(body, /Scale = 1\.08/);
   }
   for (const name of ['RouteMiniChartMap', 'RouteSupplyMeter', 'RouteCoalMeter', 'RouteCargoProfit']) assert.ok(route.includes(name));
   assert.match(route, /confirmSail\(selected\)/);
@@ -109,6 +112,7 @@ test('항해·연구 선택과 상세를 분리하고 실제 서버 행동을 �
   assert.match(route, /if selected and not selected\.locked then/);
   assert.match(route, /H\.routeListScroll = list\.CanvasPosition\.Y/);
   assert.match(tech, /ResearchProgress/);
+  assert.match(tech, /previous < completed/);
   assert.match(tech, /ResearchBudgetMeter/);
   assert.match(tech, /not selected\.owned and selected\.blocked == nil and \(selected\.cost or 0\) <= coins/);
   assert.match(tech, /call\("Research", \{ techId = selected\.id \}\)/);
