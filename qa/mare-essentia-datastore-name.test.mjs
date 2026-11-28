@@ -5032,3 +5032,10 @@ test('전체 메뉴 탭은 승인 청동 아이콘과 짧은 한글 이름으로
  assert.match(source,/caption\.Text = H\.TAB_CAPTION\[id\] or TAB_NAME\[id\]/);
  assert.match(source,/if caption then caption\.TextColor3 = b\.TextColor3 end/);
 });
+
+test('공통 안내는 묶음 첫 화면에만 두고 초보 안내는 승인 원화로 보여 준다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ assert.match(source,/currentTab == grp\.tabs\[1\] or currentTab == "market"/);
+ assert.match(source,/icon\.Name = "CoachStepArt"/);
+ assert.ok(!source.includes('실제 진행 상태와 조건을 아래에서 확인해.'));
+});
