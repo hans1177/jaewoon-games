@@ -5930,6 +5930,91 @@ function RENDERERS.harbor()
 	if H.harborPagePort ~= view.player.portId then H.harborPage = "overview"; H.harborPagePort = view.player.portId end
 	if H.bankVisitPending then H.harborPage = "finance" end
 	local page = H.harborPage or "overview"
+	if page == "overview" then
+		add(function()
+			-- 실제 항구 장면의 시설 좌표만 표시한다.
+			local panel = Instance.new("Frame")
+			panel.Name = "HarborSpatialMap"
+			panel.Size = UDim2.new(1, -6, 0, 188)
+			panel.BackgroundColor3 = COLORS.paper
+			panel.BorderSizePixel = 0
+			corner(panel, 6)
+			local title = mkLabel(panel, "항구 시설 지도 · 시설 선택", 14, INK, true)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			title.Position = UDim2.fromOffset(8, 4)
+			title.Size = UDim2.new(1, -16, 0, 24)
+			local scene = workspace:FindFirstChild("PortScene")
+			if not scene or scene:GetAttribute("PortSceneActive") ~= true or scene:GetAttribute("CityPortVisualIdentity") ~= view.player.portId then
+				title.Text = "항구 시설 지도 · 장면 준비 중"
+				panel.Size = UDim2.new(1, -6, 0, 36)
+				return panel
+			end
+			local sites = {}
+			local loX, hiX, loZ, hiZ = math.huge, -math.huge, math.huge, -math.huge
+			for _, item in {
+				{"trade", "교역소"}, {"board", "주점"}, {"route", "항만청", "harbormaster"},
+				{"harbor", "은행", "bank"}, {"market", "길드", "guild"},
+				{"tech", "서재"}, {"codex", "도서관"},
+			} do
+				local pos = scene:GetAttribute("CityFacilityPosition_" .. item[1])
+				if typeof(pos) == "Vector3" and (not item[3] or table.find(view.facilities or {}, item[3])) then
+					table.insert(sites, {tab = item[1], label = item[2], pos = pos})
+					loX, hiX = math.min(loX, pos.X), math.max(hiX, pos.X)
+					loZ, hiZ = math.min(loZ, pos.Z), math.max(hiZ, pos.Z)
+				end
+			end
+			if #sites == 0 then
+				title.Text = "항구 시설 지도 · 위치 정보 없음"
+				panel.Size = UDim2.new(1, -6, 0, 36)
+				return panel
+			end
+			local plot = Instance.new("Frame")
+			plot.Name = "HarborSpatialPlot"
+			plot.Position = UDim2.fromOffset(4, 30)
+			plot.Size = UDim2.new(1, -8, 1, -36)
+			plot.BackgroundColor3 = Color3.fromRGB(214, 198, 165)
+			plot.BorderSizePixel = 0
+			plot.Parent = panel
+			corner(plot, 4)
+			for _, site in sites do
+				local nx = (site.pos.X - loX) / math.max(1, hiX - loX)
+				local nz = (site.pos.Z - loZ) / math.max(1, hiZ - loZ)
+				local pin = mkButton(plot, site.label, COLORS.paper, UDim2.fromOffset(54, 58), function()
+					if site.tab == "harbor" then
+						H.harborPage = "finance"
+						content.CanvasPosition = Vector2.zero
+						render()
+					else
+						openTab(site.tab)
+					end
+				end, true)
+				pin.Name = "HarborMapPin_" .. site.tab
+				pin:SetAttribute("FacilityWorldPosition", site.pos)
+				pin.AnchorPoint = Vector2.new(0.5, 0.5)
+				pin.Position = UDim2.new(nx, 29 - 58 * nx, nz, 30 - 60 * nz)
+				for _, name in {"PressedEdge", "BookRibbon", "BrassRivet"} do
+					local decoration = pin:FindFirstChild(name)
+					if decoration then decoration.Visible = false end
+				end
+				local icon
+				if H.hasIconArt(site.tab) then
+					icon = modelIcon(pin, "FacilityArt", site.tab, nil, 28, site.label)
+					icon.Position = UDim2.new(0.5, -14, 0, 3)
+					icon.Active = false
+					icon.ZIndex = pin.ZIndex + 2
+				end
+				local caption = pin:FindFirstChild("PrintedCaption")
+				if caption and caption:IsA("TextLabel") then
+					caption.Position = UDim2.fromOffset(1, if icon then 34 else 0)
+					caption.Size = UDim2.new(1, -2, 0, if icon then 21 else 58)
+					caption.TextXAlignment = Enum.TextXAlignment.Center
+					caption.TextSize = 13
+					caption.TextWrapped = false
+				end
+			end
+			return panel
+		end)
+	end
 	add(function()
 		local bar = Instance.new("Frame")
 		bar.Name = "HarborFacilityIndex"
@@ -16996,7 +17081,7 @@ function H.renderTabs()
 				caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
 				local textLimit = Instance.new("UITextSizeConstraint")
 				textLimit.MinTextSize = 13
-				textLimit.MaxTextSize = if compactTabs then 14 else 17
+				textLimit.MaxTextSize = 16
 				textLimit.Parent = caption
 			else
 				b.TextXAlignment = Enum.TextXAlignment.Right
