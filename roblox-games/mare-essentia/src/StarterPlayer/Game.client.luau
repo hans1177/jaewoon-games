@@ -1104,6 +1104,10 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		grad.Rotation = 90
 		grad.Parent = b
 		local grain = bookMaterial(b, "parchment", 148)
+		-- 큰 실행 버튼에만 지시서의 승인된 원화 적용. 시설 탭은 자체 상태 원화를 쓴다.
+		local skinKey = if not active then "grey" elseif highlighted then "gold" elseif good then "green" else nil
+		local buttonArt = if skinKey and size.Y.Offset >= 44 and parent ~= H.tabStrip then AssetIds["CardArt/ui_button_" .. skinKey] else nil
+		local initialColor = b.BackgroundColor3
 		if grain then
 			grain.ImageColor3 = if danger then Color3.fromRGB(248, 185, 169)
 				elseif good or travel then Color3.fromRGB(242, 217, 175)
@@ -1111,11 +1115,19 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 				elseif highlighted then Color3.fromRGB(252, 220, 148)
 				elseif active then Color3.fromRGB(251, 238, 212) else Color3.fromRGB(193, 183, 168)
 			grain.ImageTransparency = if back then 0.58 elseif danger or good or travel then 0.64 else 0.55
+			if buttonArt then
+				grain.Image = "rbxassetid://" .. tostring(buttonArt)
+				grain.ScaleType = Enum.ScaleType.Slice
+				grain.SliceCenter = Rect.new(24, 24, 232, 72)
+				grain.SliceScale = 0.5
+				grain.ImageColor3 = Color3.new(1, 1, 1)
+				grain.ImageTransparency = 0
+			end
 		end
 		if grain then
 			-- 저장 초기화 재확인처럼 상태가 붉게 바뀌는 경우 종이가 경고색을 가리지 않게 한다.
 			b:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
-				grain.ImageTransparency = if b.BackgroundColor3 == COLORS.red then 1 else 0.55
+				grain.ImageTransparency = if buttonArt then (if b.BackgroundColor3 == initialColor then 0 else 1) elseif b.BackgroundColor3 == COLORS.red then 1 else 0.55
 			end)
 		end
 		local edge = Instance.new("UIStroke")
@@ -11785,7 +11797,7 @@ do
 		local box = Instance.new("Frame")
 		box.AnchorPoint = Vector2.new(0.5, 0.5)
 		box.Position = UDim2.fromScale(0.5, 0.5)
-		box.Size = UDim2.new(0, 520, 0, 0)
+		box.Size = UDim2.new(1, -24, 0, 0)
 		box.AutomaticSize = Enum.AutomaticSize.Y
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
@@ -11829,9 +11841,35 @@ do
 				who.TextXAlignment = Enum.TextXAlignment.Center
 			end
 		end
-		local head = mkLabel(box, if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name), if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
-		head.Size = UDim2.new(1, 0, 0, 0)
-		head.TextXAlignment = Enum.TextXAlignment.Center
+		local chapterArt = if chapterEnd then AssetIds["CardArt/ui_banner_chapter"] else nil
+		local heading = if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name)
+		if chapterArt then
+			local banner = Instance.new("ImageLabel")
+			banner.Name = "ChapterCompletionBanner"
+			banner.LayoutOrder = 1
+			banner.Size = UDim2.new(1, 0, 0, 64)
+			banner.BackgroundTransparency = 1
+			banner.Image = "rbxassetid://" .. tostring(chapterArt)
+			banner.ScaleType = Enum.ScaleType.Fit
+			banner.Active = false
+			banner.Parent = box
+			local title = mkLabel(banner, tostring(d.chapter) .. " 완료!", 24, Color3.fromRGB(255, 242, 208), true)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			title.Position = UDim2.fromScale(0.15, 0.15)
+			title.Size = UDim2.fromScale(0.7, 0.7)
+			title.TextScaled = true
+			title.TextXAlignment = Enum.TextXAlignment.Center
+			title.TextYAlignment = Enum.TextYAlignment.Center
+			title.ZIndex = banner.ZIndex + 1
+			local fontLimit = Instance.new("UITextSizeConstraint")
+			fontLimit.MinTextSize = 12
+			fontLimit.MaxTextSize = 24
+			fontLimit.Parent = title
+		else
+			local head = mkLabel(box, heading, if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
+			head.Size = UDim2.new(1, 0, 0, 0)
+			head.TextXAlignment = Enum.TextXAlignment.Center
+		end
 		if d.result then
 			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 15, Color3.fromRGB(40, 90, 50), true, 2)
 			res.Size = UDim2.new(1, 0, 0, 0)
