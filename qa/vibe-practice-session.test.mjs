@@ -208,6 +208,10 @@ test('클라우드 연습은 cron 에만 기대지 않고 회차가 끝날 때 �
   assert.ok(y.includes('(.created_at | fromdateiso8601) >= $cutoff'));
   assert.ok(y.includes('gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true'));
   assert.ok(y.includes('MARE_PERIODIC_RECOVERY_SKIP=HISTORY_UNVERIFIED'));
+  assert.ok(y.includes('MARE_PERIODIC_RECOVERY_BLOCKER=%s'));
+  assert.ok(y.includes('{id, status, event, created_at, updated_at,'));
+  assert.ok(y.includes('then "ACTIVE" else "RECENT_PERIODIC" end'));
+  assert.ok(y.includes('MARE_PERIODIC_RECOVERY_SKIP=BUSY_OR_RECENT'));
   assert.match(y,/cron: '\*\/5 \* \* \* \*'/);                    // 안전망
   // [메인 큐 보존] PR 읽기 전용 검사는 별도 큐를 쓰더라도 main 연습 동시 실행 방지는 유지한다.
   const group=(y.match(/^  group: ([^\n]+)$/m)||[])[1]||'';
