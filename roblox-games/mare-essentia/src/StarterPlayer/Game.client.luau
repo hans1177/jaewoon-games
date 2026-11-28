@@ -7599,7 +7599,7 @@ local function openTradeHall()
 				local track = Instance.new("Frame")
 				track.Name = "TradeIndexPriceMeter"
 				track.Position = UDim2.fromOffset(10, 136)
-				track.Size = UDim2.new(1, if g.tag and g.tag ~= "" then -78 else -20, 0, 7)
+				track.Size = UDim2.new(1, if g.lock or (g.tag and g.tag ~= "") then -98 else -20, 0, 7)
 				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
 				track.BorderSizePixel = 0
 				track.Parent = row
@@ -7622,7 +7622,7 @@ local function openTradeHall()
 			local profitText = if profit == nil then "세후손익 미확인"
 				elseif profit >= 0 then "세후 이익 +" .. H.commas(profit) else "세후 손실 -" .. H.commas(-profit)
 			local budgetQty = 0
-			for n = 1, math.min(20, view.orderCap or 20, free0, g.supply or 20) do
+			for n = 1, if g.lock then 0 else math.min(20, view.orderCap or 20, free0, g.supply or 20) do
 				local cost = if g.buyTotals and g.buyTotals[n] then g.buyTotals[n] else unitBuyOf(g) * n
 				if cost <= p.coins then budgetQty = n end
 			end
@@ -7639,25 +7639,25 @@ local function openTradeHall()
 			pr.TextSize = if listWidth < 230 then 15 else 17
 			pr.AutomaticSize = Enum.AutomaticSize.None
 			local ownedLine = mkLabel(row,
-				string.format("보유 %d개 · 구매 가능 %d개\n%s", g.owned, budgetQty, profitText), 16, if profit and profit < 0 then COLORS.red else INK_SOFT, true)
+				string.format("보유 %d개 · %s\n%s", g.owned, if g.lock then "구매 잠김" else "구매 가능 " .. tostring(budgetQty) .. "개", profitText), 16, if profit and profit < 0 then COLORS.red elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
 			ownedLine.Position = UDim2.fromOffset(10, 147)
             ownedLine.Size = UDim2.new(1, -20, 0, 50)
             ownedLine.TextWrapped = true
             ownedLine.TextSize = if listWidth < 230 then 14 else 16
 			ownedLine.AutomaticSize = Enum.AutomaticSize.None
 			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
-			if g.tag and g.tag ~= "" then
-                local badge = Instance.new("TextLabel")
-				-- [특산품 잠금] 아직 못 사는 특산품·명품은 자물쇠 도장
-				badge.Text = if g.lock then "🔒" .. tostring(g.lock.tierName or "잠김") else g.tag
-				badge.TextSize = 16
+			if g.lock or (g.tag and g.tag ~= "") then
+				local badge = Instance.new("TextLabel")
+				badge.Name = "TradeAccessBadge"
+				badge.Text = if g.lock then tostring(g.lock.tierName or "특산") .. " 잠김" else g.tag
+				badge.TextSize = 13
 				badge.Font = Enum.Font.GothamBold
-				-- [특산·수요 도장] 어두운 잉크/밝은 황동으로 밝은 양피지와 대비.
-                badge.TextColor3 = INK
-                badge.BackgroundColor3 = if g.tag == "특산" then Color3.fromRGB(216, 197, 143) else Color3.fromRGB(236, 201, 139)
-				badge.Size = UDim2.fromOffset(56, 26)
+				badge.TextColor3 = if g.lock then Color3.fromRGB(255, 235, 217) else INK
+				badge.BackgroundColor3 = if g.lock then Color3.fromRGB(126, 54, 42) elseif g.tag == "특산" then Color3.fromRGB(216, 197, 143) else Color3.fromRGB(236, 201, 139)
+				badge.Size = UDim2.fromOffset(82, 26)
 				badge.AnchorPoint = Vector2.new(1, 0)
 				badge.Position = UDim2.new(1, -10, 0, 117)
+				badge.TextTruncate = Enum.TextTruncate.AtEnd
 				corner(badge, 6)
 				badge.Parent = row
 			end
@@ -7900,7 +7900,8 @@ local function openTradeHall()
 				fill.Parent = track
 				corner(fill, 4)
 			end
-			local meanStatus = if diff > 0.5 then string.format("▲ 평균보다 %.1f%% 비쌈", diff)
+			local average = tonumber(sel.avgPrice) or tonumber(sel.basePrice) or 0
+			local meanStatus = if average <= 0 then "세계 평균 자료 없음" elseif diff > 0.5 then string.format("▲ 평균보다 %.1f%% 비쌈", diff)
 				elseif diff < -0.5 then string.format("▼ 평균보다 %.1f%% 저렴", -diff)
 				else "－ 세계 평균과 비슷함"
 			local meanLabel = mkLabel(right, meanStatus, 23,
@@ -7909,8 +7910,8 @@ local function openTradeHall()
 			meanLabel.Position = UDim2.fromOffset(12, infoTop + 105)
 			meanLabel.Size = UDim2.new(1, -24, 0, 32)
 			meanLabel.AutomaticSize = Enum.AutomaticSize.None
-			local worldPrice = mkLabel(right, "세계 평균 매입가 " .. H.commas(sel.avgPrice or sel.basePrice or 0)
-				.. "코인" .. (if dealPct > 0 then " · 흥정 할인 적용" else ""), 16, INK_SOFT, false)
+			local worldPrice = mkLabel(right, (if average > 0 then "세계 평균 매입가 " .. H.commas(average) .. "코인" else "비교 기준가 미확인")
+				.. (if dealPct > 0 then " · 흥정 할인 적용" else ""), 16, INK_SOFT, false)
 			worldPrice.Position = UDim2.fromOffset(12, infoTop + 143)
 			worldPrice.Size = UDim2.new(1, -24, 0, 46)
 			worldPrice.AutomaticSize = Enum.AutomaticSize.None
@@ -7922,13 +7923,15 @@ local function openTradeHall()
 			local profitLabel = mkLabel(profitBox,
 				"1개 세후 예상손익\n" .. (if profit == nil then "매입 기록 없음" else profitText .. "코인"),
 				22, if profit and profit < 0 then Color3.fromRGB(177, 47, 57)
+					elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60)
 					else Color3.fromRGB(96, 78, 41), true)
 			profitLabel.Position = UDim2.fromOffset(10, 5)
 			profitLabel.Size = UDim2.new(1, -20, 0, 64)
 			profitLabel.AutomaticSize = Enum.AutomaticSize.None
 			profitLabel.TextWrapped = true
-			local inventory = mkLabel(right, string.format("내 보유 %d개 · 구매 가능 %d개\n내 평균 매입가 %s코인\n빈 화물칸 %d · 이번 판매 한도 %d개",
-				sel.owned, maxBuy, basis, free, maxSell), 18, INK, true)
+			local inventory = mkLabel(right, string.format("내 보유 %d개 · %s\n내 평균 매입가 %s\n빈 화물칸 %d · 이번 판매 한도 %d개",
+				sel.owned, if sel.lock then "구매 잠김" else "구매 가능 " .. tostring(maxBuy) .. "개",
+				if basis == "미구매" then basis else basis .. "코인", free, maxSell), 18, INK, true)
 			inventory.Position = UDim2.fromOffset(12, infoTop + 283)
 			inventory.Size = UDim2.new(1, -24, 0, 80)
 			inventory.AutomaticSize = Enum.AutomaticSize.None
@@ -7969,7 +7972,7 @@ local function openTradeHall()
 				receipt.TextColor3 = if qty > maxBuy then COLORS.red else COLORS.text
 				if buy then
 					local canBuy = maxBuy >= qty
-					buy.Text = if canBuy then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족"
+					buy.Text = if canBuy then "구매 " .. tostring(qty) .. "개" elseif sel.lock then "특산품 잠김" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족"
 					buy.Interactable, buy.Active, buy.Selectable, buy.AutoButtonColor = canBuy, canBuy, canBuy, canBuy
 					buy.TextColor3 = if canBuy then INK else Color3.fromRGB(97, 93, 89)
 					buy.BackgroundColor3 = if canBuy then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(174, 169, 159)
@@ -8017,8 +8020,9 @@ local function openTradeHall()
 			alert.Position = UDim2.fromOffset(14, infoTop + 390)
 			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
+			alert.TextWrapped = true
 			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			local hg = mkButton(desk, if sel.lock then "🔒 잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			local hg = mkButton(desk, if sel.lock then "잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "흥정 게임", COLORS.grey, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
 			hg.Name = "HaggleGameButton"
 			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
 			hg.TextSize = if narrow then 14 else 16
