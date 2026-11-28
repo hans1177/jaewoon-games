@@ -8219,10 +8219,72 @@ function RENDERERS.route()
 	if not selected then H.routeDetailId = nil end
 	if selected then
 		add(function()
-			return mkRow(content, "항로 상세", "", {
-				{ text = "목록", color = COLORS.grey, onClick = function() H.routeDetailId = nil; render() end },
-			}, 78)
+			return mkButton(content, "항로 목록", COLORS.leather, UDim2.new(1, -6, 0, 44), function() H.routeDetailId = nil; render() end, true)
 		end)
+		-- [항해 상세 해도] 세계지도 화면과 같은 승인 원화 및 정규 바닷길 좌표를 사용한다.
+		if not selected.locked and PortData.Ports[view.player.portId] and PortData.Ports[selected.id] then
+			add(function()
+				local path = SeaRoutes.path(view.player.portId, selected.id, PortData.Ports)
+				local worldImg = AssetIds["CardArt/event_chart_world"]
+				local box = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 210), COLORS.paper)
+				box.Name = "RouteMiniChart"
+				local caption = mkLabel(box, view.player.portName .. " → " .. selected.name, 16, INK, true)
+				caption.Size = UDim2.new(1, -16, 0, 28)
+				caption.Position = UDim2.fromOffset(8, 4)
+				caption.AutomaticSize = Enum.AutomaticSize.None
+				caption.TextTruncate = Enum.TextTruncate.AtEnd
+				local map = Instance.new("ImageLabel")
+				map.Name = "RouteMiniChartMap"
+				map.Position = UDim2.fromOffset(8, 34)
+				map.Size = UDim2.new(1, -16, 1, -62)
+				map.BackgroundColor3 = Color3.fromRGB(38, 82, 120)
+				map.BorderSizePixel = 0
+				map.Image = if worldImg then "rbxassetid://" .. tostring(worldImg) else ""
+				map.ScaleType = Enum.ScaleType.Stretch
+				map.ClipsDescendants = true
+				map.Parent = box
+				local function point(lat, lon)
+					local x = if worldImg then (31 + (lon + 180) / 360 * 1522) / 1587 else (lon + 180) / 360
+					local y = if worldImg then (98 + (80.6 - lat) / 145.4 * 822) / 991 else (90 - lat) / 180
+					return UDim2.fromScale(math.clamp(x, 0.02, 0.98), math.clamp(y, 0.02, 0.98))
+				end
+				for i = 1, #path - 1 do
+					local a, b = path[i], path[i + 1]
+					local dl = (b[2] - a[2] + 180) % 360 - 180
+					local count = math.clamp(math.ceil(math.max(math.abs(dl), math.abs(b[1] - a[1])) / 2), 1, 24)
+					for k = 0, count - 1 do
+						local t = k / count
+						local lon = (a[2] + dl * t + 180) % 360 - 180
+						local dot = Instance.new("Frame")
+						dot.Name = "RouteWaypoint"
+						dot.AnchorPoint = Vector2.new(0.5, 0.5)
+						dot.Position = point(a[1] + (b[1] - a[1]) * t, lon)
+						dot.Size = UDim2.fromOffset(3, 3)
+						dot.BackgroundColor3 = Color3.fromRGB(255, 224, 118)
+						dot.BorderSizePixel = 0
+						dot.Parent = map
+					end
+				end
+				for _, index in { 1, #path } do
+					local p = path[index]
+					local mark = Instance.new("Frame")
+					mark.Name = if index == 1 then "RouteOrigin" else "RouteDestination"
+					mark.AnchorPoint = Vector2.new(0.5, 0.5)
+					mark.Position = point(p[1], p[2])
+					mark.Size = UDim2.fromOffset(10, 10)
+					mark.BackgroundColor3 = if index == 1 then Color3.fromRGB(112, 207, 146) else Color3.fromRGB(249, 191, 61)
+					mark.BorderSizePixel = 0
+					mark.ZIndex = 3
+					mark.Parent = map
+					corner(mark, 5)
+				end
+				local legend = mkLabel(box, "초록 출발 · 금색 목적지" .. (if worldImg then "" else " · 좌표 개략도"), 13, INK_SOFT, false)
+				legend.Position = UDim2.new(0, 8, 1, -24)
+				legend.Size = UDim2.new(1, -16, 0, 20)
+				legend.AutomaticSize = Enum.AutomaticSize.None
+				return box
+			end)
+		end
 	elseif view.weather then
 		add(function()
 			local fc = ""
@@ -8330,11 +8392,16 @@ function RENDERERS.route()
 						meter.Size = UDim2.new(1, 0, 0, 25)
 						meter.BackgroundTransparency = 1
 						meter.Parent = textBox
-						local icon = modelIcon(meter, "FacilityArt", data[4], nil, 22, data[1])
-						icon.Position = UDim2.fromOffset(0, 1)
+						local key = if index == 1 and H.hasIconArt("supply") then "supply" else data[4]
+						local iconLeft = 0
+						if H.hasIconArt(key) then
+							local icon = modelIcon(meter, "FacilityArt", key, nil, 22, data[1])
+							icon.Position = UDim2.fromOffset(0, 1)
+							iconLeft = 26
+						end
 						local label = mkLabel(meter, string.format("%s %d/%d", data[1], data[3], data[2]), 13, INK, true)
-						label.Position = UDim2.fromOffset(26, 0)
-						label.Size = UDim2.new(0.55, -26, 1, 0)
+						label.Position = UDim2.fromOffset(iconLeft, 0)
+						label.Size = UDim2.new(0.55, -iconLeft, 1, 0)
 						label.AutomaticSize = Enum.AutomaticSize.None
 						label.TextTruncate = Enum.TextTruncate.AtEnd
 						local track = Instance.new("Frame")
