@@ -71,3 +71,6 @@
 - 상인 표정 시트 6종: `ui_haggle_merchant_europe_sheet.png`, `ui_haggle_merchant_w_africa_sheet.png`, `ui_haggle_merchant_new_world_sheet.png`, `ui_haggle_merchant_indian_sheet.png`, `ui_haggle_merchant_far_east_sheet.png`, `ui_haggle_merchant_pacific_sheet.png`. 각 1024×768, 4×3칸, 3절과 동일한 움직임. 지역별 시대 복식·사실적인 가상 인물, 배경 투명.
 - 계약서 `ui_haggle_contract.png` (1024×512, 불투명 양피지, 여백 넓게, 글자 없음), 밀랍 인장 `ui_haggle_contract_seal.png` (512×512 투명, 17~18세기 청동 인장 문양과 붉은 밀랍). 모두 CardArt 기존 등록 경로. 등록 전에는 기존 승인 양피지와 체결 문구 사용. 임의 인장 대체 없음.
 - 실제 서버 거래 성공 응답에만 도장 연출. 거래 결과와 영수증을 읽고 확인 버튼으로 닫는다. 모션 줄이기 설정 준수. 지역별 신규 그림은 실제 등록 전 미완료.
+
+## 11. 실물 검수 장부 연계
+- 승인된 정상 상품 견본과 별도로 서버가 가상 견본 3개의 불량 수량·봉인 상태·검수 수량을 생성. 품목별 결함 유형 및 계약 수량 부족분 확인, 저울 기준 추의 오차와 포장 무게 보정. 현재 문제의 장부만 전송하고 판정은 기존 서버 라운드에서 한다. 실제 불량 모델이 없는 동안 정상 견본을 불량 3D라고 표시하지 않는다. 기존 할인·경제·저장 불변.

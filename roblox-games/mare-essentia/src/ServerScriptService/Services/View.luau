@@ -178,6 +178,7 @@ return function(D, S)
 							title = pend.trade.title, persona = pend.trade.persona, support = pend.trade.support, auction = pend.trade.auction, deadline = pend.trade.deadline, feedback = pend.trade.feedback,
 							round = pend.trade.round, total = #pend.trade.rounds,
 							question = pend.trade.rounds[pend.trade.round].question,
+							evidence = pend.trade.rounds[pend.trade.round].evidence,
 							options = pend.trade.rounds[pend.trade.round].options,
 						} else nil }
 				end)(),

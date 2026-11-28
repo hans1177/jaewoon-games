@@ -5352,6 +5352,12 @@ local function testHaggleGames()
 		check("교역 협상 시작: " .. mode, started and trade ~= nil and #trade.rounds >= 2)
 		local shown: any = S.View.build(st, ctx).haggle.pending.trade
 		check("정답·점수 비공개: " .. mode, shown.answer == nil and shown.rounds == nil and shown.correct == nil)
+		if mode == "appraisal" or mode == "inspection" then
+			check("상품별 검수 장부와 정상 견본 선택: " .. mode, type(shown.evidence) == "string" and #trade.rounds[1].options == 3 and trade.rounds[2].evidence ~= nil)
+		elseif mode == "weigh" then
+			local row = trade.rounds[2]
+			check("저울 보정 장부와 서로 다른 선택지", row.evidence ~= nil and row.options[1] ~= row.options[2] and row.options[1] ~= row.options[3] and row.options[2] ~= row.options[3])
+		end
 		check("잘못된 협상 차례 거절: " .. mode, not act(st, "HagglePlay", { goodId = goodId, round = 99, pick = 1 }))
 		for i, row in trade.rounds do
 			check("교역 단계 응답: " .. mode, act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }))

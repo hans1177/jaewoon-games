@@ -279,11 +279,11 @@ return function(D, S)
 		local price = T.getPrice(state.portId, goodId, mult, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
 		local rounds, title = {}, ""
 		local auction = game == "auction" or game == "antique"
-		local function add(question, correct, wrong1, wrong2)
+		local function add(question, correct, wrong1, wrong2, evidence)
 			local options = { correct, wrong1, wrong2 }
 			local answer = math.floor(rng() * 3) + 1
 			options[1], options[answer] = options[answer], options[1]
-			table.insert(rounds, { question = question, options = options, answer = answer })
+			table.insert(rounds, { question = question, options = options, answer = answer, evidence = evidence })
 		end
 		local function money(n) return tostring(n) .. "코인" end
 		local role = if table.find(port.produces, goodId) then "산지" elseif table.find(port.demands, goodId) then "수요 항구" else "일반 항구"
@@ -317,14 +317,30 @@ return function(D, S)
 		elseif game == "appraisal" or game == "inspection" then
 			title = if game == "appraisal" then "상품 감정" else "견본 검사"
 			local kind = good.resourceKind
-			local defect = if kind == "textile" then "올 풀림과 얼룩" elseif kind == "spice" or kind == "crops" then "습기와 곰팡이" elseif kind == "gem" or kind == "crafted" then "균열과 파손" else "오염과 손상"
-			add(good.name .. "의 가상 검수 기록: " .. defect .. "이 발견됐다.", "불량품을 분리해 재감정", "정상품으로 그대로 인정", "무게만 보고 품질 확정")
-			add("봉인된 견본의 산지 기록과 수량이 장부와 다르다.", "실물과 장부를 대조해 수정 요청", "가격만 보고 승인", "기록을 무시하고 인수")
+			local defect = if kind == "textile" then "올 풀림·얼룩" elseif kind == "spice" or kind == "crops" or kind == "food" then "습기·변질" elseif kind == "gem" or kind == "crafted" or kind == "stone" then "균열·파손" elseif kind == "timber" then "갈라짐·부식" elseif kind == "ore" then "이물질·산화" else "오염·손상"
+			-- 승인 상품 견본은 그대로 두고 서버가 가상 검수 장부를 매번 새로 구성한다.
+			local names = { "가 견본", "나 견본", "다 견본" }
+			local clean = math.floor(rng() * 3) + 1
+			local records, wrong = {}, {}
+			for i, name in names do
+				local bad = if i == clean then 0 else 1 + math.floor(rng() * n)
+				local sealed = i == clean or i == clean % 3 + 1
+				local quantity = if i == clean then n else n + i
+				if i ~= clean then table.insert(wrong, name) end
+				table.insert(records, string.format("%s · %s %d/%d · 봉인 %s", name, defect, bad, quantity, if sealed then "정상" else "훼손"))
+			end
+			add(good.name .. " 중 불량이 없고 봉인이 정상인 견본을 골라.", names[clean], wrong[1], wrong[2], table.concat(records, "\n"))
+			local missing = 1 + math.floor(rng() * 3)
+			local expected = n + missing
+			add("장부와 실제 검수 수량을 비교해 부족분을 골라.", tostring(missing) .. "개", tostring(missing + 1) .. "개", tostring(missing + 2) .. "개", string.format("계약 장부 · %d개\n검수 통과 · %d개\n확인 대상 · %s", expected, n, good.name))
 		elseif game == "weigh" then
 			title = "저울 속임수"
 			local tare = 1 + math.floor(rng() * 3)
 			add(string.format("총 무게 %d근, 빈 포대 %d근. 실제 상품 무게는?", n + tare, tare), tostring(n) .. "근", tostring(n + tare) .. "근", tostring(n + tare + 1) .. "근")
-			add("기준 추 5근을 올렸는데 저울이 6근을 표시한다.", "영점과 기준 추를 재검사", "표시값을 그대로 인정", "포장 무게를 더해서 결제")
+			local reference = 4 + math.floor(rng() * 5)
+			local errorAmount = 1 + math.floor(rng() * 3)
+			local loaded = n + tare + errorAmount
+			add("기준 추로 확인한 저울 오차까지 빼면 실제 상품 무게는?", tostring(n) .. "근", tostring(n + errorAmount) .. "근", tostring(n + tare + errorAmount) .. "근", string.format("기준 추 %d근 → 표시 %d근\n포장 포함 표시 %d근 · 빈 포대 %d근", reference, reference + errorAmount, loaded, tare))
 		elseif game == "secret" then
 			title = "비밀 거래 협상"
 			add("상인이 희귀 화물의 거래 자격을 확인한다.", "길드 허가와 출처 기록 제시", "허가 없이 넘겨 달라고 요구", "신원을 숨기고 강요")

@@ -12910,6 +12910,18 @@ do
 					specimen.Position = UDim2.new(0.5, -72, 0, 26)
 					top = 174
 				end
+				if trade.evidence then
+					local record = mkLabel(tradePanel, trade.evidence, 14, INK, false)
+					record.Name = "TradeInspectionLedger"
+					record.Position = UDim2.fromOffset(4, top)
+					record.Size = UDim2.new(1, -8, 0, 100)
+					record.AutomaticSize = Enum.AutomaticSize.None
+					record.TextWrapped = true
+					record.BackgroundColor3 = PAPER
+					record.BackgroundTransparency = 0.05
+					corner(record, 6)
+					top += 106
+				end
 				local question = mkLabel(tradePanel, trade.question, 16, INK, true)
 				question.Position = UDim2.fromOffset(0, top)
 				question.Size = UDim2.new(1, 0, 0, 68)
@@ -12926,6 +12938,10 @@ do
 					button.TextWrapped = true
 					button.TextSize = 15
 				end
+				local requiredHeight = math.max(590, top + 72 + #trade.options * 52 + 90)
+				tradePanel.Size = UDim2.new(1, 0, 0, requiredHeight - 60)
+				stage.Size = UDim2.new(1, -6, 0, requiredHeight)
+				scroll.CanvasSize = UDim2.fromOffset(0, requiredHeight)
 				hint.Text = trade.support or (if trade.auction then "경쟁 상인보다 높은 가격으로 입찰해. 마지막 입찰에 성공하면 구매 조건 확정." else "협상 완료 후 실제 계약을 선택해.")
 				if trade.auction and trade.deadline then
 					local clock = mkLabel(tradePanel, "", 14, INK, true)
