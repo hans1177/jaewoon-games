@@ -4861,3 +4861,15 @@ test('Mare Studio priority model delay remains a failure unless full recovery is
   assert.ok(workflow.includes('STUDIO_PRIORITY_MODEL_DELAY_RECOVERED='));
   assert.ok(workflow.includes('-not ($msgs.Count -gt 0 -and $benign.Count -eq $msgs.Count)'));
 });
+
+// [검증 증거] 2026-11-28: luau 단계 반환값(수치)이 Actions 로그에 남아야 완료 보고를 검증할 수 있다.
+import { test as evidenceTest } from 'node:test';
+import evidenceAssert from 'node:assert/strict';
+import evidenceFs from 'node:fs';
+evidenceTest('studio-script luau 단계 결과를 STUDIO_STEP_OUT 으로 로그에 남긴다', () => {
+  const src = evidenceFs.readFileSync('tools/company-development-roblox-studio-local-play.mjs', 'utf8');
+  evidenceAssert.match(src, /console\.log\('STUDIO_STEP_OUT='\+n\+':'/);
+  const lint = evidenceFs.readFileSync('tools/devloop/visual_lint.py', 'utf8');
+  evidenceAssert.match(lint, /for ext in \("png", "jpg", "jpeg"\)/);
+  evidenceAssert.match(lint, /빈 영역/);
+});
