@@ -4,6 +4,7 @@
 -- 겹쳐 띄운다. 판정·쿨타임·입력은 건드리지 않는 화면 효과만. 움직임 줄이기 설정이면 짧은 섬광만.
 local TweenService = game:GetService("TweenService")
 local GuiService = game:GetService("GuiService")
+local AssetIds = require(script.Parent.AssetIds)
 
 local Fx = {}
 
@@ -25,13 +26,21 @@ local function overlayFor(button)
 end
 
 local function ring(o, size, color, thickness, grow, dur, z)
-	local r = Instance.new("Frame")
+	local art = AssetIds["CardArt/fx_button_ring"]
+	local r = Instance.new(if art then "ImageLabel" else "Frame")
 	r.AnchorPoint = Vector2.new(0.5, 0.5)
 	r.Position = UDim2.fromScale(0.5, 0.5)
 	r.Size = UDim2.fromOffset(size, size)
 	r.BackgroundTransparency = 1
 	r.ZIndex = z
 	r.Parent = o
+	if r:IsA("ImageLabel") then
+		r.Image = "rbxassetid://" .. tostring(art)
+		r.ImageColor3 = color
+		r.ScaleType = Enum.ScaleType.Fit
+		TweenService:Create(r, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(size * grow, size * grow), ImageTransparency = 1 }):Play()
+		return
+	end
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(1, 0)
 	c.Parent = r
@@ -44,9 +53,10 @@ local function ring(o, size, color, thickness, grow, dur, z)
 end
 
 local function sparks(o, size, color, count, dist, dur, z)
+	local art = AssetIds["CardArt/fx_button_spark"]
 	for i = 1, count do
 		local a = (i / count) * math.pi * 2 + math.random() * 0.4
-		local s = Instance.new("Frame")
+		local s = Instance.new(if art then "ImageLabel" else "Frame")
 		s.AnchorPoint = Vector2.new(0.5, 0.5)
 		s.Position = UDim2.fromScale(0.5, 0.5)
 		local w = math.max(4, size * 0.07)
@@ -56,15 +66,27 @@ local function sparks(o, size, color, count, dist, dur, z)
 		s.BorderSizePixel = 0
 		s.ZIndex = z
 		s.Parent = o
-		local c = Instance.new("UICorner")
-		c.CornerRadius = UDim.new(1, 0)
-		c.Parent = s
 		local d = dist * (0.8 + math.random() * 0.4)
-		TweenService:Create(s, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Position = UDim2.new(0.5, math.cos(a) * d, 0.5, math.sin(a) * d),
-			Size = UDim2.fromOffset(w * 0.4, w * 0.6),
-			BackgroundTransparency = 1,
-		}):Play()
+		if s:IsA("ImageLabel") then
+			s.BackgroundTransparency = 1
+			s.Image = "rbxassetid://" .. tostring(art)
+			s.ImageColor3 = color
+			s.ScaleType = Enum.ScaleType.Fit
+			TweenService:Create(s, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Position = UDim2.new(0.5, math.cos(a) * d, 0.5, math.sin(a) * d),
+				Size = UDim2.fromOffset(w * 0.4, w * 0.6),
+				ImageTransparency = 1,
+			}):Play()
+		else
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(1, 0)
+			c.Parent = s
+			TweenService:Create(s, TweenInfo.new(dur, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				Position = UDim2.new(0.5, math.cos(a) * d, 0.5, math.sin(a) * d),
+				Size = UDim2.fromOffset(w * 0.4, w * 0.6),
+				BackgroundTransparency = 1,
+			}):Play()
+		end
 	end
 end
 
