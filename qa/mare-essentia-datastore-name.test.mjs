@@ -4465,15 +4465,15 @@ test('지역별 공방·우물·종교·시장·제분 시설은 해당 항구 �
   'info.portId .. (if n % 2 == 0 then "_bld_carpenter" else "_bld_smithy")',
   'if portWorkshop and not AssetIds["Town/" .. portWorkshop] then portWorkshop = nil end',
   'ground = importedModel(folder, "Town", "floor_base", at, 21, false, c[6])',
-  'local originalWell = info.portId .. "_bld_well"',
+  'local originalWell = PortScene.cultureSlot(info.portId .. "_bld_well")',
   'if not detail and itemName == originalWell then',
   'local originalReligious = info.portId .. (if lvl <= 2 then "_bld_chapel" else "_bld_temple")',
   'local placedOriginal = AssetIds["Town/" .. originalReligious]',
   'if not placedOriginal then put("Town", "church"',
-  'local localMarket = info.portId .. "_bld_market_stalls"',
+  'local localMarket = PortScene.cultureSlot(info.portId .. "_bld_market_stalls")',
   'if not originalStall and stallAsset == localMarket then',
-  'AssetIds["Town/" .. info.portId .. "_bld_mill"]',
-  'if not building and workshop == info.portId .. "_bld_mill" then'
+  'AssetIds["Town/" .. PortScene.cultureSlot(info.portId .. "_bld_mill")]',
+  'if not building and workshop == PortScene.cultureSlot(info.portId .. "_bld_mill") then'
  ]) assert.ok(scene.includes(token),token);
  for(const port of ['london','acapulco','edo']){
   const brief=readText('roblox-games/mare-essentia/docs/ports/'+port+'.md');
