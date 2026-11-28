@@ -262,6 +262,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1795901160875
+    },
+    "background:sparse-world:월드 부품이 적음(n)#d9fc54d4b8": {
+      "sig": "background:sparse-world:월드 부품이 적음(n)",
+      "kind": "background",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "search": "terrain:FillBlock(filledChunks[key], Vector3.new(CH, 8, CH), Enum.Material.Water)",
+          "replace": "if terrain then terrain:FillBlock(filledChunks[key], Vector3.new(CH, 8, CH), Enum.Material.Water) end"
+        }
+      ],
+      "summary": "terrain nil 방지로 월드 부품 부족 해결",
+      "provider": "groq:openai/gpt-oss-20b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795902171699
     }
   }
 }
