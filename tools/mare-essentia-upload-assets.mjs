@@ -1864,7 +1864,8 @@ for (const k of Object.keys(cardApprovalDocument.approved || {})) {
   if (!k.startsWith('CardArt/')) continue;
   approvedCardNames.add(k.slice(8) + '.jpg');
   // [역사 이벤트 30프레임] 검수된 기존 등록 해시에 오른 3종 PNG 그림판만 허용.
-  if (k.startsWith('CardArt/ui_') || /^CardArt\/history_(?:open|map|record)$/.test(k)) {
+  if (k.startsWith('CardArt/ui_') || /^CardArt\/history_(?:open|map|record)$/.test(k)
+      || /^CardArt\/ency_(?:bg_book|tab_sheet|map_world|scale_people)$/.test(k)) {
     approvedCardNames.add(k.slice(8) + '.png');
   }
 }
