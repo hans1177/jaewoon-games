@@ -1117,7 +1117,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		)
 		grad.Rotation = 90
 		grad.Parent = b
-		local grain = bookMaterial(b, "parchment", 148)
+		local grain = bookMaterial(b, if parent == H.tabStrip or back then "leather" else "parchment", 148)
 		-- 큰 실행 버튼에만 지시서의 승인된 원화 적용. 시설 탭은 자체 상태 원화를 쓴다.
 		local skinKey = if not active then "grey" elseif highlighted then "gold" elseif good then "green" else nil
 		local buttonArt = if skinKey and size.Y.Offset >= 44 and parent ~= H.tabStrip then AssetIds["CardArt/ui_button_" .. skinKey] else nil
@@ -1138,8 +1138,8 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 				grain.ImageTransparency = 0
 			end
 		end
-		if grain then
-			-- 저장 초기화 재확인처럼 상태가 붉게 바뀌는 경우 종이가 경고색을 가리지 않게 한다.
+		if grain and parent ~= H.tabStrip then
+			-- 탭 재질은 renderTabs가 선택 상태와 함께 관리한다. 일반 버튼의 경고색만 여기서 갱신한다.
 			b:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
 				grain.ImageTransparency = if buttonArt then (if b.BackgroundColor3 == initialColor then 0 else 1) elseif b.BackgroundColor3 == COLORS.red then 1 else 0.55
 			end)
@@ -1156,6 +1156,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		-- 깊이를 주는 안쪽 인쇄 테두리
 		local bevel = Instance.new("Frame")
 		bevel.Name = "PressedEdge"
+		bevel.Visible = not buttonArt
 		bevel.BackgroundTransparency = 1
 		bevel.BorderSizePixel = 0
 		bevel.Position = UDim2.fromOffset(3, 3)
@@ -1180,7 +1181,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		mark.ZIndex = b.ZIndex + 1
 		mark.Active = false
 		mark.Parent = b
-		mark.Visible = size.X.Scale > 0 or size.X.Offset >= 60
+		mark.Visible = not buttonArt and (size.X.Scale > 0 or size.X.Offset >= 60)
 		corner(mark, 2)
 		local rivet = Instance.new("Frame")
 		rivet.Name = "BrassRivet"
@@ -1193,7 +1194,7 @@ local function mkButton(parent, text, color, size, onClick, enabled)
 		rivet.ZIndex = b.ZIndex + 1
 		rivet.Active = false
 		rivet.Parent = b
-		rivet.Visible = size.X.Scale > 0 or size.X.Offset >= 88
+		rivet.Visible = not buttonArt and (size.X.Scale > 0 or size.X.Offset >= 88)
 		corner(rivet, 3)
 		-- 인쇄 글자가 실제 종이 텍스처 아래로 가라앉지 않도록 별도 잉크 층을 둔다.
 		-- TextButton.Text 자체는 그대로 유지해 기존 상태 변경과 접근성을 보존한다.
@@ -2912,7 +2913,7 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 		local art = button:FindFirstChild("MenuArt")
 		if art and art:IsA("ImageLabel") then
 			-- [밝은 투명 원화] 배경 사각형 없이 원본 색을 최대한 유지한다.
-			art.ImageColor3 = if selected then Color3.fromRGB(255, 253, 237) else (HUD_MENU_TINT[key] or HUD_BRONZE)
+			art.ImageColor3 = if selected then Color3.fromRGB(255, 253, 237) elseif art:GetAttribute("FacilityArtKey") then Color3.new(1, 1, 1) else (HUD_MENU_TINT[key] or HUD_BRONZE)
 		elseif art and art:IsA("Frame") and art:GetAttribute("MenuGlyph") then
 			-- [선택 색 동기화] 원화뿐 아니라 황동 도형도 같은 선택 강조를 받는다.
 			local highlight = if selected then Color3.fromRGB(255, 243, 190) else Color3.fromRGB(255, 222, 155)
@@ -2934,8 +2935,8 @@ function H.hudShortcut(parent, name, key, label, dockItem)
 			end
 		end
 		badgeStroke.Color = Color3.fromRGB(255, 233, 170)
-		badgeStroke.Transparency = if selected then 0.20 else 1
-		disc.BackgroundTransparency = if selected then 0.52 else 1
+		badgeStroke.Transparency = if selected then 0.20 else 0.55
+		disc.BackgroundTransparency = if selected then 0.52 else 0.90
 		local caption = button:FindFirstChild("MenuName")
 		if caption then caption.TextColor3 = if selected then Color3.fromRGB(255, 237, 172) else Color3.fromRGB(255, 244, 214) end
 	end
@@ -16247,6 +16248,11 @@ function H.renderTabs()
 				local underline = b:FindFirstChild("ActiveTabRule")
 				if underline then underline.Visible = selected end
 				local icon = b:FindFirstChild("TabIcon")
+				local rim = icon and icon:FindFirstChild("TabIconRim")
+				if rim then
+					rim.Color = if selected then UI_BRASS_DARK else UI_BRASS
+					rim.Transparency = if selected then 0.12 else 0.55
+				end
 				local iconScale = icon and icon:FindFirstChild("TabIconScale")
 				if selected and iconScale and not motionSettings.ReducedMotionEnabled then
 					motionService:Create(iconScale, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {
@@ -16282,6 +16288,9 @@ function H.renderTabs()
 			grain.SliceScale = 0.5
 			grain.ImageColor3 = Color3.new(1, 1, 1)
 			grain.ImageTransparency = 0
+		elseif grain and grain:IsA("ImageLabel") then
+			grain.ImageColor3 = if selected then Color3.fromRGB(252, 220, 148) else Color3.fromRGB(138, 111, 78)
+			grain.ImageTransparency = if selected then 0.55 else 0.58
 		end
 		for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
 			local decoration = b:FindFirstChild(name)
@@ -16298,6 +16307,17 @@ function H.renderTabs()
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
+			-- [청동 원형 테두리] HUD와 탭 모두 같은 원화·둥근 금속 테두리로 통일한다.
+			local round = Instance.new("UICorner")
+			round.CornerRadius = UDim.new(1, 0)
+			round.Parent = icon
+			local rim = Instance.new("UIStroke")
+			rim.Name = "TabIconRim"
+			rim.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			rim.Thickness = 1.5
+			rim.Color = if selected then UI_BRASS_DARK else UI_BRASS
+			rim.Transparency = if selected then 0.12 else 0.55
+			rim.Parent = icon
 			-- [아이콘 일관성] 원화 아틀라스와 기존 황동 도형 모두 같은 15% 선택 확대를 쓴다.
 			-- UIScale은 버튼의 클릭 영역·스크롤 탭 크기·원본 이미지 자산을 바꾸지 않는다.
 			local iconScale = Instance.new("UIScale")
@@ -16345,6 +16365,9 @@ function H.renderTabs()
             -- [선택한 책갈피] 황동 가장자리와 얇은 가죽 표식을 더해 색면 없이 위치를 구분한다.
             local border = b:FindFirstChildOfClass("UIStroke")
             if border then border.Color = UI_BRASS_DARK; border.Thickness = 2.5 end
+		else
+			local border = b:FindFirstChildOfClass("UIStroke")
+			if border then border.Color = Color3.fromRGB(205, 163, 93); border.Thickness = 1.6 end
 		end
 		-- [선택 띠 재사용] 모든 탭에 한 번 만들고 선택 시 보이기만 전환한다.
 		local rule = Instance.new("Frame")
