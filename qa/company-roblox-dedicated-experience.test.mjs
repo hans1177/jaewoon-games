@@ -1383,7 +1383,8 @@ test('Mare donkey rig candidate keeps original geometry and has real skinned joi
 test('Mare R15 faces use their native head front and stationary villagers greet nearby players',()=>{
   const pose=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau','utf8');
   const port=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau','utf8');
-  assert.match(pose,/decal = head:FindFirstChildWhichIsA\("Decal"\)/);
+  assert.match(pose,/for _, child in head:GetChildren\(\) do\s*if child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front then/);
+  assert.match(pose,/if child ~= decal and child:IsA\("Decal"\) and child.Face == Enum.NormalId.Front then\s*child.Transparency = 1/);
   assert.match(pose,/decal\.Face = Enum\.NormalId\.Front/);
   assert.doesNotMatch(pose,/head\.CFrame:VectorToObjectSpace\(root\.CFrame\.LookVector\)/);
   assert.match(pose,/pcall\(drawFace, headPart\)/);
@@ -1639,7 +1640,7 @@ test('Mare naval encounter keeps card duel exclusive to the dedicated tavern flo
 test('Mare naval cinematic VFX keeps server outcome and mobile emission budgets', () => {
   const battle=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau','utf8');
   assert.match(battle,/local MOBILE_VFX = game:GetService\("UserInputService"\)\.TouchEnabled/);
-  assert.match(battle,/local rangeRing = \{ segments = \{\}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 \}/,'range remains a segmented outline with newer impact radar states, not a solid sea disk');
+  assert.match(battle,/local rangeRing = \{ segments = \{\}, radials = \{\}, angles = \{\}, volleyUntil = 0, impactUntil = 0, hitUntil = 0, fade = 1 \}/,'range remains a segmented outline with newer impact radar states, not a solid sea disk');
   assert.match(battle,/local segmentLength = 2 \* math\.pi \* cannon\.range \/ count/,'radius must reuse existing gun range');
   assert.doesNotMatch(battle,/rangeRing\.(?:Transparency|CFrame|Color|Size)\s*=/,'obsolete solid cylinder range must stay removed');
   assert.match(battle,/FX\.projectile\(ball, nc, style\)/,'the existing cannon routine gets culture-stage trails');
@@ -1795,7 +1796,8 @@ test('Mare naval touch controls avoid HUD overlap and card acquisition never for
     'reloadBack.Parent = if compactReload then skillBtn.fire else gui',
     'reloadBack.Position = if compactReload then UDim2.new(0.5, 0, 0, 12)',
     'reloadBack.Size = if compactReload then UDim2.new(1, -42, 0, 19)',
-    'reloadText.Text = if not inRange then "사거리 밖"',
+    'local reloadCaption = if not inRange then "사거리 밖"',
+    'if reloadText.Text ~= reloadCaption then reloadText.Text = reloadCaption end',
   ]) assert.ok(battle.includes(token),'missing mobile-safe naval HUD binding: '+token);
   const intersects=(a,b)=>a.x<b.x+b.w && b.x<a.x+a.w && a.y<b.y+b.h && b.y<a.y+a.h;
   // [휴대전화 세로] 실제 104/86/76px 버튼, 전술판·카드 지원판·연타 확대 좌표를 검증한다.
@@ -1875,7 +1877,7 @@ test('Mare registered 36 ship models have seven regional battle signatures and s
   assert.match(battle,/blueprint\.existingId and not FX_PROFILES\[blueprint\.existingId\]/,'legacy save id is preserved');
   assert.match(battle,/AssetIds\["Naval\/" \.\. shipId \.\. "-v5"\]/,'only registered V5 IDs can select combat models');
   assert.match(battle,/if MOBILE_VFX and AssetIds\["Naval\/" \.\. light\] then light/,'touch devices prefer registered light model');
-  assert.match(battle,/FX\.muzzle\(from, \(to - from\)\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
+  assert.match(battle,/local flightDelta = to - from\s*FX\.muzzle\(from, flightDelta\.Unit, style, nc\)/,'existing cannon profile is passed to visual effect');
   assert.match(battle,/FX\.impact\(to, nc\.ball, style, nc\)/,'impact uses current weapon profile');
   assert.match(battle,/local power = nc\.ball \* \(splashScale or 1\)\s*if MOBILE_VFX and splashScale and splashScale < 0\.8 then\s*FX\.waterColumn\(Vector3\.new\(to\.X, ORIGIN\.Y \+ 0\.35, to\.Z\), style, power\)\s*else\s*local flight = Vector3\.new\(velocity\.X, 0, velocity\.Z\)\s*FX\.splash\(to, style, power, if flight\.Magnitude > 0 then flight\.Unit else nil\)/);
   assert.match(battle,/FX\.flame\(ORIGIN \+ sunk\.pos \+ Vector3\.new\(0, 6 - k \* 8, 0\), 4\.8, sunk\.fx\)/);
