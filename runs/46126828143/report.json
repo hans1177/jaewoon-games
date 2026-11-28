@@ -1,5 +1,5 @@
 {
- "sourceRevision": "1e481f6fb7f4bcc8a5bd9ec256cc9fd42630900b",
+ "sourceRevision": "92030d8e629fe1b76cdda3e939e59849a06798b2",
  "log": [
   {
    "step": 1,
@@ -320,361 +320,406 @@
    "step": 68,
    "capture": "tab_quest",
    "files": 1
+  },
+  {
+   "step": 69,
+   "ctx": "Client",
+   "out": "TEXTS: 이스탄불 · 주점 · 주점 주인 | 모험 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | ← 성장 | 의뢰 받기 | 진행 일지 | 지상 탐험 | 해적 사냥 | 함대전\ntext"
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "tab explore\ntext"
+  },
+  {
+   "step": 72,
+   "ctx": "Client",
+   "out": "FACILITY_TAB_RUNTIME_PASS:explore\ntext"
+  },
+  {
+   "step": 73,
+   "capture": "tab_explore",
+   "files": 1
   }
  ],
  "errors": [
-  "step69:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:10: MENU_TAB_MISSING:recruit | text"
+  "step74:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:34: FACILITY_DOCK_COUNT=9 | text"
  ],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28009
+   "elapsedMs": 28015
   },
   {
    "step": 1,
    "type": "capture",
-   "elapsedMs": 1566
+   "elapsedMs": 2811
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 283
+   "elapsedMs": 416
   },
   {
    "step": 3,
    "type": "luau",
-   "elapsedMs": 283
+   "elapsedMs": 467
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 477
+   "elapsedMs": 399
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 411
+   "elapsedMs": 409
   },
   {
    "step": 6,
    "type": "click_from_luau",
-   "elapsedMs": 1209
+   "elapsedMs": 1292
   },
   {
    "step": 7,
    "type": "wait",
-   "elapsedMs": 2009
+   "elapsedMs": 2007
   },
   {
    "step": 8,
    "type": "capture",
-   "elapsedMs": 1280
+   "elapsedMs": 1467
   },
   {
    "step": 9,
    "type": "luau",
-   "elapsedMs": 506
+   "elapsedMs": 293
   },
   {
    "step": 10,
    "type": "wait",
-   "elapsedMs": 407
+   "elapsedMs": 414
   },
   {
    "step": 11,
    "type": "click_from_luau",
-   "elapsedMs": 1333
+   "elapsedMs": 1336
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2007
+   "elapsedMs": 2011
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1329
+   "elapsedMs": 1025
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 332
+   "elapsedMs": 297
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 404
+   "elapsedMs": 405
   },
   {
    "step": 16,
    "type": "click_from_luau",
-   "elapsedMs": 1497
+   "elapsedMs": 1479
   },
   {
    "step": 17,
    "type": "wait",
-   "elapsedMs": 1702
+   "elapsedMs": 1706
   },
   {
    "step": 18,
    "type": "capture",
-   "elapsedMs": 1531
+   "elapsedMs": 2655
   },
   {
    "step": 19,
    "type": "wait",
-   "elapsedMs": 1813
+   "elapsedMs": 1811
   },
   {
    "step": 20,
    "type": "capture",
-   "elapsedMs": 3995
+   "elapsedMs": 6057
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1804
+   "elapsedMs": 1800
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 4559
+   "elapsedMs": 4569
   },
   {
    "step": 23,
    "type": "wait",
-   "elapsedMs": 3707
+   "elapsedMs": 3712
   },
   {
    "step": 24,
    "type": "capture",
-   "elapsedMs": 3445
+   "elapsedMs": 4640
   },
   {
    "step": 25,
    "type": "luau",
-   "elapsedMs": 3502
+   "elapsedMs": 4049
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 821
+   "elapsedMs": 502
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2504
+   "elapsedMs": 2506
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 2567
+   "elapsedMs": 2924
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1467
+   "elapsedMs": 2151
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 391
+   "elapsedMs": 470
   },
   {
    "step": 31,
    "type": "luau",
-   "elapsedMs": 396
+   "elapsedMs": 438
   },
   {
    "step": 32,
    "type": "wait",
-   "elapsedMs": 2501
+   "elapsedMs": 2509
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 363
+   "elapsedMs": 801
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 1238
+   "elapsedMs": 1850
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 420
+   "elapsedMs": 474
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 393
+   "elapsedMs": 869
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 2503
+   "elapsedMs": 2502
   },
   {
    "step": 38,
    "type": "luau",
-   "elapsedMs": 362
+   "elapsedMs": 608
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 399
+   "elapsedMs": 580
   },
   {
    "step": 40,
    "type": "capture",
-   "elapsedMs": 1584
+   "elapsedMs": 3067
   },
   {
    "step": 41,
    "type": "luau",
-   "elapsedMs": 399
+   "elapsedMs": 1092
   },
   {
    "step": 42,
    "type": "click_from_luau",
-   "elapsedMs": 1683
+   "elapsedMs": 2728
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 864
+   "elapsedMs": 854
   },
   {
    "step": 44,
    "type": "luau",
-   "elapsedMs": 353
+   "elapsedMs": 135
   },
   {
    "step": 45,
    "type": "capture",
-   "elapsedMs": 1603
+   "elapsedMs": 2489
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 403
+   "elapsedMs": 528
   },
   {
    "step": 47,
    "type": "wait",
-   "elapsedMs": 2509
+   "elapsedMs": 2501
   },
   {
    "step": 48,
    "type": "luau",
-   "elapsedMs": 385
+   "elapsedMs": 622
   },
   {
    "step": 49,
    "type": "capture",
-   "elapsedMs": 1675
+   "elapsedMs": 1398
   },
   {
    "step": 50,
    "type": "luau",
-   "elapsedMs": 442
+   "elapsedMs": 458
   },
   {
    "step": 51,
    "type": "click_from_luau",
-   "elapsedMs": 1638
+   "elapsedMs": 1852
   },
   {
    "step": 52,
    "type": "wait",
-   "elapsedMs": 857
+   "elapsedMs": 864
   },
   {
    "step": 53,
    "type": "luau",
-   "elapsedMs": 105
+   "elapsedMs": 447
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 1700
+   "elapsedMs": 1305
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 416
+   "elapsedMs": 446
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 2511
+   "elapsedMs": 2504
   },
   {
    "step": 57,
    "type": "luau",
-   "elapsedMs": 456
+   "elapsedMs": 760
   },
   {
    "step": 58,
    "type": "capture",
-   "elapsedMs": 1399
+   "elapsedMs": 1389
   },
   {
    "step": 59,
    "type": "luau",
-   "elapsedMs": 468
+   "elapsedMs": 545
   },
   {
    "step": 60,
    "type": "luau",
-   "elapsedMs": 450
+   "elapsedMs": 427
   },
   {
    "step": 61,
    "type": "wait",
-   "elapsedMs": 2507
+   "elapsedMs": 2510
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 310
+   "elapsedMs": 598
   },
   {
    "step": 63,
    "type": "capture",
-   "elapsedMs": 2629
+   "elapsedMs": 1338
   },
   {
    "step": 64,
    "type": "luau",
-   "elapsedMs": 823
+   "elapsedMs": 409
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 413
+   "elapsedMs": 420
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 2514
+   "elapsedMs": 2511
   },
   {
    "step": 67,
    "type": "luau",
-   "elapsedMs": 159
+   "elapsedMs": 462
   },
   {
    "step": 68,
    "type": "capture",
-   "elapsedMs": 1239
+   "elapsedMs": 935
   },
   {
    "step": 69,
    "type": "luau",
-   "elapsedMs": 709
+   "elapsedMs": 2724
+  },
+  {
+   "step": 70,
+   "type": "luau",
+   "elapsedMs": 162
+  },
+  {
+   "step": 71,
+   "type": "wait",
+   "elapsedMs": 2509
+  },
+  {
+   "step": 72,
+   "type": "luau",
+   "elapsedMs": 127
+  },
+  {
+   "step": 73,
+   "type": "capture",
+   "elapsedMs": 886
+  },
+  {
+   "step": 74,
+   "type": "luau",
+   "elapsedMs": 781
   }
  ],
  "consoleCapture": {
@@ -685,12 +730,12 @@
  },
  "summary": {
   "plannedSteps": 1000,
-  "completedSteps": 70,
+  "completedSteps": 75,
   "plannedClicks": 12,
   "successfulClicks": 5,
   "skippedOptionalClicks": 0,
   "plannedFrames": 70,
-  "capturedFrames": 16,
+  "capturedFrames": 17,
   "abortedEarly": true
  },
  "visualSamples": [
@@ -700,7 +745,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 251302,
+      "bytes": 251304,
       "width": 0,
       "height": 0,
       "pass": true
@@ -723,7 +768,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 250667,
+      "bytes": 251014,
       "width": 0,
       "height": 0,
       "pass": true
@@ -738,7 +783,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 195353,
+      "bytes": 195370,
       "width": 0,
       "height": 0,
       "pass": true
@@ -753,7 +798,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 145178,
+      "bytes": 145165,
       "width": 0,
       "height": 0,
       "pass": true
@@ -777,7 +822,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 157706,
+      "bytes": 163240,
       "width": 0,
       "height": 0,
       "pass": true
@@ -801,7 +846,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 183499,
+      "bytes": 125385,
       "width": 0,
       "height": 0,
       "pass": true
@@ -825,7 +870,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 120037,
+      "bytes": 144614,
       "width": 0,
       "height": 0,
       "pass": true
@@ -838,7 +883,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.0266964435577393,
+    "brightness": 2.030674695968628,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -849,7 +894,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 143556,
+      "bytes": 143429,
       "width": 0,
       "height": 0,
       "pass": true
@@ -862,7 +907,7 @@
     "sky": false,
     "departing": false,
     "atmosphere": true,
-    "brightness": 2.032820701599121,
+    "brightness": 2.0330491065979004,
     "voyageScene": false,
     "voyageHud": false
    }
@@ -873,7 +918,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 167296,
+      "bytes": 171093,
       "width": 0,
       "height": 0,
       "pass": true
@@ -888,7 +933,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 189090,
+      "bytes": 188025,
       "width": 0,
       "height": 0,
       "pass": true
@@ -903,7 +948,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 171182,
+      "bytes": 167143,
       "width": 0,
       "height": 0,
       "pass": true
@@ -918,7 +963,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 168813,
+      "bytes": 168042,
       "width": 0,
       "height": 0,
       "pass": true
@@ -933,7 +978,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163147,
+      "bytes": 162755,
       "width": 0,
       "height": 0,
       "pass": true
@@ -948,7 +993,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 163583,
+      "bytes": 163356,
       "width": 0,
       "height": 0,
       "pass": true
@@ -963,7 +1008,7 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 179625,
+      "bytes": 180088,
       "width": 0,
       "height": 0,
       "pass": true
@@ -978,7 +1023,22 @@
     "pass": true,
     "frames": [
      {
-      "bytes": 147693,
+      "bytes": 147477,
+      "width": 0,
+      "height": 0,
+      "pass": true
+     }
+    ]
+   },
+   "interaction": "FACILITY_TAB_route_TO_map"
+  },
+  {
+   "name": "tab_explore",
+   "frame": {
+    "pass": true,
+    "frames": [
+     {
+      "bytes": 148312,
       "width": 0,
       "height": 0,
       "pass": true
@@ -989,11 +1049,11 @@
   }
  ],
  "abortDiagnostics": {
-  "step": 69,
+  "step": 74,
   "type": "luau",
-  "elapsedMs": 245,
+  "elapsedMs": 425,
   "context": "Client",
-  "lastScreenshot": "tab_quest",
+  "lastScreenshot": "tab_explore",
   "lastClick": "qa_tab_route_to_map",
   "probes": {
    "Client": {
@@ -1007,7 +1067,7 @@
   }
  },
  "visualEvidence": {
-  "framesChecked": 16,
+  "framesChecked": 17,
   "framesWithInvalidSize": 0,
   "voyageSceneObserved": false,
   "departureObserved": false,
