@@ -1,25 +1,20 @@
 {
- "sourceRevision": "b2115acfa948bd9e460b30cfb1ff9954c2fd309c",
+ "sourceRevision": "52dde15aa565685f47cc552324e27a8bd15a21e9",
  "log": [
   {
    "step": 1,
    "ctx": "Client",
-   "out": "bound\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=6 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=6 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   },
   {
    "step": 2,
-   "ctx": "Client",
-   "out": "truenil\ntext"
+   "capture": "ap_game",
+   "files": 1
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "truenil\ntext"
-  },
-  {
-   "step": 6,
-   "ctx": "Client",
-   "out": "DIAG cow piv(-180,50,-0) bb1.8x7.3x4.1 tilt=flip prim=Cow |   P Cow MeshPart sz1.8x4.1x7.3 r(90,0,50) tr0 |   B root<Cow w(90,0,50) y3.0 |   B FrontFoot.R<root w(0,-50,0) y4.6 |   B Body<root w(90,0,50) y3.0 |   B FrontLeg.R<Body w(90,0,-40) y4.5 |   B FrontUpLeg.R<FrontLeg.R w(-78,-10,-49) y4.5 |   B FrontLowLeg.R<FrontUpLeg.R w(-94,4,-50) y4.7 |   B BackLeg.R<Body w(90,0,-40) y1.3 |   B BackUpLeg.R<BackLeg.R w(-114,23,-44) y1.3 |   B BackLowLeg.R<BackUpLeg.R w(-84,-7,-50) y0.8 |   B FrontLeg.L<Body w(-90,-0,40) y4.5 |   B FrontUpLeg.L<FrontLeg.L w(-85,-16,-50) y4.5 |   B FrontLowLeg.L<FrontUpLeg.L w(-94,4,-50) y4.7 |   B BackLeg.L<Body w(-90,-0,40) y1.3 | sheep piv(-0,-86,-180) bb1.4x2.8x3.8 tilt=nil prim=Sheep |   P Sheep MeshPart sz1.4x2.8x3.8 r(-180,86,180) tr0 |   B root<Sheep w(-180,86,-180) y0.0 |   B FrontFoot.R<root w(-90,0,94) y0.1 |   B Body<root w(-180,86,-180) y1.5 |   B FrontLeg.R<Body w(-180,86,90) y1.6 |   B FrontUpLeg.R<FrontLeg.R w(-80,-78,101) y1.6 |   B FrontLowLeg.R<FrontUpLeg.R w(64,-81,-117) y0.8 |   B BackLeg.R<Body w(-180,86,90) y1.6 |   B BackUpLeg.R<BackLeg.R w(80,-54,-100) y1.6 |   B BackLowLeg.R<BackUpLeg.R w(-67,-79,114) y1.0 |   B FrontLeg.L<Body w(0,-86,-90) y1.6 |   B FrontUpLeg.L<FrontLeg.L w(-48,-75,132) y1.6 |   B FrontLowLeg.L<FrontUpLeg.L w(64,-81,-117) y0.8 |   B BackLeg.L<Body w(0,-86,-90) y1.6 | chicken piv(90,0,23) bb1.5x1.1x1.1 tilt=nil prim=Chicken |   P Chicken MeshPart sz1.6x1.1x1.1 r(-0,-23,-0) tr0 |   B Body<Chicken w(-0,-23,-0) y0.0 |   B Head<Chicken w(-0,-23,-0) y0.3 |   B Head2<Head w(-0,-23,-0) y0.7 |   B Head3<Head2 w(-0,-23,-0) y1.0 |   B Eyebrow.R<Head w(-0,-23,-0) y0.7 |   B Eyebrow.L<Head w(-0,-23,-0) y0.7 | dog piv(-180,77,-0) bb1.1x2.6x2.0 tilt=flip prim=Pug |   P Pug MeshPart sz1.1x2.0x2.6 r(90,0,77) tr0 |   B root<Pug w(90,0,77) y1.1 |   B FrontFoot.R<root w(0,-77,0) y1.7 |   B Body<root w(90,0,77) y1.1 |   B FrontLeg.R<Body w(90,0,-13) y1.7 |   B FrontUpLeg.R<FrontLeg.R w(-86,-9,-77) y1.7 |   B FrontLowLeg.R<FrontUpLeg.R w(-91,6,-77) y1.7 |   B BackLeg.R<Body w(90,0,-13) y0.5 |   B BackUpLeg.R<BackLeg.R w(-101,34,-73) y0.5 |   B BackLowLeg.R<BackUpLeg.R w(-89,-6,-77) y0.4 |   B FrontLeg.L<Body w(-90,-0,13) y1.7 |   B FrontUpLeg.L<FrontLeg.L w(-94,-11,-78) y1.7 |   B FrontLowLeg.L<FrontUpLeg.L w(-91,6,-77) y1.7 |   B BackLeg.L<Body w(-90,-0,13) y0.5 | cat piv(-180,-88,-180) bb1.3x1.8x1.2 tilt=nil prim=RootPart |   P body MeshPart sz0.8x0.9x0.9 r(-180,-88,-180) tr0 |   P leg-back-left MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P leg-back-right MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P leg-front-left MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P leg-front-right MeshPart sz0.2x0.2x0.2 r(-180,-88,-180) tr0 |   P Group MeshPart sz0.2x0.1x0.0 r(-180,-88,-180) tr0 |   P tail MeshPart sz0.1x0.7x0.4 r(-180,-88,-180) tr0\ntext"
+   "out": "HEALTH_ERR n=0 first=\nHEALTH_ASSET fail=0 total=6 ids=\nHEALTH_WORLD mobs=0 mobhp=0 parts=18\nHEALTH_UI 퀘스트=0 항해=6 교역=2 백과=0\nHEALTH_LIGHT clock=14.0 bright=1.00 atmos=false sky=false\ntext"
   }
  ],
  "errors": [],
@@ -27,37 +22,27 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35007
+   "elapsedMs": 35005
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 160
+   "elapsedMs": 1133
   },
   {
    "step": 2,
-   "type": "luau",
-   "elapsedMs": 7297
+   "type": "capture",
+   "elapsedMs": 1510
   },
   {
    "step": 3,
    "type": "wait",
-   "elapsedMs": 8003
+   "elapsedMs": 20005
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 8069
-  },
-  {
-   "step": 5,
-   "type": "wait",
-   "elapsedMs": 8015
-  },
-  {
-   "step": 6,
-   "type": "luau",
-   "elapsedMs": 240
+   "elapsedMs": 339
   }
  ],
  "consoleCapture": {
@@ -67,13 +52,13 @@
   "errors": []
  },
  "summary": {
-  "plannedSteps": 7,
-  "completedSteps": 7,
+  "plannedSteps": 5,
+  "completedSteps": 5,
   "plannedClicks": 0,
   "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 0,
-  "capturedFrames": 0,
+  "plannedFrames": 1,
+  "capturedFrames": 1,
   "abortedEarly": false
  }
 }
