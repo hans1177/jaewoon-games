@@ -1179,6 +1179,8 @@ return function(D, S)
 		view.scenes = state._scenes -- 이번에 새로 생긴 퀘스트 이야기 장면 (한 번만 보낸다)
 		state._scenes = nil
 		state._questRewards = nil -- 일회성 보상 표시, 저장하지 않는다
+		view.bossReward = state._bossReward
+		state._bossReward = nil
 		view.bosses = {}
 		for _, b in D.Bosses.Bosses do
 			local rec = state.bosses[b.id]

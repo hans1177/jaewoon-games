@@ -12304,7 +12304,7 @@ do
 			end
 		end
 		local chapterArt = if chapterEnd then AssetIds["CardArt/ui_banner_chapter"] else nil
-		local heading = if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" elseif d.name == "지난 이야기" then "지난 이야기" else "의뢰 완료 · " .. tostring(d.name)
+		local heading = if d.boss then "보스 격파 · " .. tostring(d.name) elseif chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" elseif d.name == "지난 이야기" then "지난 이야기" else "의뢰 완료 · " .. tostring(d.name)
 		if chapterArt then
 			local banner = Instance.new("ImageLabel")
 			banner.Name = "ChapterCompletionBanner"
@@ -12332,6 +12332,19 @@ do
 			head.Size = UDim2.new(1, 0, 0, 0)
 			head.TextXAlignment = Enum.TextXAlignment.Center
 		end
+		if d.boss and d.bossArt then
+			local id = AssetIds["CardArt/" .. tostring(d.bossArt)]
+			if id then
+				local art = Instance.new("ImageLabel")
+				art.Name = "BossVictoryArt"
+				art.LayoutOrder = 0
+				art.Size = UDim2.fromOffset(112, 160)
+				art.BackgroundTransparency = 1
+				art.ScaleType = Enum.ScaleType.Fit
+				art.Image = "rbxassetid://" .. tostring(id)
+				art.Parent = box
+			end
+		end
 		if grade > 0 then
 			local seal = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 46), Color3.fromRGB(55, 37, 25))
 			seal.Name = "QuestRewardRank"
@@ -12341,7 +12354,7 @@ do
 			edge.Color = tone
 			edge.Thickness = 2
 			edge.Parent = seal
-			local caption = mkLabel(seal, string.format("%s 의뢰 · 난이도 %d단계", rankName, grade), 23, tone, true)
+			local caption = mkLabel(seal, if d.boss then "신화 보스 격파" else string.format("%s 의뢰 · 난이도 %d단계", rankName, grade), 23, tone, true)
 			caption.AutomaticSize = Enum.AutomaticSize.None
 			caption.Size = UDim2.fromScale(1, 1)
 			caption.TextXAlignment = Enum.TextXAlignment.Center
@@ -12475,7 +12488,7 @@ do
 				end
 			end
 		end
-		local hint = mkLabel(box, if chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
+		local hint = mkLabel(box, if d.boss then "카드 보상은 기존 카드 메뉴에서 선택해 줘." elseif chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
 		local epic = chapterEnd or grade >= 4
@@ -12515,6 +12528,7 @@ do
 		local first = H.seenDoneQuests == nil
 		H.seenDoneQuests = H.seenDoneQuests or {}
 		local fresh = {}
+		if view.bossReward then table.insert(fresh, view.bossReward) end
 		for _, d in done do
 			local key = tostring(d.id or d.name)
 			if not H.seenDoneQuests[key] then
