@@ -649,6 +649,7 @@ H.facilityIconCells = {
 	nextstep = 2, reward = 0, recommend = 11, chapter = 7, problem = 4,
 	cause = 11, todo = 7, result = 2, recap = 7, coach = 11, defeat = 4,
 	hull = 3, cargo = 0, supply = 0, coin = 0, fame = 6, gift = 0, lock = 10, map_pin = 2, shipyard = 3,
+	quest = 7, recruit = 1, crew = 6, explore = 2, war = 4, scholar = 5, tech = 10, chart = 2,
 	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
 	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
 	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 5, close = 15, -- 외교: 예비 손그림 2번 시트의 봉인 서신(2행 2열)
@@ -2438,12 +2439,12 @@ function H.layoutBook()
     headerLabel.Size = UDim2.fromOffset(150, 29)
     H.pageDetails.Size = UDim2.fromOffset(150, 18)
   end
-  local tabHeight = if compactTabs then 48 else 46
+  local tabHeight = if compactTabs then 58 else 48
   local tabGap = if width < 340 then 4 else 6
   local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
   if tabList then tabList.Padding = UDim.new(0, tabGap) end
-  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 82, 190) else 166
-  if headerTabs then tabWidth = math.min(166, headerTabW) end
+  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 86, 154) else 144
+  if headerTabs then tabWidth = math.min(144, headerTabW) end
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, sectionTop)
@@ -2457,15 +2458,16 @@ function H.layoutBook()
       local icon = button:FindFirstChild("TabIcon")
       local caption = button:FindFirstChild("PrintedCaption")
       if icon then
-        icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
+        icon.Size = UDim2.fromOffset(32, 32)
+        icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)
       end
       if icon and caption then
-        caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
-        caption.Size = if compactTabs then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
+        caption.Position = if compactTabs then UDim2.fromOffset(4, 36) else UDim2.fromOffset(45, 0)
+        caption.Size = if compactTabs then UDim2.new(1, -8, 0, 18) else UDim2.new(1, -51, 1, -4)
         caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
         local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
         if limit then
-          limit.MinTextSize = 11
+          limit.MinTextSize = 13
           limit.MaxTextSize = if compactTabs then 14 else 17
         end
       end
@@ -16155,6 +16157,9 @@ H.TAB_ICON = {
 	status = { "Glyph", "captain" }, crew = { "Glyph", "crew" },
 	diplomacy = { "Castle", "flag-banner-short" }, -- 승인된 외교 서신 원화가 없을 때만 기존 모델 사용
 }
+H.TAB_CAPTION = { route = "항로", map = "해도", diplomacy = "외교", trade = "거래", market = "시장", harbor = "항구",
+	board = "의뢰", quest = "일지", explore = "탐험", battle = "해전", war = "함대전", gwent = "카드",
+	status = "선장", yard = "조선소", crew = "승조원", recruit = "영입", tech = "연구", scholar = "보고", codex = "지식 카드", encyclopedia = "백과" }
 function H.renderTabs()
 	-- [시설 아이콘 동작] 기존 탭 아이콘에만 터치 선택·마우스 반응을 적용한다.
 	-- 매 프레임 갱신이나 무한 반복은 사용하지 않아 모바일 배터리·입력 성능을 유지한다.
@@ -16180,6 +16185,8 @@ function H.renderTabs()
 				b:SetAttribute("SelectedTab", selected)
 				b.BackgroundColor3 = if selected then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(91, 67, 47)
 				b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
+				local caption = b:FindFirstChild("PrintedCaption")
+				if caption then caption.TextColor3 = b.TextColor3 end
 				local gradient = b:FindFirstChildOfClass("UIGradient")
 				if gradient then
 					gradient.Color = ColorSequence.new(
@@ -16222,7 +16229,7 @@ function H.renderTabs()
 	for i, id in g.tabs do
 		local selected = currentTab == id
 		local compactTabs = mainInner.AbsoluteSize.X < 740
-		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 166, if compactTabs then 52 else 54), function()
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 144, if compactTabs then 58 else 48), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)
@@ -16249,10 +16256,10 @@ function H.renderTabs()
 		if ti then
 			-- [공통 규격] 도크는 40px, 시설별 탭은 26px. 아이콘과 인쇄 글자를 겹치지 않게 나눈다.
 			local atlas = H.hasIconArt(id)
-			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 26, TAB_NAME[id])
+			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 32, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
-			icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)
+			icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
@@ -16283,13 +16290,15 @@ function H.renderTabs()
 			end
 			local caption = b:FindFirstChild("PrintedCaption")
 			if caption and caption:IsA("TextLabel") then
-				caption.Position = if compactTabs then UDim2.fromOffset(4, 29) else UDim2.fromOffset(44, 0)
-				caption.Size = if compactTabs then UDim2.new(1, -8, 0, 17) else UDim2.new(1, -54, 1, -4)
+				caption.Text = H.TAB_CAPTION[id] or TAB_NAME[id]
+				caption.TextColor3 = b.TextColor3
+				caption.Position = if compactTabs then UDim2.fromOffset(4, 36) else UDim2.fromOffset(45, 0)
+				caption.Size = if compactTabs then UDim2.new(1, -8, 0, 18) else UDim2.new(1, -51, 1, -4)
 				caption.TextWrapped = false
 				caption.TextScaled = true
 				caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
 				local textLimit = Instance.new("UITextSizeConstraint")
-				textLimit.MinTextSize = 11
+				textLimit.MinTextSize = 13
 				textLimit.MaxTextSize = if compactTabs then 14 else 17
 				textLimit.Parent = caption
 			else
@@ -16308,7 +16317,7 @@ function H.renderTabs()
 		rule.BackgroundColor3 = UI_BRASS_DARK
 		rule.BorderSizePixel = 0
 		rule.Position = UDim2.new(0, 8, 1, -4)
-		rule.Size = UDim2.new(1, -16, 0, 2)
+		rule.Size = UDim2.new(1, -16, 0, 3)
 		rule.ZIndex = b.ZIndex + 3
 		rule.Visible = selected
 		rule.Parent = b
