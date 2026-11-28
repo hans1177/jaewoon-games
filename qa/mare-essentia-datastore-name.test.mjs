@@ -9,9 +9,11 @@ const readText=(file)=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
 // [시설 탭 최초 배치 회귀] 모바일 첫 렌더와 화면 크기 갱신이 같은 배치 규칙을 사용한다.
 test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 배치된다',()=>{
   const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -16, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -16\)/);
+  assert.match(game,/icon\.Position = if not compactTabs then UDim2\.new\(0, 6, 0\.5, -16\) else UDim2\.new\(0\.5, -16, 0, 4\)/);
+  assert.match(game,/icon\.Position = if not iconAbove then UDim2\.new\(0, 6, 0\.5, -16\) else UDim2\.new\(0\.5, -16, 0, 4\)/);
   assert.match(game,/caption\.TextXAlignment = if compactTabs then Enum\.TextXAlignment\.Center else Enum\.TextXAlignment\.Left/);
-  assert.match(game,/textLimit\.MaxTextSize = if compactTabs then 14 else 17/);
+  assert.match(game,/textLimit\.MaxTextSize = 16/);
+  assert.match(game,/limit\.MinTextSize = 13; limit\.MaxTextSize = 16/);
 });
 
 // DataStore 이름이 개명·유니버스 변경 중에 조용히 바뀌어 플레이어 저장이 초기화되는 사고를 막는다.
@@ -99,10 +101,11 @@ test('스튜디오 실제 로딩 대기에서 서버·클라이언트 원인 증
   assert.match(capture[9].code,/local pref=\{"상인 집안"\}/);
   assert.match(capture[11].code,/local pref=\{"상인 집안"\}/);
   assert.match(capture[16].code,/local pref=\{"출항하기"\}/);
-  // [모바일 큰 원화] 실제 전시 원화의 높이를 반영해 겹침을 검사한다.
-  assert.match(capture[87].code,/FindFirstChild\('FacilityGallery'\)/);
-  assert.match(capture[87].code,/expectedTop=gallery\.Position\.Y\.Offset\+gallery\.AbsoluteSize\.Y\+8/);
-  assert.match(capture[87].code,/content\.Position\.Y\.Offset==expectedTop/);
+  // [모바일 기능판] 실제 본문과 도크·레일의 겹침 및 모든 탭 접근을 검사한다.
+  assert.match(capture[87].code,/MENU_RAIL_BODY_OVERLAP/);
+  assert.match(capture[87].code,/MOBILE_DOCK_BODY_OVERLAP/);
+  assert.match(capture[87].code,/MOBILE_LAST_TAB_NOT_REACHABLE/);
+  assert.match(capture[87].code,/MOBILE_ICON_CAPTION_OVERLAP/);
   assert.match(capture[4].code,/MARE_TITLE_NOT_READY_AFTER_50S;LOADING=/);
   assert.match(capture[4].code,/MareCoreStartStage/);
   assert.match(capture[4].code,/StartupStage/);
@@ -5006,15 +5009,17 @@ test('메뉴 글꼴과 실제 화물 막대 및 화면 비율별 탭 폭을 검�
   const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
   assert.match(source,/headerLabel\.Font = Enum\.Font\.GothamBold/);
   assert.match(source,/mastheadSize\.MinTextSize = 15/);
-  assert.match(layout,/local rail = tabs and width >= 700 and width > height/);
+  assert.match(layout,/local compactLandscape = width >= 600 and width > height and height < 440/);
+  assert.match(layout,/local rail = tabs and \(compactLandscape or \(width >= 700 and width > height and not facilityDetail/);
   assert.match(layout,/math\.clamp\(math\.floor\(\(visibleW - \(tabCount - 1\) \* gap\) \/ math\.max\(1, tabCount\)\), 72, 176\)/);
   for (const [width,height,count] of [[320,600,6],[390,700,3],[740,390,6],[832,384,6],[1024,768,6]]) {
-    const rail=width>=700&&width>height, gap=4;
-    const railW=rail?Math.max(120,Math.min(172,Math.floor(width*.18))):0;
+    const compactLandscape=width>=600&&width>height&&height<440;
+    const rail=compactLandscape||(width>=700&&width>height), gap=4;
+    const railW=rail?(compactLandscape?88:Math.max(120,Math.min(172,Math.floor(width*.18)))):0;
     const tab=rail?railW-5:Math.max(72,Math.min(176,Math.floor((width-12-(count-1)*gap)/count)));
     assert.ok(tab>=44);
-    const total=count*(rail?50:tab)+(count-1)*gap;
-    const viewport=rail?height-48-10:width-12;
+    const total=count*(rail?(compactLandscape?62:50):tab)+(count-1)*gap;
+    const viewport=rail?height-52-10:width-12;
     assert.ok(Math.max(0,total-viewport)+viewport>=total);
     assert.ok(width-(rail?railW+18:12)>=200);
   }
@@ -5213,4 +5218,17 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(source.includes('EncyclopediaBookmarkJump'));
  assert.ok(source.includes('H.encyclopediaTargetId = saved.id'));
  assert.ok(source.includes('ArtGallery = 10'));
+});
+
+
+test('항구 지도는 현재 장면의 실제 해금 시설만 표시하며 기존 메뉴로 연결한다',()=>{
+  const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const map=game.split('panel.Name = "HarborSpatialMap"')[1].split('bar.Name = "HarborFacilityIndex"')[0];
+  assert.match(map,/scene:GetAttribute\("PortSceneActive"\) ~= true/);
+  assert.match(map,/scene:GetAttribute\("CityPortVisualIdentity"\) ~= view.player.portId/);
+  assert.match(map,/scene:GetAttribute\("CityFacilityPosition_" \.\. item\[1\]\)/);
+  assert.match(map,/table.find\(view.facilities or \{\}, item\[3\]\)/);
+  assert.match(map,/pin:SetAttribute\("FacilityWorldPosition", site.pos\)/);
+  assert.match(map,/H.harborPage = "finance"/);
+  assert.match(map,/openTab\(site.tab\)/);
 });
