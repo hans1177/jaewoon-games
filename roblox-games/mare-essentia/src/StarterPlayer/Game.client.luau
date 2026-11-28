@@ -17628,7 +17628,7 @@ do
 	function H.shortText(s, n)
 		s = tostring(s or "")
 		local first = string.split(s, "\n")[1]
-		local stop = string.find(first, "[%.!?] ")
+		local stop = string.find(first, "[%.!?] ") -- lint:ok (문장 끝 패턴 의도)
 		if stop and ulen(string.sub(first, 1, stop)) <= n then first = string.sub(first, 1, stop) end
 		if ulen(first) > n then
 			local parts = string.split(first, " · ")
