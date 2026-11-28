@@ -8171,7 +8171,7 @@ function RENDERERS.route()
 	if not selected then H.routeDetailId = nil end
 	if selected then
 		add(function()
-			return mkRow(content, "항로 상세", selected.name, {
+			return mkRow(content, "항로 상세", "", {
 				{ text = "목록", color = COLORS.grey, onClick = function() H.routeDetailId = nil; render() end },
 			}, 78)
 		end)
@@ -8189,7 +8189,7 @@ function RENDERERS.route()
 				elseif view.weather.id == "rain" then "비 · 안개·암초 주의"
 				elseif view.weather.id == "head" or view.weather.id == "calm" then "역풍·무풍 · 지연 주의"
 				else "기상 경보 없음"
-			return mkRow(content, "날씨 · " .. view.weather.name, string.format("%s · 바람 x%.2f%s", weatherAlert, view.weather.wind, fc), {
+			return mkRow(content, "날씨 · " .. view.weather.name, string.format("%s · 바람 x%.2f%s", weatherAlert, view.weather.wind, "\n" .. (view.weather.hint or "") .. fc), {
 				{ text = "하루 대기", color = COLORS.grey, onClick = function() call("WaitDay", {}) end },
 			}, 78)
 		end)
@@ -8252,16 +8252,25 @@ function RENDERERS.route()
 				elseif r.cargoProfit < 0 then string.format(" · 손해 -%s", H.commas(-r.cargoProfit)) else " · 손익 0"
 			local tags = (if r.yard then " · 조선소" else "") .. (if r.quest then " · " .. r.quest else "") .. profitTag
 			if not selected then
-				return mkRow(content, r.name, string.format("%d일 · %d km%s", r.days, r.distanceKm, tags), {
+				local item = mkRow(content, r.name, string.format("%d일 · %d km%s%s", r.days, r.distanceKm, tags, if supplyLeft < 0 or coalLeft < 0 then " · 보급 부족" else ""), {
 					{ text = "상세", color = COLORS.grey, onClick = function()
 						H.routeDetailId = r.id
 						H.gallerySelection = { tab = "route", name = r.name, search = r.name, chart = H.chartForPort(r.id) }
 						render()
 					end },
 				}, 78)
+				local key = if r.quest then "quest" elseif r.yard then "shipyard" else "route"
+				if H.hasIconArt(key) then withIcon(item, "FacilityArt", key, nil, 44) end
+				local accent = item:FindFirstChild("AccentBar")
+				if accent and accent:IsA("Frame") then
+					accent.BackgroundColor3 = if supplyLeft < 0 or coalLeft < 0 then COLORS.red
+						elseif (r.cargoProfit or 0) > 0 then COLORS.green
+						elseif (r.cargoProfit or 0) < 0 then COLORS.red else UI_BRASS
+				end
+				return item
 			end
 			local row = mkRow(content, r.name, string.format("%s · %d일 · %d km%s\n%s", r.region, r.days, r.distanceKm, tags, warn), {
-				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = COLORS.gold, onClick = function() confirmSail(r) end },
+				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = COLORS.gold, onClick = function() H.routeDetailId = nil; confirmSail(r) end },
 			}, 104)
 			-- [항해 준비 시각화] 현재 보유량 대비 실제 항로 필요량. 부족하면 빨강으로 표시.
 			local textBox = row:FindFirstChild("RowText")
@@ -15424,6 +15433,7 @@ function RENDERERS.quest()
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
 			local row = mkRow(content, q.name, if expanded then strandText(q) .. said else q.summary, buttons, 92)
+			if H.hasIconArt("quest") then withIcon(row, "FacilityArt", "quest", nil, 44) end
 			local textBox = row:FindFirstChild("RowText")
 			if textBox then
 				local meter = Instance.new("Frame")
@@ -15460,8 +15470,7 @@ function RENDERERS.quest()
 	if #autos == 0 then
 		add(function() return mkLabel(content, "기록 중인 목표 없음", 14, INK_SOFT, true) end)
 	else
-		add(function() return mkHeader(content, "자동 기록 중인 목표") end)
-		for _, q in autos do
+ 		for _, q in autos do
 			add(function()
 				return mkRow(content, q.name, string.format("%s\n진행 %d/%d · 보상 %d코인", strandText(q), math.min(q.progress or 0, q.amount or 0), q.amount or 0, q.rewardCoins), nil, if q.story then 116 else 64)
 			end)
@@ -15481,6 +15490,8 @@ function RENDERERS.quest()
 					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 112)
 			end)
 		end
+	else
+		add(function() return mkLabel(content, "기록된 탐험 항로 없음", 14, INK_SOFT, true) end)
 	end
 	elseif section == "done" then
 	if #view.quests.done == 0 then
@@ -15492,7 +15503,6 @@ function RENDERERS.quest()
 		end)
 	end
 	if #view.quests.done > 0 then
-		add(function() return mkHeader(content, string.format("완료한 기록 %d", #view.quests.done)) end)
 		for _, q in view.quests.done do
 			add(function()
 				return mkLabel(content, string.format("(완료 · %d/5단) ", q.grade or 1) .. q.name .. " — " .. q.summary .. (if q.ending then "\n   " .. q.ending else ""), 12, COLORS.muted, true)
