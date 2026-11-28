@@ -8,6 +8,7 @@ test('AGENTS.md 가 사전점검 뜻과 멈춤 금지를 적는다', () => {
   assert.match(agents, /사전점검 = 최신 main에서 위 4종을 읽고/);
   assert.match(agents, /채팅형 GPT가 node·셸을 직접 실행할 수 없는 것은 사전점검 실패가 아니다/);
   assert.match(agents, /company-central-policy-contract-qa/);
+  assert.match(agents, /깃허브 주소 해석 오류\(DNS\)/);
 });
 test('근거가 되는 중앙정책 값이 그대로다', () => {
   const c = roadmap.fixedAutonomousDevelopmentOperatingContract;
@@ -21,7 +22,7 @@ test('START_HERE: 모든 AI 입구 파일이 가리키고, 정책 4종 경로·�
     assert.ok(start.includes(f), f);
     assert.ok(fs.existsSync(`company-learning/${f}`), f + ' 실제 존재');
   }
-  for (const phrase of ['중앙 정책이 없다', '비어 있어 검증 불가', '검증기 실행 환경에 연결 못 해']) assert.ok(start.includes(phrase), phrase);
+  for (const phrase of ['중앙 정책이 없다', '비어 있어 검증 불가', '검증기 실행 환경에 연결 못 해', '깃허브 주소 해석 오류', '오류 종류는 상관없다']) assert.ok(start.includes(phrase), phrase);
   for (const entry of ['AGENTS.md', 'CLAUDE.md', 'GEMINI.md', '.cursorrules', '.github/copilot-instructions.md', 'roblox-games/mare-essentia/docs/READ_FIRST.md']) {
     assert.ok(fs.readFileSync(entry, 'utf8').includes('START_HERE.md'), entry);
   }
