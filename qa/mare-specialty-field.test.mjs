@@ -40,3 +40,15 @@ test('퀘스트 대화 연출: 말하는 사람·초상·사연 대화·결과 �
   assert.match(game, /face\.Name = "ResultSpeaker"/);
   assert.match(game, /AssetIds\["Portraits\/comp_" \.\. id\]/);
 });
+
+test('등록 개별 초상은 기존 동료·주인공·담당자 경로에서 원본 전체를 표시한다', () => {
+  assert.match(game, /COMPANION_PORTRAIT\[id\] = \{ atlas = "comp_" \.\. id, offset = Vector2.zero, size = Vector2.zero \}/);
+  assert.match(game, /local own = nationId and AssetIds\["Portraits\/hero_" \.\. nationId\]/);
+  assert.match(game, /if own then return own, Vector2.zero, Vector2.zero end/);
+  assert.match(game, /local keeperKey = if role == "merchant" then "trade" else role/);
+  assert.match(game, /portraitOffset and string.sub\(asset, 1, 5\) ~= "comp_"/);
+  assert.match(game, /\(image.size or Vector2.new\(256, 336\)\) \* scale/);
+  assert.match(game, /if portraitSpec then \(portraitSpec.size or PORTRAIT_SIZE\) \* fk/);
+  assert.match(game, /if nid and AssetIds\["Portraits\/hero_" \.\. nid\] then\s*table.insert\(out, "hero:" \.\. nid\)/);
+  assert.match(game, /if kind == "keeper" and id == "tavern" then return nil end/);
+});
