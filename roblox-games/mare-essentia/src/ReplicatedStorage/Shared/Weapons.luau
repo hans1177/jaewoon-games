@@ -18,6 +18,15 @@ export type Weapon = {
 
 local Weapons = {}
 
+-- [무기 숙련 정본] 필드 전투와 선장실/상태창이 같은 누적 경험치 기준을 사용한다.
+Weapons.MasteryXp = table.freeze({ 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 })
+function Weapons.masteryRank(xp: number): number
+	for rank = #Weapons.MasteryXp, 2, -1 do
+		if xp >= Weapons.MasteryXp[rank] then return rank end
+	end
+	return 1
+end
+
 Weapons.List = {
 	{ id = "fist", name = "맨손 격투", motion = nil, family = "fist", ranged = false, range = 3, speed = 1.3, power = 0.8, model = nil, note = "빠른 연타·발차기, 막기 쉽다" },
 	{ id = "sword", name = "검", motion = "SWORD", family = "blade", ranged = false, range = 5, speed = 1.15, power = 1, model = "weapon-sword", note = "균형형: 베기·찌르기" },
@@ -215,7 +224,7 @@ export type ActionDesign = {
 
 -- [탐험 전투: 무기별 모션·스킬 명세]
 -- 기존 피해량, 사거리, 기력, 재사용 시간은 ActionCombat/Weapons 원본을 그대로 사용한다.
--- 평타는 한 번의 입력에 한 번만 판정하고, 숙련 연타 2~3타는 기존 R15 무기 동작으로만 재생한다. 숙련도 자체는 최대 5단계다.
+-- 평타는 한 번의 입력에 한 번만 판정하고, 숙련 연타 2~3타는 기존 R15 무기 동작으로만 재생한다. 숙련도 자체는 최대 10단계다.
 Weapons.ActionDesign = {
 	fist = { basic = "잽", heavy = "승룡", sweep = "회축", heavyName = "승룡 어퍼컷", sweepName = "회전 발차기", cadence = "잽·크로스·훅·회전훅·앞차기·역돌려차기·팔꿈치·회피주먹·공중차기·회전마무리", heavyBeat = 1, sweepBeat = 2 },
 	blade = { basic = "베기", heavy = "강참", sweep = "반월", heavyName = "내려 베기", sweepName = "반월 베기", cadence = "좌베기·우베기·전진찌르기·낮은베기·상승베기·역선회·반월베기·교차베기·도약베기·회전마무리", heavyBeat = 4, sweepBeat = 2 },
