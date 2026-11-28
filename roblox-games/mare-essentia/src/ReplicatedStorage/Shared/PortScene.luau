@@ -2590,13 +2590,6 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 			local yaw = rng:NextNumber(-math.pi, math.pi)
 			local center0 = m:GetBoundingBox().Position
 			m:PivotTo(CFrame.new(center0) * CFrame.Angles(0, yaw, 0) * CFrame.new(-center0) * origin)
-			do
-				-- 측정: 몸이 길이보다 높이가 크면(세워짐 의심) 표시만 한다.
-				local _, sz = m:GetBoundingBox()
-				if species ~= "chicken" and species ~= "duck" and sz.Y > math.max(sz.X, sz.Z) * 1.2 then
-					m:SetAttribute("AnimalTallWarning", true)
-				end
-			end
 			-- [회전 후 실측 접지] 수입 모델의 기준점이 몸 중앙에 있어도 회전 후 실제 발바닥이 지면에 남는다.
 			local lowestY = math.huge
 			for _, footPart in m:GetDescendants() do
