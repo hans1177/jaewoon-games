@@ -11,7 +11,7 @@
 - 이미지 생성기·편집기에서 내보낼 때 **"PNG-8 / 256색 / 색상 수 줄이기 / 인덱스 색" 옵션을 끈다.** 용량을 줄이려면 색 수 대신 해상도를 맞춘다.
 - 기계 차단:
   - `tools/devloop/register_asset.py` 가 256색 그림을 **거부**한다.
-  - `tools/devloop/asset_color_check.py <게임폴더>` 가 저장소 전체를 검사하고, `tests/run.sh` 에서도 돈다.
+  - `tools/devloop/asset_color_check.py <게임폴더>` 가 **실제 등록 자산 + 등록 대기열(assets/inbox)** 을 검사하고, `tests/run.sh` 에서도 돈다. 등록 안 된 보관본(원본 증거 `src/`, 보류 `inbox-hold/`)은 게임에 안 쓰이므로 제외하지만, 그대로 등록하면 거부된다.
 - 옛날에 이미 들어온 256색 자산은 `docs/assets/legacy_256color.txt` 에 **교체 대상**으로만 남아 있다.
   - 이 목록에 새 줄을 **추가하지 않는다**(추가로 통과시키는 것 금지).
   - 풀컬러 원본으로 교체하면 그 줄을 지운다. 교체 우선순위: 카드 원화(`eu_*`, `af_*` 등) → UI 틀(`ui_frame_*`) → 아이콘(`ui_icon_*`).
