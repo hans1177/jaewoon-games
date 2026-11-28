@@ -3732,16 +3732,16 @@
     },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "4836b97fb85c89c243a8e0eba6e1e681c3918c1f",
+     "sourceRevision": "4c9dcb455cc85818087cdcb87fa78a9e75569fab",
      "sourceMemberSha256": "27f54f879846af5ca48419da73a9e92e3b8c107b0cb0f0eabf8c89c99e99569f",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "model": "gemini-3.6-flash",
      "provider": "gemini:gemini-3.6-flash",
      "frameSha256": [
-      "bfe9b3976960f536513c404cfa911df678b4d201471f5365b3e42640c38dd0df",
-      "3c13eb74d6625a0b2472f6f832a6b8d6f819ee6f4262d54718fcbc0d93de7a68",
-      "33205524ddfc7c2ce22c024f92a9ffda82e88bb10e1a9198160fb34927ed351a"
+      "90fa93d84ed248b23fbacba8ae0b242a5a71109c74624a5bff5f54ee87d44f3d",
+      "6856987546973bc7d96ffb14adc543ce9d3e8f33fbf9617f6e7e0471703ec743",
+      "56765bd8b706ebdab70125ce15e137a091b378fb64f324ea595ff3547074610d"
      ],
      "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
      "speciesMatch": true,
@@ -3750,7 +3750,44 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "27f54f879846af5c-27f54f879846af5c",
+     "sourceMemberSha256": "27f54f879846af5ca48419da73a9e92e3b8c107b0cb0f0eabf8c89c99e99569f",
+     "triangles": 696,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "90fa93d84ed248b23fbacba8ae0b242a5a71109c74624a5bff5f54ee87d44f3d",
+       "bytes": 231199
+      },
+      {
+       "name": "rear.png",
+       "sha256": "6856987546973bc7d96ffb14adc543ce9d3e8f33fbf9617f6e7e0471703ec743",
+       "bytes": 233889
+      },
+      {
+       "name": "side.png",
+       "sha256": "56765bd8b706ebdab70125ce15e137a091b378fb64f324ea595ff3547074610d",
+       "bytes": 234301
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "27f54f879846af5ca48419da73a9e92e3b8c107b0cb0f0eabf8c89c99e99569f",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_BUDGET_UNREACHABLE"
+    }
    },
    {
     "name": "seal",
@@ -3825,26 +3862,54 @@
      "nativeRuntimeVerified": false
     },
     "sourceVisualObservation": {
-     "state": "SOURCE_VISUAL_OBSERVED_ONLY",
-     "sourceRevision": "1ae9b7fce08d86380d1834e801a4451258b49a1c",
+     "state": "VISUAL_OBSERVATION_UNCERTAIN",
+     "sourceRevision": "4c9dcb455cc85818087cdcb87fa78a9e75569fab",
      "sourceMemberSha256": "4ffe3fe0536e1c380ae2995b8012e90417094c96114bf2be61bc27780a1645ef",
      "registrationApproved": false,
      "visualQualityApproved": false,
      "model": "gemini-3.6-flash",
      "provider": "gemini:gemini-3.6-flash",
      "frameSha256": [
-      "a728f6b0a281f39da3a5cc347df642286013b1fd960b764771c80c7d9535b467",
-      "b609cd07955f44e64041741aa6c2a4bf95d9c657cc0615291ea5bcaf21ee2a99",
-      "ffb22fdd8c396f36c6b3d57bc4fc352513fe3d929739017e0d51a9220b84b923"
+      "5e69e6e7a9d3222425ab98161d9217746227e3312f27cc29faacadd6918cb53e",
+      "0d2061545c2bcdeed88f4cc6e4e69135ff71a49802933077489e9dd6871e5885",
+      "fecebbaca282d00e12cff25396d0a14207cb6686bc0b3bdaf285eecaf22b7392"
      ],
-     "responseSha256": "ed90fd86e135d389da1cfd4da58a6356259c373233127de452783473261fb2ce",
-     "speciesMatch": true,
+     "responseSha256": "944ac832a6fba418f940ed3d9d63643ccadcbffe60d2fcadee23c3dba8bd5b05",
+     "speciesMatch": false,
      "contentSafe": true,
      "silhouetteClear": true,
-     "uncertain": false,
+     "uncertain": true,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "4ffe3fe0536e1c38-4ffe3fe0536e1c38",
+     "sourceMemberSha256": "4ffe3fe0536e1c380ae2995b8012e90417094c96114bf2be61bc27780a1645ef",
+     "triangles": 398,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "5e69e6e7a9d3222425ab98161d9217746227e3312f27cc29faacadd6918cb53e",
+       "bytes": 230667
+      },
+      {
+       "name": "rear.png",
+       "sha256": "0d2061545c2bcdeed88f4cc6e4e69135ff71a49802933077489e9dd6871e5885",
+       "bytes": 226397
+      },
+      {
+       "name": "side.png",
+       "sha256": "fecebbaca282d00e12cff25396d0a14207cb6686bc0b3bdaf285eecaf22b7392",
+       "bytes": 225212
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "tasmanian_devil",
@@ -3938,7 +4003,46 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "e02ec4e264812692-e02ec4e264812692",
+     "sourceMemberSha256": "e02ec4e264812692c86528cb36e1d6c2fbb3447aefea184b279f834f40f1b67a",
+     "triangles": 606,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "e6b7764dd8964dd51b0a62a09743afa00b3a83357c3bc596d7f13a319594a1e8",
+       "bytes": 230855
+      },
+      {
+       "name": "rear.png",
+       "sha256": "089ee5bb22704425325c49b765d3b7cea00ced3914fa974e0a6ce0aa1914dd30",
+       "bytes": 234898
+      },
+      {
+       "name": "side.png",
+       "sha256": "4b194846665d5c5c05e883f3a828f6c2c0615fdc8f0daebf597e3981a20b6023",
+       "bytes": 234568
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "4c9dcb455cc85818087cdcb87fa78a9e75569fab",
+     "sourceMemberSha256": "e02ec4e264812692c86528cb36e1d6c2fbb3447aefea184b279f834f40f1b67a",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "PROVIDER_TEMPORARY_FAILURE",
+     "httpStatuses": [
+      503
+     ]
+    }
    },
    {
     "name": "penguin",
@@ -4038,7 +4142,14 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+    "sourcePreview": {
+     "state": "DEFERRED_TEXTURE_ALTERNATE",
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
    },
    {
     "name": "oryx",
@@ -4220,7 +4331,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -16462,8 +16573,11 @@
     }
    ]
   },
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "46126421845",
+   "runId": "46127179082",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
@@ -16481,10 +16595,11 @@
    ],
    "registrationApproved": false,
    "nativeRuntimeVerified": false,
-   "sourceVisualObservationState": "SOURCE_OBSERVATION_RECORDED",
-   "visualObservationCount": 3,
+   "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED",
+   "visualObservationCount": 2,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "PARTIAL_SOURCE_OBSERVATION_RETRY_REQUIRED"
  }
 }
