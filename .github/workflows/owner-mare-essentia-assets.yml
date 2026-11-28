@@ -111,15 +111,28 @@ jobs:
       # 자동 검사(이름·형식·크기·256색 금지·중복)만 통과하면 기존 register_asset.py 로 정식 폴더에 넣는다.
       # main 직접 쓰기 금지 규칙: 후보 브랜치 → PR → 기존 3개 검사(gates·qa·discover-and-verify) 통과 후에만 병합.
       # 다음 정기 실행이 통과한 후보 PR 을 병합하고, 봇 병합은 push 를 일으키지 않으므로 기존 등록기를 main 에서 다시 부른다.
-      # 열린 후보 PR 이 있으면 새로 가져오지 않는다(충돌 방지). 정기·드롭박스 알림 실행에서만 돈다.
+      # 열린 후보 PR 이 있으면 새로 가져오지 않는다(충돌 방지). 정기·드롭박스 알림·기존 정기 복구 실행에서 돈다.
+      # [인증] 전용 앱은 현재 저장소 후보 PR 작성에만 쓰고, 검사 통과 후 병합·등록은 기존 토큰 경로를 유지한다.
+      - name: Create scoped Dropbox intake app token
+        id: dropbox_intake_app
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.scheduled_recovery == true) }}
+        continue-on-error: true
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+        with:
+          app-id: ${{ secrets.MARE_ASSET_APP_ID }}
+          private-key: ${{ secrets.MARE_ASSET_APP_PRIVATE_KEY }}
+          permission-contents: read
+          permission-pull-requests: write
+          permission-actions: write
       - name: Import all Dropbox inbox assets (auto-checked)
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' }}
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.scheduled_recovery == true) }}
         continue-on-error: true
         env:
           DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
           DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
           DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
           GH_TOKEN: ${{ github.token }}
+          MARE_INBOX_APP_TOKEN: ${{ steps.dropbox_intake_app.outputs.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -140,7 +153,11 @@ jobs:
             echo "DROPBOX_INBOX_WAITING_FOR_CANDIDATE"
             exit 0
           fi
-          # 2) 새로 들어온 것 가져오기
+          # 2) 새로 들어온 것 가져오기. 앱 인증이 없으면 대기열 원본은 건드리지 않는다.
+          if [[ -z "$MARE_INBOX_APP_TOKEN" ]]; then
+            echo "DROPBOX_INBOX_APP_AUTH_REQUIRED" >&2
+            exit 1
+          fi
           python3 -m pip install --disable-pip-version-check --quiet pillow==12.3.0
           python3 tools/devloop/dropbox_inbox.py
           if [[ -z "$(git status --porcelain -- roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets)" ]]; then
@@ -156,12 +173,9 @@ jobs:
           git add -A roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets roblox-games/mare-essentia/docs/auto_placement_needed.csv roblox-games/mare-essentia/assets-wanted.auto.json
           git commit -q -m "Mare Essentia: 드롭박스 자동 인입 후보 (검사 통과분)"
           git push -q origin "HEAD:refs/heads/$branch"
-          gh api "repos/$repo/pulls" -f title="Mare Essentia: 드롭박스 자동 인입 후보" -f head="$branch" -f base=main \
+          GH_TOKEN="$MARE_INBOX_APP_TOKEN" gh api "repos/$repo/pulls" -f title="Mare Essentia: 드롭박스 자동 인입 후보" -f head="$branch" -f base=main \
             -f body="드롭박스 /Vibe2Transfer/inbox 자동 검사 통과분. 기존 3개 검사 통과 후 다음 정기 실행이 병합하고 기존 등록기를 다시 부른다." --silent
-          # GITHUB_TOKEN 이 만든 PR 은 검사를 자동 시작하지 않으므로 기존 검사를 후보 브랜치에서 실행한다.
-          gh workflow run devloop-gates.yml --repo "$repo" --ref "$branch"
-          gh workflow run vibe-qa.yml --repo "$repo" --ref "$branch"
-          gh workflow run game-development-sync.yml --repo "$repo" --ref "$branch" -f game_id=mare-essentia
+          # 전용 앱의 PR 이벤트가 기존 필수 검사 3개를 자동 실행한다. 중복 수동 디스패치는 하지 않는다.
           git checkout -q -
           echo "DROPBOX_INBOX_CANDIDATE_OPENED $branch"
 
