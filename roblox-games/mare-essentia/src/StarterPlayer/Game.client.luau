@@ -7667,13 +7667,15 @@ local function openTradeHall()
 		local bigPx = if narrow then math.floor(math.min(width - 54, math.max(170, root.AbsoluteSize.Y * 0.48), 330)) else 0
 		local bigH = math.floor(bigPx * 10 / 7)
 		-- [모바일 세로] 원화는 카드배틀과 같은 7:10, 원본 이미지는 Fit으로 읽는다.
-		local infoTop = if narrow then bigH + 242 else 80
-		detail.CanvasSize = UDim2.fromOffset(0, infoTop + 812)
+		local infoTop = 80
+		local articleTop = infoTop + 812
+		local detailHeight = articleTop + (if narrow then bigH + 242 else 0)
+		detail.CanvasSize = UDim2.fromOffset(0, detailHeight)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
 		detail.Parent = root
 		corner(detail, 7)
-		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, infoTop + 812), COLORS.paper)
+		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, detailHeight), COLORS.paper)
 		bookMaterial(right, "parchment", 220)
 		if sel and detail.Visible then
 			local gi = GOOD_ICON[sel.id]
@@ -7688,7 +7690,7 @@ local function openTradeHall()
 			hn.AutomaticSize = Enum.AutomaticSize.None
 			local note = (sel.category or "교역품") .. " · " .. (sel.purpose or "항구 간 판매")
 			local hnote = mkLabel(right, note, 16, INK_SOFT, false)
-			hnote.Position = UDim2.fromOffset(12, if narrow then bigH + 46 else 42)
+			hnote.Position = UDim2.fromOffset(12, 42)
 			hnote.Size = UDim2.new(1, -24, 0, 38)
 			hnote.AutomaticSize = Enum.AutomaticSize.None
 			if narrow then
@@ -7708,7 +7710,7 @@ local function openTradeHall()
 				end
 				big.Size = UDim2.fromOffset(bigPx, bigH)
 				big.AnchorPoint = Vector2.new(0.5, 0)
-				big.Position = UDim2.new(0.5, 0, 0, 42)
+				big.Position = UDim2.new(0.5, 0, 0, articleTop + 8)
 				local artTap = Instance.new("TextButton")
 				artTap.Name = "TradeArtToCodex"
 				artTap.Text = ""
@@ -7717,11 +7719,11 @@ local function openTradeHall()
 				artTap.AutoButtonColor = false
 				artTap.Size = UDim2.fromOffset(bigPx, bigH)
 				artTap.AnchorPoint = Vector2.new(0.5, 0)
-				artTap.Position = UDim2.new(0.5, 0, 0, 42)
+				artTap.Position = UDim2.new(0.5, 0, 0, articleTop + 8)
 				artTap.ZIndex = 8
 				artTap.Parent = right
 				artTap.Activated:Connect(openSelectedGoodEncyclopedia)
-				local sheet = mkBox(right, UDim2.fromOffset(12, bigH + 82),
+				local sheet = mkBox(right, UDim2.fromOffset(12, articleTop + bigH + 20),
 					UDim2.new(1, -24, 0, 148), COLORS.paper)
 				sheet.Name = "TradeBookPage"
 				bookMaterial(sheet, "parchment", 180)
@@ -7735,7 +7737,7 @@ local function openTradeHall()
 				summary.AutomaticSize = Enum.AutomaticSize.None
 				summary.TextWrapped = true
 				summary.TextTruncate = Enum.TextTruncate.AtEnd
-				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 38),
+				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 44),
 					openSelectedGoodEncyclopedia, true)
 				openBook.Position = UDim2.fromOffset(8, 106)
 			end
@@ -7816,6 +7818,7 @@ local function openTradeHall()
             receipt.Size = UDim2.new(1, -16, 0, if shortScreen then 34 else 38)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
+			local buy, sell
 			local function refreshReceipt()
 				local pay = if sel.buyTotals and sel.buyTotals[qty] then sel.buyTotals[qty] else unitBuy * qty
 				local sellQty = math.min(qty, maxSell)
@@ -7825,15 +7828,25 @@ local function openTradeHall()
 					qty, H.commas(pay), H.commas(p.coins - pay),
 					sellQty, H.commas(get), if profit == nil then "미보유" else string.format("%+d", profit))
 				receipt.TextColor3 = if qty > maxBuy then COLORS.red else COLORS.text
+				if buy then
+					local canBuy = maxBuy >= qty
+					buy.Text = if canBuy then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족"
+					buy.Interactable, buy.Active, buy.Selectable, buy.AutoButtonColor = canBuy, canBuy, canBuy, canBuy
+					buy.TextColor3 = if canBuy then INK else Color3.fromRGB(97, 93, 89)
+					buy.BackgroundColor3 = if canBuy then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(174, 169, 159)
+					local grad = buy:FindFirstChildOfClass("UIGradient")
+					if grad then grad.Color = if canBuy then ColorSequence.new(Color3.fromRGB(254,224,158), Color3.fromRGB(193,146,72)) else ColorSequence.new(Color3.fromRGB(211,206,196), Color3.fromRGB(166,157,143)) end
+				end
+				if sell then sell.Text = if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 " .. tostring(maxSell) .. "개" else "판매 불가" end
 			end
 			local function setQuantity(value)
 				qty = math.clamp(value, 1, 20)
 				hallQty = qty
-				-- [버튼 상태] 수량 변경 즉시 실제 구매·판매 가능 여부까지 함께 다시 그린다.
-				build()
+				-- [버튼 상태] 수량만 변하면 원화·목록을 재생성하지 않고 영수증과 실행 버튼만 갱신한다.
+				refreshReceipt()
 			end
 			local function quantityButton(index, label, action, enabled)
-				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, if shortScreen then 40 else 50), action, enabled)
+				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, if shortScreen then 44 else 50), action, enabled)
                 b.Position = UDim2.new((index - 1) / 4, 4, 0, if shortScreen then 39 else 47)
 				b.TextSize = 17
 			end
@@ -7841,13 +7854,13 @@ local function openTradeHall()
 			quantityButton(2, "+", function() setQuantity(qty + 1) end)
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
-			refreshReceipt()
-			local buy = mkButton(desk, if maxBuy >= qty then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족", COLORS.gold, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
+			buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() if maxBuy >= qty then call("Buy", { goodId = sel.id, amount = qty }) end end, true)
 			buy.Position = UDim2.fromOffset(4, if shortScreen then 84 else 106)
-			buy.TextSize = 21
-			local sell = mkButton(desk, if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 가능 " .. tostring(maxSell) else "보유·한도 부족", COLORS.green, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(0.5, 4, 0, if shortScreen then 84 else 106)
-			sell.TextSize = 21
+			buy.TextSize = if narrow then 15 else 17
+			sell = mkButton(desk, "판매", COLORS.green, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sell.Position = UDim2.new(2/3, 4, 0, if shortScreen then 84 else 106)
+			sell.TextSize = if narrow then 15 else 17
+			refreshReceipt()
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
 			local bargain = view.haggle or {}
 			local tried = bargain.tried and bargain.tried[sel.id]
@@ -7858,14 +7871,13 @@ local function openTradeHall()
 			if dealHere then status = string.format("흥정 성공 · 다음 구매 %d%% 할인 적용", bargain.deal.pct or 0) end
 			local alert = mkLabel(right, status, 14, if bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
 			alert.Position = UDim2.fromOffset(14, infoTop + 390)
-			alert.Size = UDim2.new(1, if tried or dealHere then -28 else -150, 0, 58)
+			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			if not tried and not dealHere and H.openHaggle then
-				local hg = mkButton(right, "🎲 흥정 게임", COLORS.gold, UDim2.fromOffset(124, 50), function() H.openHaggle(sel.id, sel.name) end, true)
-				hg.Name = "HaggleGameButton"
-				hg.Position = UDim2.new(1, -136, 0, infoTop + 394)
-			end
+			local hg = mkButton(desk, if dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			hg.Name = "HaggleGameButton"
+			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
+			hg.TextSize = if narrow then 14 else 16
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sm.Position = UDim2.fromOffset(12, infoTop + 456)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
