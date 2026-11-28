@@ -6172,31 +6172,51 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local WX = math.floor(math.min(X_END - 58, if isRoyalCity then -615 else -470) / wallStep) * wallStep
 	local walled = lvl >= 3
 	local wallSize = wallStep + 0.4
+	-- [문화권별 마을 경계 · 2026-11-29 오너: "마을 구조 항구마다 달라야 하는데 다 똑같다"]
+	-- 예전엔 모든 항구가 같은 석조 성벽 + 파란 지붕 감시탑이라 런던·나가사키·잔지바르가 같은 마을로 보였다.
+	-- stone: 유럽 석조 성벽(문화권 돌색·지붕색) · mud: 이슬람권 흙벽(모래색, 탑 없음) · earth: 조선·중국 회벽 담장(탑 없음)
+	-- palisade: 열대·신대륙·아프리카 나무 울타리(탑 없음) · open: 일본 무가 항구 — 성벽 없이 숲 경계.
+	local ENCLOSURE = {
+		britain = "stone", hanse = "stone", nordic = "stone", stone = "stone", france = "stone", north = "stone",
+		brick = "stone", italy = "stone", iberia = "stone", med = "stone",
+		ottoman = "mud", desert = "mud", korea = "earth", china = "earth", japan = "open",
+	}
+	local enclosure = ENCLOSURE[key] or "palisade"
+	local wallTint = if enclosure == "mud" then C(206, 176, 128) elseif enclosure == "earth" then C(214, 208, 196)
+		else (style.walls and style.walls[1] and style.walls[1]:Lerp(C(150, 146, 138), 0.55)) or nil
+	local roofTint = style.roofs and style.roofs[1] or nil
+	folder:SetAttribute("CityEnclosure", enclosure)
+	local function wallPiece(at: Vector3, rotate: boolean, gate: boolean)
+		local m
+		if enclosure == "palisade" then
+			m = importedModel(folder, "Town", if AssetIds["Town/fence_straight_long"] then "fence_straight_long" else "fence_rails_long", at, wallSize, true)
+		else
+			m = importedModel(folder, "Castle", if gate then "wall-narrow-gate" else "wall", at, wallSize, true, wallTint)
+			if not m then m = importedModel(folder, "Naval", "castle-wall", at, wallSize, true, wallTint) end
+		end
+		if m and rotate then rotateAround(m, at, math.pi / 2) end
+		return m
+	end
+	local useWall = walled and enclosure ~= "open"
 	for _, side in { 1, -1 } do
-		if walled then
+		if useWall then
 			local x = -22
 			while x > WX do
-				local m = importedModel(folder, "Castle", "wall", Vector3.new(x, 0, side * WZ), wallSize, true)
-				if not m then importedModel(folder, "Naval", "castle-wall", Vector3.new(x, 0, side * WZ), wallSize, true) end
+				wallPiece(Vector3.new(x, 0, side * WZ), false, false)
 				x -= wallStep
 			end
 		end
-		if lvl >= 2 then
+		if lvl >= 2 and enclosure == "stone" then
 			for _, tx in { -22, -140, WX } do
-				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true)
+				importedModel(folder, "Naval", "tower-watch", Vector3.new(tx, 0, side * WZ), 16, true, roofTint)
 			end
 		end
 	end
-	if walled then
+	if useWall then
 		for z = -WZ, WZ, wallStep do
-			local at = Vector3.new(WX, 0, z)
-			-- 목장으로 나가는 출입문은 동쪽 마을에서 오갈 수 있도록 가운데에 배치.
-			local asset = if math.abs(z) <= wallStep / 2 then "wall-narrow-gate" else "wall"
-			local m = importedModel(folder, "Castle", asset, at, wallSize, true)
-			if not m then m = importedModel(folder, "Naval", "castle-wall", at, wallSize, true) end
-			rotateAround(m, at, math.pi / 2)
+			wallPiece(Vector3.new(WX, 0, z), true, math.abs(z) <= wallStep / 2)
 		end
-		importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true)
+		if enclosure == "stone" then importedModel(folder, "Naval", "tower-watch", Vector3.new(WX, 0, 0), 16, true, roofTint) end
 	end
 	-- [문화권별 대형 입체 원경] 기존 도시 경계·보행·주택 필지는 그대로 두고 바깥의 승인된 지형 메시만 대폭 확대한다.
 	-- 발헤임식 지형 높이층과 아노식 도시 발전 실루엣은 배치 원리만 참고한다. 타 게임 모델을 복제하지 않는다.
