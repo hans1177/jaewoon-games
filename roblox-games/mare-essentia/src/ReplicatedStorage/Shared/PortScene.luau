@@ -2541,6 +2541,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 		local function animal(species, pos)
 			local k = KIND[species]
 			local asset = if species == "dog" then "dog-pug" else species
+			-- [당나귀 관절판] 뼈 없는 donkey 대신 등록된 관절판(donkey-rig)을 쓴다(Studio 실측: donkey 뼈 0 → 정지).
+			if species == "donkey" and AssetIds["Animals/donkey-rig"] then asset = "donkey-rig" end
 			-- [가축 재제작 자동 교체] <종>_v2 원본이 등록되면 그것을 쓴다(실사풍 재제작 지시서).
 			if AssetIds["Animals/" .. species .. "_v2"] then asset = species .. "_v2" end
 			local skin = animalVisual[asset] or animalVisual[if species == "dog" then "dog-pug" else species]
@@ -2563,6 +2565,34 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 				else CFrame.new(origin.Position)
 			local yaw = rng:NextNumber(-math.pi, math.pi)
 			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
+			-- [세워진 가축 바로잡기 · 2026-11-29 Studio 실측: 소·말이 엉덩이로 서 있음]
+			-- FBX 원본은 기준점(뼈대 루트)이 -90도 누워 있어, 기준점을 똑바로 세우면 몸이 수직으로 선다.
+			-- 다리 뼈·다리 조각의 평균 위치가 몸 중심 아래(-Y)를 향하도록 몸 중심 기준으로 한 번 돌린다.
+			do
+				local legSum, legN = Vector3.zero, 0
+				for _, node in m:GetDescendants() do
+					local nm = string.lower(node.Name)
+					if nm:find("leg", 1, true) or nm:find("foot", 1, true) or nm:find("hoof", 1, true) or nm:find("paw", 1, true) then
+						local at = if node:IsA("Bone") then node.WorldPosition elseif node:IsA("BasePart") then node.Position else nil
+						if at then legSum += at; legN += 1 end
+					end
+				end
+				if legN >= 2 then
+					local center = m:GetBoundingBox().Position
+					local down = legSum / legN - center
+					if down.Magnitude > 0.05 then
+						down = down.Unit
+						local dot = down:Dot(-Vector3.yAxis)
+						if dot < 0.7 then
+							local axis = down:Cross(-Vector3.yAxis)
+							axis = if axis.Magnitude < 1e-3 then Vector3.xAxis else axis.Unit
+							local angle = math.acos(math.clamp(dot, -1, 1))
+							m:PivotTo(CFrame.new(center) * CFrame.fromAxisAngle(axis, angle) * CFrame.new(-center) * m:GetPivot())
+							m:SetAttribute("AnimalUprightFixDeg", math.floor(math.deg(angle) + 0.5))
+						end
+					end
+				end
+			end
 			-- [회전 후 실측 접지] 수입 모델의 기준점이 몸 중앙에 있어도 회전 후 실제 발바닥이 지면에 남는다.
 			local lowestY = math.huge
 			for _, footPart in m:GetDescendants() do
@@ -2673,7 +2703,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 					-- [중복 관절 제거] 한 다리의 무릎·발목은 서로 다른 보행 다리로 집계하지 않는다.
 					local legGroup = if kind == "leg" then (if rear then "rear" else "front")
 						.. (if left then "_left" else "_right") else nil
-					if node:IsA("Bone") and #animalJoints < 14 then
+					if node:IsA("Bone") and legChild then
+						-- [관절 한도 낭비 제거] 무릎·발목 하위 뼈는 회전 0이라 움직임이 없다. 말·개가 다리 2개만 잡히던 원인(14개 한도).
+						continue
+					elseif node:IsA("Bone") and #animalJoints < 14 then
 						-- 스킨 메시는 원본 Bone.Transform으로만 변형한다.
 						table.insert(animalJoints, { joint = node, base = node.Transform,
 							kind = kind, side = side, phase = phaseOffset, group = legGroup,
