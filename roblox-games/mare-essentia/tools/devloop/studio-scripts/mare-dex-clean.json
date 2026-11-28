@@ -1,0 +1,64 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:codex') task.wait(2.5) local pg=game:GetService('Players').LocalPlayer.PlayerGui local c={} for _,d in ipairs(pg:GetDescendants()) do if d.Name=='DexThumb' or d.Name=='DexHero' or d.Name=='FacilityGallery' then c[d.Name]=(c[d.Name] or 0)+1 end end local fg=pg:FindFirstChild('FacilityGallery',true) return 'TAB codex thumbs='..tostring(c.DexThumb)..' hero='..tostring(c.DexHero)..' strip='..tostring(fg and fg.Visible)"
+ },
+ {
+  "type": "capture",
+  "name": "dex_codex"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:encyclopedia') task.wait(2.5) local pg=game:GetService('Players').LocalPlayer.PlayerGui local c={} for _,d in ipairs(pg:GetDescendants()) do if d.Name=='DexThumb' or d.Name=='DexHero' or d.Name=='FacilityGallery' then c[d.Name]=(c[d.Name] or 0)+1 end end local fg=pg:FindFirstChild('FacilityGallery',true) return 'TAB encyclopedia thumbs='..tostring(c.DexThumb)..' hero='..tostring(c.DexHero)..' strip='..tostring(fg and fg.Visible)"
+ },
+ {
+  "type": "capture",
+  "name": "dex_encyclopedia"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:trade') task.wait(2.5) local pg=game:GetService('Players').LocalPlayer.PlayerGui local c={} for _,d in ipairs(pg:GetDescendants()) do if d.Name=='DexThumb' or d.Name=='DexHero' or d.Name=='FacilityGallery' then c[d.Name]=(c[d.Name] or 0)+1 end end local fg=pg:FindFirstChild('FacilityGallery',true) return 'TAB trade thumbs='..tostring(c.DexThumb)..' hero='..tostring(c.DexHero)..' strip='..tostring(fg and fg.Visible)"
+ },
+ {
+  "type": "capture",
+  "name": "strip_trade"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:board') task.wait(2.5) local pg=game:GetService('Players').LocalPlayer.PlayerGui local c={} for _,d in ipairs(pg:GetDescendants()) do if d.Name=='DexThumb' or d.Name=='DexHero' or d.Name=='FacilityGallery' then c[d.Name]=(c[d.Name] or 0)+1 end end local fg=pg:FindFirstChild('FacilityGallery',true) return 'TAB board thumbs='..tostring(c.DexThumb)..' hero='..tostring(c.DexHero)..' strip='..tostring(fg and fg.Visible)"
+ },
+ {
+  "type": "capture",
+  "name": "strip_board"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:quest') task.wait(2.5) local pg=game:GetService('Players').LocalPlayer.PlayerGui local c={} for _,d in ipairs(pg:GetDescendants()) do if d.Name=='DexThumb' or d.Name=='DexHero' or d.Name=='FacilityGallery' then c[d.Name]=(c[d.Name] or 0)+1 end end local fg=pg:FindFirstChild('FacilityGallery',true) return 'TAB quest thumbs='..tostring(c.DexThumb)..' hero='..tostring(c.DexHero)..' strip='..tostring(fg and fg.Visible)"
+ },
+ {
+  "type": "capture",
+  "name": "strip_quest"
+ }
+]
