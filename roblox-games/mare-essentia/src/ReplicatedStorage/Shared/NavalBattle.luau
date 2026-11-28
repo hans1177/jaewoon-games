@@ -280,6 +280,7 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 					or (d:IsA("MeshPart") and d.TextureID ~= "")
 				for _, child in d:GetChildren() do
 					if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true; break end
+					if (child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "" then textured = true; break end
 				end
 				local low = math.min(d.Color.R, d.Color.G, d.Color.B)
 				local high = math.max(d.Color.R, d.Color.G, d.Color.B)
@@ -841,6 +842,7 @@ function NavalBattle.play(opts)
 								local specialMap = false
 								for _, child in node:GetChildren() do
 									if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+									if (child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "" then specialMap = true; break end
 								end
 								if not specialMap and node.Transparency < 0.95 then
 									local low = math.min(node.Color.R, node.Color.G, node.Color.B)
