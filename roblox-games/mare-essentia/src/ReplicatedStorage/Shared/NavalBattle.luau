@@ -921,6 +921,7 @@ function NavalBattle.play(opts)
 		local elapsed = 0
 		local startClock = lighting.ClockTime
 		local nextLightAt = 0
+		local daylightMix = if phase == "night" then 0 else 1
 		local envConnection
 		envConnection = RunService.Heartbeat:Connect(function(dt)
 			if not folder.Parent then
@@ -937,6 +938,7 @@ function NavalBattle.play(opts)
 				nextLightAt = elapsed + 0.5
 				local clock = (startClock + elapsed * (24 / 720)) % 24
 				local daylight = math.clamp(math.sin((clock - 6) * math.pi / 12) * 1.15 + 0.16, 0, 1)
+				daylightMix = daylight
 				local dawn = math.max(0, 1 - math.abs(clock - 6.5) / 2.5)
 				local dusk = math.max(0, 1 - math.abs(clock - 18.5) / 2.5)
 				local nextPhase = if clock < 5 or clock >= 20 then "night"
@@ -967,7 +969,12 @@ function NavalBattle.play(opts)
 				colorGrade.Saturation = if mode == "storm" then -0.24 else -0.12 * (1 - daylight)
 				if mode ~= "storm" then colorGrade.Brightness = -0.12 + 0.145 * daylight end
 				foamColor = Color3.fromRGB(123, 163, 198):Lerp(Color3.fromRGB(198, 238, 237), daylight)
-				if oceanReady then oceanTerrain.WaterReflectance = 0.08 + 0.07 * daylight end
+				if oceanReady then
+					oceanTerrain.WaterReflectance = 0.08 + 0.07 * daylight
+					-- 실제 Terrain 수면을 갱신한다. 숨겨진 평면의 색만 바뀌지 않게 한다.
+					local tideColor = coast.water:Lerp(Color3.fromRGB(17, 37, 54), 0.12 + (1 - daylight) * 0.24)
+					if oceanTerrain.WaterColor ~= tideColor then oceanTerrain.WaterColor = tideColor end
+				end
 			end
 			-- 기본 파도·하늘은 엔진이 움직인다. 매 프레임 사각형/구체를 갱신하지 않는다.
 			if #distantShips > 0 then
@@ -987,7 +994,7 @@ function NavalBattle.play(opts)
 			if sea.Color ~= waterColor then sea.Color = waterColor end
 			if mode == "storm" then
 				local flash = math.sin(elapsed * 0.47 + sceneSeed) > 0.994
-				local brightness = (if phase == "night" then -0.12 else 0.025) + (if flash then 0.23 else 0)
+				local brightness = -0.12 + 0.145 * daylightMix + (if flash then 0.23 else 0)
 				if colorGrade.Brightness ~= brightness then colorGrade.Brightness = brightness end
 			end
 		end)
