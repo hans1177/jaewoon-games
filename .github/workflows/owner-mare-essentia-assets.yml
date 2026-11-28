@@ -107,6 +107,41 @@ jobs:
           node-version: '20'
 
 
+      # [드롭박스 전체 자동 인입 · 2026-11-28 오너 지시] /Vibe2Transfer/inbox/<종류>/<파일> 의 모든 그림·3D 모델을
+      # 자동 검사(이름·형식·크기·256색 금지·중복)만 통과하면 기존 register_asset.py 로 정식 폴더에 넣고 main 에 저장한다.
+      # GITHUB_TOKEN 푸시는 다른 실행을 깨우지 않으므로, 같은 등록기를 수동 실행으로 한 번 더 불러 그림·모델을 모두 등록한다.
+      # 정기·드롭박스 알림 실행에서만 돌고, 그 수동 실행에서는 돌지 않아 반복되지 않는다.
+      - name: Import all Dropbox inbox assets (auto-checked)
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' }}
+        continue-on-error: true
+        env:
+          DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+          DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+          DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet pillow==12.3.0
+          python3 tools/devloop/dropbox_inbox.py
+          if [[ -z "$(git status --porcelain -- roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets)" ]]; then
+            echo "DROPBOX_INBOX_NOTHING_NEW"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets
+          git commit -q -m "Mare Essentia: 드롭박스 자동 인입 (검사 통과분 정식 폴더 반영)"
+          for i in 1 2 3 4 5; do
+            if git push -q origin HEAD:main; then break; fi
+            git pull -q --rebase origin main
+            [[ $i == 5 ]] && { echo "DROPBOX_INBOX_PUSH_FAILED"; exit 1; }
+          done
+          if git show --stat HEAD | grep -qE 'assets/(cardart|icons|portraits|goods|materials|animals|terrain|relics|town|castle|naval|people|monsters|interior|cargo)/'; then
+            gh workflow run owner-mare-essentia-assets.yml --ref main
+            echo "DROPBOX_INBOX_REGISTRATION_REQUESTED"
+          fi
+
       # [드롭박스 원화 인입] 검수 완료된 원본만 기존 승인표와 함께 후보 브랜치에 보관한다.
       # 활성 승인·main·기존 Roblox 번호는 직접 바꾸지 않는다. 기존 PR 검사를 통과해야 등록한다.
       - name: Stage reviewed Dropbox original in existing card transfer lane

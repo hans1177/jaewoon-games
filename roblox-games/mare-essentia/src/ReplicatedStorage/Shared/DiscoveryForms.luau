@@ -7,6 +7,20 @@
 
 local DF = {}
 
+-- [드롭박스 자동 배치] 카드 id 와 같은 이름으로 등록된 모델(예: Animals/zoo_tiger)이 있으면 그 카드 전용 실물로 쓴다.
+-- 로블록스 안에서만 AssetIds 를 읽는다(로직 테스트에서는 없음).
+local okIds, AssetIdsMod = pcall(function()
+	return require((script :: any).Parent:WaitForChild("AssetIds", 2))
+end)
+local OWN_GROUPS = { "Animals", "Terrain", "Relics", "Town", "Castle", "Naval", "Monsters", "Interior", "Cargo" }
+function DF.ownModel(cardId: string)
+	if not okIds or type(AssetIdsMod) ~= "table" then return nil end
+	for _, g in OWN_GROUPS do
+		if AssetIdsMod[g .. "/" .. cardId] ~= nil then return { g, cardId } end
+	end
+	return nil
+end
+
 -- 대표 모양: 모델 후보 { 그룹, 이름 }, 기본 크기(스터드), 무리 수, 조사 방법, 장소 힌트
 -- method: sketch(스케치·동물) / collect(채집·식물·광물) / rubbing(탁본·유적) / inspect(조사·유물)
 DF.ARCHETYPES = {
@@ -249,6 +263,11 @@ function DF.form(card)
 	if a.kind == "animal" then
 		exact = DF.EXACT_ANIMALS[card.id]
 		models = if exact then { { "Animals", exact } } else {}
+	end
+	local own = DF.ownModel(card.id)
+	if own then
+		models = { own }
+		if a.kind == "animal" then exact = exact or card.id end
 	end
 	local cond = nil
 	for _, c in CONDITIONS do
