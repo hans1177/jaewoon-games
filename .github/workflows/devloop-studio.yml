@@ -120,9 +120,9 @@ jobs:
           Write-Host "RUNNER_DISK_REMOVED_FILES=$removed RUNNER_DISK_REMOVED_MB=$([math]::Round($freed/1MB)) RUNNER_DISK_CLEAN_FAILURES=$failed"
           $volume = [IO.DriveInfo]::new('E:\')
           Write-Host "RUNNER_DISK_FREE_MB_AFTER=$([math]::Round($volume.AvailableFreeSpace/1MB))"
-          # [자동 복구] 공간이 6GB 미만이면 이 러너의 지난 GitHub Actions 작업 복사본만 검증 후 정리한다.
+          # [자동 복구] 기존 체크아웃을 우선 재사용한다. 안전 하한 2GB 미만일 때만 지난 작업 복사본을 검증 후 정리한다.
           # [데이터 보호] 현재 러너는 이 작업만 수행한다. 이전 체크아웃에 로컬 변경·잠금·다른 Git 실행이 있으면 삭제하지 않는다.
-          if ($volume.AvailableFreeSpace -lt 6GB) {
+          if ($volume.AvailableFreeSpace -lt 2GB) {
             $previousCheckout = Join-Path $env:GITHUB_WORKSPACE 'main'
             $knownCheckout = Join-Path $work 'jaewoon-games\jaewoon-games\main'
             $gitFolder = Join-Path $previousCheckout '.git'
@@ -156,6 +156,18 @@ jobs:
               }
             }
           }
+          # [재사용 관측] 기존 Git 객체 용량을 확인하되 체크아웃의 원본/변경 검증은 기존 동작을 유지한다.
+          $reuseRoot = Join-Path $env:GITHUB_WORKSPACE 'main'
+          if (Test-Path -LiteralPath (Join-Path $reuseRoot '.git') -PathType Container) {
+            $reuseSize = @(& git -C $reuseRoot count-objects -v)
+            if ($LASTEXITCODE -eq 0) {
+              foreach ($row in $reuseSize) {
+                if ($row -match '^size-pack:\s*(\d+)$') {
+                  Write-Host "STUDIO_GIT_PACK_MB_BEFORE_CHECKOUT=$([math]::Round([long]$Matches[1]/1024,2))"
+                }
+              }
+            }
+          } else { Write-Host 'STUDIO_GIT_PACK_MB_BEFORE_CHECKOUT=0' }
           Write-Host "RUNNER_DISK_FREE_MB_AFTER_RECOVERY=$([math]::Round($volume.AvailableFreeSpace/1MB,2))"
           # [실행기 장애] 공간 미확보 상태에서는 체크아웃을 반복하지 않고 복구 큐에 정확한 원인을 알린다.
           if ($volume.AvailableFreeSpace -lt 2GB) {
@@ -168,16 +180,23 @@ jobs:
           path: main
           ref: ${{ inputs.candidate_ref || github.sha }}
           fetch-depth: 1
-          # [E: 재발 방지] 전체 대형 저장소 대신 Studio 게임/공용 런타임/원본 3D와 검증 정책만 내려받는다.
-          # checkout의 기본 sparse cone이 필요한 파일만 부분 수신하므로 filter(우선권 있음)는 중복 지정하지 않는다.
-          # [필수 보존] assets 공용 모듈, QA, 중앙정책, 게임의 전체 원본 에셋은 빠짐없이 포함한다.
+          fetch-tags: false
+          # [E: 재발 방지] 촬영에 사용하지 않는 공용 외부 원본 압축 파일만 부분 체크아웃에서 제외한다.
+          # filter를 별도 지정하지 않아 actions/checkout의 blob:none 부분 수신을 유지한다.
+          # [필수 보존] 루트 파일, 공용 모듈/라이선스, QA, 중앙정책, 게임 전체 원본 에셋을 유지한다.
+          # 제외된 압축 파일의 Git 원본과 기존 자산 등록/배포 작업은 변경하지 않는다.
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            .github
-            assets
-            company-learning
-            qa
-            tools
-            roblox-games/mare-essentia
+            /*
+            !/*/
+            /.github/
+            /assets/
+            /company-learning/
+            /qa/
+            /tools/
+            /roblox-games/mare-essentia/
+            !/assets/external/simple-rpg/**/*.zip
+            !/assets/external/simple-rpg/**/*.7z
       - name: Verify E drive after Studio checkout
         # [운영 복구] 스파스 체크아웃의 실제 Git 팩 크기와 남은 용량을 기록해 0GB 재발을 탐지한다.
         # [실패 차단] 작업 폴더나 Git 객체를 임의 삭제하지 않는다. 로컬 공간 부족이면 빌드 전에 중단한다.
@@ -864,7 +883,7 @@ jobs:
             git init -q
             git config user.name 'mare-capture-bot'
             git config user.email 'mare-capture-bot@users.noreply.github.com'
-            & git fetch -q --depth=1 $remote "refs/heads/$($env:CAP_GAME)-studio-frames"
+            & git fetch -q --depth=1 --no-tags --no-recurse-submodules $remote "refs/heads/$($env:CAP_GAME)-studio-frames"
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_FETCH_FAILED' }
             & git checkout -q --detach FETCH_HEAD
             if ($LASTEXITCODE -ne 0) { throw 'STUDIO_HISTORY_CHECKOUT_FAILED' }
