@@ -14384,7 +14384,7 @@ do
 			b.Size = UDim2.fromOffset(66, 92)
 			b.BackgroundColor3 = if r.found then Color3.fromRGB(240, 226, 196) else Color3.fromRGB(150, 136, 112)
 			b.Image = if r.found and other and type(other.image) == "string" then other.image else ""
-			b.ScaleType = Enum.ScaleType.Crop
+			b.ScaleType = Enum.ScaleType.Fit
 			b.AutoButtonColor = r.found == true
 			b.Parent = row
 			corner(b, 6)
@@ -14400,6 +14400,11 @@ do
 				b.Activated:Connect(function()
 					H.encyclopediaTargetId = r.cardId
 					H.encyclopediaCategoryId = "all"
+					H.encyclopediaSearchText = ""
+					H.encyclopediaIndexOpen = false
+					H.dexPlateIndex = false
+					H.dexAppendixScroll = nil
+					Sfx.play("sfx_book_turn", 0.3)
 					render()
 				end)
 			end
@@ -14598,7 +14603,10 @@ do
 			if current.region then table.insert(meta, tostring(current.region)) end
 			if current.era then table.insert(meta, tostring(current.era)) end
 			local rarityName = ({ Common = "일반", Uncommon = "고급", Rare = "희귀", Epic = "영웅", Legendary = "전설" })[current.rarity or ""]
-			if rarityName then table.insert(meta, rarityName) end
+			if rarityName then
+				local stars = ({ Common = 1, Uncommon = 2, Rare = 3, Epic = 4, Legendary = 5 })[current.rarity] or 1
+				table.insert(meta, string.rep("★", stars) .. " " .. rarityName)
+			end
 			if #meta > 0 then para(table.concat(meta, " · "), 14, SOFTT, false) end
 			local function section(titleText, value)
 				if not value or value == "" then return end
@@ -14623,6 +14631,15 @@ do
 				section("흥미로운 사실", article.trivia)
 			end
 			if not current.combatArt then
+				-- [자료 구분] 새 고서에도 기존 사실·전승·가설 구분과 원고 상태를 보존한다.
+				if current.evidenceId == "fiction" then
+					para("게임 속 가상 설정", 14, SOFTT, true)
+				elseif current.evidenceId == "legend" or current.evidenceId == "hypothesis" then
+					para("전승 또는 가설 · 확정된 사실과 구분", 14, SOFTT, true)
+				elseif current.evidenceId == "unreviewed" then
+					para("개별 자료 검증 대기", 14, SOFTT, true)
+				end
+				if not article then para("상세 해설 원고 준비 중", 14, SOFTT, false) end
 				-- [부록] 긴 원고는 그대로 읽고 지도·연표·관련 도판은 필요할 때만 생성한다.
 				local appendix = Instance.new("TextButton")
 				appendix.Name = "EncyclopediaAppendix"
@@ -14651,13 +14668,36 @@ do
 				for _, c in (cx.cards or {}) do allById[c.id] = c end
 				if H.encyRelated then H.encyRelated(page, nextOrder(), current, allById) end
 				if H.encyCollection then H.encyCollection(page, nextOrder(), current, cx.cards) end
+				local places = {}
+				for _, rel in current.relations or {} do
+					if not rel.cardId and rel.name and #places < 4 then
+						table.insert(places, tostring(rel.name) .. " · " .. tostring(rel.relation or "연관 장소·상품"))
+					end
+				end
+				if #places > 0 then section("관련 장소·상품·사료", table.concat(places, "\n")) end
+				local more = mkButton(page, "카드 원문 · 추가 연구 기록", COLORS.gold, UDim2.new(1, 0, 0, 44), function()
+					H.showCardDetail(current)
+				end, true)
+				more.LayoutOrder = nextOrder()
+				more.TextSize = 15
 			end
 			local first = current.provenance
 			if first then
-				section("내 발견 기록", "첫 발견: " .. tostring(first.port or "위치 미상") .. " · 항해 " .. tostring(first.day or 0) .. "일째 · " .. tostring(first.method or "발견"))
+				section("내 발견 기록", "첫 발견: " .. tostring(first.port or "위치 미상")
+					.. (if first.day then " · 항해 " .. tostring(first.day) .. "일째" else "")
+					.. " · " .. tostring(first.method or "발견")
+					.. (if first.person then "\n전수한 인물: " .. tostring(first.person) else "")
+					.. (if first.site then "\n탐험 현장: " .. tostring(first.site) else "")
+					.. (if first.quest then "\n관련 의뢰: " .. tostring(first.quest) else "")
+					.. (if first.event then "\n관련 사건: " .. tostring(first.event) else ""))
 			end
 			if article and type(article.sources) == "table" and #article.sources > 0 then
 				para("참고: " .. table.concat(article.sources, " · "), 13, SOFTT, false)
+			elseif article and article.topic and article.topic ~= "" then
+				para("본문 참고: 위키백과 · " .. string.gsub(article.topic, "_", " "), 13, SOFTT, false)
+			end
+			if current.credit and current.credit ~= "" then
+				para("도판 출처: " .. current.credit, 13, SOFTT, false)
 			end
 
 			-- 부록을 열고 닫을 때 읽던 위치를 유지한다. 다른 책장 이동에는 적용하지 않는다.
@@ -14863,9 +14903,15 @@ function RENDERERS.encyclopedia()
 				card.era or "", card.region or "", card.topic or "", card.kindName or "",
 				card.source or "", card.evidence or "", card.worldGroup or "" }
 			if article then
-				table.insert(words, article.details or "")
-				table.insert(words, article.context or "")
-				table.insert(words, article.history or "")
+				for _, key in { "topic", "latin", "summary", "looks", "details", "context", "history", "trivia" } do
+					table.insert(words, tostring(article[key] or ""))
+				end
+				for _, fact in article.facts or {} do
+					if type(fact) == "table" then
+						table.insert(words, tostring(fact[1] or ""))
+						table.insert(words, tostring(fact[2] or ""))
+					end
+				end
 			end
 			for _, tag in (card.tags or {}) do table.insert(words, tostring(tag)) end
 			for _, alias in (card.aliases or {}) do table.insert(words, tostring(alias)) end
