@@ -208,6 +208,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1795897759258
+    },
+    "background:sparse-world:월드 부품이 적음(n)#d5886e6970": {
+      "sig": "background:sparse-world:월드 부품이 적음(n)",
+      "kind": "background",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "search": "fillChunksAround(ORIGIN, 25)",
+          "replace": "fillChunksAround(ORIGIN, 100)"
+        }
+      ],
+      "summary": "월드 부품 수를 늘리기 위해 초기 청크 생성량을 확대했습니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795898583885
     }
   }
 }
