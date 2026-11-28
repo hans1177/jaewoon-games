@@ -5118,3 +5118,16 @@ test('백과사전은 원화와 해설 양면 및 세로폰 단면 책 구조를
  for(const name of ['encyFacts','encyMap','encyTimeline','encySize','encyRelated','encyCollection']) assert.ok(dex.includes('H.'+name));
  assert.doesNotMatch(dex,/DexHeroBackdrop|DexExpanded|Enum\.ScaleType\.Crop/);
 });
+
+
+test('백과 필사본의 삽화 여백을 보존하고 모바일은 해상도 독립 단면을 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ assert.match(dex,/AssetIds\["CardArt\/ency_bg_book"\]/);
+ assert.match(dex,/art\.Size = UDim2\.new\(2, 0, 1, -55\)/);
+ assert.match(dex,/art\.Position = UDim2\.fromScale\(if H\.dexReading then -1 else 0, 0\)/);
+ assert.match(dex,/leaf\.Position = UDim2\.new\(if wide then 0\.15 else 0\.17/);
+ assert.match(dex,/plate\.BackgroundTransparency = if bookId then 1 else 0/);
+ assert.match(dex,/page\.BackgroundTransparency = if bookId then 1 else 0/);
+ assert.match(dex,/hero\.ScaleType = Enum\.ScaleType\.Fit/);
+});
