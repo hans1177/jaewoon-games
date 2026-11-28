@@ -11,9 +11,9 @@
       "lastResult": "FAILED"
     },
     "mare-essentia:health": {
-      "lastAt": 1795901105841,
+      "lastAt": 1795906624821,
       "pending": true,
-      "lastSha": "3a4dc92ab102f11ad95f3180539d173c3d5c04a7",
+      "lastSha": "52dde15aa565685f47cc552324e27a8bd15a21e9",
       "runs": 16,
       "ema": 0.998,
       "failStreak": 0,
@@ -180,7 +180,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "studio:46196461744:2b62d003e2e1dbd390cf76bfc4489706bf8ad231"
+    "mare-essentia": "studio:46197904968:75f30b5f170128818ddc888dacf35706fa52caa4"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -309,16 +309,15 @@
       "id": "card-ui-issues",
       "kind": "ui",
       "task": "cards",
-      "text": "카드 화면 글자 잘림/겹침: deck(1048x380): CUT[999997749] box=76x20 text=80x16 | practice(1048x380): CUT[999997749] box=76x20 text=80x16 | tactics(1048x380): CUT[999997749] box=76x20 text=80x16",
+      "text": "카드 화면 글자 잘림/겹침: deck(1048x380): CUT[999997749] box=76x20 text=80x16 | deck(1048x380): CUT[999997749] box=76x20 text=80x16 | deck(1048x380): CUT[999997749] box=76x20 text=80x16",
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:card-ui-issues",
       "firstAt": 1795899298506,
-      "lastAt": 1795899298506,
-      "seen": 1
+      "lastAt": 1795906624821,
+      "seen": 2
     }
   },
   "history": [
-    "mare-essentia:town",
     "mare-essentia:combat",
     "mare-essentia:health",
     "mare-essentia:ui",
@@ -329,8 +328,9 @@
     "mare-essentia:weapons",
     "mare-essentia:holes",
     "mare-essentia:town",
-    "mare-essentia:facilities"
+    "mare-essentia:facilities",
+    "mare-essentia:health"
   ],
-  "lastDispatchAt": 1795905681990,
-  "lastDecisionAt": 1795905681990
+  "lastDispatchAt": 1795906624821,
+  "lastDecisionAt": 1795906624821
 }
