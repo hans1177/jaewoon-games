@@ -147,11 +147,13 @@ jobs:
             echo "DROPBOX_INBOX_NOTHING_NEW"
             exit 0
           fi
+          # 자동 채우기 현황판·오늘 만들 것·CC0 자동 찾기 목록·안 쓰는 자산을 같은 후보에 갱신한다(ASSET_MANAGEMENT 5절).
+          python3 tools/devloop/auto_placement_status.py || echo "AUTO_FILL_STATUS_FAILED"
           branch="mare-dropbox-inbox-${GITHUB_RUN_ID}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -q -b "$branch"
-          git add -A roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets
+          git add -A roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets roblox-games/mare-essentia/docs/auto_placement_needed.csv roblox-games/mare-essentia/assets-wanted.auto.json
           git commit -q -m "Mare Essentia: 드롭박스 자동 인입 후보 (검사 통과분)"
           git push -q origin "HEAD:refs/heads/$branch"
           gh api "repos/$repo/pulls" -f title="Mare Essentia: 드롭박스 자동 인입 후보" -f head="$branch" -f base=main \

@@ -22,6 +22,11 @@ local Cultures = require(script.Parent:WaitForChild("PortCultures"))
 -- [동물 실물 규격] 기존 항구/목장의 Animals 시각 정본만 재사용한다.
 local PortBuildings = require(script.Parent:WaitForChild("PortBuildings"))
 -- [발견물 외형] 백과 실물 대표 모양 연출. 못 읽어도 기존 발견 흐름은 그대로 돈다.
+-- [자동 배치 보정] 보정표(제외·폰 숨김·배율·회전·높이). 못 읽어도 배치는 그대로 돈다.
+local okOverrides, PlacementOverridesMod = pcall(function()
+	return require(script.Parent:WaitForChild("PlacementOverrides", 5))
+end)
+if not okOverrides then PlacementOverridesMod = nil end
 local okStage, DiscoveryStage = pcall(function()
 	return require(script.Parent:WaitForChild("DiscoveryStage", 5))
 end)
@@ -317,6 +322,10 @@ local FIELD_TINT = {
 	["kenney_log_stackLarge"] = Color3.fromRGB(128, 99, 69),
 }
 local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverride, scenicBand)
+	-- [자동 배치 보정] 보정표의 제외·폰 숨김·배율(회전·높이는 아래 배치 뒤 적용)
+	local ov = PlacementOverridesMod and PlacementOverridesMod.get(kind, asset)
+	if ov and (ov.disabled or (ov.mobileHide and game:GetService("UserInputService").TouchEnabled)) then return nil end
+	if ov and ov.scale then desired = desired * ov.scale end
 	local lib = ReplicatedStorage:FindFirstChild("MareAssets")
 	local group = lib and lib:FindFirstChild(kind)
 	local tpl = group and group:FindFirstChild(asset)
@@ -513,6 +522,7 @@ local function placeModel(parent, kind, asset, bottom, desired, solid, tintOverr
 		m:Destroy()
 		return nil
 	end
+	if ov then PlacementOverridesMod.apply(m, ov) end
 	return m
 end
 
