@@ -383410,11 +383410,174 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_726f81ef9b923b1ca56f1773",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15683",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b1508b5a10b57b09d10f0763da3904bea1542900",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15683,
+        "baseBranch": "main",
+        "headBranch": "mare-naval-materials",
+        "baseSha": "b1508b5a10b57b09d10f0763da3904bea1542900",
+        "headSha": "0d99d477e386d3731604054703de4b098b8a740c",
+        "mergeCommitSha": "de0d07108ed24a00b8d443bac0f4f5ca837b6139",
+        "mergedAt": "2026-11-28T06:52:05Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f2d67039c15a61b718d116d74d4b85003cfeb44d709fe037cd42fd9e87bc62c2",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-naval-materials",
+        "candidateSha": "0d99d477e386d3731604054703de4b098b8a740c"
+      },
+      "changeStats": {
+        "changedFileCount": 28,
+        "codingRelevantFileCount": 21,
+        "addedLineCount": 793,
+        "deletedLineCount": 381,
+        "changedFiles": [
+          ".github/workflows/devloop-studio.yml",
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-flow-story-menu.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/ea_34.png",
+          "roblox-games/mare-essentia/assets/cardart/ea_34.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_19.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_19.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_20.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_20.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_22.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_22.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_28.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_28.png.license.json",
+          "roblox-games/mare-essentia/assets/dropbox-imported.json",
+          "roblox-games/mare-essentia/docs/assets/dropbox_inbox_report.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/devloop/dropbox_inbox.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/devloop-studio.yml",
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-flow-story-menu.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/ea_34.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_19.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_20.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_22.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_28.png.license.json",
+          "roblox-games/mare-essentia/assets/dropbox-imported.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/devloop/dropbox_inbox.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15683",
+        "merge-commit:de0d07108ed24a00b8d443bac0f4f5ca837b6139",
+        "base-main:b1508b5a10b57b09d10f0763da3904bea1542900"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3011
+    "total": 3012
   }
 }
