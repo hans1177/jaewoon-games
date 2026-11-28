@@ -5070,3 +5070,18 @@ test('청동 원화와 프레임의 최초·재선택 상태를 같은 기준으
   assert.match(source,/badgeStroke\.Transparency = if selected then 0\.20 else 0\.55/);
   assert.match(source,/elseif art:GetAttribute\("FacilityArtKey"\) then Color3\.new\(1, 1, 1\)/);
 });
+
+test('교역·조선의 상세 메뉴는 중복 머리줄을 줄이고 승인 청동 탭을 재사용한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('function openYardHall()'));
+  const yard=source.slice(source.indexOf('function openYardHall()'));
+  assert.match(trade,/local narrow = width < 920/);
+  assert.match(trade,/local headH = if backToList or message ~= "" then 100 else 50/);
+  assert.doesNotMatch(trade,/local title = mkLabel\(top, "교역 장부 · "/);
+  assert.match(trade,/commonStatus\.Size = UDim2\.fromOffset\(cashWidth, 44\)/);
+  assert.match(trade,/local compactList = not narrow or listWidth < 420/);
+  assert.match(trade,/leave\.Visible = backToList/);
+  assert.match(yard,/modelIcon\(button, "FacilityArt", entry\[3\], nil, 22, entry\[1\]\)/);
+  assert.match(yard,/icon\.Name = "YardTabIcon"/);
+  assert.match(yard,/limit\.MinTextSize = 13/);
+});
