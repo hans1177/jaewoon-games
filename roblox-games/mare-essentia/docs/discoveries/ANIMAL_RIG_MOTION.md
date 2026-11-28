@@ -1,5 +1,10 @@
 # 동물 관절·애니메이션·리액션 지시서 (필독 · 몬스터 재사용 포함)
 
+> **드롭박스 올리는 곳 (필독)**
+> - `/Vibe2Transfer/inbox/Animals/<카드id>.glb` — 예: `zoo_tiger.glb`. 뼈대·애니메이션은 **GLB 안에 함께 넣는다**(별도 애니메이션 파일 자동 인입은 아직 없음)
+> - 몬스터 변형: `/Vibe2Transfer/inbox/Monsters/<이름>.glb`
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 **ChatGPT·Claude·바이브코딩 도구 등 누구든 `mare-essentia`의 동물 모델에 뼈대(리그)·애니메이션·행동(리액션)을 만들거나, 동물을 몬스터로 바꿀 때 반드시 읽고 그대로 따른다.**
 먼저 `docs/discoveries/README.md`(발견물 대표 모양)와 `docs/ASSET_MANAGEMENT.md`(등록·256색 금지)를 읽는다. 루트 `AGENTS.md`(파츠·원형·임의 생성물 금지)가 우선한다.
 

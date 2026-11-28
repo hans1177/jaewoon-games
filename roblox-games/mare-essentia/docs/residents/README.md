@@ -1,5 +1,10 @@
 # 주민(NPC) 외형·모션 지시서
 
+> **드롭박스 올리는 곳 (필독)**
+> - 옷·머리·장신구: `/Vibe2Transfer/inbox/People/outfit_<이름>.glb` · `hair_<이름>.glb` · `acc_<이름>.glb`
+> - 주민 초상(그림): `/Vibe2Transfer/inbox/Portraits/<이름>.png`
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 > 필독 순서: `AGENTS.md` → `docs/RULES.md` → 이 문서 → `jobs.md` → `<문화권>.md`. 기본 파츠 조립 외형 금지(AGENTS.md).
 
 ## 현재 문제 (Studio 진단 2026-11-23)

@@ -1,5 +1,9 @@
 # Mare Essentia 작업 규칙 (세션이 바뀌어도 같은 품질 유지)
 
+> **드롭박스 올리는 곳 (필독)**
+> - 모든 오너 자산은 `/Vibe2Transfer/inbox/<종류>/<이름>` 으로 올린다. 종류 폴더: 그림 CardArt·Icons·Portraits·Goods·Materials / 모델 Animals·Terrain·Relics·Town·Castle·Naval·People·Monsters·Interior·Cargo (모델은 GLB 만)
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 ## 에셋
 - 승인된 CC0 에셋만 쓴다(`assets-registered.json` / `AssetIds.luau`). AI 생성·실존 인물 이미지 금지(단, 아래 '오너 제작 원화'는 예외). **2026-11-17 오너 지시로 기존 자산이 부족한 3D 원본에 한해 검증된 외부 다운로드를 허용**한다. 출처 불분명·NC·유료·인공지능 생성 모델은 사용하지 않는다.
 - 소스가 쓰는 모든 에셋은 `tools/devloop/asset_check.py` 가 검사한다. `tests/run.sh` 에 포함돼 있어 오타·미등록은 배포 전에 걸린다.

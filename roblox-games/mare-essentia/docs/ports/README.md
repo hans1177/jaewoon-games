@@ -1,5 +1,10 @@
 # 항구 작업 지시서 목록
 
+> **드롭박스 올리는 곳 (필독)**
+> - `/Vibe2Transfer/inbox/Town/<항구id>_<슬롯>.glb` — 예: `london_landmark_full.glb`, `lisbon_house_2.glb`, `goa_workshop_pepper.glb`
+> - 슬롯: landmark_base · landmark_full · house_1~3 · street_lamp · bld_well · bld_market_stalls · bld_mill · plaza_center · workshop_<특산품> · stall_<특산품>
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 전체 181곳. 생성기: `python3 tools/gen_port_briefs_all.py`
 
 | 항구 | 문화권 | 테마 | 왕궁 |
