@@ -215,7 +215,7 @@ local TABS = {
 	{ id = "recruit", name = "동료 영입" },
 	{ id = "scholar", name = "지식 보고" },
 	{ id = "yard", name = "조선소" },
-	{ id = "codex", name = "지식 백과" },
+	{ id = "codex", name = "지식 카드" },
     { id = "encyclopedia", name = "백과사전" },
 	{ id = "tech", name = "연구" },
 	{ id = "map", name = "지도" },
@@ -227,16 +227,33 @@ local TABS = {
 }
 
 -- 시설별 창: 건물에 들어가면 그 시설의 탭만 열린다
+-- [메뉴 5묶음 · 2026-11-28 오너 지시: 직관·편의 완전 재배치] 탭 20개를 하는 일 기준 5묶음으로 모은다.
+-- 하단 버튼 5개(항해·교역·모험·성장·기록)로 어디서든 열고, 3D 건물에 들어가면 그 건물 탭이 먼저 열린다.
+-- 같은 묶음 안의 탭은 위쪽 가로 탭으로 바로 옮겨 다닌다. 저장·서버 동작은 그대로.
 local GROUPS = {
+	{ name = "항해", keeper = "항만 관리관", tabs = { "route", "map", "diplomacy" } },
+	{ name = "교역", keeper = "상인 길드", tabs = { "trade", "market", "harbor" } },
+	{ name = "모험", keeper = "주점 주인·전투 교관", tabs = { "board", "quest", "explore", "battle", "war", "gwent" } },
+	{ name = "성장", keeper = "선장·조선 장인", tabs = { "status", "yard", "crew", "recruit", "tech" } },
+	{ name = "기록", keeper = "학자", tabs = { "scholar", "codex", "encyclopedia" } },
+}
+-- 건물(시설) 단위 이름·담당자·초상은 예전 시설표를 그대로 쓴다.
+H.FACILITY_GROUPS = {
 	{ name = "교역소", keeper = "상인 길드", tabs = { "trade", "market", "harbor" } },
 	{ name = "항만청", keeper = "항만 관리관", tabs = { "route", "map" } },
-	{ name = "외교", keeper = "외교관", tabs = { "diplomacy" } }, -- 도크의 별도 외교 아이콘
+	{ name = "외교", keeper = "외교관", tabs = { "diplomacy" } },
 	{ name = "조선소", keeper = "조선 장인", tabs = { "yard" } },
-	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } }, -- 주점: 의뢰·동료
-	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } }, -- 전투·지상 탐험·함대전·카드 배틀
+	{ name = "주점", keeper = "주점 주인", tabs = { "board", "quest", "recruit" } },
+	{ name = "전투 본부", keeper = "전투 교관", tabs = { "battle", "explore", "war", "gwent" } },
 	{ name = "학자의 서재", keeper = "학자", tabs = { "scholar", "codex", "tech", "encyclopedia" } },
 	{ name = "선장실", keeper = "선장", tabs = { "status", "crew" } },
 }
+function H.facilityOf(tabId)
+	for _, g in H.FACILITY_GROUPS do
+		if table.find(g.tabs, tabId) then return g end
+	end
+	return H.FACILITY_GROUPS[1]
+end
 local function groupOf(tabId)
 	for _, g in GROUPS do
 		if table.find(g.tabs, tabId) then
@@ -633,9 +650,15 @@ H.facilityIconCells = {
 }
 -- [청동 아이콘 통일] 기존 승인 청동 예비 시트(768px, 4×4)에서 도형 대신 쓸 칸.
 -- {시트 번호, 칸}: 1 = ui_reserve_icons(닻·지도·두루마리…), 2 = ui_reserve_icons_2(선원·망원경·육분의…)
-H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"] }
-H.reserveIconRowH = { 184, 189 } -- 시트 세로 739/758px ÷ 4
+H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"], AssetIds["CardArt/ui_menu_icons_3"] }
+H.reserveIconRowH = { 184, 189, 192 } -- 시트 세로 739/758/768px ÷ 4
+-- [메뉴 5묶음 청동 아이콘 · 2026-11-28] docs/MENU_UI_BRIEF.md 의 768px 4×4 시트(CardArt/ui_menu_icons_3)가 등록되면 자동 사용.
+-- 칸 번호: 0 항해 1 교역 2 모험 3 성장 4 기록 5 다음할일 6 보상 7 추천 8 장도장 9 문제 10 원인 11 할일 12 결과 13 지난이야기 14 처음안내 15 패배조언
+H.MENU_SHEET_CELLS = { nav = 0, tradeg = 1, adventure = 2, growth = 3, records = 4, nextstep = 5, reward = 6, recommend = 7,
+	chapter = 8, problem = 9, cause = 10, todo = 11, result = 12, recap = 13, coach = 14, defeat = 15 }
 H.reserveIconCells = {
+	nav = { 3, 0 }, tradeg = { 3, 1 }, adventure = { 3, 2 }, growth = { 3, 3 }, records = { 3, 4 },
+	nextstep = { 3, 5 }, reward = { 3, 6 }, recommend = { 3, 7 }, chapter = { 3, 8 },
 	diplomacy = { 2, 5 }, quest = { 1, 8 }, recruit = { 2, 0 }, crew = { 2, 0 }, explore = { 2, 4 },
 	harbor = { 1, 0 }, war = { 2, 8 }, scholar = { 2, 14 }, tech = { 2, 6 }, chart = { 1, 2 },
 }
@@ -3067,9 +3090,14 @@ do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 
 end
 
 -- [시설 목차] 외교 포함 기존 8곳. 별도의 아이콘 아틀라스나 메뉴 구조를 만들지 않는다.
+-- [하단 5묶음] 항해·교역·모험·성장·기록. 버튼 id 는 각 묶음의 첫 탭.
 H.DOCK = {
-	{ "trade", "교역소", "trade" }, { "route", "항만청", "route" }, { "diplomacy", "외교", "diplomacy" }, { "yard", "조선소", "yard" },
-	{ "board", "주점", "tavern" }, { "battle", "전투", "battle" }, { "codex", "서재", "codex" }, { "status", "선장실", "status" },
+	-- 새 청동 시트(ui_menu_icons_3)가 등록되면 묶음 전용 아이콘, 없으면 기존 시설 아이콘을 쓴다.
+	{ "route", "항해", if H.reserveIconAtlas[3] then "nav" else "route" },
+	{ "trade", "교역", if H.reserveIconAtlas[3] then "tradeg" else "trade" },
+	{ "board", "모험", if H.reserveIconAtlas[3] then "adventure" else "battle" },
+	{ "status", "성장", if H.reserveIconAtlas[3] then "growth" else "yard" },
+	{ "scholar", "기록", if H.reserveIconAtlas[3] then "records" else "codex" },
 }
 H.dockButtons = {}
 H.dockNotices = {}
@@ -3700,7 +3728,7 @@ function H.updateHud(p, ship)
 	end
 	local alerts = {
 		trade = if lowPrice then "저가" else nil,
-		yard = if (ship.hull or 0) / math.max(1, ship.maxHull or 1) < 0.40 then "긴급"
+		status = if (ship.hull or 0) / math.max(1, ship.maxHull or 1) < 0.40 then "긴급"
 			elseif (ship.hull or 0) < (ship.maxHull or 0) then "수리"
 			elseif (ship.supplies or 0) <= 5 then "보급" else nil,
 		-- [인원 부족] 선원이 정원의 절반 아래면 주점(선원 고용)에 알림
@@ -3947,14 +3975,10 @@ end)
 -- 길잡이 가리킴: 지금 눌러야 할 메뉴 버튼이 금빛으로 맥동하며 살짝 흔들린다 (참고: 흔들리는 버튼·움직이는 화살표로 시선을 이끄는 튜토리얼 관례).
 -- 오래 쓰면 거슬리므로 초반 길잡이(g_...)에서만 켜고, 다른 조언으로 넘어가거나 닫으면 끈다.
 -- [메뉴 길찾기] 실제 기능이 속한 시설을 가리킨다. 카드를 여는 도구와 카드 대결 시설을 혼동하지 않는다.
-local GUIDE_BTN = {
-	trade = "Menu_trade", harbor = "Menu_trade",
-	route = "Menu_route", map = "Menu_route", yard = "Menu_yard",
-	board = "Menu_board", quest = "Menu_board", recruit = "Menu_board",
-	battle = "Menu_battle", explore = "Menu_battle", war = "Menu_battle", gwent = "Menu_battle",
-	tech = "Menu_codex", codex = "Menu_codex", scholar = "Menu_codex",
-	crew = "Menu_status", status = "Menu_status",
-}
+local GUIDE_BTN = {}
+for _, g in GROUPS do
+	for _, t in g.tabs do GUIDE_BTN[t] = "Menu_" .. g.tabs[1] end -- [5묶음] 탭 → 그 묶음 하단 버튼
+end
 -- [시설 안내] 버튼 외곽 사각 테두리·30fps 흔들림 대신 원화 중심에만 금빛을 맥동시킨다.
 function H.setGuidePulse(tab)
 	-- [튜토리얼 안내] 반짝이 대신 해당 아이콘만 맥동(GuideAlert)시킨다.
@@ -4196,6 +4220,7 @@ local function call(action, payload)
 		refreshBubble()
 		if H.checkNewCards then H.checkNewCards() end
 		if H.checkWorldEvents then H.checkWorldEvents() end
+		if H.checkQuestResults then H.checkQuestResults() end
 		if view.scenes and #view.scenes > 0 and H.playQuestScenes then H.playQuestScenes(view.scenes) end
 	end
 	if result.message and result.message ~= "" then
@@ -4317,6 +4342,10 @@ local function call(action, payload)
 				audioLock = false
 				local finalWinner = (view and view.lastBattle and view.lastBattle.winner) or lb.winner
 				Sfx.play(if finalWinner == "a" then "sfx_fanfare" else "sfx_error")
+				-- [실패 이유 · 2026-11-28] 졌으면 무엇이 모자랐는지와 다음 할 일 버튼
+				if finalWinner == "b" and H.showDefeatAdvice then
+					task.delay(0.8, function() pcall(H.showDefeatAdvice, lb.sim) end)
+				end
 				Sfx.music(if finalWinner == "a" then Sfx.questEndMusic(true) else Sfx.questEndMusic(false))
 				applyView()
 				main.Visible = true
@@ -8083,11 +8112,12 @@ if view.weather then
 	-- 정렬: 가까운 순(기본) · 의뢰 목적지 · 조선소 · 이름 · 해역
 	H.routeSort = H.routeSort or "near"
 	add(function()
-		local row = mkRow(content, "항로 정렬", "지금 선택: " .. ({ near = "가까운 순", quest = "의뢰 목적지 먼저", yard = "조선소 먼저", name = "이름순", region = "해역별" })[H.routeSort], {
+		local row = mkRow(content, "항로 정렬", "지금 선택: " .. ({ near = "가까운 순", quest = "의뢰 목적지 먼저", yard = "조선소 먼저", name = "이름순", region = "해역별", profit = "실은 화물 이익 큰 순" })[H.routeSort], {
 			{ text = "가까운 순", color = if H.routeSort == "near" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "near"; render() end },
 			{ text = "의뢰", color = if H.routeSort == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "quest"; render() end },
 			{ text = "조선소", color = if H.routeSort == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "yard"; render() end },
 			{ text = "해역", color = if H.routeSort == "region" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "region"; render() end },
+			{ text = "이익", color = if H.routeSort == "profit" then COLORS.gold else COLORS.green, onClick = function() H.routeSort = "profit"; render() end },
 		}, 60)
 		return row
 	end)
@@ -8106,6 +8136,8 @@ if view.weather then
 			return a.yard
 		elseif mode == "region" and a.region ~= b.region then
 			return a.region < b.region
+		elseif mode == "profit" and (a.cargoProfit or -math.huge) ~= (b.cargoProfit or -math.huge) then
+			return (a.cargoProfit or -math.huge) > (b.cargoProfit or -math.huge)
 		end
 		if a.distanceKm ~= b.distanceKm then
 			return a.distanceKm < b.distanceKm
@@ -8127,7 +8159,11 @@ if view.weather then
 					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
 				}, 56)
 			end
-			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "")
+			-- [교역 쉽게 보기] 실은 화물을 거기 팔면 예상 이익: 초록 ▲ / 빨강 ▼
+			local profitTag = if r.cargoProfit == nil then ""
+				elseif r.cargoProfit > 0 then string.format(" 🟢▲%s", H.commas(r.cargoProfit))
+				elseif r.cargoProfit < 0 then string.format(" 🔴▼%s", H.commas(-r.cargoProfit)) else " ⚪±0"
+			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "") .. profitTag
 			local row = mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
 				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.gold else COLORS.blue, onClick = function() confirmSail(r) end },
 			}, 56)
@@ -10369,7 +10405,7 @@ function H.showCardGain(card, moreCount)
 	-- 별도 UI 시스템·음원·저장 경로를 만들지 않으며, 움직임 감소 설정과 모바일 도크 스크롤을 존중한다.
 	task.delay(1.43, function()
 		if not g.Parent or not frame.Parent then return end
-		local icon = if isCombat then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and H.dockButtons.codex
+		local icon = if isCombat then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and (H.dockButtons.scholar or H.dockButtons.codex)
 		local canTarget = icon and icon.Parent and icon.Visible and hudTopGui.Enabled and icon.AbsoluteSize.X > 0
 		-- [모바일 서재] 가로 도크에 가려진 서재 버튼은 기존 스크롤만 움직여 수납 목적지를 보여 준다.
 		if canTarget and not isCombat and icon:IsDescendantOf(dock) then
@@ -11120,7 +11156,7 @@ do
 			end)
 			task.delay(2.4 + i * 0.05, function()
 				if not f.Parent then return end
-				local icon = if entry.card.gainType == "combat" then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and H.dockButtons.codex
+				local icon = if entry.card.gainType == "combat" then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and (H.dockButtons.scholar or H.dockButtons.codex)
 				local target = if icon and icon.Parent and icon.AbsoluteSize.X > 0 then icon.AbsolutePosition + icon.AbsoluteSize / 2 else Vector2.new(vp.X - 44, 70)
 				TS:Create(f, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
 					Position = UDim2.fromOffset(target.X, target.Y), Size = UDim2.fromOffset(12, 17), Rotation = 360,
@@ -11364,6 +11400,661 @@ do
 		elseif what == "disaster" then H.showWorldEventScene({ id = "fx_vesuvius", kind = "disaster", title = "베수비오 화산 분화", region = "지중해", text = "하늘이 잿빛으로 덮였다. 나폴리 항구가 멈췄다." })
 		end
 		return what
+	end
+end
+
+-- [쉬운 흐름 · 2026-11-28 오너 지시] '다음 할 일' 하나만 크게 · 목적지 표시 · 메뉴 첫 줄 3칸(지금 할 일/추천/보상).
+-- 최상위 local 을 늘리지 않도록 H 필드만 쓴다. 판정·저장은 서버 그대로.
+do
+	local TS = game:GetService("TweenService")
+	-- 탭 → 3D 항구 건물(FacilityIdentity) : 같은 건물에서 열리는 탭끼리 묶는다
+	local BUILDING_OF = {
+		trade = "trade", market = "market", harbor = "harbor",
+		board = "board", quest = "board", recruit = "board",
+		route = "route", map = "route", diplomacy = "route",
+		tech = "tech", scholar = "tech", codex = "codex", encyclopedia = "codex",
+	}
+	local KIND_TAB = {
+		visit = "route", field = "explore", discover = "explore", war_clear = "war", win = "battle",
+		duel_leader = "gwent", understand = "scholar", understand_card = "scholar", chronicle = "quest", choice = "quest",
+	}
+
+	-- 지금 해야 할 단 하나: { text, why, tab, portId }
+	function H.nextStep()
+		if not view or not view.player then return nil end
+		local p, ship = view.player, view.ship or {}
+		local here = p.portId
+		local captain = view.captain
+		local sailed = (p.day or 0) > 0
+		if captain and not H.tutorialHidden and (captain.step ~= "done" or not sailed) then
+			if captain.step == "name" then return { text = "상인 길드 서기에게 이름 올리기", why = "선장 등록을 해야 교역을 할 수 있어", tab = "trade" } end
+			if captain.step == "companion" then return { text = "주점에서 첫 동료 맞이하기", why = "혼자서는 배를 몰 수 없어", tab = "board" } end
+			if captain.step ~= "done" then return { text = "떠돌이 화가에게 초상 받기", why = "선장 증명서에 쓸 초상이 필요해", tab = "status" } end
+			if (ship.cargoUsed or 0) == 0 then return { text = "교역소에서 이 항구 특산품 사기", why = "싸게 사서 다른 항구에 비싸게 파는 게 돈 버는 첫걸음", tab = "trade" } end
+			return { text = "항만청에서 다른 항구로 출항하기", why = "산 물건은 다른 항구에서 비싸게 팔려", tab = "route" }
+		end
+		local active = (view.quests and view.quests.active) or {}
+		local pick = nil
+		for _, q in active do
+			if q.strand == "main" then pick = q; break end
+		end
+		pick = pick or active[1]
+		if pick then
+			local why = pick.problem or pick.summary
+			local done = (pick.progress or 0) >= (pick.amount or math.huge)
+			if pick.kind == "deliver" then
+				local good, port = pick.goodName or "물건", pick.portName or "목적지"
+				if done then
+					if pick.portId and pick.portId ~= here then
+						return { text = string.format("%s(으)로 출항해 납품하기", port), why = why, tab = "route", portId = pick.portId, quest = pick }
+					end
+					return { text = "주점에서 납품하고 보상 받기", why = why, tab = "board", quest = pick }
+				end
+				if (ship.cargoUsed or 0) > 0 and pick.portId and pick.portId ~= here then
+					return { text = string.format("%s 싣고 %s(으)로 출항하기 (%d/%d)", good, port, pick.progress or 0, pick.amount or 0), why = why, tab = "route", portId = pick.portId, quest = pick }
+				end
+				return { text = string.format("교역소에서 %s 사기 → %s에 납품 (%d/%d)", good, port, pick.progress or 0, pick.amount or 0), why = why, tab = "trade", portId = pick.portId, quest = pick }
+			end
+			local tab = KIND_TAB[pick.kind] or "quest"
+			if (pick.kind == "field" or pick.kind == "visit") and pick.portId and pick.portId ~= here then
+				return { text = string.format("%s(으)로 출항하기 · %s", pick.portName or "목적지", pick.name or ""), why = why, tab = "route", portId = pick.portId, quest = pick }
+			end
+			if done then return { text = "진행 일지에서 보상 받기 · " .. tostring(pick.name or ""), why = why, tab = "quest", quest = pick } end
+			return { text = tostring(pick.summary or pick.name or "의뢰 진행하기"), why = if pick.problem then why else nil, tab = tab, portId = pick.portId, quest = pick }
+		end
+		local counsel = view.counsel and view.counsel[1]
+		if counsel and counsel.tab then return { text = tostring(counsel.text), tab = counsel.tab } end
+		return { text = "주점 게시판에서 새 의뢰 받기", why = "의뢰가 다음 이야기와 돈벌이를 이어 줘", tab = "board" }
+	end
+
+	-- 3D 항구 건물 표시: 금빛 테두리 + '여기' 화살표(부품 도형 대신 UI 표시만)
+	function H.markFacility(tab)
+		for _, old in H.facilityMarkers or {} do
+			if old.Parent then old:Destroy() end
+		end
+		H.facilityMarkers = {}
+		local target = tab and BUILDING_OF[tab]
+		if not target then return end
+		local port = workspace:FindFirstChild("PortScene", true)
+		if not port then return end
+		for _, d in port:GetDescendants() do
+			if d:GetAttribute("FacilityIdentity") == target and (d:IsA("Model") or d:IsA("BasePart")) then
+				local hl = Instance.new("Highlight")
+				hl.Name = "NextStepHighlight"
+				hl.FillTransparency = 1
+				hl.OutlineColor = Color3.fromRGB(255, 214, 110)
+				hl.OutlineTransparency = 0.1
+				hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+				hl.Adornee = d
+				hl.Parent = d
+				local bb = Instance.new("BillboardGui")
+				bb.Name = "NextStepArrow"
+				bb.Size = UDim2.fromOffset(150, 60)
+				bb.StudsOffsetWorldSpace = Vector3.new(0, 16, 0)
+				bb.AlwaysOnTop = true
+				bb.LightInfluence = 0
+				bb.Adornee = if d:IsA("Model") then (d.PrimaryPart or d:FindFirstChildWhichIsA("BasePart", true)) else d
+				bb.Parent = d
+				local t = Instance.new("TextLabel")
+				t.Size = UDim2.fromScale(1, 1)
+				t.BackgroundTransparency = 1
+				t.Font = Enum.Font.GothamBlack
+				t.TextScaled = true
+				t.TextColor3 = Color3.fromRGB(255, 220, 120)
+				t.TextStrokeTransparency = 0.3
+				t.Text = "여기!\n▼"
+				t.Parent = bb
+				if not game:GetService("GuiService").ReducedMotionEnabled then
+					TS:Create(bb, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+						{ StudsOffsetWorldSpace = Vector3.new(0, 19, 0) }):Play()
+				end
+				table.insert(H.facilityMarkers, hl)
+				table.insert(H.facilityMarkers, bb)
+				break
+			end
+		end
+	end
+
+	-- 하단 버튼 바로 위의 '다음 할 일' 띠
+	function H.refreshNextStep()
+		local gui = dock:FindFirstAncestorOfClass("ScreenGui")
+		if not gui then return end
+		local chip = H.nextStepChip
+		if not chip or not chip.Parent then
+			chip = Instance.new("TextButton")
+			chip.Name = "NextStepChip"
+			chip.AnchorPoint = Vector2.new(0.5, 1)
+			chip.Size = UDim2.fromOffset(420, 46)
+			chip.AutoButtonColor = true
+			chip.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+			chip.BackgroundTransparency = 0.08
+			chip.BorderSizePixel = 0
+			chip.Text = ""
+			chip.ZIndex = 20
+			chip.Parent = gui
+			corner(chip, 12)
+			local st = Instance.new("UIStroke")
+			st.Color = Color3.fromRGB(214, 170, 82)
+			st.Thickness = 2
+			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			st.Parent = chip
+			local arrow = Instance.new("TextLabel")
+			arrow.Name = "Arrow"
+			arrow.BackgroundTransparency = 1
+			arrow.Position = UDim2.fromOffset(10, 0)
+			arrow.Size = UDim2.new(0, 50, 1, 0)
+			arrow.Font = Enum.Font.GothamBlack
+			arrow.TextSize = 15
+			arrow.TextColor3 = Color3.fromRGB(255, 214, 110)
+			arrow.Text = "▶ 다음"
+			arrow.TextXAlignment = Enum.TextXAlignment.Left
+			arrow.ZIndex = 21
+			arrow.Parent = chip
+			local label = Instance.new("TextLabel")
+			label.Name = "StepText"
+			label.BackgroundTransparency = 1
+			label.Position = UDim2.fromOffset(64, 3)
+			label.Size = UDim2.new(1, -74, 0, 22)
+			label.Font = Enum.Font.GothamBold
+			label.TextSize = 15
+			label.TextColor3 = Color3.fromRGB(255, 244, 222)
+			label.TextXAlignment = Enum.TextXAlignment.Left
+			label.TextTruncate = Enum.TextTruncate.AtEnd
+			label.ZIndex = 21
+			label.Parent = chip
+			local why = Instance.new("TextLabel")
+			why.Name = "WhyText"
+			why.BackgroundTransparency = 1
+			why.Position = UDim2.fromOffset(64, 24)
+			why.Size = UDim2.new(1, -74, 0, 18)
+			why.Font = Enum.Font.Gotham
+			why.TextSize = 12
+			why.TextColor3 = Color3.fromRGB(214, 196, 160)
+			why.TextXAlignment = Enum.TextXAlignment.Left
+			why.TextTruncate = Enum.TextTruncate.AtEnd
+			why.ZIndex = 21
+			why.Parent = chip
+			chip.Activated:Connect(function()
+				local step = H.currentStep
+				if not step then return end
+				Sfx.play("sfx_click", 0.4)
+				H.hideBubble()
+				menuToggle.Visible = false
+				openTab(step.tab)
+			end)
+			H.nextStepChip = chip
+		end
+		local show = view ~= nil and hud.Visible and not main.Visible and not newGameMode and not inField and not sailingNow
+			and not H.sceneBusy and not H.questScenesPlaying
+		local step = if show then H.nextStep() else nil
+		H.currentStep = step
+		chip.Visible = step ~= nil
+		if not step then
+			if H.lastStepKey then H.markFacility(nil); H.lastStepKey = nil end
+			return
+		end
+		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+		local w = math.min(460, vp.X - 24)
+		chip.Size = UDim2.fromOffset(w, if step.why then 46 else 36)
+		local top = if dock.Visible and dock.AbsoluteSize.Y > 0 then dock.AbsolutePosition.Y else vp.Y - 120
+		chip.Position = UDim2.fromOffset(vp.X / 2, top - 6)
+		chip.StepText.Text = step.text
+		chip.WhyText.Text = if step.why then "왜? " .. tostring(step.why) else ""
+		chip.WhyText.Visible = step.why ~= nil
+		chip.StepText.Position = UDim2.fromOffset(64, if step.why then 3 else 7)
+		local key = tostring(step.tab) .. "|" .. tostring(step.text)
+		if key ~= H.lastStepKey then
+			H.lastStepKey = key
+			H.markFacility(step.tab)
+			if H.setGuidePulse then H.setGuidePulse(step.tab) end
+			-- 새 목표가 생기면 띠가 한 번 톡 튀어나온다
+			if not game:GetService("GuiService").ReducedMotionEnabled then
+				local sc = chip:FindFirstChildOfClass("UIScale") or Instance.new("UIScale")
+				sc.Parent = chip
+				sc.Scale = 0.8
+				TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+			end
+		end
+	end
+
+	-- 메뉴 첫 줄 3칸: 지금 할 일 / 추천 / 보상 받기
+	function H.menuHomeStrip()
+		if not view or currentTab == "trade" or currentTab == "yard" then return end
+		local step = H.nextStep()
+		local counsel = view.counsel and view.counsel[1]
+		local rewards = 0
+		for _, q in (view.quests and view.quests.active) or {} do
+			if q.kind ~= "deliver" and (q.progress or 0) >= (q.amount or math.huge) then rewards += 1 end
+		end
+		add(function()
+			local row = Instance.new("Frame")
+			row.Name = "MenuHomeStrip"
+			row.Size = UDim2.new(1, -6, 0, 64)
+			row.BackgroundTransparency = 1
+			local grid = Instance.new("UIGridLayout")
+			grid.CellSize = UDim2.new(1 / 3, -6, 1, 0)
+			grid.CellPadding = UDim2.fromOffset(6, 0)
+			grid.SortOrder = Enum.SortOrder.LayoutOrder
+			grid.Parent = row
+			local function cell(order, title, body, color, tab)
+				local b = Instance.new("TextButton")
+				b.LayoutOrder = order
+				b.AutoButtonColor = true
+				b.BackgroundColor3 = color
+				b.BorderSizePixel = 0
+				b.Text = ""
+				b.Active = tab ~= nil
+				b.Parent = row
+				corner(b, 10)
+				local t = mkLabel(b, title, 13, Color3.fromRGB(255, 236, 196), true)
+				t.Position = UDim2.fromOffset(8, 5)
+				t.Size = UDim2.new(1, -16, 0, 18)
+				t.AutomaticSize = Enum.AutomaticSize.None
+				local d = mkLabel(b, body, 12, Color3.fromRGB(250, 244, 230), false)
+				d.Position = UDim2.fromOffset(8, 24)
+				d.Size = UDim2.new(1, -16, 0, 36)
+				d.AutomaticSize = Enum.AutomaticSize.None
+				d.TextTruncate = Enum.TextTruncate.AtEnd
+				if tab then
+					b.Activated:Connect(function()
+						Sfx.play("sfx_click", 0.4)
+						openTab(tab)
+					end)
+				end
+			end
+			cell(1, "▶ 지금 할 일", step and step.text or "자유롭게 교역해 봐", Color3.fromRGB(58, 98, 64), step and step.tab or nil)
+			cell(2, "★ 추천", counsel and tostring(counsel.text) or "시세가 싼 특산품을 찾아봐", Color3.fromRGB(64, 78, 112), counsel and counsel.tab or "trade")
+			cell(3, "🎁 보상 받기", if rewards > 0 then string.format("받을 보상 %d개", rewards) else "받을 보상 없음", if rewards > 0 then Color3.fromRGB(140, 98, 34) else Color3.fromRGB(90, 84, 76), if rewards > 0 then "quest" else nil)
+			return row
+		end)
+	end
+end
+
+-- [이야기 흐름 · 2026-11-28 오너 지시] 문제 → 원인 → 할 일 → 바뀌는 것 · 지난 이야기 · 결과 · 장 완료.
+do
+	local TS = game:GetService("TweenService")
+	local CHIP = {
+		{ "문제", Color3.fromRGB(150, 58, 46) }, { "원인", Color3.fromRGB(120, 92, 46) },
+		{ "할 일", Color3.fromRGB(52, 96, 70) }, { "바뀌는 것", Color3.fromRGB(56, 82, 128) },
+	}
+	-- 일지의 인과 카드: 장 제목 + 4칸 + 지난/다음 이야기 + 바로 가기
+	function H.questCauseCard(q)
+		if not (q.problem or q.chapter or q.prevEnding) then return end
+		local step = H.nextStep and H.nextStep()
+		local doText = if step and step.quest and step.quest.id == q.id then step.text else q.summary
+		add(function()
+			local card = Instance.new("Frame")
+			card.Name = "QuestCauseCard"
+			card.Size = UDim2.new(1, -6, 0, 0)
+			card.AutomaticSize = Enum.AutomaticSize.Y
+			card.BackgroundColor3 = Color3.fromRGB(242, 228, 196)
+			card.BorderSizePixel = 0
+			corner(card, 10)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
+			pad.Parent = card
+			local list = Instance.new("UIListLayout")
+			list.Padding = UDim.new(0, 5)
+			list.SortOrder = Enum.SortOrder.LayoutOrder
+			list.Parent = card
+			if q.chapter then
+				local t = mkLabel(card, "📖 " .. tostring(q.chapter) .. (if q.guide then "  ·  안내: " .. tostring(q.guide) else ""), 14, Color3.fromRGB(110, 70, 30), true, 1)
+				t.Size = UDim2.new(1, 0, 0, 0)
+			end
+			if q.prevEnding then
+				local prev = mkLabel(card, "지난 이야기 — " .. tostring(q.prevName or "") .. ": " .. tostring(q.prevEnding), 12, Color3.fromRGB(96, 80, 60), false, 2)
+				prev.Size = UDim2.new(1, 0, 0, 0)
+			end
+			local values = { q.problem, q.cause, doText, q.result }
+			local order = 3
+			for i, spec in CHIP do
+				local v = values[i]
+				if v and v ~= "" then
+					local row = Instance.new("Frame")
+					row.Size = UDim2.new(1, 0, 0, 0)
+					row.AutomaticSize = Enum.AutomaticSize.Y
+					row.BackgroundTransparency = 1
+					row.LayoutOrder = order
+					row.Parent = card
+					order += 1
+					local tag = Instance.new("TextLabel")
+					tag.Size = UDim2.fromOffset(70, 22)
+					tag.BackgroundColor3 = spec[2]
+					tag.BorderSizePixel = 0
+					tag.Font = Enum.Font.GothamBold
+					tag.TextSize = 12
+					tag.TextColor3 = Color3.new(1, 1, 1)
+					tag.Text = (if i > 1 then "→ " else "") .. spec[1]
+					tag.Parent = row
+					corner(tag, 6)
+					local body = mkLabel(row, tostring(v), 13, Color3.fromRGB(52, 38, 24), i == 3)
+					body.Position = UDim2.fromOffset(78, 2)
+					body.Size = UDim2.new(1, -78, 0, 0)
+				end
+			end
+			if q.nextName then
+				local nx = mkLabel(card, "다음 이야기 — " .. tostring(q.nextName) .. " (끝내면 열림)", 12, Color3.fromRGB(96, 80, 60), false, 20)
+				nx.Size = UDim2.new(1, 0, 0, 0)
+			end
+			if step and step.quest and step.quest.id == q.id and step.tab then
+				local go = mkButton(card, "▶ 지금 할 일로 가기", COLORS.green, UDim2.new(1, 0, 0, 44), function() openTab(step.tab) end, true)
+				go.LayoutOrder = 21
+			end
+			return card
+		end)
+	end
+
+	-- 결과 연출: 퀘스트를 끝내면 '당신 덕분에' 결말 + 장의 마지막이면 장 완료 장면
+	function H.showQuestResult(d)
+		local g = overlayGui("QuestResult", 72)
+		local root = Instance.new("TextButton")
+		root.Size = UDim2.fromScale(1, 1)
+		root.AutoButtonColor = false
+		root.Text = ""
+		root.BackgroundColor3 = Color3.new(0, 0, 0)
+		root.BackgroundTransparency = 0.45
+		root.BorderSizePixel = 0
+		root.Parent = g
+		local box = Instance.new("Frame")
+		box.AnchorPoint = Vector2.new(0.5, 0.5)
+		box.Position = UDim2.fromScale(0.5, 0.5)
+		box.Size = UDim2.new(0, 520, 0, 0)
+		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
+		box.BorderSizePixel = 0
+		box.Parent = root
+		corner(box, 14)
+		local lim = Instance.new("UISizeConstraint")
+		lim.MaxSize = Vector2.new(520, 560)
+		lim.Parent = box
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(196, 150, 70)
+		st.Thickness = 3
+		st.Parent = box
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 16), UDim.new(0, 16), UDim.new(0, 18), UDim.new(0, 18)
+		pad.Parent = box
+		local list = Instance.new("UIListLayout")
+		list.Padding = UDim.new(0, 8)
+		list.SortOrder = Enum.SortOrder.LayoutOrder
+		list.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		list.Parent = box
+		local chapterEnd = d.chapterEnd == true
+		local head = mkLabel(box, if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name), if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
+		head.Size = UDim2.new(1, 0, 0, 0)
+		head.TextXAlignment = Enum.TextXAlignment.Center
+		if d.result then
+			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 15, Color3.fromRGB(40, 90, 50), true, 2)
+			res.Size = UDim2.new(1, 0, 0, 0)
+		end
+		local body = mkLabel(box, "", 15, Color3.fromRGB(52, 38, 24), false, 3)
+		body.Size = UDim2.new(1, 0, 0, 0)
+		if H.typewrite then H.typewrite(body, tostring(d.ending or ""), 0.018) else body.Text = tostring(d.ending or "") end
+		local hint = mkLabel(box, if chapterEnd then "다음 장이 주점 게시판과 일지에 열렸어요." else "화면을 누르면 닫혀요.", 12, Color3.fromRGB(110, 96, 76), false, 4)
+		hint.Size = UDim2.new(1, 0, 0, 0)
+		hint.TextXAlignment = Enum.TextXAlignment.Center
+		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end
+		Sfx.play(if chapterEnd then "sfx_fanfare" else "sfx_bell", if chapterEnd then 0.55 else 0.35, 1, "sfx_card_coin")
+		local sc = Instance.new("UIScale")
+		sc.Scale = 0.85
+		sc.Parent = box
+		TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		if chapterEnd and H.cardGainFlair then
+			pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 4, gold = Color3.fromRGB(255, 217, 124),
+				tone = Color3.fromRGB(255, 196, 92), w = 360, h = 220, reduced = game:GetService("GuiService").ReducedMotionEnabled,
+				viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600), combat = false, hero = false })
+		end
+		local closed = false
+		local function close()
+			if closed then return end
+			closed = true
+			if g.Parent then g:Destroy() end
+		end
+		root.Activated:Connect(close)
+		task.delay(if chapterEnd then 9 else 6, close)
+	end
+
+	-- 새로 끝난 퀘스트 감지(첫 화면은 기준선) → 결과 장면을 차례로
+	function H.checkQuestResults()
+		local done = view and view.quests and view.quests.done
+		if type(done) ~= "table" then return end
+		local first = H.seenDoneQuests == nil
+		H.seenDoneQuests = H.seenDoneQuests or {}
+		local fresh = {}
+		for _, d in done do
+			local key = tostring(d.id or d.name)
+			if not H.seenDoneQuests[key] then
+				H.seenDoneQuests[key] = true
+				if not first and (d.result or d.chapter or d.strand == "main") then table.insert(fresh, d) end
+			end
+		end
+		if #fresh == 0 then return end
+		task.spawn(function()
+			local pg = player:WaitForChild("PlayerGui")
+			for _, d in fresh do
+				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
+					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult")) do
+					task.wait(0.3)
+				end
+				if not player.Parent then return end
+				H.showQuestResult(d)
+				while player.Parent and pg:FindFirstChild("QuestResult") do task.wait(0.3) end
+			end
+		end)
+	end
+
+	-- 지난 이야기: 접속 뒤 첫 화면에서 한 번, 진행 중 이야기의 앞 단계 결말과 지금 할 일을 보여 준다
+	function H.showRecap()
+		if H.recapShown or not view or not view.quests then return end
+		local pick = nil
+		for _, q in view.quests.active or {} do
+			if q.prevEnding and (q.strand == "main" or q.chapter) then pick = q; break end
+		end
+		H.recapShown = true
+		if not pick then return end
+		H.showQuestResult({ name = "지난 이야기", chapter = pick.chapter, chapterEnd = false,
+			ending = tostring(pick.prevName or "") .. " — " .. tostring(pick.prevEnding) .. "\n\n지금: " .. tostring(pick.problem or pick.summary),
+			result = nil })
+		local g = player.PlayerGui:FindFirstChild("QuestResult")
+		local head = g and g:FindFirstChildWhichIsA("TextLabel", true)
+		if head then head.Text = "📜 지난 이야기" .. (if pick.chapter then " · " .. tostring(pick.chapter) else "") end
+	end
+end
+
+-- [첫 경험·실패 이유·한눈에 보기 · 2026-11-28 오너 지시] 글 설명 대신 3단계 그림 카드, 진 이유와 다음 할 일, 막대 그림 현황.
+do
+	local COACH = {
+		trade = { "처음 교역", { { "📊", "시세 보기", "초록 글씨 = 평균보다 싸다" }, { "🔢", "수량 고르기", "화물칸만큼만 실린다" }, { "💰", "사기 → 다른 항구에서 팔기", "항해 탭 '이익' 정렬로 팔 곳 찾기" } } },
+		route = { "처음 출항", { { "🗺", "목적지 고르기", "📜 표시 = 의뢰 목적지" }, { "🍞", "보급 확인", "빨간 글씨면 보급부터 채우기" }, { "⛵", "출항", "도착하면 그 항구 시세로 팔기" } } },
+		battle = { "처음 해전", { { "🎯", "옆으로 붙기", "대포는 배 옆면으로 쏜다" }, { "💥", "사거리 안에서 발사", "'사거리 밖'이면 더 다가가기" }, { "🏳", "위험하면 물러나기", "선체가 30% 아래면 후퇴도 작전" } } },
+		war = { "처음 함대전", { { "⚓", "작전 고르기", "추천 레벨을 먼저 확인" }, { "🌊", "파도마다 적 격파", "파도 사이엔 회복이 없다" }, { "🏆", "마지막 파도까지", "이기면 해역이 안전해진다" } } },
+		explore = { "처음 지상 탐험", { { "👣", "천천히 다가가기", "뛰면 동물이 달아난다" }, { "🔍", "길게 눌러 조사", "스케치·채집·탁본" }, { "📖", "카드로 기록", "발견하면 백과에 꽂힌다" } } },
+		gwent = { "처음 카드 대결", { { "🃏", "카드 내기", "줄마다 힘이 합쳐진다" }, { "⚖", "세 판 두 선승", "아끼는 것도 작전" }, { "👑", "지도자 능력", "한 판에 한 번" } } },
+	}
+	H.coachSeen = H.coachSeen or {}
+	-- 그 탭을 처음 열 때 한 번(이번 접속 기준), 실제로 처음일 때만
+	function H.firstTimeCoach(tab)
+		local spec = COACH[tab]
+		if not spec or H.coachSeen[tab] or not view then return end
+		local p, ship = view.player or {}, view.ship or {}
+		local wins = view.battleStats and view.battleStats.battlesWon or 0
+		local fresh = (tab == "trade" and (p.day or 0) == 0)
+			or (tab == "route" and (p.day or 0) == 0)
+			or ((tab == "battle" or tab == "war") and wins == 0)
+			or (tab == "explore" and (view.codex and (view.codex.found or 0) <= 1))
+			or (tab == "gwent" and (p.day or 0) < 30)
+		if not fresh then return end
+		H.coachSeen[tab] = true
+		add(function()
+			local card = Instance.new("Frame")
+			card.Name = "FirstTimeCoach"
+			card.Size = UDim2.new(1, -6, 0, 132)
+			card.BackgroundColor3 = Color3.fromRGB(38, 60, 52)
+			card.BorderSizePixel = 0
+			corner(card, 12)
+			local title = mkLabel(card, "✨ " .. spec[1] .. " — 이렇게 해 봐", 16, Color3.fromRGB(255, 230, 170), true)
+			title.Position = UDim2.fromOffset(12, 8)
+			title.Size = UDim2.new(1, -24, 0, 22)
+			title.AutomaticSize = Enum.AutomaticSize.None
+			local row = Instance.new("Frame")
+			row.Position = UDim2.fromOffset(8, 36)
+			row.Size = UDim2.new(1, -16, 0, 88)
+			row.BackgroundTransparency = 1
+			row.Parent = card
+			local grid = Instance.new("UIGridLayout")
+			grid.CellSize = UDim2.new(1 / 3, -6, 1, 0)
+			grid.CellPadding = UDim2.fromOffset(6, 0)
+			grid.SortOrder = Enum.SortOrder.LayoutOrder
+			grid.Parent = row
+			for i, step in spec[2] do
+				local cell = Instance.new("Frame")
+				cell.LayoutOrder = i
+				cell.BackgroundColor3 = Color3.fromRGB(56, 84, 72)
+				cell.BorderSizePixel = 0
+				cell.Parent = row
+				corner(cell, 8)
+				local icon = mkLabel(cell, string.format("%d %s", i, step[1]), 20, Color3.new(1, 1, 1), true)
+				icon.Position = UDim2.fromOffset(6, 4)
+				icon.Size = UDim2.new(1, -12, 0, 26)
+				icon.AutomaticSize = Enum.AutomaticSize.None
+				local head = mkLabel(cell, step[2], 13, Color3.fromRGB(255, 236, 196), true)
+				head.Position = UDim2.fromOffset(6, 32)
+				head.Size = UDim2.new(1, -12, 0, 18)
+				head.AutomaticSize = Enum.AutomaticSize.None
+				local tip = mkLabel(cell, step[3], 11, Color3.fromRGB(210, 230, 216), false)
+				tip.Position = UDim2.fromOffset(6, 52)
+				tip.Size = UDim2.new(1, -12, 0, 32)
+				tip.AutomaticSize = Enum.AutomaticSize.None
+				tip.TextWrapped = true
+			end
+			return card
+		end)
+	end
+
+	-- 해전에서 졌을 때: 무엇이 모자랐는지 비교하고 다음 할 일 버튼
+	function H.showDefeatAdvice(sim)
+		local me, foe = sim and sim.me, sim and sim.foe
+		local reasons = {}
+		if me and foe then
+			if (me.cannons or 0) < (foe.cannons or 0) then
+				table.insert(reasons, { string.format("대포가 적보다 적었어 (%d vs %d)", me.cannons or 0, foe.cannons or 0), "조선소에서 대포 늘리기", "yard" })
+			end
+			if (me.maxHull or 0) < (foe.maxHull or 0) * 0.85 then
+				table.insert(reasons, { string.format("배가 약했어 (선체 %d vs %d)", me.maxHull or 0, foe.maxHull or 0), "조선소에서 더 튼튼한 배 보기", "yard" })
+			end
+			if (me.crew or 0) < (foe.crew or 0) then
+				table.insert(reasons, { string.format("선원이 모자랐어 (%d vs %d)", me.crew or 0, foe.crew or 0), "주점에서 선원·동료 채우기", "recruit" })
+			end
+			if (me.level or 1) < (foe.level or 1) then
+				table.insert(reasons, { string.format("적 레벨이 높았어 (Lv.%d vs Lv.%d)", me.level or 1, foe.level or 1), "쉬운 해적부터 이겨 경험 쌓기", "battle" })
+			end
+		end
+		if #reasons == 0 then
+			table.insert(reasons, { "운이 나빴거나 사거리 밖에서 쏘았어", "옆으로 붙어 사거리 안에서 쏘기", "battle" })
+		end
+		local g = overlayGui("DefeatAdvice", 73)
+		local box = Instance.new("Frame")
+		box.AnchorPoint = Vector2.new(0.5, 0.5)
+		box.Position = UDim2.fromScale(0.5, 0.5)
+		box.Size = UDim2.new(0, 460, 0, 0)
+		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.BackgroundColor3 = Color3.fromRGB(44, 30, 28)
+		box.BorderSizePixel = 0
+		box.Parent = g
+		corner(box, 14)
+		local lim = Instance.new("UISizeConstraint")
+		lim.MaxSize = Vector2.new(460, 520)
+		lim.Parent = box
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14), UDim.new(0, 16), UDim.new(0, 16)
+		pad.Parent = box
+		local list = Instance.new("UIListLayout")
+		list.Padding = UDim.new(0, 8)
+		list.SortOrder = Enum.SortOrder.LayoutOrder
+		list.Parent = box
+		local head = mkLabel(box, "다음엔 이길 수 있어 — 진 이유", 19, Color3.fromRGB(255, 190, 170), true, 0)
+		head.Size = UDim2.new(1, 0, 0, 0)
+		for i, r in reasons do
+			if i > 3 then break end
+			local line = mkLabel(box, "• " .. r[1], 14, Color3.fromRGB(245, 230, 214), false, i * 2 - 1)
+			line.Size = UDim2.new(1, 0, 0, 0)
+			local go = mkButton(box, "→ " .. r[2], COLORS.green, UDim2.new(1, 0, 0, 44), function()
+				g:Destroy()
+				openTab(r[3])
+			end, true)
+			go.LayoutOrder = i * 2
+		end
+		local close = mkButton(box, "닫기", COLORS.grey, UDim2.new(1, 0, 0, 40), function() g:Destroy() end, true)
+		close.LayoutOrder = 99
+	end
+
+	-- 선장 현황 맨 위: 선체·선원·보급·화물을 막대 그림으로
+	function H.visualStatus()
+		local ship = view and view.ship
+		if not ship then return end
+		add(function()
+			local card = Instance.new("Frame")
+			card.Name = "StatusAtAGlance"
+			card.Size = UDim2.new(1, -6, 0, 0)
+			card.AutomaticSize = Enum.AutomaticSize.Y
+			card.BackgroundColor3 = Color3.fromRGB(242, 228, 196)
+			card.BorderSizePixel = 0
+			corner(card, 10)
+			local pad = Instance.new("UIPadding")
+			pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8), UDim.new(0, 10), UDim.new(0, 10)
+			pad.Parent = card
+			local list = Instance.new("UIListLayout")
+			list.Padding = UDim.new(0, 6)
+			list.SortOrder = Enum.SortOrder.LayoutOrder
+			list.Parent = card
+			local t = mkLabel(card, "한눈에 보기", 15, Color3.fromRGB(110, 70, 30), true, 0)
+			t.Size = UDim2.new(1, 0, 0, 0)
+			local rows = {
+				{ "⛵ 선체", ship.hull or 0, ship.maxHull or 1, "yard" },
+				{ "👥 선원", ship.crew or 0, ship.maxCrew or 1, "recruit" },
+				{ "🍞 보급", ship.supplies or 0, math.max(ship.supplies or 0, view.supplyMax or 60), "yard" },
+				{ "📦 화물", ship.cargoUsed or 0, ship.cargoCapacity or 1, "trade" },
+			}
+			for i, r in rows do
+				local ratio = math.clamp(r[2] / math.max(1, r[3]), 0, 1)
+				local row = Instance.new("TextButton")
+				row.LayoutOrder = i
+				row.Size = UDim2.new(1, 0, 0, 30)
+				row.BackgroundTransparency = 1
+				row.Text = ""
+				row.AutoButtonColor = false
+				row.Parent = card
+				local name = mkLabel(row, r[1], 13, Color3.fromRGB(52, 38, 24), true)
+				name.Position = UDim2.fromOffset(0, 6)
+				name.Size = UDim2.fromOffset(70, 18)
+				name.AutomaticSize = Enum.AutomaticSize.None
+				local track = Instance.new("Frame")
+				track.Position = UDim2.new(0, 74, 0, 9)
+				track.Size = UDim2.new(1, -150, 0, 12)
+				track.BackgroundColor3 = Color3.fromRGB(210, 196, 166)
+				track.BorderSizePixel = 0
+				track.Parent = row
+				corner(track, 6)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(ratio, 1)
+				fill.BackgroundColor3 = if r[1] == "📦 화물" then Color3.fromRGB(80, 120, 170)
+					elseif ratio < 0.35 then Color3.fromRGB(196, 70, 56) elseif ratio < 0.7 then Color3.fromRGB(214, 160, 60) else Color3.fromRGB(70, 150, 90)
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 6)
+				local num = mkLabel(row, string.format("%d/%d", r[2], r[3]), 12, Color3.fromRGB(80, 64, 44), false)
+				num.Position = UDim2.new(1, -72, 0, 6)
+				num.Size = UDim2.fromOffset(72, 18)
+				num.AutomaticSize = Enum.AutomaticSize.None
+				num.TextXAlignment = Enum.TextXAlignment.Right
+				if ratio < 0.35 and r[1] ~= "📦 화물" then
+					row.Activated:Connect(function() openTab(r[4]) end)
+					num.Text = "⚠ " .. num.Text
+				end
+			end
+			return card
+		end)
 	end
 end
 
@@ -13034,6 +13725,7 @@ function RENDERERS.quest()
 		return order[a] < order[b]
 	end)
 	for _, q in active do
+		if H.questCauseCard then H.questCauseCard(q) end
 		add(function()
 			local buttons = {}
 			if q.kind == "deliver" then
@@ -15410,14 +16102,15 @@ function render()
 
 	local p, ship = view.player, view.ship
 	local grp = groupOf(currentTab)
-	setPortrait(grp.name)
+	local facilityGroup = H.facilityOf(currentTab)
+	setPortrait(facilityGroup.name) -- 초상·담당자는 건물(시설) 기준
 	-- [중복 이름 제거] 화면 제목에서 조선소·은행·길드 이름을 반복하지 않는다.
 	local placeName = H.visitFacility or grp.name
 	-- 시설은 제목, 현재 기능은 선택 탭, 항구와 담당자는 보조 줄에서 표시한다.
 	local tabName = TAB_NAME[currentTab] or ""
 	headerLabel.Text = if #grp.tabs <= 1 and currentTab ~= "yard" and placeName ~= tabName
 		then placeName .. " · " .. tabName else placeName
-	H.pageDetails.Text = string.format("%s · %s", p.portName, grp.keeper)
+	H.pageDetails.Text = string.format("%s · %s · %s", p.portName, facilityGroup.name, facilityGroup.keeper)
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	-- [현재 시설 표시] 가죽 도크의 선택 상태와 실제 열려 있는 시설을 동기화한다.
@@ -15432,6 +16125,10 @@ function render()
 	if message ~= "" then
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
+	-- [메뉴 첫 줄 · 2026-11-28] 지금 할 일 / 추천 / 보상 받기 3칸 + 처음 해 보는 기능이면 3단계 그림 안내
+	if H.menuHomeStrip then H.menuHomeStrip() end
+	if H.firstTimeCoach then H.firstTimeCoach(currentTab) end
+	if currentTab == "status" and H.visualStatus then H.visualStatus() end
 	-- [오른쪽 상단 판단 정보] 교역소 기준: 실제 서버 값 → 조건 → 실행을 순서대로 읽는다.
 	-- 보상·위험·연구 효과·선박 능력은 표시만 하며 기존 규칙과 서버 판정을 바꾸지 않는다.
 	local focus = if currentTab == "trade" or currentTab == "yard" or currentTab == "gwent" then nil else H.MENU_FOCUS[currentTab]
@@ -17026,6 +17723,12 @@ end
 			task.wait(0.7)
 			pcall(refreshChip)
 			pcall(refreshGoal)
+			if H.refreshNextStep then pcall(H.refreshNextStep) end
+			-- [지난 이야기] 첫 화면이 안정되면 한 번(오프닝·대화·장면 중이면 미룸)
+			if H.showRecap and not H.recapShown and view and main.Visible == false and hud.Visible and not newGameMode
+				and not H.openingPending and not dlg and not sceneHold and not H.sceneBusy and (view.player and (view.player.day or 0) > 0) then
+				pcall(H.showRecap)
+			end
 			-- 중요 인물이 항구에서 찾아오면 일러스트 연출 장면이 저절로 열린다
 			if view and view.autoStory and view.autoStory ~= H.autoStoryShown and not newGameMode and not sailingNow and not H.questScenesPlaying and not H.sceneBusy and not sceneHold and not dlg and not H.openingPending and main.Visible and not workspace:FindFirstChild("StoryScene", true) then
 				for _, ev in view.story or {} do

@@ -510,6 +510,19 @@ return function(D, S)
 					supplies = plan.supplies,
 					coal = plan.coal,
 					distanceKm = math.floor(plan.distanceKm),
+					-- [교역 쉽게 보기 · 2026-11-28] 지금 실은 화물을 그 항구에 팔면 예상 이익(산 값 대비). 판정·저장 무관 표시용.
+					cargoProfit = (function()
+						local sum, any = 0, false
+						for goodId, qty in state.cargo do
+							if type(qty) == "number" and qty > 0 and D.Ports.Goods[goodId] then
+								any = true
+								local unit = D.TradeMath.sellPrice(portId, goodId, ctx.market:get(portId, goodId), rate * S.Knowledge.goodsMult(state, goodId),
+									ctx.market:eventMult(portId, goodId) * S.History.mult(state, portId, goodId))
+								sum += (unit - (state.basis[goodId] or unit)) * qty
+							end
+						end
+						return if any then math.floor(sum) else nil
+					end)(),
 				})
 			end
 		end
@@ -666,7 +679,10 @@ return function(D, S)
 			local dq = D.Quests.ById[id]
 			if dq then
 				local _, ending = S.Quest.storyOf(dq)
-				table.insert(view.quests.done, { name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending })
+				-- [장 완료·결과 연출] 장 제목과 그 장의 마지막 단계인지(다음 단계 없음) 함께 보낸다.
+				local chapterName = dq.chapter or (string.find(dq.summary or "", " — ", 1, true) and string.sub(dq.summary, 1, (string.find(dq.summary, " — ", 1, true) :: number) - 1)) or nil
+				table.insert(view.quests.done, { id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending,
+					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
@@ -685,6 +701,24 @@ return function(D, S)
 					rewardCoins = q.rewardCoins,
 					rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil,
 					story2 = D.Quests.Kit.questExtras(state, q), -- [이야기 퀘스트 시스템] 선택지·대결 상대·인물 대사
+					-- [다음 할 일 안내 · 2026-11-28] 목적지·상품·인과(문제→원인→결과)·장 표시용. 판정·저장은 그대로.
+					portId = q.portId, portName = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or nil,
+					goodId = q.goodId, goodName = q.goodId and D.Ports.Goods[q.goodId] and D.Ports.Goods[q.goodId].name or nil,
+					exploreSite = q.exploreSite, warId = q.warId, leaderId = q.leaderId,
+					problem = q.problem or (function()
+						-- 따로 적은 문제가 없으면 사연의 첫 문장을 '왜?'로 쓴다
+						local hook = S.Quest.storyOf(q)
+						hook = string.gsub(tostring(hook or ""), "^제%d+장%. ", "")
+						local cut = string.find(hook, ". ", 1, true) or string.find(hook, "? ", 1, true) or string.find(hook, "! ", 1, true)
+						return if cut then string.sub(hook, 1, cut) elseif #hook > 0 then hook else nil
+					end)(),
+					cause = q.cause, result = q.result,
+					chapter = q.chapter or (string.find(q.summary or "", " — ", 1, true) and string.sub(q.summary, 1, (string.find(q.summary, " — ", 1, true) :: number) - 1)) or nil,
+					guide = q.guide,
+					-- [지난 이야기·다음 이야기] 앞 단계의 결말과 다음 단계 이름
+					prevName = q.after and D.Quests.ById[q.after] and D.Quests.ById[q.after].name or nil,
+					prevEnding = q.after and D.Quests.ById[q.after] and select(2, S.Quest.storyOf(D.Quests.ById[q.after])) or nil,
+					nextName = D.Quests.NextOf[q.id] and D.Quests.ById[D.Quests.NextOf[q.id]] and D.Quests.ById[D.Quests.NextOf[q.id]].name or nil,
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)

@@ -43,6 +43,13 @@ export type Quest = {
 	line: string?,
 	regionId: string?, -- kind "war_clear": 이 해역(Regions id)의 함대전 완수 횟수 (없으면 전체)
 	cat: string?, -- kind "people": 이 분야(People.Cats)의 기록한 인물 수 (없으면 전체)
+	-- [인과관계 · 2026-11-28] 화면 안내용(판정 무관): 지금 문제·원인·하면 바뀌는 것·장 제목·안내 인물
+	problem: string?,
+	cause: string?,
+	result: string?,
+	chapter: string?,
+	guide: string?,
+	afterPrologue: boolean?, -- 시작 국가 서막(pr_<국가>_4)을 마쳐야 보인다
 }
 
 local Quests: { Quest } = {
@@ -671,6 +678,12 @@ for _, sq in ScholarQ.Quests do
 	table.insert(Quests, sq :: Quest)
 end
 
+-- 인과관계로 이어지는 장 이야기 (교역 → 탐험 → 해전 → 선택 → 결과)
+local Chapters = require(script.Parent.StoryChapters)
+for _, cq in Chapters.Quests do
+	table.insert(Quests, cq :: Quest)
+end
+
 local ById: { [string]: Quest } = {}
 for _, q in Quests do
 	ById[q.id] = q
@@ -729,6 +742,9 @@ for hid, hand in Prologue.Hand do
 	HAND[hid] = hand
 end
 for hid, hand in ScholarQ.Hand do
+	HAND[hid] = hand
+end
+for hid, hand in Chapters.Hand do
 	HAND[hid] = hand
 end
 -- 퀘스트마다 따로 쓴 이야기 (납품·방문·전투·지식·지역 대장정)
@@ -863,5 +879,7 @@ return {
 	ById = ById,
 	Grade = Grade,
 	Story = Story,
+	NextOf = NEXT_OF, -- [다음 이야기 미리보기] 앞 퀘스트 id → 다음 퀘스트 id
+	Chapters = Chapters.Chapters,
 	Kit = Kit, -- [이야기 퀘스트 시스템] 선택 분기·지도자 대결·이야기 함대전·카드 이야기·인물 말풍선
 }
