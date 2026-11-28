@@ -1,579 +1,2053 @@
 {
- "sourceRevision": "a0141b259720434e3130525bf763fa4fd01779d3",
+ "sourceRevision": "831da4736a9b0624ac8e3fb4ccb327132b3cefc6",
  "log": [
   {
    "step": 1,
-   "capture": "c00_start",
-   "files": 1
+   "ctx": "Client",
+   "out": "bound\ntext"
   },
   {
    "step": 2,
    "ctx": "Client",
-   "out": "QAAutoIntro on\ntext"
-  },
-  {
-   "step": 3,
-   "ctx": "Client",
-   "out": "INTRO_CENTER_QA_MONITOR_READY\ntext"
+   "out": "truenil\ntext"
   },
   {
    "step": 4,
    "ctx": "Client",
-   "out": "MARE_TITLE_READY:TitleBackdrop:프랑스\ntext"
+   "out": "ANIMAL london none | \ntext"
   },
   {
-   "step": 6,
-   "click": "title01",
-   "at": "922,84",
-   "out": "922,84 CLICK=프랑스\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 922,
-      "y": 84
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
+   "step": 5,
+   "ctx": "Client",
+   "out": "SHOT london top\ntext"
   },
   {
-   "step": 8,
-   "capture": "t01",
+   "step": 7,
+   "capture": "london_top",
    "files": 1
   },
   {
-   "step": 9,
+   "step": 8,
    "ctx": "Client",
-   "out": "SCROLLED 상인 집안\ntext"
+   "out": "SHOT london oblique_sea\ntext"
+  },
+  {
+   "step": 10,
+   "capture": "london_oblique_sea",
+   "files": 1
   },
   {
    "step": 11,
-   "click": "title02",
-   "at": "585,132",
-   "out": "585,132 CLICK=상인 집안\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 585,
-      "y": 132
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
+   "ctx": "Client",
+   "out": "SHOT london oblique_land\ntext"
   },
   {
    "step": 13,
-   "capture": "t02",
+   "capture": "london_oblique_land",
    "files": 1
   },
   {
    "step": 14,
    "ctx": "Client",
-   "out": "SCROLLED ⚓ 출항하기\ntext"
+   "out": "SHOT london plaza_eye\ntext"
   },
   {
    "step": 16,
-   "click": "title03",
-   "at": "730,206",
-   "out": "730,206 CLICK=⚓ 출항하기\ntext",
-   "inputAction": {
-    "datamodel_type": "Client",
-    "actions": [
-     {
-      "action": "mouseButtonClick",
-      "mouse_button": "left",
-      "x": 730,
-      "y": 206
-     }
-    ]
-   },
-   "status": "DISPATCHED",
-   "mouseResponse": "Success text"
+   "capture": "london_plaza_eye",
+   "files": 1
   },
   {
-   "step": 18,
-   "capture": "intro_center_early",
+   "step": 17,
+   "ctx": "Client",
+   "out": "SHOT london street\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "london_street",
    "files": 1
   },
   {
    "step": 20,
-   "capture": "intro_center_next",
-   "files": 1
+   "ctx": "Client",
+   "out": "SHOT london houses\ntext"
   },
   {
    "step": 22,
-   "capture": "intro_center_late",
+   "capture": "london_houses",
    "files": 1
   },
   {
-   "step": 24,
-   "capture": "t03",
-   "files": 1
+   "step": 23,
+   "ctx": "Client",
+   "out": "SHOT london harbor\ntext"
   },
   {
    "step": 25,
-   "ctx": "Client",
-   "out": "INTRO_OK\ntext"
+   "capture": "london_harbor",
+   "files": 1
   },
   {
    "step": 26,
    "ctx": "Client",
-   "out": "INTRO_CENTER_SIZE_UNIFIED_PASS stages=3 |길드 서기|대상 상인 카심|떠돌이 화가\ntext"
+   "out": "SHOT london ranch\ntext"
   },
   {
    "step": 28,
-   "capture": "intro_done",
+   "capture": "london_ranch",
    "files": 1
   },
   {
    "step": 29,
    "ctx": "Client",
-   "out": "INTRO_RUNTIME_STATE_PASS_NO_DECK_POPUP\ntext"
-  },
-  {
-   "step": 30,
-   "ctx": "Client",
-   "out": "TEXTS: 이스탄불 · 선장실 · 선장 | 성장 | 999997749 | 자금 999,997,749코인 · 화물 19/19 | 선장 | 조선소 | 승조원 | 영입 | 연구 | 초상화가 완성되었다\ntext"
+   "out": "SKIP london animal_side\ntext"
   },
   {
    "step": 31,
-   "ctx": "Client",
-   "out": "tab harbor\ntext"
+   "capture": "london_animal_side",
+   "files": 1
   },
   {
-   "step": 33,
+   "step": 32,
    "ctx": "Client",
-   "out": "FACILITY_TAB_RUNTIME_PASS:harbor\ntext"
+   "out": "SKIP london animal_front\ntext"
   },
   {
    "step": 34,
-   "capture": "tab_harbor",
+   "capture": "london_animal_front",
+   "files": 1
+  },
+  {
+   "step": 35,
+   "ctx": "Client",
+   "out": "SHOT london resident\ntext"
+  },
+  {
+   "step": 37,
+   "capture": "london_resident",
+   "files": 1
+  },
+  {
+   "step": 38,
+   "ctx": "Client",
+   "out": "SHOT london edge\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "london_edge",
+   "files": 1
+  },
+  {
+   "step": 43,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 45,
+   "ctx": "Client",
+   "out": "ANIMAL istanbul sheep 뼈변화=0.000 이동=0.03 | chickenx6[IDLE_ONLY:6 관절3 조각0 뼈6 다리0/2:6 ANATOMICAL_FORWARD:6] donkeyx9[STATIC_UNRIGGED:9 관절0 조각0 뼈0 다리0/4:9 UNVERIFIED_STATIC:9] sheepx10[JOINTED_WALK:10 관절14 조각0 뼈24 다리4/4:10 ANATOMICAL_FORWARD:10]\ntext"
+  },
+  {
+   "step": 46,
+   "ctx": "Client",
+   "out": "SHOT istanbul top\ntext"
+  },
+  {
+   "step": 48,
+   "capture": "istanbul_top",
+   "files": 1
+  },
+  {
+   "step": 49,
+   "ctx": "Client",
+   "out": "SHOT istanbul oblique_sea\ntext"
+  },
+  {
+   "step": 51,
+   "capture": "istanbul_oblique_sea",
+   "files": 1
+  },
+  {
+   "step": 52,
+   "ctx": "Client",
+   "out": "SHOT istanbul oblique_land\ntext"
+  },
+  {
+   "step": 54,
+   "capture": "istanbul_oblique_land",
+   "files": 1
+  },
+  {
+   "step": 55,
+   "ctx": "Client",
+   "out": "SHOT istanbul plaza_eye\ntext"
+  },
+  {
+   "step": 57,
+   "capture": "istanbul_plaza_eye",
+   "files": 1
+  },
+  {
+   "step": 58,
+   "ctx": "Client",
+   "out": "SHOT istanbul street\ntext"
+  },
+  {
+   "step": 60,
+   "capture": "istanbul_street",
+   "files": 1
+  },
+  {
+   "step": 61,
+   "ctx": "Client",
+   "out": "SHOT istanbul houses\ntext"
+  },
+  {
+   "step": 63,
+   "capture": "istanbul_houses",
+   "files": 1
+  },
+  {
+   "step": 64,
+   "ctx": "Client",
+   "out": "SHOT istanbul harbor\ntext"
+  },
+  {
+   "step": 66,
+   "capture": "istanbul_harbor",
+   "files": 1
+  },
+  {
+   "step": 67,
+   "ctx": "Client",
+   "out": "SHOT istanbul ranch\ntext"
+  },
+  {
+   "step": 69,
+   "capture": "istanbul_ranch",
+   "files": 1
+  },
+  {
+   "step": 70,
+   "ctx": "Client",
+   "out": "SHOT istanbul animal_side\ntext"
+  },
+  {
+   "step": 72,
+   "capture": "istanbul_animal_side",
+   "files": 1
+  },
+  {
+   "step": 73,
+   "ctx": "Client",
+   "out": "SHOT istanbul animal_front\ntext"
+  },
+  {
+   "step": 75,
+   "capture": "istanbul_animal_front",
+   "files": 1
+  },
+  {
+   "step": 76,
+   "ctx": "Client",
+   "out": "SHOT istanbul resident\ntext"
+  },
+  {
+   "step": 78,
+   "capture": "istanbul_resident",
+   "files": 1
+  },
+  {
+   "step": 79,
+   "ctx": "Client",
+   "out": "SHOT istanbul edge\ntext"
+  },
+  {
+   "step": 81,
+   "capture": "istanbul_edge",
+   "files": 1
+  },
+  {
+   "step": 84,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 86,
+   "ctx": "Client",
+   "out": "ANIMAL calicut cow 뼈변화=0.000 이동=0.77 | chickenx6[IDLE_ONLY:6 관절3 조각0 뼈6 다리0/2:6 ANATOMICAL_FORWARD:6] cowx13[JOINTED_WALK:13 관절14 조각0 뼈28 다리4/4:13 ANATOMICAL_FORWARD:13] elephantx3[IDLE_ONLY:3 관절0 조각5 뼈0 다리4/4:3 UNVERIFIED_STATIC:3]\ntext"
+  },
+  {
+   "step": 87,
+   "ctx": "Client",
+   "out": "SHOT calicut top\ntext"
+  },
+  {
+   "step": 89,
+   "capture": "calicut_top",
+   "files": 1
+  },
+  {
+   "step": 90,
+   "ctx": "Client",
+   "out": "SHOT calicut oblique_sea\ntext"
+  },
+  {
+   "step": 92,
+   "capture": "calicut_oblique_sea",
+   "files": 1
+  },
+  {
+   "step": 93,
+   "ctx": "Client",
+   "out": "SHOT calicut oblique_land\ntext"
+  },
+  {
+   "step": 95,
+   "capture": "calicut_oblique_land",
+   "files": 1
+  },
+  {
+   "step": 96,
+   "ctx": "Client",
+   "out": "SHOT calicut plaza_eye\ntext"
+  },
+  {
+   "step": 98,
+   "capture": "calicut_plaza_eye",
+   "files": 1
+  },
+  {
+   "step": 99,
+   "ctx": "Client",
+   "out": "SHOT calicut street\ntext"
+  },
+  {
+   "step": 101,
+   "capture": "calicut_street",
+   "files": 1
+  },
+  {
+   "step": 102,
+   "ctx": "Client",
+   "out": "SHOT calicut houses\ntext"
+  },
+  {
+   "step": 104,
+   "capture": "calicut_houses",
+   "files": 1
+  },
+  {
+   "step": 105,
+   "ctx": "Client",
+   "out": "SHOT calicut harbor\ntext"
+  },
+  {
+   "step": 107,
+   "capture": "calicut_harbor",
+   "files": 1
+  },
+  {
+   "step": 108,
+   "ctx": "Client",
+   "out": "SHOT calicut ranch\ntext"
+  },
+  {
+   "step": 110,
+   "capture": "calicut_ranch",
+   "files": 1
+  },
+  {
+   "step": 111,
+   "ctx": "Client",
+   "out": "SHOT calicut animal_side\ntext"
+  },
+  {
+   "step": 113,
+   "capture": "calicut_animal_side",
+   "files": 1
+  },
+  {
+   "step": 114,
+   "ctx": "Client",
+   "out": "SHOT calicut animal_front\ntext"
+  },
+  {
+   "step": 116,
+   "capture": "calicut_animal_front",
+   "files": 1
+  },
+  {
+   "step": 117,
+   "ctx": "Client",
+   "out": "SHOT calicut resident\ntext"
+  },
+  {
+   "step": 119,
+   "capture": "calicut_resident",
+   "files": 1
+  },
+  {
+   "step": 120,
+   "ctx": "Client",
+   "out": "SHOT calicut edge\ntext"
+  },
+  {
+   "step": 122,
+   "capture": "calicut_edge",
+   "files": 1
+  },
+  {
+   "step": 125,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 127,
+   "ctx": "Client",
+   "out": "ANIMAL nagasaki pig 뼈변화=0.000 이동=0.17 | chickenx3[IDLE_ONLY:3 관절3 조각0 뼈6 다리0/2:3 ANATOMICAL_FORWARD:3] pigx21[JOINTED_WALK:21 관절14 조각0 뼈24 다리4/4:21 ANATOMICAL_FORWARD:21] dogx4[IDLE_ONLY:4 관절14 조각0 뼈24 다리2/4:4 ANATOMICAL_FORWARD:4]\ntext"
+  },
+  {
+   "step": 128,
+   "ctx": "Client",
+   "out": "SHOT nagasaki top\ntext"
+  },
+  {
+   "step": 130,
+   "capture": "nagasaki_top",
+   "files": 1
+  },
+  {
+   "step": 131,
+   "ctx": "Client",
+   "out": "SHOT nagasaki oblique_sea\ntext"
+  },
+  {
+   "step": 133,
+   "capture": "nagasaki_oblique_sea",
+   "files": 1
+  },
+  {
+   "step": 134,
+   "ctx": "Client",
+   "out": "SHOT nagasaki oblique_land\ntext"
+  },
+  {
+   "step": 136,
+   "capture": "nagasaki_oblique_land",
+   "files": 1
+  },
+  {
+   "step": 137,
+   "ctx": "Client",
+   "out": "SHOT nagasaki plaza_eye\ntext"
+  },
+  {
+   "step": 139,
+   "capture": "nagasaki_plaza_eye",
+   "files": 1
+  },
+  {
+   "step": 140,
+   "ctx": "Client",
+   "out": "SHOT nagasaki street\ntext"
+  },
+  {
+   "step": 142,
+   "capture": "nagasaki_street",
+   "files": 1
+  },
+  {
+   "step": 143,
+   "ctx": "Client",
+   "out": "SHOT nagasaki houses\ntext"
+  },
+  {
+   "step": 145,
+   "capture": "nagasaki_houses",
+   "files": 1
+  },
+  {
+   "step": 146,
+   "ctx": "Client",
+   "out": "SHOT nagasaki harbor\ntext"
+  },
+  {
+   "step": 148,
+   "capture": "nagasaki_harbor",
+   "files": 1
+  },
+  {
+   "step": 149,
+   "ctx": "Client",
+   "out": "SHOT nagasaki ranch\ntext"
+  },
+  {
+   "step": 151,
+   "capture": "nagasaki_ranch",
+   "files": 1
+  },
+  {
+   "step": 152,
+   "ctx": "Client",
+   "out": "SHOT nagasaki animal_side\ntext"
+  },
+  {
+   "step": 154,
+   "capture": "nagasaki_animal_side",
+   "files": 1
+  },
+  {
+   "step": 155,
+   "ctx": "Client",
+   "out": "SHOT nagasaki animal_front\ntext"
+  },
+  {
+   "step": 157,
+   "capture": "nagasaki_animal_front",
+   "files": 1
+  },
+  {
+   "step": 158,
+   "ctx": "Client",
+   "out": "SHOT nagasaki resident\ntext"
+  },
+  {
+   "step": 160,
+   "capture": "nagasaki_resident",
+   "files": 1
+  },
+  {
+   "step": 161,
+   "ctx": "Client",
+   "out": "SHOT nagasaki edge\ntext"
+  },
+  {
+   "step": 163,
+   "capture": "nagasaki_edge",
+   "files": 1
+  },
+  {
+   "step": 166,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 168,
+   "ctx": "Client",
+   "out": "ANIMAL dakar cow 뼈변화=0.000 이동=0.29 | chickenx3[IDLE_ONLY:3 관절3 조각0 뼈6 다리0/2:3 ANATOMICAL_FORWARD:3] dogx4[IDLE_ONLY:4 관절14 조각0 뼈24 다리2/4:4 ANATOMICAL_FORWARD:4] catx2[IDLE_ONLY:2 관절0 조각5 뼈0 다리4/4:2 UNVERIFIED_STATIC:2] sheepx10[JOINTED_WALK:10 관절14 조각0 뼈24 다리4/4:10 ANATOMICAL_FORWARD:10] cowx13[JOINTED_WALK:13 관절14 조각0 뼈28 다리4/4:13 ANATOMICAL_FORWARD:13]\ntext"
+  },
+  {
+   "step": 169,
+   "ctx": "Client",
+   "out": "SHOT dakar top\ntext"
+  },
+  {
+   "step": 171,
+   "capture": "dakar_top",
+   "files": 1
+  },
+  {
+   "step": 172,
+   "ctx": "Client",
+   "out": "SHOT dakar oblique_sea\ntext"
+  },
+  {
+   "step": 174,
+   "capture": "dakar_oblique_sea",
+   "files": 1
+  },
+  {
+   "step": 175,
+   "ctx": "Client",
+   "out": "SHOT dakar oblique_land\ntext"
+  },
+  {
+   "step": 177,
+   "capture": "dakar_oblique_land",
+   "files": 1
+  },
+  {
+   "step": 178,
+   "ctx": "Client",
+   "out": "SHOT dakar plaza_eye\ntext"
+  },
+  {
+   "step": 180,
+   "capture": "dakar_plaza_eye",
+   "files": 1
+  },
+  {
+   "step": 181,
+   "ctx": "Client",
+   "out": "SHOT dakar street\ntext"
+  },
+  {
+   "step": 183,
+   "capture": "dakar_street",
+   "files": 1
+  },
+  {
+   "step": 184,
+   "ctx": "Client",
+   "out": "SHOT dakar houses\ntext"
+  },
+  {
+   "step": 186,
+   "capture": "dakar_houses",
+   "files": 1
+  },
+  {
+   "step": 187,
+   "ctx": "Client",
+   "out": "SHOT dakar harbor\ntext"
+  },
+  {
+   "step": 189,
+   "capture": "dakar_harbor",
+   "files": 1
+  },
+  {
+   "step": 190,
+   "ctx": "Client",
+   "out": "SHOT dakar ranch\ntext"
+  },
+  {
+   "step": 192,
+   "capture": "dakar_ranch",
+   "files": 1
+  },
+  {
+   "step": 193,
+   "ctx": "Client",
+   "out": "SHOT dakar animal_side\ntext"
+  },
+  {
+   "step": 195,
+   "capture": "dakar_animal_side",
+   "files": 1
+  },
+  {
+   "step": 196,
+   "ctx": "Client",
+   "out": "SHOT dakar animal_front\ntext"
+  },
+  {
+   "step": 198,
+   "capture": "dakar_animal_front",
+   "files": 1
+  },
+  {
+   "step": 199,
+   "ctx": "Client",
+   "out": "SHOT dakar resident\ntext"
+  },
+  {
+   "step": 201,
+   "capture": "dakar_resident",
+   "files": 1
+  },
+  {
+   "step": 202,
+   "ctx": "Client",
+   "out": "SHOT dakar edge\ntext"
+  },
+  {
+   "step": 204,
+   "capture": "dakar_edge",
+   "files": 1
+  },
+  {
+   "step": 207,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 209,
+   "ctx": "Client",
+   "out": "ANIMAL havana horse 뼈변화=0.000 이동=0.00 | chickenx3[IDLE_ONLY:3 관절3 조각0 뼈6 다리0/2:3 ANATOMICAL_FORWARD:3] horsex17[IDLE_ONLY:17 관절14 조각0 뼈28 다리2/4:17 ANATOMICAL_FORWARD:17] dogx2[IDLE_ONLY:2 관절14 조각0 뼈24 다리2/4:2 ANATOMICAL_FORWARD:2]\ntext"
+  },
+  {
+   "step": 210,
+   "ctx": "Client",
+   "out": "SHOT havana top\ntext"
+  },
+  {
+   "step": 212,
+   "capture": "havana_top",
+   "files": 1
+  },
+  {
+   "step": 213,
+   "ctx": "Client",
+   "out": "SHOT havana oblique_sea\ntext"
+  },
+  {
+   "step": 215,
+   "capture": "havana_oblique_sea",
+   "files": 1
+  },
+  {
+   "step": 216,
+   "ctx": "Client",
+   "out": "SHOT havana oblique_land\ntext"
+  },
+  {
+   "step": 218,
+   "capture": "havana_oblique_land",
+   "files": 1
+  },
+  {
+   "step": 219,
+   "ctx": "Client",
+   "out": "SHOT havana plaza_eye\ntext"
+  },
+  {
+   "step": 221,
+   "capture": "havana_plaza_eye",
+   "files": 1
+  },
+  {
+   "step": 222,
+   "ctx": "Client",
+   "out": "SHOT havana street\ntext"
+  },
+  {
+   "step": 224,
+   "capture": "havana_street",
+   "files": 1
+  },
+  {
+   "step": 225,
+   "ctx": "Client",
+   "out": "SHOT havana houses\ntext"
+  },
+  {
+   "step": 227,
+   "capture": "havana_houses",
+   "files": 1
+  },
+  {
+   "step": 228,
+   "ctx": "Client",
+   "out": "SHOT havana harbor\ntext"
+  },
+  {
+   "step": 230,
+   "capture": "havana_harbor",
+   "files": 1
+  },
+  {
+   "step": 231,
+   "ctx": "Client",
+   "out": "SHOT havana ranch\ntext"
+  },
+  {
+   "step": 233,
+   "capture": "havana_ranch",
+   "files": 1
+  },
+  {
+   "step": 234,
+   "ctx": "Client",
+   "out": "SHOT havana animal_side\ntext"
+  },
+  {
+   "step": 236,
+   "capture": "havana_animal_side",
+   "files": 1
+  },
+  {
+   "step": 237,
+   "ctx": "Client",
+   "out": "SHOT havana animal_front\ntext"
+  },
+  {
+   "step": 239,
+   "capture": "havana_animal_front",
+   "files": 1
+  },
+  {
+   "step": 240,
+   "ctx": "Client",
+   "out": "SHOT havana resident\ntext"
+  },
+  {
+   "step": 242,
+   "capture": "havana_resident",
+   "files": 1
+  },
+  {
+   "step": 243,
+   "ctx": "Client",
+   "out": "SHOT havana edge\ntext"
+  },
+  {
+   "step": 245,
+   "capture": "havana_edge",
    "files": 1
   }
  ],
- "errors": [
-  "step35:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:11: FACILITY_ICON_SCALE:harbor | text"
- ],
+ "errors": [],
  "stepTimings": [
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 28012
+   "elapsedMs": 35012
   },
   {
    "step": 1,
-   "type": "capture",
-   "elapsedMs": 2286
+   "type": "luau",
+   "elapsedMs": 244
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 317
+   "elapsedMs": 13138
   },
   {
    "step": 3,
-   "type": "luau",
-   "elapsedMs": 300
+   "type": "wait",
+   "elapsedMs": 7008
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 300
+   "elapsedMs": 317
   },
   {
    "step": 5,
-   "type": "wait",
-   "elapsedMs": 407
+   "type": "luau",
+   "elapsedMs": 285
   },
   {
    "step": 6,
-   "type": "click_from_luau",
-   "elapsedMs": 1443
+   "type": "wait",
+   "elapsedMs": 703
   },
   {
    "step": 7,
-   "type": "wait",
-   "elapsedMs": 2004
+   "type": "capture",
+   "elapsedMs": 1344
   },
   {
    "step": 8,
-   "type": "capture",
-   "elapsedMs": 1423
+   "type": "luau",
+   "elapsedMs": 311
   },
   {
    "step": 9,
-   "type": "luau",
-   "elapsedMs": 306
+   "type": "wait",
+   "elapsedMs": 708
   },
   {
    "step": 10,
-   "type": "wait",
-   "elapsedMs": 405
+   "type": "capture",
+   "elapsedMs": 1190
   },
   {
    "step": 11,
-   "type": "click_from_luau",
-   "elapsedMs": 1061
+   "type": "luau",
+   "elapsedMs": 294
   },
   {
    "step": 12,
    "type": "wait",
-   "elapsedMs": 2012
+   "elapsedMs": 708
   },
   {
    "step": 13,
    "type": "capture",
-   "elapsedMs": 1163
+   "elapsedMs": 1030
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 323
+   "elapsedMs": 283
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 404
+   "elapsedMs": 714
   },
   {
    "step": 16,
-   "type": "click_from_luau",
-   "elapsedMs": 1247
+   "type": "capture",
+   "elapsedMs": 1425
   },
   {
    "step": 17,
-   "type": "wait",
-   "elapsedMs": 1700
+   "type": "luau",
+   "elapsedMs": 276
   },
   {
    "step": 18,
-   "type": "capture",
-   "elapsedMs": 1332
+   "type": "wait",
+   "elapsedMs": 713
   },
   {
    "step": 19,
-   "type": "wait",
-   "elapsedMs": 1810
+   "type": "capture",
+   "elapsedMs": 1687
   },
   {
    "step": 20,
-   "type": "capture",
-   "elapsedMs": 3232
+   "type": "luau",
+   "elapsedMs": 320
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1811
+   "elapsedMs": 710
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 3604
+   "elapsedMs": 1249
   },
   {
    "step": 23,
-   "type": "wait",
-   "elapsedMs": 3701
+   "type": "luau",
+   "elapsedMs": 290
   },
   {
    "step": 24,
-   "type": "capture",
-   "elapsedMs": 3584
+   "type": "wait",
+   "elapsedMs": 710
   },
   {
    "step": 25,
-   "type": "luau",
-   "elapsedMs": 3820
+   "type": "capture",
+   "elapsedMs": 1315
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 895
+   "elapsedMs": 322
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 2510
+   "elapsedMs": 707
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 1884
+   "elapsedMs": 1192
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 1750
+   "elapsedMs": 267
   },
   {
    "step": 30,
-   "type": "luau",
-   "elapsedMs": 500
+   "type": "wait",
+   "elapsedMs": 705
   },
   {
    "step": 31,
-   "type": "luau",
-   "elapsedMs": 480
+   "type": "capture",
+   "elapsedMs": 1314
   },
   {
    "step": 32,
-   "type": "wait",
-   "elapsedMs": 2505
+   "type": "luau",
+   "elapsedMs": 336
   },
   {
    "step": 33,
-   "type": "luau",
-   "elapsedMs": 400
+   "type": "wait",
+   "elapsedMs": 714
   },
   {
    "step": 34,
    "type": "capture",
-   "elapsedMs": 2318
+   "elapsedMs": 1217
   },
   {
    "step": 35,
    "type": "luau",
-   "elapsedMs": 1766
+   "elapsedMs": 292
+  },
+  {
+   "step": 36,
+   "type": "wait",
+   "elapsedMs": 704
+  },
+  {
+   "step": 37,
+   "type": "capture",
+   "elapsedMs": 1624
+  },
+  {
+   "step": 38,
+   "type": "luau",
+   "elapsedMs": 275
+  },
+  {
+   "step": 39,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 1276
+  },
+  {
+   "step": 41,
+   "type": "wait",
+   "elapsedMs": 815
+  },
+  {
+   "step": 42,
+   "type": "wait",
+   "elapsedMs": 504
+  },
+  {
+   "step": 43,
+   "type": "luau",
+   "elapsedMs": 10955
+  },
+  {
+   "step": 44,
+   "type": "wait",
+   "elapsedMs": 7002
+  },
+  {
+   "step": 45,
+   "type": "luau",
+   "elapsedMs": 802
+  },
+  {
+   "step": 46,
+   "type": "luau",
+   "elapsedMs": 165
+  },
+  {
+   "step": 47,
+   "type": "wait",
+   "elapsedMs": 705
+  },
+  {
+   "step": 48,
+   "type": "capture",
+   "elapsedMs": 1109
+  },
+  {
+   "step": 49,
+   "type": "luau",
+   "elapsedMs": 155
+  },
+  {
+   "step": 50,
+   "type": "wait",
+   "elapsedMs": 705
+  },
+  {
+   "step": 51,
+   "type": "capture",
+   "elapsedMs": 1205
+  },
+  {
+   "step": 52,
+   "type": "luau",
+   "elapsedMs": 188
+  },
+  {
+   "step": 53,
+   "type": "wait",
+   "elapsedMs": 706
+  },
+  {
+   "step": 54,
+   "type": "capture",
+   "elapsedMs": 983
+  },
+  {
+   "step": 55,
+   "type": "luau",
+   "elapsedMs": 178
+  },
+  {
+   "step": 56,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 57,
+   "type": "capture",
+   "elapsedMs": 1039
+  },
+  {
+   "step": 58,
+   "type": "luau",
+   "elapsedMs": 189
+  },
+  {
+   "step": 59,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 60,
+   "type": "capture",
+   "elapsedMs": 1315
+  },
+  {
+   "step": 61,
+   "type": "luau",
+   "elapsedMs": 186
+  },
+  {
+   "step": 62,
+   "type": "wait",
+   "elapsedMs": 715
+  },
+  {
+   "step": 63,
+   "type": "capture",
+   "elapsedMs": 1298
+  },
+  {
+   "step": 64,
+   "type": "luau",
+   "elapsedMs": 197
+  },
+  {
+   "step": 65,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 66,
+   "type": "capture",
+   "elapsedMs": 1036
+  },
+  {
+   "step": 67,
+   "type": "luau",
+   "elapsedMs": 232
+  },
+  {
+   "step": 68,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 69,
+   "type": "capture",
+   "elapsedMs": 1025
+  },
+  {
+   "step": 70,
+   "type": "luau",
+   "elapsedMs": 216
+  },
+  {
+   "step": 71,
+   "type": "wait",
+   "elapsedMs": 712
+  },
+  {
+   "step": 72,
+   "type": "capture",
+   "elapsedMs": 1071
+  },
+  {
+   "step": 73,
+   "type": "luau",
+   "elapsedMs": 266
+  },
+  {
+   "step": 74,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 75,
+   "type": "capture",
+   "elapsedMs": 962
+  },
+  {
+   "step": 76,
+   "type": "luau",
+   "elapsedMs": 180
+  },
+  {
+   "step": 77,
+   "type": "wait",
+   "elapsedMs": 701
+  },
+  {
+   "step": 78,
+   "type": "capture",
+   "elapsedMs": 960
+  },
+  {
+   "step": 79,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 80,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 81,
+   "type": "capture",
+   "elapsedMs": 864
+  },
+  {
+   "step": 82,
+   "type": "wait",
+   "elapsedMs": 812
+  },
+  {
+   "step": 83,
+   "type": "wait",
+   "elapsedMs": 515
+  },
+  {
+   "step": 84,
+   "type": "luau",
+   "elapsedMs": 5961
+  },
+  {
+   "step": 85,
+   "type": "wait",
+   "elapsedMs": 7004
+  },
+  {
+   "step": 86,
+   "type": "luau",
+   "elapsedMs": 721
+  },
+  {
+   "step": 87,
+   "type": "luau",
+   "elapsedMs": 82
+  },
+  {
+   "step": 88,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 89,
+   "type": "capture",
+   "elapsedMs": 601
+  },
+  {
+   "step": 90,
+   "type": "luau",
+   "elapsedMs": 79
+  },
+  {
+   "step": 91,
+   "type": "wait",
+   "elapsedMs": 705
+  },
+  {
+   "step": 92,
+   "type": "capture",
+   "elapsedMs": 585
+  },
+  {
+   "step": 93,
+   "type": "luau",
+   "elapsedMs": 77
+  },
+  {
+   "step": 94,
+   "type": "wait",
+   "elapsedMs": 700
+  },
+  {
+   "step": 95,
+   "type": "capture",
+   "elapsedMs": 801
+  },
+  {
+   "step": 96,
+   "type": "luau",
+   "elapsedMs": 151
+  },
+  {
+   "step": 97,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 98,
+   "type": "capture",
+   "elapsedMs": 885
+  },
+  {
+   "step": 99,
+   "type": "luau",
+   "elapsedMs": 153
+  },
+  {
+   "step": 100,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 101,
+   "type": "capture",
+   "elapsedMs": 974
+  },
+  {
+   "step": 102,
+   "type": "luau",
+   "elapsedMs": 209
+  },
+  {
+   "step": 103,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 104,
+   "type": "capture",
+   "elapsedMs": 994
+  },
+  {
+   "step": 105,
+   "type": "luau",
+   "elapsedMs": 176
+  },
+  {
+   "step": 106,
+   "type": "wait",
+   "elapsedMs": 714
+  },
+  {
+   "step": 107,
+   "type": "capture",
+   "elapsedMs": 885
+  },
+  {
+   "step": 108,
+   "type": "luau",
+   "elapsedMs": 232
+  },
+  {
+   "step": 109,
+   "type": "wait",
+   "elapsedMs": 699
+  },
+  {
+   "step": 110,
+   "type": "capture",
+   "elapsedMs": 897
+  },
+  {
+   "step": 111,
+   "type": "luau",
+   "elapsedMs": 230
+  },
+  {
+   "step": 112,
+   "type": "wait",
+   "elapsedMs": 715
+  },
+  {
+   "step": 113,
+   "type": "capture",
+   "elapsedMs": 905
+  },
+  {
+   "step": 114,
+   "type": "luau",
+   "elapsedMs": 225
+  },
+  {
+   "step": 115,
+   "type": "wait",
+   "elapsedMs": 701
+  },
+  {
+   "step": 116,
+   "type": "capture",
+   "elapsedMs": 767
+  },
+  {
+   "step": 117,
+   "type": "luau",
+   "elapsedMs": 186
+  },
+  {
+   "step": 118,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 119,
+   "type": "capture",
+   "elapsedMs": 862
+  },
+  {
+   "step": 120,
+   "type": "luau",
+   "elapsedMs": 196
+  },
+  {
+   "step": 121,
+   "type": "wait",
+   "elapsedMs": 709
+  },
+  {
+   "step": 122,
+   "type": "capture",
+   "elapsedMs": 775
+  },
+  {
+   "step": 123,
+   "type": "wait",
+   "elapsedMs": 813
+  },
+  {
+   "step": 124,
+   "type": "wait",
+   "elapsedMs": 503
+  },
+  {
+   "step": 125,
+   "type": "luau",
+   "elapsedMs": 4635
+  },
+  {
+   "step": 126,
+   "type": "wait",
+   "elapsedMs": 7010
+  },
+  {
+   "step": 127,
+   "type": "luau",
+   "elapsedMs": 822
+  },
+  {
+   "step": 128,
+   "type": "luau",
+   "elapsedMs": 200
+  },
+  {
+   "step": 129,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 130,
+   "type": "capture",
+   "elapsedMs": 955
+  },
+  {
+   "step": 131,
+   "type": "luau",
+   "elapsedMs": 198
+  },
+  {
+   "step": 132,
+   "type": "wait",
+   "elapsedMs": 710
+  },
+  {
+   "step": 133,
+   "type": "capture",
+   "elapsedMs": 1023
+  },
+  {
+   "step": 134,
+   "type": "luau",
+   "elapsedMs": 222
+  },
+  {
+   "step": 135,
+   "type": "wait",
+   "elapsedMs": 704
+  },
+  {
+   "step": 136,
+   "type": "capture",
+   "elapsedMs": 979
+  },
+  {
+   "step": 137,
+   "type": "luau",
+   "elapsedMs": 218
+  },
+  {
+   "step": 138,
+   "type": "wait",
+   "elapsedMs": 704
+  },
+  {
+   "step": 139,
+   "type": "capture",
+   "elapsedMs": 1223
+  },
+  {
+   "step": 140,
+   "type": "luau",
+   "elapsedMs": 232
+  },
+  {
+   "step": 141,
+   "type": "wait",
+   "elapsedMs": 715
+  },
+  {
+   "step": 142,
+   "type": "capture",
+   "elapsedMs": 1186
+  },
+  {
+   "step": 143,
+   "type": "luau",
+   "elapsedMs": 263
+  },
+  {
+   "step": 144,
+   "type": "wait",
+   "elapsedMs": 700
+  },
+  {
+   "step": 145,
+   "type": "capture",
+   "elapsedMs": 1297
+  },
+  {
+   "step": 146,
+   "type": "luau",
+   "elapsedMs": 397
+  },
+  {
+   "step": 147,
+   "type": "wait",
+   "elapsedMs": 715
+  },
+  {
+   "step": 148,
+   "type": "capture",
+   "elapsedMs": 1307
+  },
+  {
+   "step": 149,
+   "type": "luau",
+   "elapsedMs": 281
+  },
+  {
+   "step": 150,
+   "type": "wait",
+   "elapsedMs": 705
+  },
+  {
+   "step": 151,
+   "type": "capture",
+   "elapsedMs": 1048
+  },
+  {
+   "step": 152,
+   "type": "luau",
+   "elapsedMs": 364
+  },
+  {
+   "step": 153,
+   "type": "wait",
+   "elapsedMs": 706
+  },
+  {
+   "step": 154,
+   "type": "capture",
+   "elapsedMs": 1317
+  },
+  {
+   "step": 155,
+   "type": "luau",
+   "elapsedMs": 223
+  },
+  {
+   "step": 156,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 157,
+   "type": "capture",
+   "elapsedMs": 1194
+  },
+  {
+   "step": 158,
+   "type": "luau",
+   "elapsedMs": 209
+  },
+  {
+   "step": 159,
+   "type": "wait",
+   "elapsedMs": 702
+  },
+  {
+   "step": 160,
+   "type": "capture",
+   "elapsedMs": 1048
+  },
+  {
+   "step": 161,
+   "type": "luau",
+   "elapsedMs": 212
+  },
+  {
+   "step": 162,
+   "type": "wait",
+   "elapsedMs": 706
+  },
+  {
+   "step": 163,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 164,
+   "type": "wait",
+   "elapsedMs": 801
+  },
+  {
+   "step": 165,
+   "type": "wait",
+   "elapsedMs": 501
+  },
+  {
+   "step": 166,
+   "type": "luau",
+   "elapsedMs": 6196
+  },
+  {
+   "step": 167,
+   "type": "wait",
+   "elapsedMs": 7007
+  },
+  {
+   "step": 168,
+   "type": "luau",
+   "elapsedMs": 898
+  },
+  {
+   "step": 169,
+   "type": "luau",
+   "elapsedMs": 183
+  },
+  {
+   "step": 170,
+   "type": "wait",
+   "elapsedMs": 715
+  },
+  {
+   "step": 171,
+   "type": "capture",
+   "elapsedMs": 773
+  },
+  {
+   "step": 172,
+   "type": "luau",
+   "elapsedMs": 170
+  },
+  {
+   "step": 173,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 174,
+   "type": "capture",
+   "elapsedMs": 849
+  },
+  {
+   "step": 175,
+   "type": "luau",
+   "elapsedMs": 186
+  },
+  {
+   "step": 176,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 177,
+   "type": "capture",
+   "elapsedMs": 771
+  },
+  {
+   "step": 178,
+   "type": "luau",
+   "elapsedMs": 195
+  },
+  {
+   "step": 179,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 180,
+   "type": "capture",
+   "elapsedMs": 782
+  },
+  {
+   "step": 181,
+   "type": "luau",
+   "elapsedMs": 164
+  },
+  {
+   "step": 182,
+   "type": "wait",
+   "elapsedMs": 710
+  },
+  {
+   "step": 183,
+   "type": "capture",
+   "elapsedMs": 831
+  },
+  {
+   "step": 184,
+   "type": "luau",
+   "elapsedMs": 326
+  },
+  {
+   "step": 185,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 186,
+   "type": "capture",
+   "elapsedMs": 864
+  },
+  {
+   "step": 187,
+   "type": "luau",
+   "elapsedMs": 164
+  },
+  {
+   "step": 188,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 189,
+   "type": "capture",
+   "elapsedMs": 797
+  },
+  {
+   "step": 190,
+   "type": "luau",
+   "elapsedMs": 222
+  },
+  {
+   "step": 191,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 192,
+   "type": "capture",
+   "elapsedMs": 913
+  },
+  {
+   "step": 193,
+   "type": "luau",
+   "elapsedMs": 178
+  },
+  {
+   "step": 194,
+   "type": "wait",
+   "elapsedMs": 710
+  },
+  {
+   "step": 195,
+   "type": "capture",
+   "elapsedMs": 948
+  },
+  {
+   "step": 196,
+   "type": "luau",
+   "elapsedMs": 212
+  },
+  {
+   "step": 197,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 198,
+   "type": "capture",
+   "elapsedMs": 935
+  },
+  {
+   "step": 199,
+   "type": "luau",
+   "elapsedMs": 195
+  },
+  {
+   "step": 200,
+   "type": "wait",
+   "elapsedMs": 713
+  },
+  {
+   "step": 201,
+   "type": "capture",
+   "elapsedMs": 977
+  },
+  {
+   "step": 202,
+   "type": "luau",
+   "elapsedMs": 177
+  },
+  {
+   "step": 203,
+   "type": "wait",
+   "elapsedMs": 704
+  },
+  {
+   "step": 204,
+   "type": "capture",
+   "elapsedMs": 800
+  },
+  {
+   "step": 205,
+   "type": "wait",
+   "elapsedMs": 815
+  },
+  {
+   "step": 206,
+   "type": "wait",
+   "elapsedMs": 505
+  },
+  {
+   "step": 207,
+   "type": "luau",
+   "elapsedMs": 6039
+  },
+  {
+   "step": 208,
+   "type": "wait",
+   "elapsedMs": 7010
+  },
+  {
+   "step": 209,
+   "type": "luau",
+   "elapsedMs": 816
+  },
+  {
+   "step": 210,
+   "type": "luau",
+   "elapsedMs": 188
+  },
+  {
+   "step": 211,
+   "type": "wait",
+   "elapsedMs": 711
+  },
+  {
+   "step": 212,
+   "type": "capture",
+   "elapsedMs": 951
+  },
+  {
+   "step": 213,
+   "type": "luau",
+   "elapsedMs": 211
+  },
+  {
+   "step": 214,
+   "type": "wait",
+   "elapsedMs": 709
+  },
+  {
+   "step": 215,
+   "type": "capture",
+   "elapsedMs": 1002
+  },
+  {
+   "step": 216,
+   "type": "luau",
+   "elapsedMs": 223
+  },
+  {
+   "step": 217,
+   "type": "wait",
+   "elapsedMs": 707
+  },
+  {
+   "step": 218,
+   "type": "capture",
+   "elapsedMs": 999
+  },
+  {
+   "step": 219,
+   "type": "luau",
+   "elapsedMs": 211
+  },
+  {
+   "step": 220,
+   "type": "wait",
+   "elapsedMs": 703
+  },
+  {
+   "step": 221,
+   "type": "capture",
+   "elapsedMs": 1260
+  },
+  {
+   "step": 222,
+   "type": "luau",
+   "elapsedMs": 54
+  },
+  {
+   "step": 223,
+   "type": "wait",
+   "elapsedMs": 705
+  },
+  {
+   "step": 224,
+   "type": "capture",
+   "elapsedMs": 1308
+  },
+  {
+   "step": 225,
+   "type": "luau",
+   "elapsedMs": 253
+  },
+  {
+   "step": 226,
+   "type": "wait",
+   "elapsedMs": 701
+  },
+  {
+   "step": 227,
+   "type": "capture",
+   "elapsedMs": 1418
+  },
+  {
+   "step": 228,
+   "type": "luau",
+   "elapsedMs": 233
+  },
+  {
+   "step": 229,
+   "type": "wait",
+   "elapsedMs": 706
+  },
+  {
+   "step": 230,
+   "type": "capture",
+   "elapsedMs": 1326
+  },
+  {
+   "step": 231,
+   "type": "luau",
+   "elapsedMs": 229
+  },
+  {
+   "step": 232,
+   "type": "wait",
+   "elapsedMs": 714
+  },
+  {
+   "step": 233,
+   "type": "capture",
+   "elapsedMs": 1165
+  },
+  {
+   "step": 234,
+   "type": "luau",
+   "elapsedMs": 266
+  },
+  {
+   "step": 235,
+   "type": "wait",
+   "elapsedMs": 712
+  },
+  {
+   "step": 236,
+   "type": "capture",
+   "elapsedMs": 1052
+  },
+  {
+   "step": 237,
+   "type": "luau",
+   "elapsedMs": 258
+  },
+  {
+   "step": 238,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 239,
+   "type": "capture",
+   "elapsedMs": 949
+  },
+  {
+   "step": 240,
+   "type": "luau",
+   "elapsedMs": 201
+  },
+  {
+   "step": 241,
+   "type": "wait",
+   "elapsedMs": 708
+  },
+  {
+   "step": 242,
+   "type": "capture",
+   "elapsedMs": 1340
+  },
+  {
+   "step": 243,
+   "type": "luau",
+   "elapsedMs": 248
+  },
+  {
+   "step": 244,
+   "type": "wait",
+   "elapsedMs": 716
+  },
+  {
+   "step": 245,
+   "type": "capture",
+   "elapsedMs": 908
+  },
+  {
+   "step": 246,
+   "type": "wait",
+   "elapsedMs": 803
+  },
+  {
+   "step": 247,
+   "type": "wait",
+   "elapsedMs": 502
   }
  ],
  "consoleCapture": {
   "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
   "errorCount": 0,
-  "warningCount": 0,
+  "warningCount": 12,
   "errors": []
  },
  "summary": {
-  "plannedSteps": 1000,
-  "completedSteps": 36,
-  "plannedClicks": 12,
-  "successfulClicks": 3,
+  "plannedSteps": 248,
+  "completedSteps": 248,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
   "skippedOptionalClicks": 0,
-  "plannedFrames": 70,
-  "capturedFrames": 9,
-  "abortedEarly": true
- },
- "visualSamples": [
-  {
-   "name": "c00_start",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 251264,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "t01",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 251196,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "프랑스"
-  },
-  {
-   "name": "t02",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 195345,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "상인 집안"
-  },
-  {
-   "name": "intro_center_early",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 145149,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": false,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "intro_center_next",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 207215,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "intro_center_late",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 183478,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 1,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "t03",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 113589,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.0249807834625244,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "intro_done",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 138572,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기",
-   "scene": {
-    "camera": true,
-    "sky": false,
-    "departing": false,
-    "atmosphere": true,
-    "brightness": 2.0320143699645996,
-    "voyageScene": false,
-    "voyageHud": false
-   }
-  },
-  {
-   "name": "tab_harbor",
-   "frame": {
-    "pass": true,
-    "frames": [
-     {
-      "bytes": 154083,
-      "width": 0,
-      "height": 0,
-      "pass": true
-     }
-    ]
-   },
-   "interaction": "⚓ 출항하기"
-  }
- ],
- "abortDiagnostics": {
-  "step": 35,
-  "type": "luau",
-  "elapsedMs": 455,
-  "context": "Client",
-  "lastScreenshot": "tab_harbor",
-  "lastClick": "title03",
-  "probes": {
-   "Client": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_CLIENT\ntext"
-   },
-   "Server": {
-    "reachable": true,
-    "output": "STUDIO_CONTEXT_SERVER\ntext"
-   }
-  }
- },
- "visualEvidence": {
-  "framesChecked": 9,
-  "framesWithInvalidSize": 0,
-  "voyageSceneObserved": false,
-  "departureObserved": false,
-  "voyageDiagnostics": [],
-  "graphicalQuality": "REVIEW_CAPTURED_FRAMES"
+  "plannedFrames": 72,
+  "capturedFrames": 72,
+  "abortedEarly": false
  }
 }
