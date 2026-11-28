@@ -5478,3 +5478,15 @@ test('연속 두목전은 서버에 접수된 두 번째 단계에서 이미 격
   assert.match(restored,/FieldBossRushCheckpointRestored", true/);
   assert.doesNotMatch(restored,/strikeEnemy|damageEnemy|onCheckpoint|earnedPractice/);
 });
+
+
+test("탐험 장소별 구획과 승인 소품은 기존 저장 경계를 유지한다",()=>{
+ const field=read("ReplicatedStorage/Shared/FieldScene.luau");
+ assert.match(field,/anchor:SetAttribute\("FieldZoneName", zoneName\)/);
+ assert.match(field,/if props and i > found then/);
+ assert.match(field,/if not AssetIds\[spec\[1\] \.\. "\/" \.\. spec\[2\]\] then continue end/);
+ assert.match(field,/if visualMobile and index > 1 then break end/);
+ assert.match(field,/surface\.Material == Enum\.Material\.Water then continue end/);
+ assert.match(field,/placeModel\(group, spec\[1\], spec\[2\], hit\.Position, spec\[3\], false, nil, "near"\)/);
+ assert.match(field,/recorded = requestOk and recorded == true[\s\S]*?found \+= 1[\s\S]*?folder:SetAttribute\("FieldCurrentZoneName", nextAnchor:GetAttribute\("FieldZoneName"\)\)/);
+});

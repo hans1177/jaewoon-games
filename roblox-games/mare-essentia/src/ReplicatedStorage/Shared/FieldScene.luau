@@ -3923,6 +3923,63 @@ function FieldScene.start(opts)
 		anchor.Name = "Discovery" .. i
 		anchor:SetAttribute("FieldRouteStep", i)
 		anchor:SetAttribute("FieldObjectiveKind", if extraction then "escape" elseif guardedTransit then "infiltrate" else "survey")
+		-- [장소별 조사 구획] 기존 완료 단계와 적 배치 유지. 실내 원본이 없는 곳을 실내로 사칭하지 않는다.
+		do
+			local zoneName = if extraction then "귀환 입구" elseif i == 1 then "외곽 조사 구역" else "기록 조사 구역"
+			local props = nil
+			if not extraction and not isWildlife then
+				if questTerrain == "mine" then
+					zoneName = if i == 1 then "광산 진입부" else "채굴 기록 구역"
+					props = { {"Cargo", "wood-planks-stack-small", 4}, {"Cargo", "barrel", 2.2} }
+				elseif questTerrain == "fort" then
+					zoneName = if i == 1 then "성채 외곽" else "성채 보급 구역"
+					props = { {"Naval", "crate", 3}, {"Cargo", "barrel", 2.2} }
+				elseif questTerrain == "archive" and opts.siteId == "hamburg_docks" then
+					zoneName = if i == 1 then "도서관 앞 조사대" else "문헌 기록 구역"
+					props = { {"Interior", "tablecross", 3.5}, {"Interior", "bookcaseopenlow", 3.2} }
+				elseif questTerrain == "ruins" then
+					zoneName = if i == 1 then "유적 외곽" else "유적 발굴 구역"
+					props = { {"Relics", "pot", 1.7}, {"Cargo", "wood-planks-stack-small", 3.2} }
+				elseif questTerrain == "coast" and targetCard and targetCard.field == "Shipbuilding" then
+					zoneName = if i == 1 then "해안 조사 구역" else "선박 기록 구역"
+					props = { {"Naval", "crate", 3}, {"Cargo", "wood-planks-stack-small", 3.5} }
+				end
+			end
+			anchor:SetAttribute("FieldZoneName", zoneName)
+			if i == found + 1 then folder:SetAttribute("FieldCurrentZoneName", zoneName) end
+			-- [승인 소품] 완료 구역 재접속 시에도 동일 배치. 기존 난수·전투 물리에는 관여하지 않는다.
+			-- 중앙 동선에서 벗어난 평탄한 지면만 사용하고 수면/겹침/미등록 원본은 건너뛴다.
+			if props and i > found then
+				local group = Instance.new("Folder")
+				group.Name = "FieldZoneScenery" .. i
+				group.Parent = folder
+				for index, spec in props do
+					if visualMobile and index > 1 then break end
+					if not AssetIds[spec[1] .. "/" .. spec[2]] then continue end
+					local x = pos.X + (if index == 1 then -1 else 1) * 15
+					local z = pos.Z - 5
+					if math.abs(x - ORIGIN.X) > half - 10 or math.abs(z - ORIGIN.Z) > half - 10 then continue end
+					local hit = workspace:Raycast(Vector3.new(x, ORIGIN.Y + 55, z), Vector3.new(0, -100, 0), groundRay)
+					if not hit or hit.Normal.Y < 0.88 then continue end
+					local waterRay = RaycastParams.new()
+					waterRay.FilterType = Enum.RaycastFilterType.Include
+					waterRay.FilterDescendantsInstances = {workspace.Terrain, ground}
+					local surface = workspace:Raycast(Vector3.new(x, ORIGIN.Y + 55, z), Vector3.new(0, -100, 0), waterRay)
+					if not surface or surface.Material == Enum.Material.Water then continue end
+					local overlap = OverlapParams.new()
+					overlap.FilterType = Enum.RaycastFilterType.Include
+					overlap.FilterDescendantsInstances = {folder}
+					local blocked = false
+					for _, piece in workspace:GetPartBoundsInBox(CFrame.new(hit.Position + Vector3.new(0, 2, 0)), Vector3.new(5, 4, 5), overlap) do
+						if piece ~= ground and piece ~= anchor and piece.Transparency < 0.95 then blocked = true; break end
+					end
+					if blocked then continue end
+					local model = placeModel(group, spec[1], spec[2], hit.Position, spec[3], false, nil, "near")
+					if model then model:SetAttribute("FieldZoneProp", true) end
+				end
+				if #group:GetChildren() == 0 then group:Destroy() end
+			end
+		end
 		if i <= found then
 			-- [재개 좌표] 서버의 완료 단계만 사용하고 실제 월드 좌표는 현재 맵에서 다시 계산한다.
 			if i == found then folder:SetAttribute("FieldResumeAnchor", pos) end
@@ -3975,7 +4032,7 @@ function FieldScene.start(opts)
 		local pp = Instance.new("ProximityPrompt")
 		pp.ActionText = if extraction then "탈출 확인" elseif guardedTransit then "기록 확보" elseif special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
 		pp.KeyboardKeyCode = Enum.KeyCode.T -- 회전 스킬 E와 구분
-		pp.ObjectText = if extraction then "탐험 입구" elseif guardedTransit then "경계 구역" elseif special then targetCard.name else "발견물"
+		pp.ObjectText = if extraction then "탐험 입구" elseif guardedTransit then tostring(anchor:GetAttribute("FieldZoneName") or "경계 구역") elseif special then targetCard.name else tostring(anchor:GetAttribute("FieldZoneName") or "발견물")
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
 		pp.RequiresLineOfSight = false
@@ -4116,6 +4173,7 @@ function FieldScene.start(opts)
 			if nextPrompt then
 				nextPrompt.Enabled = true
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
+				folder:SetAttribute("FieldCurrentZoneName", nextAnchor:GetAttribute("FieldZoneName"))
 				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
 					elseif found == 1 and folder:GetAttribute("FieldInterceptRoute") then
 						if folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 탈환 · 상자와 경비병을 찾아"
@@ -4135,6 +4193,7 @@ function FieldScene.start(opts)
 			say(string.format(if extraction and folder:GetAttribute("FieldRescueRoute") then "조사원 호위 완료 (%d/%d)" elseif guardedTransit and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 (%d/%d)" elseif extraction then "안전 지점 도착 (%d/%d)" elseif i == 2 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 기록 확보 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
+				folder:SetAttribute("FieldCurrentZoneName", "조사 완료")
 				showCompletion()
 				say("조사 완료! 항구로 귀환하거나 현장을 더 둘러볼 수 있어.")
 			end
