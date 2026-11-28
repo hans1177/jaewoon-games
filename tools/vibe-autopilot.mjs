@@ -151,7 +151,14 @@ export function parseReport(report, root = process.cwd()) {
   s.captured = Number(report.summary?.capturedFrames || 0);
   s.studioErrors = (report.errors || []).map(e => String(e).slice(0, 200)).slice(0, 5);
   // [단계 단언] 잘리기 전 원문으로 실패 단계·마커·책임 함수를 찾는다.
-  s.stepFailure = studioStepFailure(String((report.errors || [])[0] || ''), root);
+  const evidence = report.autopilotEvidence;
+  const script = String(evidence?.scriptPath || '');
+  const validScript = Object.values(GAMES).some(game => Object.values(game.scripts).includes(script));
+  // [검사 출처] 다른 장면의 검사 코드를 현재 오류의 책임 함수로 오인하지 않는다.
+  s.stepFailure = evidence
+    ? (validScript && /^[a-f0-9]{64}$/.test(String(evidence.scriptSha256 || ''))
+      ? studioStepFailure(String((report.errors || [])[0] || ''), root, script) : null)
+    : studioStepFailure(String((report.errors || [])[0] || ''), root);
   // [실물 Studio] HEALTH_* 로그가 없는 241단계 점검도 콘솔 오류를 작업으로 인식한다.
   const capturedConsole = Array.isArray(report.consoleCapture?.errors)
     ? report.consoleCapture.errors.filter(e => e?.type === 'studio-console-error' && String(e.signature || '').trim())
@@ -311,7 +318,15 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     // 최신 검사를 이미 반영했다면 오래된 보고서나 출처 미확인 보고서로 원장을 되돌리지 않는다.
     if (previousRun && (!observedRun || Number(observedRun[1]) <= Number(previousRun[1]))) continue;
     out.lastReport[game] = h;
-    const pending = Object.entries(out.tasks).filter(([k, r]) => k.startsWith(game + ':') && r.pending).sort((a, b) => b[1].lastAt - a[1].lastAt)[0];
+    const evidence = reports[game]?.autopilotEvidence;
+    const script = String(evidence?.scriptPath || '');
+    const matchedKind = Object.keys(GAMES[game].scripts).find(kind => GAMES[game].scripts[kind] === script);
+    const candidates = Object.entries(out.tasks).filter(([k, r]) => k.startsWith(game + ':') && r.pending);
+    // [작업 일치] 실제 출처가 있는 결과는 같은 검사에만 연결한다. 기존 시험용 보고서 형식은 보존한다.
+    const pending = evidence
+      ? (matchedKind && /^[a-f0-9]{64}$/.test(String(evidence.scriptSha256 || ''))
+        ? candidates.find(([k]) => k === taskKey(game, matchedKind)) : null)
+      : candidates.sort((a, b) => b[1].lastAt - a[1].lastAt)[0];
     const s = signals[game];
     const found = findingsFrom(game, s);
     // 새 지시서 등록(같은 지문은 한 번만, 해결되면 사라짐)
@@ -354,7 +369,7 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     if (pending) {
       const [k, rec] = pending;
       const hit = found.length > 0 ? 1 : 0;
-      const failed = s.aborted || !s.ok;
+      const failed = evidence ? !complete : s.aborted || !s.ok;
       rec.runs = (rec.runs || 0) + 1;
       rec.ema = +(0.7 * (rec.ema ?? 0.5) + 0.3 * hit).toFixed(3);
       rec.failStreak = failed ? (rec.failStreak || 0) + 1 : 0;
