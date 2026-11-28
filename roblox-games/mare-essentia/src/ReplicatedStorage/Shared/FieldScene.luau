@@ -7582,7 +7582,8 @@ function FieldScene.start(opts)
 			e.model:SetAttribute("FieldWeakHit", weakLabel)
 			if pl.fieldChallenge then pl.fieldChallenge.weakHits = (pl.fieldChallenge.weakHits or 0) + 1 end
 		end
-		-- [두목 단계 · 2026-11-28] 체력 2/3 아래 분노(빨라짐), 1/3 아래 최후의 일격(사거리↑·빈틈 길어짐)
+		-- [두목 능력 변화] 기존 66%/33% 수치와 배율 유지. 공식 4단계 기술 표시는 bossSkillTick 한 곳에서 결정한다.
+		-- 한 번의 강타로 두 임계값을 넘겨도 각 능력 변화는 정확히 한 번 적용한다.
 		if e.boss and not died then
 			local ratio = e.ac.hp / math.max(1, e.maxHp)
 			if ratio < 0.66 and not e.bossPhase2 then
@@ -7591,16 +7592,15 @@ function FieldScene.start(opts)
 				e.ac.def.speed *= 1.25
 				e.ac.def.windup *= 0.85
 				e.speed = e.ac.def.speed
-				e.model:SetAttribute("FieldBossPhase", 2)
-				showCombo("두목 분노! · 2단계 — 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
+				showCombo("두목 분노! · 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
 				screenFlash(Color3.fromRGB(255, 90, 60), 0.82)
 				sfx("sfx_horn", 0.5, 0.8)
-			elseif ratio < 0.33 and not e.bossPhase3 then
+			end
+			if ratio < 0.33 and not e.bossPhase3 then
 				e.bossPhase3 = true
 				e.ac.def = table.clone(e.ac.def)
 				e.ac.def.range *= 1.2
 				e.ac.def.recover *= 1.6
-				e.model:SetAttribute("FieldBossPhase", 3)
 				showCombo("최후의 일격! · 크게 내려친 뒤가 빈틈", true, Color3.fromRGB(255, 70, 60))
 				screenFlash(Color3.fromRGB(255, 60, 40), 0.78)
 				shakeUntil, shakeAmp = os.clock() + 0.4, 1.4
@@ -9437,6 +9437,7 @@ function FieldScene.start(opts)
 				sfx("sfx_horn", 0.75, 0.7)
 				shakeUntil, shakeAmp = now + 0.22, if visualMobile then 0.3 else 0.7
 			end
+			-- [단계 표시 정본] 기존 기술 개방 기준 70%/40%/15%를 유지한다.
 			if e.model:GetAttribute("FieldBossPhase") ~= phase then
 				e.model:SetAttribute("FieldBossPhase", phase)
 			end
@@ -9450,7 +9451,6 @@ function FieldScene.start(opts)
 			if phase >= 4 and not e.bossPhase4 then
 				e.bossPhase4 = true
 				e.armorUntil = if e.weakPartBroken then now else now + 6
-				e.model:SetAttribute("FieldBossPhase", 4)
 				showCombo(if e.weakPartBroken then "두목 최후 발악! · 방어구 파괴 상태" else "두목 최후 발악! · 6초간 단단해짐", true, Color3.fromRGB(255, 60, 60))
 				screenFlash(Color3.fromRGB(255, 50, 40), 0.8)
 				sfx("sfx_event_war", 0.8, 0.7)
