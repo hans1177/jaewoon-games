@@ -2498,10 +2498,21 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			dog = { animalVisual["dog-pug"].size, "tail" }, cat = { animalVisual.cat.size, "still" },
 		}
 		local list = SPECIES[key] or SPECIES.britain
+		-- [고양이 임시 제외 · 2026-11-29 오너: "고양이는 이상하고"] 지금 고양이 원본은 비율이 어색하다.
+		-- 새 원본(Animals/cat_v2, docs/discoveries/ANIMAL_RIG_MOTION.md 가축 재제작 절)이 등록되면 자동으로 다시 쓴다.
+		do
+			local filtered = {}
+			for _, sp in list do
+				if sp ~= "cat" or AssetIds["Animals/cat_v2"] then table.insert(filtered, sp) end
+			end
+			if #filtered > 0 then list = filtered end
+		end
 		local function animal(species, pos)
 			local k = KIND[species]
 			local asset = if species == "dog" then "dog-pug" else species
-			local skin = animalVisual[asset]
+			-- [가축 재제작 자동 교체] <종>_v2 원본이 등록되면 그것을 쓴다(실사풍 재제작 지시서).
+			if AssetIds["Animals/" .. species .. "_v2"] then asset = species .. "_v2" end
+			local skin = animalVisual[asset] or animalVisual[if species == "dog" then "dog-pug" else species]
 			-- [품종별 코트] 직업·서식지·사육량을 바꾸지 않도록 기존 RNG 소비 없이 좌표로만 품종을 선택한다.
 			local coatIndex = if skin then 1 + math.floor(math.abs(pos.X * 0.21 + pos.Z * 0.39 + #walkers * 0.67)) % #skin.coats else 0
 			local coat = if skin then Color3.fromRGB(table.unpack(skin.coats[coatIndex])) else nil
@@ -9420,7 +9431,7 @@ function PortScene.build(info, onFacility)
 			end
 			return false
 		end
-		local relocated, stopped, inspected = 0, 0, 0
+		local relocated, stopped, inspected, shortened = 0, 0, 0, 0
 		-- [주민끼리 겹침 방지] 제자리 주민은 서로 2.4스터드 안에 서지 않는다(한 몸에 두 사람 겹침 방지).
 		local claimed = {}
 		local function crowded(pos)
@@ -9476,6 +9487,21 @@ function PortScene.build(info, onFacility)
 						walker.home, walker.morning, walker.market, walker.evening = home, morning, market, evening
 						break
 					end
+					-- [짧은 하루 동선 · 2026-11-29 오너: "직업별 동선 다양하게"] 4곳을 다 돌 길이 막혔으면
+					-- 바로 서 버리지 말고 두 곳만 오가는 짧은 일과(일터↔시장, 집↔일터)로 줄여 계속 걷게 한다.
+					local shortPlans = { { morning, market }, { home, morning }, { market, evening } }
+					for _, pair in shortPlans do
+						local a, b = pair[1], pair[2]
+						if (b - a).Magnitude > 4 and not blocked(CFrame.new(a), 0, walker.model)
+							and not blocked(CFrame.new(b), 0, walker.model) and clearSegment(a, b) then
+							safe = candidate
+							walker.home, walker.morning, walker.market, walker.evening = a, a, b, b
+							walker.model:SetAttribute("DailyRouteShort", true)
+							shortened += 1
+							break
+						end
+					end
+					if safe then break end
 				elseif not blocked(candidate, if moving then walker.len else 0, walker.model)
 					and (moving or not crowded(candidate.Position)) then
 					safe = candidate
@@ -9488,7 +9514,9 @@ function PortScene.build(info, onFacility)
 					local candidate = original + offset
 					if not blocked(candidate, 0, walker.model) and not crowded(candidate.Position) then
 						safe = candidate
-						walker.mode, walker.kind = "stay", "look"
+						-- 제자리여도 직업 동작(망치질·쓸기·짐 나르기 자세 등)을 한다. 없으면 둘러보기.
+						local roster = walker.workKinds or walker.tradeKinds
+						walker.mode, walker.kind = "stay", (roster and roster[1]) or walker.socialKind or "look"
 						stopped += 1
 						break
 					end
@@ -9560,6 +9588,7 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("NpcRouteChecked", inspected)
 		folder:SetAttribute("NpcRouteRelocated", relocated)
 		folder:SetAttribute("NpcRouteBlocked", stopped)
+		folder:SetAttribute("NpcRouteShortened", shortened)
 	end)
 	-- [진단] 질의가 실패하면 성공으로 간주하지 않고 스튜디오에서 확인할 수 있게 보존한다.
 	folder:SetAttribute("NpcRouteAudit", if routeOk then "PASS" else "FAIL")
