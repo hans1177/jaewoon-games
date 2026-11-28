@@ -14623,6 +14623,26 @@ do
 				section("흥미로운 사실", article.trivia)
 			end
 			if not current.combatArt then
+				-- [부록] 긴 원고는 그대로 읽고 지도·연표·관련 도판은 필요할 때만 생성한다.
+				local appendix = Instance.new("TextButton")
+				appendix.Name = "EncyclopediaAppendix"
+				appendix.LayoutOrder = nextOrder()
+				appendix.Size = UDim2.new(1, 0, 0, 44)
+				appendix.BackgroundColor3 = Color3.fromRGB(225, 204, 162)
+				appendix.BorderSizePixel = 0
+				appendix.TextColor3 = Color3.fromRGB(110, 39, 33)
+				appendix.Font = Enum.Font.Garamond
+				appendix.TextSize = 18
+				appendix.TextWrapped = true
+				appendix.Text = if H.dexExpanded then "부록 접기" else "부록 펼치기 · 지도와 연표"
+				appendix.Parent = page
+				appendix.Activated:Connect(function()
+					H.dexExpanded = not H.dexExpanded
+					H.dexAppendixScroll = page.CanvasPosition.Y
+					render()
+				end)
+			end
+			if not current.combatArt and H.dexExpanded then
 				if H.encyFacts then H.encyFacts(page, nextOrder(), current, article) end
 				if H.encyMap then H.encyMap(page, nextOrder(), current) end
 				if H.encyTimeline then H.encyTimeline(page, nextOrder(), current) end
@@ -14638,6 +14658,17 @@ do
 			end
 			if article and type(article.sources) == "table" and #article.sources > 0 then
 				para("참고: " .. table.concat(article.sources, " · "), 13, SOFTT, false)
+			end
+
+			-- 부록을 열고 닫을 때 읽던 위치를 유지한다. 다른 책장 이동에는 적용하지 않는다.
+			local resumeY = H.dexAppendixScroll
+			H.dexAppendixScroll = nil
+			if resumeY then
+				task.defer(function()
+					if page.Parent then
+						page.CanvasPosition = Vector2.new(0, math.clamp(resumeY, 0, math.max(0, page.AbsoluteCanvasSize.Y - page.AbsoluteWindowSize.Y)))
+					end
+				end)
 			end
 
 			-- 도판 목차는 펼친 책 위에 12장 단위로만 표시한다.
@@ -14669,9 +14700,12 @@ do
 					b.LayoutOrder = i
 					b.BackgroundColor3 = PAPER
 					b.Image = artOf(card)
+					b.BorderSizePixel = 0
+					b.AutoButtonColor = false
 					b.ScaleType = Enum.ScaleType.Fit
 					b.Parent = grid
 					local nm = mkLabel(b, card.name, 13, INKD, true)
+					nm.Font = Enum.Font.Garamond
 					nm.AnchorPoint = Vector2.new(0, 1)
 					nm.Position = UDim2.fromScale(0, 1)
 					nm.Size = UDim2.new(1, 0, 0, 26)
