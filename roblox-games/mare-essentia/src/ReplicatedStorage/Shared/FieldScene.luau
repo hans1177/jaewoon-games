@@ -4331,7 +4331,7 @@ function FieldScene.start(opts)
 		-- [전투 지속력] 기존 장면 배율을 공용 정본에서 적용한다. 공격력·드롭·저장은 불변.
 		individualDef.hp = if isBoss and type(opts.fieldEncounter) == "table" then opts.fieldEncounter.bossMaxHp else AC.fieldEnemyMaxHp(ac.kind)
 		ac.def = individualDef
-		ac.hp = individualDef.hp
+		ac.hp = individualDef.hp -- 재입장·재도전도 항상 만피. 저장된 구역과 전투 중 체력은 분리한다.
 		-- [몹 역할별 실루엣] 기존 전투 능력은 유지하고 R15 비율·걸음 성격만 다르게 설정한다.
 		-- [병종 실루엣] 기존 R15 리그·실제 손 장착 메시 재사용. 키/체형/바지색으로 원거리·투척·방패·돌격을 구분.
 		-- [초급 적 실루엣] 1단은 검병·궁수만 나오므로 검병도 기존 복식 원형에 맞춰 체형을 나눈다.

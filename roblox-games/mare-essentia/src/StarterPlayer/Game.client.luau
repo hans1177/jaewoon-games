@@ -9515,7 +9515,9 @@ function H.startField(s)
 				-- [현장 관찰] 서버가 기존 탐험지 pool·시대·미발견 상태를 재검증한 뒤 카드 후보를 선택한다.
 				call("Explore", { siteId = s.id, observedCardId = observedCardId, fieldCheckpoint = true, runId = fieldRunId })
 			else
-				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "항구로 돌아왔어요. 마지막으로 접수된 탐험 단계에서 이어갈 수 있어요"
+				message = if result == "defeat" then "탐험에서 패배했어요. 저장된 구역부터 재도전할 수 있어요" else "항구로 돌아왔어요. 저장된 구역부터 이어갈 수 있어요"
+				-- 미완료 보스는 중간 체력을 복원하지 않는다. 완료 구역은 기존 서버 기록을 유지한다.
+				if s.minLevel >= 3 then message ..= " · 미완료 두목은 만피로 재시작" end
 				messageOk = false
 				render()
 			end

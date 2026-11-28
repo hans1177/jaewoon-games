@@ -5438,6 +5438,13 @@ do
 	check("서버 입장만으로 영구 진행 변경 없음", st.stats.fieldCheckpoint == nil)
 	local wrong = handlers.FieldPracticeBegin(st, { siteId = "amsterdam_gardens" })
 	check("타 항구 편성 요청 거절", wrong == false)
+	-- 저장된 정상 구역은 유지하고 중간 전투 정보는 복원하지 않는다.
+	st.stats.fieldCheckpoint = { version = 1, siteId = "london_fields", stage = 1, cardId = "bot_oak",
+		bossHp = 1, bossPhase = 4, bosses = { [1] = { hp = 1 } } }
+	local loaded = S.State.sanitize(S.State.serialize(st))
+	local cp = loaded.stats.fieldCheckpoint
+	check("탐험 구역·단서 복원", cp ~= nil and cp.stage == 1 and cp.cardId == "bot_oak")
+	check("보스 중간 전투 상태 저장 복원 금지", cp ~= nil and cp.bossHp == nil and cp.bossPhase == nil and cp.bosses == nil)
 end
 
 print(string.format("\n통과 %d, 실패 %d", passed, failed))

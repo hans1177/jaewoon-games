@@ -101,7 +101,8 @@ function A.fieldEnemyMaxHp(kind: string): number
 	return math.floor(def.hp * (if kind == "boss" then 2.75 elseif kind == "shield" or kind == "charger" then 2.55 else 2.35) + 0.5)
 end
 
--- [보스 저장·복구 공용 규칙] 체력으로 기술 단계를 계산하고 기존 능력 변화를 한 번만 적용한다.
+-- [보스 전투 공용 규칙] 현재 전투 체력으로 기술 단계를 계산하고 기존 능력 변화를 한 번만 적용한다.
+-- 재도전은 newEnemy로 새 상태를 만들며 중간 체력·기술 단계는 저장하지 않는다.
 -- 호출자가 소유한 전투 상태만 변경한다. 이 함수 자체는 원격 요청이나 저장 권한을 부여하지 않는다.
 function A.bossPhase(hp: number, maxHp: number): number
 	local ratio = hp / math.max(1, maxHp)

@@ -150,7 +150,7 @@ do
 		and A.fieldEnemyMaxHp("boss") == 1980)
 	check("공용 적 정의 원본 체력 유지", A.Enemies.boss.hp == 720)
 end
--- 두목의 실제 피해·재개 체력에서 공용 능력과 기술 단계를 복구한다.
+-- 두목의 현재 전투 중 기술 단계와 재도전 초기화.
 do
 	local b = A.newEnemy("boss")
 	local maxHp = b.hp
@@ -162,10 +162,12 @@ do
 	check("기존 두목 배율 유지", math.abs(def.speed - A.Enemies.boss.speed * 1.25 * 1.3) < 0.0001 and math.abs(def.windup - A.Enemies.boss.windup * 0.85 * 0.7) < 0.0001 and math.abs(def.range - A.Enemies.boss.range * 1.2) < 0.0001 and math.abs(def.recover - A.Enemies.boss.recover * 1.6 * 0.7) < 0.0001)
 	local f2, r2, g2 = A.advanceBossAbilities(b, maxHp)
 	check("같은 체력 반복 갱신은 배율 중복 없음", not f2 and not r2 and not g2 and b.def == def)
-	local restored = A.newEnemy("boss")
-	restored.hp = b.hp -- 신뢰된 전투 상태를 재구성하는 순수 계산 검사. 저장 RPC는 아님.
-	A.advanceBossAbilities(restored, maxHp)
-	check("재구성 체력에서 동일한 기술 단계·능력", A.bossPhase(restored.hp, maxHp) == A.bossPhase(b.hp, maxHp) and restored.def.speed == def.speed and restored.def.range == def.range and restored.def.windup == def.windup and restored.def.recover == def.recover)
+	local restarted = A.newEnemy("boss")
+	local rf, rr, rg = A.advanceBossAbilities(restarted, maxHp)
+	check("재도전 두목 만피·첫 단계·초기 능력", restarted.hp == maxHp and A.bossPhase(restarted.hp, maxHp) == 1
+		and restarted.def == A.Enemies.boss and restarted.state == "idle" and restarted.t == 0
+		and not restarted.dead and not rf and not rr and not rg
+		and not restarted.bossPhase2 and not restarted.bossPhase3 and not restarted.enraged)
 	check("다른 두목과 원본 정의는 독립", A.newEnemy("boss").def.speed == 8 and A.newEnemy("boss").hp == maxHp)
 	local dead = A.newEnemy("boss")
 	A.damageEnemy(dead, maxHp, 1, false)
