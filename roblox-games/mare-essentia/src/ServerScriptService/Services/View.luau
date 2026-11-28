@@ -703,6 +703,14 @@ return function(D, S)
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
 		for _, q in D.Quests.Quests do
 			if state.quests.active[q.id] then
+				local previousId = q.after
+				if not previousId and q.afterAny then
+					for _, id in q.afterAny do if state.quests.done[id] then previousId = id break end end
+				end
+				local previous = previousId and D.Quests.ById[previousId]
+				local nextId = D.Quests.NextOf[q.id]
+				local nextName = nextId and D.Quests.ById[nextId] and D.Quests.ById[nextId].name or nil
+				if q.chapter and q.kind == "choice" then nextName = "선택에 따라 달라지는 결말" end
 				table.insert(view.quests.active, {
 					id = q.id,
 					name = q.name,
@@ -731,9 +739,9 @@ return function(D, S)
 					chapter = q.chapter or (string.find(q.summary or "", " — ", 1, true) and string.sub(q.summary, 1, (string.find(q.summary, " — ", 1, true) :: number) - 1)) or nil,
 					guide = q.guide,
 					-- [지난 이야기·다음 이야기] 앞 단계의 결말과 다음 단계 이름
-					prevName = q.after and D.Quests.ById[q.after] and D.Quests.ById[q.after].name or nil,
-					prevEnding = q.after and D.Quests.ById[q.after] and select(2, S.Quest.storyOf(D.Quests.ById[q.after])) or nil,
-					nextName = D.Quests.NextOf[q.id] and D.Quests.ById[D.Quests.NextOf[q.id]] and D.Quests.ById[D.Quests.NextOf[q.id]].name or nil,
+					prevName = previous and previous.name or nil,
+					prevEnding = previous and select(2, S.Quest.storyOf(previous)) or nil,
+					nextName = nextName,
 				})
 			elseif not state.quests.done[q.id] and S.Quest.visible(state, q) and q.kind == "deliver" and q.strand ~= "main" and (q.portId ~= state.portId or shownDeliver >= DELIVER_SHOWN_MAX) then
 				-- 납품 의뢰는 지금 항구의 주점 게시판만, 최대 몇 개까지만 보여 준다 (나머지는 개수만 알린다)
@@ -752,7 +760,8 @@ return function(D, S)
 		local routeIds = {}
 		for _, q in D.Quests.Quests do
 			if q.routeId then routeIds[q.routeId] = true end
-			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after]) then
+			if q.exploreSite and not state.quests.done[q.id] and (not q.after or state.quests.done[q.after])
+				and (not q.chapter or S.Quest.visible(state, q)) then
 				local destination = D.Ports.Ports[q.portId]
 				table.insert(view.quests.fieldRoutes, {
 					name = q.name, grade = D.Quests.Grade(q),
