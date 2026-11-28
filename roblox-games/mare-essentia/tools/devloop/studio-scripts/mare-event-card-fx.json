@@ -1,0 +1,156 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:legend') task.wait(1.3) return 'FX legend '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "fx_legend"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:epic') task.wait(1.3) return 'FX epic '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "fx_epic"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:rare') task.wait(1.3) return 'FX rare '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "fx_rare"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:fan') task.wait(1.3) return 'FX fan '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 1300
+ },
+ {
+  "type": "capture",
+  "name": "fx_fan"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:plus') task.wait(1.3) return 'FX plus '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 100
+ },
+ {
+  "type": "capture",
+  "name": "fx_plus"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:set') task.wait(1.3) return 'FX set '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 100
+ },
+ {
+  "type": "capture",
+  "name": "fx_set"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:world') task.wait(1.3) return 'FX world '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "fx_world"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','FxCheck:disaster') task.wait(1.3) return 'FX disaster '..tostring(workspace:GetAttribute('DevResult'))"
+ },
+ {
+  "type": "wait",
+  "ms": 500
+ },
+ {
+  "type": "capture",
+  "name": "fx_disaster"
+ },
+ {
+  "type": "wait",
+  "ms": 4200
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local L=game:GetService('LogService'):GetLogHistory() local e={} for _,m in ipairs(L) do if m.messageType==Enum.MessageType.MessageError or string.find(m.message,'CardGain') then table.insert(e,m.message) end end return 'LOG '..table.concat(e,' | ')"
+ }
+]

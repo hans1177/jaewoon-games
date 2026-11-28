@@ -282,7 +282,7 @@ return function(D, S)
 		for i, a in w.active do
 			local tpl = W.ById[a.id]
 			table.insert(out.active, {
-				index = i, title = a.title, text = a.text, kind = a.kind, region = regionName(a.region), left = a.endDay - state.day, here = a.region == here,
+				index = i, id = a.id, title = a.title, text = a.text, kind = a.kind, region = regionName(a.region), left = a.endDay - state.day, here = a.region == here,
 				canAid = a.kind == "disaster" and a.region == here and not a.aided and not (tpl and tpl.aid == false), aided = a.aided == true,
 				cut = if a.kind == "disaster" and tpl then math.floor(mitigation(state, tpl.guard) * 100 + 0.5) else nil,
 			})
