@@ -15,6 +15,8 @@ local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 
 local DF = require(script.Parent:WaitForChild("DiscoveryForms"))
+-- [드롭박스 자동 배치] 카드 id 이름으로 등록된 전용 모델을 찾을 수 있게 등록표를 넘긴다.
+pcall(function() DF.assetIds = require(script.Parent:WaitForChild("AssetIds", 5)) end)
 -- 동물 실물은 항구 목장과 같은 크기·품종색(AnimalVisual)을 쓴다.
 local okPB, PortBuildings = pcall(function() return require(script.Parent:WaitForChild("PortBuildings", 5)) end)
 if not okPB then PortBuildings = nil end

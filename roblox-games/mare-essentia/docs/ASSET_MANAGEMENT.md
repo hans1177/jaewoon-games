@@ -24,6 +24,23 @@
 5. 코드는 **`AssetIds["종류/이름"]`으로만** 참조한다. `rbxassetid://숫자`를 코드에 직접 박지 않는다.
 - 새 워크플로·유료 API·다른 업로드 경로를 만들지 않는다. 업로드 성공·ID를 지어내지 않는다.
 
+## 2-1. 드롭박스 자동 인입 (오너 자산 · 2026-11-28)
+오너가 드롭박스에 올리면 **자동 검사만 통과하면 사람 확인 없이** 등록·배치까지 간다.
+- 올리는 곳: `/Vibe2Transfer/inbox/<종류>/<이름>.<확장자>`
+  - 그림 종류: `CardArt` · `Icons` · `Portraits` · `Goods` · `Materials` (png/jpg)
+  - 모델 종류: `Animals` · `Terrain` · `Relics` · `Town` · `Castle` · `Naval` · `People` · `Monsters` · `Interior` · `Cargo` (**glb 만**, FBX 는 GLB 로 바꿔서)
+  - 이름: 소문자·숫자·`_`·`-` 만
+- 자동 검사: 이름·형식·크기(그림 128~4096px, 모델 20MB 이하)·**256색 금지**·중복. 대륙 카드(eu_01 등)는 세로 7:10 → 1400×2000 으로 맞춤. 그 밖의 카드 그림 PNG 는 JPG 로 바꿔 등록.
+- 흐름: 기존 등록 워크플로(`owner-mare-essentia-assets`) 정기 실행이 드롭박스를 확인 → 통과분을 `register_asset.py` 로 정식 폴더에 넣고 main 저장 → 같은 등록기를 다시 불러 Roblox 등록 → `AssetIds` 반영. 대개 10~20분.
+- 결과: `docs/assets/dropbox_inbox_report.md`(등록·거부 이유), 기록 `assets/dropbox-imported.json`. 드롭박스 쓰기 권한이 있으면 처리한 파일은 `_done/`, 거부는 `_rejected/` 로 옮긴다.
+- **이름만 맞추면 게임에 자동 배치**:
+  | 올린 이름 | 들어가는 곳 |
+  |---|---|
+  | 기존과 같은 이름(예: `CardArt/eu_05.png`, `Icons/…`) | 그 그림을 쓰던 자리 그대로 교체 |
+  | `CardArt/menu_<메뉴>_<번호>.jpg` (예: `menu_harbor_02`) | 그 메뉴창 원화 배너에 자동으로 섞임 (메뉴: trade·harbor·route·quest·yard·explore·codex …) |
+  | `<모델 종류>/<백과 카드 id>.glb` (예: `Animals/zoo_tiger.glb`) | 지상 탐험에서 그 카드의 실물 모델로 바로 쓰임(관찰 기록 현장 대신) |
+  | 그 밖의 새 이름 | 등록·`AssetIds` 까지. 화면에 쓰는 자리는 코드에서 연결 필요 |
+
 ## 3. 품질·규격 체크리스트 (등록 전 모두 확인)
 | 항목 | 기준 |
 |---|---|

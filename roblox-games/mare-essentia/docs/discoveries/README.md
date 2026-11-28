@@ -75,6 +75,7 @@
 5. **중남미 피라미드(ruin_meso)** — 마야·테오티우아칸 계단 피라미드(이집트 모델로 대체 금지).
 
 ## 4. 제작 규칙
+- **가장 빠른 방법:** 백과 카드 id 와 같은 이름의 GLB 를 드롭박스 `/Vibe2Transfer/inbox/Animals/zoo_tiger.glb` 처럼 올리면 자동 등록되고 탐험에 바로 나온다(`docs/ASSET_MANAGEMENT.md` 2-1절).
 - **동물 뼈대·애니메이션·행동(리액션)·몬스터 재사용은 `docs/discoveries/ANIMAL_RIG_MOTION.md` 필독.** 표준 뼈 이름·애니메이션 이름을 지켜야 탐험·목장·몬스터에서 재사용된다.
 - 종마다 **실제 생김새 그대로**(색·무늬·비율). 다른 종 모델을 색만 바꿔 쓰지 않는다.
 - 저폴리 + 손그림 질감, 게임 내 기존 승인 동물(`Animals/elephant`, `Animals/llama`)과 같은 스케일·톤.

@@ -2217,6 +2217,19 @@ function H.renderFacilityGallery()
     local id = AssetIds["CardArt/event_" .. key]
     if id then table.insert(matches, { image = "rbxassetid://" .. tostring(id), poolArt = true }) end
   end
+  -- [드롭박스 자동 배치] CardArt/menu_<메뉴>_<번호> 로 등록된 원화는 그 메뉴 배너에 자동으로 섞인다.
+  H.menuArtCache = H.menuArtCache or {}
+  if H.menuArtCache[tab] == nil then
+    local list, prefix = {}, "CardArt/menu_" .. tostring(tab) .. "_"
+    for key, id in AssetIds :: any do
+      if type(key) == "string" and string.sub(key, 1, #prefix) == prefix then table.insert(list, { key, id }) end
+    end
+    table.sort(list, function(x, y) return x[1] < y[1] end)
+    H.menuArtCache[tab] = list
+  end
+  for _, kv in H.menuArtCache[tab] do
+    table.insert(matches, { image = "rbxassetid://" .. tostring(kv[2]), poolArt = true })
+  end
   H.galleryMatches = matches
   if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = math.random(1, #matches) end
   H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
