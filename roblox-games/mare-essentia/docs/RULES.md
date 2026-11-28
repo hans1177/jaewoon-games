@@ -1,5 +1,7 @@
 # Mare Essentia 작업 규칙 (세션이 바뀌어도 같은 품질 유지)
 
+> **인물 사실 묘사 공통 필수 규칙 (2026-11-28 오너 지시):** 인물이 등장할 때 미남·미녀로 획일화하거나 미화하지 않는다. 나이·직업·생활환경에 맞는 얼굴형, 체형, 피부 결, 주름, 비대칭, 머리와 손, 자연스러운 표정과 자세를 사실적으로 묘사한다. 현대 모델 같은 외모·보정 피부·과장된 미형·문화권 고정관념을 피하고 인물마다 개성을 살린다. 기존 역사 고증·회화 화풍·실존 인물 얼굴 제한을 지키며 인물이 없는 소재에는 사람을 억지로 추가하지 않는다.
+
 > **드롭박스 올리는 곳 (필독)**
 > - 모든 오너 자산은 `/Vibe2Transfer/inbox/<종류>/<이름>` 으로 올린다. 종류 폴더: 그림 CardArt·Icons·Portraits·Goods·Materials / 모델 Animals·Terrain·Relics·Town·Castle·Naval·People·Monsters·Interior·Cargo (모델은 GLB 만)
 > - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
