@@ -19128,8 +19128,25 @@ function H.openCabin()
 		local sh = view.ship
 		local W = root.AbsoluteSize.X
 		local wide = W >= 760
-		root.ScrollingEnabled = not wide
-		if wide then root.CanvasSize = UDim2.new(); root.CanvasPosition = Vector2.zero end
+		root.ScrollingEnabled = true
+		local jobs = require(Shared:WaitForChild("JobSkills"))
+		local members, currentSeats, supportOrder = {}, {}, {}
+		local supportCount, filled, matched = 0, 0, 0
+		for _, c in v.list do
+			members[c.id] = c
+			if c.joined and supportCount < 2 then
+				supportCount += 1
+				supportOrder[c.id] = supportCount
+			end
+		end
+		for _, st in v.stations do
+			if st.seatId then
+				currentSeats[st.seatId] = st.name
+				filled += 1
+				if st.matched then matched += 1 end
+			end
+		end
+		local selectedMember = selected and members[selected]
 
 		-- 윗줄
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 58), COLORS.paper)
@@ -19138,7 +19155,7 @@ function H.openCabin()
 		title.Position = UDim2.fromOffset(12, 6)
 		title.Size = UDim2.new(1, -184, 0, 24)
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local hint = mkLabel(top, "직책을 고르고 동료 선택", 12, Color3.fromRGB(90, 70, 50), false)
+		local hint = mkLabel(top, string.format("배치 %d/%d · 적합 %d", filled, #v.stations, matched), 13, Color3.fromRGB(90, 70, 50), true)
 		hint.Position = UDim2.fromOffset(12, 32)
 		hint.Size = UDim2.new(1, -184, 0, 20)
 		hint.AutomaticSize = Enum.AutomaticSize.None
@@ -19151,11 +19168,11 @@ function H.openCabin()
 
 		-- 왼쪽: 큰 배 그림과 능력
 		local shipW = if wide then 0.42 else 1
-		local shipH = if wide then 1 else 0
-		local shipBox = mkBox(root, UDim2.fromOffset(8, 74), if wide then UDim2.new(shipW, -12, 1, -82) else UDim2.new(1, -16, 0, 190), COLORS.leather)
+		local shipHeight = if wide then 370 else 254
+		local shipBox = mkBox(root, UDim2.fromOffset(8, 74), if wide then UDim2.new(shipW, -12, 0, shipHeight) else UDim2.new(1, -16, 0, shipHeight), COLORS.leather)
 		corner(shipBox, 8)
 		local si = SHIP_ICON[sh.id]
-		local px = if wide then 230 else 130
+		local px = if wide then 190 else 112
 		if si then
 			local icon = modelIcon(shipBox, si[1], si[2], si[3], px)
 			icon.AnchorPoint = Vector2.new(0.5, 0)
@@ -19176,28 +19193,41 @@ function H.openCabin()
 
 		-- 오른쪽 위: 자리 칸 (2열)
 		local rx = if wide then shipW else 0
-		local rightPos = if wide then UDim2.new(rx, 4, 0, 74) else UDim2.fromOffset(8, 272)
-		local slotsH = math.ceil(#v.stations / 2) * 96 + 8
+		local rightY = if wide then 74 else 74 + shipHeight + 8
+		local rightPos = if wide then UDim2.new(rx, 4, 0, rightY) else UDim2.fromOffset(8, rightY)
+		local availableWidth = math.max(1, if wide then W * (1 - rx) - 12 else W - 16)
+		local slotColumns = if availableWidth >= 338 then 2 else 1
+		local slotsH = math.ceil(#v.stations / slotColumns) * 112 + 42
 		local slotsBox = mkBox(root, rightPos, if wide then UDim2.new(1 - rx, -12, 0, slotsH) else UDim2.new(1, -16, 0, slotsH), COLORS.leather)
 		corner(slotsBox, 8)
 		local grid = Instance.new("UIGridLayout")
-		grid.CellSize = UDim2.new(0.5, -8, 0, 88)
+		grid.CellSize = UDim2.new(1 / slotColumns, -10, 0, 104)
 		grid.CellPadding = UDim2.fromOffset(6, 8)
 		grid.SortOrder = Enum.SortOrder.LayoutOrder
 		grid.Parent = slotsBox
 		local pad = Instance.new("UIPadding")
-		pad.PaddingTop, pad.PaddingLeft, pad.PaddingRight, pad.PaddingBottom = UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 6)
+		pad.PaddingTop, pad.PaddingLeft, pad.PaddingRight, pad.PaddingBottom = UDim.new(0, 34), UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 6)
 		pad.Parent = slotsBox
+		slotsBox.Name = "CabinStationBoard"
+		local heading = mkLabel(root, if selectedMember then selectedMember.name .. "의 직책 선택" else "직책 선택 · 적합 배치 ×1.2", 15, COLORS.gold, true)
+		heading.AutomaticSize = Enum.AutomaticSize.None
+		heading.Position = if wide then UDim2.new(rx, 12, 0, rightY + 7) else UDim2.fromOffset(16, rightY + 7)
+		heading.Size = if wide then UDim2.new(1-rx, -28, 0, 24) else UDim2.new(1, -32, 0, 24)
+		heading.ZIndex = slotsBox.ZIndex + 2
 		for idx, st in v.stations do
 			local slot = Instance.new("TextButton")
 			slot.LayoutOrder = idx
+			slot.Name = "CabinStation_" .. st.id
+			slot:SetAttribute("StationMatched", st.matched == true)
+			slot:SetAttribute("StationOccupied", st.seatId ~= nil)
+			slot:SetAttribute("SelectedCompanionFits", selectedMember ~= nil and selectedMember.bestSeat == st.name)
 			slot.Text = ""
 			slot.AutoButtonColor = false
 			slot.BackgroundColor3 = if st.seatId then (if st.matched then Color3.fromRGB(70, 104, 76) else Color3.fromRGB(112, 92, 62)) else Color3.fromRGB(58, 48, 40)
 			slot.BorderSizePixel = 0
 			slot.Parent = slotsBox
 			corner(slot, 8)
-			if selected or pendingStation == st.id then
+			if pendingStation == st.id or (selectedMember and selectedMember.bestSeat == st.name) then
 				local stroke = Instance.new("UIStroke")
 				stroke.Color = COLORS.gold
 				stroke.Thickness = 2
@@ -19206,6 +19236,7 @@ function H.openCabin()
 			slotFrames[st.id] = slot
 			slot.Activated:Connect(function()
 				if selected then
+					if selected == st.seatId then selected = nil; build(); return end
 					place(selected, st.id)
 				else
 					pendingStation = if pendingStation == st.id then nil else st.id
@@ -19218,9 +19249,17 @@ function H.openCabin()
 			nm.AutomaticSize = Enum.AutomaticSize.None
 			local desc = mkLabel(slot, if st.seatName then (st.seatName .. (if st.matched then "  (딱 맞음 x1.2)" else "  (다른 직책 x0.6)")) elseif pendingStation == st.id then "아래에서 동료 선택" else "빈 직책", 12, COLORS.text, false)
 			desc.Position = UDim2.fromOffset(78, 28)
-			desc.Size = UDim2.new(1, -84, 0, 54)
+			desc.Size = UDim2.new(1, -84, 0, 38)
 			desc.AutomaticSize = Enum.AutomaticSize.None
 			desc.TextYAlignment = Enum.TextYAlignment.Top
+			local fitCount = 0
+			for _, c in v.list do
+				if c.joined and c.bestSeat == st.name and c.id ~= st.seatId then fitCount += 1 end
+			end
+			local fitHint = mkLabel(slot, if selectedMember then (if selectedMember.bestSeat == st.name then "추천 직책 ×1.2" else "다른 직책 ×0.6") elseif fitCount > 0 then string.format("적합 후보 %d명", fitCount) else "적합 후보 없음", 13, COLORS.gold, true)
+			fitHint.AutomaticSize = Enum.AutomaticSize.None
+			fitHint.Position = UDim2.fromOffset(78, 70)
+			fitHint.Size = UDim2.new(1, -84, 0, 30)
 			if st.seatId then
 				local face = H.companionFace(slot, st.seatId, 64)
 				if face then
@@ -19230,13 +19269,14 @@ function H.openCabin()
 		end
 
 		-- 오른쪽 아래: 함께하는 동료 초상 (끌어서 놓기)
-		local listY = if wide then 74 + slotsH + 8 else 272 + slotsH + 8
+		local listY = rightY + slotsH + 8
 		local joined = 0
 		for _, c in v.list do if c.joined then joined += 1 end end
-		local columns = math.max(1, math.floor((W - 28 + 8) / 112))
-		local listHeight = 38 + math.max(1, math.ceil(joined / columns)) * 128
-		if not wide then root.CanvasSize = UDim2.fromOffset(0, listY + listHeight + 8) end
-		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 1, -listY - 8) else UDim2.new(1, -16, 0, listHeight), COLORS.leather)
+		local columns = math.max(1, math.floor((availableWidth - 12 + 8) / 150))
+		local listHeight = 48 + math.max(1, math.ceil(joined / columns)) * 182
+		root.CanvasSize = UDim2.fromOffset(0, math.max(listY + listHeight + 8, 74 + shipHeight + 8))
+		local listBox = mkBox(root, if wide then UDim2.new(rx, 4, 0, listY) else UDim2.fromOffset(8, listY), if wide then UDim2.new(1 - rx, -12, 0, listHeight) else UDim2.new(1, -16, 0, listHeight), COLORS.leather)
+		listBox.Name = "CabinCompanionRoster"
 		corner(listBox, 8)
 		local lt = mkLabel(listBox, string.format("함께하는 동료 (%d/%d)", (function() local n = 0 for _, c in v.list do if c.joined then n += 1 end end return n end)(), v.max), 14, COLORS.gold, true)
 		lt.Position = UDim2.fromOffset(10, 6)
@@ -19247,13 +19287,13 @@ function H.openCabin()
 		sc.Size = UDim2.new(1, -12, 1, -38)
 		sc.BackgroundTransparency = 1
 		sc.BorderSizePixel = 0
-		sc.ScrollBarThickness = if wide then 5 else 0
-		sc.ScrollingEnabled = wide
+		sc.ScrollBarThickness = 0
+		sc.ScrollingEnabled = false
 		sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		sc.CanvasSize = UDim2.new()
 		sc.Parent = listBox
 		local tg = Instance.new("UIGridLayout")
-		tg.CellSize = UDim2.fromOffset(104, 120)
+		tg.CellSize = UDim2.new(1 / columns, -8 * (columns - 1) / columns, 0, 174)
 		tg.CellPadding = UDim2.fromOffset(8, 8)
 		tg.SortOrder = Enum.SortOrder.LayoutOrder
 		tg.Parent = sc
@@ -19263,9 +19303,15 @@ function H.openCabin()
 				any = true
 				local tile = Instance.new("TextButton")
 				tile.LayoutOrder = idx
+				tile.Name = "CabinCompanion_" .. c.id
+				tile:SetAttribute("FieldSupportOrder", supportOrder[c.id] or 0)
+				tile:SetAttribute("CurrentStation", currentSeats[c.id] or "")
 				tile.Text = ""
 				tile.AutoButtonColor = false
-				tile.BackgroundColor3 = if selected == c.id then Color3.fromRGB(150, 118, 52) else Color3.fromRGB(72, 58, 46)
+				tile.BackgroundColor3 = if selected == c.id or (pendingStation and (function()
+					for _, st in v.stations do if st.id == pendingStation then return st.name == c.bestSeat end end
+					return false
+				end)()) then Color3.fromRGB(150, 118, 52) else Color3.fromRGB(72, 58, 46)
 				tile.BorderSizePixel = 0
 				tile.Parent = sc
 				corner(tile, 8)
@@ -19279,11 +19325,29 @@ function H.openCabin()
 				nl.AutomaticSize = Enum.AutomaticSize.None
 				nl.TextXAlignment = Enum.TextXAlignment.Center
 				nl.TextTruncate = Enum.TextTruncate.AtEnd
-				local bl = mkLabel(tile, "어울림: " .. c.bestSeat, 11, COLORS.muted, false)
-				bl.Position = UDim2.fromOffset(4, 92)
-				bl.Size = UDim2.new(1, -8, 0, 22)
+				local bl = mkLabel(tile, (currentSeats[c.id] or "미배치") .. " → " .. c.bestSeat, 13, COLORS.gold, true)
+				bl.Position = UDim2.fromOffset(4, 90)
+				bl.Size = UDim2.new(1, -8, 0, 32)
 				bl.AutomaticSize = Enum.AutomaticSize.None
 				bl.TextXAlignment = Enum.TextXAlignment.Center
+				local role = if jobs.Categories[c.role or ""] then c.role else jobs.categoryOf(c.role)
+				local category = jobs.Categories[role]
+				local skillNames = {}
+				for _, id in category.skills do
+					local skill = jobs.Skills[id]
+					table.insert(skillNames, skill.name .. " " .. tostring(skill.cooldown) .. "초")
+				end
+				local skill = mkLabel(tile, table.concat(skillNames, " · "), 13, COLORS.text, false)
+				skill.Name = "CabinSupportSkills"
+				skill.Position = UDim2.fromOffset(4, 122)
+				skill.Size = UDim2.new(1, -8, 0, 32)
+				skill.AutomaticSize = Enum.AutomaticSize.None
+				skill.TextXAlignment = Enum.TextXAlignment.Center
+				local status = mkLabel(tile, if supportOrder[c.id] then "지상 지원 " .. supportOrder[c.id] .. "번" else "지상 지원 대기", 12, COLORS.gold, true)
+				status.Position = UDim2.fromOffset(4, 154)
+				status.Size = UDim2.new(1, -8, 0, 18)
+				status.AutomaticSize = Enum.AutomaticSize.None
+				status.TextXAlignment = Enum.TextXAlignment.Center
 				tile.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 						startDrag(c.id, c.name, input)
