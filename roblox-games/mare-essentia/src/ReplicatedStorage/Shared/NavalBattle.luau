@@ -2871,10 +2871,13 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			for _, glow in forecastGlows do glow:Destroy() end
 			table.clear(forecastGlows)
 			if dropGlow then
-				pcall(function() dropGlow:Destroy() end)
+				dropGlow.tween:Cancel()
+				dropGlow.tween:Destroy()
+				pcall(function() dropGlow.stroke:Destroy() end)
 				dropGlow = nil
 			end
 		end
+		g.Destroying:Connect(clearDropHint)
 		local function dropHint(c)
 			local side = if c.ability == "spy" or c.ability == "defect" or c.ability == "feigned" then "foe" else "me"
 			local target = if c.special then boardFrame else (rowTargets[side][BC.lane(c)] and rowTargets[side][BC.lane(c)].Parent)
@@ -2885,8 +2888,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			st.Thickness = 3
 			st.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			st.Parent = target
-			dropGlow = st
-			TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 }):Play()
+			local tween = TweenService:Create(st, TweenInfo.new(0.55, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Transparency = 0.7 })
+			dropGlow = { stroke = st, tween = tween }
+			tween:Play()
 		end
 		local boardCards, previousBoard, previousOrder, previousLeaders = {}, {}, {}, {}
 		local deployAbilities = {
@@ -3213,9 +3217,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			render()
 			if opts.cardOnly and not res then
 				local rendered = previousBoard
-				task.defer(function()
-					if g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
-				end)
+				cardTimers[task.defer(function()
+					cardTimers[coroutine.running()] = nil
+					if not finished and g.Parent and rendered == previousBoard then playBoardEffects(before, order, card, leader) end
+				end)] = true
 			end
 		end
 		local passArmedAt = 0
@@ -3786,6 +3791,9 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		focusScale.Scale = 1
 		focusScale.Parent = focusFrame
 		local focusTween
+		g.Destroying:Connect(function()
+			if focusTween then focusTween:Cancel(); focusTween:Destroy(); focusTween = nil end
+		end)
 		local focusEdge = frameEdge(focusFrame, Color3.fromRGB(224, 179, 99), 7)
 		focusEdge.Thickness = 3
 		local focusPaper = Instance.new("ImageLabel")
@@ -3953,7 +3961,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 				end
 				focusMotion = nil
 			end
-			if focusTween then focusTween:Cancel(); focusTween = nil end
+			if focusTween then focusTween:Cancel(); focusTween:Destroy(); focusTween = nil end
 			if not card then
 				leaderPreviewId = nil
 				focusArtwork:SetAttribute("ArtFocused", false)
