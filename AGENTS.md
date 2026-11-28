@@ -1,5 +1,7 @@
 # 저장소 작업 지침
 
+> 👉 **처음이면 `START_HERE.md`(1분)부터.** 정책 4종 위치·읽는 법·"정책이 없다/비어 있다/검증기 연결 실패"로 멈추지 않는 법이 한 장에 있다.
+
 이 저장소에서 작업하는 모든 GPT·코딩 에이전트는 작업 전에 최신 main의 다음 중앙문서를 읽어야 한다.
 
 - company-learning/platform-release-roadmap.json

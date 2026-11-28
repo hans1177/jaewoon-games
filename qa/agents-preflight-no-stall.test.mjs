@@ -15,3 +15,14 @@ test('근거가 되는 중앙정책 값이 그대로다', () => {
   assert.equal(c.startupSync.documentHashesRequired, true);
   assert.ok(fs.existsSync('.github/workflows/company-central-policy-contract-qa.yml'));
 });
+test('START_HERE: 모든 AI 입구 파일이 가리키고, 정책 4종 경로·멈춤 금지 문장이 있다', () => {
+  const start = fs.readFileSync('START_HERE.md', 'utf8');
+  for (const f of ['platform-release-roadmap.json', 'platform-release-roadmap.brief.json', 'company-log-map.json', 'company-architecture-map.json', 'security-immune-system.json']) {
+    assert.ok(start.includes(f), f);
+    assert.ok(fs.existsSync(`company-learning/${f}`), f + ' 실제 존재');
+  }
+  for (const phrase of ['중앙 정책이 없다', '비어 있어 검증 불가', '검증기 실행 환경에 연결 못 해']) assert.ok(start.includes(phrase), phrase);
+  for (const entry of ['AGENTS.md', 'CLAUDE.md', 'GEMINI.md', '.cursorrules', '.github/copilot-instructions.md', 'roblox-games/mare-essentia/docs/READ_FIRST.md']) {
+    assert.ok(fs.readFileSync(entry, 'utf8').includes('START_HERE.md'), entry);
+  }
+});
