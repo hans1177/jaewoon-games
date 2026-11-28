@@ -1654,6 +1654,11 @@ function NavalBattle.play(opts)
         readyScale.Name = "NavalReadyScale"
         readyScale.Scale = 1
         readyScale.Parent = b
+		-- [전투 버튼 효과 · 2026-11-28] 누를 때 충격 고리·불꽃·섬광(지상과 같은 모듈)
+		do
+			local okFx, ButtonFx = pcall(function() return require(script.Parent:WaitForChild("BattleButtonFx", 5)) end)
+			if okFx and ButtonFx then ButtonFx.attach(b) end
+		end
 		local assetId = iconKey and AssetIds[iconKey]
 		if assetId then
 			b.BackgroundTransparency = 1
@@ -7230,6 +7235,10 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			elseif b:GetAttribute("NavalWasCooling") then
 				b:SetAttribute("NavalWasCooling", false)
 				b:SetAttribute("NavalReadyPulseUntil", now + 0.55)
+				do
+					local okFx, ButtonFx = pcall(function() return require(script.Parent:FindFirstChild("BattleButtonFx")) end)
+					if okFx and ButtonFx then ButtonFx.ready(b) end
+				end
 				-- [해상 쿨타임 준비광] 지상과 동일하게 준비 완료 순간 한 바퀴 회전 후 사라진다.
 				local halo = b:FindFirstChild("NavalButtonHalo")
 				local lightRim = halo and halo:FindFirstChildOfClass("UIStroke")

@@ -4196,7 +4196,7 @@ test('Mare two-button HUD, owner-only five-hit automatic heavy and seven profess
     scene.includes('hitActionSeq, nil, moveId == "rush", basicBeat)')&&
     !scene.includes('pl.basicAttackSeq')&&
     scene.includes('pl.autoNormalHits = (pl.autoNormalHits or 0) + 1')&&
-    scene.includes('if pl.autoNormalHits % 5 == 0 then')&&
+    scene.includes('if chanceNow > 0 and hitAt - (pl.lastAutoSkillAt or -100) >= 4 and comboRng:NextNumber() < chanceNow then')&&
     scene.includes('ch:SetAttribute("FieldAutoSkillPending", nil)')&&
     scene.includes('useMove("heavy")')&&
     scene.includes('pl.autoNormalHits = 0')&&

@@ -934,6 +934,18 @@ return function(D, S)
 				-- 존재 형태·시대·지역·선행 지식은 카드 종류와 독립적으로 도감에 전달한다.
 				era = c.meta and c.meta.era or nil,
 				region = c.meta and c.meta.region and D.Ports.Ports[c.meta.region] and D.Ports.Ports[c.meta.region].name or (c.visitPort and D.Ports.Ports[c.visitPort] and D.Ports.Ports[c.visitPort].name) or nil,
+				-- [백과 분포 지도 · 2026-11-28] 대표 지역·처음 발견한 항구의 위경도(지도 금색 점). 표시용.
+				mapPoints = (function()
+					local pts = {}
+					local function addPort(id, label)
+						local port = id and D.Ports.Ports[id]
+						if port and port.lat and port.lon then table.insert(pts, { lat = port.lat, lon = port.lon, name = port.name, label = label }) end
+					end
+					addPort(c.meta and c.meta.region, "대표 지역")
+					if c.visitPort ~= (c.meta and c.meta.region) then addPort(c.visitPort, "발견 항구") end
+					if origin and origin.portId and origin.portId ~= (c.meta and c.meta.region) then addPort(origin.portId, "내가 발견") end
+					return pts
+				end)(),
 				-- [개인 백과] 자료의 대표 지역과 실제 플레이어 최초 습득 장소를 구별한다.
 				nextClue = if found and nextRouteByCard[c.id] then {
 					quest = nextRouteByCard[c.id].name,
