@@ -128611,7 +128611,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -128646,7 +128646,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 29,
-      "previousReservationId": "system-ai:46149552965:1",
+      "previousReservationId": "system-ai:46150967010:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -128654,12 +128654,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46150967010:1",
-      "reservedAt": "2026-11-28T13:49:49.040Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -129828,7 +129828,13 @@
         "actions-run:46148786042",
         "system-ai-handoff-to-reservation:system-ai:46149552965:1",
         "actions-run:46149552965",
-        "system-ai-handoff-to-reservation:system-ai:46150967010:1"
+        "system-ai-handoff-to-reservation:system-ai:46150967010:1",
+        "actions-run:46150967010",
+        "external-ai-raw-output-sha256:25675e1188a5dbf2c33d6bc2ac8c16c90bfb343ab31547776af3da6430332ad3",
+        "system-ai-applied-answer-sha256:6603cfe978d89ead04096993308524439ac18136fbd774b2cf529baeaef3a0bc",
+        "repair-strategy-fingerprint:45f5624fb38ee56dc4d8b4fb15a8cc92a1f4542c8e516798febb6e15c7d0ef3d",
+        "failed-strategy-fingerprint:45f5624fb38ee56dc4d8b4fb15a8cc92a1f4542c8e516798febb6e15c7d0ef3d",
+        "model-output-sha256:25675e1188a5dbf2c33d6bc2ac8c16c90bfb343ab31547776af3da6430332ad3"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1862,
@@ -129843,7 +129849,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-28T13:49:49.040Z"
+      "updatedAt": "2026-11-28T13:55:54.668Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -157767,7 +157773,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -157801,7 +157807,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 16,
-      "previousReservationId": "system-ai:46147170808:1",
+      "previousReservationId": "system-ai:46150967010:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -157809,12 +157815,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46150967010:1",
-      "reservedAt": "2026-11-28T13:49:49.040Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -158519,7 +158525,8 @@
         "actions-run:46146125558",
         "system-ai-handoff-to-reservation:system-ai:46147170808:1",
         "system-ai-handoff-from-reservation:system-ai:46147170808:1",
-        "system-ai-handoff-to-reservation:system-ai:46150967010:1"
+        "system-ai-handoff-to-reservation:system-ai:46150967010:1",
+        "actions-run:46150967010"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 402,
@@ -158534,7 +158541,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T13:49:49.040Z"
+      "updatedAt": "2026-11-28T13:55:54.668Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
@@ -159337,7 +159344,7 @@
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -159371,7 +159378,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 4,
-      "previousReservationId": "system-ai:46149786639:1",
+      "previousReservationId": "system-ai:46150967010:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -159379,12 +159386,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46150967010:1",
-      "reservedAt": "2026-11-28T13:49:49.040Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -159548,7 +159555,13 @@
         "repair-strategy-fingerprint:8e0f1a3ebada4f07d9999d2701d03fdd22eaa5f9429d3b7ceede2ef974be625b",
         "failed-strategy-fingerprint:8e0f1a3ebada4f07d9999d2701d03fdd22eaa5f9429d3b7ceede2ef974be625b",
         "model-output-sha256:9547b5a52b0ccb80c30b230e3fcd514200c980bf2468512b7b81075090cbefc1",
-        "system-ai-handoff-to-reservation:system-ai:46150967010:1"
+        "system-ai-handoff-to-reservation:system-ai:46150967010:1",
+        "actions-run:46150967010",
+        "external-ai-raw-output-sha256:f07eaa286af341a35647df84d4d451b87048146814338807f963fa9a0a393519",
+        "system-ai-applied-answer-sha256:3517a8f6b38a2bd489352b09f3605ffa7f7d6860c4894d386961b255e7988ff3",
+        "repair-strategy-fingerprint:3dba49ce8a82934f140cb045a7088c468b54ae8dbf3d66d1fbda70aab89ec30c",
+        "failed-strategy-fingerprint:3dba49ce8a82934f140cb045a7088c468b54ae8dbf3d66d1fbda70aab89ec30c",
+        "model-output-sha256:f07eaa286af341a35647df84d4d451b87048146814338807f963fa9a0a393519"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 302,
@@ -159563,7 +159576,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T13:49:49.040Z"
+      "updatedAt": "2026-11-28T13:55:54.668Z"
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
