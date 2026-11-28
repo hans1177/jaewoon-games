@@ -4482,70 +4482,80 @@ local function confirmSail(r)
 	local layer = overlayGui("DepartConfirm", 25)
 	local dim = mkBox(layer, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), Color3.new(0, 0, 0), 0.45)
 	dim.ZIndex = 50
-	local card = mkBox(dim, UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(420, 300), Color3.fromRGB(24, 28, 38))
+	local card = mkBox(dim, UDim2.fromScale(0.5, 0.5), UDim2.fromScale(0.94, 0.88), COLORS.cover)
 	card.AnchorPoint = Vector2.new(0.5, 0.5)
 	card.ZIndex = 51
-	local cc = Instance.new("UICorner")
-	cc.CornerRadius = UDim.new(0, 10)
-	cc.Parent = card
-	local title = Instance.new("TextLabel")
-	title.BackgroundTransparency = 1
-	title.Position = UDim2.fromOffset(14, 10)
-	title.Size = UDim2.new(1, -28, 0, 26)
-	title.Font = Enum.Font.GothamBold
-	title.TextSize = 20
-	title.TextColor3 = COLORS.gold
-	title.TextXAlignment = Enum.TextXAlignment.Left
-	title.Text = string.format("출항 준비 · %s → %s", view.player.portName, r.name)
+	corner(card, 10)
+	local limit = Instance.new("UISizeConstraint")
+	limit.MaxSize = Vector2.new(560, 460)
+	limit.Parent = card
+	local edge = Instance.new("UIStroke")
+	edge.Color = BRASS
+	edge.Thickness = 2
+	edge.Parent = card
+	local title = mkLabel(card, "출항 준비", 22, COLORS.gold, true)
+	title.Position = UDim2.fromOffset(58, 8)
+	title.Size = UDim2.new(1, -120, 0, 40)
+	title.AutomaticSize = Enum.AutomaticSize.None
 	title.ZIndex = 52
-	title.Parent = card
+	if H.hasIconArt("harbor") then
+		local icon = modelIcon(card, "FacilityArt", "harbor", nil, 40, "출항")
+		icon.Position = UDim2.fromOffset(10, 6)
+		icon.ZIndex = 52
+	end
+	local close = mkButton(card, "닫기", COLORS.grey, UDim2.fromOffset(52, 44), function() layer:Destroy() end, true)
+	close.AnchorPoint = Vector2.new(1, 0)
+	close.Position = UDim2.new(1, -8, 0, 6)
+	local info = Instance.new("ScrollingFrame")
+	info.BackgroundTransparency = 1
+	info.BorderSizePixel = 0
+	info.Position = UDim2.fromOffset(12, 58)
+	info.Size = UDim2.new(1, -24, 1, -126)
+	info.CanvasSize = UDim2.new()
+	info.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	info.ScrollingDirection = Enum.ScrollingDirection.Y
+	info.ScrollBarThickness = 5
+	info.ZIndex = 52
+	info.Parent = card
+	local layout = Instance.new("UIListLayout")
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Padding = UDim.new(0, 8)
+	layout.Parent = info
 	local enough = view.ship.supplies >= (r.supplies or 0)
 	local lines = {
+		string.format("%s → %s", view.player.portName, r.name),
 		string.format("해역: %s · 거리 약 %d km · 예상 %d일", r.region or "", r.distanceKm or 0, r.days or 1),
 		string.format("보급품: %d / 필요 약 %d%s", view.ship.supplies, r.supplies or 0, if enough then "" else "  부족해요"),
 		string.format("선원: %d / %d · 선체: %d / %d", view.ship.crew, view.ship.maxCrew, view.ship.hull, view.ship.maxHull),
 		string.format("날씨: %s · 사기: %s", view.weather and view.weather.name or "맑음", tostring(view.morale or "-")),
-		"닻을 올리면 항해가 시작돼요. 바다에서 무슨 일이 생길지 아무도 몰라요.",
 	}
-	local info = Instance.new("TextLabel")
-	info.BackgroundTransparency = 1
-	info.Position = UDim2.fromOffset(14, 46)
-	info.Size = UDim2.new(1, -28, 0, 130)
-	info.Font = Enum.Font.Gotham
-	info.TextSize = 15
-	info.TextWrapped = true
-	info.TextXAlignment = Enum.TextXAlignment.Left
-	info.TextYAlignment = Enum.TextYAlignment.Top
-	info.TextColor3 = COLORS.text
-	info.Text = table.concat(lines, "\n")
-	info.ZIndex = 52
-	info.Parent = card
+	for i, line in lines do
+		local label = mkLabel(info, line, if i == 1 then 20 else 18, if i == 3 and not enough then COLORS.red else COLORS.text, i == 1, i)
+		label.ZIndex = 52
+	end
 	local modeBtn
 	local function paintMode()
-		-- 항해 장면은 ManualHelm 속성을 읽는다. 이 버튼도 같은 속성을 바꿔야 실제로 수동 항해가 된다.
 		local manualOn = player:GetAttribute("ManualHelm") ~= false
-		modeBtn.Text = if manualOn then "항해 방식: 직접 항해 (바람 고리 · 언제든 자동 전환)" else "항해 방식: 자동 항해"
+		modeBtn.Text = if manualOn then "직접 항해 · 바람 고리" else "자동 항해"
 		modeBtn.BackgroundColor3 = if manualOn then COLORS.gold else COLORS.blue
 	end
-	modeBtn = mkButton(card, "", COLORS.blue, UDim2.new(1, -28, 0, 34), function()
+	modeBtn = mkButton(info, "", COLORS.blue, UDim2.new(1, -10, 0, 48), function()
 		player:SetAttribute("ManualHelm", not (player:GetAttribute("ManualHelm") ~= false))
 		paintMode()
 	end, true)
-	modeBtn.Position = UDim2.fromOffset(14, 182)
-	modeBtn.ZIndex = 52
+	modeBtn.LayoutOrder = 6
 	paintMode()
-	local go = mkButton(card, "⚓ 닻 올리기", COLORS.green, UDim2.new(0.5, -20, 0, 40), function()
+	local go = mkButton(card, "닻 올리기", COLORS.gold, UDim2.new(0.58, -16, 0, 50), function()
 		layer:Destroy()
 		sail(r.id)
 	end, true)
-	go.Position = UDim2.new(0, 14, 1, -54)
-	go.ZIndex = 52
-	local cancel = mkButton(card, "취소", COLORS.red, UDim2.new(0.5, -20, 0, 40), function()
+	go.Position = UDim2.new(0.42, 4, 1, -58)
+	local cancel = mkButton(card, "취소", COLORS.grey, UDim2.new(0.42, -16, 0, 50), function()
 		layer:Destroy()
 	end, true)
-	cancel.Position = UDim2.new(0.5, 6, 1, -54)
-	cancel.ZIndex = 52
+	cancel.Position = UDim2.new(0, 12, 1, -58)
 end
+
 
 -- 이야기 장면: 코드로 그린 일러스트 + 대화 + 선택지 ----------------------------------------
 
@@ -17965,21 +17975,21 @@ openOptions = function(helpOnly)
 	limit.MaxSize = Vector2.new(560, 520)
 	limit.MinSize = Vector2.new(0, 0)
 	limit.Parent = win
-	local bar = mkBox(win, UDim2.fromScale(0, 0), UDim2.new(1, 0, 0, 46), Color3.fromRGB(40, 32, 18))
+	local bar = mkBox(win, UDim2.fromScale(0, 0), UDim2.new(1, 0, 0, 56), Color3.fromRGB(40, 32, 18))
 	corner(bar, 16)
 	local ttl = mkLabel(bar, if helpOnly then "항해 도움말" else "시스템 설정", 20, Color3.fromRGB(246, 208, 130), true)
 	ttl.Position = UDim2.fromOffset(16, 9)
-	ttl.Size = UDim2.new(1, -70, 0, 28)
+	ttl.Size = UDim2.new(1, -90, 0, 36)
 	ttl.AutomaticSize = Enum.AutomaticSize.None
-	local x = mkButton(bar, "X", Color3.fromRGB(150, 54, 54), UDim2.fromOffset(38, 32), closeOptions, true)
+	local x = mkButton(bar, "닫기", COLORS.grey, UDim2.fromOffset(56, 44), closeOptions, true)
 	x.AnchorPoint = Vector2.new(1, 0.5)
 	x.Position = UDim2.new(1, -8, 0.5, 0)
-	x.TextSize = 16
+	x.TextSize = 18
 	local body = Instance.new("ScrollingFrame")
 	body.BackgroundTransparency = 1
 	body.BorderSizePixel = 0
-	body.Position = UDim2.fromOffset(12, 54)
-	body.Size = UDim2.new(1, -24, 1, -64)
+	body.Position = UDim2.fromOffset(12, 64)
+	body.Size = UDim2.new(1, -24, 1, -76)
 	body.ScrollBarThickness = 4
 	body.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	body.CanvasSize = UDim2.new()
@@ -18005,27 +18015,10 @@ openOptions = function(helpOnly)
 			l.Size = UDim2.new(1, 0, 0, 22)
 			l.AutomaticSize = Enum.AutomaticSize.None
 		end
-		-- 한 줄: 이름 + 오른쪽 버튼들
+		-- 설정도 기존 시설 카드와 같은 모바일 재배치·44px 이상 조작 영역을 사용한다.
 		local function row(name, sub, buttons)
-			local r = mkBox(body, UDim2.new(), UDim2.new(1, -4, 0, 52), Color3.fromRGB(24, 34, 50))
+			local r = mkRow(body, name, sub, buttons, 78)
 			r.LayoutOrder = nxt()
-			corner(r, 10)
-			local n = mkLabel(r, name, 15, COLORS.text, true)
-			n.Position = UDim2.fromOffset(12, if sub then 7 else 15)
-			n.Size = UDim2.new(1, -24 - #buttons * 76, 0, 20)
-			n.AutomaticSize = Enum.AutomaticSize.None
-			if sub then
-				local sl = mkLabel(r, sub, 12, COLORS.muted, false)
-				sl.Position = UDim2.fromOffset(12, 28)
-				sl.Size = UDim2.new(1, -24 - #buttons * 76, 0, 18)
-				sl.AutomaticSize = Enum.AutomaticSize.None
-			end
-			for i, b in buttons do
-				local btn = mkButton(r, b.text, b.color or COLORS.blue, UDim2.fromOffset(68, 36), b.onClick, true)
-				btn.AnchorPoint = Vector2.new(1, 0.5)
-				btn.Position = UDim2.new(1, -8 - (#buttons - i) * 76, 0.5, 0)
-				btn.TextSize = 13
-			end
 		end
 		if not helpOnly then
 			section("⛵ 항해 방식")
@@ -19797,11 +19790,14 @@ do
 		dim.Parent = layer
 		-- [역사 이벤트] 책에서 지도와 기존 3D 무대가 등장한 뒤 선택창이 나타난다.
 		local recordHistory = H.historyCinematic(layer, ev)
-		local win = Instance.new("Frame")
+		local win = Instance.new("ScrollingFrame")
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.new(0, 520, 0, 0)
-		win.AutomaticSize = Enum.AutomaticSize.Y
+		win.Size = UDim2.fromScale(0.94, 0.88)
+		win.CanvasSize = UDim2.new()
+		win.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		win.ScrollingDirection = Enum.ScrollingDirection.Y
+		win.ScrollBarThickness = 5
 		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
 		win.Visible = false
@@ -19817,7 +19813,7 @@ do
 		wst.Parent = win
 		local limit = Instance.new("UISizeConstraint")
 		limit.MaxSize = Vector2.new(560, 640)
-		limit.MinSize = Vector2.new(280, 200)
+		limit.MinSize = Vector2.new(0, 0)
 		limit.Parent = win
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14), UDim.new(0, 16), UDim.new(0, 16)
@@ -19845,7 +19841,7 @@ do
 		if H.cinemaBars then H.cinemaBars(layer, 0.9) end
 		mkLabel(win, string.format("%d년 · %s", ev.year, ev.tag or "역사"), 13, COLORS.muted, false, 1)
 		mkLabel(win, ev.title, 22, Color3.fromRGB(246, 208, 130), true, 2)
-		mkLabel(win, ev.text, 15, COLORS.text, false, 3)
+		mkLabel(win, ev.text, 18, COLORS.text, false, 3)
 		for i, ch in ev.choices do
 			local row = Instance.new("Frame")
 			row.BackgroundTransparency = 1
@@ -19857,7 +19853,7 @@ do
 			rl.Padding = UDim.new(0, 2)
 			rl.Parent = row
 			local ok = (view and view.player and view.player.coins or 0) >= ch.cost
-			local b = mkButton(row, ch.label, COLORS.gold, UDim2.new(1, 0, 0, 40), function()
+			local b = mkButton(row, ch.label, COLORS.gold, UDim2.new(1, -8, 0, 54), function()
 				-- 서버가 선택을 승인해야만 책에 기록되는 효과를 준다. 판정과 보상은 그대로.
 				if not popupGui or popupFor ~= ev.id then return end
 				local response = call("HistoryChoose", { choice = ch.index })
@@ -19891,7 +19887,7 @@ do
 			end
 			mkLabel(win, "얽힌 인물: " .. table.concat(names, ", ") .. " — 만난 적이 있으면 지식 활용 보상이 커져요", 12, COLORS.muted, false, 17)
 		end
-		local later = mkButton(win, "나중에 정하기", COLORS.grey, UDim2.new(1, 0, 0, 34), function()
+		local later = mkButton(win, "나중에 정하기", COLORS.grey, UDim2.new(1, -8, 0, 48), function()
 			dismissed[ev.id] = true
 			closePopup()
 		end, true)
