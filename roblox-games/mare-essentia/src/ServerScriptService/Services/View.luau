@@ -703,7 +703,9 @@ return function(D, S)
 					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result,
 					rewardCoins = dq.rewardCoins, rewardFame = dq.rewardFame, rewardXp = dq.rewardCareer and dq.rewardXp or nil, rewardCareer = dq.rewardCareer,
 					receipt = state._questRewards and state._questRewards[dq.id] or nil,
-					nextName = D.Quests.NextOf[dq.id] and D.Quests.ById[D.Quests.NextOf[dq.id]] and D.Quests.ById[D.Quests.NextOf[dq.id]].name or nil })
+					nextName = D.Quests.NextOf[dq.id] and D.Quests.ById[D.Quests.NextOf[dq.id]] and D.Quests.ById[D.Quests.NextOf[dq.id]].name or nil,
+					rewardPermit = dq.rewardPermit and D.Ports.Ports[dq.rewardPermit] and D.Ports.Ports[dq.rewardPermit].name or nil,
+					rewardCard = dq.rewardCardId and D.Cards.ById[dq.rewardCardId] and D.Cards.ById[dq.rewardCardId].name or nil })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)

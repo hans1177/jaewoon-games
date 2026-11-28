@@ -13,7 +13,7 @@ test('메뉴 5묶음·하단 5버튼·건물 이름 보존', () => {
   const all = [...groups.matchAll(/"([a-z]+)"/g)].map(m => m[1]);
   for (const t of ['board','quest','route','trade','market','status','harbor','crew','recruit','scholar','yard','codex','encyclopedia','tech','map','diplomacy','explore','battle','gwent','war']) assert.ok(all.includes(t), t);
   assert.match(game, /H\.FACILITY_GROUPS = \{/);
-  assert.match(game, /setPortrait\(facilityGroup\.name\)/);
+  assert.match(game, /H\.pageDetails\.Text = if #grp\.tabs > 1 and tabName ~= placeName then p\.portName \.\. " · " \.\. tabName else p\.portName/);
   assert.match(game, /\{ "route", "항해", if H\.reserveIconAtlas\[3\] then "nav" else "route" \}/);
   assert.match(game, /\{ "trade", "교역", if H\.reserveIconAtlas\[3\] then "tradeg" else "trade" \}/);
   assert.match(game, /\{ "board", "모험", if H\.reserveIconAtlas\[3\] then "adventure" else "battle" \}/);
@@ -50,10 +50,27 @@ test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 
   assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
   assert.match(home, /d\.TextWrapped = true/);
   const trade = game.split('local function openTradeHall()')[1].split('H.tradeHall = openTradeHall')[0];
-  assert.match(trade, /local infoTop = 80/);
-  assert.match(trade, /big\.Position = UDim2\.new\(0\.5, 0, 0, articleTop \+ 8\)/);
+  assert.match(trade, /local specimenPx = if shortScreen then 56 else 96/);
+  assert.match(trade, /local infoTop = specimenPx \+ 14/);
+  assert.match(trade, /local narrow = width < 640/);
+  assert.match(trade, /math\.floor\(availableW \* 0\.43\)/);
+  assert.match(trade, /artTap\.Activated:Connect\(openSelectedGoodEncyclopedia\)/);
+  assert.doesNotMatch(trade, /TradeEncyclopediaGallery|TradeBookPage/);
+  assert.match(trade, /row\.Size = UDim2\.new\(1, -8, 0, 116\)/);
   assert.match(trade, /hg = mkButton\(desk,/);
-  assert.match(trade, /hg\.Position = UDim2\.new\(1\/3,/);
+  // 승인된 흥정 42% 중앙 배치와 구매/판매 양쪽 29%를 실제 소스와 대조한다.
+  assert.match(trade, /buy = mkButton\(desk, "구매", COLORS\.gold, UDim2\.new\(0\.29, -8, 0, if shortScreen then 44 else 54\)/);
+  assert.match(trade, /sell = mkButton\(desk, "판매", COLORS\.green, UDim2\.new\(0\.29, -8, 0, if shortScreen then 44 else 54\)/);
+  assert.match(trade, /hg = mkButton\(desk,[^\n]+UDim2\.new\(0\.42, -8, 0, if shortScreen then 44 else 54\)/);
+  assert.match(trade, /buy\.Position = UDim2\.fromOffset\(4, if shortScreen then 73 else 100\)/);
+  assert.match(trade, /hg\.Position = UDim2\.new\(0\.29, 4, 0, if shortScreen then 73 else 100\)/);
+  assert.match(trade, /sell\.Position = UDim2\.new\(0\.71, 4, 0, if shortScreen then 73 else 100\)/);
+  for (const width of [200, 240, 280, 320, 384, 480, 640]) {
+    const boxes = [[4, width * 0.29 - 8], [width * 0.29 + 4, width * 0.42 - 8], [width * 0.71 + 4, width * 0.29 - 8]];
+    assert.ok(boxes.every(([x, w]) => x >= 0 && w >= 44 && x + w <= width));
+    assert.ok(boxes[0][0] + boxes[0][1] <= boxes[1][0]);
+    assert.ok(boxes[1][0] + boxes[1][1] <= boxes[2][0]);
+  }
   const qty = trade.split('local function setQuantity(value)')[1].split('local function quantityButton')[0];
   assert.match(qty, /refreshReceipt\(\)/);
   assert.doesNotMatch(qty, /build\(\)/);
@@ -73,4 +90,193 @@ test('등록된 청동 안내 원화와 9분할 프레임만 선택적으로 연
   assert.match(home, /if frameArt then INK else/);
   assert.match(home, /b\.Activated:Connect/);
   assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
+});
+
+test("전면 재구성 메뉴: 가로 기능 레일, 세로 탭, 장식 전시장 제거, 실제 기능 본문 우선", () => {
+  const layout = game.split("function H.layoutBook()")[1].split("mainInner:GetPropertyChangedSignal")[0];
+  assert.match(layout, /local compactLandscape = width >= 600 and width > height and height < 440/);
+  assert.match(layout, /local rail = tabs and \(compactLandscape or \(width >= 700 and width > height and not facilityDetail and currentTab ~= "route" and currentTab ~= "tech"\)\)/);
+  assert.match(layout, /local bottomInset = if tabs and not rail then tabH \+ 10 else 6/);
+  assert.match(layout, /H\.menuRecentButton\.Visible = not not showRecent/);
+  assert.match(layout, /icon\.Size = UDim2\.fromOffset\(32, 32\)/);
+  assert.match(layout, /Enum\.ScrollingDirection\.Y else Enum\.ScrollingDirection\.X/);
+  assert.match(layout, /local tabH, gap = if rail and not compactLandscape then 50 else 62, 4/);
+  assert.match(layout, /tabBar\.Position = if rail then UDim2\.fromOffset\(6, headerH \+ 4\) else UDim2\.new\(0, 6, 1, -tabH - 6\)/);
+  assert.match(layout, /content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - bottomInset\)/);
+  assert.doesNotMatch(game, /function H\.renderFacilityGallery|H\.facilityGallery|H\.menuFocusBanner|H\.menuActionDock/);
+  const render = game.split("function render()")[1].split("-- [단일 시작 화면]")[0];
+  assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.menuHomeStrip()"));
+  assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.firstTimeCoach(currentTab)"));
+});
+
+test('항해·연구 선택과 상세를 분리하고 실제 서버 행동을 하단에 둔다', () => {
+  const route = game.split('function RENDERERS.route()')[1].split('local openYardHall')[0];
+  const tech = game.split('function RENDERERS.tech()')[1].split('function RENDERERS.quest()')[0];
+  for (const [body, prefix, list] of [[route, 'Route', 'RouteDestinationList'], [tech, 'Research', 'ResearchTechnologyList']]) {
+    assert.ok(body.includes('"' + list + '"'));
+    for (const suffix of ['Decision', 'ActionBar', 'Select']) assert.ok(body.includes('"' + prefix + suffix + '"'));
+    assert.match(body, /root\.AbsoluteSize\.X >= 640/);
+    assert.match(body, /list\.Visible = wide or selected == nil/);
+    assert.match(body, /detail\.Visible = wide or selected ~= nil/);
+    assert.match(body, /footer\.Size = UDim2\.new\(if wide then 0\.57 else 1, if wide then -5 else 0, 0, 48\)/);
+    assert.match(body, /root\.Destroying:Connect\(function\(\) resize:Disconnect\(\) end\)/);
+    assert.match(body, /bookmark\.Name = "SelectedBookmark"/);
+    assert.match(body, /ReducedMotionEnabled/);
+    assert.match(body, /Scale = 1\.08/);
+  }
+  for (const name of ['RouteMiniChartMap', 'RouteSupplyMeter', 'RouteCoalMeter', 'RouteCargoProfit']) assert.ok(route.includes(name));
+  assert.match(route, /confirmSail\(selected\)/);
+  assert.match(route, /call\("WaitDay", \{\}\)/);
+  assert.match(route, /if selected and not selected\.locked then/);
+  assert.match(route, /H\.routeListScroll = list\.CanvasPosition\.Y/);
+  assert.match(tech, /ResearchProgress/);
+  assert.match(tech, /previous < completed/);
+  assert.match(tech, /ResearchBudgetMeter/);
+  assert.match(tech, /not selected\.owned and selected\.blocked == nil and \(selected\.cost or 0\) <= coins/);
+  assert.match(tech, /call\("Research", \{ techId = selected\.id \}\)/);
+});
+
+test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', () => {
+  const harbor = game.split('function RENDERERS.harbor()')[1].split('function RENDERERS.recruit()')[0];
+  const crew = game.split('function RENDERERS.crew()')[1].split('function RENDERERS.status()')[0];
+  const captain = game.split('function RENDERERS.status()')[1].split('function intelName')[0];
+  const explore = game.split('function RENDERERS.explore()')[1].split('-- 학자 방문')[0];
+  for (const key of ['HarborFacilityIndex', 'HarborConstructionProgress', 'BankEntry']) assert.ok(harbor.includes(key), key);
+  for (const key of ['Deposit','Withdraw','Borrow','Repay','BuildStage','BuyLicense','BuyInsurance','Audience','Invest','Resupply','Rumor']) assert.ok(harbor.includes('call("' + key + '"'), key);
+  assert.match(harbor, /H\.bankVisitPending then H\.harborPage = "finance"/);
+  for (const key of ['CaptainSectionIndex', 'CaptainFullBody', 'CaptainApprovedPortrait', 'WeaponMasteryStages', 'CareerExperienceMeter','SpecialtyExperienceMeter']) assert.ok(captain.includes(key), key);
+  assert.match(captain, /character:Clone\(\)/);
+  assert.match(captain, /view\.weaponPractice/);
+  assert.match(captain, /local thresholds = \{ 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 \}/);
+  assert.match(captain, /WeaponMasteryExperience/);
+  assert.match(captain, /Weapons\.actionDesign\(weapon\)/);
+  assert.match(captain, /stage:SetAttribute\("MasteryUnlocked", i <= rank\)/);
+  assert.match(captain, /stage\.Activated:Connect/);
+  assert.match(captain, /MasteryMotionPreview/);
+  assert.match(captain, /if activePreview then activePreview:Destroy\(\) end/);
+  assert.match(captain, /fm\.weaponCombo\(profile, i\)/);
+  assert.match(captain, /fm\.new\(model, false\)/);
+  assert.match(captain, /model:GetAttribute\("FieldJointReady"\)/);
+  assert.match(captain, /fm\.sample\(combo, math\.min\(elapsed, duration\), rig\.canon\)/);
+  assert.match(captain, /while panel\.Parent and main\.Visible and elapsed < duration do/);
+  assert.match(captain, /fm\.destroy\(rig\)/);
+  assert.match(captain, /local reduced = game:GetService\("GuiService"\)\.ReducedMotionEnabled/);
+  assert.match(captain, /if rank >= 8 then "필살기 해금/);
+  assert.match(captain, /local cols = math\.clamp\(math\.floor\(\(width \+ 4\) \/ 48\), 1, 5\)/);
+  assert.match(captain, /local height = math\.ceil\(10 \/ cols\) \* 48 - 4/);
+  assert.match(captain, /grid\.CellSize = UDim2\.new\(1 \/ cols, -4 \* \(cols - 1\) \/ cols, 0, 44\)/);
+  assert.match(captain, /view\.fieldStreakBest/);
+  assert.match(captain, /gearDefs\[g\.id\]\.perk/);
+  for (const key of ['ToggleGear','BuyGear','SetSpecialty','SetSubSpecialty']) assert.ok(captain.includes('call("' + key + '"'), key);
+  assert.match(crew, /CrewSectionIndex/);
+  assert.match(crew, /H\.openCabin\(\)/);
+  assert.match(crew, /call\("Station",/);
+  assert.match(explore, /ExploreFilterIndex/);
+  assert.match(explore, /ExploreDifficultyMeter/);
+  assert.match(explore, /enabled = site\.unlocked and site\.left > 0/);
+  assert.match(explore, /H\.startField\(site\)/);
+});
+
+test('의뢰 선택 시 실제 상세만 노출하고 탐험 경로를 단서와 목적지로 표시한다', () => {
+  const quest = game.split('function RENDERERS.quest()')[1].split('-- 주점의 지식 카드 배틀')[0];
+  assert.match(quest,/JournalVisualSections/);
+  assert.match(quest,/for _, q in \(if selected then \{ selected \} else active\) do/);
+  assert.match(quest,/H\.questDetailId = nil; content\.CanvasPosition = Vector2\.zero; render\(\)/);
+  assert.match(quest,/FieldRoutePath/);
+  assert.match(quest,/route\.leadSource or "현지 탐험"/);
+  assert.match(quest,/route\.port/);
+  assert.match(quest,/openTab\(targetTab\)/);
+});
+
+
+test('숙련 시연은 기존 실전 무기 장착 책임 함수와 실제 단계 해금 연출을 재사용한다',()=>{
+  const game=fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau','utf8');
+  const field=fs.readFileSync('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau','utf8');
+  assert.equal((field.match(/function FieldScene\.equipFieldWeapon\(/g)||[]).length,1);
+  assert.match(field,/FieldScene\.equipFieldWeapon\(player\.Character, wpn\)/);
+  assert.match(game,/pcall\(sceneModule\.equipFieldWeapon, model, weapon\)/);
+  assert.match(game,/equipped and source == "registered"/);
+  assert.match(game,/MasterySelectionRim/);
+  assert.match(field,/showCombo\(string.format\("%s 숙련 %d단! · %s 해금", wpn.name, rank, unlocked\), true/);
+});
+
+
+test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순서를 표시한다',()=>{
+  const start=game.indexOf('function H.openCabin()');
+  const cabin=game.slice(start,game.indexOf('-- [방문 단일화]',start));
+  assert.ok(start>=0 && cabin.length>1000);
+  for(const name of ['CabinStationBoard','CabinCompanionRoster','StationMatched','SelectedCompanionFits','FieldSupportOrder','CurrentStation','CabinSupportSkills']) assert.ok(cabin.includes(name),name);
+  assert.match(cabin,/c\.joined and supportCount < 2/);
+  assert.match(cabin,/jobs\.Categories\[c\.role or ""\]/);
+  assert.match(cabin,/skill\.name \.\. " " \.\. tostring\(skill\.cooldown\)/);
+  assert.match(cabin,/call\("Station", \{ companionId = id, station = stationId \}\)/);
+  assert.match(cabin,/call\("AutoStations"\)/);
+  assert.match(cabin,/root\.ScrollingEnabled = true/);
+  assert.match(cabin,/local slotColumns = if availableWidth >= 338 then 2 else 1/);
+  for(const width of [320,375,568,760,1024]){
+    const wide=width>=760;
+    const available=wide?width*.58-12:width-16;
+    const slots=available>=338?2:1;
+    const columns=Math.max(1,Math.floor((available-4)/150));
+    assert.ok((available-12)/slots-10>120);
+    assert.ok(Math.ceil(6/slots)*112+42>Math.ceil(6/slots)*104+34);
+    assert.ok((available-12)/columns-8>=130);
+  }
+});
+
+ test('해전 출격·스킬·기록과 함대전 선택 상세는 기존 행동을 유지한다',()=>{
+ const war=game.split('function RENDERERS.war()')[1].split('function RENDERERS.battle()')[0];
+ const battle=game.split('function RENDERERS.battle()')[1].split('H.selectedMapPort = nil')[0];
+ assert.ok(war.includes('H.warDetailId = c.id'));
+ assert.ok(war.includes('c.blocked == nil and w == nil'));
+ assert.ok(war.includes('call("WarStart", { id = c.id })'));
+ assert.ok(war.includes('call("WarNext")'));
+ assert.ok(battle.includes('NavalBattleSectionIndex'));
+ for(const action of ['Hunt','ChallengeBoss','SetLoadout']) assert.ok(battle.includes('call("'+action+'"'));
+ assert.ok(battle.includes('elseif page == "log" then'));
+ assert.ok(battle.includes('view.lastBattle.log'));
+ assert.ok(battle.includes('H.battleMenuPage = spec[1]'));
+});
+
+ test('외교·시장·은행 메뉴 분리와 기존 서버 행동 보존',()=>{
+ const market=game.split('function RENDERERS.market()')[1].split('function RENDERERS.route()')[0];
+ const diplo=game.split('function RENDERERS.diplomacy()')[1].split('function RENDERERS.map()')[0];
+ assert.ok(market.includes('MarketSectionIndex'));
+ for(const action of ['MarketList','MarketPost','MarketBuy','MarketCancel','MailInbox','MailClaim','MailSend','AcceptContract','TurnInContract','AbandonContract']) assert.ok(market.includes('call("'+action+'"'));
+ assert.ok(market.includes('UDim2.new(0.62, -12, 0, 44)'));
+ assert.ok(diplo.includes('DiplomacySectionIndex'));
+ for(const action of ['DiploGift','DiploPass','DiploAid','VoyagerMeet']) assert.ok(diplo.includes('call("'+action+'"'));
+ assert.ok(game.includes('BankAmountSelector'));
+ for(const action of ['Deposit','Withdraw','Borrow','Repay']) assert.ok(game.includes('call("'+action+'", { amount = amt })'));
+});
+
+ test('주점과 조선소의 기능 분리는 기존 행동과 구매 조건을 보존한다',()=>{
+ const tavern=game.split('function RENDERERS.board()')[1].split('function RENDERERS.war()')[0];
+ assert.ok(tavern.includes('TavernSectionIndex'));
+ for(const action of ['TavernJob','TavernAbandon','TavernPick','TavernDecline','TavernRumor','TavernDrink','TavernTalk','TavernStranger']) assert.ok(tavern.includes('call("'+action+'"'));
+ assert.ok(tavern.includes('playStory(ev)'));
+ assert.ok(tavern.includes('H.tavernOfferKey ~= offerKey'));
+ const yard=game.split('local function renderYard(page)')[1].split('H.yardHall = openYardHall')[0];
+ for(const page of ['maintenance','fleet','refit','compare','blueprints']) assert.ok(yard.includes('"'+page+'"'));
+ for(const action of ['Repair','HireCrew','BuySupplies','BuyEscort','DismissEscort','SetFlagship','SellFleetShip','BuyFleetShip','BuyCannon','BuyPlating','BuyShip']) assert.ok(yard.includes('call("'+action+'"'));
+ assert.ok(yard.includes('YardSectionNavigation'));
+ assert.ok(yard.includes('if showGallery then'));
+ assert.ok(yard.includes('H.yardMenuPage = page'));
+});
+
+test('출항·설정·역사 팝업은 모바일 화면과 기존 조작을 보존한다', () => {
+  const depart = game.split('local function confirmSail(r)')[1].split('-- 이야기 장면:')[0];
+  const options = game.split('openOptions = function(helpOnly)')[1].split('local function draw()')[0];
+  const optionDraw = game.split('openOptions = function(helpOnly)')[1].split('section("⛵ 항해 방식")')[0];
+  const history = game.split('local function openPopup(ev)')[1].split('task.spawn(function()')[0];
+  for (const token of ['UDim2.fromScale(0.94, 0.88)', 'AutomaticCanvasSize = Enum.AutomaticSize.Y', 'modelIcon(card, "FacilityArt", "harbor"', 'player:SetAttribute("ManualHelm"', 'sail(r.id)', 'UDim2.new(0.58, -16, 0, 50)']) assert.ok(depart.includes(token), token);
+  assert.ok(options.includes('UDim2.fromOffset(56, 44)'));
+  assert.ok(optionDraw.includes('mkRow(body, name, sub, buttons, 78)'));
+  for (const token of ['Instance.new("ScrollingFrame")', 'AutomaticCanvasSize = Enum.AutomaticSize.Y', 'call("HistoryChoose"', 'recordHistory()', 'dismissed[ev.id] = true', 'UDim2.new(1, -8, 0, 54)']) assert.ok(history.includes(token), token);
+  for (const [width,height] of [[320,568],[375,667],[568,320],[832,384],[1024,768]]) {
+    const w=Math.min(560,width*.94), h=Math.min(460,height*.88);
+    assert.ok(w*.42-16>=44 && w*.58-16>=44);
+    assert.ok(h-126>=100);
+    assert.ok(12+w*.42-16 < w*.42+4);
+  }
 });
