@@ -9,7 +9,7 @@ const view = fs.readFileSync(`${root}/src/ServerScriptService/Services/View.luau
 test('서버 판정·한 번·4~12%', () => {
   assert.match(trade, /function handlers\.HaggleStart\(state, p, ctx\)/);
   assert.match(trade, /function handlers\.HagglePlay\(state, p, ctx\)/);
-  assert.match(trade, /local HAGGLE_GAMES = \{ "scale", "face", "coin", "quiz" \}/);
+  assert.match(trade, /local HAGGLE_GAMES = \{ "face", "coin", "quiz" \}/);
   assert.match(trade, /pct = math\.clamp\(pct, 0, 12\)/);
   assert.match(trade, /h\.tried\[pend\.goodId\] = true/);
 });
@@ -18,7 +18,7 @@ test('화면에 정답을 보내지 않음(퀴즈 답·판정)', () => {
   assert.doesNotMatch(pend, /answer|limit =/);
 });
 test('교역소 버튼·4가지 화면·그냥 사기', () => {
-  assert.match(game, /"🎲 흥정 게임"/);
+  assert.match(game, /"흥정 게임"/);
   assert.match(game, /function H\.openHaggle\(goodId, goodName\)/);
   for (const g of ['scale', 'face', 'coin']) assert.match(game, new RegExp(`pend\\.game == "${g}"`));
   assert.match(game, /"그냥 사기"/);

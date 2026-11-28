@@ -62,7 +62,7 @@ return function(D, S)
 		return keys
 	end
 
-	function View.build(state, ctx)
+	function View.build(state: any, ctx)
 		local port = D.Ports.Ports[state.portId]
 		local def = S.State.shipDef(state)
 		local year = S.State.year(state)
@@ -157,8 +157,9 @@ return function(D, S)
 				pending = (function()
 					local pend = h and h.portId == port.id and h.pending
 					if not pend then return nil end
-					return { goodId = pend.goodId, game = pend.game, period = pend.period, center = pend.center, width = pend.width,
-						faces = pend.faces, count = pend.count, looks = (function()
+					return { goodId = pend.goodId, game = pend.game, started = pend.started, duration = pend.duration,
+						weights = pend.weights, target = pend.target, pieces = pend.pieces, goods = pend.goods, sequence = pend.sequence,
+						count = pend.count, looks = (function()
 							-- 동전 생김새(보고 고르는 게 놀이): 진짜 1개 + 가짜는 저마다 다른 흠(테두리 깨짐·색 다름·문양 흐림) — 맨 위 '정품 견본'과 비교
 							if not pend.count then return nil end
 							local l = {}
@@ -699,7 +700,10 @@ return function(D, S)
 				-- [장 완료·결과 연출] 장 제목과 그 장의 마지막 단계인지(다음 단계 없음) 함께 보낸다.
 				local chapterName = dq.chapter or (string.find(dq.summary or "", " — ", 1, true) and string.sub(dq.summary, 1, (string.find(dq.summary, " — ", 1, true) :: number) - 1)) or nil
 				table.insert(view.quests.done, { id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending,
-					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result })
+					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result,
+					rewardCoins = dq.rewardCoins, rewardFame = dq.rewardFame, rewardXp = dq.rewardCareer and dq.rewardXp or nil, rewardCareer = dq.rewardCareer,
+					receipt = state._questRewards and state._questRewards[dq.id] or nil,
+					nextName = D.Quests.NextOf[dq.id] and D.Quests.ById[D.Quests.NextOf[dq.id]] and D.Quests.ById[D.Quests.NextOf[dq.id]].name or nil })
 			end
 		end
 		table.sort(view.quests.done, function(a, b) return a.name < b.name end)
@@ -1175,6 +1179,11 @@ return function(D, S)
 		view.village = S.Village.view(state)
 		view.scenes = state._scenes -- 이번에 새로 생긴 퀘스트 이야기 장면 (한 번만 보낸다)
 		state._scenes = nil
+		state._questRewards = nil -- 일회성 보상 표시, 저장하지 않는다
+		view.bossReward = state._bossReward
+		state._bossReward = nil
+		view.fieldReward = state._fieldReward
+		state._fieldReward = nil
 		view.bosses = {}
 		for _, b in D.Bosses.Bosses do
 			local rec = state.bosses[b.id]

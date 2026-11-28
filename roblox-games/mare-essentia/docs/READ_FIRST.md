@@ -1,5 +1,7 @@
 # mare-essentia — 모든 작업자 필독 (READ FIRST)
 
+> **인물 사실 묘사 공통 필수 규칙 (2026-11-28 오너 지시):** 인물이 등장할 때 미남·미녀로 획일화하거나 미화하지 않는다. 나이·직업·생활환경에 맞는 얼굴형, 체형, 피부 결, 주름, 비대칭, 머리와 손, 자연스러운 표정과 자세를 사실적으로 묘사한다. 현대 모델 같은 외모·보정 피부·과장된 미형·문화권 고정관념을 피하고 인물마다 개성을 살린다. 기존 역사 고증·회화 화풍·실존 인물 얼굴 제한을 지키며 인물이 없는 소재에는 사람을 억지로 추가하지 않는다.
+
 > 저장소 처음이면 루트 `START_HERE.md`부터(중앙정책 4종 위치·멈춤 금지 문장). 이 파일과 아래 지시서는 전부 raw 주소로도 읽힌다: `https://raw.githubusercontent.com/hans1177/jaewoon-games/main/roblox-games/mare-essentia/docs/<파일>`
 
 **ChatGPT·Claude·Codex·Copilot·Cursor·Gemini·바이브코딩 도구 등 누구든 `mare-essentia`를 만지기 전에 이 파일과 아래 해당 지시서를 반드시 읽고 그대로 따른다.**

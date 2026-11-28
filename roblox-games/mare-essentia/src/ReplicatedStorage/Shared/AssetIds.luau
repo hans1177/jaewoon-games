@@ -1,6 +1,7 @@
 -- 자동 생성: tools/mare-essentia-upload-assets.mjs (직접 고치지 말 것)
 return {
 	["Animals/cat"] = 79373455239272,
+	["Animals/cat_v2"] = 96920877055110,
 	["Animals/chicken"] = 82991790164266,
 	["Animals/cow"] = 83562948192460,
 	["Animals/discovery_bald_eagle"] = 125611148420114,

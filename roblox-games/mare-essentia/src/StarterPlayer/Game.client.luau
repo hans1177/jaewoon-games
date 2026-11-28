@@ -864,13 +864,14 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		local portrait = Instance.new("ImageLabel")
 		portrait.Size = UDim2.fromOffset(px, px)
 		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
-		if portraitOffset then
+		local useAtlas = portraitOffset ~= nil and string.sub(asset, 1, 5) ~= "comp_"
+		if useAtlas then
 			local k = sheetK(asset)
 			portrait.ImageRectOffset = portraitOffset * k
 			-- 정사각 칸에 세로로 긴 초상(256x336)을 넣으면 위아래가 잘려 머리가 잘린다: 위쪽 정사각(머리~어깨)만 쓴다.
 			portrait.ImageRectSize = Vector2.new(256, 256) * k
 		end
-		portrait.ScaleType = if portraitOffset then Enum.ScaleType.Crop else Enum.ScaleType.Fit
+		portrait.ScaleType = if useAtlas then Enum.ScaleType.Crop else Enum.ScaleType.Fit
 		H.iconPaper(portrait, px)
 		portrait.Parent = parent
 		return portrait
@@ -1785,6 +1786,13 @@ for _, nid in NATION_LIST do
 	end
 	H.captainChoices[nid] = out
 end
+-- [개별 동료 초상] 등록된 원본만 기존 배정표에 연결한다.
+for key in AssetIds do
+	local id = string.match(key, "^Portraits/comp_([%w_]+)$")
+	if id then
+		COMPANION_PORTRAIT[id] = { atlas = "comp_" .. id, offset = Vector2.zero, size = Vector2.zero }
+	end
+end
 end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
@@ -1821,6 +1829,8 @@ local HERO_TILE = {
 }
 -- 연도와 항구에 맞는 승인·등록 초상을 고른다.
 function H.heroPortraitAsset(nationId)
+	local own = nationId and AssetIds["Portraits/hero_" .. nationId]
+	if own then return own, Vector2.zero, Vector2.zero end
 	local year = if view and view.player and not newGameMode then view.player.year else chosenYear
 	local atlas = if year and year >= 1700 then AssetIds["Portraits/heroes_color"]
 		elseif year and year < 1600 then AssetIds["Portraits/heroes_1517"] else nil
@@ -1875,6 +1885,9 @@ do
 		west_africa = { harbor = 2, yard = 6 },
 	}
 	function H.facilityPortraitAsset(portId, role)
+		local keeperKey = if role == "merchant" then "trade" else role
+		local own = keeperKey and AssetIds["Portraits/npc_keeper_" .. keeperKey]
+		if own then return own, Vector2.zero, Vector2.zero end
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
 		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard" and role ~= "scholar") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
@@ -1960,6 +1973,7 @@ local function setPortrait(groupName)
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
 	portraitImage.ImageRectOffset = offset or Vector2.zero
 	portraitImage.ImageRectSize = heroSize or regionalSize or (if offset then PORTRAIT_SIZE else Vector2.zero)
+	portraitImage.ScaleType = if portraitImage.ImageRectSize == Vector2.zero then Enum.ScaleType.Fit else Enum.ScaleType.Crop
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -4234,7 +4248,19 @@ local function call(action, payload)
 		if H.checkWorldEvents then H.checkWorldEvents() end
 		if H.checkQuestResults then H.checkQuestResults() end
 		if H.checkQuestTalks then H.checkQuestTalks() end
-		if view.scenes and #view.scenes > 0 and H.playQuestScenes then H.playQuestScenes(view.scenes) end
+		if view.scenes and #view.scenes > 0 and H.playQuestScenes then
+			local scenes = {}
+			for _, sc in view.scenes do
+				local completed = false
+				if sc.kind == "end" then
+					for _, d in (view.quests and view.quests.done or {}) do
+						if d.name == sc.name and H.seenDoneQuests and H.seenDoneQuests[tostring(d.id or d.name)] then completed = true; break end
+					end
+				end
+				if not completed then table.insert(scenes, sc) end
+			end
+			H.playQuestScenes(scenes)
+		end
 	end
 	if result.message and result.message ~= "" then
 		message, messageOk = result.message, result.ok
@@ -5919,6 +5945,7 @@ function playStory(ev)
 		local pk = if cport.atlas then sheetK(cport.atlas) else 1
 		ph.ImageRectOffset = cport.offset * pk
 		ph.ImageRectSize = (cport.size or Vector2.new(256, 336)) * pk
+		if ph.ImageRectSize == Vector2.zero then ph.ScaleType = Enum.ScaleType.Fit end
 		corner(ph, 10)
 		local pst = Instance.new("UIStroke")
 		pst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -6012,9 +6039,11 @@ function playStory(ev)
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
 	chapter.Position = UDim2.fromOffset(0, 14)
-	chapter.Size = UDim2.new(1, 0, 0, 30)
+	chapter.Size = UDim2.new(1, -140, 0, 64)
+	chapter.Position = UDim2.fromOffset(8, 4)
 	chapter.Font = Enum.Font.GothamBold
-	chapter.TextSize = 21
+	chapter.TextSize = if storyViewport.X < 600 then 26 else 30
+	chapter.TextWrapped = true
 	chapter.TextXAlignment = Enum.TextXAlignment.Center
 	chapter.TextColor3 = Color3.new(1, 1, 1)
 	chapter.TextStrokeTransparency = 1
@@ -6023,32 +6052,49 @@ function playStory(ev)
 	chapter.Parent = overlay
 
 	-- 대화창
-	local box = mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(24, 28, 38))
+	local split = if storyViewport.Y < 460 then 0.34 else 0.46
+	local box = mkBox(overlay, UDim2.fromScale(0, split), UDim2.fromScale(1, 1 - split), Color3.fromRGB(24, 28, 38))
 	local nameTag = Instance.new("TextLabel")
 	nameTag.BackgroundTransparency = 1
 	nameTag.Position = UDim2.fromOffset(14, 6)
 	nameTag.Size = UDim2.new(1, -28, 0, 28)
 	nameTag.Font = Enum.Font.GothamBold
-	nameTag.TextSize = 20
+	nameTag.TextSize = 24
 	nameTag.TextXAlignment = Enum.TextXAlignment.Left
 	nameTag.TextColor3 = COLORS.gold
 	nameTag.Text = ev.npc
 	nameTag.Parent = box
+	local dialogue = Instance.new("ScrollingFrame")
+	dialogue.Name = "StoryDialogueScroll"
+	dialogue.BackgroundTransparency = 1
+	dialogue.BorderSizePixel = 0
+	dialogue.Position = UDim2.fromOffset(14, 38)
+	dialogue.Size = UDim2.new(1, -28, 1, -94)
+	dialogue.CanvasSize = UDim2.new()
+	dialogue.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	dialogue.ScrollBarThickness = 5
+	dialogue.ScrollingDirection = Enum.ScrollingDirection.Y
+	dialogue.Parent = box
 	local text = Instance.new("TextLabel")
 	text.BackgroundTransparency = 1
-	text.Position = UDim2.fromOffset(14, 38)
-	text.Size = UDim2.new(1, -28, 1, -56)
+	text.Size = UDim2.new(1, -8, 0, 0)
+	text.AutomaticSize = Enum.AutomaticSize.Y
 	text.Font = Enum.Font.Gotham
-	text.TextSize = 21
+	text.TextSize = if storyViewport.Y < 460 then 22 else 26
 	text.TextWrapped = true
 	text.TextXAlignment = Enum.TextXAlignment.Left
 	text.TextYAlignment = Enum.TextYAlignment.Top
 	text.TextColor3 = COLORS.text
-	text.Parent = box
+	text.Parent = dialogue
 	local next = Instance.new("TextButton")
-	next.BackgroundTransparency = 1
-	next.Size = UDim2.fromScale(1, 1)
-	next.Text = ""
+	next.Name = "StoryNext"
+	next.BackgroundColor3 = Color3.fromRGB(65, 48, 29)
+	next.BackgroundTransparency = 0.1
+	next.Position = UDim2.new(0, 14, 1, -50)
+	next.Size = UDim2.new(1, -28, 0, 44)
+	next.Text = "다음 대사"
+	next.TextSize = 20
+	next.TextColor3 = COLORS.gold
 	next.ZIndex = 2
 	next.Parent = box
 	local hint = Instance.new("TextLabel")
@@ -6056,18 +6102,20 @@ function playStory(ev)
 	hint.Position = UDim2.new(0, 0, 1, -24)
 	hint.Size = UDim2.new(1, -12, 0, 20)
 	hint.Font = Enum.Font.Gotham
-	hint.TextSize = 15
+	hint.TextSize = 18
 	hint.TextXAlignment = Enum.TextXAlignment.Right
 	hint.TextColor3 = COLORS.muted
-	hint.Text = "화면을 누르면 다음"
+	hint.Text = ""
 	hint.Parent = box
 
 	local function typeLine(line)
+		dialogue.CanvasPosition = Vector2.zero
 		text.Text = line
+		if game:GetService("GuiService").ReducedMotionEnabled then text.MaxVisibleGraphemes = -1; return end
 		text.MaxVisibleGraphemes = 0
 		local n = utf8.len(line) or #line
 		for i = 1, n do
-			if not overlay.Parent then
+			if not overlay.Parent or text.Text ~= line or text.MaxVisibleGraphemes == -1 then
 				return
 			end
 			text.MaxVisibleGraphemes = i
@@ -6086,13 +6134,18 @@ function playStory(ev)
 	local function showChoices()
 		next:Destroy()
 		hint.Text = ""
-		text.Size = UDim2.new(1, -28, 0, 64)
+		dialogue.Size = UDim2.new(1, -28, 0.32, 0)
+		dialogue.CanvasPosition = Vector2.zero
+		text.MaxVisibleGraphemes = -1
 		text.Text = ev.lines[#ev.lines]
-		text.TextSize = 19
-		local list = Instance.new("Frame")
+		text.TextSize = 22
+		local list = Instance.new("ScrollingFrame")
+		list.CanvasSize = UDim2.new()
+		list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		list.ScrollBarThickness = 5
 		list.BackgroundTransparency = 1
-		list.Position = UDim2.fromOffset(14, 108)
-		list.Size = UDim2.new(1, -28, 1, -114)
+		list.Position = UDim2.new(0, 14, 0.32, 44)
+		list.Size = UDim2.new(1, -28, 0.68, -70)
 		list.Parent = box
 		local lay = Instance.new("UIListLayout")
 		lay.Padding = UDim.new(0, 5)
@@ -6118,8 +6171,9 @@ function playStory(ev)
 						end
 					end
 					nameTag.Text = ""
-					text.TextSize = 20
-					text.Size = UDim2.new(1, -28, 1, -90)
+					text.TextSize = 22
+					dialogue.Size = UDim2.new(1, -28, 1, -100)
+					dialogue.CanvasPosition = Vector2.zero
 					text.Text = result.message
 					text.MaxVisibleGraphemes = -1
 					if ev.art == "epilogue" then
@@ -6131,19 +6185,20 @@ function playStory(ev)
 					list.Size = UDim2.new(1, -28, 0, 48)
 				end
 			end, true)
-			b.TextSize = 18
+			b.TextSize = 22
 		end
 	end
 	next.Activated:Connect(function()
 		if advancing then
 			return
 		end
+		if text.MaxVisibleGraphemes ~= -1 then text.MaxVisibleGraphemes = -1; return end
 		advancing = true
 		idx += 1
 		if idx > #ev.lines then
 			showChoices()
 		else
-			typeLine(ev.lines[idx])
+			task.spawn(typeLine, ev.lines[idx])
 		end
 		advancing = false
 	end)
@@ -6153,7 +6208,7 @@ function playStory(ev)
 		skip.Name = "StorySkip"
 		skip.AnchorPoint = Vector2.new(1, 0)
 		skip.Position = UDim2.new(1, -12, 0, 12)
-		skip.Size = UDim2.fromOffset(112, 36)
+		skip.Size = UDim2.fromOffset(124, 44)
 		skip.BackgroundColor3 = Color3.fromRGB(24, 20, 16)
 		skip.BackgroundTransparency = 0.25
 		skip.Text = "건너뛰기 ▶▶"
@@ -7996,11 +8051,11 @@ local function openTradeHall()
 			quantityButton(2, "+", function() setQuantity(qty + 1) end)
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
-			buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() if maxBuy >= qty then call("Buy", { goodId = sel.id, amount = qty }) end end, true)
+			buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(0.29, -8, 0, if shortScreen then 52 else 60), function() if maxBuy >= qty then call("Buy", { goodId = sel.id, amount = qty }) end end, true)
 			buy.Position = UDim2.fromOffset(4, if shortScreen then 84 else 106)
 			buy.TextSize = if narrow then 15 else 17
-			sell = mkButton(desk, "판매", COLORS.green, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(2/3, 4, 0, if shortScreen then 84 else 106)
+			sell = mkButton(desk, "판매", COLORS.green, UDim2.new(0.29, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sell.Position = UDim2.new(0.71, 4, 0, if shortScreen then 84 else 106)
 			sell.TextSize = if narrow then 15 else 17
 			refreshReceipt()
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
@@ -8021,11 +8076,11 @@ local function openTradeHall()
 			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			alert.TextWrapped = true
-			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			local hg = mkButton(desk, if sel.lock then "잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "흥정 게임", COLORS.grey, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			-- [흥정 미니게임] 확정 5종 중 서버 무작위 출제. 구매·판매 사이 황동 버튼.
+			local hg = mkButton(desk, if sel.lock then "흥정 잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인 적용" elseif tried then "흥정 완료" else "흥정하기\n4~12% 할인", COLORS.gold, UDim2.new(0.42, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not sel.lock and not tried and not dealHere and H.openHaggle ~= nil)
 			hg.Name = "HaggleGameButton"
-			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
-			hg.TextSize = if narrow then 14 else 16
+			hg.Position = UDim2.new(0.29, 4, 0, if shortScreen then 84 else 106)
+			hg.TextSize = if narrow then 18 else 20
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sm.Position = UDim2.fromOffset(12, infoTop + 456)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
@@ -11030,7 +11085,9 @@ do
 					-- 출항 전 사건은 완료하고, 바다·전투 중 사건은 뒤로 미룬다.
 					while inField or (sceneHold and not departureEventPhase) or workspace:GetAttribute("VoyageActive")
 						or H.sceneBusy or player.PlayerGui:FindFirstChild("StoryScene", true)
-						or player.PlayerGui:FindFirstChild("WonderScene", true) do
+						or player.PlayerGui:FindFirstChild("WonderScene", true)
+						or player.PlayerGui:FindFirstChild("QuestResult") or player.PlayerGui:FindFirstChild("QuestTalk")
+						or player.PlayerGui:FindFirstChild("WorldEventScene") or player.PlayerGui:FindFirstChild("CardGain") or player.PlayerGui:FindFirstChild("CardFan") do
 						task.wait(0.2)
 					end
 					local sc = table.remove(pending, 1)
@@ -11186,7 +11243,7 @@ do
 		task.spawn(function()
 			local n = utf8.len(text) or #text
 			for i = 1, n do
-				if not label.Parent then return end
+				if not label.Parent or label.Text ~= text or label.MaxVisibleGraphemes == -1 then return end
 				label.MaxVisibleGraphemes = i
 				task.wait(speed or 0.025)
 			end
@@ -11628,7 +11685,7 @@ do
 		tint.Parent = root
 		local tag = Instance.new("TextLabel")
 		tag.AnchorPoint = Vector2.new(0.5, 1)
-		tag.Position = UDim2.fromScale(0.5, 0.7)
+		tag.Position = UDim2.fromScale(0.5, 0.52)
 		tag.Size = UDim2.new(0.9, 0, 0, 30)
 		tag.BackgroundTransparency = 1
 		tag.Font = Enum.Font.GothamBold
@@ -11639,7 +11696,7 @@ do
 		tag.Parent = root
 		local title = Instance.new("TextLabel")
 		title.AnchorPoint = Vector2.new(0.5, 0)
-		title.Position = UDim2.fromScale(0.5, 0.7)
+		title.Position = UDim2.fromScale(0.5, 0.52)
 		title.Size = UDim2.new(0.9, 0, 0, 44)
 		title.BackgroundTransparency = 1
 		title.Font = Enum.Font.GothamBlack
@@ -11651,11 +11708,12 @@ do
 		title.Parent = root
 		local body = Instance.new("TextLabel")
 		body.AnchorPoint = Vector2.new(0.5, 0)
-		body.Position = UDim2.new(0.5, 0, 0.7, 50)
-		body.Size = UDim2.new(0.82, 0, 0, 50)
+		body.Position = UDim2.new(0.5, 0, 0.52, 50)
+		body.Size = UDim2.new(0.9, 0, 0, 0)
+		body.AutomaticSize = Enum.AutomaticSize.Y
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = 17
+		body.TextSize = 22
 		body.TextWrapped = true
 		body.TextColor3 = Color3.fromRGB(240, 230, 210)
 		body.ZIndex = 5
@@ -11682,7 +11740,7 @@ do
 			task.delay(0.32, function() if g.Parent then g:Destroy() end end)
 		end
 		root.Activated:Connect(close)
-		task.delay(3.6, close)
+		task.delay(math.clamp((utf8.len(tostring(a.text or "")) or 0) * 0.09 + 3, 6, 14), close)
 	end
 
 	-- 새로 시작된 세계 사건만 감지(첫 화면은 기준선). 다른 장면 중이면 기다렸다가 보여 준다.
@@ -11705,12 +11763,13 @@ do
 			for _, a in fresh do
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)
-					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")) do
+					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")
+					or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene") or inField) do
 					task.wait(0.3)
 				end
 				if not player.Parent then return end
 				H.showWorldEventScene(a)
-				task.wait(3.9)
+				while player.Parent and pg:FindFirstChild("WorldEventScene") do task.wait(0.3) end
 			end
 		end)
 	end
@@ -12205,6 +12264,12 @@ do
 	-- 결과 연출: 퀘스트를 끝내면 '당신 덕분에' 결말 + 장의 마지막이면 장 완료 장면
 	function H.showQuestResult(d)
 		local g = overlayGui("QuestResult", 72)
+		local chapterEnd = d.chapterEnd == true
+		local grade = if d.id then math.clamp(math.floor(tonumber(d.grade) or 1), 1, 5) else 0
+		local reduced = game:GetService("GuiService").ReducedMotionEnabled
+		local rankName = ({ "일반", "숙련", "희귀", "영웅", "전설" })[grade]
+		local tone = ({ Color3.fromRGB(161, 115, 70), Color3.fromRGB(174, 178, 183), Color3.fromRGB(89, 152, 220), Color3.fromRGB(176, 116, 220), Color3.fromRGB(242, 191, 70) })[grade] or Color3.fromRGB(196, 150, 70)
+		g:SetAttribute("QuestRewardGrade", grade)
 		local root = Instance.new("TextButton")
 		root.Size = UDim2.fromScale(1, 1)
 		root.AutoButtonColor = false
@@ -12213,21 +12278,24 @@ do
 		root.BackgroundTransparency = 0.45
 		root.BorderSizePixel = 0
 		root.Parent = g
-		local box = Instance.new("Frame")
+		local box = Instance.new("ScrollingFrame")
 		box.AnchorPoint = Vector2.new(0.5, 0.5)
 		box.Position = UDim2.fromScale(0.5, 0.5)
-		box.Size = UDim2.new(1, -24, 0, 0)
-		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.Size = UDim2.new(1, -24, 0.78, 0)
+		box.CanvasSize = UDim2.new()
+		box.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		box.ScrollBarThickness = 6
+		box.ScrollingDirection = Enum.ScrollingDirection.Y
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.Parent = root
 		corner(box, 14)
 		local lim = Instance.new("UISizeConstraint")
-		lim.MaxSize = Vector2.new(520, 560)
+		lim.MaxSize = Vector2.new(680, 640)
 		lim.Parent = box
 		local st = Instance.new("UIStroke")
-		st.Color = Color3.fromRGB(196, 150, 70)
-		st.Thickness = 3
+		st.Color = tone
+		st.Thickness = if grade >= 4 or chapterEnd then 5 else 3
 		st.Parent = box
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 16), UDim.new(0, 16), UDim.new(0, 18), UDim.new(0, 18)
@@ -12237,7 +12305,6 @@ do
 		list.SortOrder = Enum.SortOrder.LayoutOrder
 		list.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		list.Parent = box
-		local chapterEnd = d.chapterEnd == true
 		-- [대화 연출] 의뢰를 준 사람이 결말을 말한다(초상)
 		local talk = d.id and H.questTalkMemo and H.questTalkMemo[d.id]
 		if talk and H.portraitFor then
@@ -12261,7 +12328,7 @@ do
 			end
 		end
 		local chapterArt = if chapterEnd then AssetIds["CardArt/ui_banner_chapter"] else nil
-		local heading = if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name)
+		local heading = if d.boss then "보스 격파 · " .. tostring(d.name) elseif d.field then "탐험 귀환 · " .. tostring(d.name) elseif chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" elseif d.name == "지난 이야기" then "지난 이야기" else "의뢰 완료 · " .. tostring(d.name)
 		if chapterArt then
 			local banner = Instance.new("ImageLabel")
 			banner.Name = "ChapterCompletionBanner"
@@ -12281,34 +12348,191 @@ do
 			title.TextYAlignment = Enum.TextYAlignment.Center
 			title.ZIndex = banner.ZIndex + 1
 			local fontLimit = Instance.new("UITextSizeConstraint")
-			fontLimit.MinTextSize = 12
-			fontLimit.MaxTextSize = 24
+			fontLimit.MinTextSize = 18
+			fontLimit.MaxTextSize = 30
 			fontLimit.Parent = title
 		else
-			local head = mkLabel(box, heading, if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
+			local head = mkLabel(box, heading, if chapterEnd then 32 else 28, Color3.fromRGB(120, 70, 20), true, 1)
 			head.Size = UDim2.new(1, 0, 0, 0)
 			head.TextXAlignment = Enum.TextXAlignment.Center
 		end
+		if d.boss and d.bossArt then
+			local id = AssetIds["CardArt/" .. tostring(d.bossArt)]
+			if id then
+				local art = Instance.new("ImageLabel")
+				art.Name = "BossVictoryArt"
+				art.LayoutOrder = 0
+				art.Size = UDim2.fromOffset(112, 160)
+				art.BackgroundTransparency = 1
+				art.ScaleType = Enum.ScaleType.Fit
+				art.Image = "rbxassetid://" .. tostring(id)
+				art.Parent = box
+			end
+		end
+		if grade > 0 and not d.field then
+			local seal = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 46), Color3.fromRGB(55, 37, 25))
+			seal.Name = "QuestRewardRank"
+			seal.LayoutOrder = 2
+			corner(seal, 8)
+			local edge = Instance.new("UIStroke")
+			edge.Color = tone
+			edge.Thickness = 2
+			edge.Parent = seal
+			local caption = mkLabel(seal, if d.boss then "신화 보스 격파" else string.format("%s 의뢰 · 난이도 %d단계", rankName, grade), 23, tone, true)
+			caption.AutomaticSize = Enum.AutomaticSize.None
+			caption.Size = UDim2.fromScale(1, 1)
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			if grade >= 3 and not reduced then
+				local shine = Instance.new("UIGradient")
+				shine.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, tone), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 246, 210)), ColorSequenceKeypoint.new(1, tone) })
+				shine.Offset = Vector2.new(-1, 0)
+				shine.Parent = caption
+				TS:Create(shine, TweenInfo.new(0.9, Enum.EasingStyle.Quad), { Offset = Vector2.new(1, 0) }):Play()
+			end
+		end
 		if d.result then
-			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 15, Color3.fromRGB(40, 90, 50), true, 2)
+			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 22, Color3.fromRGB(40, 90, 50), true, 3)
 			res.Size = UDim2.new(1, 0, 0, 0)
 		end
-		local body = mkLabel(box, "", 15, Color3.fromRGB(52, 38, 24), false, 3)
+		local body = mkLabel(box, "", 22, Color3.fromRGB(52, 38, 24), false, 4)
 		body.Size = UDim2.new(1, 0, 0, 0)
-		if H.typewrite then H.typewrite(body, tostring(d.ending or ""), 0.018) else body.Text = tostring(d.ending or "") end
-		local hint = mkLabel(box, if chapterEnd then "다음 장이 주점 게시판과 일지에 열렸어요." else "화면을 누르면 닫혀요.", 12, Color3.fromRGB(110, 96, 76), false, 4)
+		body.Text = tostring(d.ending or "")
+		-- [보상 장부] 기존 서버 지급 영수증을 표시한다. 클라이언트는 지급하지 않는다.
+		if d.id then
+			local receipt = d.receipt
+			local career = ({ trade = "교역", adventure = "모험", battle = "전투" })[d.rewardCareer] or "직업"
+			local reduced = game:GetService("GuiService").ReducedMotionEnabled
+			local rewards = {
+				{ "금화", receipt and receipt.coins or d.rewardCoins, "coin" },
+				{ "명성", receipt and receipt.fame or d.rewardFame, "fame" },
+				{ career .. (if receipt then " 경험치" else " 기본 경험치"), receipt and receipt.xp or d.rewardXp, "growth" },
+			}
+			for i, reward in rewards do
+				local amount = tonumber(reward[2])
+				if amount and amount > 0 then
+					local row = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 64), Color3.fromRGB(224, 198, 146))
+					row.Name = "QuestReward_" .. tostring(reward[3])
+					row.LayoutOrder = 4 + i
+					corner(row, 8)
+					local hasArt = H.hasIconArt(reward[3])
+					if hasArt then
+						local icon = modelIcon(row, "FacilityArt", reward[3], COLORS.gold, 44)
+						icon.Position = UDim2.fromOffset(8, 10)
+					end
+					local caption = mkLabel(row, tostring(reward[1]), 18, Color3.fromRGB(100, 65, 30), true)
+					caption.AutomaticSize = Enum.AutomaticSize.None
+					caption.Position = UDim2.fromOffset(if hasArt then 60 else 12, 4)
+					caption.Size = UDim2.new(1, if hasArt then -70 else -24, 0, 24)
+					local value = mkLabel(row, "+" .. H.commas(amount), 28, Color3.fromRGB(80, 48, 12), true)
+					value.Name = "QuestRewardValue"
+					value.AutomaticSize = Enum.AutomaticSize.None
+					value.Position = UDim2.fromOffset(if hasArt then 60 else 12, 28)
+					value.Size = UDim2.new(1, if hasArt then -70 else -24, 0, 32)
+					if not reduced then
+						value.Text = "+0"
+						task.spawn(function()
+							task.wait((i - 1) * 0.22)
+							if not row.Parent then return end
+							Sfx.play(if i == 1 then "sfx_coin" else "sfx_card_coin", 0.3)
+							for step = 1, 16 do
+								if not g.Parent or not row.Parent then return end
+								value.Text = "+" .. H.commas(math.floor(amount * step / 16))
+								task.wait(0.035)
+							end
+							if row.Parent then value.Text = "+" .. H.commas(amount) end
+						end)
+					end
+				end
+			end
+			if receipt and receipt.afterLevel then
+				local raised = receipt.afterLevel > receipt.beforeLevel
+				local growth = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 84), Color3.fromRGB(224, 198, 146))
+				growth.Name = "QuestCareerGrowth"
+				growth.LayoutOrder = 8
+				corner(growth, 8)
+				local head = mkLabel(growth, career .. (if raised then string.format(" 레벨 %d → %d", receipt.beforeLevel, receipt.afterLevel) else string.format(" 레벨 %d", receipt.afterLevel)), 24, Color3.fromRGB(96, 57, 15), true)
+				head.AutomaticSize = Enum.AutomaticSize.None
+				head.Position = UDim2.fromOffset(10, 4)
+				head.Size = UDim2.new(1, -20, 0, 30)
+				local track = mkBox(growth, UDim2.fromOffset(10, 40), UDim2.new(1, -20, 0, 16), Color3.fromRGB(109, 83, 53))
+				corner(track, 5)
+				local capped = receipt.afterLevel >= receipt.maxLevel
+				local ratio = if capped then 1 else math.clamp(receipt.afterXp / math.max(1, receipt.afterNextXp), 0, 1)
+				local initial = if raised then 0 else math.clamp(receipt.beforeXp / math.max(1, receipt.beforeNextXp), 0, 1)
+				local fill = mkBox(track, UDim2.new(), UDim2.fromScale(if reduced then ratio else initial, 1), COLORS.green)
+				fill.Name = "QuestCareerFill"
+				corner(fill, 5)
+				local meter = mkLabel(growth, if capped then "최고 레벨" else string.format("%d / %d 경험치", receipt.afterXp, receipt.afterNextXp), 18, Color3.fromRGB(70, 45, 20), true)
+				meter.AutomaticSize = Enum.AutomaticSize.None
+				meter.Position = UDim2.fromOffset(10, 57)
+				meter.Size = UDim2.new(1, -20, 0, 25)
+				if not reduced then
+					task.delay(0.8, function()
+						if not g.Parent or not fill.Parent then return end
+						TS:Create(fill, TweenInfo.new(0.65, Enum.EasingStyle.Quad), { Size = UDim2.fromScale(ratio, 1) }):Play()
+						if raised then Sfx.play("sfx_fanfare", 0.55) end
+					end)
+				end
+			end
+		end
+		-- 카드의 기존 획득 장면은 한 번만 재생하고 결과 장부에는 실제 지급 항목만 기록한다.
+		if d.receipt then
+			for i, item in {
+				{ "발견 등록", d.receipt.discovery },
+				{ "카드 획득", d.receipt.card },
+				{ "길드 허가증 · 특산품 해금", d.receipt.permit },
+			} do
+				if item[2] then
+					local itemBox = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 88), Color3.fromRGB(232, 211, 165))
+					itemBox.LayoutOrder = 8 + i
+					itemBox.Name = "QuestUnlock_" .. i
+					corner(itemBox, 8)
+					local artId = item[2].id and AssetIds["CardArt/" .. tostring(item[2].id)]
+					if artId then
+						local art = Instance.new("ImageLabel")
+						art.BackgroundTransparency = 1
+						art.Position = UDim2.fromOffset(8, 6)
+						art.Size = UDim2.fromOffset(52, 76)
+						art.ScaleType = Enum.ScaleType.Fit
+						art.Image = "rbxassetid://" .. tostring(artId)
+						art.Parent = itemBox
+					elseif H.hasIconArt("reward") then
+						local art = modelIcon(itemBox, "FacilityArt", "reward", COLORS.gold, 44)
+						art.Position = UDim2.fromOffset(10, 22)
+					end
+					local label = mkLabel(itemBox, tostring(item[1]), 18, INK, true)
+					label.AutomaticSize = Enum.AutomaticSize.None
+					label.Position = UDim2.fromOffset(70, 5)
+					label.Size = UDim2.new(1, -80, 0, 28)
+					local name = mkLabel(itemBox, tostring(item[2].name), 22, INK, true)
+					name.AutomaticSize = Enum.AutomaticSize.None
+					name.Position = UDim2.fromOffset(70, 34)
+					name.Size = UDim2.new(1, -80, 0, 48)
+					name.TextWrapped = true
+				end
+			end
+		end
+		local hint = mkLabel(box, if d.boss then "카드 보상은 기존 카드 메뉴에서 선택해 줘." elseif chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
-		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end
-		Sfx.play(if chapterEnd then "sfx_fanfare" else "sfx_bell", if chapterEnd then 0.55 else 0.35, 1, "sfx_card_coin")
+		local epic = chapterEnd or grade >= 4
+		if not reduced and H.cinemaBars and (epic or grade == 3) then H.cinemaBars(g, if epic then 2.8 else 1.4) end
+		Sfx.play(if epic then "sfx_fanfare" else "sfx_bell", if epic then 0.55 else 0.35, 1, "sfx_card_coin")
 		local sc = Instance.new("UIScale")
-		sc.Scale = 0.85
+		sc.Scale = if reduced then 1 elseif epic then 0.88 else 0.97
 		sc.Parent = box
-		TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-		if chapterEnd and H.cardGainFlair then
-			pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 4, gold = Color3.fromRGB(255, 217, 124),
-				tone = Color3.fromRGB(255, 196, 92), w = 360, h = 220, reduced = game:GetService("GuiService").ReducedMotionEnabled,
-				viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600), combat = false, hero = false })
+		if not reduced then
+			TS:Create(sc, TweenInfo.new(if epic then 0.48 else 0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		end
+		-- 기존 카드 전용 효과는 카드에서만 사용한다. 의뢰는 난이도 문장과 독립적인 금빛 테두리로 연출한다.
+		if epic and not reduced then
+			local pulse = Instance.new("UIStroke")
+			pulse.Color = tone
+			pulse.Thickness = 10
+			pulse.Transparency = 0.4
+			pulse.Parent = root
+			TS:Create(pulse, TweenInfo.new(1.15), { Transparency = 1, Thickness = 2 }):Play()
+			task.delay(1.2, function() if pulse.Parent then pulse:Destroy() end end)
 		end
 		local closed = false
 		local function close()
@@ -12316,8 +12540,9 @@ do
 			closed = true
 			if g.Parent then g:Destroy() end
 		end
-		root.Activated:Connect(close)
-		task.delay(if chapterEnd then 9 else 6, close)
+		local confirm = mkButton(box, "확인", COLORS.gold, UDim2.new(1, 0, 0, 48), close, true)
+		confirm.LayoutOrder = 13
+		confirm.TextSize = 22
 	end
 
 	-- 새로 끝난 퀘스트 감지(첫 화면은 기준선) → 결과 장면을 차례로
@@ -12327,20 +12552,22 @@ do
 		local first = H.seenDoneQuests == nil
 		H.seenDoneQuests = H.seenDoneQuests or {}
 		local fresh = {}
+		if view.bossReward then table.insert(fresh, view.bossReward) end
+		if view.fieldReward then table.insert(fresh, view.fieldReward) end
 		for _, d in done do
 			local key = tostring(d.id or d.name)
 			if not H.seenDoneQuests[key] then
 				H.seenDoneQuests[key] = true
-				if not first and (d.result or d.chapter or d.strand == "main") then table.insert(fresh, d) end
+				if not first and d.id ~= "q_first_discovery" and (not d.receipt or d.receipt.showScene or d.result or d.chapter or d.strand == "main") then table.insert(fresh, d) end
 			end
 		end
 		if #fresh == 0 then return end
 		task.spawn(function()
 			local pg = player:WaitForChild("PlayerGui")
 			for _, d in fresh do
-				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
+				while player.Parent and (inField or newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
-					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult")) do
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene") or pg:FindFirstChild("IntroDialog")) do
 					task.wait(0.3)
 				end
 				if not player.Parent then return end
@@ -12573,78 +12800,13 @@ do
 	end
 end
 
--- [흥정 미니게임 · 2026-11-28 오너 지시] 강제 아님: 저울 멈추기·상인 표정 읽기·진짜 동전·산지 퀴즈.
--- 원화(docs/HAGGLE_MINIGAME_BRIEF.md)가 등록되면 그림·움직임을 쓰고, 없으면 같은 자리 UI 로 돈다. 판정은 서버.
+-- [흥정 미니게임 · 오너 확정 5종] 동전·산지·양팔저울·화물·기억. 서버 판정.
 do
 	local TS = game:GetService("TweenService")
-	local RS = game:GetService("RunService")
 	local function art(key) local id = AssetIds["CardArt/" .. key]; return if id then "rbxassetid://" .. tostring(id) else nil end
 	local INK = Color3.fromRGB(52, 38, 24)
 	local PAPER = Color3.fromRGB(246, 234, 206)
 	local GOLD = Color3.fromRGB(214, 170, 82)
-	local FACE_TEXT = { smile = "😊 \"그 정도야 뭐…\"", think = "🤔 \"음… 글쎄요.\"", frown = "😠 \"장난하시오?\"" }
-	local FACE_ROW = { smile = 0, think = 1, frown = 2 }
-
-	-- 상인 얼굴: 시트(4프레임×3표정)가 있으면 눈 깜빡·끄덕 움직임, 없으면 이모지 말풍선
-	local function merchantFace(parent, mood)
-		local holder = parent:FindFirstChild("MerchantFace")
-		if not holder then
-			holder = Instance.new("ImageLabel")
-			holder.Name = "MerchantFace"
-			holder.AnchorPoint = Vector2.new(0.5, 0)
-			holder.Position = UDim2.new(0.5, 0, 0, 6)
-			holder.Size = UDim2.fromOffset(150, 150)
-			holder.BackgroundTransparency = 1
-			holder.ScaleType = Enum.ScaleType.Fit
-			holder.Parent = parent
-			local say = Instance.new("TextLabel")
-			say.Name = "Say"
-			say.AnchorPoint = Vector2.new(0.5, 0)
-			say.Position = UDim2.new(0.5, 0, 1, 2)
-			say.Size = UDim2.fromOffset(300, 26)
-			say.BackgroundTransparency = 1
-			say.Font = Enum.Font.GothamBold
-			say.TextSize = 16
-			say.TextColor3 = INK
-			say.Parent = holder
-		end
-		local sheet = art("ui_haggle_merchant_sheet")
-		holder.Say.Text = FACE_TEXT[mood] or ""
-		local stageWidth = parent.AbsoluteSize.X
-		holder.Say.Size = UDim2.fromOffset(math.min(300, if stageWidth > 0 then math.max(100, stageWidth - 8) else 260), 32)
-		holder.Say.TextWrapped = true
-		if sheet then
-			holder.Say.Position = UDim2.new(0.5, 0, 1, 2)
-			holder.Image = sheet
-			holder.ImageRectSize = Vector2.new(256, 256)
-			holder:SetAttribute("Row", FACE_ROW[mood] or 1)
-			holder.ImageRectOffset = Vector2.new(0, (FACE_ROW[mood] or 1) * 256)
-			if not game:GetService("GuiService").ReducedMotionEnabled and not holder:GetAttribute("Animating") then
-				holder:SetAttribute("Animating", true)
-				task.spawn(function()
-					local f = 0
-					while holder:IsDescendantOf(game) and not game:GetService("GuiService").ReducedMotionEnabled do
-						holder.ImageRectOffset = Vector2.new(f * 256, (holder:GetAttribute("Row") or 1) * 256)
-						task.wait(if f == 0 then 1.2 else 0.12)
-						f = (f + 1) % 4 -- 가만히 있다가 깜빡·끄덕
-					end
-					if holder:IsDescendantOf(game) then
-						holder.ImageRectOffset = Vector2.new(0, (holder:GetAttribute("Row") or 1) * 256)
-						holder:SetAttribute("Animating", false)
-					end
-				end)
-			end
-		else
-			holder.Image = ""
-			holder.Say.Position = UDim2.new(0.5, 0, 0.5, -13)
-		end
-		-- 표정이 바뀔 때 살짝 들썩
-		if not game:GetService("GuiService").ReducedMotionEnabled then
-			local base = UDim2.new(0.5, 0, 0, 6)
-			holder.Position = base + UDim2.fromOffset(0, -6)
-			TS:Create(holder, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = base }):Play()
-		end
-	end
 
 	function H.openHaggle(goodId, goodName)
 		local pg = player:FindFirstChildOfClass("PlayerGui")
@@ -12755,94 +12917,304 @@ do
 		hint.AutomaticSize = Enum.AutomaticSize.None
 		hint.TextWrapped = true
 
-		if pend.game == "scale" then
-			-- 1) 저울 멈추기: 바늘이 왕복, 금색 구간에서 탭
-			hint.Text = "바늘이 금색 칸에 올 때 '지금!'을 눌러. 가운데일수록 많이 깎여."
-			local track = Instance.new("ImageLabel")
-			track.Name = "ScaleTrack"
-			track.Position = UDim2.new(0, 10, 0, 120)
-			track.Size = UDim2.new(1, -20, 0, 40)
-			track.BackgroundColor3 = Color3.fromRGB(120, 92, 60)
-			track.Image = art("ui_haggle_scale") or ""
-			track.ScaleType = if track.Image ~= "" then Enum.ScaleType.Slice else Enum.ScaleType.Stretch
-			track.SliceCenter = Rect.new(64, 24, 960, 104)
-			track.SliceScale = 0.5
-			track.BorderSizePixel = 0
-			track.Parent = stage
-			corner(track, 10)
-			local zone = Instance.new("Frame")
-			zone.Name = "GoldZone"
-			zone.AnchorPoint = Vector2.new(0.5, 0)
-			zone.Position = UDim2.fromScale(pend.center, 0)
-			zone.Size = UDim2.fromScale(pend.width * 2, 1)
-			zone.BackgroundColor3 = Color3.fromRGB(240, 200, 90)
-			zone.BackgroundTransparency = 0.15
-			zone.BorderSizePixel = 0
-			zone.Parent = track
-			local core = zone:Clone()
-			core.Name = "PerfectZone"
-			core.Position = UDim2.fromScale(0.5, 0)
-			core.Size = UDim2.fromScale(0.25, 1)
-			core.BackgroundColor3 = Color3.fromRGB(255, 240, 170)
-			core.BackgroundTransparency = 0
-			core.Parent = zone
-			local needle = Instance.new("ImageLabel")
-			needle.Name = "Needle"
-			needle.AnchorPoint = Vector2.new(0.5, 0.5)
-			needle.Position = UDim2.fromScale(0, 0.5)
-			needle.Size = UDim2.new(0, 8, 1.6, 0)
-			needle.BackgroundColor3 = Color3.fromRGB(60, 30, 20)
-			needle.Image = art("ui_haggle_needle") or ""
-			if needle.Image ~= "" then
-				needle.BackgroundTransparency = 1
-				needle.Size = UDim2.new(0, 16, 1.6, 0)
-				needle.ScaleType = Enum.ScaleType.Fit
-			end
-			needle.BorderSizePixel = 0
-			needle.ZIndex = 5
-			needle.Parent = track
-			local t0 = os.clock()
-			local conn
-			conn = RS.RenderStepped:Connect(function()
-				if not g.Parent or not needle.Parent or finished then conn:Disconnect() return end
-				local phase = ((os.clock() - t0) / pend.period) % 2
-				needle.Position = UDim2.fromScale(if phase < 1 then phase else 2 - phase, 0.5)
+		if pend.duration then
+			local clock = mkLabel(stage, "", 15, INK, true)
+			clock.Size = UDim2.new(1, 0, 0, 22)
+			clock.AutomaticSize = Enum.AutomaticSize.None
+			clock.TextXAlignment = Enum.TextXAlignment.Right
+			task.spawn(function()
+				while g.Parent and not finished do
+					local left = math.max(0, math.ceil(pend.started + pend.duration - workspace:GetServerTimeNow()))
+					clock.Text = tostring(left) .. "초"
+					if left <= 0 then finish({}); return end
+					task.wait(0.2)
+				end
 			end)
-			local go = mkButton(stage, "지금!", COLORS.gold, UDim2.new(1, -20, 0, 56), function()
-				finish({ t = os.clock() - t0 })
+		end
+		if pend.game == "balance" then
+			hint.Text = "추를 누르면 올리거나 뺄 수 있어. 양쪽 무게를 맞춰!"
+			local chosen = {}
+			local info = mkLabel(stage, "", 20, INK, true)
+			info.Position = UDim2.fromOffset(0, 27)
+			info.Size = UDim2.new(1, 0, 0, 32)
+			info.AutomaticSize = Enum.AutomaticSize.None
+			info.TextXAlignment = Enum.TextXAlignment.Center
+			local beam = Instance.new("ImageLabel")
+			beam.Name = "BalanceBeam"
+			beam.AnchorPoint = Vector2.new(0.5, 0.5)
+			beam.Position = UDim2.fromScale(0.5, 0.31)
+			beam.Size = UDim2.new(0.9, 0, 0, 74)
+			beam.Image = art("ui_haggle_balance") or ""
+			beam.BackgroundTransparency = 1
+			beam.ScaleType = Enum.ScaleType.Fit
+			beam.Parent = stage
+			-- 기존 승인 교역 청동 원화와 상품 원화를 사용. 신규 저울 원화가 없어도 제작 대기하지 않는다.
+			if beam.Image == "" and H.hasIconArt("tradeg") then
+				local scaleArt = modelIcon(beam, "FacilityArt", "tradeg", nil, 74, "저울")
+				scaleArt.Name = "ExistingTradeScaleArt"
+				scaleArt.AnchorPoint = Vector2.new(0.5, 0.5)
+				scaleArt.Position = UDim2.fromScale(0.5, 0.5)
+			end
+			local leftArt = Instance.new("ImageLabel")
+			leftArt.Name = "BalanceProductArt"
+			leftArt.AnchorPoint = Vector2.new(0.5, 0.5)
+			leftArt.Position = UDim2.fromScale(0.13, 0.5)
+			leftArt.Size = UDim2.fromOffset(52, 52)
+			leftArt.BackgroundTransparency = 1
+			leftArt.ScaleType = Enum.ScaleType.Fit
+			local productId = AssetIds["Goods/" .. goodId]
+			leftArt.Image = if productId then "rbxassetid://" .. tostring(productId) else ""
+			leftArt.Parent = beam
+			local rightWeight = mkLabel(beam, "0", 24, INK, true)
+			rightWeight.Name = "BalanceSelectedWeight"
+			rightWeight.AnchorPoint = Vector2.new(0.5, 0.5)
+			rightWeight.Position = UDim2.fromScale(0.87, 0.5)
+			rightWeight.Size = UDim2.fromOffset(54, 48)
+			rightWeight.AutomaticSize = Enum.AutomaticSize.None
+			rightWeight.TextXAlignment = Enum.TextXAlignment.Center
+			rightWeight.BackgroundColor3 = PAPER
+			rightWeight.BackgroundTransparency = 0.1
+			corner(rightWeight, 6)
+			local weights = {}
+			local go
+			local function refresh()
+				local total = 0
+				for i, weight in pend.weights do
+					if chosen[i] then total += weight end
+					if weights[i] then weights[i].Text = tostring(weight) .. (if chosen[i] then " ✓" else "") end
+				end
+				info.Text = string.format("상품 %d  /  추 %d", pend.target, total)
+				rightWeight.Text = tostring(total)
+				rightWeight.TextColor3 = if total == pend.target then Color3.fromRGB(43, 108, 55) else INK
+				local tilt = math.clamp((total - pend.target) * 3, -20, 20)
+				if reduced then beam.Rotation = tilt else TS:Create(beam, TweenInfo.new(0.18), { Rotation = tilt }):Play() end
+				if go then go.Text = if total == pend.target then "균형 확인" else "균형 맞추기" end
+			end
+			for i, weight in pend.weights do
+				local b = mkButton(stage, tostring(weight), COLORS.gold, UDim2.new(0.2, -5, 0, 48), function()
+					if finished then return end
+					chosen[i] = not chosen[i]; refresh()
+				end, true)
+				b.Position = UDim2.new((i - 1) * 0.2, 2, 0, 160)
+				weights[i] = b
+			end
+			go = mkButton(stage, "균형 확인", COLORS.green, UDim2.new(1, -12, 0, 52), function()
+				local picks = {}
+				for i = 1, #pend.weights do if chosen[i] then table.insert(picks, i) end end
+				finish({ weights = picks })
 			end, true)
-			go.Position = UDim2.new(0, 10, 0, 200)
-			go.TextSize = 24
-		elseif pend.game == "face" then
-			-- 2) 상인 표정 읽기: 할인을 불러 보고 표정을 본다. 3번 안에 '이걸로 하자'
-			hint.Text = "깎을 만큼 불러 봐. 웃으면 더 불러도 되고, 찡그리면 너무 많이 부른 거야. 3번 안에 정해."
-			local offer, tries = 6, 0
-			merchantFace(stage, "think")
-			local label = mkLabel(stage, "", 22, INK, true)
-			label.Position = UDim2.new(0, 0, 0, 186)
-			label.Size = UDim2.new(1, 0, 0, 30)
-			label.AutomaticSize = Enum.AutomaticSize.None
-			label.TextXAlignment = Enum.TextXAlignment.Center
-			local function show() label.Text = string.format("%d%% 깎아 주세요 (남은 시도 %d)", offer, 3 - tries) end
-			show()
-			local function ask(delta)
-				if finished or selecting or not g.Parent or tries >= 3 then return end
-				offer = math.clamp(offer + delta, 4, 12)
-				tries += 1
-				merchantFace(stage, pend.faces and pend.faces[offer] or "think")
-				show()
-				if tries >= 3 then
-					selecting = true
-					local finalOffer = offer
-					task.delay(0.6, function() finish({ offer = finalOffer }) end)
+			go.Position = UDim2.fromOffset(6, 220)
+			refresh()
+		elseif pend.game == "cargo" then
+			hint.Text = "화물을 끌어 놓거나 선택 후 칸 터치. 회전·빼기로 빈칸 없이 채워!"
+			local pieces = pend.pieces or {}
+			local chosen, placed, rotated = 1, {}, {}
+			local cells, buttons, placedArt = {}, {}, {}
+			local UIS = game:GetService("UserInputService")
+			local drag
+			local cargoArt = { {"Naval", "crate", "상자"}, {"Cargo", "barrel", "술통"}, {"Cargo", "bag", "자루"}, {"Naval", "crate", "상자"}, {"Cargo", "bag", "자루"} }
+			local colors = { Color3.fromRGB(166, 112, 60), Color3.fromRGB(94, 124, 82), Color3.fromRGB(100, 126, 156), Color3.fromRGB(160, 97, 81), Color3.fromRGB(151, 119, 157) }
+			local info = mkLabel(stage, "", 15, INK, true)
+			info.Position = UDim2.fromOffset(0, 25)
+			info.Size = UDim2.new(1, 0, 0, 23)
+			info.AutomaticSize = Enum.AutomaticSize.None
+			local function dims(i, rot)
+				local p = pieces[i]
+				return if rot then p.h else p.w, if rot then p.w else p.h
+			end
+			local function refresh()
+				local occupied, count = {}, 0
+				for i, pos in placed do
+					local w, ht = dims(i, pos.rot)
+					count += 1
+					for y = pos.y, pos.y + ht - 1 do for x = pos.x, pos.x + w - 1 do occupied[(y - 1) * 4 + x] = i end end
+				end
+				for i, b in cells do
+					local id = occupied[i]
+					b.Text = if id then tostring(id) else ""
+					b.BackgroundColor3 = if id then colors[id] else PAPER
+				end
+				for i, icon in placedArt do
+					local pos = placed[i]
+					icon.Visible = pos ~= nil
+					if pos then
+						local w, ht = dims(i, pos.rot)
+						icon.Position = UDim2.new((pos.x - 1 + w / 2) / 4, 0, 0, 48 + (pos.y - 1) * 42 + ht * 21)
+					end
+				end
+				for i, b in buttons do
+					local w, ht = dims(i, rotated[i] == true)
+					b.Text = string.format("%d번\n%d×%d%s", i, w, ht, if placed[i] then " ✓" else "")
+					b.BackgroundColor3 = if chosen == i then GOLD else colors[i]
+				end
+				info.Text = string.format("적재 %d/%d · 선택 %d번", count, #pieces, chosen)
+			end
+			local function place(x, y)
+				if finished then return end
+				local rot = rotated[chosen] == true
+				local w, ht = dims(chosen, rot)
+				if x + w - 1 > 4 or y + ht - 1 > 3 then return end
+				for i, pos in placed do
+					if i ~= chosen then
+						local ow, oh = dims(i, pos.rot)
+						if x < pos.x + ow and x + w > pos.x and y < pos.y + oh and y + ht > pos.y then return end
+					end
+				end
+				placed[chosen] = { x = x, y = y, rot = rot }
+				refresh()
+			end
+			for y = 1, 3 do
+				for x = 1, 4 do
+					local b = mkButton(stage, "", COLORS.paper, UDim2.new(0.25, -4, 0, 40), function() place(x, y) end, true)
+					b.Position = UDim2.new((x - 1) / 4, 2, 0, 48 + (y - 1) * 42)
+					cells[(y - 1) * 4 + x] = b
 				end
 			end
-			local less = mkButton(stage, "− 덜 깎기", COLORS.blue, UDim2.new(0.32, -6, 0, 48), function() ask(-2) end, true)
-			less.Position = UDim2.new(0, 0, 0, 226)
-			local more = mkButton(stage, "+ 더 깎기", COLORS.red, UDim2.new(0.32, -6, 0, 48), function() ask(2) end, true)
-			more.Position = UDim2.new(0.34, 0, 0, 226)
-			local deal = mkButton(stage, "이걸로 하자", COLORS.green, UDim2.new(0.32, 0, 0, 48), function() if not selecting then finish({ offer = offer }) end end, true)
-			deal.Position = UDim2.new(0.68, 0, 0, 226)
+			for i in pieces do
+				local b = mkButton(stage, "", COLORS.paper, UDim2.new(0.2, -4, 0, 52), function() chosen = i; refresh() end, true)
+				b.Position = UDim2.new((i - 1) / 5, 2, 0, 178)
+				b.TextSize = 12
+				b.TextYAlignment = Enum.TextYAlignment.Bottom
+				local asset = cargoArt[i]
+				local icon = modelIcon(b, asset[1], asset[2], nil, 24, asset[3])
+				icon.Position = UDim2.new(0.5, -12, 0, 0)
+				icon.Active = false
+				-- 실제 적재된 화물도 같은 등록 모델을 한 개만 표시한다(칸마다 모델 복제하지 않음).
+				local display = modelIcon(stage, asset[1], asset[2], nil, 32, asset[3])
+				display.Name = "PlacedCargoArt_" .. i
+				display.AnchorPoint = Vector2.new(0.5, 0.5)
+				display.ZIndex = b.ZIndex + 1
+				display.Active = false
+				display.Visible = false
+				placedArt[i] = display
+				b.InputBegan:Connect(function(input)
+					if finished or drag or (input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1) then return end
+					chosen = i; refresh()
+					drag = { input = input, start = Vector2.new(input.Position.X, input.Position.Y), id = i }
+					scroll.ScrollingEnabled = false
+				end)
+				buttons[i] = b
+			end
+			local connMove = UIS.InputChanged:Connect(function(input)
+				if not drag or finished or not g.Parent then return end
+				if input ~= drag.input and not (drag.input.UserInputType == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseMovement) then return end
+				local pos = Vector2.new(input.Position.X, input.Position.Y)
+				if not drag.ghost and (pos - drag.start).Magnitude >= 8 then
+					local ghost = mkLabel(dim, tostring(drag.id) .. "번 화물", 15, INK, true)
+					ghost.Size = UDim2.fromOffset(76, 38)
+					ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+					ghost.AutomaticSize = Enum.AutomaticSize.None
+					ghost.BackgroundColor3 = colors[drag.id]
+					ghost.BackgroundTransparency = 0.15
+					ghost.ZIndex = 60
+					ghost.Active = false
+					ghost.Parent = g
+					drag.ghost = ghost
+				end
+				if drag.ghost then drag.ghost.Position = UDim2.fromOffset(pos.X, pos.Y) end
+			end)
+			local connEnd = UIS.InputEnded:Connect(function(input)
+				if not drag or input ~= drag.input then return end
+				local current = drag
+				drag = nil
+				scroll.ScrollingEnabled = true
+				if not current.ghost then return end
+				current.ghost:Destroy()
+				if finished then return end
+				chosen = current.id
+				local pos = Vector2.new(input.Position.X, input.Position.Y)
+				local sp, ss = scroll.AbsolutePosition, scroll.AbsoluteSize
+				if pos.X < sp.X or pos.X > sp.X + ss.X or pos.Y < sp.Y or pos.Y > sp.Y + ss.Y then return end
+				for index, cell in cells do
+					local cp, cs = cell.AbsolutePosition, cell.AbsoluteSize
+					if pos.X >= cp.X and pos.X <= cp.X + cs.X and pos.Y >= cp.Y and pos.Y <= cp.Y + cs.Y then
+						place((index - 1) % 4 + 1, math.floor((index - 1) / 4) + 1)
+						break
+					end
+				end
+			end)
+			g.Destroying:Connect(function() connMove:Disconnect(); connEnd:Disconnect() end)
+			local rotate = mkButton(stage, "90도 회전", COLORS.gold, UDim2.new(0.33, -4, 0, 44), function()
+				rotated[chosen] = not rotated[chosen]; placed[chosen] = nil; refresh()
+			end, true)
+			rotate.Position = UDim2.new(0, 2, 0, 234)
+			local remove = mkButton(stage, "빼기", COLORS.grey, UDim2.new(0.33, -4, 0, 44), function() placed[chosen] = nil; refresh() end, true)
+			remove.Position = UDim2.new(0.33, 2, 0, 234)
+			local confirm = mkButton(stage, "적재 완료", COLORS.green, UDim2.new(0.34, -4, 0, 44), function()
+				local result = {}
+				for i = 1, #pieces do
+					if not placed[i] then return end
+					result[i] = placed[i]
+				end
+				finish({ placements = result })
+			end, true)
+			confirm.Position = UDim2.new(0.66, 2, 0, 234)
+			refresh()
+		elseif pend.game == "memory" then
+			hint.Text = "3초 동안 순서를 기억하고, 같은 순서로 상품을 눌러!"
+			local seq = pend.sequence or {}
+			local goods = pend.goods or {}
+			local preview = Instance.new("Frame")
+			preview.Position = UDim2.fromOffset(0, 40)
+			preview.Size = UDim2.new(1, 0, 0, 96)
+			preview.BackgroundTransparency = 1
+			preview.Parent = stage
+			local function goodTile(parent, good, x, y, w, ht)
+				local imageId = AssetIds["Goods/" .. good.id]
+				if not imageId then return end
+				local img = Instance.new("ImageLabel")
+				img.Image = "rbxassetid://" .. tostring(imageId)
+				img.BackgroundTransparency = 1
+				img.ScaleType = Enum.ScaleType.Fit
+				img.Position = UDim2.new(x, 2, 0, y)
+				img.Size = UDim2.new(w, -4, 0, ht)
+				img.Parent = parent
+			end
+			for i, id in seq do
+				local good = goods[id]
+				goodTile(preview, good, (i - 1) / 5, 0, 0.2, 60)
+				local label = mkLabel(preview, good.name, 12, INK, true)
+				label.Position = UDim2.new((i - 1) / 5, 0, 0, 60)
+				label.Size = UDim2.new(0.2, 0, 0, 35)
+				label.AutomaticSize = Enum.AutomaticSize.None
+				label.TextWrapped = true
+				label.TextXAlignment = Enum.TextXAlignment.Center
+			end
+			local cover = mkLabel(stage, "상품이 가려졌어", 20, INK, true)
+			cover.Position = preview.Position
+			cover.Size = preview.Size
+			cover.AutomaticSize = Enum.AutomaticSize.None
+			cover.TextXAlignment = Enum.TextXAlignment.Center
+			cover.BackgroundColor3 = PAPER
+			cover.BackgroundTransparency = 0
+			cover.Visible = false
+			local picks, used, buttons = {}, {}, {}
+			local progress = mkLabel(stage, "0 / 5", 16, INK, true)
+			progress.Position = UDim2.fromOffset(0, 140)
+			progress.Size = UDim2.new(1, 0, 0, 25)
+			progress.AutomaticSize = Enum.AutomaticSize.None
+			progress.Visible = false
+			for i, good in goods do
+				local b = mkButton(stage, good.name, COLORS.gold, UDim2.new(0.2, -4, 0, 96), function()
+					if finished or not cover.Visible or used[i] then return end
+					used[i] = true; table.insert(picks, i)
+					buttons[i].Text = tostring(#picks) .. ". " .. good.name
+					buttons[i].Interactable = false
+					progress.Text = tostring(#picks) .. " / 5"
+					if #picks == 5 then finish({ sequence = picks }) end
+				end, true)
+				b.Position = UDim2.new((i - 1) / 5, 2, 0, 170)
+				b.TextSize = 13
+				b.TextYAlignment = Enum.TextYAlignment.Bottom
+				b.Visible = false
+				goodTile(b, good, 0, 4, 1, 52)
+				buttons[i] = b
+			end
+			task.delay(3, function()
+				if not g.Parent or finished then return end
+				preview.Visible = false; cover.Visible = true; progress.Visible = true
+				for _, b in buttons do b.Visible = true end
+			end)
 		elseif pend.game == "coin" then
 			-- 3) 진짜 동전 고르기: 맨 위 정품 견본과 같은 동전
 			hint.Text = "맨 위 '정품 견본'과 똑같은 동전을 골라. 테두리·색·문양을 잘 봐."
@@ -12914,8 +13286,8 @@ do
 					task.delay(0.35, function() finish({ pick = i }) end)
 				end)
 			end
-		else
-			-- 6) 산지 퀴즈: 정답이면 10% (백과 카드와 연결)
+		elseif pend.game == "quiz" then
+			-- 산지 퀴즈: 정답이면 10% (백과 카드와 연결)
 			hint.Text = "맞히면 상인이 '물건 좀 아시네' 하며 깎아 줘. 백과에서 산지를 미리 봐 두면 쉬워."
 			local q = mkLabel(stage, tostring(pend.question or ""), 18, INK, true)
 			q.Position = UDim2.fromOffset(0, 10)
@@ -12957,11 +13329,11 @@ do
 			local spec = COMPANION_PORTRAIT[id]
 			if spec and AssetIds["Portraits/" .. spec.atlas] then
 				local k = sheetK(spec.atlas)
-				return AssetIds["Portraits/" .. spec.atlas], spec.offset * k, Vector2.new(256, 336) * k
+				return AssetIds["Portraits/" .. spec.atlas], spec.offset * k, (spec.size or Vector2.new(256, 336)) * k
 			end
 			if string.sub(id, 1, 2) == "h_" then
-				local hid, hoff = H.heroPortraitAsset(string.sub(id, 3))
-				if hid then return hid, hoff, Vector2.new(256, 336) end
+				local hid, hoff, hsize = H.heroPortraitAsset(string.sub(id, 3))
+				if hid then return hid, hoff, hsize end
 			end
 		elseif kind == "keeper" then
 			local own = AssetIds["Portraits/npc_keeper_" .. id]
@@ -12976,8 +13348,8 @@ do
 		elseif kind == "hero" then
 			local own = AssetIds["Portraits/hero_" .. id]
 			if own then return own end
-			local hid, hoff = H.heroPortraitAsset(id)
-			if hid then return hid, hoff, Vector2.new(256, 336) end
+			local hid, hoff, hsize = H.heroPortraitAsset(id)
+			if hid then return hid, hoff, hsize end
 		end
 		-- 정확한 화자 초상이 없을 때 상세 화면은 이름만 표시한다.
 		if exact then return nil end
@@ -13038,12 +13410,13 @@ do
 		if H.cinemaBars then H.cinemaBars(g, 60) end
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
 		local narrow = vp.X < 600
+		local talkHeight = math.clamp(math.floor(vp.Y * 0.52), 174, 280)
 		-- 초상(왼쪽 아래, 크게)
 		local face = Instance.new("ImageLabel")
 		face.Name = "TalkPortrait"
 		face.AnchorPoint = Vector2.new(0, 1)
-		face.Position = UDim2.new(0, 16, 1, if narrow then -170 else -150)
-		face.Size = if narrow then UDim2.fromOffset(150, 196) else UDim2.fromOffset(220, 288)
+		face.Position = UDim2.new(0, 16, 1, -talkHeight - 24)
+		face.Size = UDim2.fromOffset(math.min(if narrow then 150 else 220, math.floor((vp.Y - talkHeight - 50) * 0.76)), math.max(60, math.min(if narrow then 196 else 288, vp.Y - talkHeight - 50)))
 		face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
 		face.BorderSizePixel = 0
 		face.ScaleType = Enum.ScaleType.Crop
@@ -13059,7 +13432,7 @@ do
 		box.Name = "TalkBox"
 		box.AnchorPoint = Vector2.new(0.5, 1)
 		box.Position = UDim2.new(0.5, 0, 1, -16)
-		box.Size = UDim2.new(1, -32, 0, if narrow then 150 else 132)
+		box.Size = UDim2.new(1, -32, 0, talkHeight)
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.ZIndex = 6
@@ -13072,11 +13445,11 @@ do
 		local nameTag = Instance.new("TextLabel")
 		nameTag.Name = "TalkName"
 		nameTag.Position = UDim2.fromOffset(14, -18)
-		nameTag.Size = UDim2.fromOffset(240, 32)
+		nameTag.Size = UDim2.new(1, -28, 0, 36)
 		nameTag.BackgroundColor3 = Color3.fromRGB(70, 44, 24)
 		nameTag.BorderSizePixel = 0
 		nameTag.Font = Enum.Font.GothamBlack
-		nameTag.TextSize = 16
+		nameTag.TextSize = 22
 		nameTag.TextColor3 = Color3.fromRGB(255, 230, 170)
 		nameTag.ZIndex = 7
 		nameTag.Parent = box
@@ -13087,7 +13460,7 @@ do
 		body.Size = UDim2.new(1, -36, 1, -48)
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = if narrow then 15 else 17
+		body.TextSize = if vp.Y < 460 then 22 else 26
 		body.TextWrapped = true
 		body.TextXAlignment = Enum.TextXAlignment.Left
 		body.TextYAlignment = Enum.TextYAlignment.Top
@@ -13097,15 +13470,15 @@ do
 		local next = Instance.new("TextLabel")
 		next.AnchorPoint = Vector2.new(1, 1)
 		next.Position = UDim2.new(1, -14, 1, -6)
-		next.Size = UDim2.fromOffset(160, 20)
+		next.Size = UDim2.fromOffset(240, 24)
 		next.BackgroundTransparency = 1
 		next.Font = Enum.Font.GothamBold
-		next.TextSize = 12
+		next.TextSize = 18
 		next.TextXAlignment = Enum.TextXAlignment.Right
 		next.TextColor3 = Color3.fromRGB(130, 100, 60)
 		next.ZIndex = 7
 		next.Parent = box
-		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(120, 40), function() end, true)
+		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(132, 44), function() end, true)
 		skip.AnchorPoint = Vector2.new(1, 0)
 		skip.Position = UDim2.new(1, -16, 0, 70)
 		skip.ZIndex = 8
@@ -13187,7 +13560,11 @@ do
 		for _, q in active do
 			if not H.seenActiveQuests[q.id] then
 				H.seenActiveQuests[q.id] = true
-				if not first and q.story and #tostring(q.story) > 0 then table.insert(fresh, q) end
+				local hasCinematic = false
+				for _, sc in view.scenes or {} do
+					if sc.kind == "start" and sc.name == q.name then hasCinematic = true; break end
+				end
+				if not first and not hasCinematic and q.story and #tostring(q.story) > 0 then table.insert(fresh, q) end
 			end
 		end
 		if #fresh == 0 then return end
@@ -13197,7 +13574,7 @@ do
 				if i > 2 then break end -- 한꺼번에 여러 개 받으면 앞의 둘만(나머지는 일지에)
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
-					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("IntroDialog")) do
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("IntroDialog") or pg:FindFirstChild("WorldEventScene") or inField) do
 					task.wait(0.3)
 				end
 				if not player.Parent then return end
@@ -13273,7 +13650,8 @@ function H.checkNewCards()
 			-- [연결 수정 · 2026-11-28] 지상 탐험 중 발견한 카드도 바로 보여 준다(예전엔 탐험이 끝날 때까지 밀렸다).
 			while player.Parent and (newGameMode or sceneHold or H.sceneBusy
 				or H.questScenesPlaying or pg:FindFirstChild("StoryScene", true)
-				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)) do
+				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)
+				or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene")) do
 				task.wait(0.2)
 			end
 			if not player.Parent then break end
@@ -19533,9 +19911,9 @@ end
 			elseif string.find(spec.speaker, "상인", 1, true) then "merchant"
 			elseif string.find(spec.speaker, "주점", 1, true) then "tavern"
 			else "hero"
-		local heroId, heroOffset
+		local heroId, heroOffset, heroSize
 		if not portraitSpec and tile == "hero" then
-			heroId, heroOffset = H.heroPortraitAsset(chosenNation)
+			heroId, heroOffset, heroSize = H.heroPortraitAsset(chosenNation)
 		end
 		local regId, regOffset, regSize
 		if not portraitSpec and tile ~= "hero" then
@@ -19558,9 +19936,12 @@ end
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
 		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
 		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
-		-- [빈 초상 방지 · 2026-11-28] 새 개별 담당자 초상(npc_keeper_*)이 있으면 그것, 없고 칸도 못 찾으면 공용 초상 찾기
-		do
-			local keeperKey = if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" elseif tile ~= "hero" then tile else nil
+		-- [개별 초상] 원본 크기를 보존하고 동료 얼굴은 담당자 초상으로 덮지 않는다.
+		face.ImageRectSize = if portraitSpec then (portraitSpec.size or PORTRAIT_SIZE) * fk
+			elseif regId then regSize elseif heroId then heroSize elseif portraitOffset then PORTRAIT_SIZE else Vector2.zero
+		if not portraitSpec then
+			local keeperKey = if string.find(spec.speaker, "서기", 1, true) then "trade"
+				elseif tile == "merchant" then "trade" elseif tile ~= "hero" then tile else nil
 			local own = keeperKey and AssetIds["Portraits/npc_keeper_" .. keeperKey]
 			if own then
 				face.Image = "rbxassetid://" .. tostring(own)
@@ -19574,10 +19955,7 @@ end
 				end
 			end
 		end
-		if not face:GetAttribute("PortraitFallback") and not (tile ~= "hero" and AssetIds["Portraits/npc_keeper_" .. (if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" else tile)]) then
-			face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
-		end
-		face.ScaleType = Enum.ScaleType.Crop
+		face.ScaleType = if face.ImageRectSize == Vector2.zero then Enum.ScaleType.Fit else Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		face.Visible = not narration
 		corner(face, 6)
@@ -19961,6 +20339,9 @@ end
 			if n.name == view.player.nation then
 				nid = id
 			end
+		end
+		if nid and AssetIds["Portraits/hero_" .. nid] then
+			table.insert(out, "hero:" .. nid)
 		end
 		for _, v in H.captainChoices[nid or ""] or {} do
 			table.insert(out, v)

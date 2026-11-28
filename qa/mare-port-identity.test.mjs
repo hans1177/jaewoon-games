@@ -263,9 +263,9 @@ test('재배치 이후 시설 이용 주민과 주택 골목도 새 좌표를 �
       facility + ' 방문 건물에 전문직 주민 연결');
     assert.ok(scene.includes('at = ' + role + ', prop ='), role + ' 실제 주민 좌표 사용');
   }
-  assert.match(scene, /local laneNear = 152 \+ laneOffset \+ laneIndex \* laneL \+ nearBend/);
-  assert.match(scene, /local laneFar = 152 \+ laneOffset \+ \(laneIndex \+ 1\) \* laneL \+ farBend/);
-  assert.match(scene, /strip\(folder, style, sx, 0, laneWidth, 2 \* \(152 \+ math\.abs\(laneOffset\) \+ pairsN \* laneL\) \+ 30\)/);
+  assert.match(scene, /local laneNear = LANE_BASE \+ laneOffset \+ laneIndex \* laneL \+ nearBend/);
+  assert.match(scene, /local laneFar = LANE_BASE \+ laneOffset \+ \(laneIndex \+ 1\) \* laneL \+ farBend/);
+  assert.match(scene, /strip\(folder, style, sx, 0, laneWidth, 2 \* \(LANE_BASE \+ math\.abs\(laneOffset\) \+ pairsN \* laneL\) \+ 30\)/);
   assert.match(scene, /local homeCandidates, homePlaced, homeShifted,/);
   assert.match(scene, /CityHousingLayoutState/);
   assert.match(scene, /CityPortPlannedPlots/);
@@ -609,7 +609,7 @@ test('런던 지시서: 양모·석탄·주석 시장과 장날 가판대·광�
   const sharedHarbor = fs.readFileSync(root + 'src/ReplicatedStorage/Shared/Harbor.luau', 'utf8');
   assert.match(sharedHarbor, /function Harbor\.festivalAt\(region: string, day: number\)/);
   assert.match(sharedHarbor, /europe = \{ \{ day = 45, name = "사육제\(카니발\)" \}/);
-  assert.match(scene, /put\("Town", stallAsset, 7, x, cz \+ side \* 19, false/);
+  assert.match(scene, /put\("Town", stallAsset, 7, x, cz \+ side \* stallRowZ, false/);
   assert.match(scene, /"CityMarketStalls", stalls \+ londonExtraStalls/);
   assert.match(scene, /"CityLondonMarketDay", londonMarketDay/);
   assert.ok(scene.includes('for index, mineral in { "coal", "tin" } do'));
@@ -697,7 +697,7 @@ test('원거리 주민은 위치와 보행 위상을 보존하고 관절 갱신�
   assert.match(walk, /if fullMotion or \(motionEye - w\.base\.Position\)\.Magnitude < motionRange then/);
   assert.match(walk, /local close = not motionEye or \(motionEye - destination\)\.Magnitude < \(if UserInputService\.TouchEnabled then 105 else 155\)/);
   assert.match(walk, /if close and now >= w\.groundCheckAt then/);
-  assert.match(walk, /local pivot = w\.base \* CFrame\.new\(0, w\.groundOffset \+ bob, d\) \* CFrame\.Angles\(0, w\.hd, 0\)\s+w\.model:PivotTo\(pivot\)/);
+  assert.match(walk, /local pivot = CFrame\.new\(destination \+ Vector3\.new\(0, w\.groundOffset \+ bob, 0\)\)\s+\* CFrame\.Angles\(0, w\.hd, 0\) \* w\.base\.Rotation\s+w\.model:PivotTo\(pivot\)/);
   assert.match(scene, /if math\.max\(sz\.X, sz\.Y, sz\.Z\) < 4 then\s+d\.CastShadow = false/);
 });
 

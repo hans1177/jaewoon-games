@@ -255,12 +255,21 @@ jobs:
               if doc['approved'].get(card)==digest:
                   print('CARD_DROPBOX_ALREADY_APPROVED',card)
                   continue
-              if previous.get('sourceSha256')!=review.get('replacesSha256') or doc['approved'].get(card)!=review.get('replacesSha256') or str(previous.get('assetId'))!=str(review.get('replacesAssetId')) or previous.get('assetType')!='Image' or previous.get('usePermissionGranted') is not True:
-                  raise SystemExit('CARD_DROPBOX_REPLACEMENT_STALE:'+card)
               target = root/'assets/cardart'/ (name+'.png')
-              old_raw = target.read_bytes()
-              if hashlib.sha256(old_raw).hexdigest()!=review['replacesSha256']:
-                  raise SystemExit('CARD_DROPBOX_REGISTERED_BYTES_CHANGED:'+card)
+              first_registration = (not ui and card not in registry and card not in doc['approved']
+                  and card not in doc.get('modelOriginals',{}) and 'replacesSha256' not in review
+                  and 'replacesAssetId' not in review)
+              old_raw = b''
+              if first_registration:
+                  # 신규 카드도 기존 승인 후보 통로를 이용하며 기존 파일이나 번호는 덮어쓰지 않는다.
+                  if target.exists() or target.with_suffix('.jpg').exists() or target.with_suffix('.jpeg').exists() or (root/relative).exists():
+                      raise SystemExit('CARD_DROPBOX_NEW_SOURCE_CONFLICT:'+card)
+              else:
+                  if previous.get('sourceSha256')!=review.get('replacesSha256') or doc['approved'].get(card)!=review.get('replacesSha256') or str(previous.get('assetId'))!=str(review.get('replacesAssetId')) or previous.get('assetType')!='Image' or previous.get('usePermissionGranted') is not True:
+                      raise SystemExit('CARD_DROPBOX_REPLACEMENT_STALE:'+card)
+                  old_raw = target.read_bytes()
+                  if hashlib.sha256(old_raw).hexdigest()!=review['replacesSha256']:
+                      raise SystemExit('CARD_DROPBOX_REGISTERED_BYTES_CHANGED:'+card)
               # 화면 원화는 실제 등록 중인 256색 PNG의 교체만 허용한다.
               if ui and (previous.get('source')!=str(target) or old_raw[:8]!=b'\x89PNG\r\n\x1a\n' or len(old_raw)<26 or old_raw[12:16]!=b'IHDR' or old_raw[25]!=3):
                   raise SystemExit('CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:'+card)
@@ -280,7 +289,12 @@ jobs:
               token = json.loads(request('https://api.dropboxapi.com/oauth2/token',{'Authorization':'Basic '+basic,'Content-Type':'application/x-www-form-urlencoded'},grant,65536)).get('access_token')
               if not token:
                   raise SystemExit('CARD_DROPBOX_ACCESS_TOKEN_MISSING')
-              arg = json.dumps({'path':'/Vibe2Transfer/'+name+'-original.png'})
+              original_path = '/Vibe2Transfer/'+name+'-original.png'
+              inbox_path = '/Vibe2Transfer/inbox/CardArt/'+name+'.png'
+              source_path = candidate.get('dropboxPath', original_path)
+              if source_path != original_path and (ui or source_path != inbox_path):
+                  raise SystemExit('CARD_DROPBOX_SOURCE_PATH_INVALID:'+card)
+              arg = json.dumps({'path':source_path})
               raw = request('https://content.dropboxapi.com/2/files/download',{'Authorization':'Bearer '+token,'Dropbox-API-Arg':arg},None,20*1024*1024)
               if len(raw)!=candidate['bytes'] or len(raw)<50000 or hashlib.sha256(raw).hexdigest()!=digest:
                   raise SystemExit('CARD_DROPBOX_ORIGINAL_HASH_OR_SIZE_MISMATCH:'+card)
@@ -367,8 +381,20 @@ jobs:
           if not candidate:
               raise SystemExit('CARD_DROPBOX_PENDING_REVIEW_CHANGED')
           review=candidate['review']
+          live=json.loads(contents('roblox-games/mare-essentia/assets-registered.json','main'))['assets']
+          old=live.get(card,{})
+          if not ui and 'replacesSha256' not in review and 'replacesAssetId' not in review:
+              if card in live or card in current['approved'] or card in current.get('modelOriginals',{}):
+                  raise SystemExit('CARD_DROPBOX_NEW_SOURCE_CONFLICT:'+card)
+              active=api('repos/'+repo+'/contents/'+root+'cardart?ref=main')
+              sources=api('repos/'+repo+'/contents/'+root+'cardart/src?ref=main')
+              if len(active)>=1000 or len(sources)>=1000 or any(row['name'] in (name+'.png',name+'.jpg',name+'.jpeg') for row in active) or any(row['name']==name+'-original.png' for row in sources):
+                  raise SystemExit('CARD_DROPBOX_NEW_SOURCE_CONFLICT:'+card)
+          elif not ui:
+              active_original=root+'cardart/'+name+'.png'
+              if old.get('assetType')!='Image' or old.get('usePermissionGranted') is not True or old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or current['approved'].get(card)!=review.get('replacesSha256') or hashlib.sha256(contents(active_original,'main')).hexdigest()!=review.get('replacesSha256'):
+                  raise SystemExit('CARD_DROPBOX_REPLACEMENT_STALE:'+card)
           if ui:
-              old=json.loads(contents('roblox-games/mare-essentia/assets-registered.json','main'))['assets'].get(card,{})
               old_raw=contents(original,'main')
               if old.get('source')!=original or old.get('assetType')!='Image' or old.get('usePermissionGranted') is not True or old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or current['approved'].get(card)!=review.get('replacesSha256') or hashlib.sha256(old_raw).hexdigest()!=review.get('replacesSha256') or len(old_raw)<26 or old_raw[:8]!=b'\x89PNG\r\n\x1a\n' or old_raw[25]!=3:
                   raise SystemExit('CARD_DROPBOX_UI_REGISTERED_INDEXED_REQUIRED:'+card)
@@ -517,7 +543,8 @@ jobs:
               digest=review.get('sourceSha256')
               if not digest or doc['approved'].get(card)!=digest or old.get('sourceSha256')==digest:
                   continue
-              if old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or old.get('usePermissionGranted') is not True:
+              first_registration = card not in registry and 'replacesSha256' not in review and 'replacesAssetId' not in review
+              if not first_registration and (old.get('sourceSha256')!=review.get('replacesSha256') or str(old.get('assetId'))!=str(review.get('replacesAssetId')) or old.get('usePermissionGranted') is not True):
                   continue
               name=card.split('/')[1]
               rel=review.get('sourceFile')

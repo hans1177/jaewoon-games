@@ -6814,7 +6814,7 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						sinkStart = now
 						Sfx.play("sfx_naval_sink", 0.64 + math.min(sunk.length / 200, 0.2), if sunk.length > 45 then 0.77 else 0.95, "sfx_splash")
 					end
-					banner.Text = if opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
+					banner.Text = if opts.winner == "a" and opts.isBoss then "신화 보스 격파!" elseif opts.winner == "a" then "승리!" elseif opts.winner == "b" then "패배..." else "물러났다"
 					CH.flash("medic")
 					banner.TextColor3 = if opts.winner == "a" then Color3.fromRGB(255, 214, 120) elseif opts.winner == "b" then Color3.fromRGB(230, 110, 100) else Color3.fromRGB(220, 220, 230)
 					banner.TextTransparency = 0
@@ -6833,7 +6833,8 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 						Sfx.play("sfx_waves", 0.24, 0.95)
 					end
 					if not opts.cardOnly then
-						endingCaption.Text = if captured and opts.winner == "a" then "접현·항복으로 적선을 제압했어."
+						endingCaption.Text = if opts.isBoss and opts.winner == "a" then tostring(opts.enemyName or "신화 괴물") .. " 제압 · 항구에서 정산 결과를 확인해."
+							elseif captured and opts.winner == "a" then "접현·항복으로 적선을 제압했어."
 							elseif captured and opts.winner == "b" then "기함이 제압됐어. 남은 승조원을 확인해."
 							elseif FX.sink and opts.winner == "a" then "적선 침몰 · 승전 나팔과 함께 함대를 확인해."
 							elseif FX.sink and opts.winner == "b" then "기함 침몰 · 패배 결과를 확인해."
