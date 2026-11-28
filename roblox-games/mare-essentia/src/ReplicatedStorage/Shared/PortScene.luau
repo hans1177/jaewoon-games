@@ -3845,6 +3845,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local terrainLaneShift = if coastForm == "hill" then 3.5 elseif coastForm == "river" or coastForm == "delta" then -2.5
 		elseif coastForm == "lagoon" or coastForm == "canal" then 2 else 0
 	local laneOffset = districtSeed:NextNumber(-28, 28) + terrainLaneShift + (if reflow then reflow.lane else 0)
+	-- [주택 골목을 광장 쪽으로 · 2026-11-29 Studio 12각도: 시설은 |z|≤58 에 있는데 첫 주택 골목은 z=152 라
+	-- 광장과 집 사이 70~150 띠가 통째로 비어 "광장만 모여 있고 집은 멀리 띄엄띄엄"이었다.
+	-- 첫 골목을 96 으로 당긴다(시설 외곽 52 + 여유). 겹침은 기존 reserved() 가 그대로 막는다.
+	local LANE_BASE = 96
 	if reflow then folder:SetAttribute("CityPortManualReflow", "PORT_MANUAL_REPOSITION_V1") end
 	folder:SetAttribute("CityPortLayoutRevision", "WHOLE_PORT_REPOSITION_V2")
 	folder:SetAttribute("CityPortLaneOffset", laneOffset)
@@ -4027,27 +4031,28 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityDistrictPlaced", #districts)
 	folder:SetAttribute("CityDistrictMoved", districtMoved)
 	folder:SetAttribute("CityDistrictRejectedCandidates", districtRejected)
+	local reserveWhy = { last = "" }
 	local function reserved(x, z, halfX, halfZ)
 		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
 		-- [새 도시 예약] 방문 시설·광장·왕궁의 실제 배치 좌표와 주거 충돌을 검증한다.
 		halfZ = halfZ or halfX
 		for _, site in facilityLocations do
-			if math.abs(x - site.X) < halfX + 25 and math.abs(z - site.Z) < halfZ + 25 then return true end
+			if math.abs(x - site.X) < halfX + 25 and math.abs(z - site.Z) < halfZ + 25 then reserveWhy.last = "facility" return true end
 		end
 		if typeof(plazaLocation) == "Vector3"
 			and math.abs(x - plazaLocation.X) < halfX + 25
-			and math.abs(z - plazaLocation.Z) < halfZ + 25 then return true end
-		if x < -211 + halfX and math.abs(z) < 145 + halfZ then return true end
-		if isRoyalCity and x < -215 + halfX and x > -630 - halfX and math.abs(z) < 320 + halfZ then return true end
+			and math.abs(z - plazaLocation.Z) < halfZ + 25 then reserveWhy.last = "plaza" return true end
+		if x < -211 + halfX and math.abs(z) < 145 + halfZ then reserveWhy.last = "west" return true end
+		if isRoyalCity and x < -215 + halfX and x > -630 - halfX and math.abs(z) < 320 + halfZ then reserveWhy.last = "royal" return true end
 		for _, d in districts do
-			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then return true end
+			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then reserveWhy.last = "district:" .. tostring(d.kind) return true end
 		end
 		for _, a in landmarkSites do
-			if math.abs(x - a.X) < 29 + halfX and math.abs(z - a.Z) < 29 + halfZ then return true end
+			if math.abs(x - a.X) < 29 + halfX and math.abs(z - a.Z) < 29 + halfZ then reserveWhy.last = "landmark" return true end
 		end
 		for _, lot in placedLots do
 			if math.abs(x - lot.X) < halfX + (lot.HX or lot.H) + 2
-				and math.abs(z - lot.Z) < halfZ + (lot.HZ or lot.H) + 2 then return true end
+				and math.abs(z - lot.Z) < halfZ + (lot.HZ or lot.H) + 2 then reserveWhy.last = "lot:" .. tostring(lot.kind or lot.Kind or "?") return true end
 		end
 		return false
 	end
@@ -4147,7 +4152,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							ground:SetAttribute("BuildEconomicCount", count)
 							ground:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 							placed += 1
-							table.insert(placedLots, { X = x, Z = z, H = 18 })
+							table.insert(placedLots, { X = x, Z = z, H = 18, kind = "econ" })
 							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
 							local back = nil
 							if not portWorkshop then
@@ -4259,7 +4264,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local oldTownHomes, newTownHomes, nightWindows = 0, 0, 0
 	-- [발전도별 필지] 6/10/14/18/24 필지를 골목 행에 나누어 배치. 경제/저장과 무관한 화면용 수만 제한.
 	local portPlotLimit = if identity then PortIdentity.tier(lvl).plots else math.huge
-	local rowPlotLimit = if identity then math.max(1, math.ceil(portPlotLimit / (4 * pairsN))) else math.huge
+	-- [집을 광장 가까이 모아 짓기 · 2026-11-29 Studio 12각도: 집 14채가 모든 골목에 1~2채씩 흩어져 마을이 텅 비어 보였다]
+	-- 안쪽 골목 4줄이 먼저 채워지도록 줄당 한도를 전체/4 로 올린다. 바깥 골목은 발전해서 집이 늘 때 채워진다.
+	-- 집이 안쪽에 모이면 땅·길도 그 범위로 줄어든다(아래 TownFloor 범위 계산).
+	local rowPlotLimit = if identity then math.max(2, math.ceil(portPlotLimit / 4)) else math.huge
 	if identity then folder:SetAttribute("CityPortPlannedPlots", portPlotLimit) end
 	-- [문화권 주거 발전 입면] 단계별 추가 실물 부재는 각 주택에 한 번만 부착한다.
 	local villageAccents, villageCrowns = 0, 0
@@ -4274,6 +4282,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
 	local residentialDecorationPlaced = false
 	local homeRejectRoad, homeRejectStreet, homeRejectReserved = 0, 0, 0
+	local homeRejectSize, homePreLoose, homeRejectBody = 0, 0, 0
 	local houseSpots = {}
 	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
@@ -4329,15 +4338,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local half = math.max(sz * 0.62, projectedHalf)
 				-- [기존 필지 내 재배치] 중앙 자리만 사전 검사하면 옆자리 2.4칸이 비어도 주택이 사라진다.
 				-- 전체 모델을 복제하기 전에 가까운 5곳의 기존 예약 경계부터 가볍게 검사한다.
-				local canFitPlot = false
-				if projectedHalf <= rowClearance then
+				-- [집 사전검사 완화 · 2026-11-29 Studio 181곳 실측: 후보 51채 중 5채만 지어짐, 뒤 단계 탈락은 2~3채뿐]
+				-- 예전 사전검사는 지붕까지 넣은 큰 반경으로 길·예약지를 봐서 대부분을 여기서 버렸다(뒤의 '길 사이 밀어 넣기'까지 못 감).
+				-- 이제 크기만 보고 통과시키고, 실제 외곽을 잰 뒤 단계(길 사이 밀어 넣기·큰길·예약지)가 최종 판정한다.
+				local canFitPlot = projectedHalf <= rowClearance
+				if not canFitPlot then
+					homeRejectSize += 1
+				else
+					local strict = false
 					for _, shift in homeShifts do
 						local at = pos + Vector3.new(shift.X, 0, shift.Z * side)
-						if not onStreet(at.X, half) and not reserved(at.X, at.Z, half) then
-							canFitPlot = true
-							break
-						end
+						if not onStreet(at.X, half) and not reserved(at.X, at.Z, half) then strict = true break end
 					end
+					if not strict then homePreLoose += 1 end
 				end
 				if canFitPlot then
 					local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
@@ -4354,6 +4367,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					local staged = Instance.new("Model")
 					staged.Name = "PortScene"
 					local body = house(staged, pos, ww, dd, fl, style, rng)
+					if not body then homeRejectBody += 1 end
 					if body then
 						-- [구시가지 회백색 풍화·신시가지 회칠] PBR 및 원본 텍스처는 유지.
 						for _, surface in staged:GetDescendants() do
@@ -4402,8 +4416,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							elseif villageLayout == "terrace" then laneIndex * 2 else 0
 						local farBend = if villageLayout == "organic" then (if (laneIndex + 1) % 2 == 0 then -3 else 3)
 							elseif villageLayout == "terrace" then (laneIndex + 1) * 2 else 0
-						local laneNear = 152 + laneOffset + laneIndex * laneL + nearBend
-						local laneFar = 152 + laneOffset + (laneIndex + 1) * laneL + farBend
+						local laneNear = LANE_BASE + laneOffset + laneIndex * laneL + nearBend
+						local laneFar = LANE_BASE + laneOffset + (laneIndex + 1) * laneL + farBend
 						local chosenShift
 						-- 원래 자리에서 시작해 같은 필지 안에서만 조금 이동한다. 다른 건물은 건드리지 않는다.
 						-- [집 배치 실패 수정 · 2026-11-29 오너: "중앙 광장만 모여 있다"] 예전엔 ±2.4만 옮겨 보고 길에 닿으면 포기해
@@ -4431,6 +4445,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 								homeRejectStreet += 1
 							elseif reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
 								homeRejectReserved += 1
+								reserveWhy[reserveWhy.last] = (reserveWhy[reserveWhy.last] or 0) + 1
 							else
 								chosenShift = shift
 								break
@@ -4554,7 +4569,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 									if newGrade then stageDecoration(detail, placeAt, delay) end
 								end
 							end
-							table.insert(placedLots, { X = pos.X, Z = pos.Z,
+							table.insert(placedLots, { X = pos.X, Z = pos.Z, kind = "house",
 								H = math.max(actualHalfX, actualHalfZ), HX = actualHalfX, HZ = actualHalfZ })
 							if smokers < 28 and rng:NextNumber() < 0.22 then
 								smokers += 1
@@ -4608,7 +4623,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 								model:SetAttribute("ShowcaseOnly", true)
 								wildernessQuota -= 1
 								wildernessPlaced += 1
-								table.insert(placedLots, { X = x, Z = z0, H = half })
+								table.insert(placedLots, { X = x, Z = z0, H = half, kind = "wild" })
 								-- [근경 밀도] 고성능 PC는 작은 꽃·풀 한 개만 추가. 모바일은 원본 1개로 제한.
 								if not wildernessTouch and plotRng:NextInteger(1, 3) == 1 then
 									local accent = if biome == "arid" then "arid-cactus-short"
@@ -4650,7 +4665,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			-- [항구 골목] 기존 해안선·필지·도로 중심을 함께 옮겨 보행 동선을 보존한다.
 			local laneBend = if villageLayout == "organic" then (if p % 2 == 0 then -3 else 3)
 				elseif villageLayout == "terrace" then p * 2 else 0
-			local laneZ = 152 + laneOffset + p * laneL + laneBend
+			local laneZ = LANE_BASE + laneOffset + p * laneL + laneBend
 			-- [항구별 물길] 운하 도시 이외에는 수로 대신 보행 골목.
 			local waterLane = if identity then villageLayout == "canal" else P.canal or info.portId == "venice"
 			if waterLane and p % 2 == 1 then
@@ -4682,7 +4697,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, cityRowStart + rowShift, side, p, 1)
 				local nextBend = if villageLayout == "organic" then (if (p + 1) % 2 == 0 then -3 else 3)
 					elseif villageLayout == "terrace" then (p + 1) * 2 else 0
-				local nextLaneZ = 152 + laneOffset + (p + 1) * laneL + nextBend
+				local nextLaneZ = LANE_BASE + laneOffset + (p + 1) * laneL + nextBend
 				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, cityRowStart - rowShift, side, p, 2)
 			end
 		end
@@ -4692,7 +4707,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local fringeBudget = if wildernessTouch then 7 else 13
 	local outerBend = if villageLayout == "organic" then (if pairsN % 2 == 0 then -3 else 3)
 		elseif villageLayout == "terrace" then pairsN * 2 else 0
-	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + outerBend + laneWidth * 0.5 + 15
+	local outerEdgeZ = LANE_BASE + laneOffset + pairsN * laneL + outerBend + laneWidth * 0.5 + 15
 	-- [발전별 실제 마을 땅] 표준화한 주거·골목·외곽 경계에 맞춰 TownFloor 실물 판의 폭·깊이를 축소한다.
 	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
 	local townFloor = folder:FindFirstChild("TownFloor")
@@ -4710,6 +4725,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		if not isRoyalCity and #placedLots > 0 then
 			local bx0, bz0, bz1 = 0, -40, 40
 			for _, lot in placedLots do
+				-- [빈 땅 줄이기 2 · 2026-11-29 Studio 12각도: 바둑판 길만 깔린 초록 빈 땅이 대부분]
+				-- 외곽 장식(야생·자연 완충) 필지는 땅 크기 계산에서 뺀다. 집·경제·특산 필지만 마을 범위다.
+				if lot.kind == "wild" or lot.kind == "fringe" then continue end
 				local hx = lot.HX or lot.H or 8
 				local hz = lot.HZ or lot.H or 8
 				bx0 = math.min(bx0, lot.X - hx)
@@ -4722,8 +4740,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				bz1 = math.max(bz1, at.Z + 24)
 			end
 			-- 지시서 항구는 집 범위까지 더 줄이고, 그 외 항구는 단계 표 크기. 어느 쪽이든 집·시설은 덮는다.
-			local wantLeft = if identity then bx0 - 40 else math.min(planLeft, bx0 - 40)
-			local wantHalfZ = if identity then math.max(-bz0, bz1) + 40 else math.max(planHalfZ, math.max(-bz0, bz1) + 40)
+			-- 모든 항구: 실제 집·시설 범위 + 32, 단계 표 크기를 넘지 않게. (예전: 일반 항구는 단계 표 크기 고정 → 집 14채에 땅 505×736)
+			local wantLeft = math.max(planLeft, bx0 - 32)
+			local wantHalfZ = math.min(planHalfZ, math.max(-bz0, bz1) + 32)
 			local compactLeft = math.max(townLeft, wantLeft)
 			local compactHalfZ = math.min(townHalfZ, wantHalfZ)
 			folder:SetAttribute("CityPlanLevel", lvl)
@@ -4786,7 +4805,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 									model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 									model:SetAttribute("ShowcaseOnly", true)
 									model:SetAttribute("CityOpenLandBiome", biome)
-									table.insert(placedLots, { X = x, Z = z, H = half })
+									table.insert(placedLots, { X = x, Z = z, H = half, kind = "fringe" })
 									fringeBudget -= 1
 									wildernessFringe += 1
 								end
@@ -4811,6 +4830,15 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityHousingCulture", key)
 	folder:SetAttribute("CityHousingCandidates", homeCandidates)
 	folder:SetAttribute("CityHousingRejectRoad", homeRejectRoad)
+	folder:SetAttribute("CityHousingRejectSize", homeRejectSize)
+	folder:SetAttribute("CityHousingPreLoose", homePreLoose)
+	folder:SetAttribute("CityHousingRejectBody", homeRejectBody)
+	do
+		local why = {}
+		for k, v in reserveWhy do if k ~= "last" then table.insert(why, k .. ":" .. tostring(v)) end end
+		table.sort(why)
+		folder:SetAttribute("CityHousingRejectWhy", table.concat(why, " "))
+	end
 	folder:SetAttribute("CityHousingRejectStreet", homeRejectStreet)
 	folder:SetAttribute("CityHousingRejectReserved", homeRejectReserved)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
@@ -4830,7 +4858,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		folder:SetAttribute("CityHousingSize" .. sizeClass, homeSizeCounts[sizeClass])
 	end
 	for _, sx in streetsOuter do
-		strip(folder, style, sx, 0, laneWidth, 2 * (152 + math.abs(laneOffset) + pairsN * laneL) + 30)
+		strip(folder, style, sx, 0, laneWidth, 2 * (LANE_BASE + math.abs(laneOffset) + pairsN * laneL) + 30)
 	end
 	-- 기존 항구 중심 도로는 유지하고 서쪽 외곽도로로 진입로를 연결한다.
 	strip(folder, style, -212, 0, 9, 320)
@@ -4869,7 +4897,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			local laneBend = if villageLayout == "organic" then (if laneRow % 2 == 0 then -3 else 3)
 				elseif villageLayout == "terrace" then laneRow * 2 else 0
 			local side = if i % 2 == 0 then 1 else -1
-			local roadAt = Vector3.new(sx, 0.25, side * (152 + laneOffset + laneRow * laneL + laneBend))
+			local roadAt = Vector3.new(sx, 0.25, side * (LANE_BASE + laneOffset + laneRow * laneL + laneBend))
 			local paving = importedModel(folder, pathKind, pathAsset, roadAt,
 				math.min(10, laneWidth * 0.76), false)
 			if paving then
@@ -4898,7 +4926,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				if lampSpacing == 0 or (i - 1) % lampSpacing == 0 then
 					local side = if i % 2 == 0 then 1 else -1
 					local lampAt = Vector3.new(streetsOuter[i] + laneWidth * 0.36, 0,
-						side * (152 + laneOffset + laneL * 0.5))
+						side * (LANE_BASE + laneOffset + laneL * 0.5))
 					local lamp = importedModel(folder, "Town", lampAsset, lampAt, 5.6, false)
 					if lamp then
 						lamp.Name = "CityRegionalStreetLantern"
@@ -5359,7 +5387,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						end
 						body:SetAttribute("BuildingFootprintX", hx * 2)
 						body:SetAttribute("BuildingFootprintZ", hz * 2)
-						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz) })
+						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz), kind = "specialty" })
 						specialtyPlaced += 1
 						-- 기존 생산품 3D 전시·간판과 동일한 수량 상한을 유지한다.
 						for j = -1, 1 do
@@ -6258,7 +6286,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- 7) 외곽: 도시의 실제 발전 구획 바깥으로 성벽과 숲을 이동한다.
 	-- 예전 -204, ±150 고정 성벽이 확장 도로·주택을 가로막던 문제를 직접 수정한다.
 	local wallStep = if lvl >= 4 then 20 else 16
-	local WZ = math.ceil((152 + pairsN * laneL + 55) / wallStep) * wallStep
+	local WZ = math.ceil((LANE_BASE + math.abs(laneOffset) + pairsN * laneL + 55) / wallStep) * wallStep
 	local WX = math.floor(math.min(X_END - 58, if isRoyalCity then -615 else -470) / wallStep) * wallStep
 	local walled = lvl >= 3
 	local wallSize = wallStep + 0.4
@@ -9133,9 +9161,35 @@ function PortScene.build(info, onFacility)
 				oldSite.Z + (if oldSite.Z > 0 then shiftZ else -shiftZ))
 		end
 		folder:SetAttribute("CityLandmarkReflowCount", #landmarkSites)
+		-- [안 지은 랜드마크 자리 비우기 · 2026-11-29 Studio 실측: 집 탈락의 70%가 랜드마크 예약]
+		-- 8자리를 늘 예약해 지금 단계·연도·기술로는 짓지 않는 랜드마크 자리까지 집이 못 들어갔다.
+		-- placeLandmarks 와 같은 순서(같은 시드)로 실제 지을 자리만 골라 주택 예약에 쓴다.
+		local activeSites = (function()
+			local year = (info.sim and info.sim.year) or info.year or 1700
+			local adopted = {}
+			for _, node in ipairs((info.sim and info.sim.technology and info.sim.technology.rows) or {}) do
+				if node.status == "adopted" then adopted[node.id] = true end
+			end
+			local order = {}
+			for i = 1, #landmarkSites do order[i] = i end
+			local pr = seeded(info.portId .. "landmarks")
+			for i = #order, 2, -1 do
+				local j = pr:NextInteger(1, i)
+				order[i], order[j] = order[j], order[i]
+			end
+			local list = {}
+			for idx, lm in PortBuildings.Landmarks do
+				local at = landmarkSites[order[idx]]
+				if at and sceneLevel >= lm.minLevel and year >= (lm.since or 0) and (not lm.tech or adopted[lm.tech]) then
+					table.insert(list, at)
+				end
+			end
+			return list
+		end)()
+		folder:SetAttribute("CityLandmarkActiveSites", #activeSites)
 		densify(folder, info, style, rng, walkers,
 			(PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {},
-			onFacility, landmarkSites)
+			onFacility, activeSites)
 		placeLandmarks(folder, info, style, rng, onFacility, walkers, landmarkSites)
 	end
 	placeSignature(folder, info)
