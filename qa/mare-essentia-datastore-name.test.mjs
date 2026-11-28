@@ -5209,3 +5209,15 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(trade.includes('else "흥정 게임", COLORS.grey'));
  for(const action of ['Buy','Sell']) assert.ok(trade.includes('call("'+action+'"'));
 });
+
+ test('항해 상세 해도는 기존 승인 세계지도와 정규 항로를 사용한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const route=source.slice(source.indexOf('function RENDERERS.route()'),source.indexOf('local openYardHall'));
+ for(const name of ['RouteMiniChart','RouteMiniChartMap','RouteWaypoint','RouteOrigin','RouteDestination']) assert.ok(route.includes(name));
+ assert.ok(route.includes('SeaRoutes.path(view.player.portId, selected.id, PortData.Ports)'));
+ assert.ok(route.includes('AssetIds["CardArt/event_chart_world"]'));
+ assert.ok(route.includes('(b[2] - a[2] + 180) % 360 - 180'));
+ assert.ok(route.includes('not selected.locked'));
+ assert.ok(route.includes('confirmSail(r)'));
+ assert.ok(route.includes('if H.hasIconArt(key) then'));
+});
