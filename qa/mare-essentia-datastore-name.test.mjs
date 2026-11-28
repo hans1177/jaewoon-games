@@ -3778,6 +3778,11 @@ test('주민 계절 외투와 개별 비옷은 현재 착용 목록을 기준으
 test('주민 의상·헤어 메시 부착은 실제 경계 크기를 사용하고 실패 원인을 남긴다',()=>{
   const pose=read('ReplicatedStorage/Shared/Pose.luau');
   assert.match(pose,/local bounds, ext = skin:GetBoundingBox\(\)/, '첫 반환값은 위치 CFrame, 둘째는 실제 크기');
+  assert.match(pose,/if npcOutfit and not jobProp then ratio \*= skin:GetScale\(\) end\s+if ratio <= 0/, '수입 원본의 절대 배율을 반영하고 전투와 도구는 유지');
+  const fit=(originalScale, originalSize, wanted)=>originalScale*wanted/originalSize;
+  assert.equal(fit(2,4,1.5),0.75);
+  assert.equal(fit(0.5,1,1.5),0.75);
+  assert.equal(fit(1,2,1.5),0.75);
   assert.match(pose,/skin:ScaleTo\(ratio\)\s*--[^\n]*\n\s*--[^\n]*\n\s*bounds, ext = skin:GetBoundingBox\(\)/, '스케일 후에는 두 반환값을 다시 받는다');
   assert.match(pose,/hairOffsetY = crownY - ext\.Y \* 0\.5 \/ target\.Size\.Y/, '두상 배치를 크기 Vector3 기준으로 한다');
   assert.doesNotMatch(pose,/bounds\.Size/, 'CFrame에는 Size 속성이 없음');
