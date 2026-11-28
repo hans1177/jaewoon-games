@@ -1635,13 +1635,12 @@ function VoyageScene.play(info)
 	local beacon, edgeArrow, beaconLabel = nil, nil, nil
 	if not info.intro then
 		local endPos = positionAt(pts, cum, total)
-		beacon = Instance.new("Part")
+		-- 기본 도형 없이 지형 Attachment 에 빌보드만 단다(AGENTS.md 도형 금지)
+		beacon = Instance.new("Attachment")
 		beacon.Name = "VoyageDestinationBeacon"
-		beacon.Anchored, beacon.CanCollide, beacon.CanQuery, beacon.CanTouch = true, false, false, false
-		beacon.Transparency = 1
-		beacon.Size = Vector3.new(1, 1, 1)
-		beacon.Position = endPos + Vector3.new(0, 4, 0)
-		beacon.Parent = folder
+		beacon.Parent = workspace.Terrain
+		beacon.WorldPosition = endPos + Vector3.new(0, 4, 0)
+		folder.Destroying:Connect(function() if beacon then beacon:Destroy() end end)
 		local bb = Instance.new("BillboardGui")
 		bb.Name = "BeaconBillboard"
 		bb.Size = UDim2.fromOffset(160, 260)
@@ -1649,7 +1648,8 @@ function VoyageScene.play(info)
 		bb.AlwaysOnTop = true
 		bb.LightInfluence = 0
 		bb.MaxDistance = 100000
-		bb.Parent = beacon
+		bb.Adornee = beacon
+		bb.Parent = folder
 		local pillar = Instance.new("ImageLabel")
 		pillar.AnchorPoint = Vector2.new(0.5, 0)
 		pillar.Position = UDim2.new(0.5, 0, 0, 40)
@@ -1724,7 +1724,7 @@ function VoyageScene.play(info)
 			beaconLabel.Text = (if info.questTarget then "📜 " else "⚓ ") .. tostring(info.toName or "목적지") .. string.format("\n남은 %d일", leftDays)
 			local cam = workspace.CurrentCamera
 			if cam then
-				local sp, onScreen = cam:WorldToViewportPoint(beacon.Position + Vector3.new(0, 60, 0))
+				local sp, onScreen = cam:WorldToViewportPoint(beacon.WorldPosition + Vector3.new(0, 60, 0))
 				local vp = cam.ViewportSize
 				local inside = onScreen and sp.Z > 0 and sp.X > 0 and sp.X < vp.X and sp.Y > 0 and sp.Y < vp.Y
 				edgeArrow.Visible = not inside
