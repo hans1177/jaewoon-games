@@ -8865,7 +8865,8 @@ local function renderYard(page)
 		if not yard.available then
 			add(function() return mkLabel(content, "이 항구엔 조선소가 없어 배 구매·수리가 안 돼요.", 13, COLORS.gold, false) end)
 		end
-		local rf = view.refit
+	end
+	if not page or page == "fleet" then
 		add(function()
 			return mkRow(content, string.format("선단 · 호위함 %d/3척", view.fleet.escorts), string.format("고용 %d코인 · 명성 %d 필요\n포격 +8%%/척 · 속도 -3%%/척 · 유지 15코인/일", view.fleet.price, view.fleet.needFame), {
 				{ text = "고용", color = COLORS.blue, enabled = yard.available and view.fleet.escorts < 3, onClick = function() call("BuyEscort") end },
@@ -8900,6 +8901,9 @@ local function renderYard(page)
 				end
 			end
 		end
+	end
+	if not page or page == "refit" then
+		local rf = view.refit
 		local upgradeHeader = add(function() return mkHeader(content, string.format("대포 · 선체 개조 (등급 %d · %s)", rf.class, rf.className)) end)
 		upgradeHeader.Name = "YardSectionRefit"
 		add(function()
@@ -9270,7 +9274,7 @@ function openYardHall()
 	sl.Parent = scroll
 	local lastScroll = 0
 	local zoomOpen = false
-	local page = "maintenance"
+	local page = H.yardMenuPage or "maintenance"
 
 	local function build()
 		if not root.Parent or not view then
@@ -9294,17 +9298,19 @@ function openYardHall()
 		local inset = 8
 		local landscape = width >= 740
 		local compactNav = not landscape
-		local availableH = math.max(300, root.AbsoluteSize.Y)
+		local availableH = math.max(1, root.AbsoluteSize.Y)
+		local showGallery = (page == "compare" or page == "blueprints") and (landscape or availableH >= 440)
 		-- [조선소도 교역소형] 가로: 왼쪽 18% 항목 / 중앙 36% 선박 / 오른쪽 실제 정비·구매.
 		-- [세로] 기존 항목 버튼 두 줄 → 배 그림 → 정비 목록 순서를 유지한다.
 		local navWidth = if landscape then math.clamp(math.floor((width - inset - 16) * 0.18), 136, 230) else 0
 		local heroTop = if landscape then 92 else 150
-		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.46) else width - inset - 8
-		local heroHeight = if landscape then availableH - heroTop - 8 else math.clamp(math.floor(availableH * 0.24), 98, 172)
-		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + heroWidth + 16, heroTop)
-			else UDim2.fromOffset(inset, heroTop + heroHeight + 8)
-		scroll.Size = if landscape then UDim2.new(1, -inset - navWidth - heroWidth - 24, 1, -heroTop - 8)
-			else UDim2.new(1, -inset - 8, 1, -heroTop - heroHeight - 16)
+		local heroWidth = if landscape then math.floor((width - inset - navWidth - 24) * 0.36) else width - inset - 8
+		local heroHeight = if landscape then math.max(1, availableH - heroTop - 8) else math.clamp(math.floor(availableH * 0.24), 98, 172)
+		local gallerySpace = if showGallery then (if landscape then heroWidth + 8 else heroHeight + 8) else 0
+		scroll.Position = if landscape then UDim2.fromOffset(inset + navWidth + 8 + gallerySpace, heroTop)
+			else UDim2.fromOffset(inset, heroTop + gallerySpace)
+		scroll.Size = if landscape then UDim2.new(1, -inset - navWidth - gallerySpace - 16, 1, -heroTop - 8)
+			else UDim2.new(1, -inset - 8, 1, -heroTop - gallerySpace - 8)
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, 74), COLORS.paper)
         corner(top, 6)
         bookMaterial(top, "parchment", 220)
@@ -9361,14 +9367,23 @@ function openYardHall()
 		-- [닫기 중복 제거] 시설 책 오른쪽 위 X가 이미 닫기를 맡는다.
 		leave.Visible = false
 
-		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90),
-			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 52), COLORS.leather)
-		for i, entry in { { "정비", "maintenance", "shipyard" }, { "선박 비교", "compare", "yard" }, { "지역 설계", "blueprints", "chart" } } do
+		local nav = Instance.new("ScrollingFrame")
+		nav.Name = "YardSectionNavigation"
+		nav.BackgroundColor3 = COLORS.leather
+		nav.BorderSizePixel = 0
+		nav.Position = if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90)
+		nav.Size = if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 52)
+		nav.ScrollingDirection = if landscape then Enum.ScrollingDirection.Y else Enum.ScrollingDirection.X
+		nav.CanvasSize = if landscape then UDim2.fromOffset(0, 284) else UDim2.fromOffset(544, 0)
+		nav.ScrollBarThickness = 3
+		nav.Parent = root
+		for i, entry in { { "정비", "maintenance", "shipyard" }, { "선단", "fleet", "crew" }, { "개조", "refit", "yard" }, { "선박 비교", "compare", "yard" }, { "지역 설계", "blueprints", "chart" } } do
 			local selected = page == entry[2]
 			local button = mkButton(nav, entry[1], if selected then COLORS.gold else COLORS.paper,
-				if landscape then UDim2.new(1, -8, 0, 52) else UDim2.new(1 / 3, -6, 0, 46), function()
+				if landscape then UDim2.new(1, -8, 0, 52) else UDim2.fromOffset(104, 46), function()
 					if page == entry[2] then return end
 					page = entry[2]
+					H.yardMenuPage = page
 					scroll.CanvasPosition = Vector2.zero
 					build()
 				end, true)
@@ -9384,7 +9399,11 @@ function openYardHall()
 				activeRule.ZIndex = button.ZIndex + 3
 				activeRule.Parent = button
 			end
-			button.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56) else UDim2.new((i - 1) / 3, 4, 0, 3)
+			button.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56) else UDim2.fromOffset(4 + (i - 1) * 108, 3)
+			if selected then
+				nav.CanvasPosition = if landscape then Vector2.new(0, math.max(0, (i - 1) * 56 - math.max(0, availableH - heroTop - 64)))
+					else Vector2.new(math.max(0, (i - 1) * 108 - math.max(0, width - 124)), 0)
+			end
 			button.TextSize = 14
 			-- [조선 탭] 공통 청동 원화와 짧은 이름을 같은 줄에 배치한다.
 			local caption = button:FindFirstChild("PrintedCaption")
@@ -9415,14 +9434,15 @@ function openYardHall()
 			end
 		end
 		if preview then H.shipPreviewId = preview.id end
+		local shipName = preview and preview.name or ship.name
+		local shipId = preview and preview.id or ship.id
+		local shipArt = SHIP_ICON[shipId]
+		if showGallery then
 		local gallery = mkBox(root, UDim2.fromOffset(inset + (if landscape then navWidth + 8 else 0), heroTop),
 			UDim2.fromOffset(heroWidth, heroHeight), Color3.fromRGB(230, 209, 171))
 		gallery.Name = "YardShipGallery"
 		corner(gallery, 8)
 		bookMaterial(gallery, "parchment", 220)
-		local shipName = preview and preview.name or ship.name
-		local shipId = preview and preview.id or ship.id
-		local shipArt = SHIP_ICON[shipId]
 		-- [조선소 원화 카드] 기존 승인 선박 모델을 세로 7:10 슬롯에 맞춰 전시한다.
 		local availableArtH = math.max(44, heroHeight - 72)
 		local cardW = math.floor(math.max(34, math.min(heroWidth - 20, availableArtH * 0.7)))
@@ -9465,6 +9485,7 @@ function openYardHall()
 		local inspect = mkButton(gallery, "선박 확대", COLORS.gold, UDim2.fromOffset(128, 44), function() zoomOpen = true; build() end, shipArt ~= nil)
 		inspect.AnchorPoint = Vector2.new(0.5, 1)
 		inspect.Position = UDim2.new(0.5, 0, 1, -5)
+		end
 		local left = mkBox(root, UDim2.fromOffset(8, 128), UDim2.new(0, 240, 1, -136), COLORS.leather)
 		left.Visible = showPortrait
 		local lib = game:GetService("ReplicatedStorage"):FindFirstChild("MareAssets")
@@ -9547,11 +9568,11 @@ function openYardHall()
 			done.Position = UDim2.new(1, -10, 0, 8)
 		end
 	end
-	local lastWidth
+	local lastSize
 	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		local width = root.AbsoluteSize.X
-		if width > 0 and width ~= lastWidth then
-			lastWidth = width
+		local size = root.AbsoluteSize
+		if size.X > 0 and size.Y > 0 and size ~= lastSize then
+			lastSize = size
 			build()
 		end
 	end)
@@ -16484,8 +16505,37 @@ end
 -- 전투 본부의 대규모 해전 의뢰: 여러 파도로 이어지는 작전
 function RENDERERS.board()
 	H.walletBar("tavern")
-	H.counselRows(1) -- 맨 위 "지금 할 일": 동료가 지금 가장 급한 조언을 큰 카드로
 	local q = view.tavernQ or {}
+	local page = H.tavernMenuPage or (if q.active or #(q.offer or {}) > 0 then "jobs" else "visit")
+	-- 서버가 새 제안이나 선택 사건을 돌려주면 해당 내용이 있는 화면을 바로 연다.
+	if q.offer ~= H.tavernShownOffers and #(q.offer or {}) > 0 then
+		local offerKey = tostring(q.offerKind) .. ":" .. tostring(q.offer[1].id)
+		if H.tavernOfferKey ~= offerKey then page = "jobs"; H.tavernMenuPage = page end
+		H.tavernOfferKey = offerKey
+	elseif #(q.offer or {}) == 0 then H.tavernOfferKey = nil end
+	H.tavernShownOffers = q.offer
+	local rumorKey = q.rumorEvent and q.rumorEvent.id
+	if rumorKey and rumorKey ~= H.tavernRumorKey then page = "stories"; H.tavernMenuPage = page end
+	H.tavernRumorKey = rumorKey
+	H.statStrip({
+		{ "맡은 의뢰", if q.active then "1건" else "없음", tone = "key" },
+		{ "새 제안", tostring(#(q.offer or {})) .. "건", tone = "good" },
+		{ "항구 이야기", tostring(#(view.story or {})) .. "건", tone = "key" },
+	})
+	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "TavernSectionIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 52)
+		for n, spec in {{ "visit", "주점 활동" }, { "jobs", "의뢰 장부" }, { "stories", "소문·이야기" }} do
+			local button = mkButton(bar, spec[2], if page == spec[1] then COLORS.gold else COLORS.leather, UDim2.new(1/3, -4, 0, 48), function()
+				H.tavernMenuPage = spec[1]; content.CanvasPosition = Vector2.zero; render()
+			end, true)
+			button.Position = UDim2.new((n - 1)/3, 2, 0, 2)
+			button:SetAttribute("SelectedSection", page == spec[1])
+		end
+		return bar
+	end)
 	local KIND = { hunt = "전투", deliver = "납품", event = "선택" }
 	local function money(j)
 		if j.kind == "event" then return "" end
@@ -16500,6 +16550,7 @@ function RENDERERS.board()
 	if q.note then
 		add(function() return mkRow(content, "알림", q.note, nil, 64) end)
 	end
+	if page == "jobs" then
 	-- 1) 지금 맡은 의뢰
 	add(function() return mkHeader(content, "맡은 의뢰") end)
 	if q.active then
@@ -16542,6 +16593,9 @@ function RENDERERS.board()
 			return mkRow(content, "거절하고 돌아선다", "고르지 않아도 괜찮아요.", { { text = "거절", color = COLORS.grey, onClick = function() call("TavernDecline") end } }, 64)
 		end)
 	end
+	return
+	end
+	if page == "visit" then
 	-- 3) 주점에서 할 수 있는 일
 	add(function() return mkHeader(content, "주점에서") end)
 	add(function()
@@ -16554,6 +16608,8 @@ function RENDERERS.board()
 				else { icon = "status", title = "구석 자리", sub = "오늘은 비어 있어요", enabled = false },
 		}, content)
 	end)
+	return
+	end
 	-- 4) 소문에서 나온 선택 사건
 	if q.rumorEvent then
 		local j = q.rumorEvent
@@ -16568,6 +16624,9 @@ function RENDERERS.board()
 		end
 	end
 	-- 5) 이 항구의 이야기 (수상한 손님이 광장에 서 있던 시절의 이야기도 이곳에서 들어요)
+	if not q.rumorEvent and #(view.story or {}) == 0 then
+		add(function() return mkLabel(content, "현재 들을 수 있는 이야기가 없어요.", 16, INK_SOFT, false) end)
+	end
 	if view.story and #view.story > 0 then
 		add(function() return mkHeader(content, "이 항구의 이야기") end)
 		for _, ev in view.story do

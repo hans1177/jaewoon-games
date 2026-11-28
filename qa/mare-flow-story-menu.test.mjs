@@ -237,3 +237,17 @@ test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순�
  assert.ok(game.includes('BankAmountSelector'));
  for(const action of ['Deposit','Withdraw','Borrow','Repay']) assert.ok(game.includes('call("'+action+'", { amount = amt })'));
 });
+
+ test('주점과 조선소의 기능 분리는 기존 행동과 구매 조건을 보존한다',()=>{
+ const tavern=game.split('function RENDERERS.board()')[1].split('function RENDERERS.war()')[0];
+ assert.ok(tavern.includes('TavernSectionIndex'));
+ for(const action of ['TavernJob','TavernAbandon','TavernPick','TavernDecline','TavernRumor','TavernDrink','TavernTalk','TavernStranger']) assert.ok(tavern.includes('call("'+action+'"'));
+ assert.ok(tavern.includes('playStory(ev)'));
+ assert.ok(tavern.includes('H.tavernOfferKey ~= offerKey'));
+ const yard=game.split('local function renderYard(page)')[1].split('H.yardHall = openYardHall')[0];
+ for(const page of ['maintenance','fleet','refit','compare','blueprints']) assert.ok(yard.includes('"'+page+'"'));
+ for(const action of ['Repair','HireCrew','BuySupplies','BuyEscort','DismissEscort','SetFlagship','SellFleetShip','BuyFleetShip','BuyCannon','BuyPlating','BuyShip']) assert.ok(yard.includes('call("'+action+'"'));
+ assert.ok(yard.includes('YardSectionNavigation'));
+ assert.ok(yard.includes('if showGallery then'));
+ assert.ok(yard.includes('H.yardMenuPage = page'));
+});
