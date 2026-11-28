@@ -3073,10 +3073,10 @@ dock.ScrollBarThickness = 3
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hudTop
--- [12개 도크] 시설 8 + 도구 4 = 위 6개·아래 6개. 배경 없는 기존 아이콘을 2열 격자로 정렬한다.
+-- [메뉴 도크] 주 메뉴 5개와 보조 도구 4개를 두 줄로 구분한다.
 local dockGrid = Instance.new("UIGridLayout")
 dockGrid.FillDirection = Enum.FillDirection.Horizontal
-dockGrid.FillDirectionMaxCells = 6
+dockGrid.FillDirectionMaxCells = 5
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
 dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 dockGrid.VerticalAlignment = Enum.VerticalAlignment.Center
@@ -3101,26 +3101,11 @@ H.DOCK = {
 }
 H.dockButtons = {}
 H.dockNotices = {}
-H.dockBlooms = {}
 H.dockMotion = {}
 for i, d in H.DOCK do
 	local b = H.hudShortcut(dock, "Menu_" .. d[1], d[3], d[2], true)
 	b.LayoutOrder = i
 	H.dockButtons[d[1]] = b
-	-- [시설 신호] 기존 아이콘 위에 투명한 색광 두 겹을 한 번만 만든다. 메뉴·자산·터치 영역은 유지.
-	local halo = Instance.new("ImageLabel")
-	halo.Name = "SignalHalo"
-	halo.AnchorPoint = Vector2.new(0.5, 0.5)
-	halo.Position = UDim2.new(0.5, 0, 0, 23) -- [모바일] 셀 가운데에서만 빛이 퍼져 여섯 번째 열에서도 잘리지 않는다.
-	halo.Size = UDim2.fromOffset(28, 28)
-	halo.Image = "rbxasset://textures/particles/sparkles_main.dds"
-	halo.ImageColor3 = Color3.fromRGB(255, 204, 96)
-	halo.ImageTransparency = 0.58
-	halo.BackgroundTransparency = 1
-	halo.BorderSizePixel = 0
-	halo.ZIndex = 6
-	halo.Visible = false
-	halo.Parent = b
 	local notice = Instance.new("ImageLabel")
 	notice.Name = "FacilityNotice"
 	notice.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -3139,33 +3124,6 @@ for i, d in H.DOCK do
 	notice.Visible = false
 	notice.Parent = b
 	H.dockNotices[d[1]] = notice
-	-- [긴급·저가·납품] 스크롤 잘림 밖 100px 둥근 그림자/빛 고리.
-	-- [시설 알림] 기존 알림 판정은 유지하되 100~128px 화면광 대신 아이콘 크기의 원형 음영을 쓴다.
-	local bloom = Instance.new("Frame")
-	bloom.Name = "SignalBloom_" .. d[1]
-	bloom.AnchorPoint = Vector2.new(0.5, 0.5)
-	bloom.Position = UDim2.new(0.5, 0, 0, 23)
-	bloom.Size = UDim2.fromOffset(46, 46)
-	bloom.BackgroundColor3 = Color3.fromRGB(255, 202, 92)
-	bloom.BackgroundTransparency = 0.77
-	bloom.BorderSizePixel = 0
-	bloom.Active = false
-	bloom.Visible = false
-	bloom.ZIndex = 1
-	bloom.Parent = b
-	local r = Instance.new("UICorner")
-	r.CornerRadius = UDim.new(1, 0)
-	r.Parent = bloom
-	local shade = Instance.new("UIGradient")
-	shade.Color = ColorSequence.new(Color3.fromRGB(255, 255, 237), Color3.fromRGB(145, 75, 40))
-	shade.Rotation = 90
-	shade.Parent = bloom
-	local rim = Instance.new("UIStroke")
-	rim.Name = "BloomEdge"
-	rim.Thickness = 2
-	rim.Transparency = 0.24
-	rim.Parent = bloom
-	H.dockBlooms[d[1]] = bloom
 	b.Activated:Connect(function()
 		openTab(d[1])
 	end)
@@ -3735,7 +3693,7 @@ function H.updateHud(p, ship)
 		board = if readyDelivery then "납품"
 			elseif (ship.crew or 0) < (ship.maxCrew or 0) * 0.5 then "인원" else nil,
 	}
-	-- [알림 효과] 실제 게임 상태만 사용. 2겹 색광은 활성 알림에만 재생하고 상태 변경 시 기존 트윈을 정리한다.
+	-- [알림 효과] 실제 게임 상태만 사용. 상태 변경 시 기존 배지 트윈을 정리한다.
 	H.dockSignalTweens = H.dockSignalTweens or {}
 	local signalTweenService = game:GetService("TweenService")
 	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
@@ -3745,14 +3703,12 @@ function H.updateHud(p, ship)
 		local changed = (alert or "") ~= (previous or "")
 		local motionChanged = notice:GetAttribute("ReducedMotionLast") ~= reducedMotion
 		local button = H.dockButtons[id]
-		local halo = if button then button:FindFirstChild("SignalHalo") else nil
-		local bloom = H.dockBlooms[id]
-		-- [효과 정리] 반짝이·색광·파편 제거. 알림은 청동 느낌표 배지 + 아이콘 맥동만.
-		if bloom then bloom.Visible = false end
-		if halo then halo.Visible = false end
-		notice.Visible = alert ~= nil
-		notice.ImageColor3 = if alert == "긴급" then Color3.fromRGB(255, 205, 190) else Color3.new(1, 1, 1)
-		if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
+		-- [효과 정리] 숨겨진 광원 인스턴스 없이 청동 배지와 맥동만 사용한다.
+		if changed or motionChanged or previous == nil then
+			notice.Visible = alert ~= nil
+			notice.ImageColor3 = if alert == "긴급" then Color3.fromRGB(255, 205, 190) else Color3.new(1, 1, 1)
+			if button then button:SetAttribute("IconAlert", alert ~= nil) end -- 알림 있을 때만 아이콘이 커졌다 작아진다
+		end
 		if changed or motionChanged then
 			notice:SetAttribute("SignalKind", alert or "")
 			notice:SetAttribute("ReducedMotionLast", reducedMotion)
@@ -3765,8 +3721,10 @@ function H.updateHud(p, ship)
 			if alert and changed and not reducedMotion then
 				-- 새 알림 순간 배지가 한 번 톡 튀어나온다(반복 없음).
 				notice.Size = UDim2.fromOffset(8, 8)
-				signalTweenService:Create(notice, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-					{ Size = UDim2.fromOffset(20, 20) }):Play()
+				local tween = signalTweenService:Create(notice, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+					{ Size = UDim2.fromOffset(20, 20) })
+				H.dockSignalTweens[id] = { tween }
+				tween:Play()
 			end
 		end
 	end
@@ -3792,7 +3750,7 @@ function H.updateHud(p, ship)
 		local pulse = H.dockMotion["Menu_" .. destination]
 		if pulse and not game:GetService("GuiService").ReducedMotionEnabled then pulse:Play() end
 	end
-	-- [글씨 알림 제거] 저가·긴급·수리·보급·납품·추천 상태는 해당 아이콘의 색광·파티클만으로 표시한다.
+	-- [글씨 알림 제거] 저가·긴급·수리·보급·납품·추천 상태는 청동 배지와 아이콘 맥동으로 표시한다.
 end
 
 -- 화면 중앙 상단 동료 말풍선: 게임을 시작하거나 새 항구에 닿으면 동료가 인사하고 앞으로 할 일을 조언한다.
@@ -3814,24 +3772,24 @@ do
 	local function layoutBubble()
 		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
-		-- [12개 고정 배열] 8개 시설 + 저널·내 카드·설정·걷기 4개 = 위 6 / 아래 6.
+		-- [5개 주 메뉴 / 4개 도구] 기능 묶음과 보조 도구를 서로 다른 줄에 정렬한다.
 		local GAP = if width < 420 then 4 else 6
-		local CW = math.min(58, math.floor((width - 16 - GAP * 5) / 6))
+		local CW = math.min(64, math.floor((width - 16 - GAP * 4) / 5))
 		local CH = if CW < 54 then 70 else 76
-		local dockW = CW * 6 + GAP * 5
+		local dockW = CW * 5 + GAP * 4
 		local dockH = CH * 2 + GAP
 		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
 		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
-		-- [정렬] 걷기는 2줄 맨 앞(7번째). 시설 1~6 → 1줄, 걷기 → 2줄 첫 칸, 나머지 시설 → 그 뒤, 저널·카드·설정 → 끝.
+		-- [정렬] 주 메뉴 다섯 개는 첫 줄, 걷기·일지·카드·설정은 다음 줄.
 		local sysOrder = { "JournalButton", "DeckButton", "OptionsButton" }
 		for i, d in H.DOCK do
 			local fb = H.dockButtons[d[1]]
-			if fb then fb.LayoutOrder = if i <= 6 then i else i + 1 end
+			if fb then fb.LayoutOrder = i end
 		end
 		local walkBtn = dock:FindFirstChild("ViewToggle") or hudTop:FindFirstChild("ViewToggle")
 		if walkBtn then
 			if walkBtn.Parent ~= dock then walkBtn.Parent = dock end
-			walkBtn.LayoutOrder = 7
+			walkBtn.LayoutOrder = #H.DOCK + 1
 		end
 		for i, name in sysOrder do
 			local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
@@ -7709,13 +7667,15 @@ local function openTradeHall()
 		local bigPx = if narrow then math.floor(math.min(width - 54, math.max(170, root.AbsoluteSize.Y * 0.48), 330)) else 0
 		local bigH = math.floor(bigPx * 10 / 7)
 		-- [모바일 세로] 원화는 카드배틀과 같은 7:10, 원본 이미지는 Fit으로 읽는다.
-		local infoTop = if narrow then bigH + 242 else 80
-		detail.CanvasSize = UDim2.fromOffset(0, infoTop + 812)
+		local infoTop = 80
+		local articleTop = infoTop + 812
+		local detailHeight = articleTop + (if narrow then bigH + 242 else 0)
+		detail.CanvasSize = UDim2.fromOffset(0, detailHeight)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
 		detail.Parent = root
 		corner(detail, 7)
-		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, infoTop + 812), COLORS.paper)
+		local right = mkBox(detail, UDim2.fromOffset(0, 0), UDim2.new(1, -6, 0, detailHeight), COLORS.paper)
 		bookMaterial(right, "parchment", 220)
 		if sel and detail.Visible then
 			local gi = GOOD_ICON[sel.id]
@@ -7730,7 +7690,7 @@ local function openTradeHall()
 			hn.AutomaticSize = Enum.AutomaticSize.None
 			local note = (sel.category or "교역품") .. " · " .. (sel.purpose or "항구 간 판매")
 			local hnote = mkLabel(right, note, 16, INK_SOFT, false)
-			hnote.Position = UDim2.fromOffset(12, if narrow then bigH + 46 else 42)
+			hnote.Position = UDim2.fromOffset(12, 42)
 			hnote.Size = UDim2.new(1, -24, 0, 38)
 			hnote.AutomaticSize = Enum.AutomaticSize.None
 			if narrow then
@@ -7750,7 +7710,7 @@ local function openTradeHall()
 				end
 				big.Size = UDim2.fromOffset(bigPx, bigH)
 				big.AnchorPoint = Vector2.new(0.5, 0)
-				big.Position = UDim2.new(0.5, 0, 0, 42)
+				big.Position = UDim2.new(0.5, 0, 0, articleTop + 8)
 				local artTap = Instance.new("TextButton")
 				artTap.Name = "TradeArtToCodex"
 				artTap.Text = ""
@@ -7759,11 +7719,11 @@ local function openTradeHall()
 				artTap.AutoButtonColor = false
 				artTap.Size = UDim2.fromOffset(bigPx, bigH)
 				artTap.AnchorPoint = Vector2.new(0.5, 0)
-				artTap.Position = UDim2.new(0.5, 0, 0, 42)
+				artTap.Position = UDim2.new(0.5, 0, 0, articleTop + 8)
 				artTap.ZIndex = 8
 				artTap.Parent = right
 				artTap.Activated:Connect(openSelectedGoodEncyclopedia)
-				local sheet = mkBox(right, UDim2.fromOffset(12, bigH + 82),
+				local sheet = mkBox(right, UDim2.fromOffset(12, articleTop + bigH + 20),
 					UDim2.new(1, -24, 0, 148), COLORS.paper)
 				sheet.Name = "TradeBookPage"
 				bookMaterial(sheet, "parchment", 180)
@@ -7777,7 +7737,7 @@ local function openTradeHall()
 				summary.AutomaticSize = Enum.AutomaticSize.None
 				summary.TextWrapped = true
 				summary.TextTruncate = Enum.TextTruncate.AtEnd
-				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 38),
+				local openBook = mkButton(sheet, "서재 백과사전", COLORS.blue, UDim2.new(1, -16, 0, 44),
 					openSelectedGoodEncyclopedia, true)
 				openBook.Position = UDim2.fromOffset(8, 106)
 			end
@@ -7858,6 +7818,7 @@ local function openTradeHall()
             receipt.Size = UDim2.new(1, -16, 0, if shortScreen then 34 else 38)
 			receipt.AutomaticSize = Enum.AutomaticSize.None
 			receipt.TextXAlignment = Enum.TextXAlignment.Center
+			local buy, sell
 			local function refreshReceipt()
 				local pay = if sel.buyTotals and sel.buyTotals[qty] then sel.buyTotals[qty] else unitBuy * qty
 				local sellQty = math.min(qty, maxSell)
@@ -7867,15 +7828,25 @@ local function openTradeHall()
 					qty, H.commas(pay), H.commas(p.coins - pay),
 					sellQty, H.commas(get), if profit == nil then "미보유" else string.format("%+d", profit))
 				receipt.TextColor3 = if qty > maxBuy then COLORS.red else COLORS.text
+				if buy then
+					local canBuy = maxBuy >= qty
+					buy.Text = if canBuy then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족"
+					buy.Interactable, buy.Active, buy.Selectable, buy.AutoButtonColor = canBuy, canBuy, canBuy, canBuy
+					buy.TextColor3 = if canBuy then INK else Color3.fromRGB(97, 93, 89)
+					buy.BackgroundColor3 = if canBuy then Color3.fromRGB(239, 202, 123) else Color3.fromRGB(174, 169, 159)
+					local grad = buy:FindFirstChildOfClass("UIGradient")
+					if grad then grad.Color = if canBuy then ColorSequence.new(Color3.fromRGB(254,224,158), Color3.fromRGB(193,146,72)) else ColorSequence.new(Color3.fromRGB(211,206,196), Color3.fromRGB(166,157,143)) end
+				end
+				if sell then sell.Text = if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 " .. tostring(maxSell) .. "개" else "판매 불가" end
 			end
 			local function setQuantity(value)
 				qty = math.clamp(value, 1, 20)
 				hallQty = qty
-				-- [버튼 상태] 수량 변경 즉시 실제 구매·판매 가능 여부까지 함께 다시 그린다.
-				build()
+				-- [버튼 상태] 수량만 변하면 원화·목록을 재생성하지 않고 영수증과 실행 버튼만 갱신한다.
+				refreshReceipt()
 			end
 			local function quantityButton(index, label, action, enabled)
-				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, if shortScreen then 40 else 50), action, enabled)
+				local b = mkButton(desk, label, COLORS.paper, UDim2.new(0.25, -8, 0, if shortScreen then 44 else 50), action, enabled)
                 b.Position = UDim2.new((index - 1) / 4, 4, 0, if shortScreen then 39 else 47)
 				b.TextSize = 17
 			end
@@ -7883,13 +7854,13 @@ local function openTradeHall()
 			quantityButton(2, "+", function() setQuantity(qty + 1) end)
 			quantityButton(3, "10개", function() setQuantity(10) end)
 			quantityButton(4, "최대 구매", function() setQuantity(maxBuy) end, maxBuy > 0)
-			refreshReceipt()
-			local buy = mkButton(desk, if maxBuy >= qty then "구매 " .. tostring(qty) .. "개" elseif free < qty then "화물 부족" elseif (sel.supply or 20) < qty then "재고 부족" else "코인·한도 부족", COLORS.gold, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Buy", { goodId = sel.id, amount = qty }) end, maxBuy >= qty)
+			buy = mkButton(desk, "구매", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() if maxBuy >= qty then call("Buy", { goodId = sel.id, amount = qty }) end end, true)
 			buy.Position = UDim2.fromOffset(4, if shortScreen then 84 else 106)
-			buy.TextSize = 21
-			local sell = mkButton(desk, if maxSell >= qty then "판매 " .. tostring(qty) .. "개" elseif maxSell > 0 then "판매 가능 " .. tostring(maxSell) else "보유·한도 부족", COLORS.green, UDim2.new(0.5, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
-			sell.Position = UDim2.new(0.5, 4, 0, if shortScreen then 84 else 106)
-			sell.TextSize = 21
+			buy.TextSize = if narrow then 15 else 17
+			sell = mkButton(desk, "판매", COLORS.green, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() call("Sell", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
+			sell.Position = UDim2.new(2/3, 4, 0, if shortScreen then 84 else 106)
+			sell.TextSize = if narrow then 15 else 17
+			refreshReceipt()
 			-- [자동 흥정] 수동 버튼 없이 상인 전문/승선 동료가 구매 순간 협상한다.
 			local bargain = view.haggle or {}
 			local tried = bargain.tried and bargain.tried[sel.id]
@@ -7900,14 +7871,13 @@ local function openTradeHall()
 			if dealHere then status = string.format("흥정 성공 · 다음 구매 %d%% 할인 적용", bargain.deal.pct or 0) end
 			local alert = mkLabel(right, status, 14, if bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
 			alert.Position = UDim2.fromOffset(14, infoTop + 390)
-			alert.Size = UDim2.new(1, if tried or dealHere then -28 else -150, 0, 58)
+			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			if not tried and not dealHere and H.openHaggle then
-				local hg = mkButton(right, "🎲 흥정 게임", COLORS.gold, UDim2.fromOffset(124, 50), function() H.openHaggle(sel.id, sel.name) end, true)
-				hg.Name = "HaggleGameButton"
-				hg.Position = UDim2.new(1, -136, 0, infoTop + 394)
-			end
+			local hg = mkButton(desk, if dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			hg.Name = "HaggleGameButton"
+			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
+			hg.TextSize = if narrow then 14 else 16
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sm.Position = UDim2.fromOffset(12, infoTop + 456)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
@@ -11592,7 +11562,7 @@ do
 			end)
 			H.nextStepChip = chip
 		end
-		local show = view ~= nil and hud.Visible and not main.Visible and not newGameMode and not inField and not sailingNow
+		local show = gui.Enabled and view ~= nil and hud.Visible and not main.Visible and not newGameMode and not inField and not sailingNow
 			and not H.sceneBusy and not H.questScenesPlaying
 		local step = if show then H.nextStep() else nil
 		H.currentStep = step
@@ -11602,14 +11572,17 @@ do
 			return
 		end
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-		local w = math.min(460, vp.X - 24)
-		chip.Size = UDim2.fromOffset(w, if step.why then 46 else 36)
-		local top = if dock.Visible and dock.AbsoluteSize.Y > 0 then dock.AbsolutePosition.Y else vp.Y - 120
-		chip.Position = UDim2.fromOffset(vp.X / 2, top - 6)
+		-- [다음 할 일] 상단 도크 위치에서 빼면 화면 밖으로 나간다. 하단 중앙에서 이동 조작 영역을 피한다.
+		local touch = game:GetService("UserInputService").TouchEnabled
+		local w = math.max(1, math.min(460, vp.X - 24))
+		local chipHeight = if step.why then 52 else 44
+		local bottomInset = if touch then math.min(132, math.floor(vp.Y * 0.25)) else 16
+		chip.Size = UDim2.fromOffset(w, chipHeight)
+		chip.Position = UDim2.fromOffset(vp.X / 2, math.max(chipHeight + 8, vp.Y - bottomInset))
 		chip.StepText.Text = step.text
 		chip.WhyText.Text = if step.why then "왜? " .. tostring(step.why) else ""
 		chip.WhyText.Visible = step.why ~= nil
-		chip.StepText.Position = UDim2.fromOffset(64, if step.why then 3 else 7)
+		chip.StepText.Position = UDim2.fromOffset(64, if step.why then 5 else 11)
 		local key = tostring(step.tab) .. "|" .. tostring(step.text)
 		if key ~= H.lastStepKey then
 			H.lastStepKey = key
@@ -11637,11 +11610,13 @@ do
 		add(function()
 			local row = Instance.new("Frame")
 			row.Name = "MenuHomeStrip"
-			row.Size = UDim2.new(1, -6, 0, 64)
+			local compact = content.AbsoluteSize.X > 0 and content.AbsoluteSize.X < 440
+			row.Size = UDim2.new(1, -6, 0, if compact then 180 else 76)
 			row.BackgroundTransparency = 1
 			local grid = Instance.new("UIGridLayout")
-			grid.CellSize = UDim2.new(1 / 3, -6, 1, 0)
-			grid.CellPadding = UDim2.fromOffset(6, 0)
+			grid.CellSize = if compact then UDim2.new(1, 0, 0, 56) else UDim2.new(1 / 3, -4, 1, 0)
+			grid.CellPadding = UDim2.fromOffset(6, if compact then 6 else 0)
+			grid.FillDirectionMaxCells = if compact then 1 else 3
 			grid.SortOrder = Enum.SortOrder.LayoutOrder
 			grid.Parent = row
 			local function cell(order, title, body, color, tab)
@@ -11654,13 +11629,15 @@ do
 				b.Active = tab ~= nil
 				b.Parent = row
 				corner(b, 10)
-				local t = mkLabel(b, title, 13, Color3.fromRGB(255, 236, 196), true)
+				local t = mkLabel(b, title, 14, Color3.fromRGB(255, 236, 196), true)
 				t.Position = UDim2.fromOffset(8, 5)
-				t.Size = UDim2.new(1, -16, 0, 18)
+				t.Size = if compact then UDim2.new(0.36, -12, 1, -10) else UDim2.new(1, -16, 0, 20)
+				t.TextWrapped = true
 				t.AutomaticSize = Enum.AutomaticSize.None
-				local d = mkLabel(b, body, 12, Color3.fromRGB(250, 244, 230), false)
-				d.Position = UDim2.fromOffset(8, 24)
-				d.Size = UDim2.new(1, -16, 0, 36)
+				local d = mkLabel(b, body, 14, Color3.fromRGB(250, 244, 230), false)
+				d.Position = if compact then UDim2.new(0.36, 4, 0, 5) else UDim2.fromOffset(8, 27)
+				d.Size = if compact then UDim2.new(0.64, -12, 1, -10) else UDim2.new(1, -16, 0, 44)
+				d.TextWrapped = true
 				d.AutomaticSize = Enum.AutomaticSize.None
 				d.TextTruncate = Enum.TextTruncate.AtEnd
 				if tab then
@@ -12107,14 +12084,15 @@ do
 			holder.Image = sheet
 			holder.ImageRectSize = Vector2.new(256, 256)
 			holder:SetAttribute("Row", FACE_ROW[mood] or 1)
-			if not holder:GetAttribute("Animating") then
+			holder.ImageRectOffset = Vector2.new(0, (FACE_ROW[mood] or 1) * 256)
+			if not game:GetService("GuiService").ReducedMotionEnabled and not holder:GetAttribute("Animating") then
 				holder:SetAttribute("Animating", true)
 				task.spawn(function()
 					local f = 0
-					while holder.Parent do
-						f = (f + 1) % 4
+					while holder:IsDescendantOf(game) do
 						holder.ImageRectOffset = Vector2.new(f * 256, (holder:GetAttribute("Row") or 1) * 256)
-						task.wait(if f == 0 then 1.2 else 0.12) -- 가만히 있다가 깜빡·끄덕
+						task.wait(if f == 0 then 1.2 else 0.12)
+						f = (f + 1) % 4 -- 가만히 있다가 깜빡·끄덕
 					end
 				end)
 			end
@@ -12131,7 +12109,12 @@ do
 	end
 
 	function H.openHaggle(goodId, goodName)
+		local pg = player:FindFirstChildOfClass("PlayerGui")
+		if pg and pg:FindFirstChild("HaggleGame") then return end
+		if H.haggleOpening then return end
+		H.haggleOpening = true
 		local r = H.call("HaggleStart", { goodId = goodId })
+		H.haggleOpening = false
 		local pend = view and view.haggle and view.haggle.pending
 		if not (r and r.ok ~= false) or not pend or pend.goodId ~= goodId then return end
 		local g = overlayGui("HaggleGame", 80)
@@ -12155,33 +12138,44 @@ do
 		local lim = Instance.new("UISizeConstraint")
 		lim.MaxSize = Vector2.new(460, 460)
 		lim.Parent = box
-		local asp = Instance.new("UIAspectRatioConstraint")
-		asp.AspectRatio = 1
-		asp.Parent = box
 		local st = Instance.new("UIStroke")
 		st.Color = GOLD
 		st.Thickness = 3
 		st.Parent = box
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-		if vp.X < 500 then box.Size = UDim2.fromOffset(vp.X - 24, vp.X - 24) end
+		local boxWidth, boxHeight = math.min(460, math.max(1, vp.X - 24)), math.min(460, math.max(1, vp.Y - 24))
+		box.Size = UDim2.fromOffset(boxWidth, boxHeight)
+		local reduced = game:GetService("GuiService").ReducedMotionEnabled
 		local title = mkLabel(box, "흥정 · " .. tostring(goodName or ""), 18, INK, true)
 		title.Position = UDim2.fromOffset(14, 10)
-		title.Size = UDim2.new(1, -120, 0, 24)
+		title.Size = UDim2.new(1, -120, 0, 40)
+		title.TextTruncate = Enum.TextTruncate.AtEnd
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local skip = mkButton(box, "그냥 사기", COLORS.grey, UDim2.fromOffset(96, 34), function() g:Destroy() end, true)
+		local skip = mkButton(box, "그냥 사기", COLORS.grey, UDim2.fromOffset(96, 44), function() g:Destroy() end, true)
 		skip.Position = UDim2.new(1, -106, 0, 8)
+		local scroll = Instance.new("ScrollingFrame")
+		scroll.Name = "StageScroll"
+		scroll.Position = UDim2.fromOffset(12, 56)
+		scroll.Size = UDim2.new(1, -24, 1, -68)
+		scroll.BackgroundTransparency = 1
+		scroll.BorderSizePixel = 0
+		scroll.ScrollBarThickness = 4
+		scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+		scroll.Parent = box
+		local stageHeight = math.max(336, boxHeight - 68)
+		scroll.CanvasSize = UDim2.fromOffset(0, stageHeight)
 		local stage = Instance.new("Frame")
 		stage.Name = "Stage"
-		stage.Position = UDim2.fromOffset(12, 44)
-		stage.Size = UDim2.new(1, -24, 1, -56)
+		stage.Size = UDim2.new(1, -6, 0, stageHeight)
 		stage.BackgroundTransparency = 1
-		stage.Parent = box
-		local finished = false
+		stage.Parent = scroll
+		local finished, selecting = false, false
 		local function finish(payload)
-			if finished then return end
+			if finished or not g.Parent then return end
 			finished = true
 			payload.goodId = goodId
 			local res = H.call("HagglePlay", payload)
+			if not g.Parent then return end
 			local ok = res and res.ok ~= false
 			Sfx.play(if ok then "sfx_card_coin" else "sfx_error", 0.5)
 			local banner = mkLabel(box, if ok then "흥정 성공!" else "정가대로…", 30, if ok then Color3.fromRGB(40, 120, 60) else Color3.fromRGB(150, 60, 50), true)
@@ -12191,10 +12185,7 @@ do
 			banner.AutomaticSize = Enum.AutomaticSize.None
 			banner.TextXAlignment = Enum.TextXAlignment.Center
 			banner.ZIndex = 30
-			if ok and H.cardGainFlair then
-				pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 2, gold = GOLD, tone = Color3.fromRGB(255, 210, 120),
-					w = 260, h = 260, reduced = game:GetService("GuiService").ReducedMotionEnabled, viewport = vp, combat = false, hero = false })
-			end
+
 			task.delay(1.4, function() if g.Parent then g:Destroy() end end)
 		end
 
@@ -12246,7 +12237,7 @@ do
 			local t0 = os.clock()
 			local conn
 			conn = RS.RenderStepped:Connect(function()
-				if not needle.Parent or finished then conn:Disconnect() return end
+				if not g.Parent or not needle.Parent or finished then conn:Disconnect() return end
 				local phase = ((os.clock() - t0) / pend.period) % 2
 				needle.Position = UDim2.fromScale(if phase < 1 then phase else 2 - phase, 0.5)
 			end)
@@ -12268,18 +12259,22 @@ do
 			local function show() label.Text = string.format("%d%% 깎아 주세요 (남은 시도 %d)", offer, 3 - tries) end
 			show()
 			local function ask(delta)
-				if finished then return end
+				if finished or selecting or not g.Parent or tries >= 3 then return end
 				offer = math.clamp(offer + delta, 4, 12)
 				tries += 1
 				merchantFace(stage, pend.faces and pend.faces[offer] or "think")
 				show()
-				if tries >= 3 then task.delay(0.6, function() finish({ offer = offer }) end) end
+				if tries >= 3 then
+					selecting = true
+					local finalOffer = offer
+					task.delay(0.6, function() finish({ offer = finalOffer }) end)
+				end
 			end
 			local less = mkButton(stage, "− 덜 깎기", COLORS.blue, UDim2.new(0.32, -6, 0, 48), function() ask(-2) end, true)
 			less.Position = UDim2.new(0, 0, 0, 226)
 			local more = mkButton(stage, "+ 더 깎기", COLORS.red, UDim2.new(0.32, -6, 0, 48), function() ask(2) end, true)
 			more.Position = UDim2.new(0.34, 0, 0, 226)
-			local deal = mkButton(stage, "이걸로 하자", COLORS.green, UDim2.new(0.32, 0, 0, 48), function() finish({ offer = offer }) end, true)
+			local deal = mkButton(stage, "이걸로 하자", COLORS.green, UDim2.new(0.32, 0, 0, 48), function() if not selecting then finish({ offer = offer }) end end, true)
 			deal.Position = UDim2.new(0.68, 0, 0, 226)
 		elseif pend.game == "coin" then
 			-- 3) 진짜 동전 고르기: 맨 위 정품 견본과 같은 동전
@@ -12327,14 +12322,20 @@ do
 			lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
 			lay.Padding = UDim.new(0, 14)
 			lay.Parent = row
+			local coinCount = math.max(1, #(pend.looks or {}))
+			local coinSize = math.max(44, math.min(80, math.floor((boxWidth - 30 - 14 * (coinCount - 1)) / coinCount)))
 			for i, look in pend.looks or {} do
-				local c = coin(row, look, 80)
+				local c = coin(row, look, coinSize)
 				c.LayoutOrder = i
 				c.Activated:Connect(function()
-					if finished then return end
-					-- 동전을 뒤집어 보는 움직임
-					TS:Create(c, TweenInfo.new(0.12), { Size = UDim2.fromOffset(6, 80) }):Play()
-					task.delay(0.13, function() TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(80, 80) }):Play() end)
+					if finished or selecting or not g.Parent then return end
+					selecting = true
+					if reduced then finish({ pick = i }); return end
+					-- 첫 선택만 뒤집고, 닫힌 창에는 지연 연출을 실행하지 않는다.
+					TS:Create(c, TweenInfo.new(0.12), { Size = UDim2.fromOffset(6, coinSize) }):Play()
+					task.delay(0.13, function()
+						if g.Parent and c.Parent then TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(coinSize, coinSize) }):Play() end
+					end)
 					task.delay(0.35, function() finish({ pick = i }) end)
 				end)
 			end
@@ -12351,10 +12352,12 @@ do
 				b.Position = UDim2.new(if i % 2 == 1 then 0 else 0.5, if i % 2 == 1 then 0 else 6, 0, 70 + math.floor((i - 1) / 2) * 60)
 			end
 		end
-		local sc = Instance.new("UIScale")
-		sc.Scale = 0.85
-		sc.Parent = box
-		TS:Create(sc, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		if not reduced then
+			local sc = Instance.new("UIScale")
+			sc.Scale = 0.85
+			sc.Parent = box
+			TS:Create(sc, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		end
 		Sfx.play("sfx_card_deal", 0.35)
 	end
 end
