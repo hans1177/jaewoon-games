@@ -327,6 +327,7 @@ local shipColorModels, shipColorParts, shipUnknownParts, shipColorExpected = 0, 
 local outfitModels, outfitParts, outfitWhite, outfitMapped, outfitMaterialized = 0, 0, 0, 0, 0
 local outfitColorMaps, outfitNormalMaps, outfitRoughnessMaps, outfitMetalnessMaps = 0, 0, 0, 0
 local outfitMissing = {}
+local outfitMapUnreadable, outfitMaterialDetails = 0, {}
 for _, item in queue do
 	if item.kind == "Naval" and (item.name:match("%-v5$") or item.name:match("%-v5%-mobile$")) then
 		shipColorExpected += 1
@@ -436,12 +437,16 @@ for _ = 1, 12 do
 					if studioAudit and item.kind == "People"
 						and string.sub(item.name, 1, 7) == "outfit_" then
 						outfitModels += 1
+						local detail = { meshParts = 0, whiteParts = 0, colorMaps = 0, normalMaps = 0, roughnessMaps = 0, metalnessMaps = 0, unreadableMaps = 0 }
+						outfitMaterialDetails[item.name] = detail
 						for _, piece in model:GetDescendants() do
 							if piece:IsA("MeshPart") then
 								outfitParts += 1
+								detail.meshParts += 1
 								local color = piece.Color
 								if color.R > 0.94 and color.G > 0.94 and color.B > 0.94 then
 									outfitWhite += 1
+									detail.whiteParts += 1
 								end
 								if piece.Material == Enum.Material.Metal or piece.Material == Enum.Material.Fabric
 									or piece.Material == Enum.Material.Leather then
@@ -453,13 +458,19 @@ for _ = 1, 12 do
 								end
 								-- [실물 재질 4종] 색만 입힌 플라스틱이 아닌 원본 256px 텍스처 여부를 확인한다.
 								if surface then
-									if surfaceHasColorMap(surface) then outfitColorMaps += 1 end
-									-- 맵 속성은 플러그인 권한에서만 읽힐 수 있어 실패해도 집계만 건너뛴다.
-									pcall(function()
-										if surface.NormalMap ~= "" then outfitNormalMaps += 1 end
-										if surface.RoughnessMap ~= "" then outfitRoughnessMaps += 1 end
-										if surface.MetalnessMap ~= "" then outfitMetalnessMaps += 1 end
-									end)
+									-- [권한과 실제 누락 분리] 접근 불가를 빈 맵 또는 정상 맵으로 추정하지 않는다.
+									for _, map in { "ColorMap", "NormalMap", "RoughnessMap", "MetalnessMap" } do
+										local readable, present = pcall(function() return (surface :: any)[map] ~= "" end)
+										if not readable then
+											outfitMapUnreadable += 1
+											detail.unreadableMaps += 1
+										elseif present then
+											if map == "ColorMap" then outfitColorMaps += 1; detail.colorMaps += 1
+											elseif map == "NormalMap" then outfitNormalMaps += 1; detail.normalMaps += 1
+											elseif map == "RoughnessMap" then outfitRoughnessMaps += 1; detail.roughnessMaps += 1
+											else outfitMetalnessMaps += 1; detail.metalnessMaps += 1 end
+										end
+									end
 								end
 							end
 						end
@@ -541,11 +552,12 @@ for _ = 1, 12 do
 					colorMaps = outfitColorMaps, normalMaps = outfitNormalMaps,
 					roughnessMaps = outfitRoughnessMaps, metalnessMaps = outfitMetalnessMaps,
 					nativeMaterialParts = outfitMaterialized, missing = outfitMissing,
+					unreadableMapReads = outfitMapUnreadable, perAsset = outfitMaterialDetails,
 				}))
 				ReplicatedStorage:SetAttribute("MareOutfitMaterialAuditState",
 					if outfitModels == 9 and outfitParts >= 9 and outfitWhite == 0
 						and outfitColorMaps >= 9 and outfitNormalMaps >= 9 and outfitRoughnessMaps >= 9
-						and outfitMetalnessMaps >= 1 then "PASS" else "FAIL")
+						and outfitMetalnessMaps >= 1 and outfitMapUnreadable == 0 and #outfitMissing == 0 then "PASS" else "FAIL")
 				-- [스튜디오 독립 진단] 미복원 메시가 남았는지 확인할 수 있도록 집계만 기록한다.
 				ReplicatedStorage:SetAttribute("MareShipV5ColorAudit", HttpService:JSONEncode({
 					expected = shipColorExpected, models = shipColorModels,

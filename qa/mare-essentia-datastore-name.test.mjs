@@ -2106,7 +2106,10 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(loader,/MareOutfitMaterialAudit/);
   assert.match(loader,/outfitWhite == 0/);
   assert.match(loader,/outfitColorMaps >= 9 and outfitNormalMaps >= 9 and outfitRoughnessMaps >= 9/);
-  assert.match(loader,/outfitMetalnessMaps >= 1/);
+  assert.match(loader,/outfitMetalnessMaps >= 1 and outfitMapUnreadable == 0 and #outfitMissing == 0/);
+  assert.match(loader,/if not readable then\s+outfitMapUnreadable \+= 1/);
+  assert.match(loader,/unreadableMapReads = outfitMapUnreadable, perAsset = outfitMaterialDetails/);
+  assert.match(loader,/elseif present then\s+if map == "ColorMap" then outfitColorMaps \+= 1/);
   assert.match(loader,/local importedPeople = library:FindFirstChild\("People"\)/);
   assert.match(pose,/elseif hair or pearlWhite then Enum\.Material\.SmoothPlastic/);
   assert.match(pose,/part\.Material = fallback\[2\]/);
