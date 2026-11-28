@@ -58,3 +58,19 @@ test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 
   assert.match(qty, /refreshReceipt\(\)/);
   assert.doesNotMatch(qty, /build\(\)/);
 });
+
+test('등록된 청동 안내 원화와 9분할 프레임만 선택적으로 연결한다', () => {
+  const chip = game.split('function H.refreshNextStep()')[1].split('function H.menuHomeStrip()')[0];
+  assert.match(chip, /local chipArt = AssetIds\["CardArt\/ui_frame_chip"\]/);
+  assert.match(chip, /if chipArt then/);
+  assert.match(chip, /art\.SliceCenter = Rect\.new\(24, 24, 488, 104\)/);
+  assert.match(chip, /H\.hasIconArt\("nextstep"\)/);
+  assert.match(chip, /chip\.Activated:Connect/);
+  const home = game.split('function H.menuHomeStrip()')[1].split('-- [이야기 흐름')[0];
+  assert.match(home, /local frameArt = AssetIds\["CardArt\/ui_frame_card"\]/);
+  assert.match(home, /art\.SliceCenter = Rect\.new\(24, 24, 232, 232\)/);
+  assert.match(home, /\{ "nextstep", "recommend", "reward" \}/);
+  assert.match(home, /if frameArt then INK else/);
+  assert.match(home, /b\.Activated:Connect/);
+  assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
+});
