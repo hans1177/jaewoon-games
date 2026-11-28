@@ -15,7 +15,16 @@
  },
  {
   "type": "wait",
-  "ms": 7000
+  "ms": 8000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='dakar',portName='dakar',level=4,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 8000
  },
  {
   "type": "luau",
