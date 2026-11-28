@@ -5230,7 +5230,13 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(trade.includes('if average <= 0 then "세계 평균 자료 없음"'));
  assert.ok(trade.includes('H.tradeProfit(sel, sellQty)'));
  assert.ok(trade.includes('elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60)'));
- assert.ok(trade.includes('else "흥정 게임", COLORS.grey'));
+ for(const token of ['else "흥정하기\\n4~12% 할인", COLORS.gold', 'local canHaggle = not sel.lock and not tried and not dealHere and H.openHaggle ~= nil', 'hg.Name = "HaggleGameButton"', 'hg.Position = UDim2.new(0.29, 4, 0, if shortScreen then 84 else 106)', 'hg.TextSize = if narrow then 18 else 20', 'UDim2.new(0.42, -8, 0, if shortScreen then 52 else 60)', 'sell.Position = UDim2.new(0.71, 4, 0, if shortScreen then 84 else 106)']) assert.ok(trade.includes(token),token);
+ for(const width of [220,280,320,360,480,640,900]){
+   const buy=[4,width*0.29-4],haggle=[width*0.29+4,width*0.71-4],sell=[width*0.71+4,width-4];
+   assert.ok(buy[1]<haggle[0] && haggle[1]<sell[0]);
+   assert.ok(haggle[1]-haggle[0]>buy[1]-buy[0]);
+   assert.ok([buy,haggle,sell].every(([a,b])=>b-a>=44 && a>=0 && b<=width));
+ }
  for(const action of ['Buy','Sell']) assert.ok(trade.includes('call("'+action+'"'));
 });
 
