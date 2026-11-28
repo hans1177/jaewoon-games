@@ -5,7 +5,7 @@ local BC = require("./Shared/BoardingCards")
 local CB = require("./Shared/CardBook")
 local KB = require("./Shared/KnowledgeBattle")
 
-local D = {
+local D: { [string]: any } = {
 	Ports = require("./Shared/Ports"),
 	PortEras = require("./Shared/PortEras"),
 	SeaCards = require("./Shared/SeaCards"),
@@ -21,6 +21,7 @@ local D = {
 	Careers = require("./Shared/Careers"),
 	Voyage = require("./Shared/Voyage"),
 	Combat = require("./Shared/Combat"),
+	ActionCombat = require("./Shared/ActionCombat"),
 	BoardingCards = require("./Shared/BoardingCards"),
 	CardBook = require("./Shared/CardBook"),
 	Bosses = require("./Shared/Bosses"),
@@ -56,7 +57,7 @@ local D = {
 	Economy = require("./Shared/Economy"),
 }
 -- 서비스 등록 경계에서 이종 모듈 사전의 구조적 타입 확장을 제한한다. 기존 검사와 런타임 값은 유지한다.
-local Registry = require("./Services/Registry")(D :: {[string]: any})
+local Registry = (require("./Services/Registry") :: (any) -> any)(D)
 local S = Registry.S
 local ctx = { rng = math.random, market = S.MarketClass.new() }
 local pass, fail = 0, 0
@@ -82,8 +83,10 @@ do
 	if site and cardId then
 		st.ship.supplies = 10000
 		local H = Registry.handlers
-		local began, _, runId = H.FieldPracticeBegin(st, { siteId = site.id })
+		local began, _, runId, encounter = H.FieldPracticeBegin(st, { siteId = site.id })
 		check("탐험 구역 저장: 입장", began == true and type(runId) == "number")
+		local expectedEnemies, expectedBosses = D.ActionCombat.fieldEnemyCounts(site.minLevel)
+		check("탐험 구역 저장: 서버 편성", encounter ~= nil and encounter.enemyCount == expectedEnemies and encounter.bossCount == expectedBosses and encounter.bossMaxHp == D.ActionCombat.fieldEnemyMaxHp("boss"))
 		check("탐험 구역 저장: 단계 건너뛰기 거부", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 2, observedCardId = cardId }) == false)
 		check("탐험 구역 저장: 1단계", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 1, observedCardId = cardId }) == true)
 		check("탐험 구역 저장: 재전송 멱등", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 1, observedCardId = cardId }) == true)
