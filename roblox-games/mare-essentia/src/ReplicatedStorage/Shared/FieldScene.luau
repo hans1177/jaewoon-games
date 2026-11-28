@@ -5313,6 +5313,8 @@ function FieldScene.start(opts)
 				dur = math.clamp(dur, 0.33, 0.44)
 			end
 		end
+		-- [막타 슬로모션] 시각 전용 3타의 관절 재생만 늘린다. 실제 공격 시계는 변경하지 않는다.
+		if visualOnly and nextStage == 3 then dur *= 1.55 end
 		slashIdx = nextStage
 		swingKind, swingT0, swingDur = kind, os.clock(), dur
 		local source = player.Character
@@ -7134,7 +7136,7 @@ function FieldScene.start(opts)
 				Color3.fromRGB(250, 249, 227), if strong then 6 else 4, if visualMobile then 3 else 6)
 			if strong and not visualMobile then afterimage(player.Character, color, 2, 0.045) end
 		end
-		-- 3타에서만 짧은 시점 펀치. 4·5타 킬캠과 긴 시간 감속은 제거한다.
+		-- 3타에서만 짧은 시각 슬로모션과 시점 펀치. 전투 시간과 적 행동은 그대로.
 		if not strong then return end
 		killcamToken += 1
 		local token = killcamToken
@@ -7144,16 +7146,22 @@ function FieldScene.start(opts)
 		if killcamCamera and killcamCamera.Parent then killcamCamera.FieldOfView = killcamFov end
 		killcamCamera = camera
 		killcamFov = camera.FieldOfView
-		local duration = if visualMobile then 0.14 else 0.19
+		local duration = if visualMobile then 0.32 else 0.42
+		local serial = chainMotionSerial
 		local zoom = if visualMobile then 2.2 else 3.8
 		RunService:BindToRenderStep("FieldMasteryKillcam", Enum.RenderPriority.Camera.Value + 2, function()
-			if finished or token ~= killcamToken or workspace.CurrentCamera ~= camera then
+			if finished or token ~= killcamToken or workspace.CurrentCamera ~= camera or serial ~= chainMotionSerial then
+				if killcamCamera == camera then
+					if camera.Parent then camera.FieldOfView = killcamFov end
+					killcamCamera = nil
+				end
 				RunService:UnbindFromRenderStep("FieldMasteryKillcam")
 				return
 			end
 			local progress = math.clamp((os.clock() - now) / duration, 0, 1)
 			if progress >= 1 then
 				camera.FieldOfView = killcamFov
+				killcamCamera = nil
 				RunService:UnbindFromRenderStep("FieldMasteryKillcam")
 				return
 			end
