@@ -2203,7 +2203,7 @@
     },
     "sourceVisualObservation": {
      "state": "SOURCE_VISUAL_RETRY_REQUIRED",
-     "sourceRevision": "9efc2149feca6ad0efe2937b46a0e7c047ffc579",
+     "sourceRevision": "29af3e88b3c3fd217cb8319480f5d59677dbbf8d",
      "sourceMemberSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
      "registrationApproved": false,
      "visualQualityApproved": false,
@@ -2212,7 +2212,35 @@
       429
      ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "15ca99527b87af6d-15ca99527b87af6d",
+     "sourceMemberSha256": "15ca99527b87af6d3e13ddbe9b026b6ac0607f56ab14bf37d0e7ca36e69d1180",
+     "triangles": 390,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "62b1beb24f1142c9cdde17e0011e856e572a0be7368cb2221bcd30f9147a82f9",
+       "bytes": 241317
+      },
+      {
+       "name": "rear.png",
+       "sha256": "3a0ed40ac04705dbb22d3404a383dcc4869e1771cdc504ed305538c4d79dcc96",
+       "bytes": 240396
+      },
+      {
+       "name": "side.png",
+       "sha256": "97ee08ae79cf10f82ec6ec01c0384fb394385e1cd3d0764437d2376ee2d83bb7",
+       "bytes": 240275
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "frigatebird",
@@ -3437,26 +3465,45 @@
      "nativeRuntimeVerified": false
     },
     "sourceVisualObservation": {
-     "state": "VISUAL_IDENTITY_REPAIR_REQUIRED",
-     "sourceRevision": "0a747d8bf62375785a53cc84aff19b68e432b738",
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "29af3e88b3c3fd217cb8319480f5d59677dbbf8d",
      "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
      "registrationApproved": false,
      "visualQualityApproved": false,
-     "model": "gemini-3.6-flash",
-     "provider": "gemini:gemini-3.6-flash",
-     "frameSha256": [
-      "8fb49baca98d14317c34eeeca4b554f19b5a821365016883863dafd066c23808",
-      "34601afda1a29b4edeefe7f4f1139e96a8a6e34002516bc71285244f6c77d6d3",
-      "ba89e11160843d94629247de75c51a67c2c5fd4e7dead24aeb7582dd3b0e8742"
-     ],
-     "responseSha256": "922f0c45bd19d919ac45cb8617ced44c480f3c54cdacabf64745bd2fee541e75",
-     "speciesMatch": false,
-     "contentSafe": true,
-     "silhouetteClear": true,
-     "uncertain": false,
-     "mobileGeometryWithinBudget": false
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "41e008751c798c66-41e008751c798c66",
+     "sourceMemberSha256": "41e008751c798c662560fc0da4711c1beb8a69d9ac515a72cb812020448f7f6c",
+     "triangles": 732,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "8ff74fbcbb32b40e20c9fbedfe7834f0bdc8c4214b36a8f33fb59f2e54361d49",
+       "bytes": 240039
+      },
+      {
+       "name": "rear.png",
+       "sha256": "3ba90749202fa11b5812302d7548ca4b5d7beefb3a441120aa5430729220aec7",
+       "bytes": 247562
+      },
+      {
+       "name": "side.png",
+       "sha256": "f3d313bf0c1045734e6546c68ad9d4406072e4ca99d96554c7d832d5bef1d889",
+       "bytes": 240841
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    }
    },
    {
     "name": "narwhal",
@@ -3550,7 +3597,55 @@
      "uncertain": false,
      "mobileGeometryWithinBudget": false
     },
-    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED"
+    "geometryQualityState": "SOURCE_GEOMETRY_REPAIR_REQUIRED",
+    "sourcePreview": {
+     "state": "RENDERED_AWAITING_VISUAL_REVIEW",
+     "artifactDirectory": "f3497a82d21198bc-f3497a82d21198bc",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "triangles": 572,
+     "frames": [
+      {
+       "name": "front.png",
+       "sha256": "698f579e843e07fded3f218a67533710d17c15daf4f73d1542d0df360ebe9dd9",
+       "bytes": 230229
+      },
+      {
+       "name": "rear.png",
+       "sha256": "22ccb645d000fc47276f46f35b85bc45fc8b57db2eb9e5b96eeaba7743240a24",
+       "bytes": 223581
+      },
+      {
+       "name": "side.png",
+       "sha256": "b3b5b96d8045f89425a1dc12957b124b21c159f37db4692e860b8de9ec385304",
+       "bytes": 225367
+      }
+     ],
+     "renderer": "BLENDER_WORKBENCH_TEXTURE",
+     "ignoredReferenceImages": 0,
+     "restoredTextureReferences": 0,
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "qualityCandidate": {
+     "state": "QUALITY_CANDIDATE_RETRY_REQUIRED",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "nativeRuntimeVerified": false,
+     "originalPreserved": true,
+     "failureReason": "ANIMAL_QUALITY_BUDGET_UNREACHABLE"
+    },
+    "sourceVisualLastAttempt": {
+     "state": "SOURCE_VISUAL_RETRY_REQUIRED",
+     "sourceRevision": "29af3e88b3c3fd217cb8319480f5d59677dbbf8d",
+     "sourceMemberSha256": "f3497a82d21198bc19be7dee07718d95bc9db29d6191d61cb51c8720cc7d9769",
+     "registrationApproved": false,
+     "visualQualityApproved": false,
+     "failureReason": "FREE_QUOTA_LIMIT",
+     "httpStatuses": [
+      429
+     ]
+    }
    },
    {
     "name": "platypus",
@@ -4026,7 +4121,14 @@
     "registrationApproved": false,
     "actualRobloxRuntimeVerified": false,
     "priorRenderRetry": true,
-    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE"
+    "priorRenderFailureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+    "sourcePreview": {
+     "state": "DEFERRED_TEXTURE_ALTERNATE",
+     "failureReason": "SOURCE_PREVIEW_EXTERNAL_OR_MISSING_TEXTURE",
+     "registrationApproved": false,
+     "visualQualityApproved": false
+    },
+    "alternateSourceState": "VERIFIED_GLB_PRIORITY_ORIGINAL_TEXTURE_UNRESOLVED"
    },
    {
     "name": "oryx",
@@ -4208,7 +4310,7 @@
   "restoredOriginals": [],
   "newOriginals": [],
   "downloadAttempts": 0,
-  "publisherSearchState": "NOT_REQUESTED",
+  "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
   "portImplementation": {
    "state": "BRIEF_SOURCE_COVERAGE_ONLY",
    "portCount": 181,
@@ -16450,8 +16552,11 @@
     }
    ]
   },
+  "publisherExactNameCandidates": 0,
+  "scenePublisherExactNameCandidates": 0,
+  "scenePublisherRoleCandidates": 0,
   "lastPreviewRun": {
-   "runId": "46117473860",
+   "runId": "46118278655",
    "publisherSearchState": "PUBLISHER_CATALOG_CHECKED",
    "publisherExactNameCandidates": 0,
    "scenePublisherExactNameCandidates": 0,
@@ -16473,6 +16578,7 @@
    "visualObservationCount": 0,
    "visionRoute": "VERIFIED_FREE"
   },
-  "sourcePreviewState": "NOT_REQUESTED"
+  "sourcePreviewState": "RENDER_EVIDENCE_ONLY",
+  "sourceVisualObservationState": "VISION_RETRY_REQUIRED"
  }
 }
