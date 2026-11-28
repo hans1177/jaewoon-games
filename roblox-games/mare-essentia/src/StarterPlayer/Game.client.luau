@@ -4248,7 +4248,19 @@ local function call(action, payload)
 		if H.checkWorldEvents then H.checkWorldEvents() end
 		if H.checkQuestResults then H.checkQuestResults() end
 		if H.checkQuestTalks then H.checkQuestTalks() end
-		if view.scenes and #view.scenes > 0 and H.playQuestScenes then H.playQuestScenes(view.scenes) end
+		if view.scenes and #view.scenes > 0 and H.playQuestScenes then
+			local scenes = {}
+			for _, sc in view.scenes do
+				local completed = false
+				if sc.kind == "end" then
+					for _, d in (view.quests and view.quests.done or {}) do
+						if d.name == sc.name and H.seenDoneQuests and H.seenDoneQuests[tostring(d.id or d.name)] then completed = true; break end
+					end
+				end
+				if not completed then table.insert(scenes, sc) end
+			end
+			H.playQuestScenes(scenes)
+		end
 	end
 	if result.message and result.message ~= "" then
 		message, messageOk = result.message, result.ok
@@ -6027,9 +6039,11 @@ function playStory(ev)
 	local chapter = Instance.new("TextLabel")
 	chapter.BackgroundTransparency = 1
 	chapter.Position = UDim2.fromOffset(0, 14)
-	chapter.Size = UDim2.new(1, 0, 0, 30)
+	chapter.Size = UDim2.new(1, -140, 0, 64)
+	chapter.Position = UDim2.fromOffset(8, 4)
 	chapter.Font = Enum.Font.GothamBold
-	chapter.TextSize = 21
+	chapter.TextSize = if storyViewport.X < 600 then 26 else 30
+	chapter.TextWrapped = true
 	chapter.TextXAlignment = Enum.TextXAlignment.Center
 	chapter.TextColor3 = Color3.new(1, 1, 1)
 	chapter.TextStrokeTransparency = 1
@@ -6044,7 +6058,7 @@ function playStory(ev)
 	nameTag.Position = UDim2.fromOffset(14, 6)
 	nameTag.Size = UDim2.new(1, -28, 0, 28)
 	nameTag.Font = Enum.Font.GothamBold
-	nameTag.TextSize = 20
+	nameTag.TextSize = 24
 	nameTag.TextXAlignment = Enum.TextXAlignment.Left
 	nameTag.TextColor3 = COLORS.gold
 	nameTag.Text = ev.npc
@@ -6054,7 +6068,7 @@ function playStory(ev)
 	text.Position = UDim2.fromOffset(14, 38)
 	text.Size = UDim2.new(1, -28, 1, -56)
 	text.Font = Enum.Font.Gotham
-	text.TextSize = 21
+	text.TextSize = if storyViewport.Y < 460 then 22 else 26
 	text.TextWrapped = true
 	text.TextXAlignment = Enum.TextXAlignment.Left
 	text.TextYAlignment = Enum.TextYAlignment.Top
@@ -6071,7 +6085,7 @@ function playStory(ev)
 	hint.Position = UDim2.new(0, 0, 1, -24)
 	hint.Size = UDim2.new(1, -12, 0, 20)
 	hint.Font = Enum.Font.Gotham
-	hint.TextSize = 15
+	hint.TextSize = 18
 	hint.TextXAlignment = Enum.TextXAlignment.Right
 	hint.TextColor3 = COLORS.muted
 	hint.Text = "화면을 누르면 다음"
@@ -6079,10 +6093,11 @@ function playStory(ev)
 
 	local function typeLine(line)
 		text.Text = line
+		if game:GetService("GuiService").ReducedMotionEnabled then text.MaxVisibleGraphemes = -1; return end
 		text.MaxVisibleGraphemes = 0
 		local n = utf8.len(line) or #line
 		for i = 1, n do
-			if not overlay.Parent then
+			if not overlay.Parent or text.Text ~= line or text.MaxVisibleGraphemes == -1 then
 				return
 			end
 			text.MaxVisibleGraphemes = i
@@ -6103,8 +6118,11 @@ function playStory(ev)
 		hint.Text = ""
 		text.Size = UDim2.new(1, -28, 0, 64)
 		text.Text = ev.lines[#ev.lines]
-		text.TextSize = 19
-		local list = Instance.new("Frame")
+		text.TextSize = 22
+		local list = Instance.new("ScrollingFrame")
+		list.CanvasSize = UDim2.new()
+		list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		list.ScrollBarThickness = 5
 		list.BackgroundTransparency = 1
 		list.Position = UDim2.fromOffset(14, 108)
 		list.Size = UDim2.new(1, -28, 1, -114)
@@ -6146,13 +6164,14 @@ function playStory(ev)
 					list.Size = UDim2.new(1, -28, 0, 48)
 				end
 			end, true)
-			b.TextSize = 18
+			b.TextSize = 22
 		end
 	end
 	next.Activated:Connect(function()
 		if advancing then
 			return
 		end
+		if text.MaxVisibleGraphemes ~= -1 then text.MaxVisibleGraphemes = -1; return end
 		advancing = true
 		idx += 1
 		if idx > #ev.lines then
@@ -6168,7 +6187,7 @@ function playStory(ev)
 		skip.Name = "StorySkip"
 		skip.AnchorPoint = Vector2.new(1, 0)
 		skip.Position = UDim2.new(1, -12, 0, 12)
-		skip.Size = UDim2.fromOffset(112, 36)
+		skip.Size = UDim2.fromOffset(124, 44)
 		skip.BackgroundColor3 = Color3.fromRGB(24, 20, 16)
 		skip.BackgroundTransparency = 0.25
 		skip.Text = "건너뛰기 ▶▶"
@@ -11201,7 +11220,7 @@ do
 		task.spawn(function()
 			local n = utf8.len(text) or #text
 			for i = 1, n do
-				if not label.Parent then return end
+				if not label.Parent or label.Text ~= text or label.MaxVisibleGraphemes == -1 then return end
 				label.MaxVisibleGraphemes = i
 				task.wait(speed or 0.025)
 			end
@@ -11643,7 +11662,7 @@ do
 		tint.Parent = root
 		local tag = Instance.new("TextLabel")
 		tag.AnchorPoint = Vector2.new(0.5, 1)
-		tag.Position = UDim2.fromScale(0.5, 0.7)
+		tag.Position = UDim2.fromScale(0.5, 0.52)
 		tag.Size = UDim2.new(0.9, 0, 0, 30)
 		tag.BackgroundTransparency = 1
 		tag.Font = Enum.Font.GothamBold
@@ -11654,7 +11673,7 @@ do
 		tag.Parent = root
 		local title = Instance.new("TextLabel")
 		title.AnchorPoint = Vector2.new(0.5, 0)
-		title.Position = UDim2.fromScale(0.5, 0.7)
+		title.Position = UDim2.fromScale(0.5, 0.52)
 		title.Size = UDim2.new(0.9, 0, 0, 44)
 		title.BackgroundTransparency = 1
 		title.Font = Enum.Font.GothamBlack
@@ -11666,11 +11685,12 @@ do
 		title.Parent = root
 		local body = Instance.new("TextLabel")
 		body.AnchorPoint = Vector2.new(0.5, 0)
-		body.Position = UDim2.new(0.5, 0, 0.7, 50)
-		body.Size = UDim2.new(0.82, 0, 0, 50)
+		body.Position = UDim2.new(0.5, 0, 0.52, 50)
+		body.Size = UDim2.new(0.9, 0, 0, 0)
+		body.AutomaticSize = Enum.AutomaticSize.Y
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = 17
+		body.TextSize = 22
 		body.TextWrapped = true
 		body.TextColor3 = Color3.fromRGB(240, 230, 210)
 		body.ZIndex = 5
@@ -11697,7 +11717,7 @@ do
 			task.delay(0.32, function() if g.Parent then g:Destroy() end end)
 		end
 		root.Activated:Connect(close)
-		task.delay(3.6, close)
+		task.delay(math.clamp((utf8.len(tostring(a.text or "")) or 0) * 0.09 + 3, 6, 14), close)
 	end
 
 	-- 새로 시작된 세계 사건만 감지(첫 화면은 기준선). 다른 장면 중이면 기다렸다가 보여 준다.
@@ -11725,7 +11745,7 @@ do
 				end
 				if not player.Parent then return end
 				H.showWorldEventScene(a)
-				task.wait(3.9)
+				while player.Parent and pg:FindFirstChild("WorldEventScene") do task.wait(0.3) end
 			end
 		end)
 	end
@@ -12228,17 +12248,20 @@ do
 		root.BackgroundTransparency = 0.45
 		root.BorderSizePixel = 0
 		root.Parent = g
-		local box = Instance.new("Frame")
+		local box = Instance.new("ScrollingFrame")
 		box.AnchorPoint = Vector2.new(0.5, 0.5)
 		box.Position = UDim2.fromScale(0.5, 0.5)
-		box.Size = UDim2.new(1, -24, 0, 0)
-		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.Size = UDim2.new(1, -24, 0.78, 0)
+		box.CanvasSize = UDim2.new()
+		box.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		box.ScrollBarThickness = 6
+		box.ScrollingDirection = Enum.ScrollingDirection.Y
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.Parent = root
 		corner(box, 14)
 		local lim = Instance.new("UISizeConstraint")
-		lim.MaxSize = Vector2.new(520, 560)
+		lim.MaxSize = Vector2.new(680, 640)
 		lim.Parent = box
 		local st = Instance.new("UIStroke")
 		st.Color = Color3.fromRGB(196, 150, 70)
@@ -12276,7 +12299,7 @@ do
 			end
 		end
 		local chapterArt = if chapterEnd then AssetIds["CardArt/ui_banner_chapter"] else nil
-		local heading = if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name)
+		local heading = if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" elseif d.name == "지난 이야기" then "지난 이야기" else "의뢰 완료 · " .. tostring(d.name)
 		if chapterArt then
 			local banner = Instance.new("ImageLabel")
 			banner.Name = "ChapterCompletionBanner"
@@ -12296,28 +12319,53 @@ do
 			title.TextYAlignment = Enum.TextYAlignment.Center
 			title.ZIndex = banner.ZIndex + 1
 			local fontLimit = Instance.new("UITextSizeConstraint")
-			fontLimit.MinTextSize = 12
-			fontLimit.MaxTextSize = 24
+			fontLimit.MinTextSize = 18
+			fontLimit.MaxTextSize = 30
 			fontLimit.Parent = title
 		else
-			local head = mkLabel(box, heading, if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
+			local head = mkLabel(box, heading, if chapterEnd then 32 else 28, Color3.fromRGB(120, 70, 20), true, 1)
 			head.Size = UDim2.new(1, 0, 0, 0)
 			head.TextXAlignment = Enum.TextXAlignment.Center
 		end
 		if d.result then
-			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 15, Color3.fromRGB(40, 90, 50), true, 2)
+			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 22, Color3.fromRGB(40, 90, 50), true, 2)
 			res.Size = UDim2.new(1, 0, 0, 0)
 		end
-		local body = mkLabel(box, "", 15, Color3.fromRGB(52, 38, 24), false, 3)
+		local body = mkLabel(box, "", 22, Color3.fromRGB(52, 38, 24), false, 3)
 		body.Size = UDim2.new(1, 0, 0, 0)
-		if H.typewrite then H.typewrite(body, tostring(d.ending or ""), 0.018) else body.Text = tostring(d.ending or "") end
-		local hint = mkLabel(box, if chapterEnd then "다음 장이 주점 게시판과 일지에 열렸어요." else "화면을 누르면 닫혀요.", 12, Color3.fromRGB(110, 96, 76), false, 4)
+		body.Text = tostring(d.ending or "")
+		-- 서버 완료 목록의 실제 기본 지급 수치만 표시한다. 저장 및 보상 지급은 서버의 기존 책임이다.
+		if d.id then
+			local career = ({ trade = "교역", adventure = "모험", battle = "전투" })[d.rewardCareer] or "직업"
+			local rewards = {
+				{ "금화", d.rewardCoins, "coin" },
+				{ "명성", d.rewardFame, "fame" },
+				{ career .. " 경험치", d.rewardXp, "growth" },
+			}
+			for i, reward in rewards do
+				local amount = tonumber(reward[2])
+				if amount and amount > 0 then
+					local row = mkLabel(box, tostring(reward[1]) .. "  +" .. H.commas(amount), 26, Color3.fromRGB(110, 70, 20), true, 4 + i)
+					row.Size = UDim2.new(1, 0, 0, 0)
+					row.TextXAlignment = Enum.TextXAlignment.Center
+					if not game:GetService("GuiService").ReducedMotionEnabled then
+						local scale = Instance.new("UIScale")
+						scale.Scale = 0.92
+						scale.Parent = row
+						task.delay(i * 0.16, function()
+							if row.Parent then TS:Create(scale, TweenInfo.new(0.25, Enum.EasingStyle.Back), { Scale = 1 }):Play() end
+						end)
+					end
+				end
+			end
+		end
+		local hint = mkLabel(box, if chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 9)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
 		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end
 		Sfx.play(if chapterEnd then "sfx_fanfare" else "sfx_bell", if chapterEnd then 0.55 else 0.35, 1, "sfx_card_coin")
 		local sc = Instance.new("UIScale")
-		sc.Scale = 0.85
+		sc.Scale = if game:GetService("GuiService").ReducedMotionEnabled then 1 else 0.85
 		sc.Parent = box
 		TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 		if chapterEnd and H.cardGainFlair then
@@ -12331,8 +12379,9 @@ do
 			closed = true
 			if g.Parent then g:Destroy() end
 		end
-		root.Activated:Connect(close)
-		task.delay(if chapterEnd then 9 else 6, close)
+		local confirm = mkButton(box, "확인", COLORS.gold, UDim2.new(1, 0, 0, 48), close, true)
+		confirm.LayoutOrder = 10
+		confirm.TextSize = 22
 	end
 
 	-- 새로 끝난 퀘스트 감지(첫 화면은 기준선) → 결과 장면을 차례로
@@ -12346,7 +12395,7 @@ do
 			local key = tostring(d.id or d.name)
 			if not H.seenDoneQuests[key] then
 				H.seenDoneQuests[key] = true
-				if not first and (d.result or d.chapter or d.strand == "main") then table.insert(fresh, d) end
+				if not first and d.id ~= "q_first_discovery" then table.insert(fresh, d) end
 			end
 		end
 		if #fresh == 0 then return end
@@ -13053,12 +13102,13 @@ do
 		if H.cinemaBars then H.cinemaBars(g, 60) end
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
 		local narrow = vp.X < 600
+		local talkHeight = math.clamp(math.floor(vp.Y * 0.52), 174, 280)
 		-- 초상(왼쪽 아래, 크게)
 		local face = Instance.new("ImageLabel")
 		face.Name = "TalkPortrait"
 		face.AnchorPoint = Vector2.new(0, 1)
-		face.Position = UDim2.new(0, 16, 1, if narrow then -170 else -150)
-		face.Size = if narrow then UDim2.fromOffset(150, 196) else UDim2.fromOffset(220, 288)
+		face.Position = UDim2.new(0, 16, 1, -talkHeight - 24)
+		face.Size = UDim2.fromOffset(math.min(if narrow then 150 else 220, math.floor((vp.Y - talkHeight - 50) * 0.76)), math.max(60, math.min(if narrow then 196 else 288, vp.Y - talkHeight - 50)))
 		face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
 		face.BorderSizePixel = 0
 		face.ScaleType = Enum.ScaleType.Crop
@@ -13074,7 +13124,7 @@ do
 		box.Name = "TalkBox"
 		box.AnchorPoint = Vector2.new(0.5, 1)
 		box.Position = UDim2.new(0.5, 0, 1, -16)
-		box.Size = UDim2.new(1, -32, 0, if narrow then 150 else 132)
+		box.Size = UDim2.new(1, -32, 0, talkHeight)
 		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
 		box.BorderSizePixel = 0
 		box.ZIndex = 6
@@ -13087,11 +13137,11 @@ do
 		local nameTag = Instance.new("TextLabel")
 		nameTag.Name = "TalkName"
 		nameTag.Position = UDim2.fromOffset(14, -18)
-		nameTag.Size = UDim2.fromOffset(240, 32)
+		nameTag.Size = UDim2.new(1, -28, 0, 36)
 		nameTag.BackgroundColor3 = Color3.fromRGB(70, 44, 24)
 		nameTag.BorderSizePixel = 0
 		nameTag.Font = Enum.Font.GothamBlack
-		nameTag.TextSize = 16
+		nameTag.TextSize = 22
 		nameTag.TextColor3 = Color3.fromRGB(255, 230, 170)
 		nameTag.ZIndex = 7
 		nameTag.Parent = box
@@ -13102,7 +13152,7 @@ do
 		body.Size = UDim2.new(1, -36, 1, -48)
 		body.BackgroundTransparency = 1
 		body.Font = Enum.Font.Gotham
-		body.TextSize = if narrow then 15 else 17
+		body.TextSize = if vp.Y < 460 then 22 else 26
 		body.TextWrapped = true
 		body.TextXAlignment = Enum.TextXAlignment.Left
 		body.TextYAlignment = Enum.TextYAlignment.Top
@@ -13112,15 +13162,15 @@ do
 		local next = Instance.new("TextLabel")
 		next.AnchorPoint = Vector2.new(1, 1)
 		next.Position = UDim2.new(1, -14, 1, -6)
-		next.Size = UDim2.fromOffset(160, 20)
+		next.Size = UDim2.fromOffset(240, 24)
 		next.BackgroundTransparency = 1
 		next.Font = Enum.Font.GothamBold
-		next.TextSize = 12
+		next.TextSize = 18
 		next.TextXAlignment = Enum.TextXAlignment.Right
 		next.TextColor3 = Color3.fromRGB(130, 100, 60)
 		next.ZIndex = 7
 		next.Parent = box
-		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(120, 40), function() end, true)
+		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(132, 44), function() end, true)
 		skip.AnchorPoint = Vector2.new(1, 0)
 		skip.Position = UDim2.new(1, -16, 0, 70)
 		skip.ZIndex = 8
@@ -13202,7 +13252,11 @@ do
 		for _, q in active do
 			if not H.seenActiveQuests[q.id] then
 				H.seenActiveQuests[q.id] = true
-				if not first and q.story and #tostring(q.story) > 0 then table.insert(fresh, q) end
+				local hasCinematic = false
+				for _, sc in view.scenes or {} do
+					if sc.kind == "start" and sc.name == q.name then hasCinematic = true; break end
+				end
+				if not first and not hasCinematic and q.story and #tostring(q.story) > 0 then table.insert(fresh, q) end
 			end
 		end
 		if #fresh == 0 then return end
