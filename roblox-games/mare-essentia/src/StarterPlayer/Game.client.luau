@@ -2106,7 +2106,7 @@ function H.layoutBook()
   local tabs = tabCount > 1 and tabBar.Visible
   local facilityDetail = currentTab == "trade" or currentTab == "yard"
   local live = view ~= nil and not newGameMode
-  local rail = tabs and width >= 700 and width > height and not facilityDetail
+  local rail = tabs and width >= 700 and width > height and not facilityDetail and currentTab ~= "route" and currentTab ~= "tech"
   local status = live and not facilityDetail
   local statusInline = status and width >= 520
   local headerH = if status and not statusInline then 90 else 48
@@ -7572,6 +7572,7 @@ function RENDERERS.route()
 	end
 	if not selected then H.routeDetailId = nil end
 	H.routeSort = H.routeSort or "near"
+	if H.routeListPort ~= view.player.portId then H.routeListScroll = 0; H.routeListPort = view.player.portId end
 
 	-- [항해 장부] 목적지 선택 / 항로 판단 / 출항을 독립된 영역으로 배치한다.
 	local root = add(function()
@@ -7611,6 +7612,7 @@ function RENDERERS.route()
 	footer.Parent = root
 	local back = mkButton(footer, "항로 목록", COLORS.leather, UDim2.new(0.38, -4, 1, 0), function()
 		H.routeDetailId = nil
+		content.CanvasPosition = Vector2.zero
 		render()
 	end, true)
 	back.Position = UDim2.fromOffset(0, 0)
@@ -7671,7 +7673,7 @@ function RENDERERS.route()
 	sorts.Parent = list
 	for i, mode in { { "가까운 순", "near" }, { "의뢰", "quest" }, { "조선소", "yard" }, { "해역", "region" }, { "이익", "profit" } } do
 		local b = mkButton(sorts, mode[1], if H.routeSort == mode[2] then COLORS.gold else COLORS.paper,
-			UDim2.new(1/3, -4, 0, 44), function() H.routeSort = mode[2]; render() end, true)
+			UDim2.new(1/3, -4, 0, 44), function() H.routeSort = mode[2]; H.routeListScroll = 0; content.CanvasPosition = Vector2.zero; render() end, true)
 		b.Position = UDim2.new(((i - 1) % 3) / 3, 2, 0, math.floor((i - 1) / 3) * 48)
 		b.TextSize = 13
 	end
@@ -7713,7 +7715,7 @@ function RENDERERS.route()
 		hit.Size = UDim2.fromScale(1, 1)
 		hit.ZIndex = item.ZIndex + 5
 		hit.Parent = item
-		hit.Activated:Connect(function() H.routeDetailId = r.id; render() end)
+		hit.Activated:Connect(function() H.routeListScroll = list.CanvasPosition.Y; H.routeDetailId = r.id; content.CanvasPosition = Vector2.zero; render() end)
 	end
 	if selected then
 		local r = selected
@@ -7830,6 +7832,9 @@ function RENDERERS.route()
 		empty.LayoutOrder = 0
 	end
 	layoutWorkspace()
+	task.defer(function()
+		if list.Parent and list.Visible then list.CanvasPosition = Vector2.new(0, H.routeListScroll or 0) end
+	end)
 end
 
 local openYardHall
@@ -15136,6 +15141,7 @@ function RENDERERS.tech()
 	footer.Parent = root
 	local back = mkButton(footer, "기술 목록", COLORS.leather, UDim2.new(0.38, -4, 1, 0), function()
 		H.techSelectedId = nil
+		content.CanvasPosition = Vector2.zero
 		render()
 	end, true)
 	local action
@@ -15197,7 +15203,7 @@ function RENDERERS.tech()
 	filters.Parent = list
 	for i, spec in { { "전체", "all" }, { "가능", "ready" }, { "잠김", "blocked" }, { "완료", "done" } } do
 		local button = mkButton(filters, spec[1], if H.techFilter == spec[2] then COLORS.gold else COLORS.paper,
-			UDim2.new(0.5, -4, 0, 44), function() H.techFilter = spec[2]; render() end, true)
+			UDim2.new(0.5, -4, 0, 44), function() H.techFilter = spec[2]; H.techListScroll = 0; content.CanvasPosition = Vector2.zero; render() end, true)
 		button.Position = UDim2.new(((i - 1) % 2) * 0.5, 2, 0, math.floor((i - 1) / 2) * 48)
 	end
 	for i, t in view.tech do
@@ -15224,7 +15230,7 @@ function RENDERERS.tech()
 		hit.Size = UDim2.fromScale(1, 1)
 		hit.ZIndex = row.ZIndex + 5
 		hit.Parent = row
-		hit.Activated:Connect(function() H.techSelectedId = t.id; render() end)
+		hit.Activated:Connect(function() H.techListScroll = list.CanvasPosition.Y; H.techSelectedId = t.id; content.CanvasPosition = Vector2.zero; render() end)
 	end
 	if selected then
 		local t = selected
@@ -15259,6 +15265,9 @@ function RENDERERS.tech()
 		empty.LayoutOrder = 0
 	end
 	layoutWorkspace()
+	task.defer(function()
+		if list.Parent and list.Visible then list.CanvasPosition = Vector2.new(0, H.techListScroll or 0) end
+	end)
 end
 
 function RENDERERS.quest()
