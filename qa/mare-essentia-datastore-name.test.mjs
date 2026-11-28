@@ -306,7 +306,10 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
 test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격은 추가하지 않는다',()=>{
   assert.match(field,/stage < 2 or stage > 3/);
   assert.match(field,/if stage == chain then\s*masteryCinema\(hrp, stage, defeatedAt\)/);
-  assert.match(field,/if visualMobile then 0\.14 else 0\.19/);
+  assert.match(field,/if visualMobile then 0\.32 else 0\.42/);
+  assert.match(field,/if visualOnly and nextStage == 3 then dur \*= 1\.55 end/);
+  assert.match(field,/local serial = chainMotionSerial[\s\S]*?serial ~= chainMotionSerial/);
+  assert.match(field,/if killcamCamera == camera then\s*if camera\.Parent then camera\.FieldOfView = killcamFov end\s*killcamCamera = nil/);
   assert.doesNotMatch(field,/slowMotionUntil/);
   assert.match(field,/local finishName = if family == "fist" then "훅"/);
   for (const feature of ['"급습"','"분쇄"','"관통"','"충격"','"속사"','"관통 사격"','"반동 사격"','"교차 베기"']) {
