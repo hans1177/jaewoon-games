@@ -303,6 +303,17 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
+test('전 세계 매복과 증원 차단은 기존 병력의 시간차 교전과 단계 완료 조건을 사용한다',()=>{
+  assert.match(field,/FieldInterceptRoute", mode/);
+  assert.match(field,/FieldInterceptWave", if i <= 2 then 1 else 2/);
+  assert.match(field,/now < startedAt \+ \(wave - 1\) \* 4/);
+  assert.match(field,/flat.Magnitude > 18 then continue/);
+  assert.match(field,/Magnitude <= 28 then\s+folder:SetAttribute\("FieldInterceptStartedAt", now\)/);
+  assert.match(field,/if i == 2 and folder:GetAttribute\("FieldInterceptRoute"\) then/);
+  assert.match(field,/FieldInterceptRemaining", remaining/);
+  assert.match(field,/not folder:GetAttribute\("FieldStrongholdRoute"\)/);
+});
+
 test('전 세계 구출 호위는 지점별 고정 분기와 안전한 지면을 사용한다',()=>{
   assert.match(field,/siteChoice = \(siteChoice \* 31 \+ string.byte\(opts.siteId, i\)\) % 997/);
   assert.match(field,/existingRescue or \(\(theme == "ruins" or theme == "archive" or theme == "fort"\) and siteChoice % 3 == 0\)/);
