@@ -385813,11 +385813,141 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1a44f8d317b66670871616d5",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15763",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "181f8a36a5af977c1ba1249b1da3a89d33e5ecb6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15763,
+        "baseBranch": "main",
+        "headBranch": "fix/studio-verified-repair-learning-20261128",
+        "baseSha": "181f8a36a5af977c1ba1249b1da3a89d33e5ecb6",
+        "headSha": "e9c19bd3e8825978404836bcc3ef54c4f4b2f8ac",
+        "mergeCommitSha": "b836fa189ea5742c5c433fb85c93b63e7788c9cc",
+        "mergedAt": "2026-11-28T09:52:14Z",
+        "authorLogin": "hans1177",
+        "titleHash": "8a70074fadb6a462c6ede99526dbdc900b00eaeece73eef5fff975a07c298a71",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/studio-verified-repair-learning-20261128",
+        "candidateSha": "e9c19bd3e8825978404836bcc3ef54c4f4b2f8ac"
+      },
+      "changeStats": {
+        "changedFileCount": 8,
+        "codingRelevantFileCount": 8,
+        "addedLineCount": 192,
+        "deletedLineCount": 22,
+        "changedFiles": [
+          ".github/workflows/vibe-autopilot.yml",
+          ".github/workflows/vibe-brain.yml",
+          "qa/mare-battle-button-sea.test.mjs",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-brain.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BattleButtonFx.luau",
+          "tools/vibe-autopilot.mjs",
+          "tools/vibe-brain.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/vibe-autopilot.yml",
+          ".github/workflows/vibe-brain.yml",
+          "qa/mare-battle-button-sea.test.mjs",
+          "qa/vibe-autopilot.test.mjs",
+          "qa/vibe-brain.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BattleButtonFx.luau",
+          "tools/vibe-autopilot.mjs",
+          "tools/vibe-brain.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15763",
+        "merge-commit:b836fa189ea5742c5c433fb85c93b63e7788c9cc",
+        "base-main:181f8a36a5af977c1ba1249b1da3a89d33e5ecb6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3028
+    "total": 3029
   }
 }
