@@ -2541,6 +2541,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 		local function animal(species, pos)
 			local k = KIND[species]
 			local asset = if species == "dog" then "dog-pug" else species
+			-- [당나귀 관절판] 뼈 없는 donkey 대신 등록된 관절판(donkey-rig)을 쓴다(Studio 실측: donkey 뼈 0 → 정지).
+			if species == "donkey" and AssetIds["Animals/donkey-rig"] then asset = "donkey-rig" end
 			-- [가축 재제작 자동 교체] <종>_v2 원본이 등록되면 그것을 쓴다(실사풍 재제작 지시서).
 			if AssetIds["Animals/" .. species .. "_v2"] then asset = species .. "_v2" end
 			local skin = animalVisual[asset] or animalVisual[if species == "dog" then "dog-pug" else species]
@@ -2555,14 +2557,39 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 			m:SetAttribute("AnimalSpecies", species)
 			m:SetAttribute("AnimalVisualSize", k and k[1] or 1.35)
 			m:SetAttribute("AnimalCoatIndex", coatIndex)
-			-- 가축은 월드 기준 회전이나 X/Z 축 기울기를 적용하지 않는다. 원본 방향을 제자리에서만 정규화한다.
+			-- [가축 방향 · 2026-11-29 Studio 실측: 소·말·돼지가 엉덩이로 수직으로 서 있음]
+			-- 원인: 수입 원본(FBX)은 기준점(뼈대 루트)이 -90도 누워 있고 몸 메시는 원래 똑바로 서 있다.
+			-- 예전 코드는 기준점을 똑바로 세워(lookAt) 몸을 90도 넘어뜨렸다. 이제 원본 기울기를 그대로 두고
+			-- 세로축(월드 Y)으로만 돌린다. 기준점이 이미 똑바른 GLB(코끼리·고양이 등)는 결과가 예전과 같다.
+			-- [가축 몸 바로 세우기 · 2026-11-29 Studio 진단(46198040186)]
+			-- 소 몸 메시 자체는 정상 축(로컬 Y=높이 4.1, Z=몸길이 7.3)인데 메시 부품의 회전이 (90,0,50)이라
+			-- 몸길이 축이 하늘을 향했다. 모델 상자(뼈대 포함)로 판단하면 틀리므로, 가장 큰 몸 메시의 위쪽 축을
+			-- 월드 위(Y)에 맞추도록 몸 중심 기준으로 한 번 돌린다. 이미 바른 모델은 각도 0이라 변화 없음.
+			do
+				local body, best = nil, 0
+				for _, part in m:GetDescendants() do
+					if part:IsA("BasePart") and part.Transparency < 0.98 then
+						local vol = part.Size.X * part.Size.Y * part.Size.Z
+						if vol > best then body, best = part, vol end
+					end
+				end
+				if body then
+					local up = body.CFrame.UpVector
+					local dot = math.clamp(up:Dot(Vector3.yAxis), -1, 1)
+					if dot < 0.995 then
+						local axis = up:Cross(Vector3.yAxis)
+						axis = if axis.Magnitude < 1e-4 then body.CFrame.RightVector else axis.Unit
+						local angle = math.acos(dot)
+						local c = body.Position
+						m:PivotTo(CFrame.new(c) * CFrame.fromAxisAngle(axis, angle) * CFrame.new(-c) * m:GetPivot())
+						m:SetAttribute("AnimalTiltFix", math.floor(math.deg(angle) + 0.5))
+					end
+				end
+			end
 			local origin = m:GetPivot()
-			local forward = origin.LookVector
-			local upright = if math.abs(forward.X) + math.abs(forward.Z) > 0.01
-				then CFrame.lookAt(origin.Position, origin.Position + Vector3.new(forward.X, 0, forward.Z))
-				else CFrame.new(origin.Position)
 			local yaw = rng:NextNumber(-math.pi, math.pi)
-			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
+			local center0 = m:GetBoundingBox().Position
+			m:PivotTo(CFrame.new(center0) * CFrame.Angles(0, yaw, 0) * CFrame.new(-center0) * origin)
 			-- [회전 후 실측 접지] 수입 모델의 기준점이 몸 중앙에 있어도 회전 후 실제 발바닥이 지면에 남는다.
 			local lowestY = math.huge
 			for _, footPart in m:GetDescendants() do
@@ -2673,7 +2700,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 					-- [중복 관절 제거] 한 다리의 무릎·발목은 서로 다른 보행 다리로 집계하지 않는다.
 					local legGroup = if kind == "leg" then (if rear then "rear" else "front")
 						.. (if left then "_left" else "_right") else nil
-					if node:IsA("Bone") and #animalJoints < 14 then
+					if node:IsA("Bone") and legChild then
+						-- [관절 한도 낭비 제거] 무릎·발목 하위 뼈는 회전 0이라 움직임이 없다. 말·개가 다리 2개만 잡히던 원인(14개 한도).
+						continue
+					elseif node:IsA("Bone") and #animalJoints < 14 then
 						-- 스킨 메시는 원본 Bone.Transform으로만 변형한다.
 						table.insert(animalJoints, { joint = node, base = node.Transform,
 							kind = kind, side = side, phase = phaseOffset, group = legGroup,
