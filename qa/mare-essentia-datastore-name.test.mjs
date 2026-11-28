@@ -9,7 +9,7 @@ const readText=(file)=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
 // [시설 탭 최초 배치 회귀] 모바일 첫 렌더와 화면 크기 갱신이 같은 배치 규칙을 사용한다.
 test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 배치된다',()=>{
   const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
+  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -16, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -16\)/);
   assert.match(game,/caption\.TextXAlignment = if compactTabs then Enum\.TextXAlignment\.Center else Enum\.TextXAlignment\.Left/);
   assert.match(game,/textLimit\.MaxTextSize = if compactTabs then 14 else 17/);
 });
@@ -186,9 +186,9 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
   assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
-  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 120 else 68/);
+  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 112 else 68/);
   assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, sectionTop\)/);
-  assert.match(layout,/local bodyTop = sectionTop \+ \(if tabs then tabHeight \+ 12 else 0\)/);
+  assert.match(layout,/local bodyTop = if headerTabs then 68 else sectionTop \+ \(if tabs then tabHeight \+ 8 else 0\)/);
   assert.match(layout,/H\.tabWidth = tabWidth/);
   assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
   assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
@@ -3612,7 +3612,12 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
-  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 300 else 340\)/,'낮은 화면은 원화보다 본문 우선');
+  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 340 else 360\)/,'실행 버튼 높이를 제외한 본문이 충분할 때만 원화 표시');
+  assert.match(source,/local bodyH = height - bodyTop - dockH/);
+  assert.doesNotMatch(source,/local posterW =/);
+  assert.match(source,/H\.galleryCard\.Visible = true\s+H\.galleryImage\.ImageTransparency = 1/);
+  assert.match(source,/H\.menuActionButton\.Parent = H\.menuActionDock/);
+  assert.match(source,/nav = 2, tradeg = 0, adventure = 4, growth = 6, records = 7/);
   // [선택 대상과 원화] 실제 항로/국가/항구를 눌러도 기존 출항·외교·저장 흐름은 분리한다.
   assert.match(source,/H\.gallerySelection = nil -- \[시설 변경\]/,'시설 변경 시 이전 선택 정리');
   assert.match(source,/H\.gallerySearchTerm or/,'백과 링크에 선택 대상 검색어 전달');
@@ -3673,7 +3678,7 @@ test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',
 // [시설 아이콘 회귀] 최초 생성과 반응형 갱신은 같은 모바일·데스크톱 좌표를 사용한다.
 test('항구 시설 아이콘은 최초 생성과 반응형 배치에서 같은 탭 내부 여백을 유지한다',()=>{
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)';
+  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)';
   assert.equal(source.split(expected).length-1,2);
 });
 
@@ -5000,4 +5005,37 @@ test('항구 주민 최초 발바닥과 이동 지면 높이를 분리하여 보
  const target=(floor,baseline,old)=>Math.abs(floor-baseline)<=1.25?floor-baseline:old;
  assert.ok(Math.abs(target(0.42,0.17,0)-0.25)<1e-9);
  assert.equal(target(8,0.17,0.25),0.25);
+});
+
+// [메뉴 실수치 시각화] 가격·적재·보급은 원본 서버 수치만 사용한다.
+test('교역과 항해의 승인 아이콘 및 실제 수치 막대 유지',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ for(const key of ['TradeIndexPriceMeter','TradeBuyMeter','TradeSellMeter','TradeCargoMeter','RouteSupplyMeter','RouteCoalMeter']) assert.ok(source.includes(key),key);
+ assert.match(source,/math\.clamp\(ship\.cargoUsed \/ math\.max\(1, ship\.cargoCapacity\), 0, 1\)/);
+ assert.match(source,/local priceMax = math\.max\(1, unitBuy, sel\.sell\)/);
+ assert.match(source,/math\.clamp\(data\[3\] \/ math\.max\(1, data\[2\]\), 0, 1\)/);
+ assert.match(source,/Create\(H\.galleryBackdrop,/);
+});
+
+test('선장 현황 및 진행 일지는 문자 그림 대신 등록 아이콘과 실제 진행 막대를 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ assert.match(source,/icon\.Name = "StatusMetricArt"/);
+ assert.match(source,/meter\.Name = "QuestProgressMeter"/);
+ assert.match(source,/math\.clamp\(done \/ total, 0, 1\)/);
+ assert.doesNotMatch(source,/string\.rep\("▰", filled\)/);
+});
+
+test('전체 메뉴 탭은 승인 청동 아이콘과 짧은 한글 이름으로 선택 상태를 구별한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const caps=source.slice(source.indexOf('H.TAB_CAPTION = {'),source.indexOf('function H.renderTabs()'));
+ for(const id of ['route','map','diplomacy','trade','market','harbor','board','quest','explore','battle','war','gwent','status','yard','crew','recruit','tech','scholar','codex','encyclopedia']) assert.ok(caps.includes(id+' ='),id);
+ assert.match(source,/caption\.Text = H\.TAB_CAPTION\[id\] or TAB_NAME\[id\]/);
+ assert.match(source,/if caption then caption\.TextColor3 = b\.TextColor3 end/);
+});
+
+test('공통 안내는 묶음 첫 화면에만 두고 초보 안내는 승인 원화로 보여 준다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ assert.match(source,/currentTab == grp\.tabs\[1\] or currentTab == "market"/);
+ assert.match(source,/icon\.Name = "CoachStepArt"/);
+ assert.ok(!source.includes('실제 진행 상태와 조건을 아래에서 확인해.'));
 });
