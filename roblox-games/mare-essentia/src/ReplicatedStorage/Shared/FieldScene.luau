@@ -4760,12 +4760,22 @@ function FieldScene.start(opts)
 		local snowy = winterScene or questTerrain == "glacier" or (region == "nordic" and season ~= "여름")
 		local dry = arid or biome.kind == "mine"
 		-- [기후별 기상] 북방 설기·온대 봄비·열대 우기·사막 건기를 구별한다.
+		-- 항구에서 넘어온 시간은 유지하고 이후 기존 12분 순환을 사용한다.
+		if type(opts.clockTime) == "number" and opts.clockTime >= 0 and opts.clockTime < 24 then
+			biome.clock = opts.clockTime
+		end
 		local weatherOptions = if snowy then { "맑음", "흐림", "눈", "옅은 안개" }
 			elseif monsoon then { "흐림", "비", "소나기", "옅은 안개", "비" }
 			elseif dry then { "맑음", "흐림", "옅은 안개" }
 			elseif season == "봄" then { "맑음", "흐림", "비", "옅은 안개", "비" }
 			else { "맑음", "흐림", "비", "옅은 안개", "소나기" }
 		local weather = weatherOptions[climateRng:NextInteger(1, #weatherOptions)]
+		-- 항구 예보를 지역에서 가능한 기상으로만 변환한다. 이후 기존 기후 순환 유지.
+		local initialWeather = if opts.weatherId == "rain" or opts.weatherId == "storm" then
+			(if snowy then "눈" elseif dry then "흐림" elseif opts.weatherId == "storm" and not monsoon then "소나기" else "비")
+			elseif opts.weatherId == "clear" or opts.weatherId == "tail" then "맑음"
+			elseif opts.weatherId == "head" or opts.weatherId == "calm" then "흐림" else nil
+		if initialWeather and table.find(weatherOptions, initialWeather) then weather = initialWeather end
 		-- [Studio 기후 촬영] 해당 지형에서 실제 허용되는 기상만 선택한다. 실제 플레이의 난수·시간·보상은 유지.
 		if RunService:IsStudio() then
 			if type(opts.studioCaptureWeather) == "table" then
