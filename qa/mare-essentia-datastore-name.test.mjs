@@ -303,6 +303,18 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
+test('밀렵 저지와 현상 수배는 기존 적과 지점별 유형을 재사용한다',()=>{
+  assert.match(field,/elseif isWildlife then "poacher"/);
+  assert.match(field,/portVisualSeed % 3 == 1 then "bounty"/);
+  assert.match(field,/mode == "bounty" and a.elite ~= b.elite/);
+  assert.match(field,/if mode == "bounty" then 1 elseif mode == "poacher" then 3 else 4/);
+  assert.match(field,/enemy.tag.Text = "밀렵단 · "/);
+  assert.match(field,/enemy.tag.Text = "현상 수배 대상 · "/);
+  assert.match(field,/and \(not isWildlife or portVisualSeed % 2 == 0\)/);
+  assert.match(field,/밀렵단 저지 · 생태 기록 확보/);
+  assert.match(field,/수배 대상 격파 · 현장 기록 확보/);
+});
+
 test('전 세계 생존 방어와 보급품 탈환은 실제 구역 유지와 경비병 격파를 사용한다',()=>{
   assert.match(field,/FieldDefenseHoldAt", now/);
   assert.match(field,/20 - \(now - started\)/);
