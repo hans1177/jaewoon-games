@@ -1306,8 +1306,8 @@ function NavalBattle.play(opts)
 	do
 		local wind = Instance.new("Frame")
 		wind.AnchorPoint = Vector2.new(0.5, 0)
-		wind.Position = UDim2.new(0.5, 0, 0, 10)
-		wind.Size = UDim2.fromOffset(if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 160 else 190, 32)
+		wind.Position = UDim2.new(0.5, 0, 0, 38)
+		wind.Size = UDim2.fromOffset(if battleViewport.X < 480 then 120 elseif battleViewport.X < 720 then 160 else 190, 28)
 		wind.BackgroundColor3 = Color3.fromRGB(26, 34, 40)
 		wind.BackgroundTransparency = 0.15
 		wind.BorderSizePixel = 0
@@ -1339,9 +1339,12 @@ function NavalBattle.play(opts)
 	-- 동료 조언 띠: 항해사·포수 등이 상황을 보고 한마디 (한 번에 하나, 같은 말은 두 번까지)
 	local adviceLine = label(gui, "", 14, Color3.fromRGB(255, 236, 190))
 	adviceLine.AnchorPoint = Vector2.new(0.5, 0)
-	adviceLine.Position = UDim2.new(0.5, 0, 0, 174)
-	adviceLine.Size = UDim2.fromOffset(math.min(420, battleViewport.X - 32), 24)
-	adviceLine.Visible = battleViewport.X >= 1000 -- [상단 안전 영역] 지원판·전술판 사이 조언 띠는 넓은 화면에서만 노출.
+	adviceLine.Position = UDim2.new(0.5, 0, 0, 112)
+	adviceLine.Size = UDim2.fromOffset(math.min(520, battleViewport.X - 32), 42)
+	adviceLine.TextSize = if battleViewport.X < 480 then 16 else 20
+	adviceLine.ZIndex = 25
+	adviceLine.Active = false
+	adviceLine.Visible = true -- [상단 중앙] 모바일에서도 동료 길잡이 도움말 표시.
 	adviceLine.BackgroundColor3 = Color3.fromRGB(34, 28, 22)
 	adviceLine.BackgroundTransparency = 1
 	adviceLine.TextTransparency = 1
@@ -1369,24 +1372,25 @@ function NavalBattle.play(opts)
 		return true
 	end
 	-- [해전 전술 판넬] 실제 적과의 거리·선측 각·장전 시간으로 다음 행동을 시각화한다.
-	-- 항해 중 필요한 조타 안내는 아군 선단 아래에 짧게 표시한다.
+	-- 조타 길잡이는 화면 최상단 중앙에 크게 표시한다.
 	local tactic = label(gui, "", 15, Color3.fromRGB(255, 224, 159), true)
 	tactic.Name = "BattleTacticalReadout"
-	tactic.AnchorPoint = Vector2.zero
-	tactic.Position = UDim2.fromOffset(16, 126)
-	-- [조타 안내] 전장 중앙을 비우고 한 줄만 사용한다.
-    tactic.Size = UDim2.fromOffset(math.min(168, math.floor(battleViewport.X * 0.42), if battleViewport.X < 480 then math.max(80, battleViewport.X - 206) else 168), 26)
-    tactic.TextSize = if battleViewport.X < 480 then 12 else 14
+	tactic.AnchorPoint = Vector2.new(0.5, 0)
+	tactic.Position = UDim2.new(0.5, 0, 0, 4)
+	-- [조타 안내] 양쪽 선체 표시 사이에서 한 줄만 사용한다.
+    tactic.Size = UDim2.fromOffset(math.min(320, math.floor(battleViewport.X * (if battleViewport.X < 480 then 0.54 elseif battleViewport.X < 720 then 0.46 else 0.34)) - 36), 30)
+    tactic.TextSize = if battleViewport.X < 480 then 18 else 22
     tactic.Font = Enum.Font.GothamBold
     tactic.TextScaled = false
     tactic.TextStrokeTransparency = 1
     tactic.TextTruncate = Enum.TextTruncate.AtEnd
-    tactic.TextWrapped = true
+    tactic.TextWrapped = false
     tactic.BackgroundColor3 = Color3.fromRGB(21, 29, 35)
     tactic.BackgroundTransparency = 0.04
 	tactic.BorderSizePixel = 0
 	tactic.Visible = false
-	tactic.ZIndex = 10
+	tactic.ZIndex = 28
+	tactic.Active = false
 	local tacticCorner = Instance.new("UICorner")
 	tacticCorner.CornerRadius = UDim.new(0, 9)
 	tacticCorner.Parent = tactic
@@ -1446,38 +1450,30 @@ function NavalBattle.play(opts)
 		trajDots[i] = d
 	end
 	sailLabel.AnchorPoint = Vector2.new(0.5, 0)
-	sailLabel.Position = UDim2.new(0.5, 0, 0, if battleViewport.X < 480 then 69 else 44)
+	sailLabel.Position = UDim2.new(0.5, 0, 0, 69)
 	sailLabel.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.max(80, battleViewport.X - 240) elseif battleViewport.X < 720 then 160 else 190, 20)
 	sailLabel.TextSize = if battleViewport.X < 480 then 11 else 14
 	sailLabel.TextTruncate = Enum.TextTruncate.AtEnd
 	-- 기동 점수: 포탄 낙하 경고를 피하면 올라간다 (결과와는 별개로 명성 보너스만 준다)
 	local flair, combo, dodged = 0, 0, 0
-	-- [포격 연타 안내] 중앙 전투 숫자 배너와 별개로 실제 연속 명중만 좌측에 크게 표시한다.
-	local navalHitStreak, navalHitAt, navalHitCueSerial = 0, -100, 0
-	local navalHitCue = label(gui, "", if battleViewport.X < 480 then 16 else 32, Color3.fromRGB(255, 223, 133), true)
+	-- [중앙 연출] 지상전과 같은 글꼴·맥동, 연타와 전투 알림을 하나로 통합.
+	local navalHitStreak, navalHitAt = 0, -100
+	local navalHitCue = label(gui, "", 54, Color3.fromRGB(255, 226, 120))
 	navalHitCue.Name = "NavalHitStreak"
-	navalHitCue.AnchorPoint = Vector2.zero
-	navalHitCue.Position = UDim2.fromOffset(16, if battleViewport.X < 480 then 225 elseif battleViewport.Y < 420 then 199 else 204)
-	navalHitCue.Size = UDim2.fromOffset(if battleViewport.X < 480 then math.min(182, math.max(80, math.floor((battleViewport.X - 206) / 1.08))) else math.min(242, math.floor(battleViewport.X * 0.32)), if battleViewport.X < 480 then 46 else 54)
-	navalHitCue.Font = Enum.Font.GothamBlack
-	navalHitCue.TextScaled = false
-	navalHitCue.TextWrapped = false
-	navalHitCue.TextXAlignment = Enum.TextXAlignment.Center
-	navalHitCue.TextStrokeColor3 = Color3.fromRGB(25, 21, 18)
-	navalHitCue.TextStrokeTransparency = 0.4
-	navalHitCue.BackgroundColor3 = Color3.fromRGB(34, 27, 21)
-	navalHitCue.BackgroundTransparency = 0.18
-	navalHitCue.BorderSizePixel = 0
+	navalHitCue.AnchorPoint = Vector2.new(0.5, 0.5)
+	navalHitCue.Position = UDim2.fromScale(0.5, 0.27)
+	navalHitCue.Size = UDim2.new(0.82, 0, 0, math.min(112, math.floor(battleViewport.Y * 0.18)))
+	navalHitCue.Font = Enum.Font.Bangers
+	navalHitCue.TextStrokeColor3 = Color3.fromRGB(22, 22, 37)
+	navalHitCue.TextStrokeTransparency = 1
+	navalHitCue.TextTransparency = 1
+	navalHitCue.BackgroundTransparency = 1
+	navalHitCue.Active = false
 	navalHitCue.ZIndex = 29
 	navalHitCue.Visible = false
-	Instance.new("UICorner", navalHitCue).CornerRadius = UDim.new(0, 10)
-	local navalHitCueStroke = Instance.new("UIStroke")
-	navalHitCueStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-	navalHitCueStroke.Color = Color3.fromRGB(241, 186, 93)
-	navalHitCueStroke.Thickness = 2
-	navalHitCueStroke.Parent = navalHitCue
 	local navalHitCueScale = Instance.new("UIScale")
 	navalHitCueScale.Parent = navalHitCue
+	local navalCue = { serial = 0, streak = false, fade = nil, pop = nil, timer = nil }
 
 	local subtitle = label(gui, "", 16)
 	subtitle.AnchorPoint = Vector2.new(0.5, 1)
@@ -5528,51 +5524,42 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 
 	-- 대포 한 발
 	local kick = 0 -- 포격·피격 때 순간적으로 화각이 튀는 정도
-	-- 화면 가운데 잠깐 뜨는 한 줄 연출 글자
-	-- [해전 글씨 선명도] 전투 알림 한 개만 표시하고 폰트를 고정한다.
-	-- 이전에는 매 프레임 TextSize를 바꿔 한글 윤곽이 뭉개지고 알림이 겹쳤다.
-	local currentAnnouncement = nil
-	local function popText(text, color)
-		-- [해전 알림] 이 함수의 트윈 서비스는 함수 안에서 가져와 미정의 변수 오류를 막는다.
-		local tweenService = game:GetService("TweenService")
-		if currentAnnouncement and currentAnnouncement.Parent then currentAnnouncement:Destroy() end
-		local l = label(gui, text, if battleViewport.X < 480 then 12 else 14, color)
-        currentAnnouncement = l
-        l.Name = "NavalBattleAnnouncement"
-        l.Font = Enum.Font.GothamBold
-        l.AnchorPoint = Vector2.zero
-        l.Position = UDim2.fromOffset(16, 158)
-        l.Size = UDim2.fromOffset(math.min(220, math.floor(battleViewport.X * 0.46)), 34)
-        l.TextScaled = false
-        l.TextWrapped = true
-        l.TextStrokeTransparency = 1
-        l.BackgroundColor3 = Color3.fromRGB(28, 25, 21)
-        l.BackgroundTransparency = 0.08
-        l.ZIndex = 28
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(0, 8)
-        corner.Parent = l
-        local edge = Instance.new("UIStroke")
-        edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        edge.Color = Color3.fromRGB(216, 177, 104)
-        edge.Thickness = 1.5
-        edge.Parent = l
-        -- 글자·배경·테두리를 함께 지워 빈 알림 테두리가 남지 않게 한다.
-        -- [알림 정리] 기존 전투 종료 목록에 예약 작업을 등록한다.
-        local fadeTimer = task.delay(0.92, function()
-            conns[coroutine.running()] = nil
-            if finished or not l.Parent then return end
-            local fade = TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            tweenService:Create(l, fade, { TextTransparency = 1, BackgroundTransparency = 1 }):Play()
-            tweenService:Create(edge, fade, { Transparency = 1 }):Play()
-        end)
-        conns[fadeTimer] = fadeTimer
-		local removeTimer = task.delay(1.28, function()
+	-- [중앙 전투 알림] 지상 showCombo와 같은 맥동과 상승 페이드.
+	local function popText(text, color, milestone, isStreak)
+		if finished or not navalHitCue.Parent then return end
+		navalCue.serial += 1
+		local serial = navalCue.serial
+		if navalCue.fade then navalCue.fade:Cancel() end
+		if navalCue.pop then navalCue.pop:Cancel() end
+		if navalCue.timer then
+			conns[navalCue.timer] = nil
+			task.cancel(navalCue.timer)
+			navalCue.timer = nil
+		end
+		navalCue.streak = isStreak == true
+		local size = if #text > 48 then (if MOBILE_VFX then 34 else 42)
+			elseif milestone then (if MOBILE_VFX then 63 else 76) else (if MOBILE_VFX then 51 else 60)
+		local centerY = if battleViewport.Y < 480 then 0.43 else (if milestone then 0.245 else 0.27)
+		navalHitCue.Text = text
+		navalHitCue.TextSize = math.min(size, math.max(12, math.floor(battleViewport.X * 0.80 / math.max(1, utf8.len(text) or #text))))
+		navalHitCue.TextColor3 = color or Color3.fromRGB(255, 226, 112)
+		navalHitCue.TextTransparency = 0
+		navalHitCue.TextStrokeTransparency = 0.15
+		navalHitCue.Visible = true
+		navalHitCue.Position = UDim2.fromScale(0.5, centerY)
+		navalHitCueScale.Scale = if milestone then 1.20 else 1.13
+		navalCue.pop = TweenService:Create(navalHitCueScale, TweenInfo.new(0.13, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 })
+		navalCue.pop:Play()
+		navalCue.timer = task.delay(if milestone then 0.75 else 0.43, function()
 			conns[coroutine.running()] = nil
-			if l.Parent then l:Destroy() end
-			if currentAnnouncement == l then currentAnnouncement = nil end
+			navalCue.timer = nil
+			if finished or navalCue.serial ~= serial or not navalHitCue.Parent then return end
+			navalCue.fade = TweenService:Create(navalHitCue, TweenInfo.new(0.28, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+				TextTransparency = 1, TextStrokeTransparency = 1, Position = UDim2.fromScale(0.5, centerY - 0.045),
+			})
+			navalCue.fade:Play()
 		end)
-		conns[removeTimer] = removeTimer
+		conns[navalCue.timer] = navalCue.timer
 	end
 	skillPop = popText
 	skillFx = function(id, dur)
@@ -5595,39 +5582,16 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 		local facing = Vector3.new(math.cos(sh.theta), 0, math.sin(sh.theta))
 		sh.lastHitSide = if facing:Cross(incoming).Y >= 0 then 1 else -1
 		sh.damageHits = (sh.damageHits or 0) + 1
-		-- [포격 연타] 실제 명중은 적선이 카메라 밖에 있어도 집계하며, 중앙 배너 대신 좌측 큐만 갱신한다.
+		-- [포격 연타] 실제 명중과 기존 3.2초 규칙 유지.
 		if not toPlayer and not opts.cardOnly then
 			local nowHit = os.clock()
 			navalHitStreak = if nowHit - navalHitAt <= 3.2 then navalHitStreak + 1 else 1
 			navalHitAt = nowHit
 			if navalHitStreak >= 2 then
-				navalHitCueSerial += 1
-				local cueSerial = navalHitCueSerial
-				navalHitCue.Text = string.format("포격 %d연타!", navalHitStreak)
-				navalHitCue.TextColor3 = if navalHitStreak >= 10 then Color3.fromRGB(255, 125, 105)
+				local accent = if navalHitStreak >= 10 then Color3.fromRGB(255, 125, 105)
 					elseif navalHitStreak >= 5 then Color3.fromRGB(255, 187, 91)
 					else Color3.fromRGB(255, 235, 154)
-				navalHitCue.Visible = true
-				navalHitCue.TextTransparency = 0
-				navalHitCue.TextStrokeTransparency = 0.4
-				navalHitCue.BackgroundTransparency = 0.18
-				navalHitCueStroke.Transparency = 0
-				navalHitCueScale.Scale = 1.08
-				local tweenService = game:GetService("TweenService")
-				tweenService:Create(navalHitCueScale, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-				local fadeTimer = task.delay(1.8, function()
-					conns[coroutine.running()] = nil
-					if finished or navalHitCueSerial ~= cueSerial or not navalHitCue.Parent then return end
-					local fade = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-					tweenService:Create(navalHitCue, fade, { TextTransparency = 1, TextStrokeTransparency = 1, BackgroundTransparency = 1 }):Play()
-					tweenService:Create(navalHitCueStroke, fade, { Transparency = 1 }):Play()
-					local hideTimer = task.delay(0.26, function()
-						conns[coroutine.running()] = nil
-						if not finished and navalHitCue.Parent and navalHitCueSerial == cueSerial then navalHitCue.Visible = false end
-					end)
-					conns[hideTimer] = hideTimer
-				end)
-				conns[fadeTimer] = fadeTimer
+				popText(string.format("포격 %d연타!", navalHitStreak), accent, navalHitStreak % 5 == 0, true)
 			end
 			if navalHitStreak == 3 or navalHitStreak == 5 or navalHitStreak == 10 then
 				Sfx.play(if navalHitStreak >= 10 then "sfx_horn" else "sfx_card_ring",
@@ -5636,8 +5600,18 @@ local BC = require(script.Parent:WaitForChild("BoardingCards"))
 			end
 		elseif toPlayer then
 			navalHitStreak = 0
-			navalHitCueSerial += 1
-			navalHitCue.Visible = false
+			if navalCue.streak then
+				navalCue.serial += 1
+				if navalCue.fade then navalCue.fade:Cancel() end
+				if navalCue.pop then navalCue.pop:Cancel() end
+				if navalCue.timer then
+					conns[navalCue.timer] = nil
+					task.cancel(navalCue.timer)
+					navalCue.timer = nil
+				end
+				navalHitCue.Visible = false
+				navalCue.streak = false
+			end
 		end
 		local v, on = cam:WorldToViewportPoint(ORIGIN + sh.pos + Vector3.new((math.random() - 0.5) * 12, 16, 0))
 		if not on then
