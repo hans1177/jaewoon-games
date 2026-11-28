@@ -42,3 +42,16 @@ test('일반 인입 후보 검사 완료 이벤트는 정확한 SHA 및 필수 �
   assert.ok(wf.includes('length == 3 and all(.[]; .pass)'));
   assert.ok(wf.includes('if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then exit 0; fi'));
 });
+
+
+test('시설 원화는 정확한 규격 및 원본 시각 승인 없이는 반입하지 않는다', () => {
+  assert.ok(py.includes('trade|route|diplomacy|yard|board|battle|scholar|status'));
+  assert.ok(py.includes('(w, h) != (2400, 800)'));
+  assert.ok(py.includes('시설 가로 원화는 빈 영역 없이 완성된 불투명 그림 필수'));
+  const gate = py.split('if kind == "CardArt" and FACILITY_STRIP.fullmatch(fn):')[1].split('# 대륙 원화')[0];
+  assert.ok(gate.includes('approved_doc.get("approved", {}).get(card) != digest'));
+  assert.ok(gate.includes('status="pending_review"'));
+  assert.ok(gate.includes('continue'));
+  assert.ok(py.includes('if approved_doc.get("approved", {}).get(card) != prev.get("sha256"):'));
+  assert.ok(py.includes('if CONTINENT.match(fn) and approved_doc.get("modelOriginals"'));
+});
