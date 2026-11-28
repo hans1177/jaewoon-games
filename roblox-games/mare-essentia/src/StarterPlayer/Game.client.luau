@@ -12107,15 +12107,55 @@ do
 			list.SortOrder = Enum.SortOrder.LayoutOrder
 			list.Parent = card
 			if q.chapter then
-				local t = mkLabel(card, "📖 " .. tostring(q.chapter) .. (if q.guide then "  ·  안내: " .. tostring(q.guide) else ""), 14, Color3.fromRGB(110, 70, 30), true, 1)
+				local t = mkLabel(card, tostring(q.chapter) .. (if q.guide then " · 안내: " .. tostring(q.guide) else ""), 15, Color3.fromRGB(110, 70, 30), true, 1)
 				t.Size = UDim2.new(1, 0, 0, 0)
 			end
+			if q.talk then
+				-- [화자] 등록된 동일 인물/역할 초상만 사용한다. 이름만 있는 창작 인물은 임의 얼굴을 붙이지 않는다.
+				local talk = q.talk
+				local portraitTalk = if talk.key ~= "name" then talk else nil
+				if not portraitTalk then
+					for _, member in (view.companions and view.companions.list) or {} do
+						if member.name == talk.name then portraitTalk = { key = "comp:" .. member.id }; break end
+					end
+				end
+				local imageId, offset, imageSize
+				if portraitTalk and H.portraitFor then imageId, offset, imageSize = H.portraitFor(portraitTalk, true) end
+				local speaker = Instance.new("Frame")
+				speaker.Name = "QuestSpeaker"
+				speaker.Size = UDim2.new(1, 0, 0, 0)
+				speaker.AutomaticSize = Enum.AutomaticSize.Y
+				speaker.BackgroundTransparency = 1
+				speaker.LayoutOrder = 2
+				speaker.Parent = card
+				if imageId then
+					local face = Instance.new("ImageLabel")
+					face.Name = "QuestSpeakerPortrait"
+					face.Size = UDim2.fromOffset(62, 80)
+					face.BackgroundTransparency = 1
+					face.ScaleType = Enum.ScaleType.Fit
+					face.Image = "rbxassetid://" .. tostring(imageId)
+					face.ImageRectOffset = offset or Vector2.zero
+					face.ImageRectSize = imageSize or Vector2.zero
+					face.Parent = speaker
+					local minimum = Instance.new("UISizeConstraint")
+					minimum.MinSize = Vector2.new(0, 80)
+					minimum.Parent = speaker
+				end
+				local ex = q.story2
+				local line = tostring(talk.name or "안내 인물") .. (if talk.role and talk.role ~= "" then " · " .. talk.role else "")
+				if ex and ex.line and ex.line ~= "" then line ..= "\n“" .. tostring(ex.line) .. "”" end
+				local description = mkLabel(speaker, line, 15, INK, true)
+				description.Position = UDim2.fromOffset(if imageId then 70 else 0, 0)
+				description.Size = UDim2.new(1, if imageId then -70 else 0, 0, 0)
+				description.TextWrapped = true
+			end
 			if q.prevEnding then
-				local prev = mkLabel(card, "지난 이야기 — " .. tostring(q.prevName or "") .. ": " .. tostring(q.prevEnding), 12, Color3.fromRGB(96, 80, 60), false, 2)
+				local prev = mkLabel(card, "지난 이야기 — " .. tostring(q.prevName or "") .. ": " .. tostring(q.prevEnding), 12, Color3.fromRGB(96, 80, 60), false, 3)
 				prev.Size = UDim2.new(1, 0, 0, 0)
 			end
 			local values = { q.problem, q.cause, doText, q.result }
-			local order = 3
+			local order = 4
 			for i, spec in CHIP do
 				local v = values[i]
 				if v and v ~= "" then
@@ -12907,7 +12947,7 @@ do
 	H.questTalkMemo = H.questTalkMemo or {}
 
 	-- 초상: (이미지, 칸 위치, 칸 크기) — 개별 파일이면 칸 없음
-	function H.portraitFor(talk)
+	function H.portraitFor(talk, exact)
 		if type(talk) ~= "table" then return nil end
 		local key = tostring(talk.key or "")
 		local kind, id = string.match(key, "^(%a+):(.+)$")
@@ -12939,13 +12979,15 @@ do
 			local hid, hoff = H.heroPortraitAsset(id)
 			if hid then return hid, hoff, Vector2.new(256, 336) end
 		end
+		-- 정확한 화자 초상이 없을 때 상세 화면은 이름만 표시한다.
+		if exact then return nil end
 		-- 이름만 있는 인물(장 이야기): 동료 목록에서 같은 이름을 찾는다
 		if view and view.companions and view.companions.list then
 			for _, m in view.companions.list do
 				if m.name == talk.name then return H.portraitFor({ key = "comp:" .. m.id }) end
 			end
 		end
-		return H.portraitFor({ key = "keeper:tavern" })
+		return H.portraitFor({ key = "keeper:tavern" }, true)
 	end
 
 	-- 사연을 말풍선 단위로 자른다: 따옴표 대사는 인물, 나머지는 해설. 한 마디 최대 두 문장.
@@ -15718,8 +15760,10 @@ function RENDERERS.quest()
 			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
-			local row = mkRow(content, q.name, if expanded then strandText(q) .. said else q.summary, buttons, 92)
-			if H.hasIconArt("quest") then withIcon(row, "FacilityArt", "quest", nil, 44) end
+			local compact = (if q.chapter then tostring(q.chapter) .. "\n" else "") .. q.summary
+			local row = mkRow(content, q.name, if expanded then strandText(q) .. (if q.problem or q.chapter or q.prevEnding then "" else said) else compact, buttons, 92)
+			local stamp = if q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
+			if H.hasIconArt(stamp) then withIcon(row, "FacilityArt", stamp, nil, 44) end
 			local textBox = row:FindFirstChild("RowText")
 			if textBox then
 				local meter = Instance.new("Frame")
@@ -15727,11 +15771,15 @@ function RENDERERS.quest()
 				meter.Size = UDim2.new(1, 0, 0, 46)
 				meter.BackgroundTransparency = 1
 				meter.Parent = textBox
-				local icon = modelIcon(meter, "FacilityArt", "reward", nil, 24, "보상")
-				icon.Position = UDim2.fromOffset(0, 0)
+				local iconLeft = 0
+				if H.hasIconArt("reward") then
+					local icon = modelIcon(meter, "FacilityArt", "reward", nil, 24, "보상")
+					icon.Position = UDim2.fromOffset(0, 0)
+					iconLeft = 28
+				end
 				local label = mkLabel(meter, string.format("%d/%d · 보상 %s코인", done, q.amount, H.commas(q.rewardCoins)), 14, INK, true)
-				label.Position = UDim2.fromOffset(28, 0)
-				label.Size = UDim2.new(1, -28, 0, 24)
+				label.Position = UDim2.fromOffset(iconLeft, 0)
+				label.Size = UDim2.new(1, -iconLeft, 0, 24)
 				label.AutomaticSize = Enum.AutomaticSize.None
 				label.TextTruncate = Enum.TextTruncate.AtEnd
 				local track = Instance.new("Frame")
