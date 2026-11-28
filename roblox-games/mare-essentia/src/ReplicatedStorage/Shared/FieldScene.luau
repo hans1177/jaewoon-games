@@ -9380,6 +9380,26 @@ function FieldScene.start(opts)
 					pulseAt("BUFF_PULSE", hrp.CFrame * CFrame.new(0, -2, 0), tint, Color3.fromRGB(255, 246, 211), if rank >= 8 then 12 else 6, if visualMobile then 3 else 6)
 					if rank >= 8 then screenFlash(tint, 0.94) end
 					sfx(if rank >= 8 then "sfx_fanfare" else "sfx_card_ring", if visualMobile then 0.35 else 0.5, 1.05 + rank * 0.025)
+					-- [해금 시범] 일반 확률 연타가 이미 보여 준 동작은 반복하지 않는다. 새 단계의 자세만 한 번 시연한다.
+					-- 공격/회피/무기교체가 우선이며 피해·경험치·기력·쿨타임을 소비하지 않는다.
+					if rank > chain then
+						local demoWeapon, demoSerial = wpn.id, chainMotionSerial
+						local demoName = string.split(Weapons.actionDesign(wpn).cadence, "·")[rank] or string.format("%d타", rank)
+						task.delay(if chain > 1 then 0.95 else 0.48, function()
+							if finished or pl.hp <= 0 or not folder.Parent or not hrp.Parent or wpn.id ~= demoWeapon or chainMotionSerial ~= demoSerial then return end
+							if pl.guarding or os.clock() - swingT0 < 0.28 then return end
+							startSwing("slash", 0.4, rank, true)
+							if not wpn.ranged then
+								slashArc(hrp, tint, math.max(7, wpn.range * STUD), if wpn.family == "spear" then 55 else 100, if rank % 2 == 0 then 25 else -25)
+							else
+								-- [원거리 시범] 총구/활 손에서만 빛을 내고 적에게 탄도나 피해를 생성하지 않는다.
+								pulseAt("IMPACT_FLASH", hrp.CFrame * CFrame.new(0, 1.2, -2.4), tint, Color3.fromRGB(255, 248, 229), 4, if visualMobile then 2 else 4)
+							end
+							if rank >= 6 then trailsOn(player.Character, TRAIL_LIMBS, tint, 0.22, 0.42) end
+							if rank >= 8 and not visualMobile then afterimage(player.Character, tint, 2, 0.055) end
+							showCombo("새 동작 · " .. demoName, true, tint)
+						end)
+					end
 				end
 				if chain > 1 then
 					local activeWeapon, activeSerial = wpn.id, chainMotionSerial
