@@ -2,33 +2,59 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "46182302566",
-    "kind": "autopilot",
+    "runId": "46182509531",
+    "kind": "studio",
     "portBatch": null,
-    "at": "2026-11-28T19:54:31.097Z",
-    "sourceRevision": "c3117f38c435bcb517c2f17a30d52cd0bce9c511",
+    "at": "2026-11-28T20:06:24.995Z",
+    "sourceRevision": "44cf675d4737ea025e30e144a0bb49e75fb0da24",
     "captureArtifact": {
-      "name": "studio-frames-46182302566",
+      "name": "studio-frames-46182509531",
       "retentionDays": 1,
-      "runId": "46182302566"
+      "runId": "46182509531"
     },
     "result": "PASS",
-    "frames": 1,
-    "changedFrames": 0,
+    "frames": 48,
+    "changedFrames": 24,
     "summary": {
-      "plannedSteps": 5,
-      "completedSteps": 5,
+      "plannedSteps": 176,
+      "completedSteps": 176,
       "plannedClicks": 0,
       "successfulClicks": 0,
       "skippedOptionalClicks": 0,
-      "plannedFrames": 1,
-      "capturedFrames": 1,
+      "plannedFrames": 48,
+      "capturedFrames": 48,
       "abortedEarly": false
     },
-    "path": "runs/46182302566"
+    "path": "runs/46182509531"
   },
   "lastDeepAt": "2026-11-28T19:46:27.672Z",
   "runs": [
+    {
+      "runId": "46182509531",
+      "kind": "studio",
+      "portBatch": null,
+      "at": "2026-11-28T20:06:24.995Z",
+      "sourceRevision": "44cf675d4737ea025e30e144a0bb49e75fb0da24",
+      "captureArtifact": {
+        "name": "studio-frames-46182509531",
+        "retentionDays": 1,
+        "runId": "46182509531"
+      },
+      "result": "PASS",
+      "frames": 48,
+      "changedFrames": 24,
+      "summary": {
+        "plannedSteps": 176,
+        "completedSteps": 176,
+        "plannedClicks": 0,
+        "successfulClicks": 0,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 48,
+        "capturedFrames": 48,
+        "abortedEarly": false
+      },
+      "path": "runs/46182509531"
+    },
     {
       "runId": "46182302566",
       "kind": "autopilot",
@@ -262,32 +288,6 @@
         "abortedEarly": false
       },
       "path": "runs/46173319301"
-    },
-    {
-      "runId": "46172178751",
-      "kind": "studio",
-      "portBatch": null,
-      "at": "2026-11-28T18:05:11.754Z",
-      "sourceRevision": "54582ac6e26bf2bdf096594ea50ee0f0ecc41922",
-      "captureArtifact": {
-        "name": "studio-frames-46172178751",
-        "retentionDays": 1,
-        "runId": "46172178751"
-      },
-      "result": "PASS",
-      "frames": 48,
-      "changedFrames": 0,
-      "summary": {
-        "plannedSteps": 176,
-        "completedSteps": 176,
-        "plannedClicks": 0,
-        "successfulClicks": 0,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 48,
-        "capturedFrames": 48,
-        "abortedEarly": false
-      },
-      "path": "runs/46172178751"
     }
   ]
 }
