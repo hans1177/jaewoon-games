@@ -5057,3 +5057,16 @@ test('메뉴 글꼴과 실제 화물 막대 및 화면 비율별 탭 폭을 검�
   assert.match(source,/H\.menuCargoFill\.Size = UDim2\.fromScale\(cargoRatio, 1\)/);
   assert.doesNotMatch(source,/보급 %d개 · 석탄 %d개 · 해금된 항로 확인/);
 });
+
+test('청동 원화와 프레임의 최초·재선택 상태를 같은 기준으로 표시한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const tabs=source.slice(source.indexOf('function H.renderTabs()'),source.indexOf('-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼'));
+  const buttons=source.slice(source.indexOf('local function mkButton('),source.indexOf('local function mkRow('));
+  assert.equal((tabs.match(/rim\.Transparency = if selected then 0\.12 else 0\.55/g)||[]).length,2);
+  assert.equal((tabs.match(/grain\.ImageTransparency = if selected then 0\.55 else 0\.58/g)||[]).length,2);
+  assert.match(buttons,/if grain and parent ~= H\.tabStrip then/);
+  assert.match(buttons,/bookMaterial\(b, if parent == H\.tabStrip or back then "leather" else "parchment", 148\)/);
+  assert.match(buttons,/bevel\.Visible = not buttonArt/);
+  assert.match(source,/badgeStroke\.Transparency = if selected then 0\.20 else 0\.55/);
+  assert.match(source,/elseif art:GetAttribute\("FacilityArtKey"\) then Color3\.new\(1, 1, 1\)/);
+});
