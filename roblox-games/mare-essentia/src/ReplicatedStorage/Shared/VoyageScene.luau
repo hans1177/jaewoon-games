@@ -260,11 +260,16 @@ function VoyageScene.play(info)
 	local autoRing = false -- 직접 항해 중 언제든 자동으로 바꿀 수 있다(처음 가는 항구는 제외)
 	if manual then
 		skip.Visible = false
-		hint.Text = "스틱·A/D·◀ ▶ 로 금색 바람 고리를 통과해요 · 연속 통과하면 빨라져요"
+		hint.Text = "좌우 조종 · 금빛 고리를 통과하면 가속"
 		local track = Instance.new("Frame")
 		track.AnchorPoint = Vector2.new(0.5, 1)
 		track.Position = UDim2.new(0.5, 0, 1, -86)
-		track.Size = UDim2.fromOffset(460, 18)
+		-- 좁은 화면에서도 좌우 64px 조종 버튼과 8px 간격을 확보한다.
+		track.Size = UDim2.new(1, -160, 0, 18)
+		track.ClipsDescendants = false
+		local trackLimit = Instance.new("UISizeConstraint")
+		trackLimit.MaxSize = Vector2.new(460, 18)
+		trackLimit.Parent = track
 		track.BackgroundColor3 = Color3.fromRGB(20, 40, 64)
 		track.BackgroundTransparency = 0.25
 		track.BorderSizePixel = 0
@@ -315,18 +320,23 @@ function VoyageScene.play(info)
 		scoreLabel = Instance.new("TextLabel")
 		scoreLabel.BackgroundTransparency = 1
 		scoreLabel.AnchorPoint = Vector2.new(0.5, 1)
-		scoreLabel.Position = UDim2.new(0.5, 0, 0, -4)
-		scoreLabel.Size = UDim2.fromOffset(300, 20)
+		scoreLabel.Position = UDim2.new(0.5, 0, 0, -16)
+		scoreLabel.Size = UDim2.new(1, 144, 0, 24)
 		scoreLabel.Font = Enum.Font.GothamBold
-		scoreLabel.TextSize = 14
+		scoreLabel.TextSize = 16
+		scoreLabel.TextScaled = true
+		local scoreLimit = Instance.new("UITextSizeConstraint")
+		scoreLimit.MinTextSize = 12
+		scoreLimit.MaxTextSize = 16
+		scoreLimit.Parent = scoreLabel
 		scoreLabel.TextColor3 = Color3.new(1, 1, 1)
 		scoreLabel.TextStrokeTransparency = 0.4
 		scoreLabel.ZIndex = 7
 		scoreLabel.Parent = track
 		for _, side in { "l", "r" } do
 			local b = Instance.new("TextButton")
-			b.AnchorPoint = Vector2.new(0.5, 1)
-			b.Position = UDim2.new(0.5, if side == "l" then -290 else 290, 1, -78)
+			b.AnchorPoint = Vector2.new(if side == "l" then 1 else 0, 0.5)
+			b.Position = UDim2.new(if side == "l" then 0 else 1, if side == "l" then -8 else 8, 0.5, 0)
 			b.Size = UDim2.fromOffset(64, 44)
 			b.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
 			b.BackgroundTransparency = 0.2
@@ -335,7 +345,7 @@ function VoyageScene.play(info)
 			b.TextColor3 = Color3.new(1, 1, 1)
 			b.Font = Enum.Font.GothamBold
 			b.ZIndex = 8
-			b.Parent = gui
+			b.Parent = track
 			sideBtns[side] = b
 			local c = Instance.new("UICorner")
 			c.Parent = b
@@ -605,7 +615,10 @@ function VoyageScene.play(info)
 				g.BackgroundTransparency = 1
 				g.AnchorPoint = Vector2.new(0.5, 0.5)
 				g.Position = UDim2.fromScale(0.5, 0.3)
-				g.Size = UDim2.fromOffset(360, 70)
+				g.Size = UDim2.new(0.94, 0, 0, 70)
+				local arrowLimit = Instance.new("UISizeConstraint")
+				arrowLimit.MaxSize = Vector2.new(360, 70)
+				arrowLimit.Parent = g
 				g.Font = Enum.Font.GothamBlack
 				g.TextSize = 54
 				g.TextColor3 = Color3.fromRGB(255, 226, 110)
@@ -618,12 +631,15 @@ function VoyageScene.play(info)
 				guideHint.BackgroundTransparency = 0.25
 				guideHint.AnchorPoint = Vector2.new(0.5, 0)
 				guideHint.Position = UDim2.new(0.5, 0, 0.3, 46)
-				guideHint.Size = UDim2.fromOffset(420, 52)
+				guideHint.Size = UDim2.new(0.92, 0, 0, 64)
+				local guideLimit = Instance.new("UISizeConstraint")
+				guideLimit.MaxSize = Vector2.new(420, 64)
+				guideLimit.Parent = guideHint
 				guideHint.Font = Enum.Font.GothamMedium
-				guideHint.TextSize = 16
+				guideHint.TextSize = 18
 				guideHint.TextWrapped = true
 				guideHint.TextColor3 = Color3.fromRGB(255, 244, 214)
-				guideHint.Text = "첫 항해! 화살표 쪽으로 ◀ ▶ (또는 A·D, 화면 드래그)를 눌러\n금빛 고리 한가운데로 배를 보내세요"
+				guideHint.Text = "화살표 방향으로 조종해요.\n금빛 고리 가운데를 통과하세요."
 				guideHint.ZIndex = 9
 				guideHint.Parent = gui
 				local guideCorner = Instance.new("UICorner")
@@ -668,13 +684,18 @@ function VoyageScene.play(info)
 		modeBadge.Name = "SailModeBadge"
 		modeBadge.AnchorPoint = Vector2.new(0.5, 0)
 		modeBadge.Position = UDim2.new(0.5, 0, 1, -84)
-		modeBadge.Size = UDim2.fromOffset(230, 30)
+		modeBadge.Size = if manual then UDim2.new(0.45, 0, 0, 30) else UDim2.fromOffset(230, 30)
+		if manual then
+			local modeLimit = Instance.new("UISizeConstraint")
+			modeLimit.MaxSize = Vector2.new(230, 30)
+			modeLimit.Parent = modeBadge
+		end
 		modeBadge.BackgroundColor3 = Color3.fromRGB(18, 30, 48)
 		modeBadge.BackgroundTransparency = 0.2
 		modeBadge.Font = Enum.Font.GothamBold
 		modeBadge.TextSize = 15
 		modeBadge.TextColor3 = Color3.fromRGB(255, 232, 170)
-		modeBadge.Text = if manual then "🌊 직접 항해 (바람 고리)" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
+		modeBadge.Text = if manual then "직접 항해 · 바람 고리" elseif helm then "🎮 직접 조종 중" else "⚓ 자동 항해 중"
 		modeBadge.ZIndex = 9
 		modeBadge.Parent = gui
 		local mc = Instance.new("UICorner")
