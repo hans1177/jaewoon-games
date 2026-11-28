@@ -9,7 +9,7 @@ const readText=(file)=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
 // [시설 탭 최초 배치 회귀] 모바일 첫 렌더와 화면 크기 갱신이 같은 배치 규칙을 사용한다.
 test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 배치된다',()=>{
   const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
+  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -16, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -16\)/);
   assert.match(game,/caption\.TextXAlignment = if compactTabs then Enum\.TextXAlignment\.Center else Enum\.TextXAlignment\.Left/);
   assert.match(game,/textLimit\.MaxTextSize = if compactTabs then 14 else 17/);
 });
@@ -3678,7 +3678,7 @@ test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',
 // [시설 아이콘 회귀] 최초 생성과 반응형 갱신은 같은 모바일·데스크톱 좌표를 사용한다.
 test('항구 시설 아이콘은 최초 생성과 반응형 배치에서 같은 탭 내부 여백을 유지한다',()=>{
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)';
+  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)';
   assert.equal(source.split(expected).length-1,2);
 });
 
