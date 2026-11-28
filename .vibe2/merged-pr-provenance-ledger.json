@@ -378437,11 +378437,163 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_1e8d10e5941e67c65ff8249b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15670",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b431df4d0be590ee12b7c059cfc7a774990d548e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15670,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-asset-slots",
+        "baseSha": "b431df4d0be590ee12b7c059cfc7a774990d548e",
+        "headSha": "7281822eb98d85cab9401e951668561a8ad60197",
+        "mergeCommitSha": "6a442559d8272f84e4a1aa8feeff07b6139656f2",
+        "mergedAt": "2026-11-28T03:18:08Z",
+        "authorLogin": "hans1177",
+        "titleHash": "bc031ebe4507d2ce186005968e8321990059808762e2bbb5ac2c809a50615622",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-asset-slots",
+        "candidateSha": "7281822eb98d85cab9401e951668561a8ad60197"
+      },
+      "changeStats": {
+        "changedFileCount": 27,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 5411,
+        "deletedLineCount": 20,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "AGENTS.md",
+          "qa/mare-auto-placement.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/docs/ASSET_MANAGEMENT.md",
+          "roblox-games/mare-essentia/docs/AUTO_PLACEMENT.md",
+          "roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/CARD_BATTLE_HANDOFF.md",
+          "roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/RULES.md",
+          "roblox-games/mare-essentia/docs/auto_placement_needed.csv",
+          "roblox-games/mare-essentia/docs/battle_backdrops/README.md",
+          "roblox-games/mare-essentia/docs/card_battle/README.md",
+          "roblox-games/mare-essentia/docs/discoveries/ANIMAL_RIG_MOTION.md",
+          "roblox-games/mare-essentia/docs/discoveries/README.md",
+          "roblox-games/mare-essentia/docs/ports/README.md",
+          "roblox-games/mare-essentia/docs/residents/README.md",
+          "roblox-games/mare-essentia/docs/ships/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryForms.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryStage.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/SeaAreas.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/devloop/dropbox_inbox.py",
+          "tools/gen_auto_placement.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-auto-placement.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryForms.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/DiscoveryStage.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/SeaAreas.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/devloop/dropbox_inbox.py",
+          "tools/gen_auto_placement.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15670",
+        "merge-commit:6a442559d8272f84e4a1aa8feeff07b6139656f2",
+        "base-main:b431df4d0be590ee12b7c059cfc7a774990d548e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2992
+    "total": 2993
   }
 }
