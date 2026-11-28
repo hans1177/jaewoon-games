@@ -91,3 +91,24 @@ test('기존 실패가 있으면 승인된 카드배틀 화면 교체의 반복 
   assert.equal(mayUpload(false,['other failure'],'CardArt/history_open',logger),true);
   assert.ok(uploader.includes('MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED'));
 });
+
+ test('백과사전 전용 PNG 원본 보존 및 문양 검수 대기', () => {
+  const uploader = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  for (const [name, size] of Object.entries({bg_book:'1600, 1000',tab_sheet:'1024, 1024',map_world:'2048, 1024',scale_people:'512, 512'})) {
+    assert.ok(py.includes('"ency_' + name + '": (' + size + ')'));
+  }
+  const start = py.indexOf('if encyclopedia_size is not None:');
+  const end = py.indexOf('# 메뉴/흥정 제작 지시서', start);
+  const guard = py.slice(start, end);
+  assert.ok(start >= 0 && end > start);
+  assert.ok(guard.includes('return (fn, raw), None'));
+  assert.ok(guard.includes('im.mode != "RGBA"'));
+  assert.ok(guard.includes('for index in range(16):'));
+  assert.ok(guard.includes('256 - bounds[3]) < 21'));
+  assert.ok(end < py.indexOf('im.convert("RGB").save(buf, "JPEG"'));
+  const review = py.slice(py.indexOf('if kind == "CardArt" and fn == "ency_tab_sheet.png":'), py.indexOf('# 대륙 원화는 기존 시각 검수'));
+  assert.ok(review.includes('approved_doc.get("approved", {}).get(card) != digest'));
+  assert.ok(review.includes('status="pending_review"'));
+  assert.ok(review.includes('continue'));
+  assert.ok(uploader.includes('ency_(?:bg_book|tab_sheet|map_world|scale_people)'));
+});
