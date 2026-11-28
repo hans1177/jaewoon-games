@@ -83,3 +83,7 @@ roblox-games/mare-essentia/audio/out/sfx_card_*.ogg -filter -diff -merge -text
 roblox-games/mare-essentia/audio/out/sfx_ui_*.ogg -filter -diff -merge -text
 roblox-games/mare-essentia/audio/out/sfx_skill_*.ogg -filter -diff -merge -text
 roblox-games/mare-essentia/audio/out/sfx_naval_wood.ogg -filter -diff -merge -text
+
+# mare-essentia 보류 원본(inbox-hold)은 LFS 포인터가 아니라 일반 Git 바이너리로 올라가 있다.
+# 원본 바이트를 그대로 보존하고, 체크아웃 때마다 "변경됨"으로 보이지 않게 LFS 필터를 끈다.
+roblox-games/mare-essentia/assets/inbox-hold/** -filter -diff -merge -text
