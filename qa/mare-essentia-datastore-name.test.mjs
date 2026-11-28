@@ -5429,3 +5429,16 @@ test('신화 기록은 실제 카드와 기존 수호 두목을 연결하고 재
   assert.equal((field.match(/targetCard.field == "Architecture" or folder:GetAttribute\("FieldMythRoute"\)/g)||[]).length,2);
   assert.match(field,/not folder:GetAttribute\("FieldMythRoute"\) and mode ~= "supply"/);
 });
+
+
+test('연속 두목전은 서버에 접수된 두 번째 단계에서 이미 격파한 두목을 재생성하지 않는다',()=>{
+  const route=field.split('-- [전 세계 매복·증원 차단]')[1].split('-- [탐험 시간·날씨·실물 동물]')[0];
+  const restored=route.split('if found >= 2 then')[1].split('elseif anchor and anchor:IsA("BasePart") then')[0];
+  assert.match(route,/found >= 2 and type\(opts.fieldCheckpoint\) == "table"/);
+  assert.match(restored,/if mode == "bossrush" then/);
+  assert.match(restored,/FM.destroy\(enemy.fm\)/);
+  assert.match(restored,/table.remove\(enemies, index\)/);
+  assert.match(restored,/enemy.model:Destroy\(\)/);
+  assert.match(restored,/FieldBossRushCheckpointRestored", true/);
+  assert.doesNotMatch(restored,/strikeEnemy|damageEnemy|onCheckpoint|earnedPractice/);
+});

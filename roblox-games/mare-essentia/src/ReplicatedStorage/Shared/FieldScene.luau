@@ -4667,14 +4667,15 @@ function FieldScene.start(opts)
 	-- 기존 적 수·체력·공격 간격·보상·저장은 그대로이며 앞서 격파한 적을 다시 만들지 않는다.
 	do
 		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
-		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard
+		if nodeCount >= 2 and (found < 2 or found >= 2 and type(opts.fieldCheckpoint) == "table") and (opts.danger or 1) >= 3 and targetCard
 			and (not isWildlife or portVisualSeed % 2 == 0)
 			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
 			and not folder:GetAttribute("FieldStrongholdRoute")
 			and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding"
 				or table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme) or isWildlife) then
 			local anchor = folder:FindFirstChild("Discovery2")
-			if anchor and anchor:IsA("BasePart") then
+			-- 완료한 단계에는 조사 앵커가 없다. 연속 두목전의 전원 격파만 기존 서버 단계로 복원한다.
+			if (anchor and anchor:IsA("BasePart")) or found >= 2 then
 				local mode = if targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"
 					elseif isWildlife then "poacher"
 					elseif (opts.danger or 1) >= 4 and portVisualSeed % 3 == 1 then "bounty"
@@ -4695,6 +4696,17 @@ function FieldScene.start(opts)
 					end
 					if #bosses >= 2 then mode, troops = "bossrush", bosses end
 				end
+				if found >= 2 then
+					if mode == "bossrush" then
+						for _, enemy in troops do
+							if enemy.fm then FM.destroy(enemy.fm) end
+							local index = table.find(enemies, enemy)
+							if index then table.remove(enemies, index) end
+							enemy.model:Destroy()
+						end
+						folder:SetAttribute("FieldBossRushCheckpointRestored", true)
+					end
+				elseif anchor and anchor:IsA("BasePart") then
 				table.sort(troops, function(a, b)
 					if (mode == "bounty" or mode == "duel") and a.elite ~= b.elite then return a.elite == true end
 					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
@@ -4731,6 +4743,7 @@ function FieldScene.start(opts)
 						elseif mode == "duel" then "이어하기 · 결투 구역으로 이동"
 						elseif mode == "bossrush" then "이어하기 · 연속 두목전 구역으로 이동" else "이어하기 · 경계 구역으로 이동" end
 				end
+				end -- 완료 구역과 활성 구역은 별도 처리
 			end
 		end
 	end
