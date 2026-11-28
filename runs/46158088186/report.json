@@ -1,0 +1,403 @@
+{
+ "sourceRevision": "3e366b82338f4f12bfb7b12ae23f89617d9f5d90",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "london_L3 npc=80 겹친쌍=0 막힘=19/75 옮김=112 숨김=7/453 집=5 X -325~-257 Z -233~250 땅 510x884\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "london_L3_top",
+   "files": 1
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "london_L3_street",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "lisbon_L4 npc=87 겹친쌍=0 막힘=27/86 옮김=133 숨김=30/565 집=2 X -285~-256 Z -242~178 땅 510x884\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "lisbon_L4_top",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 15,
+   "capture": "lisbon_L4_street",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "amsterdam_L4 npc=88 겹친쌍=0 막힘=29/87 옮김=131 숨김=28/559 집=1 X -365~-365 Z 243~243 땅 510x884\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "amsterdam_L4_top",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "amsterdam_L4_street",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "istanbul_L3 npc=79 겹친쌍=0 막힘=21/75 옮김=129 숨김=4/337 집=1 X -265~-265 Z -211~-211 땅 510x884\ntext"
+  },
+  {
+   "step": 26,
+   "capture": "istanbul_L3_top",
+   "files": 1
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "istanbul_L3_street",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "nagasaki_L3 npc=80 겹친쌍=1 막힘=14/73 옮김=97 숨김=3/312 집=4 X -357~-260 Z 190~269 땅 510x884\ntext"
+  },
+  {
+   "step": 33,
+   "capture": "nagasaki_L3_top",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "nagasaki_L3_street",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "venice_L4 npc=82 겹친쌍=0 막힘=32/87 옮김=127 숨김=28/323 집=1 X -281~-281 Z 258~258 땅 510x884\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "venice_L4_top",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 43,
+   "capture": "venice_L4_street",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35009
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 190
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 10643
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 10000
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 121
+  },
+  {
+   "step": 5,
+   "type": "capture",
+   "elapsedMs": 1422
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 296
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 2502
+  },
+  {
+   "step": 8,
+   "type": "capture",
+   "elapsedMs": 1149
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 9589
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 10015
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 552
+  },
+  {
+   "step": 12,
+   "type": "capture",
+   "elapsedMs": 1336
+  },
+  {
+   "step": 13,
+   "type": "luau",
+   "elapsedMs": 289
+  },
+  {
+   "step": 14,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 15,
+   "type": "capture",
+   "elapsedMs": 1700
+  },
+  {
+   "step": 16,
+   "type": "luau",
+   "elapsedMs": 11968
+  },
+  {
+   "step": 17,
+   "type": "wait",
+   "elapsedMs": 10002
+  },
+  {
+   "step": 18,
+   "type": "luau",
+   "elapsedMs": 385
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 1305
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 207
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 2508
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 1426
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 6045
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 10001
+  },
+  {
+   "step": 25,
+   "type": "luau",
+   "elapsedMs": 247
+  },
+  {
+   "step": 26,
+   "type": "capture",
+   "elapsedMs": 890
+  },
+  {
+   "step": 27,
+   "type": "luau",
+   "elapsedMs": 171
+  },
+  {
+   "step": 28,
+   "type": "wait",
+   "elapsedMs": 2512
+  },
+  {
+   "step": 29,
+   "type": "capture",
+   "elapsedMs": 946
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 2906
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 10004
+  },
+  {
+   "step": 32,
+   "type": "luau",
+   "elapsedMs": 102
+  },
+  {
+   "step": 33,
+   "type": "capture",
+   "elapsedMs": 868
+  },
+  {
+   "step": 34,
+   "type": "luau",
+   "elapsedMs": 179
+  },
+  {
+   "step": 35,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 36,
+   "type": "capture",
+   "elapsedMs": 906
+  },
+  {
+   "step": 37,
+   "type": "luau",
+   "elapsedMs": 6544
+  },
+  {
+   "step": 38,
+   "type": "wait",
+   "elapsedMs": 10011
+  },
+  {
+   "step": 39,
+   "type": "luau",
+   "elapsedMs": 303
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 999
+  },
+  {
+   "step": 41,
+   "type": "luau",
+   "elapsedMs": 191
+  },
+  {
+   "step": 42,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 43,
+   "type": "capture",
+   "elapsedMs": 1038
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 12,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 44,
+  "completedSteps": 44,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 12,
+  "capturedFrames": 12,
+  "abortedEarly": false
+ }
+}
