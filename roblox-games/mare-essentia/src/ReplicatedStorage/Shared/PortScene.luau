@@ -2546,7 +2546,29 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					if target and target:IsA("BasePart") then occupiedParts[target] = true end
 				end
 			end
-			local _, rigBounds = m:GetBoundingBox()
+			local rigBox, rigBounds = m:GetBoundingBox()
+			-- [가축 관절] 수입 모델의 본 로컬 X축은 좌우 다리마다 다를 수 있다.
+			-- 실제 머리 방향에서 몸의 좌우축을 얻고, 다리 분류도 몸 기준 좌표로 한다.
+			local rigRight, rigForward, facingKnown
+			local biped = species == "chicken" or species == "duck"
+			local legHinges = {}
+			do
+				local front, rear, heads, tails = Vector3.zero, Vector3.zero, 0, 0
+				for _, node in m:GetDescendants() do
+					local point = if node:IsA("Bone") then node.WorldPosition
+						elseif node:IsA("BasePart") then node.Position else nil
+					if point then
+						local name = node.Name:lower()
+						if name:find("head", 1, true) or name:find("muzzle", 1, true) or name:find("beak", 1, true) then
+							front += point; heads += 1
+						elseif name:find("tail", 1, true) then rear += point; tails += 1 end
+					end
+				end
+				local axis = if heads > 0 then (front / heads - (if tails > 0 then rear / tails else rigBox.Position)) * Vector3.new(1, 0, 1) else Vector3.zero
+				facingKnown = axis.Magnitude > math.max(0.08, rigBounds.Magnitude * 0.02)
+				rigForward = if facingKnown then axis.Unit else basePivot.LookVector
+				rigRight = rigForward:Cross(Vector3.yAxis).Unit
+			end
 			local bodyExtent = math.max(rigBounds.X, rigBounds.Y, rigBounds.Z)
 			for _, node in m:GetDescendants() do
 				-- 관절 자체 이름이 일반적일 때 실제 움직이는 사지의 파츠 이름까지 확인한다.
@@ -2558,7 +2580,7 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				end
 				local leg = name:find("leg", 1, true) or name:find("hoof", 1, true)
 					or name:find("paw", 1, true) or name:find("foot", 1, true)
-					or name:find("knee", 1, true) or name:find("hock", 1, true)
+					or name:find("knee", 1, true) or name:find("hock", 1, true) or name:find("toe", 1, true)
 				local head = name:find("head", 1, true) or name:find("neck", 1, true)
 				local tail = name:find("tail", 1, true)
 				local ear = name:find("ear", 1, true) and not name:find("heart", 1, true)
@@ -2571,10 +2593,35 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 						or name:sub(1, 2) == "l_"
 					local rear = name:find("hind", 1, true) or name:find("rear", 1, true)
 						or name:find("back", 1, true)
+					local targetPart = if node:IsA("Motor6D") then node.Part1
+						elseif node:IsA("AnimationConstraint") then node.Attachment1 and node.Attachment1.Parent else nil
+					local legFrame, legChild
+					if kind == "leg" then
+						legFrame = if node:IsA("Bone") then node.WorldCFrame
+							elseif node:IsA("Motor6D") and node.Part0 then node.Part0.CFrame * node.C0
+							elseif node:IsA("AnimationConstraint") and node.Attachment0 then node.Attachment0.WorldCFrame
+							elseif node:IsA("BasePart") then node.CFrame else nil
+						if legFrame and facingKnown then
+							local rel = (if targetPart and targetPart:IsA("BasePart") then targetPart.Position else legFrame.Position) - rigBox.Position
+							left, rear = rel:Dot(rigRight) < 0, rel:Dot(rigForward) < 0
+						end
+						if biped then rear = false end
+						-- 하위 본에는 상위 본의 회전이 이미 전달된다. 발목에 보폭을 다시 더하지 않는다.
+						local ancestor = if node:IsA("Bone") then node.Parent
+							elseif node:IsA("Motor6D") then node.Part0
+							elseif node:IsA("AnimationConstraint") and node.Attachment0 then node.Attachment0.Parent else nil
+						while ancestor and ancestor ~= m do
+							local n = ancestor.Name:lower()
+							if n:find("leg", 1, true) or n:find("hoof", 1, true) or n:find("foot", 1, true)
+								or n:find("knee", 1, true) or n:find("hock", 1, true) then legChild = true; break end
+							if not ancestor:IsA("Bone") then break end
+							ancestor = ancestor.Parent
+						end
+					end
 					local side = if left then 1 else -1
 					-- [사족 보행] 소·말·양은 네 발 순서대로 딛고, 개·고양이는 대각선 보폭을 사용한다.
 					local fourBeat = species == "cow" or species == "horse" or species == "donkey"
-						or species == "sheep" or species == "llama" or species == "elephant"
+						or species == "sheep" or species == "llama" or species == "elephant" or species == "pig"
 					local phaseOffset = if kind ~= "leg" then 0 elseif fourBeat then
 						(if rear then (if left then math.pi * 1.5 else math.pi * 0.5)
 						else (if left then 0 else math.pi))
@@ -2582,12 +2629,11 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					-- [중복 관절 제거] 한 다리의 무릎·발목은 서로 다른 보행 다리로 집계하지 않는다.
 					local legGroup = if kind == "leg" then (if rear then "rear" else "front")
 						.. (if left then "_left" else "_right") else nil
-					local targetPart = if node:IsA("Motor6D") then node.Part1
-						elseif node:IsA("AnimationConstraint") then node.Attachment1 and node.Attachment1.Parent else nil
 					if node:IsA("Bone") and #animalJoints < 14 then
 						-- 스킨 메시는 원본 Bone.Transform으로만 변형한다.
 						table.insert(animalJoints, { joint = node, base = node.Transform,
-							kind = kind, side = side, phase = phaseOffset, group = legGroup })
+							kind = kind, side = side, phase = phaseOffset, group = legGroup,
+							legAxis = legFrame and legFrame:VectorToObjectSpace(rigRight), legChild = legChild })
 					elseif targetPart and targetPart:IsA("BasePart") then
 						if targetPart.Anchored then
 							-- [외부 FBX 실제 표시] 가져온 동물은 모든 파츠가 고정된다.
@@ -2602,7 +2648,8 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 							end
 						elseif #animalJoints < 14 then
 							table.insert(animalJoints, { joint = node, base = node.Transform,
-								kind = kind, side = side, phase = phaseOffset, group = legGroup })
+								kind = kind, side = side, phase = phaseOffset, group = legGroup,
+								legAxis = legFrame and legFrame:VectorToObjectSpace(rigRight), legChild = legChild })
 						end
 					elseif node:IsA("BasePart") and not occupiedParts[node] and not drivenParts[node]
 						and #animalParts < 12
@@ -2612,6 +2659,25 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 							kind = kind, side = side, phase = phaseOffset, group = legGroup,
 							hinge = math.min(node.Size.Y * 0.34, 0.65) })
 						drivenParts[node] = true
+					end
+				end
+			end
+			-- [가축 분리 메시] 발굽·정강이가 따로 수입돼도 다리 전체가 하나의 상단 회전점을 공유한다.
+			do
+				for _, limb in animalParts do
+					if limb.group then
+						local part = limb.part
+						local cf, half = part.CFrame, part.Size * 0.5
+						local top = cf.Position + Vector3.yAxis * (math.abs(cf.RightVector.Y) * half.X
+							+ math.abs(cf.UpVector.Y) * half.Y + math.abs(cf.LookVector.Y) * half.Z)
+						local current = legHinges[limb.group]
+						if not current or top.Y > current.Y then legHinges[limb.group] = top end
+					end
+				end
+				for _, limb in animalParts do
+					if limb.group then
+						limb.legHinge = basePivot:PointToObjectSpace(legHinges[limb.group])
+						limb.legAxis = basePivot:VectorToObjectSpace(rigRight)
 					end
 				end
 			end
@@ -2635,7 +2701,10 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 					legCount += 1
 				end
 			end
-			local canWalk = legCount >= 2
+			local requiredLegs = if biped then 2 else 4
+			local canWalk = legCount == requiredLegs
+			m:SetAttribute("AnimalLegGroups", legCount)
+			m:SetAttribute("AnimalRequiredLegGroups", requiredLegs)
 			m:SetAttribute("AnimalMotionRig", if canWalk and #animalJoints > 0 then "JOINTED_WALK"
 				elseif canWalk then "SEGMENTED_WALK"
 				elseif #animalJoints + #animalParts > 0 then "IDLE_ONLY" else "STATIC_UNRIGGED")
@@ -8127,6 +8196,8 @@ function PortScene.build(info, onFacility)
 						local wag = if action == "wag" or action == "walk" then math.sin(t * (w.gait or 7)) * 0.30
 							else math.sin(t * 1.4) * 0.08
 						local blend = 1 - math.exp(-11 * dt)
+						local legSwingScale = if w.animalType == "sheep" or w.animalType == "elephant" then 0.65
+							elseif w.animalType == "chicken" or w.animalType == "duck" then 0.80 else 0.75
 						for _, limb in w.animalJoints do
 							local pitch, yaw, roll, footLift = 0, 0, 0, 0
 							if limb.kind == "leg" then
@@ -8152,8 +8223,14 @@ function PortScene.build(info, onFacility)
 							elseif limb.kind == "wing" then roll = if action == "preen" or action == "shake"
 							then math.sin(t * 5) * 0.15 * limb.side else 0
 							end
-							limb.pose = (limb.pose or CFrame.identity):Lerp(
-								CFrame.new(0, footLift, 0) * CFrame.Angles(pitch, yaw, roll), blend)
+							local targetPose
+							if limb.legAxis then
+								-- 하위 관절은 원본 상대 자세 유지, 상위 본만 몸 좌우축으로 작은 보폭.
+								targetPose = CFrame.fromAxisAngle(limb.legAxis, if limb.legChild then 0 else pitch * legSwingScale)
+							else
+								targetPose = CFrame.new(0, footLift, 0) * CFrame.Angles(pitch, yaw, roll)
+							end
+							limb.pose = (limb.pose or CFrame.identity):Lerp(targetPose, blend)
 							limb.joint.Transform = limb.base * limb.pose
 						end
 						for _, limb in w.animalParts do
@@ -8181,11 +8258,16 @@ function PortScene.build(info, onFacility)
 							elseif limb.kind == "wing" then roll = if action == "preen" or action == "shake"
 							then math.sin(t * 5) * 0.15 * limb.side else 0
 							end
-							limb.pose = (limb.pose or CFrame.identity):Lerp(
-								CFrame.new(0, footLift, 0) * CFrame.Angles(pitch, yaw, roll), blend)
-							-- 별도 메시의 윗부분을 축으로 돌려 발·고개·꼬리가 몸체에서 뜨지 않게 한다.
-							limb.part.CFrame = pivot * limb.base * CFrame.new(0, limb.hinge, 0)
-								* limb.pose * CFrame.new(0, -limb.hinge, 0)
+							if limb.legHinge then
+								limb.pose = (limb.pose or CFrame.identity):Lerp(CFrame.fromAxisAngle(limb.legAxis, pitch * legSwingScale), blend)
+								limb.part.CFrame = pivot * CFrame.new(limb.legHinge) * limb.pose * CFrame.new(-limb.legHinge) * limb.base
+							else
+								limb.pose = (limb.pose or CFrame.identity):Lerp(
+									CFrame.new(0, footLift, 0) * CFrame.Angles(pitch, yaw, roll), blend)
+								-- 별도 메시의 윗부분을 축으로 돌려 발·고개·꼬리가 몸체에서 뜨지 않게 한다.
+								limb.part.CFrame = pivot * limb.base * CFrame.new(0, limb.hinge, 0)
+									* limb.pose * CFrame.new(0, -limb.hinge, 0)
+							end
 						end
 					end
 				end

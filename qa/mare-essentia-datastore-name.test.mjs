@@ -2205,6 +2205,17 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  // [실제 사지 보행] 한 다리의 무릎·발목을 별개 다리로 세지 않는다.
  assert.match(port,/local legGroups, legCount = \{\}, 0/);
  assert.match(port,/if limb\.group and not legGroups\[limb\.group\] then/);
+ // 전체 가축의 좌우 본 축, 다리 수, 분리된 정강이/발굽 공통 회전점 회귀.
+ assert.match(port,/rigRight = rigForward:Cross\(Vector3.yAxis\).Unit/);
+ assert.match(port,/if limb.legChild then 0 else pitch \* legSwingScale/);
+ assert.match(port,/local biped = species == "chicken" or species == "duck"/);
+ assert.match(port,/local requiredLegs = if biped then 2 else 4/);
+ assert.match(field,/local requiredLegs = if biped then 2 else 4/);
+ assert.match(port,/local canWalk = legCount == requiredLegs/);
+ assert.match(field,/local canWalk = facingKnown and legCount == requiredLegs/);
+ assert.match(port,/pivot \* CFrame.new\(limb.legHinge\) \* limb.pose \* CFrame.new\(-limb.legHinge\) \* limb.base/);
+ assert.match(field,/pitch = if limb.legChild then 0 else math.sin\(a.step \+ limb.phase\)/);
+ assert.match(field,/pivot \* CFrame.new\(limb.legHinge\) \* CFrame.fromAxisAngle\(limb.legAxis, pitch\)/);
  assert.match(field,/local occupiedParts, drivenParts, legGroups = \{\}, \{\}, \{\}/);
  assert.match(field,/node:IsA\("Motor6D"\)/);
  assert.match(field,/node:IsA\("AnimationConstraint"\)/);
@@ -4586,7 +4597,8 @@ test('마레 지상 동물은 실제 전방과 종별 보폭으로 움직이며 
   const wild=field.slice(field.indexOf('[자연 관찰]'),field.indexOf('-- 미니맵:',field.indexOf('[자연 관찰]')));
   for(const name of ['horse','cow','donkey','llama','sheep','pig','elephant','dog-pug','cat','chicken']) assert.ok(wild.includes(name));
   assert.ok(wild.includes('ANATOMICAL_FORWARD')&&wild.includes('UNVERIFIED_STATIC'));
-  assert.ok(wild.includes('facingKnown and legCount >='));
+  assert.match(wild,/local requiredLegs = if biped then 2 else 4/);
+  assert.match(wild,/local canWalk = facingKnown and legCount == requiredLegs/);
   assert.ok(wild.includes('local delta = target - a.travel'));
   assert.ok(wild.includes('math.abs(remainingTurn) < 0.12'));
   assert.ok(wild.includes('a.forward * proposed'));
