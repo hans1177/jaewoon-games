@@ -39,5 +39,5 @@
 
 ## 4. 지시서 찾기 (mare-essentia)
 
-`roblox-games/mare-essentia/docs/READ_FIRST.md` 한 장에 모든 지시서 표가 있다.
+**`roblox-games/mare-essentia/docs/BRIEF_MAP.md` = 지시서 지도**(만드는 것별 정본 1개·드롭박스·파일 이름). 규칙·금지는 `READ_FIRST.md`.
 자주 찾는 것: 항구·주민 `docs/PORT_VILLAGE_PROMPTS.md` · 원화·자산 `docs/ASSET_MANAGEMENT.md` · 메뉴 UI `docs/MENU_UI_BRIEF.md` · 백과 `docs/ENCYCLOPEDIA_BRIEF.md` · 초상·비주얼 `docs/VISUAL_REMAKE_BRIEF.md` · 해전 `docs/NAVAL_QUEST_EXPANSION_BRIEF.md` · 퀘스트 `docs/STORY_CAUSALITY.md` · 드롭박스 올리는 곳 `READ_FIRST.md` 3-2절.

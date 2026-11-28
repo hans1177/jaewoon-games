@@ -1,5 +1,7 @@
 # 지상 전투 차별화·특산품 잠금 제작 지시서 (2026-11-28 오너 지시, 모두 필독)
 
+> **두목(보스) 단계·스킬·모션·체력은 `BOSS_BRIEF.md`.**
+
 > 드롭박스: 원화 `/Vibe2Transfer/inbox/CardArt/<파일>.png`, 3D·움직임 `/Vibe2Transfer/inbox/People/<파일>.glb`.
 > **256색 금지**. 이름 그대로 올리면 자동 등록. 관절·움직임 규칙은 `docs/discoveries/ANIMAL_RIG_MOTION.md`, 사람은 R15 15관절.
 

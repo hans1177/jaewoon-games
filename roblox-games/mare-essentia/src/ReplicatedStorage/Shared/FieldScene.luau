@@ -7275,7 +7275,8 @@ function FieldScene.start(opts)
 		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
 			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
-			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1), mult, shieldBlocked == true, stagger)
+			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1)
+			* (if e.boss and os.clock() < (e.armorUntil or 0) then 0.6 else 1), mult, shieldBlocked == true, stagger)
 		if counterHit then
 			showCombo("반격 ×2!", true, Color3.fromRGB(122, 240, 246))
 		elseif weakLabel then
@@ -9018,6 +9019,114 @@ function FieldScene.start(opts)
 			end
 		end
 	end
+	-- [두목 스킬 · 2026-11-28 오너: "보스답게 페이즈·스킬·모션·피통·액션 다양하게, 쉽게 안 죽게"]
+	-- 체력 단계 1(100~70%)·2(70~40%)·3(40~15%)·4(15% 아래). 단계가 오를수록 쓸 수 있는 스킬이 늘고 간격이 짧아진다.
+	-- 모든 스킬은 바닥 원·이름·붉은 빛으로 예고한 뒤 발동 → 피하면(회피 무적) 안 맞는다. 일반 공격 중엔 쓰지 않는다.
+	local BOSS_SKILLS = {
+		{ id = "wave", phase = 1, name = "대지 충격파", warn = 1.1, cd = 9 },
+		{ id = "charge", phase = 2, name = "돌진", warn = 0.85, cd = 8 },
+		{ id = "roar", phase = 3, name = "포효", warn = 0.7, cd = 11 },
+		{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.5, cd = 14 },
+	}
+	local function bossPhaseOf(e)
+		local r = e.ac.hp / math.max(1, e.maxHp)
+		return if r < 0.15 then 4 elseif r < 0.4 then 3 elseif r < 0.7 then 2 else 1
+	end
+	local function bossFeet(e)
+		return e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0)
+	end
+	local function bossSkillTick(e, now: number, hrp: BasePart?, dist: number)
+		if not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
+		local phase = bossPhaseOf(e)
+		if phase >= 4 and not e.bossPhase4 then
+			e.bossPhase4 = true
+			e.armorUntil = now + 6
+			e.model:SetAttribute("FieldBossPhase", 4)
+			showCombo("두목 최후 발악! · 6초간 단단해짐 — 피하며 버텨라", true, Color3.fromRGB(255, 60, 60))
+			screenFlash(Color3.fromRGB(255, 50, 40), 0.8)
+			sfx("sfx_event_war", 0.8, 0.7)
+		end
+		local cast = e.bossCast
+		if cast then
+			if now < cast.at then return end
+			e.bossCast = nil
+			local dmg = e.ac.def.dmg
+			local flatTo = (hrp.Position - cast.origin) * Vector3.new(1, 0, 1)
+			if cast.id == "wave" then
+				shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 90, 60), 0.45)
+				shakeUntil, shakeAmp = now + 0.35, 1.2
+				sfx("sfx_cannon", 0.5, 0.55)
+				if flatTo.Magnitude <= cast.radius then hurtPlayerBy(dmg * 0.9) end
+			elseif cast.id == "roar" then
+				shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 200, 90), 0.4)
+				sfx("sfx_horn", 0.7, 0.6)
+				if flatTo.Magnitude <= cast.radius and not AC.isInvulnerable(pl, now) then
+					hurtPlayerBy(dmg * 0.4)
+					eliteSlowUntil = math.max(eliteSlowUntil, now + 2.5)
+					say("포효에 몸이 굳었다! 2.5초 둔화")
+				end
+			elseif cast.id == "charge" then
+				local dir = cast.dir
+				local hitDone = false
+				local start = e.model:GetPivot()
+				local t0 = os.clock()
+				sfx("sfx_event_danger", 0.6, 0.8)
+				task.spawn(function()
+					while e.root.Parent and not e.ac.dead and os.clock() - t0 < 0.45 do
+						local k = (os.clock() - t0) / 0.45
+						local pos = start.Position + dir * cast.length * k
+						e.model:PivotTo(CFrame.lookAt(pos, pos + dir))
+						local _, h = char3()
+						if not hitDone and h and ((h.Position - e.root.Position) * Vector3.new(1, 0, 1)).Magnitude < 5 then
+							hitDone = true
+							hurtPlayerBy(dmg * 1.2)
+						end
+						RunService.Heartbeat:Wait()
+					end
+				end)
+			elseif cast.id == "frenzy" then
+				local base = e.ac.def
+				local fast = table.clone(base)
+				fast.windup *= 0.55
+				fast.recover *= 0.6
+				e.ac.def = fast
+				say("두목 광폭 연타! 5초")
+				task.delay(5, function()
+					if e.ac and not e.ac.dead and e.ac.def == fast then e.ac.def = base end
+				end)
+			end
+			return
+		end
+		if e.ac.state ~= "chase" and e.ac.state ~= "idle" then return end
+		if dist > 28 or now < (e.nextBossSkillAt or 2) then return end
+		e.skillReady = e.skillReady or {}
+		local options = {}
+		for _, sk in BOSS_SKILLS do
+			if sk.phase <= phase and now >= (e.skillReady[sk.id] or 0) then table.insert(options, sk) end
+		end
+		if #options == 0 then return end
+		local sk = options[math.random(1, #options)]
+		e.skillReady[sk.id] = now + sk.cd
+		e.nextBossSkillAt = now + (if phase >= 4 then 3.5 elseif phase == 3 then 5 elseif phase == 2 then 6.5 else 8)
+		local origin = bossFeet(e)
+		local c = { id = sk.id, at = now + sk.warn, origin = origin }
+		if sk.id == "wave" then
+			c.radius = 9 * STUD
+			groundRing(origin, c.radius, sk.warn)
+		elseif sk.id == "roar" then
+			c.radius = 6 * STUD
+			groundRing(origin, c.radius, sk.warn)
+		elseif sk.id == "charge" then
+			local to = (hrp.Position - e.root.Position) * Vector3.new(1, 0, 1)
+			c.dir = if to.Magnitude > 0.1 then to.Unit else e.root.CFrame.LookVector
+			c.length = math.clamp(to.Magnitude + 6, 12, 34)
+			groundRing(e.root.Position + c.dir * c.length - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), 4, sk.warn)
+		end
+		e.bossCast = c
+		e.model:SetAttribute("FieldBossSkill", sk.id)
+		showCombo("⚠ " .. sk.name .. "!", true, Color3.fromRGB(255, 120, 70))
+		burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
+	end
 	local function boulderEvent()
 		local _, hrp = char3()
 		if not hrp then
@@ -9909,6 +10018,7 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			if e.boss then bossSkillTick(e, now, hrp, dist) end
 			-- [모바일 원거리 그림자] 일반 적의 실제 원본 그림자만 거리별로 관리한다.
 			-- 100/80스터드 히스테리시스로 경계 반복 갱신 방지. 근접·정예·두목·공격 모션은 보존.
 			if visualMobile and not e.elite and not e.ac.dead then
