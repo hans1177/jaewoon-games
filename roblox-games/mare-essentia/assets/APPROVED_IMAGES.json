@@ -1,6 +1,7 @@
 {
   "_안내": "새 이미지는 사람이 눈으로 확인한 뒤 여기에 \"종류/이름\": \"파일 sha256\" 으로 추가해야만 업로드된다. 자동 선별 이미지는 절대 자동 업로드하지 않는다. 사람 사진은 인물 확인·라이선스 확인 필수.",
   "approved": {
+    "CardArt/me_28": "3479bec4d3bdcd572800569c9932afb234eeba805e2c8993371fe80e9b8880ee",
     "Materials/london-dry-mud-field-001-source": "fa527aa4eb6151c7dab4f0a7b31722d0aa180f728af694594439d106e76f6c6d",
     "CardArt/history_open": "47a89857b659ce21864f7f8bbead3b4447611a6bb9c980c045df7c9ab84d3d0f",
     "CardArt/history_map": "495625518b407d0e05381e252a2768c7c37146547e86ba2561e07e91fb59e381",
@@ -630,6 +631,21 @@
   },
   "_vibe검수": "2026-11-08 바이브 시각 검수: 메뉴·교역품은 평면 일러스트, 초상 23장은 연필 스케치 변환본(옷 입은 역사/가상 인물). 술·마약·노출·유혈·현대 실존 인물 없음. 맥주(Goods/beer)와 heroes.jpg는 제외. | 2026-11-11 오너 승인(14종 자체 제작): 바이브가 코드로 그린 평면 벡터 교역품 14종(깃털·정향·육두구·계피·칠기·장뇌·인삼·바닐라·코치닐·물개 가죽·구아노·초석·용연향·아라비아 고무). 술·마약·노출·유혈·실존 인물 없음. 소스는 assets/goods/src/. | 2026-11-11 술 그림 대체: 맥주=보리 이삭+홉, 청주=벼 이삭(술병·술잔·음주 없음). Roblox 커뮤니티 기준이 주류 묘사를 제한하므로 술 모양 그림은 쓰지 않는다. | 2026-11-12 오너 요청으로 Claude가 눈으로 확인: 공개 도메인 초상 16장(옛 판화·유화, 노출·술·담배·유혈 없음, 출처 URL 확인). 얼굴이 잘린 에라스뮈스·루터·로크·루벤스와 중복인 person_galileo/harvey, 게임에 없는 인물 5장은 assets/inbox-hold/ 에 보류. | 2026-11-12 오너 승인(1번): 오너 원화 도감 그림(event_*, world_* 시트 중 world_21 제외)과 교역품 16종(beer.png 제외). 보류: world_21(평화의 담뱃대=담배 그림 칸 교체 필요). 위키 수집 사진류는 승인하지 않음. | 2026-11-12 사용자 UI 재질 개선 요청: 직접 생성한 불규칙 양피지 섬유·수채 얼룩 및 누빈 가죽 모공·균열 256픽셀 반복 질감 2장 시각 검수 완료. 라이선스=PROJECT_ORIGINAL_ART. | 2026-11-17 소유자 직접 지정 2.5D 교역품 원화 26종: 각각 단일 512×512 PNG·실제 알파 0~255·네 모서리 알파 0·SHA-256 검증. 기존 가격·수량·교역품 ID·세이브키 불변. 올리브는 게임 교역품 자동 추가 없이 이미지 자산에 한정한다. | 2026-11-18 해상전투 원형 HUD 3종(배=함종 특화 스킬, 대포=포 사격, 망원경=가속) 사용자 선택 생성 원화: 개별 512px 투명 PNG, 독립 SHA-256/안전성 검수, 이미지 등록 전 기존 조작·저장·전투 수치 보존. | 2026-11-19 GPT 시각 검수: 오너가 지시한 동아시아 해전 카드 12종(ea_03/04/05/08/09/10/12~17)의 기존 6×4=24프레임 JPG 시트를 각각 실제 화면으로 확인. 카드 소재별 개별 시트, 노출·유혈·현대 실존 인물 없음. PROJECT_ORIGINAL_ART의 기존 정지 원화를 대체하지 않는 애니메이션 보조 자산만 원본 SHA-256을 대조해 승인. 게임 실제 실행·움직임 품질은 아직 미검증. | 2026-11-19 워크 제작 교역품 투명 PNG 66종: 512×512 PNG 66장·RGBA 실제 투명도 0~255·원본 SHA-256/커밋 Git blob 검증. 11/18 저녁~11/19 ChatGPT Library Work 원화만 선택. 주류 시각 이미지 제외, 기존 교역품·가공품·지역 특산품 ID/가격/저장값 보존. 등록 자산 ID와 실제 Roblox Studio 표시 여부는 정식 등록/검증 후 확정. | 2026-11-19 카드배틀 UI 사용자가 만든 원화 18종: 6대륙 투명 카드 프레임, 양피지, 전투 버튼 2종, 양측 점수판, 전술 아이콘 4종, 승·무·패 결과 엠블럼 3종. 사용자 제공 ChatGPT Library 원본에서 자산별 투명 PNG를 잘라 최적화했고 원본·안전성을 확인. 로블록스 업로드 전 SHA-256 승인, 전투 규칙·저장 구조 불변. 실제 로블록스 모바일 동작은 게시 후 별도 검증.",
   "modelOriginals": {
+    "CardArt/me_28": {
+      "sourceType": "IMAGE_GENERATION_MODEL",
+      "sourceFile": "assets/cardart/src/me_28-original.png",
+      "sourceSha256": "3479bec4d3bdcd572800569c9932afb234eeba805e2c8993371fe80e9b8880ee",
+      "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+      "reviewedAt": "2026-11-28",
+      "license": "PROJECT_ORIGINAL_ART",
+      "subjectMatch": true,
+      "historicalContext": true,
+      "houseStyle": true,
+      "singleFinishedScene": true,
+      "noPartsOrSprites": true,
+      "robloxSafety": true,
+      "commercialRights": true
+    },
     "CardArt/eu_33": {
       "sourceType": "IMAGE_GENERATION_MODEL",
       "sourceFile": "assets/cardart/src/eu_33-original.png",
