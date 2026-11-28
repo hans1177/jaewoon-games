@@ -923,7 +923,13 @@ jobs:
           const deep = /\/mare-qa-click\.json$/.test(scriptName.replace(/\\/g, '/'));
           const portBatch = Number(process.env.STUDIO_PORT_BATCH || 0);
           const kind = portBatch ? (portBatch <= 19 ? 'port-survey' : portBatch <= 79 ? 'field-survey' : portBatch <= 106 ? 'naval-survey' : portBatch <= 146 ? 'feature-survey' : portBatch <= 327 ? 'port-variant-survey' : portBatch <= 475 ? 'field-climate-survey' : portBatch <= 502 ? 'voyage-weather-survey' : 'story-survey') : deep ? 'deep' : (/autopilot/i.test(scriptName) ? 'autopilot' : 'studio');
-          const previous = history.find(row => row.kind === kind && (!portBatch || row.portBatch === portBatch));
+          // [동일 장면] 촬영 종류만 같다는 이유로 서로 다른 검사 스크립트의 해시를 비교하지 않는다.
+          const scriptPath = scriptName.replace(/\\/g, '/');
+          const scriptSha256 = scriptPath && fs.existsSync(scriptFile) && fs.statSync(scriptFile).isFile()
+            ? crypto.createHash('sha256').update(fs.readFileSync(scriptFile)).digest('hex') : '';
+          const previous = scriptSha256 ? history.find(row => row.kind === kind &&
+            (row.portBatch || 0) === portBatch && row.scriptPath === scriptPath &&
+            row.scriptSha256 === scriptSha256) : null;
           const report = JSON.parse(fs.readFileSync(path.join(out, 'report.json'), 'utf8').replace(/^\uFEFF/, ''));
           const summary = report.summary || {};
           const errors = Array.isArray(report.errors) ? report.errors : ['STUDIO_ERRORS_INVALID'];
@@ -964,10 +970,13 @@ jobs:
 
           const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
           const previousDir = previous && /^runs\/[0-9]+$/.test(previous.path || '')
-            ? path.join(dst, previous.path) : dst;
-          const previousChecksFile = path.join(previousDir, 'checks.json');
-          const previousChecks = fs.existsSync(previousChecksFile) ? JSON.parse(fs.readFileSync(previousChecksFile, 'utf8')) : {};
-          const previousHashes = new Map((previousChecks.screenshotComparison || []).map(row => [row.name, row.sha256]));
+            ? path.join(dst, previous.path) : null;
+          const previousChecksFile = previousDir ? path.join(previousDir, 'checks.json') : '';
+          const previousChecks = previousChecksFile && fs.existsSync(previousChecksFile)
+            ? JSON.parse(fs.readFileSync(previousChecksFile, 'utf8')) : {};
+          const baselineVerified = Boolean(previous && previousChecks.runId === previous.runId &&
+            previousChecks.scriptPath === scriptPath && previousChecks.scriptSha256 === scriptSha256);
+          const previousHashes = new Map((baselineVerified ? previousChecks.screenshotComparison || [] : []).map(row => [row.name, row.sha256]));
           const comparisons = frames.map(name => {
             const currentHash = digest(path.join(out, name));
             const baseline = previousHashes.get(name) || '';
@@ -997,14 +1006,14 @@ jobs:
             result = 'UNVERIFIED';
           const captureArtifact = {name: 'studio-frames-' + runId, retentionDays: 1, runId};
           const link = 'https://github.com/' + repo + '/actions/runs/' + runId;
-          const checks = {runId, kind, portBatch: portBatch || null, sourceRevision: report.sourceRevision || '', result, captureArtifact,
+          const checks = {runId, kind, portBatch: portBatch || null, scriptPath, scriptSha256, sourceRevision: report.sourceRevision || '', result, captureArtifact,
             failureStage: qaStage || null, failureSignature: qaSignature || null,
             summary, errors, audits, steps: rows,
             screenshotComparison: comparisons.map(row => ({...row, url: link})),
             screenshotFrameAudit: {checked: frameIntegrity.length, invalid: badFrames.length,
               images: frameIntegrity, meaning: 'Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review'},
             comparisonMeaning: 'SHA256 byte equality only; not visual quality evidence',
-            previousRunId: previous?.runId || null};
+            previousRunId: baselineVerified ? previous.runId : null};
           const folder = path.join(dst, 'runs', runId);
           fs.mkdirSync(folder, {recursive: true});
           fs.cpSync(out, folder, {recursive: true, force: true, filter: file => !imageExt.test(file)});
@@ -1030,7 +1039,7 @@ jobs:
             }
           }
           fs.writeFileSync(path.join(out, 'checks.json'), JSON.stringify(checks, null, 2) + '\n');
-          const record = {runId, kind, portBatch: portBatch || null, at: new Date().toISOString(), sourceRevision: checks.sourceRevision, captureArtifact,
+          const record = {runId, kind, portBatch: portBatch || null, scriptPath, scriptSha256, at: new Date().toISOString(), sourceRevision: checks.sourceRevision, captureArtifact,
             result, frames: frames.length, changedFrames: comparisons.filter(row => row.comparison === 'CHANGED_BYTES').length,
             summary, path: 'runs/' + runId};
           const merged = [record, ...history.filter(row => row.runId !== runId)];
