@@ -1,16 +1,16 @@
 # Studio QA screenshot history
 
-Latest: [screenshots](https://github.com/hans1177/jaewoon-games/actions/runs/46193429342) | [checklist](checks.json) | [history](index.json)
+Latest: [screenshots](https://github.com/hans1177/jaewoon-games/actions/runs/46194402771) | [checklist](checks.json) | [history](index.json)
 Screenshots: 1 day Actions retention. Metadata: 7 days, full 4 runs, others 6 runs, world survey 525 batches
 
 | Run | Type | Status | Frames | Changed files |
 |---|---|---|---:|---:|
+| [46194402771](runs/46194402771/) | studio | PASS | 2 | 0 |
 | [46193429342](runs/46193429342/) | studio | FAIL | 0 | 0 |
 | [46193420884](runs/46193420884/) | studio | FAIL | 48 | 0 |
 | [46191687460](runs/46191687460/) | studio | FAIL | 0 | 0 |
 | [46191483699](runs/46191483699/) | autopilot | PASS | 1 | 0 |
 | [46190462670](runs/46190462670/) | studio | PASS | 2 | 0 |
-| [46190409546](runs/46190409546/) | studio | PASS | 48 | 24 |
 | [46184754288](runs/46184754288/) | deep | FAIL | 9 | 9 |
 | [46182056060](runs/46182056060/) | deep | FAIL | 9 | 9 |
 | [46180656230](runs/46180656230/) | deep | FAIL | 9 | 9 |
