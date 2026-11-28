@@ -7571,224 +7571,265 @@ function RENDERERS.route()
 		if r.id == H.routeDetailId then selected = r; break end
 	end
 	if not selected then H.routeDetailId = nil end
-	if selected then
-		add(function()
-			return mkButton(content, "항로 목록", COLORS.leather, UDim2.new(1, -6, 0, 44), function() H.routeDetailId = nil; render() end, true)
-		end)
-		-- [항해 상세 해도] 세계지도 화면과 같은 승인 원화 및 정규 바닷길 좌표를 사용한다.
-		if not selected.locked and PortData.Ports[view.player.portId] and PortData.Ports[selected.id] then
-			add(function()
-				local path = SeaRoutes.path(view.player.portId, selected.id, PortData.Ports)
-				local worldImg = AssetIds["CardArt/event_chart_world"]
-				local box = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 210), COLORS.paper)
-				box.Name = "RouteMiniChart"
-				local caption = mkLabel(box, view.player.portName .. " → " .. selected.name, 16, INK, true)
-				caption.Size = UDim2.new(1, -16, 0, 28)
-				caption.Position = UDim2.fromOffset(8, 4)
-				caption.AutomaticSize = Enum.AutomaticSize.None
-				caption.TextTruncate = Enum.TextTruncate.AtEnd
-				local map = Instance.new("ImageLabel")
-				map.Name = "RouteMiniChartMap"
-				map.Position = UDim2.fromOffset(8, 34)
-				map.Size = UDim2.new(1, -16, 1, -62)
-				map.BackgroundColor3 = Color3.fromRGB(38, 82, 120)
-				map.BorderSizePixel = 0
-				map.Image = if worldImg then "rbxassetid://" .. tostring(worldImg) else ""
-				map.ScaleType = Enum.ScaleType.Stretch
-				map.ClipsDescendants = true
-				map.Parent = box
-				local function point(lat, lon)
-					local x = if worldImg then (31 + (lon + 180) / 360 * 1522) / 1587 else (lon + 180) / 360
-					local y = if worldImg then (98 + (80.6 - lat) / 145.4 * 822) / 991 else (90 - lat) / 180
-					return UDim2.fromScale(math.clamp(x, 0.02, 0.98), math.clamp(y, 0.02, 0.98))
-				end
-				for i = 1, #path - 1 do
-					local a, b = path[i], path[i + 1]
-					local dl = (b[2] - a[2] + 180) % 360 - 180
-					local count = math.clamp(math.ceil(math.max(math.abs(dl), math.abs(b[1] - a[1])) / 2), 1, 24)
-					for k = 0, count - 1 do
-						local t = k / count
-						local lon = (a[2] + dl * t + 180) % 360 - 180
-						local dot = Instance.new("Frame")
-						dot.Name = "RouteWaypoint"
-						dot.AnchorPoint = Vector2.new(0.5, 0.5)
-						dot.Position = point(a[1] + (b[1] - a[1]) * t, lon)
-						dot.Size = UDim2.fromOffset(3, 3)
-						dot.BackgroundColor3 = Color3.fromRGB(255, 224, 118)
-						dot.BorderSizePixel = 0
-						dot.Parent = map
-					end
-				end
-				for _, index in { 1, #path } do
-					local p = path[index]
-					local mark = Instance.new("Frame")
-					mark.Name = if index == 1 then "RouteOrigin" else "RouteDestination"
-					mark.AnchorPoint = Vector2.new(0.5, 0.5)
-					mark.Position = point(p[1], p[2])
-					mark.Size = UDim2.fromOffset(10, 10)
-					mark.BackgroundColor3 = if index == 1 then Color3.fromRGB(112, 207, 146) else Color3.fromRGB(249, 191, 61)
-					mark.BorderSizePixel = 0
-					mark.ZIndex = 3
-					mark.Parent = map
-					corner(mark, 5)
-				end
-				local legend = mkLabel(box, "초록 출발 · 금색 목적지" .. (if worldImg then "" else " · 좌표 개략도"), 13, INK_SOFT, false)
-				legend.Position = UDim2.new(0, 8, 1, -24)
-				legend.Size = UDim2.new(1, -16, 0, 20)
-				legend.AutomaticSize = Enum.AutomaticSize.None
-				return box
-			end)
-		end
-	elseif view.weather then
-		add(function()
-			local fc = ""
-			if view.forecast and #view.forecast > 0 then
-				local parts = {}
-				for _, f in view.forecast do
-					table.insert(parts, string.format("%d일 뒤 %s", f.inDays, f.name))
-				end
-				fc = "\n항해사의 예보: " .. table.concat(parts, " · ")
-			end
-			local weatherAlert = if view.weather.id == "storm" then "폭풍 · 지연·사고 주의"
-				elseif view.weather.id == "rain" then "비 · 안개·암초 주의"
-				elseif view.weather.id == "head" or view.weather.id == "calm" then "역풍·무풍 · 지연 주의"
-				else "기상 경보 없음"
-			return mkRow(content, "날씨 · " .. view.weather.name, string.format("%s · 바람 x%.2f%s", weatherAlert, view.weather.wind, "\n" .. (view.weather.hint or "") .. fc), {
-				{ text = "하루 대기", color = COLORS.grey, onClick = function() call("WaitDay", {}) end },
-			}, 78)
-		end)
-	end
-	-- 정렬: 가까운 순(기본) · 의뢰 목적지 · 조선소 · 이름 · 해역
 	H.routeSort = H.routeSort or "near"
-	if not selected then
-	add(function()
-		local row = mkRow(content, "항로 정렬", "", {
-			{ text = "가까운 순", color = if H.routeSort == "near" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "near"; render() end },
-			{ text = "의뢰", color = if H.routeSort == "quest" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "quest"; render() end },
-			{ text = "조선소", color = if H.routeSort == "yard" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "yard"; render() end },
-			{ text = "해역", color = if H.routeSort == "region" then COLORS.gold else COLORS.blue, onClick = function() H.routeSort = "region"; render() end },
-			{ text = "이익", color = if H.routeSort == "profit" then COLORS.gold else COLORS.green, onClick = function() H.routeSort = "profit"; render() end },
-		}, 60)
-		return row
+
+	-- [항해 장부] 목적지 선택 / 항로 판단 / 출항을 독립된 영역으로 배치한다.
+	local root = add(function()
+		local frame = Instance.new("Frame")
+		frame.Name = "RouteWorkspace"
+		frame.BackgroundTransparency = 1
+		frame.Size = UDim2.new(1, -6, 0, math.max(180, content.AbsoluteSize.Y - 8))
+		return frame
 	end)
-	add(function()
-		return mkLabel(content, "현재 항구 기상 기준 · 해적과 돌발 사건 별도", 13, COLORS.muted, false)
-	end)
+	local list = Instance.new("ScrollingFrame")
+	list.Name = "RouteDestinationList"
+	list.BackgroundTransparency = 1
+	list.BorderSizePixel = 0
+	list.ScrollBarThickness = 4
+	list.CanvasSize = UDim2.fromOffset(0, 0)
+	list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	list.Parent = root
+	local listLayout = Instance.new("UIListLayout")
+	listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	listLayout.Padding = UDim.new(0, 6)
+	listLayout.Parent = list
+	local detail = Instance.new("ScrollingFrame")
+	detail.Name = "RouteDecision"
+	detail.BackgroundTransparency = 1
+	detail.BorderSizePixel = 0
+	detail.ScrollBarThickness = 4
+	detail.CanvasSize = UDim2.fromOffset(0, 0)
+	detail.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	detail.Parent = root
+	local detailLayout = Instance.new("UIListLayout")
+	detailLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	detailLayout.Padding = UDim.new(0, 6)
+	detailLayout.Parent = detail
+	local footer = Instance.new("Frame")
+	footer.Name = "RouteActionBar"
+	footer.BackgroundTransparency = 1
+	footer.Parent = root
+	local back = mkButton(footer, "항로 목록", COLORS.leather, UDim2.new(0.38, -4, 1, 0), function()
+		H.routeDetailId = nil
+		render()
+	end, true)
+	back.Position = UDim2.fromOffset(0, 0)
+	local depart
+	if selected and not selected.locked then
+		local shortage = ship.supplies < selected.supplies or (ship.coal or 0) < (selected.coal or 0)
+		depart = mkButton(footer, if shortage then "출항 준비 확인" else "출항", COLORS.gold, UDim2.new(1, 0, 1, 0), function()
+			H.routeDetailId = nil
+			confirmSail(selected)
+		end, true)
 	end
-	local sorted = if selected then { selected } else table.clone(view.routes)
+	local function layoutWorkspace()
+		local wide = root.AbsoluteSize.X >= 640
+		list.Visible = wide or selected == nil
+		detail.Visible = wide or selected ~= nil
+		footer.Visible = selected ~= nil
+		back.Visible = not wide and selected ~= nil
+		list.Position = UDim2.fromOffset(0, 0)
+		list.Size = UDim2.new(if wide then 0.43 else 1, if wide then -5 else 0, 1, 0)
+		detail.Position = if wide then UDim2.new(0.43, 5, 0, 0) else UDim2.fromOffset(0, 0)
+		detail.Size = UDim2.new(if wide then 0.57 else 1, if wide then -5 else 0, 1, if selected then -54 else 0)
+		footer.Position = if wide then UDim2.new(0.43, 5, 1, -48) else UDim2.new(0, 0, 1, -48)
+		footer.Size = UDim2.new(if wide then 0.57 else 1, if wide then -5 else 0, 0, 48)
+		if depart then
+			depart.Position = if wide then UDim2.fromOffset(0, 0) else UDim2.new(0.38, 4, 0, 0)
+			depart.Size = if wide then UDim2.fromScale(1, 1) else UDim2.new(0.62, -4, 1, 0)
+		else
+			back.Size = UDim2.fromScale(1, 1)
+		end
+	end
+	local resize = content:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+		root.Size = UDim2.new(1, -6, 0, math.max(180, content.AbsoluteSize.Y - 8))
+	end)
+	root.Destroying:Connect(function() resize:Disconnect() end)
+	root:GetPropertyChangedSignal("AbsoluteSize"):Connect(layoutWorkspace)
+
+	-- 현재 날씨와 예보는 목록 위에서 출항 전에 확인한다.
+	if view.weather then
+		local parts = {}
+		for _, f in view.forecast or {} do
+			table.insert(parts, string.format("%d일 뒤 %s", f.inDays, f.name))
+		end
+		local weather = view.weather
+		local warning = if weather.id == "storm" then "폭풍 · 지연·사고 주의"
+			elseif weather.id == "rain" then "비 · 안개·암초 주의"
+			elseif weather.id == "head" or weather.id == "calm" then "역풍·무풍 · 지연 주의" else "기상 경보 없음"
+		local row = mkRow(list, weather.name .. " · " .. warning,
+			string.format("바람 x%.2f · %s\n%s", weather.wind, weather.hint or "", table.concat(parts, " · ")), {
+			{ text = "하루 대기", color = COLORS.grey, onClick = function() call("WaitDay", {}) end },
+		}, 86)
+		row.LayoutOrder = 0
+	end
+	local sorts = Instance.new("Frame")
+	sorts.Name = "RouteSort"
+	sorts.BackgroundTransparency = 1
+	sorts.Size = UDim2.new(1, -6, 0, 94)
+	sorts.LayoutOrder = 1
+	sorts.Parent = list
+	for i, mode in { { "가까운 순", "near" }, { "의뢰", "quest" }, { "조선소", "yard" }, { "해역", "region" }, { "이익", "profit" } } do
+		local b = mkButton(sorts, mode[1], if H.routeSort == mode[2] then COLORS.gold else COLORS.paper,
+			UDim2.new(1/3, -4, 0, 44), function() H.routeSort = mode[2]; render() end, true)
+		b.Position = UDim2.new(((i - 1) % 3) / 3, 2, 0, math.floor((i - 1) / 3) * 48)
+		b.TextSize = 13
+	end
+	local sorted = table.clone(view.routes)
 	local mode = H.routeSort
 	table.sort(sorted, function(a, b)
-		if (a.locked ~= nil) ~= (b.locked ~= nil) then
-			return a.locked == nil
-		end
-		if mode == "quest" and (a.quest ~= nil) ~= (b.quest ~= nil) then
-			return a.quest ~= nil
-		elseif mode == "yard" and a.yard ~= b.yard then
-			return a.yard
-		elseif mode == "region" and a.region ~= b.region then
-			return a.region < b.region
+		if (a.locked ~= nil) ~= (b.locked ~= nil) then return a.locked == nil end
+		if mode == "quest" and (a.quest ~= nil) ~= (b.quest ~= nil) then return a.quest ~= nil
+		elseif mode == "yard" and a.yard ~= b.yard then return a.yard
+		elseif mode == "region" and a.region ~= b.region then return a.region < b.region
 		elseif mode == "profit" and (a.cargoProfit or -math.huge) ~= (b.cargoProfit or -math.huge) then
 			return (a.cargoProfit or -math.huge) > (b.cargoProfit or -math.huge)
 		end
-		if a.distanceKm ~= b.distanceKm then
-			return a.distanceKm < b.distanceKm
-		end
+		if a.distanceKm ~= b.distanceKm then return a.distanceKm < b.distanceKm end
 		return a.name < b.name
 	end)
-	for _, r in sorted do
-		add(function()
-			local supplyLeft = ship.supplies - r.supplies
-			local coalLeft = (ship.coal or 0) - (r.coal or 0)
-			local warn = if supplyLeft < 0 then string.format("보급 %d 부족", -supplyLeft)
-				elseif (r.coal or 0) > 0 and coalLeft < 0 then string.format("석탄 %d 부족", -coalLeft)
-				else string.format("출항 가능 · 보급 %d 남음", supplyLeft)
-			if view.weather and (view.weather.id == "storm" or view.weather.id == "rain") then
-				warn ..= if view.weather.id == "storm" then " · 폭풍 주의" else " · 비 주의"
-			end
-			if r.locked then
-				return mkRow(content, r.name, string.format("%s · 잠김: %s", r.region, r.locked), {
-					{ text = "잠김", color = COLORS.grey, onClick = function() message = r.region .. " 해역은 " .. r.locked; messageOk = false; render() end },
-				}, 56)
-			end
-			-- [교역 쉽게 보기] 실은 화물을 거기 팔면 예상 이익: 초록 ▲ / 빨강 ▼
-			local profitTag = if r.cargoProfit == nil then ""
-				elseif r.cargoProfit > 0 then string.format(" · 이익 +%s", H.commas(r.cargoProfit))
-				elseif r.cargoProfit < 0 then string.format(" · 손해 -%s", H.commas(-r.cargoProfit)) else " · 손익 0"
-			local tags = (if r.yard then " · 조선소" else "") .. (if r.quest then " · " .. r.quest else "") .. profitTag
-			if not selected then
-				local item = mkRow(content, r.name, string.format("%d일 · %d km%s%s", r.days, r.distanceKm, tags, if supplyLeft < 0 or coalLeft < 0 then " · 보급 부족" else ""), {
-					{ text = "상세", color = COLORS.grey, onClick = function()
-						H.routeDetailId = r.id
-						render()
-					end },
-				}, 78)
-				local key = if r.quest then "quest" elseif r.yard then "shipyard" else "route"
-				if H.hasIconArt(key) then withIcon(item, "FacilityArt", key, nil, 44) end
-				local accent = item:FindFirstChild("AccentBar")
-				if accent and accent:IsA("Frame") then
-					accent.BackgroundColor3 = if supplyLeft < 0 or coalLeft < 0 then COLORS.red
-						elseif (r.cargoProfit or 0) > 0 then COLORS.green
-						elseif (r.cargoProfit or 0) < 0 then COLORS.red else UI_BRASS
-				end
-				return item
-			end
-			local row = mkRow(content, r.name, string.format("%s · %d일 · %d km%s\n%s", r.region, r.days, r.distanceKm, tags, warn), {
-				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = COLORS.gold, onClick = function() H.routeDetailId = nil; confirmSail(r) end },
-			}, 104)
-			-- [항해 준비 시각화] 현재 보유량 대비 실제 항로 필요량. 부족하면 빨강으로 표시.
-			local textBox = row:FindFirstChild("RowText")
+	for i, r in sorted do
+		local profit = if r.cargoProfit == nil then "" elseif r.cargoProfit > 0 then " · 이익 +" .. H.commas(r.cargoProfit)
+			elseif r.cargoProfit < 0 then " · 손해 -" .. H.commas(-r.cargoProfit) else " · 손익 0"
+		local short = ship.supplies < r.supplies or (ship.coal or 0) < (r.coal or 0)
+		local line = if r.locked then "잠김 · " .. r.locked else string.format("%d일 · %d km%s%s%s", r.days, r.distanceKm, profit,
+			if r.quest then " · 의뢰" elseif r.yard then " · 조선소" else "", if short then " · 보급 부족" else "")
+		local item = mkRow(list, r.name, line, nil, 78)
+		item.Name = "RouteDestination_" .. tostring(r.id)
+		item.LayoutOrder = i + 1
+		local key = if r.locked then "lock" elseif r.quest then "quest" elseif r.yard then "shipyard" else "route"
+		if H.hasIconArt(key) then withIcon(item, "FacilityArt", key, nil, 44) end
+		local accent = item:FindFirstChild("AccentBar")
+		if accent and accent:IsA("Frame") then
+			accent.BackgroundColor3 = if r.locked or short or (r.cargoProfit or 0) < 0 then COLORS.red
+				elseif (r.cargoProfit or 0) > 0 then Color3.fromRGB(47, 122, 58) else UI_BRASS
+		end
+		local stroke = item:FindFirstChildOfClass("UIStroke")
+		if stroke and selected and selected.id == r.id then stroke.Thickness = 3; stroke.Color = UI_BRASS_DARK end
+		local hit = Instance.new("TextButton")
+		hit.Name = "RouteSelect"
+		hit.Text = ""
+		hit.BackgroundTransparency = 1
+		hit.Size = UDim2.fromScale(1, 1)
+		hit.ZIndex = item.ZIndex + 5
+		hit.Parent = item
+		hit.Activated:Connect(function() H.routeDetailId = r.id; render() end)
+	end
+	if selected then
+		local r = selected
+		local subtitle = string.format("%s · %d일 · %d km", r.region, r.days, r.distanceKm)
+		if r.locked then subtitle ..= "\n잠김: " .. r.locked end
+		if r.quest then subtitle ..= "\n" .. r.quest end
+		local header = mkRow(detail, r.name, subtitle, nil, 78)
+		header.LayoutOrder = 0
+		if not r.locked then
+			local meters = mkRow(detail, "출항 준비", "", nil, 126)
+			meters.LayoutOrder = 1
+			local textBox = meters:FindFirstChild("RowText")
 			if textBox then
-				for index, data in { { "보급", r.supplies, ship.supplies, "harbor" }, { "석탄", r.coal or 0, ship.coal or 0, "yard" } } do
+				for index, data in { { "보급", r.supplies, ship.supplies }, { "석탄", r.coal or 0, ship.coal or 0 } } do
 					if index == 1 or data[2] > 0 then
 						local meter = Instance.new("Frame")
 						meter.Name = if index == 1 then "RouteSupplyMeter" else "RouteCoalMeter"
-						meter.Size = UDim2.new(1, 0, 0, 25)
 						meter.BackgroundTransparency = 1
+						meter.Size = UDim2.new(1, 0, 0, 28)
 						meter.Parent = textBox
-						local key = if index == 1 and H.hasIconArt("supply") then "supply" else data[4]
-						local iconLeft = 0
-						if H.hasIconArt(key) then
-							local icon = modelIcon(meter, "FacilityArt", key, nil, 22, data[1])
-							icon.Position = UDim2.fromOffset(0, 1)
-							iconLeft = 26
-						end
-						local label = mkLabel(meter, string.format("%s %d/%d", data[1], data[3], data[2]), 13, INK, true)
-						label.Position = UDim2.fromOffset(iconLeft, 0)
-						label.Size = UDim2.new(0.55, -iconLeft, 1, 0)
+						local label = mkLabel(meter, string.format("%s %d / %d", data[1], data[3], data[2]), 13, INK, true)
+						label.Size = UDim2.new(0.55, 0, 1, 0)
 						label.AutomaticSize = Enum.AutomaticSize.None
-						label.TextTruncate = Enum.TextTruncate.AtEnd
 						local track = Instance.new("Frame")
-						track.Position = UDim2.new(0.55, 0, 0, 8)
-						track.Size = UDim2.new(0.45, -4, 0, 9)
+						track.Position = UDim2.new(0.55, 0, 0, 9)
+						track.Size = UDim2.new(0.45, -6, 0, 10)
 						track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
 						track.BorderSizePixel = 0
 						track.Parent = meter
 						corner(track, 3)
 						local fill = Instance.new("Frame")
 						fill.Size = UDim2.fromScale(math.clamp(data[3] / math.max(1, data[2]), 0, 1), 1)
-						fill.BackgroundColor3 = if data[3] < data[2] then COLORS.red else Color3.fromRGB(77, 125, 81)
+						fill.BackgroundColor3 = if data[3] < data[2] then COLORS.red else Color3.fromRGB(47, 122, 58)
 						fill.BorderSizePixel = 0
 						fill.Parent = track
 						corner(fill, 3)
 					end
 				end
 			end
-			-- 목적지 제목을 누르면 실제 해도 탭에서 해당 항구를 선택한다.
-			local choose = Instance.new("TextButton")
-			choose.Name = "RouteArtwork_" .. tostring(r.id)
-			choose.Text = ""
-			choose.BackgroundTransparency = 1
-			choose.BorderSizePixel = 0
-			choose.Size = UDim2.new(1, -124, 0, 42)
-			choose.ZIndex = row.ZIndex + 3
-			choose.Parent = row
-			choose.Activated:Connect(function()
-				H.selectedMapPort = r.id
-				openTab("map", "chart")
-			end)
-			return row
-		end)
+			if r.cargoProfit ~= nil then
+				local profit = mkLabel(textBox or meters, "예상 화물 손익 " .. H.commas(r.cargoProfit), 15,
+					if r.cargoProfit < 0 then COLORS.red else Color3.fromRGB(47, 122, 58), true)
+				profit.Name = "RouteCargoProfit"
+			end
+			if PortData.Ports[view.player.portId] and PortData.Ports[r.id] then
+		local path = SeaRoutes.path(view.player.portId, selected.id, PortData.Ports)
+		local worldImg = AssetIds["CardArt/event_chart_world"]
+		local box = mkBox(detail, UDim2.new(), UDim2.new(1, -6, 0, 210), COLORS.paper)
+		box.Name = "RouteMiniChart"
+		local caption = mkLabel(box, view.player.portName .. " → " .. selected.name, 16, INK, true)
+		caption.Size = UDim2.new(1, -16, 0, 28)
+		caption.Position = UDim2.fromOffset(8, 4)
+		caption.AutomaticSize = Enum.AutomaticSize.None
+		caption.TextTruncate = Enum.TextTruncate.AtEnd
+		local map = Instance.new("ImageLabel")
+		map.Name = "RouteMiniChartMap"
+		map.Position = UDim2.fromOffset(8, 34)
+		map.Size = UDim2.new(1, -16, 1, -62)
+		map.BackgroundColor3 = Color3.fromRGB(38, 82, 120)
+		map.BorderSizePixel = 0
+		map.Image = if worldImg then "rbxassetid://" .. tostring(worldImg) else ""
+		map.ScaleType = Enum.ScaleType.Stretch
+		map.ClipsDescendants = true
+		map.Parent = box
+		local function point(lat, lon)
+			local x = if worldImg then (31 + (lon + 180) / 360 * 1522) / 1587 else (lon + 180) / 360
+			local y = if worldImg then (98 + (80.6 - lat) / 145.4 * 822) / 991 else (90 - lat) / 180
+			return UDim2.fromScale(math.clamp(x, 0.02, 0.98), math.clamp(y, 0.02, 0.98))
+		end
+		for i = 1, #path - 1 do
+			local a, b = path[i], path[i + 1]
+			local dl = (b[2] - a[2] + 180) % 360 - 180
+			local count = math.clamp(math.ceil(math.max(math.abs(dl), math.abs(b[1] - a[1])) / 2), 1, 24)
+			for k = 0, count - 1 do
+				local t = k / count
+				local lon = (a[2] + dl * t + 180) % 360 - 180
+				local dot = Instance.new("Frame")
+				dot.Name = "RouteWaypoint"
+				dot.AnchorPoint = Vector2.new(0.5, 0.5)
+				dot.Position = point(a[1] + (b[1] - a[1]) * t, lon)
+				dot.Size = UDim2.fromOffset(3, 3)
+				dot.BackgroundColor3 = Color3.fromRGB(255, 224, 118)
+				dot.BorderSizePixel = 0
+				dot.Parent = map
+			end
+		end
+		for _, index in { 1, #path } do
+			local p = path[index]
+			local mark = Instance.new("Frame")
+			mark.Name = if index == 1 then "RouteOrigin" else "RouteDestination"
+			mark.AnchorPoint = Vector2.new(0.5, 0.5)
+			mark.Position = point(p[1], p[2])
+			mark.Size = UDim2.fromOffset(10, 10)
+			mark.BackgroundColor3 = if index == 1 then Color3.fromRGB(112, 207, 146) else Color3.fromRGB(249, 191, 61)
+			mark.BorderSizePixel = 0
+			mark.ZIndex = 3
+			mark.Parent = map
+			corner(mark, 5)
+		end
+		local legend = mkLabel(box, "초록 출발 · 금색 목적지" .. (if worldImg then "" else " · 좌표 개략도"), 13, INK_SOFT, false)
+		legend.Position = UDim2.new(0, 8, 1, -24)
+		legend.Size = UDim2.new(1, -16, 0, 20)
+		legend.AutomaticSize = Enum.AutomaticSize.None
+		box.LayoutOrder = 2
+				local mapButton = mkButton(detail, "세계 해도에서 보기", COLORS.paper, UDim2.new(1, -6, 0, 44), function()
+					H.selectedMapPort = r.id
+					openTab("map", "chart")
+				end, true)
+				mapButton.LayoutOrder = 3
+			end
+		end
+	else
+		local empty = mkRow(detail, "목적지를 선택해", "항로, 보급, 예상 손익을 비교하고 출항할 수 있어.", nil, 90)
+		empty.LayoutOrder = 0
 	end
+	layoutWorkspace()
 end
 
 local openYardHall
