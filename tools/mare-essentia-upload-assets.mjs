@@ -2337,6 +2337,11 @@ if (!modelsOnly && !studioRegrantPath) {
     for (const item of items) if (item !== selected) plan.splice(plan.indexOf(item), 1);
   }
 }
+// [카드배틀 화면 교체] 기존 번호의 UI 교체는 다른 자산 검사가 끝난 뒤 처리한다.
+// 이미 실패한 실행에서 어차피 롤백될 교체 업로드를 반복하지 않는다.
+const existingBattleUi = new Set(plan.filter(item => item.kind === 'CardArt' && item.ext === '.png'
+  && /^ui_[a-z0-9_]+$/.test(item.name) && registry.assets[item.kind + '/' + item.name]?.assetId));
+plan.sort((a, b) => Number(existingBattleUi.has(a)) - Number(existingBattleUi.has(b)));
 // [원본 보호] 종류 변경 중 신규 업로드나 Universe 사용 권한 확인이 실패하면 기존 등록 ID를 보존한다.
 const previousTypeAssets = new Map();
 for (const item of plan) {
@@ -2464,6 +2469,10 @@ for (const item of plan) {
     if (old?.assetId && old.sourceSha256 !== sourceSha256 && (approvedImages[id] || old.sourceSha256 || battleUiArt)) {
       if (approvedImages[id] !== sourceSha256) {
         failures.push(id + (battleUiArt ? ': CARD_BATTLE_UI_APPROVAL_HASH_MISMATCH' : ': NEUTRAL_CARD_ART_APPROVAL_HASH_MISMATCH'));
+        continue;
+      }
+      if (battleUiArt && failures.length) {
+        console.log('CARD_BATTLE_UI_REPLACEMENT_DEFERRED_PRIOR_FAILURE', id);
         continue;
       }
       previousTypeAssets.set(id, {...old});

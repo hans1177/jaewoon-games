@@ -66,3 +66,28 @@ test('재질은 기존 실제 업로더의 CC0 출처 및 해시 조건을 먼�
   assert.ok(guard.includes('CC0_MATERIAL_SOURCE_HASH_MISMATCH'));
   assert.ok(start < register.indexOf('shutil.move(src, dst)'));
 });
+
+test('기존 실패가 있으면 승인된 카드배틀 화면 교체의 반복 업로드를 보류한다', () => {
+  const uploader = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  const orderStart = uploader.indexOf('const existingBattleUi = new Set(');
+  const orderEnd = uploader.indexOf('// [원본 보호]', orderStart);
+  assert.ok(orderStart >= 0 && orderEnd > orderStart);
+  const ui = {kind:'CardArt', ext:'.png', name:'ui_button_ink'};
+  const newUi = {kind:'CardArt', ext:'.png', name:'ui_new'};
+  const card = {kind:'CardArt', ext:'.png', name:'af_28'};
+  const plan = [ui, newUi, card];
+  const registry = {assets:{'CardArt/ui_button_ink':{assetId:'123'}}};
+  new Function('plan','registry',uploader.slice(orderStart,orderEnd))(plan,registry);
+  assert.deepEqual(plan,[newUi,card,ui]);
+  const guardStart = uploader.indexOf('if (battleUiArt && failures.length)');
+  const guardEnd = uploader.indexOf('previousTypeAssets.set(id, {...old});',guardStart);
+  assert.ok(guardStart >= 0 && guardEnd > guardStart);
+  const guard = uploader.slice(guardStart,guardEnd);
+  const mayUpload = new Function('battleUiArt','failures','id','console',
+    'for (const once of [0]) {' + guard + 'return true;} return false;');
+  const logger = {log(){}};
+  assert.equal(mayUpload(true,['CardArt/af_28: MODEL_ORIGINAL_REVIEW_REQUIRED'],'CardArt/ui_button_ink',logger),false);
+  assert.equal(mayUpload(true,[],'CardArt/ui_button_ink',logger),true);
+  assert.equal(mayUpload(false,['other failure'],'CardArt/history_open',logger),true);
+  assert.ok(uploader.includes('MARE_ASSET_REPLACEMENT_ROLLBACK=OLD_IDS_PRESERVED'));
+});
