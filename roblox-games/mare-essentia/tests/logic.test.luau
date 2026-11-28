@@ -5327,7 +5327,13 @@ local function testTradeFun()
 -- [흥정 미니게임] 저울·표정·동전·퀴즈: 서버 판정, 물건마다 항구에서 한 번, 할인 4~12%, 실패해도 손해 없음
 local function testHaggleGames()
 	local D: any = D
-	for _, game in { "scale", "face", "coin", "quiz" } do
+	do
+		local st = newState()
+		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
+		act(st, "HaggleStart", { goodId = goodId, game = "scale" })
+		check("흥정: 저울 멈추기 게임은 안 나옴", st.haggle and st.haggle.pending and st.haggle.pending.game ~= "scale")
+	end
+	for _, game in { "face", "coin", "quiz" } do
 		local st = newState()
 		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
 		local ok = act(st, "HaggleStart", { goodId = goodId, game = game })
