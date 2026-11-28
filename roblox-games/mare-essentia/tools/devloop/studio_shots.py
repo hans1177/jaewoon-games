@@ -15,9 +15,9 @@ ANGLES = [
     ("houses", "local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50"),
     ("harbor", "return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58"),
     ("ranch", "local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55"),
-    ("animal_side", "local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40"),
-    ("animal_front", "local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40"),
-    ("resident", "local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40"),
+    ("animal_side", "local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p,sz=a:GetBoundingBox() local r=math.max(sz.X,sz.Z,2)*1.6 return CFrame.lookAt(p.Position+p.RightVector*r+Vector3.new(0,sz.Y*0.4,0),p.Position),45"),
+    ("animal_front", "local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p,sz=a:GetBoundingBox() local r=math.max(sz.X,sz.Z,2)*1.4 return CFrame.lookAt(p.Position+(p.LookVector+p.RightVector*0.6).Unit*r+Vector3.new(0,sz.Y*0.5,0),p.Position),45"),
+    ("resident", "local r=find(function(m) local h=m:FindFirstChildOfClass('Humanoid') return h~=nil and m:GetPivot().Position.Y<8 and (m:GetPivot().Position-Vector3.new(-6,0,0)).Magnitude<60 end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*2+Vector3.new(0,1.5,0),p.Position+Vector3.new(0,1,0)),45"),
     ("edge", "local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55"),
 ]
 
