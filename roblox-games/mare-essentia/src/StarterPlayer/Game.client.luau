@@ -14498,8 +14498,8 @@ do
 			leaf.Size = UDim2.new(1, -24, 1, -66)
 			if bookId then
 				-- 바깥쪽 금박 삽화(약 15%)와 중앙 제본선을 가리지 않는다.
-				leaf.Position = UDim2.new(if wide then 0.15 else 0.17, 0, 0.09, 0)
-				leaf.Size = UDim2.new(if wide then 0.70 else 0.73, 0, 0.82, -45)
+				leaf.Position = UDim2.new(if wide then 0.15 elseif H.dexReading then 0.08 else 0.27, 0, 0.10, 0)
+				leaf.Size = UDim2.new(if wide then 0.70 else 0.65, 0, 0.82, -45)
 			end
 			leaf.Parent = root
 
@@ -14625,7 +14625,7 @@ do
 				grid.Parent = root
 				local gl = Instance.new("UIGridLayout")
 				local cols = if wide then 6 else 3
-				local gridW = if bookId then W * (if wide then 0.70 else 0.73) else W - 30
+				local gridW = if bookId then W * (if wide then 0.70 else 0.65) else W - 30
 				local cw = math.max(48, math.floor((gridW - 12 - (cols - 1) * 6) / cols))
 				gl.CellSize = UDim2.fromOffset(cw, math.floor(cw * 1.4) + 26)
 				gl.CellPadding = UDim2.fromOffset(6, 6)
@@ -14675,6 +14675,27 @@ do
 				end, true)
 			end
 			button("다음", 0.81, 0.19, function() onPick(math.min(#found, pageNo + stride)) end, pageNo < #found)
+			-- 실제 페이지 이동에서만 짧은 종이 넘김 연출. 모션 감소 설정이면 즉시 표시한다.
+			local direction = H.dexTurnDirection
+			H.dexTurnDirection = nil
+			if direction and not H.dexPlateIndex and not game:GetService("GuiService").ReducedMotionEnabled then
+				local finalPosition = leaf.Position
+				leaf.Position = finalPosition + UDim2.fromOffset(18 * direction, 0)
+				local fold = Instance.new("Frame")
+				fold.Name = "EncyclopediaPageTurnShade"
+				fold.BackgroundColor3 = Color3.fromRGB(91, 57, 29)
+				fold.BackgroundTransparency = 0.55
+				fold.BorderSizePixel = 0
+				fold.Size = UDim2.new(0, 20, 1, 0)
+				fold.Position = UDim2.new(if direction > 0 then 0 else 1, if direction > 0 then 0 else -20, 0, 0)
+				fold.ZIndex = 5
+				fold.Parent = leaf
+				local tween = game:GetService("TweenService")
+				tween:Create(leaf, TweenInfo.new(0.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = finalPosition }):Play()
+				local fade = tween:Create(fold, TweenInfo.new(0.20), { BackgroundTransparency = 1 })
+				fade.Completed:Once(function() fold:Destroy() end)
+				fade:Play()
+			end
 			return root
 		end)
 	end
@@ -14846,6 +14867,13 @@ function RENDERERS.encyclopedia()
 			frame.Name = "EncyclopediaFieldIndex"
 			frame.BackgroundTransparency = 1
 			frame.Size = UDim2.new(1, -8, 0, math.ceil(#groups / columns) * 49 + 6)
+			-- [중세 문양 책갈피] 한 장의 승인 삽화 시트를 모든 분야에 재사용한다.
+			local sheet = AssetIds["CardArt/ency_tab_sheet"]
+			local cells = { Zoology = 0, Botany = 1, Mineral = 2, Site = 3, Architecture = 3,
+				Relic = 4, Geography = 5, terrain = 5, Navigation = 6, Weather = 7,
+				Medicine = 8, Chemistry = 8, Astronomy = 9, Physics = 9, Art = 10, Culture = 10,
+				Language = 11, Philosophy = 11, Myth = 12, Mystery = 12, Religion = 12,
+				Goods = 13, Law = 13, Politics = 13, Shipbuilding = 14, ArtGallery = 14, Lost = 15, all = 15 }
 			for i, g in groups do
 				local col = (i - 1) % columns
 				local row = math.floor((i - 1) / columns)
@@ -14862,6 +14890,45 @@ function RENDERERS.encyclopedia()
 					end, true)
 				button.Position = UDim2.new(col / columns, 3, 0, row * 49 + 3)
 				button.TextSize = 15
+				local cell = cells[g.id] or 15
+				if sheet then
+					local holder = Instance.new("Frame")
+					holder.Name = "EncyclopediaFieldMedallion"
+					holder.BackgroundTransparency = 1
+					holder.ClipsDescendants = true
+					holder.Size = UDim2.fromOffset(36, 36)
+					holder.Position = UDim2.fromOffset(4, 3)
+					holder.ZIndex = button.ZIndex + 2
+					holder.Parent = button
+					local art = Instance.new("ImageLabel")
+					art.BackgroundTransparency = 1
+					art.Size = UDim2.fromScale(4, 4)
+					art.Position = UDim2.fromScale(-(cell % 4), -math.floor(cell / 4))
+					art.Image = "rbxassetid://" .. tostring(sheet)
+					art.ScaleType = Enum.ScaleType.Stretch
+					art.ZIndex = holder.ZIndex
+					art.Parent = holder
+					local caption = button:FindFirstChild("PrintedCaption")
+					if not caption then
+						caption = Instance.new("TextLabel")
+						caption.Name = "PrintedCaption"
+						caption.BackgroundTransparency = 1
+						caption.Text = button.Text
+						caption.TextColor3 = button.TextColor3
+						caption.Font = button.Font
+						caption.TextSize = 15
+						caption.ZIndex = button.ZIndex + 2
+						caption.Parent = button
+					end
+					button.TextTransparency = 1
+					if caption:IsA("TextLabel") then
+						caption.Position = UDim2.fromOffset(44, 1)
+						caption.Size = UDim2.new(1, -49, 1, -2)
+						caption.TextWrapped = true
+						caption.TextSize = 14
+						caption.TextXAlignment = Enum.TextXAlignment.Left
+					end
+				end
 			end
 			return frame
 		end)
@@ -14946,6 +15013,7 @@ function RENDERERS.encyclopedia()
 	if H.dexClean ~= false then
 		H.galleryReadingCard = nil
 		H.renderDex(found, current, article, category, cx, function(i)
+			if i ~= H.encyclopediaPage then H.dexTurnDirection = if i > H.encyclopediaPage then 1 else -1 end
 			H.encyclopediaPage = i
 			Sfx.play("sfx_book_turn", 0.3)
 			render()
