@@ -1599,6 +1599,22 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local surface = part:FindFirstChildOfClass("SurfaceAppearance")
 				local textured = surfaceHasMaps(surface) or part.MaterialVariant ~= ""
 					or (part:IsA("MeshPart") and part.TextureID ~= "")
+				-- 원본 특수 메시·데칼·텍스처도 무텍스처 복원 대상에서 제외한다.
+				if not textured then
+					for _, child in part:GetChildren() do
+						if (child:IsA("SpecialMesh") and child.TextureId ~= "")
+							or ((child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "") then
+							textured = true
+							break
+						end
+					end
+				end
+				-- Roblox 수입 기본 회색(163,162,165)만 식별한다. 정상 회색 원본 재질은 보호한다.
+				local defaultImportGray = npcOutfit and not textured
+					and (part.Material == Enum.Material.Plastic or part.Material == Enum.Material.SmoothPlastic)
+					and math.abs(part.Color.R - 163 / 255) <= 1 / 255
+					and math.abs(part.Color.G - 162 / 255) <= 1 / 255
+					and math.abs(part.Color.B - 165 / 255) <= 1 / 255
 				-- [색상 지도 없는 경우] TextureID만 가져온 헤어는 SurfaceAppearance 경로를
 				-- 지나지 않는다. 머리카락 메시의 원본 TextureID를 유지한 채 색상 배율만 적용한다.
 				-- PBR SurfaceAppearance가 있는 모델은 아래 기존 PBR 분기에서 처리한다.
@@ -1762,8 +1778,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 애매한 수입 모델까지 대표색 하나로 덮지 않아 소매·안감·단추를 보존한다.
 					if bestError < 0.0064 then
 						part.Material = bestMaterial
-					elseif fallback and color.R > 0.80 and color.G > 0.80 and color.B > 0.80
-						and math.max(color.R, color.G, color.B) - math.min(color.R, color.G, color.B) < 0.09 then
+					elseif fallback and (defaultImportGray or (color.R > 0.80 and color.G > 0.80 and color.B > 0.80
+						and math.max(color.R, color.G, color.B) - math.min(color.R, color.G, color.B) < 0.09)) then
 						-- [수입기 무채색 복구] 미지의 회백색 기본 재질만 승인 GLB 주색으로 되돌린다.
 						-- 실제 색차가 큰 원본 소매·안감·단추 및 PBR 텍스처는 보호한다.
 						part.Material = fallback[2]
@@ -1862,7 +1878,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						else target.Color
 					local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-					local faded = neutral and part.Color.R > 0.87
+					local faded = (neutral and part.Color.R > 0.87) or (hair and defaultImportGray)
 					-- [기존 채색 보존] 이미 컬러가 들어간 메시를 황토색으로 몰아넣지 않는다.
 					-- 원본 색상 누락만 복구한다. 무텍스처라도 이미 유색인 주민 머리는 다시 어둡게 하지 않는다.
 					if faded or (npcOutfit and not hair and (ribbon or headwear)) then
