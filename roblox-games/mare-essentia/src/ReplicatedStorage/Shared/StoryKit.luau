@@ -153,12 +153,22 @@ function K.sanitizeStats(saved: any, into: any, num: any)
 end
 
 -- 이야기를 끝내면 카드 상세에 열리는 한 단락: cardId → { text, quest }
-function K.loreIndex(quests: any): any
+function K.loreIndex(quests: any, events: any?): any
 	local idx = {}
 	for _, q in quests do
 		if q.loreCardId and q.loreText then
 			idx[q.loreCardId] = idx[q.loreCardId] or {}
 			table.insert(idx[q.loreCardId], { questId = q.id, text = q.loreText, title = q.name })
+		end
+	end
+	-- 기존 사건의 선택 번호와 결과만 색인한다. 저장·보상은 기존 Story 서비스가 관리한다.
+	for _, event in events or {} do
+		for i, choice in event.choices do
+			local cardId = choice.effect.cardId or event.loreCardId
+			if cardId then
+				idx[cardId] = idx[cardId] or {}
+				table.insert(idx[cardId], { eventId = event.id, choice = i, title = event.title, text = choice.result })
+			end
 		end
 	end
 	return idx
@@ -171,7 +181,7 @@ function K.loreFor(state: any, idx: any, cardId: string): any
 	end
 	local out
 	for _, e in list do
-		if state.quests.done[e.questId] then
+		if (e.questId and state.quests.done[e.questId]) or (e.eventId and state.story and state.story[e.eventId] == e.choice) then
 			out = out or {}
 			table.insert(out, { title = e.title, text = e.text })
 		end

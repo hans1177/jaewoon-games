@@ -18,6 +18,7 @@ export type Event = {
 	minYear: number?,
 	requires: { { id: string, choice: number? } }?,
 	requiresCards: { string }?,
+	loreCardId: string?, -- 카드 지급이 없는 사건의 참고 지식(판정과 무관)
 	nation: string?, -- 이 나라 주인공만 볼 수 있다
 }
 
@@ -157,7 +158,7 @@ local Events: { Event } = {
 		},
 		choices = {
 			{ text = "의뢰를 받는다", effect = { coins = 200, fame = 5 }, result = "밀사가 사례금을 건넸다. 첫 조각은 리스본에 있다고 한다." },
-			{ text = "정중히 거절한다", effect = { fame = 1 }, result = "밀사는 아쉬운 얼굴로 물러났다. 마음이 바뀌면 다시 찾아오라고 한다." },
+			{ text = "정중히 거절한다", effect = { fame = 1 }, result = "밀사는 아쉬운 얼굴로 물러났다. 이번 의뢰는 여기서 끝났고 밀사는 다른 항해사를 찾기로 했다." },
 		},
 	},
 	{
@@ -316,8 +317,8 @@ local Events: { Event } = {
 			"상인이 비단 천에 싼 알뿌리를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_tulip", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_tulip", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_tulip", fame = 3 }, result = "구근의 값이 꽃의 값과 같지 않다며 상인은 장부와 꽃 그림을 나란히 놓았다. 투기 열풍의 기록과 실제 튤립의 생태는 별개다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_tulip", affinity = 1 }, result = "구근의 값이 꽃의 값과 같지 않다며 상인은 장부와 꽃 그림을 나란히 놓았다. 투기 열풍의 기록과 실제 튤립의 생태는 별개다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -327,8 +328,8 @@ local Events: { Event } = {
 			"선장이 낡은 항해 일지를 내민다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_dogger_bank", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_dogger_bank", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_dogger_bank", fame = 3 }, result = "선장은 북해의 얕은 어장을 지나던 날을 떠올렸다. 지도에 그린 도거뱅크의 물깊이와 선원들의 증언을 비교했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_dogger_bank", affinity = 1 }, result = "선장은 북해의 얕은 어장을 지나던 날을 떠올렸다. 지도에 그린 도거뱅크의 물깊이와 선원들의 증언을 비교했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -338,8 +339,8 @@ local Events: { Event } = {
 			"선원이 흥분해서 손짓을 한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_narwhal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_narwhal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_narwhal", fame = 3 }, result = "선원은 일각고래의 긴 엄니가 유니콘의 뿔이라는 소문을 낳았다고 말했다. 실제 동물의 기록과 전설을 구별했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_narwhal", affinity = 1 }, result = "선원은 일각고래의 긴 엄니가 유니콘의 뿔이라는 소문을 낳았다고 말했다. 실제 동물의 기록과 전설을 구별했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -349,8 +350,8 @@ local Events: { Event } = {
 			"직공이 막 짠 천을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_flax", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_flax", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_flax", fame = 3 }, result = "아마에 관한 기록: 줄기에서 리넨 실을, 씨에서 기름을 얻는 작물. 플랑드르 들판의 푸른 꽃이 유명했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_flax", affinity = 1 }, result = "아마의 관련 자료를 받았다. 선물에 대한 감사와 함께 줄기에서 리넨 실을, 씨에서 기름을 얻는 작물. 플랑드르 들판의 푸른 꽃이 유명했다." },
 		},
 	},
 	{
@@ -360,8 +361,8 @@ local Events: { Event } = {
 			"서기가 납 인장이 찍힌 문서를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "한자 상인은 거래 문서의 인장이 도시와 상인의 약속을 보증했다고 설명했다. 인장 문양과 계약 기록을 구분해 남겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "한자 상인은 거래 문서의 인장이 도시와 상인의 약속을 보증했다고 설명했다. 인장 문양과 계약 기록을 구분해 남겼다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -371,8 +372,8 @@ local Events: { Event } = {
 			"대장장이가 쇠를 두드리다 고개를 든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_viking_helm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_viking_helm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_viking_helm", fame = 3 }, result = "북쪽 전사들의 투구에 뿔이 달렸다는 이야기와 실제 유물은 다르다. 대장장이는 철제 투구의 구조를 가리켰다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_viking_helm", affinity = 1 }, result = "북쪽 전사들의 투구에 뿔이 달렸다는 이야기와 실제 유물은 다르다. 대장장이는 철제 투구의 구조를 가리켰다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -382,8 +383,8 @@ local Events: { Event } = {
 			"일꾼이 소금 한 줌을 손에 쥐어 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_tidal_flat", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_tidal_flat", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_tidal_flat", fame = 3 }, result = "갯벌에 관한 기록: 밀물과 썰물 사이에 드러나는 넓은 진흙 벌. 새와 조개의 낙원이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_tidal_flat", affinity = 1 }, result = "갯벌의 관련 자료를 받았다. 선물에 대한 감사와 함께 밀물과 썰물 사이에 드러나는 넓은 진흙 벌. 새와 조개의 낙원이다." },
 		},
 	},
 	{
@@ -393,8 +394,8 @@ local Events: { Event } = {
 			"장인이 오크통을 두드려 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_grape", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_grape", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_grape", fame = 3 }, result = "포도에 관한 기록: 따뜻한 비탈에서 자라는 덩굴 열매. 와인의 원료다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_grape", affinity = 1 }, result = "포도의 관련 자료를 받았다. 선물에 대한 감사와 함께 따뜻한 비탈에서 자라는 덩굴 열매. 와인의 원료다." },
 		},
 	},
 	{
@@ -404,8 +405,8 @@ local Events: { Event } = {
 			"도선사가 낡은 해도를 접는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe", fame = 3 }, result = "아스트롤라베에 관한 기록: 별의 높이를 재어 위도를 알려 주는 놋쇠 관측기구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe", affinity = 1 }, result = "아스트롤라베의 관련 자료를 받았다. 선물에 대한 감사와 함께 별의 높이를 재어 위도를 알려 주는 놋쇠 관측기구." },
 		},
 	},
 	{
@@ -415,8 +416,8 @@ local Events: { Event } = {
 			"조선공이 거대한 용골 앞에서 손을 털었다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_dry_dock", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_dry_dock", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_dry_dock", fame = 3 }, result = "건선거에 관한 기록: 배를 올려 수리하는 거대한 구덩이." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_dry_dock", affinity = 1 }, result = "건선거의 관련 자료를 받았다. 선물에 대한 감사와 함께 배를 올려 수리하는 거대한 구덩이." },
 		},
 	},
 	{
@@ -426,8 +427,8 @@ local Events: { Event } = {
 			"그가 낮은 목소리로 웃었다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_cutlass", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_cutlass", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_cutlass", fame = 3 }, result = "커틀러스에 관한 기록: 뱃사람의 휘어진 칼." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_cutlass", affinity = 1 }, result = "커틀러스의 관련 자료를 받았다. 선물에 대한 감사와 함께 뱃사람의 휘어진 칼." },
 		},
 	},
 	{
@@ -437,8 +438,8 @@ local Events: { Event } = {
 			"발굴꾼이 깨진 항아리 조각을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_carthage_coin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_carthage_coin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_carthage_coin", fame = 3 }, result = "카르타고 동전의 문양에서 옛 지중해 교역을 읽을 수 있다고 발굴꾼이 말했다. 동전 기록을 전쟁 전승과 구분했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_carthage_coin", affinity = 1 }, result = "카르타고 동전의 문양에서 옛 지중해 교역을 읽을 수 있다고 발굴꾼이 말했다. 동전 기록을 전쟁 전승과 구분했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -448,8 +449,8 @@ local Events: { Event } = {
 			"수도사가 두꺼운 필사본을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_mosaic", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mosaic", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_mosaic", fame = 3 }, result = "모자이크 조각에 관한 기록: 작은 돌로 그림을 맞춘 옛 바닥 장식 조각." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mosaic", affinity = 1 }, result = "모자이크 조각의 관련 자료를 받았다. 선물에 대한 감사와 함께 작은 돌로 그림을 맞춘 옛 바닥 장식 조각." },
 		},
 	},
 	{
@@ -459,8 +460,8 @@ local Events: { Event } = {
 			"기사가 투구를 벗고 인사한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_valletta_walls", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_valletta_walls", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_valletta_walls", fame = 3 }, result = "발레타 대성채에 관한 기록: 바위를 깎아 만든 기사단의 요새 도시." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_valletta_walls", affinity = 1 }, result = "발레타 대성채의 관련 자료를 받았다. 선물에 대한 감사와 함께 바위를 깎아 만든 기사단의 요새 도시." },
 		},
 	},
 	{
@@ -470,8 +471,8 @@ local Events: { Event } = {
 			"상인이 소금 가마를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_rock_salt", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_rock_salt", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_rock_salt", fame = 3 }, result = "암염에 관한 기록: 땅속 소금층에서 캔 결정. 생선과 고기를 오래 보관하는 데 꼭 필요했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_rock_salt", affinity = 1 }, result = "암염의 관련 자료를 받았다. 선물에 대한 감사와 함께 땅속 소금층에서 캔 결정. 생선과 고기를 오래 보관하는 데 꼭 필요했다." },
 		},
 	},
 	{
@@ -481,8 +482,8 @@ local Events: { Event } = {
 			"학자가 대리석 조각을 쓰다듬는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_parthenon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_parthenon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_parthenon", fame = 3 }, result = "학자는 파르테논의 돌을 바라보며 아테네의 신화와 실제 건축사를 구분해 읽어야 한다고 말했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_parthenon", affinity = 1 }, result = "학자는 파르테논의 돌을 바라보며 아테네의 신화와 실제 건축사를 구분해 읽어야 한다고 말했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -492,8 +493,8 @@ local Events: { Event } = {
 			"상인이 향신료 자루를 열어 향을 맡게 한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_bazaar_grand", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_bazaar_grand", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_bazaar_grand", fame = 3 }, result = "대시장에 관한 기록: 수천 개 가게가 얽힌 지붕 덮인 시장." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_bazaar_grand", affinity = 1 }, result = "대시장의 관련 자료를 받았다. 선물에 대한 감사와 함께 수천 개 가게가 얽힌 지붕 덮인 시장." },
 		},
 	},
 	{
@@ -503,8 +504,8 @@ local Events: { Event } = {
 			"현자가 별자리 그림을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_pharos", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_pharos", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_pharos", fame = 3 }, result = "현자는 파로스 등대의 옛 기록을 꺼냈다. 항해자들이 전해 온 규모의 이야기는 실제 유적의 증거와 구분했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_pharos", affinity = 1 }, result = "현자는 파로스 등대의 옛 기록을 꺼냈다. 항해자들이 전해 온 규모의 이야기는 실제 유적의 증거와 구분했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -514,8 +515,8 @@ local Events: { Event } = {
 			"길잡이가 수평선을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_strait_gibraltar", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_strait_gibraltar", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_strait_gibraltar", fame = 3 }, result = "길잡이는 헤라클레스의 기둥이라는 전승을 들려주었다. 해협의 실제 물길은 신화와 별개로 기록했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_strait_gibraltar", affinity = 1 }, result = "길잡이는 헤라클레스의 기둥이라는 전승을 들려주었다. 해협의 실제 물길은 신화와 별개로 기록했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -525,8 +526,8 @@ local Events: { Event } = {
 			"목재상이 곧게 뻗은 통나무를 두드린다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_birch", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_birch", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_birch", fame = 3 }, result = "자작나무에 관한 기록: 하얀 껍질의 가벼운 나무. 북유럽의 숲과 목공의 기본 재료다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_birch", affinity = 1 }, result = "자작나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 하얀 껍질의 가벼운 나무. 북유럽의 숲과 목공의 기본 재료다." },
 		},
 	},
 	{
@@ -536,8 +537,8 @@ local Events: { Event } = {
 			"파수꾼이 망원경을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_hansa_seal", fame = 3 }, result = "한자 동맹 인장에 관한 기록: 상인 도시들이 맹약의 증표로 찍던 납 인장." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_hansa_seal", affinity = 1 }, result = "한자 동맹 인장의 관련 자료를 받았다. 선물에 대한 감사와 함께 상인 도시들이 맹약의 증표로 찍던 납 인장." },
 		},
 	},
 	{
@@ -547,8 +548,8 @@ local Events: { Event } = {
 			"도선사가 손으로 섬들을 헤아린다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_skerries", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_skerries", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_skerries", fame = 3 }, result = "스케리 군도에 관한 기록: 바다 위에 흩어진 작은 바위섬 무리. 수로를 아는 도선사가 꼭 필요했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_skerries", affinity = 1 }, result = "스케리 군도의 관련 자료를 받았다. 선물에 대한 감사와 함께 바다 위에 흩어진 작은 바위섬 무리. 수로를 아는 도선사가 꼭 필요했다." },
 		},
 	},
 	{
@@ -558,8 +559,8 @@ local Events: { Event } = {
 			"감독이 설계도를 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_estuary", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_estuary", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_estuary", fame = 3 }, result = "강 하구에 관한 기록: 강물과 바닷물이 섞이는 넓은 입구. 큰 항구 도시가 자리 잡는 곳이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_estuary", affinity = 1 }, result = "강 하구의 관련 자료를 받았다. 선물에 대한 감사와 함께 강물과 바닷물이 섞이는 넓은 입구. 큰 항구 도시가 자리 잡는 곳이다." },
 		},
 	},
 	{
@@ -569,8 +570,8 @@ local Events: { Event } = {
 			"세공사가 호박을 빛에 비춘다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_amber_raw", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_amber_raw", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_amber_raw", fame = 3 }, result = "원석 호박에 관한 기록: 발트 해 모래에 묻힌 송진 화석. 파도에 씻겨 해안으로 밀려온다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_amber_raw", affinity = 1 }, result = "원석 호박의 관련 자료를 받았다. 선물에 대한 감사와 함께 발트 해 모래에 묻힌 송진 화석. 파도에 씻겨 해안으로 밀려온다." },
 		},
 	},
 	{
@@ -580,8 +581,8 @@ local Events: { Event } = {
 			"수도사가 돌 부스러기를 쓸어낸다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_rune_stone", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_rune_stone", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_rune_stone", fame = 3 }, result = "룬 문자 비석에 관한 기록: 고인의 이름과 공적을 룬 문자로 새긴 돌. 길가에 세워 기억을 남겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_rune_stone", affinity = 1 }, result = "룬 문자 비석의 관련 자료를 받았다. 선물에 대한 감사와 함께 고인의 이름과 공적을 룬 문자로 새긴 돌. 길가에 세워 기억을 남겼다." },
 		},
 	},
 	{
@@ -591,8 +592,8 @@ local Events: { Event } = {
 			"항해사가 서쪽 수평선을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_trade_winds", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_trade_winds", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_trade_winds", fame = 3 }, result = "무역풍에 관한 기록: 열대 바다 위로 일정하게 부는 동풍. 대서양을 건너는 길잡이가 되었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_trade_winds", affinity = 1 }, result = "무역풍의 관련 자료를 받았다. 선물에 대한 감사와 함께 열대 바다 위로 일정하게 부는 동풍. 대서양을 건너는 길잡이가 되었다." },
 		},
 	},
 	{
@@ -602,8 +603,8 @@ local Events: { Event } = {
 			"상인이 잔을 기울인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_dragon_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_dragon_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_dragon_tree", fame = 3 }, result = "용혈수에 관한 기록: 붉은 수액이 나오는 카나리아 제도의 기이한 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_dragon_tree", affinity = 1 }, result = "용혈수의 관련 자료를 받았다. 선물에 대한 감사와 함께 붉은 수액이 나오는 카나리아 제도의 기이한 나무." },
 		},
 	},
 	{
@@ -613,8 +614,8 @@ local Events: { Event } = {
 			"고래잡이가 작살을 어깨에 멘다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_sperm_whale", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_sperm_whale", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_sperm_whale", fame = 3 }, result = "향유고래에 관한 기록: 가장 깊이 잠수하는 큰 이빨고래. 기름과 용연향의 근원이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_sperm_whale", affinity = 1 }, result = "향유고래의 관련 자료를 받았다. 선물에 대한 감사와 함께 가장 깊이 잠수하는 큰 이빨고래. 기름과 용연향의 근원이다." },
 		},
 	},
 	{
@@ -624,8 +625,8 @@ local Events: { Event } = {
 			"어부가 토기 항아리를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_octopus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_octopus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_octopus", fame = 3 }, result = "문어에 관한 기록: 바위틈에 숨는 영리한 연체동물. 항구 식당의 별미였다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_octopus", affinity = 1 }, result = "문어의 관련 자료를 받았다. 선물에 대한 감사와 함께 바위틈에 숨는 영리한 연체동물. 항구 식당의 별미였다." },
 		},
 	},
 	{
@@ -635,8 +636,8 @@ local Events: { Event } = {
 			"염부가 소금 산을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_flamingo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_flamingo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_flamingo", fame = 3 }, result = "홍학에 관한 기록: 염호에서 무리 지어 사는 분홍빛 새. 소금밭의 풍경이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_flamingo", affinity = 1 }, result = "홍학의 관련 자료를 받았다. 선물에 대한 감사와 함께 염호에서 무리 지어 사는 분홍빛 새. 소금밭의 풍경이다." },
 		},
 	},
 	{
@@ -646,8 +647,8 @@ local Events: { Event } = {
 			"양치기가 지팡이에 기대어 웃는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_cork_oak", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_cork_oak", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_cork_oak", fame = 3 }, result = "코르크참나무에 관한 기록: 이베리아 반도의 참나무. 껍질을 벗겨 병마개와 배의 부표를 만든다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_cork_oak", affinity = 1 }, result = "코르크참나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 이베리아 반도의 참나무. 껍질을 벗겨 병마개와 배의 부표를 만든다." },
 		},
 	},
 	{
@@ -657,8 +658,8 @@ local Events: { Event } = {
 			"목수가 역청 통을 휘젓는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_pine_resin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pine_resin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_pine_resin", fame = 3 }, result = "소나무 송진에 관한 기록: 배의 틈을 메우는 끈적한 재료. 발트의 숲에서 대량으로 왔다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pine_resin", affinity = 1 }, result = "소나무 송진의 관련 자료를 받았다. 선물에 대한 감사와 함께 배의 틈을 메우는 끈적한 재료. 발트의 숲에서 대량으로 왔다." },
 		},
 	},
 	{
@@ -668,8 +669,8 @@ local Events: { Event } = {
 			"배우가 극장 무대 위에서 인사한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_greek_vase", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_greek_vase", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_greek_vase", fame = 3 }, result = "그리스 도기에 관한 기록: 검은 인물을 그린 붉은 항아리." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_greek_vase", affinity = 1 }, result = "그리스 도기의 관련 자료를 받았다. 선물에 대한 감사와 함께 검은 인물을 그린 붉은 항아리." },
 		},
 	},
 	{
@@ -679,8 +680,8 @@ local Events: { Event } = {
 			"공증인이 잉크병을 정리한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "nav_portolan", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "nav_portolan", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "nav_portolan", fame = 3 }, result = "포르톨라노 해도에 관한 기록: 항구와 해안선을 방위선으로 빽빽이 이은 지중해 항해용 지도." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "nav_portolan", affinity = 1 }, result = "포르톨라노 해도의 관련 자료를 받았다. 선물에 대한 감사와 함께 항구와 해안선을 방위선으로 빽빽이 이은 지중해 항해용 지도." },
 		},
 	},
 	{
@@ -690,8 +691,8 @@ local Events: { Event } = {
 			"석공이 대리석 조각을 쓰다듬는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_marble", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_marble", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_marble", fame = 3 }, result = "카라라 대리석에 관한 기록: 토스카나 산에서 캐는 흰 대리석. 조각과 건축에 쓰이며 배로 실려 나갔다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_marble", affinity = 1 }, result = "카라라 대리석의 관련 자료를 받았다. 선물에 대한 감사와 함께 토스카나 산에서 캐는 흰 대리석. 조각과 건축에 쓰이며 배로 실려 나갔다." },
 		},
 	},
 	{
@@ -701,8 +702,8 @@ local Events: { Event } = {
 			"사제가 촛불을 켠다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "정교회 성화에 관한 기록: 금박 바탕에 성인을 그린 동방의 그림." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "정교회 성화의 관련 자료를 받았다. 선물에 대한 감사와 함께 금박 바탕에 성인을 그린 동방의 그림." },
 		},
 	},
 	{
@@ -712,8 +713,8 @@ local Events: { Event } = {
 			"잠수부가 젖은 항아리 조각을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_amphora", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amphora", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_amphora", fame = 3 }, result = "고대 암포라에 관한 기록: 포도주와 올리브유를 나르던 뾰족한 항아리. 난파선에서 건져 올린다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amphora", affinity = 1 }, result = "고대 암포라의 관련 자료를 받았다. 선물에 대한 감사와 함께 포도주와 올리브유를 나르던 뾰족한 항아리. 난파선에서 건져 올린다." },
 		},
 	},
 	{
@@ -723,8 +724,8 @@ local Events: { Event } = {
 			"기사가 항구 입구를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_castle_ruin", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_castle_ruin", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_castle_ruin", fame = 3 }, result = "무너진 성에 관한 기록: 이끼 낀 옛 성의 폐허." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_castle_ruin", affinity = 1 }, result = "무너진 성의 관련 자료를 받았다. 선물에 대한 감사와 함께 이끼 낀 옛 성의 폐허." },
 		},
 	},
 	{
@@ -734,8 +735,8 @@ local Events: { Event } = {
 			"광부가 구릿빛 돌을 쥐어 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_copper_ore", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_copper_ore", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_copper_ore", fame = 3 }, result = "구리 광석에 관한 기록: 초록 녹이 낀 붉은 금속 돌." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_copper_ore", affinity = 1 }, result = "구리 광석의 관련 자료를 받았다. 선물에 대한 감사와 함께 초록 녹이 낀 붉은 금속 돌." },
 		},
 	},
 	{
@@ -745,8 +746,8 @@ local Events: { Event } = {
 			"상인이 붉은 융단을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_sundial", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_sundial", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_sundial", fame = 3 }, result = "아랍식 해시계에 관한 기록: 그림자의 길이로 시각과 방위를 재던 놋쇠 기구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_sundial", affinity = 1 }, result = "아랍식 해시계의 관련 자료를 받았다. 선물에 대한 감사와 함께 그림자의 길이로 시각과 방위를 재던 놋쇠 기구." },
 		},
 	},
 	{
@@ -756,8 +757,8 @@ local Events: { Event } = {
 			"기사가 낡은 십자 문장을 만진다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "정교회 성화에 관한 기록: 금박 바탕에 성인을 그린 동방의 그림." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "정교회 성화의 관련 자료를 받았다. 선물에 대한 감사와 함께 금박 바탕에 성인을 그린 동방의 그림." },
 		},
 	},
 	{
@@ -767,8 +768,8 @@ local Events: { Event } = {
 			"도공이 물레를 멈춘다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_amphora", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amphora", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_amphora", fame = 3 }, result = "고대 암포라에 관한 기록: 포도주와 올리브유를 나르던 뾰족한 항아리. 난파선에서 건져 올린다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_amphora", affinity = 1 }, result = "고대 암포라의 관련 자료를 받았다. 선물에 대한 감사와 함께 포도주와 올리브유를 나르던 뾰족한 항아리. 난파선에서 건져 올린다." },
 		},
 	},
 	{
@@ -778,8 +779,8 @@ local Events: { Event } = {
 			"유목민이 낙타 고삐를 쥔다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_camel", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_camel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_camel", fame = 3 }, result = "낙타에 관한 기록: 사막 대상을 이끄는 짐승. 항구에서 향신료 짐을 받아 갔다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_camel", affinity = 1 }, result = "낙타의 관련 자료를 받았다. 선물에 대한 감사와 함께 사막 대상을 이끄는 짐승. 항구에서 향신료 짐을 받아 갔다." },
 		},
 	},
 	{
@@ -789,8 +790,8 @@ local Events: { Event } = {
 			"농부가 건포도 한 줌을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_grape", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_grape", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_grape", fame = 3 }, result = "포도에 관한 기록: 따뜻한 비탈에서 자라는 덩굴 열매. 와인의 원료다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_grape", affinity = 1 }, result = "포도의 관련 자료를 받았다. 선물에 대한 감사와 함께 따뜻한 비탈에서 자라는 덩굴 열매. 와인의 원료다." },
 		},
 	},
 	{
@@ -800,8 +801,8 @@ local Events: { Event } = {
 			"경비병이 해협 쪽을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_strait_gibraltar", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_strait_gibraltar", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_strait_gibraltar", fame = 3 }, result = "헤라클레스의 기둥에 관한 기록: 대서양과 지중해의 문. 옛사람은 세상의 끝이라 믿었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_strait_gibraltar", affinity = 1 }, result = "헤라클레스의 기둥의 관련 자료를 받았다. 선물에 대한 감사와 함께 대서양과 지중해의 문. 옛사람은 세상의 끝이라 믿었다." },
 		},
 	},
 	{
@@ -811,8 +812,8 @@ local Events: { Event } = {
 			"광부가 등불을 높이 든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_lead", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_lead", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_lead", fame = 3 }, result = "납에 관한 기록: 무겁고 무른 금속. 지붕, 활자, 총알, 측심줄의 추로 쓰였다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_lead", affinity = 1 }, result = "납의 관련 자료를 받았다. 선물에 대한 감사와 함께 무겁고 무른 금속. 지붕, 활자, 총알, 측심줄의 추로 쓰였다." },
 		},
 	},
 	{
@@ -822,8 +823,8 @@ local Events: { Event } = {
 			"서기가 장부를 넘긴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_customs_house", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_customs_house", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_customs_house", fame = 3 }, result = "세관에 관한 기록: 항구에서 물건에 세금을 매기던 건물." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_customs_house", affinity = 1 }, result = "세관의 관련 자료를 받았다. 선물에 대한 감사와 함께 항구에서 물건에 세금을 매기던 건물." },
 		},
 	},
 	{
@@ -833,8 +834,8 @@ local Events: { Event } = {
 			"어부가 긴 작살을 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_tuna", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_tuna", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_tuna", fame = 3 }, result = "참치에 관한 기록: 지중해를 가로지르는 빠른 대형 어류. 봄이면 그물 덫으로 잡았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_tuna", affinity = 1 }, result = "참치의 관련 자료를 받았다. 선물에 대한 감사와 함께 지중해를 가로지르는 빠른 대형 어류. 봄이면 그물 덫으로 잡았다." },
 		},
 	},
 	{
@@ -844,8 +845,8 @@ local Events: { Event } = {
 			"사제가 성화 앞에 촛불을 켠다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_icon", fame = 3 }, result = "정교회 성화에 관한 기록: 금박 바탕에 성인을 그린 동방의 그림." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_icon", affinity = 1 }, result = "정교회 성화의 관련 자료를 받았다. 선물에 대한 감사와 함께 금박 바탕에 성인을 그린 동방의 그림." },
 		},
 	},
 	{
@@ -855,8 +856,8 @@ local Events: { Event } = {
 			"장수가 향긋한 나무토막을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_cedar_lebanon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_cedar_lebanon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_cedar_lebanon", fame = 3 }, result = "레바논 삼나무에 관한 기록: 돛대와 신전에 쓰이던 큰 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_cedar_lebanon", affinity = 1 }, result = "레바논 삼나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 돛대와 신전에 쓰이던 큰 나무." },
 		},
 	},
 	{
@@ -866,8 +867,8 @@ local Events: { Event } = {
 			"농부가 진흙 묻은 손을 턴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_papyrus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_papyrus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_papyrus", fame = 3 }, result = "파피루스에 관한 기록: 나일 강변의 갈대. 줄기로 종이를 만들었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_papyrus", affinity = 1 }, result = "파피루스의 관련 자료를 받았다. 선물에 대한 감사와 함께 나일 강변의 갈대. 줄기로 종이를 만들었다." },
 		},
 	},
 	{
@@ -877,8 +878,8 @@ local Events: { Event } = {
 			"채취꾼이 붉은 가지를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_octopus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_octopus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_octopus", fame = 3 }, result = "문어에 관한 기록: 바위틈에 숨는 영리한 연체동물. 항구 식당의 별미였다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_octopus", affinity = 1 }, result = "문어의 관련 자료를 받았다. 선물에 대한 감사와 함께 바위틈에 숨는 영리한 연체동물. 항구 식당의 별미였다." },
 		},
 	},
 	{
@@ -888,8 +889,8 @@ local Events: { Event } = {
 			"상인이 낙타 짐 보따리를 풀어 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_casablanca_mosque", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_casablanca_mosque", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_casablanca_mosque", fame = 3 }, result = "하산 모스크에 관한 기록: 바다 위에 솟은 거대한 첨탑의 모스크." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_casablanca_mosque", affinity = 1 }, result = "하산 모스크의 관련 자료를 받았다. 선물에 대한 감사와 함께 바다 위에 솟은 거대한 첨탑의 모스크." },
 		},
 	},
 	{
@@ -899,8 +900,8 @@ local Events: { Event } = {
 			"도공이 갓 구운 접시를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe_arab", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe_arab", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe_arab", fame = 3 }, result = "아랍 천체관측의에 관한 기록: 항해사들이 별을 재던 정교한 놋쇠 기구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe_arab", affinity = 1 }, result = "아랍 천체관측의의 관련 자료를 받았다. 선물에 대한 감사와 함께 항해사들이 별을 재던 정교한 놋쇠 기구." },
 		},
 	},
 	{
@@ -910,8 +911,8 @@ local Events: { Event } = {
 			"염소지기가 나무를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_acacia", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_acacia", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_acacia", fame = 3 }, result = "아카시아에 관한 기록: 사헬 지대의 가시 나무. 수액이 고무가 된다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_acacia", affinity = 1 }, result = "아카시아의 관련 자료를 받았다. 선물에 대한 감사와 함께 사헬 지대의 가시 나무. 수액이 고무가 된다." },
 		},
 	},
 	{
@@ -921,8 +922,8 @@ local Events: { Event } = {
 			"항해사가 수평선을 오래 바라본다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_canary_current", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_canary_current", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_canary_current", fame = 3 }, result = "카나리아 해류에 관한 기록: 아프리카 북서 해안을 따라 남쪽으로 흐르는 해류. 대서양 항해에 이용되었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_canary_current", affinity = 1 }, result = "카나리아 해류의 관련 자료를 받았다. 선물에 대한 감사와 함께 아프리카 북서 해안을 따라 남쪽으로 흐르는 해류. 대서양 항해에 이용되었다." },
 		},
 	},
 	{
@@ -932,8 +933,8 @@ local Events: { Event } = {
 			"상인이 투명한 덩어리를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_acacia", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_acacia", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_acacia", fame = 3 }, result = "아카시아에 관한 기록: 사헬 지대의 가시 나무. 수액이 고무가 된다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_acacia", affinity = 1 }, result = "아카시아의 관련 자료를 받았다. 선물에 대한 감사와 함께 사헬 지대의 가시 나무. 수액이 고무가 된다." },
 		},
 	},
 	{
@@ -943,8 +944,8 @@ local Events: { Event } = {
 			"어부가 형형색색 카누를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_canary_current", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_canary_current", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_canary_current", fame = 3 }, result = "카나리아 해류에 관한 기록: 아프리카 북서 해안을 따라 남쪽으로 흐르는 해류. 대서양 항해에 이용되었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_canary_current", affinity = 1 }, result = "카나리아 해류의 관련 자료를 받았다. 선물에 대한 감사와 함께 아프리카 북서 해안을 따라 남쪽으로 흐르는 해류. 대서양 항해에 이용되었다." },
 		},
 	},
 	{
@@ -954,8 +955,8 @@ local Events: { Event } = {
 			"안내인이 긴 장대를 들어 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_mangrove", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_mangrove", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_mangrove", fame = 3 }, result = "맹그로브에 관한 기록: 바닷물에 뿌리를 담그는 강어귀의 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_mangrove", affinity = 1 }, result = "맹그로브의 관련 자료를 받았다. 선물에 대한 감사와 함께 바닷물에 뿌리를 담그는 강어귀의 나무." },
 		},
 	},
 	{
@@ -965,8 +966,8 @@ local Events: { Event } = {
 			"의사가 말린 약초 다발을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_kola", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_kola", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_kola", fame = 3 }, result = "콜라 열매에 관한 기록: 씹으면 기운이 나는 쓴 열매." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_kola", affinity = 1 }, result = "콜라 열매의 관련 자료를 받았다. 선물에 대한 감사와 함께 씹으면 기운이 나는 쓴 열매." },
 		},
 	},
 	{
@@ -976,8 +977,8 @@ local Events: { Event } = {
 			"상관장이 작은 저울을 만진다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_gold_weights", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_gold_weights", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_gold_weights", fame = 3 }, result = "상관장은 금 무게추의 문양을 설명했다. 기록자는 해안 교역과 그 이면의 노예무역 피해를 구분하여 남겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_gold_weights", affinity = 1 }, result = "상관장은 금 무게추의 문양을 설명했다. 기록자는 해안 교역과 그 이면의 노예무역 피해를 구분하여 남겼다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -987,8 +988,8 @@ local Events: { Event } = {
 			"사제가 가면을 쓰다듬는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_mask", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mask", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_mask", fame = 3 }, result = "사제는 가면이 단순한 장식품이 아니라 공동체의 기억과 의례에 관계된다고 설명했다. 전승은 존중하고 함부로 사실을 단정하지 않았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_mask", affinity = 1 }, result = "사제는 가면이 단순한 장식품이 아니라 공동체의 기억과 의례에 관계된다고 설명했다. 전승은 존중하고 함부로 사실을 단정하지 않았다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -998,8 +999,8 @@ local Events: { Event } = {
 			"직공이 직물을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_kente", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_kente", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_kente", fame = 3 }, result = "켄테 직물에 관한 기록: 오색 실로 짠 왕족의 직물." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_kente", affinity = 1 }, result = "켄테 직물의 관련 자료를 받았다. 선물에 대한 감사와 함께 오색 실로 짠 왕족의 직물." },
 		},
 	},
 	{
@@ -1009,8 +1010,8 @@ local Events: { Event } = {
 			"도선사가 손으로 물길을 그린다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_niger_delta", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_niger_delta", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_niger_delta", fame = 3 }, result = "니제르 삼각주에 관한 기록: 수많은 물길이 갈라지는 열대 강어귀." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_niger_delta", affinity = 1 }, result = "니제르 삼각주의 관련 자료를 받았다. 선물에 대한 감사와 함께 수많은 물길이 갈라지는 열대 강어귀." },
 		},
 	},
 	{
@@ -1020,8 +1021,8 @@ local Events: { Event } = {
 			"농장주가 밭을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_kola", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_kola", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_kola", fame = 3 }, result = "콜라 열매에 관한 기록: 씹으면 기운이 나는 쓴 열매." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_kola", affinity = 1 }, result = "콜라 열매의 관련 자료를 받았다. 선물에 대한 감사와 함께 씹으면 기운이 나는 쓴 열매." },
 		},
 	},
 	{
@@ -1031,8 +1032,8 @@ local Events: { Event } = {
 			"상인이 구릿빛 돌을 쥐여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_copper_ore", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_copper_ore", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_copper_ore", fame = 3 }, result = "구리 광석에 관한 기록: 초록 녹이 낀 붉은 금속 돌." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_copper_ore", affinity = 1 }, result = "구리 광석의 관련 자료를 받았다. 선물에 대한 감사와 함께 초록 녹이 낀 붉은 금속 돌." },
 		},
 	},
 	{
@@ -1042,8 +1043,8 @@ local Events: { Event } = {
 			"사냥꾼이 깃털 다발을 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_ostrich", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_ostrich", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_ostrich", fame = 3 }, result = "타조에 관한 기록: 날지 못하는 거대한 새. 깃털이 유럽 귀부인의 모자를 장식했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_ostrich", affinity = 1 }, result = "타조의 관련 자료를 받았다. 선물에 대한 감사와 함께 날지 못하는 거대한 새. 깃털이 유럽 귀부인의 모자를 장식했다." },
 		},
 	},
 	{
@@ -1053,8 +1054,8 @@ local Events: { Event } = {
 			"등대지기가 차를 따라 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_doldrums", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_doldrums", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_doldrums", fame = 3 }, result = "적도 무풍대에 관한 기록: 바람이 멎어 배가 며칠씩 멈추는 적도 부근의 바다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_doldrums", affinity = 1 }, result = "적도 무풍대의 관련 자료를 받았다. 선물에 대한 감사와 함께 바람이 멎어 배가 며칠씩 멈추는 적도 부근의 바다." },
 		},
 	},
 	{
@@ -1064,8 +1065,8 @@ local Events: { Event } = {
 			"도선사가 먼 곶을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_cape_good_hope", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_cape_good_hope", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_cape_good_hope", fame = 3 }, result = "희망봉에 관한 기록: 두 대양이 만나는 남쪽 끝의 곶. 폭풍이 잦아 폭풍의 곶이라 불렸다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_cape_good_hope", affinity = 1 }, result = "희망봉의 관련 자료를 받았다. 선물에 대한 감사와 함께 두 대양이 만나는 남쪽 끝의 곶. 폭풍이 잦아 폭풍의 곶이라 불렸다." },
 		},
 	},
 	{
@@ -1075,8 +1076,8 @@ local Events: { Event } = {
 			"총독이 항구를 내려다본다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_mozambique_channel", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mozambique_channel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_mozambique_channel", fame = 3 }, result = "모잠비크 해협에 관한 기록: 아프리카와 마다가스카르 사이의 긴 바다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mozambique_channel", affinity = 1 }, result = "모잠비크 해협의 관련 자료를 받았다. 선물에 대한 감사와 함께 아프리카와 마다가스카르 사이의 긴 바다." },
 		},
 	},
 	{
@@ -1086,8 +1087,8 @@ local Events: { Event } = {
 			"기록관이 낡은 두루마리를 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_swahili_door", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_swahili_door", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_swahili_door", fame = 3 }, result = "기록관은 스와힐리 조각 문의 문양에서 장인의 기술과 인도양의 교류를 읽었다. 문양의 기원을 하나로 단정하지 않았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_swahili_door", affinity = 1 }, result = "기록관은 스와힐리 조각 문의 문양에서 장인의 기술과 인도양의 교류를 읽었다. 문양의 기원을 하나로 단정하지 않았다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1097,8 +1098,8 @@ local Events: { Event } = {
 			"선장이 삼각돛을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_monsoon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_monsoon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_monsoon", fame = 3 }, result = "다우선 선장은 계절풍이 바뀌는 때를 기억한다고 말했다. 바람의 이름과 실제 항해 기록을 함께 남겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_monsoon", affinity = 1 }, result = "다우선 선장은 계절풍이 바뀌는 때를 기억한다고 말했다. 바람의 이름과 실제 항해 기록을 함께 남겼다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1108,8 +1109,8 @@ local Events: { Event } = {
 			"농부가 말린 꽃봉오리를 쥐여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_clove_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_clove_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_clove_tree", fame = 3 }, result = "정향나무에 관한 기록: 꽃봉오리를 말려 향신료를 만드는 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_clove_tree", affinity = 1 }, result = "정향나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 꽃봉오리를 말려 향신료를 만드는 나무." },
 		},
 	},
 	{
@@ -1119,8 +1120,8 @@ local Events: { Event } = {
 			"상인이 회색 덩어리를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_dhow_model", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_dhow_model", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_dhow_model", fame = 3 }, result = "다우선 모형에 관한 기록: 삼각돛을 단 인도양의 전통 배 모형." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_dhow_model", affinity = 1 }, result = "다우선 모형의 관련 자료를 받았다. 선물에 대한 감사와 함께 삼각돛을 단 인도양의 전통 배 모형." },
 		},
 	},
 	{
@@ -1130,8 +1131,8 @@ local Events: { Event } = {
 			"경비병이 바위 절벽을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_red_sea", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_red_sea", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_red_sea", fame = 3 }, result = "홍해에 관한 기록: 산호초와 뜨거운 바람의 좁은 바다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_red_sea", affinity = 1 }, result = "홍해의 관련 자료를 받았다. 선물에 대한 감사와 함께 산호초와 뜨거운 바람의 좁은 바다." },
 		},
 	},
 	{
@@ -1141,8 +1142,8 @@ local Events: { Event } = {
 			"상인이 볶은 열매를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe_arab", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe_arab", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_astrolabe_arab", fame = 3 }, result = "아랍 천체관측의에 관한 기록: 항해사들이 별을 재던 정교한 놋쇠 기구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_astrolabe_arab", affinity = 1 }, result = "아랍 천체관측의의 관련 자료를 받았다. 선물에 대한 감사와 함께 항해사들이 별을 재던 정교한 놋쇠 기구." },
 		},
 	},
 	{
@@ -1152,8 +1153,8 @@ local Events: { Event } = {
 			"순례자가 염주를 만진다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_prayer_beads", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_prayer_beads", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_prayer_beads", fame = 3 }, result = "염주에 관한 기록: 기도 횟수를 세던 구슬 꿰미." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_prayer_beads", affinity = 1 }, result = "염주의 관련 자료를 받았다. 선물에 대한 감사와 함께 기도 횟수를 세던 구슬 꿰미." },
 		},
 	},
 	{
@@ -1163,8 +1164,8 @@ local Events: { Event } = {
 			"잠수부가 조개를 쥔다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_pearl_oyster", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_pearl_oyster", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_pearl_oyster", fame = 3 }, result = "진주조개에 관한 기록: 속에 진주를 품는 큰 조개." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_pearl_oyster", affinity = 1 }, result = "진주조개의 관련 자료를 받았다. 선물에 대한 감사와 함께 속에 진주를 품는 큰 조개." },
 		},
 	},
 	{
@@ -1174,8 +1175,8 @@ local Events: { Event } = {
 			"항해사가 해도를 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_persian_gulf", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_persian_gulf", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_persian_gulf", fame = 3 }, result = "페르시아 만에 관한 기록: 진주 어장과 뜨거운 햇볕의 얕은 바다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_persian_gulf", affinity = 1 }, result = "페르시아 만의 관련 자료를 받았다. 선물에 대한 감사와 함께 진주 어장과 뜨거운 햇볕의 얕은 바다." },
 		},
 	},
 	{
@@ -1185,8 +1186,8 @@ local Events: { Event } = {
 			"정원사가 야자를 올려다본다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_date_palm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_date_palm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_date_palm", fame = 3 }, result = "대추야자에 관한 기록: 사막 오아시스를 지키는 야자. 달콤한 열매는 대상의 양식이었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_date_palm", affinity = 1 }, result = "대추야자의 관련 자료를 받았다. 선물에 대한 감사와 함께 사막 오아시스를 지키는 야자. 달콤한 열매는 대상의 양식이었다." },
 		},
 	},
 	{
@@ -1196,8 +1197,8 @@ local Events: { Event } = {
 			"대장이 성벽을 두드린다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_dhow_model", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_dhow_model", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_dhow_model", fame = 3 }, result = "다우선 모형에 관한 기록: 삼각돛을 단 인도양의 전통 배 모형." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_dhow_model", affinity = 1 }, result = "다우선 모형의 관련 자료를 받았다. 선물에 대한 감사와 함께 삼각돛을 단 인도양의 전통 배 모형." },
 		},
 	},
 	{
@@ -1207,8 +1208,8 @@ local Events: { Event } = {
 			"환전상이 금화를 저울에 올린다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_saltpeter", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_saltpeter", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_saltpeter", fame = 3 }, result = "초석에 관한 기록: 화약의 원료가 되는 흰 결정. 인도에서 대량으로 나왔다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_saltpeter", affinity = 1 }, result = "초석의 관련 자료를 받았다. 선물에 대한 감사와 함께 화약의 원료가 되는 흰 결정. 인도에서 대량으로 나왔다." },
 		},
 	},
 	{
@@ -1218,8 +1219,8 @@ local Events: { Event } = {
 			"신부가 성당 문을 연다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_goa_church", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_goa_church", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_goa_church", fame = 3 }, result = "봄 예수 성당에 관한 기록: 고아에 선 붉은 돌 성당." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_goa_church", affinity = 1 }, result = "봄 예수 성당의 관련 자료를 받았다. 선물에 대한 감사와 함께 고아에 선 붉은 돌 성당." },
 		},
 	},
 	{
@@ -1229,8 +1230,8 @@ local Events: { Event } = {
 			"대표가 후추 열매를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_pepper_vine", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pepper_vine", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_pepper_vine", fame = 3 }, result = "상인 대표는 후추 덩굴이 자라는 농가의 이야기를 들려주었다. 신밧드의 항해담과 실제 향신료 교역을 구분했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_pepper_vine", affinity = 1 }, result = "상인 대표는 후추 덩굴이 자라는 농가의 이야기를 들려주었다. 신밧드의 항해담과 실제 향신료 교역을 구분했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1240,8 +1241,8 @@ local Events: { Event } = {
 			"어부가 지렛대를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_cochin_nets", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_cochin_nets", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_cochin_nets", fame = 3 }, result = "코친 중국식 어망에 관한 기록: 해안에 줄지어 선 거대한 지렛대식 그물." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_cochin_nets", affinity = 1 }, result = "코친 중국식 어망의 관련 자료를 받았다. 선물에 대한 감사와 함께 해안에 줄지어 선 거대한 지렛대식 그물." },
 		},
 	},
 	{
@@ -1251,8 +1252,8 @@ local Events: { Event } = {
 			"보석상이 푸른 돌을 빛에 비춘다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "min_sapphire", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_sapphire", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "min_sapphire", fame = 3 }, result = "사파이어에 관한 기록: 푸른 빛의 단단한 보석. 실론의 강바닥에서 건진다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "min_sapphire", affinity = 1 }, result = "사파이어의 관련 자료를 받았다. 선물에 대한 감사와 함께 푸른 빛의 단단한 보석. 실론의 강바닥에서 건진다." },
 		},
 	},
 	{
@@ -1262,8 +1263,8 @@ local Events: { Event } = {
 			"직공이 인쇄 천을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_indigo_plant", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_indigo_plant", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_indigo_plant", fame = 3 }, result = "인디고 풀에 관한 기록: 잎을 발효시켜 깊은 푸른 염료를 만든다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_indigo_plant", affinity = 1 }, result = "인디고 풀의 관련 자료를 받았다. 선물에 대한 감사와 함께 잎을 발효시켜 깊은 푸른 염료를 만든다." },
 		},
 	},
 	{
@@ -1273,8 +1274,8 @@ local Events: { Event } = {
 			"서기가 붓을 내려놓는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_ganges_delta", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_ganges_delta", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_ganges_delta", fame = 3 }, result = "갠지스 삼각주에 관한 기록: 수많은 물길이 갈라지는 거대한 강어귀." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_ganges_delta", affinity = 1 }, result = "갠지스 삼각주의 관련 자료를 받았다. 선물에 대한 감사와 함께 수많은 물길이 갈라지는 거대한 강어귀." },
 		},
 	},
 	{
@@ -1284,8 +1285,8 @@ local Events: { Event } = {
 			"관리가 해협을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_malacca_strait", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_malacca_strait", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_malacca_strait", fame = 3 }, result = "말라카 해협에 관한 기록: 동서 바다를 잇는 좁은 물길. 향신료 교역의 목줄이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_malacca_strait", affinity = 1 }, result = "말라카 해협의 관련 자료를 받았다. 선물에 대한 감사와 함께 동서 바다를 잇는 좁은 물길. 향신료 교역의 목줄이다." },
 		},
 	},
 	{
@@ -1295,8 +1296,8 @@ local Events: { Event } = {
 			"선원이 해변을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_mozambique_channel", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mozambique_channel", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_mozambique_channel", fame = 3 }, result = "모잠비크 해협에 관한 기록: 아프리카와 마다가스카르 사이의 긴 바다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mozambique_channel", affinity = 1 }, result = "모잠비크 해협의 관련 자료를 받았다. 선물에 대한 감사와 함께 아프리카와 마다가스카르 사이의 긴 바다." },
 		},
 	},
 	{
@@ -1306,8 +1307,8 @@ local Events: { Event } = {
 			"수도사가 낡은 해도를 편다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_manila_intramuros", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_manila_intramuros", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_manila_intramuros", fame = 3 }, result = "인트라무로스에 관한 기록: 돌성벽으로 둘러싸인 마닐라의 옛 시가지." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_manila_intramuros", affinity = 1 }, result = "인트라무로스의 관련 자료를 받았다. 선물에 대한 감사와 함께 돌성벽으로 둘러싸인 마닐라의 옛 시가지." },
 		},
 	},
 	{
@@ -1317,8 +1318,8 @@ local Events: { Event } = {
 			"무역상이 푸른 접시를 올려놓는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_ming_vase", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_ming_vase", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_ming_vase", fame = 3 }, result = "명대 자기에 관한 기록: 푸른 무늬가 정교한 먼 동쪽의 도자기." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_ming_vase", affinity = 1 }, result = "명대 자기의 관련 자료를 받았다. 선물에 대한 감사와 함께 푸른 무늬가 정교한 먼 동쪽의 도자기." },
 		},
 	},
 	{
@@ -1328,8 +1329,8 @@ local Events: { Event } = {
 			"행상인이 장부를 넘긴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_lacquer_box", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_lacquer_box", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_lacquer_box", fame = 3 }, result = "칠기 상자에 관한 기록: 윤나는 옻칠에 금가루로 무늬를 넣은 상자." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_lacquer_box", affinity = 1 }, result = "칠기 상자의 관련 자료를 받았다. 선물에 대한 감사와 함께 윤나는 옻칠에 금가루로 무늬를 넣은 상자." },
 		},
 	},
 	{
@@ -1339,8 +1340,8 @@ local Events: { Event } = {
 			"선장이 돛을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_south_china_sea", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_south_china_sea", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_south_china_sea", fame = 3 }, result = "남중국해에 관한 기록: 수많은 암초와 섬이 흩어진 넓은 바다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_south_china_sea", affinity = 1 }, result = "남중국해의 관련 자료를 받았다. 선물에 대한 감사와 함께 수많은 암초와 섬이 흩어진 넓은 바다." },
 		},
 	},
 	{
@@ -1350,8 +1351,8 @@ local Events: { Event } = {
 			"승려가 찻잔을 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_tea_plant", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_tea_plant", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_tea_plant", fame = 3 }, result = "차나무에 관한 기록: 먼 동쪽에서 온 상록수. 잎을 말려 우리는 차가 부유한 상인들 사이에서 유행했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_tea_plant", affinity = 1 }, result = "차나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 먼 동쪽에서 온 상록수. 잎을 말려 우리는 차가 부유한 상인들 사이에서 유행했다." },
 		},
 	},
 	{
@@ -1361,8 +1362,8 @@ local Events: { Event } = {
 			"직공이 비단을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_mulberry", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_mulberry", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_mulberry", fame = 3 }, result = "뽕나무에 관한 기록: 누에가 먹는 잎의 나무. 비단의 시작이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_mulberry", affinity = 1 }, result = "뽕나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 누에가 먹는 잎의 나무. 비단의 시작이다." },
 		},
 	},
 	{
@@ -1372,8 +1373,8 @@ local Events: { Event } = {
 			"뱃사공이 노를 짚는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_great_wall", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_great_wall", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_great_wall", fame = 3 }, result = "만리장성에 관한 기록: 산등성이를 따라 이어지는 끝없는 성벽." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_great_wall", affinity = 1 }, result = "만리장성의 관련 자료를 받았다. 선물에 대한 감사와 함께 산등성이를 따라 이어지는 끝없는 성벽." },
 		},
 	},
 	{
@@ -1383,8 +1384,8 @@ local Events: { Event } = {
 			"통역관이 네덜란드 책을 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_dejima", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_dejima", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_dejima", fame = 3 }, result = "통역관은 데지마의 제한된 교역에 쓰인 문서와 언어를 설명했다. 해외 교류의 기록을 유령선 괴담과 혼동하지 않았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_dejima", affinity = 1 }, result = "통역관은 데지마의 제한된 교역에 쓰인 문서와 언어를 설명했다. 해외 교류의 기록을 유령선 괴담과 혼동하지 않았다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1394,8 +1395,8 @@ local Events: { Event } = {
 			"상인이 쌀 영수증을 흔든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_rice_paddy", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_rice_paddy", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_rice_paddy", fame = 3 }, result = "논벼에 관한 기록: 물을 대어 키우는 아시아의 주식." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_rice_paddy", affinity = 1 }, result = "논벼의 관련 자료를 받았다. 선물에 대한 감사와 함께 물을 대어 키우는 아시아의 주식." },
 		},
 	},
 	{
@@ -1405,8 +1406,8 @@ local Events: { Event } = {
 			"무사가 조용히 인사한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_samurai_helm", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_samurai_helm", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_samurai_helm", fame = 3 }, result = "무사의 투구에 관한 기록: 뿔 장식이 달린 철제 투구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_samurai_helm", affinity = 1 }, result = "무사의 투구의 관련 자료를 받았다. 선물에 대한 감사와 함께 뿔 장식이 달린 철제 투구." },
 		},
 	},
 	{
@@ -1416,8 +1417,8 @@ local Events: { Event } = {
 			"어부가 등불을 흔든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_squid_giant", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_squid_giant", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_squid_giant", fame = 3 }, result = "대왕오징어에 관한 기록: 깊은 바다에서 올라오는 거대한 촉수의 짐승." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_squid_giant", affinity = 1 }, result = "대왕오징어의 관련 자료를 받았다. 선물에 대한 감사와 함께 깊은 바다에서 올라오는 거대한 촉수의 짐승." },
 		},
 	},
 	{
@@ -1427,8 +1428,8 @@ local Events: { Event } = {
 			"관리가 인삼 뿌리를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_ginseng_root", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_ginseng_root", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_ginseng_root", fame = 3 }, result = "왜관 관리는 인삼의 교역 기록과 약초에 관한 전통 지식을 들려주었다. 약효의 역사적 믿음과 현대적 검증은 구분했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_ginseng_root", affinity = 1 }, result = "왜관 관리는 인삼의 교역 기록과 약초에 관한 전통 지식을 들려주었다. 약효의 역사적 믿음과 현대적 검증은 구분했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1449,8 +1450,8 @@ local Events: { Event } = {
 			"조개잡이가 호미를 든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_crane", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_crane", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_crane", fame = 3 }, result = "어민은 두루미가 날아드는 갯벌을 가리켰다. 길조라는 전승과 새의 실제 서식 기록을 나누었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_crane", affinity = 1 }, result = "어민은 두루미가 날아드는 갯벌을 가리켰다. 길조라는 전승과 새의 실제 서식 기록을 나누었다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1460,8 +1461,8 @@ local Events: { Event } = {
 			"농장주가 밭을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_bamboo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_bamboo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_bamboo", fame = 3 }, result = "대나무에 관한 기록: 빨리 자라고 속이 빈 곧은 풀. 동아시아의 모든 곳에 쓰인다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_bamboo", affinity = 1 }, result = "대나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 빨리 자라고 속이 빈 곧은 풀. 동아시아의 모든 곳에 쓰인다." },
 		},
 	},
 	{
@@ -1471,8 +1472,8 @@ local Events: { Event } = {
 			"장수가 색색 등을 흔든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_lacquer_box", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_lacquer_box", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_lacquer_box", fame = 3 }, result = "칠기 상자에 관한 기록: 윤나는 옻칠에 금가루로 무늬를 넣은 상자." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_lacquer_box", affinity = 1 }, result = "칠기 상자의 관련 자료를 받았다. 선물에 대한 감사와 함께 윤나는 옻칠에 금가루로 무늬를 넣은 상자." },
 		},
 	},
 	{
@@ -1482,8 +1483,8 @@ local Events: { Event } = {
 			"주지가 합장한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "relic_buddha_head", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_buddha_head", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "relic_buddha_head", fame = 3 }, result = "불상 머리에 관한 기록: 고요한 얼굴의 돌 불상 조각." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "relic_buddha_head", affinity = 1 }, result = "불상 머리의 관련 자료를 받았다. 선물에 대한 감사와 함께 고요한 얼굴의 돌 불상 조각." },
 		},
 	},
 	{
@@ -1493,8 +1494,8 @@ local Events: { Event } = {
 			"순례자가 탑을 올려다본다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_shwedagon", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_shwedagon", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_shwedagon", fame = 3 }, result = "쉐다곤 파고다에 관한 기록: 황금빛으로 빛나는 거대한 탑." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_shwedagon", affinity = 1 }, result = "쉐다곤 파고다의 관련 자료를 받았다. 선물에 대한 감사와 함께 황금빛으로 빛나는 거대한 탑." },
 		},
 	},
 	{
@@ -1504,8 +1505,8 @@ local Events: { Event } = {
 			"관리가 해협을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_malacca_strait", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_malacca_strait", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_malacca_strait", fame = 3 }, result = "말라카 해협에 관한 기록: 동서 바다를 잇는 좁은 물길. 향신료 교역의 목줄이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_malacca_strait", affinity = 1 }, result = "말라카 해협의 관련 자료를 받았다. 선물에 대한 감사와 함께 동서 바다를 잇는 좁은 물길. 향신료 교역의 목줄이다." },
 		},
 	},
 	{
@@ -1515,8 +1516,8 @@ local Events: { Event } = {
 			"시민이 운하를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_batavia_canal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_batavia_canal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_batavia_canal", fame = 3 }, result = "바타비아 운하에 관한 기록: 네덜란드식으로 판 열대의 운하 도시." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_batavia_canal", affinity = 1 }, result = "바타비아 운하의 관련 자료를 받았다. 선물에 대한 감사와 함께 네덜란드식으로 판 열대의 운하 도시." },
 		},
 	},
 	{
@@ -1526,8 +1527,8 @@ local Events: { Event } = {
 			"선원이 별을 올려다본다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_pearl_oyster", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_pearl_oyster", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_pearl_oyster", fame = 3 }, result = "진주조개에 관한 기록: 속에 진주를 품는 큰 조개." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_pearl_oyster", affinity = 1 }, result = "진주조개의 관련 자료를 받았다. 선물에 대한 감사와 함께 속에 진주를 품는 큰 조개." },
 		},
 	},
 	{
@@ -1537,8 +1538,8 @@ local Events: { Event } = {
 			"사자가 정향 가지를 보여 준다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_clove_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_clove_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_clove_tree", fame = 3 }, result = "술탄의 사자는 정향을 둘러싼 섬의 교역 경쟁을 설명했다. 향신료의 자연사와 권력의 역사를 함께 기록했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_clove_tree", affinity = 1 }, result = "술탄의 사자는 정향을 둘러싼 섬의 교역 경쟁을 설명했다. 향신료의 자연사와 권력의 역사를 함께 기록했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1548,8 +1549,8 @@ local Events: { Event } = {
 			"농부가 광주리를 든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_nutmeg_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_nutmeg_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_nutmeg_tree", fame = 3 }, result = "육두구나무에 관한 기록: 씨앗과 껍질이 각각 다른 향신료가 되는 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_nutmeg_tree", affinity = 1 }, result = "육두구나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 씨앗과 껍질이 각각 다른 향신료가 되는 나무." },
 		},
 	},
 	{
@@ -1559,8 +1560,8 @@ local Events: { Event } = {
 			"농장주가 육두구를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "bot_nutmeg_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_nutmeg_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "bot_nutmeg_tree", fame = 3 }, result = "농장주는 육두구의 향을 설명했지만 기록자는 향신료 독점과 식민 지배의 역사도 함께 살폈다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "bot_nutmeg_tree", affinity = 1 }, result = "농장주는 육두구의 향을 설명했지만 기록자는 향신료 독점과 식민 지배의 역사도 함께 살폈다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1570,8 +1571,8 @@ local Events: { Event } = {
 			"뱃사공이 수상 가옥을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_orangutan", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_orangutan", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_orangutan", fame = 3 }, result = "오랑우탄에 관한 기록: 보르네오 숲의 붉은 털 유인원. 숲의 사람이란 뜻이다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_orangutan", affinity = 1 }, result = "오랑우탄의 관련 자료를 받았다. 선물에 대한 감사와 함께 보르네오 숲의 붉은 털 유인원. 숲의 사람이란 뜻이다." },
 		},
 	},
 	{
@@ -1581,8 +1582,8 @@ local Events: { Event } = {
 			"어부가 그물을 풀어 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_cod_grand", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cod_grand", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_cod_grand", fame = 3 }, result = "그랜드뱅크 대구에 관한 기록: 뉴펀들랜드 앞바다를 가득 메운 대구 떼. 유럽 배들이 이를 쫓아 건넜다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cod_grand", affinity = 1 }, result = "그랜드뱅크 대구의 관련 자료를 받았다. 선물에 대한 감사와 함께 뉴펀들랜드 앞바다를 가득 메운 대구 떼. 유럽 배들이 이를 쫓아 건넜다." },
 		},
 	},
 	{
@@ -1592,8 +1593,8 @@ local Events: { Event } = {
 			"선장이 먼 수평선을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_labrador_current", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_labrador_current", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_labrador_current", fame = 3 }, result = "래브라도 해류에 관한 기록: 빙산을 싣고 내려오는 차가운 해류." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_labrador_current", affinity = 1 }, result = "래브라도 해류의 관련 자료를 받았다. 선물에 대한 감사와 함께 빙산을 싣고 내려오는 차가운 해류." },
 		},
 	},
 	{
@@ -1603,8 +1604,8 @@ local Events: { Event } = {
 			"사냥꾼이 가죽을 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_beaver", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_beaver", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_beaver", fame = 3 }, result = "비버에 관한 기록: 댐을 짓는 큰 설치류. 모피가 유럽 모자 시장을 뒤흔들었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_beaver", affinity = 1 }, result = "비버의 관련 자료를 받았다. 선물에 대한 감사와 함께 댐을 짓는 큰 설치류. 모피가 유럽 모자 시장을 뒤흔들었다." },
 		},
 	},
 	{
@@ -1614,8 +1615,8 @@ local Events: { Event } = {
 			"인쇄공이 잉크 묻은 손을 턴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_old_north_church", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_old_north_church", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_old_north_church", fame = 3 }, result = "올드 노스 교회에 관한 기록: 보스턴 언덕 위의 높은 첨탑 교회." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_old_north_church", affinity = 1 }, result = "올드 노스 교회의 관련 자료를 받았다. 선물에 대한 감사와 함께 보스턴 언덕 위의 높은 첨탑 교회." },
 		},
 	},
 	{
@@ -1625,8 +1626,8 @@ local Events: { Event } = {
 			"상인이 장부를 펼친다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_beaver", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_beaver", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_beaver", fame = 3 }, result = "비버에 관한 기록: 댐을 짓는 큰 설치류. 모피가 유럽 모자 시장을 뒤흔들었다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_beaver", affinity = 1 }, result = "비버의 관련 자료를 받았다. 선물에 대한 감사와 함께 댐을 짓는 큰 설치류. 모피가 유럽 모자 시장을 뒤흔들었다." },
 		},
 	},
 	{
@@ -1636,8 +1637,8 @@ local Events: { Event } = {
 			"학자가 서가를 정리한다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_independence_hall", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_independence_hall", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_independence_hall", fame = 3 }, result = "독립 회관에 관한 기록: 신생국의 선언이 낭독될 붉은 벽돌 건물." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_independence_hall", affinity = 1 }, result = "독립 회관의 관련 자료를 받았다. 선물에 대한 감사와 함께 신생국의 선언이 낭독될 붉은 벽돌 건물." },
 		},
 	},
 	{
@@ -1647,8 +1648,8 @@ local Events: { Event } = {
 			"농장주가 논을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_tomato", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_tomato", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_tomato", fame = 3 }, result = "토마토에 관한 기록: 붉은 열매. 유럽에서는 처음엔 독이 있다고 여겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_tomato", affinity = 1 }, result = "토마토의 관련 자료를 받았다. 선물에 대한 감사와 함께 붉은 열매. 유럽에서는 처음엔 독이 있다고 여겼다." },
 		},
 	},
 	{
@@ -1658,8 +1659,8 @@ local Events: { Event } = {
 			"상인이 강을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_mississippi", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mississippi", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_mississippi", fame = 3 }, result = "미시시피 강에 관한 기록: 대륙의 중심을 가르는 큰 강." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_mississippi", affinity = 1 }, result = "미시시피 강의 관련 자료를 받았다. 선물에 대한 감사와 함께 대륙의 중심을 가르는 큰 강." },
 		},
 	},
 	{
@@ -1669,8 +1670,8 @@ local Events: { Event } = {
 			"해적이 럼 잔을 들어 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_pirate_code", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_pirate_code", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_pirate_code", fame = 3 }, result = "늙은 해적은 선원들이 맺었던 규약을 이야기했다. 가상의 증언과 실제 사략·해적의 역사를 구분했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_pirate_code", affinity = 1 }, result = "늙은 해적은 선원들이 맺었던 규약을 이야기했다. 가상의 증언과 실제 사략·해적의 역사를 구분했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1680,8 +1681,8 @@ local Events: { Event } = {
 			"경비병이 쇠사슬을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_castillo_havana", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_castillo_havana", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_castillo_havana", fame = 3 }, result = "아바나 항구 요새에 관한 기록: 항구 입구를 가로막는 쇠사슬 요새." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_castillo_havana", affinity = 1 }, result = "아바나 항구 요새의 관련 자료를 받았다. 선물에 대한 감사와 함께 항구 입구를 가로막는 쇠사슬 요새." },
 		},
 	},
 	{
@@ -1691,8 +1692,8 @@ local Events: { Event } = {
 			"서기가 붓을 든다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_aztec_calendar", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_aztec_calendar", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_aztec_calendar", fame = 3 }, result = "서기는 태양석의 원형 문양을 가리켰다. 고대 멕시코의 시간관과 제의의 의미를 단순한 보물 이야기로 줄이지 않았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_aztec_calendar", affinity = 1 }, result = "서기는 태양석의 원형 문양을 가리켰다. 고대 멕시코의 시간관과 제의의 의미를 단순한 보물 이야기로 줄이지 않았다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1702,8 +1703,8 @@ local Events: { Event } = {
 			"벌목꾼이 톱을 내려놓는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_logwood_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_logwood_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_logwood_tree", fame = 3 }, result = "로그우드에 관한 기록: 보랏빛 염료를 내는 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_logwood_tree", affinity = 1 }, result = "로그우드의 관련 자료를 받았다. 선물에 대한 감사와 함께 보랏빛 염료를 내는 나무." },
 		},
 	},
 	{
@@ -1713,8 +1714,8 @@ local Events: { Event } = {
 			"상인이 럼 통을 두드린다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_port_royal", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_port_royal", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_port_royal", fame = 3 }, result = "포트로열에 관한 기록: 해적의 도시로 불리던 자메이카 항구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_port_royal", affinity = 1 }, result = "포트로열의 관련 자료를 받았다. 선물에 대한 감사와 함께 해적의 도시로 불리던 자메이카 항구." },
 		},
 	},
 	{
@@ -1724,8 +1725,8 @@ local Events: { Event } = {
 			"수사가 오래된 성당을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_amber_dominican", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_amber_dominican", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_amber_dominican", fame = 3 }, result = "도미니카 호박에 관한 기록: 푸른 빛이 도는 귀한 호박." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_amber_dominican", affinity = 1 }, result = "도미니카 호박의 관련 자료를 받았다. 선물에 대한 감사와 함께 푸른 빛이 도는 귀한 호박." },
 		},
 	},
 	{
@@ -1735,8 +1736,8 @@ local Events: { Event } = {
 			"포병이 대포를 쓰다듬는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_fortress_morro", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_fortress_morro", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_fortress_morro", fame = 3 }, result = "엘모로 요새에 관한 기록: 바다를 향한 거대한 돌 요새." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_fortress_morro", affinity = 1 }, result = "엘모로 요새의 관련 자료를 받았다. 선물에 대한 감사와 함께 바다를 향한 거대한 돌 요새." },
 		},
 	},
 	{
@@ -1746,8 +1747,8 @@ local Events: { Event } = {
 			"농장주가 사탕수수를 꺾는다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_sugar_mill", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_sugar_mill", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_sugar_mill", fame = 3 }, result = "제당소의 기록은 설탕의 생산 과정뿐 아니라 강제 노동의 역사도 전한다. 기록자는 두 내용을 함께 남겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_sugar_mill", affinity = 1 }, result = "제당소의 기록은 설탕의 생산 과정뿐 아니라 강제 노동의 역사도 전한다. 기록자는 두 내용을 함께 남겼다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1757,8 +1758,8 @@ local Events: { Event } = {
 			"안내인이 열매를 건넨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_cacao_pod", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cacao_pod", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_cacao_pod", fame = 3 }, result = "카카오 꼬투리에 관한 기록: 씨앗으로 쓴 음료를 만드는 열매." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cacao_pod", affinity = 1 }, result = "카카오 꼬투리의 관련 자료를 받았다. 선물에 대한 감사와 함께 씨앗으로 쓴 음료를 만드는 열매." },
 		},
 	},
 	{
@@ -1768,8 +1769,8 @@ local Events: { Event } = {
 			"잠수부가 조개를 쥔다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_pearl_carib", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_pearl_carib", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_pearl_carib", fame = 3 }, result = "카리브 진주에 관한 기록: 카리브 해에서 건진 진주." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_pearl_carib", affinity = 1 }, result = "카리브 진주의 관련 자료를 받았다. 선물에 대한 감사와 함께 카리브 해에서 건진 진주." },
 		},
 	},
 	{
@@ -1779,8 +1780,8 @@ local Events: { Event } = {
 			"총독이 성벽을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_cartagena_walls", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_cartagena_walls", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_cartagena_walls", fame = 3 }, result = "카르타헤나 성벽에 관한 기록: 보물 함대를 지키던 두꺼운 성벽." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_cartagena_walls", affinity = 1 }, result = "카르타헤나 성벽의 관련 자료를 받았다. 선물에 대한 감사와 함께 보물 함대를 지키던 두꺼운 성벽." },
 		},
 	},
 	{
@@ -1790,8 +1791,8 @@ local Events: { Event } = {
 			"상관장이 은화를 센다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_silver_ore_potosi", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_silver_ore_potosi", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_silver_ore_potosi", fame = 3 }, result = "상관장은 은광에서 항구까지 이어지는 거래 장부를 보여 주었다. 은의 이익과 광산 노동의 피해를 구분해 기록했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_silver_ore_potosi", affinity = 1 }, result = "상관장은 은광에서 항구까지 이어지는 거래 장부를 보여 주었다. 은의 이익과 광산 노동의 피해를 구분해 기록했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1801,8 +1802,8 @@ local Events: { Event } = {
 			"길잡이가 노를 내민다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_jaguar", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_jaguar", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_jaguar", fame = 3 }, result = "재규어에 관한 기록: 밀림의 점박이 맹수." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_jaguar", affinity = 1 }, result = "재규어의 관련 자료를 받았다. 선물에 대한 감사와 함께 밀림의 점박이 맹수." },
 		},
 	},
 	{
@@ -1812,8 +1813,8 @@ local Events: { Event } = {
 			"채취꾼이 고무 공을 튕긴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_rubber_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_rubber_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_rubber_tree", fame = 3 }, result = "고무나무에 관한 기록: 흰 수액이 고무가 되는 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_rubber_tree", affinity = 1 }, result = "고무나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 흰 수액이 고무가 되는 나무." },
 		},
 	},
 	{
@@ -1823,8 +1824,8 @@ local Events: { Event } = {
 			"뱃사람이 동쪽을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_turtle_green", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_turtle_green", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_turtle_green", fame = 3 }, result = "푸른바다거북에 관한 기록: 카리브 모래밭에서 알을 낳는 거북." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_turtle_green", affinity = 1 }, result = "푸른바다거북의 관련 자료를 받았다. 선물에 대한 감사와 함께 카리브 모래밭에서 알을 낳는 거북." },
 		},
 	},
 	{
@@ -1834,8 +1835,8 @@ local Events: { Event } = {
 			"신부가 종탑을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_brazilwood_tree", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_brazilwood_tree", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_brazilwood_tree", fame = 3 }, result = "브라질나무에 관한 기록: 붉은 염료를 내는 나무. 나라 이름이 여기서 나왔다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_brazilwood_tree", affinity = 1 }, result = "브라질나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 붉은 염료를 내는 나무. 나라 이름이 여기서 나왔다." },
 		},
 	},
 	{
@@ -1845,8 +1846,8 @@ local Events: { Event } = {
 			"어부가 설탕빵 산을 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_sugarloaf", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_sugarloaf", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_sugarloaf", fame = 3 }, result = "슈거로프 산에 관한 기록: 항구 앞에 솟은 둥근 바위산." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_sugarloaf", affinity = 1 }, result = "슈거로프 산의 관련 자료를 받았다. 선물에 대한 감사와 함께 항구 앞에 솟은 둥근 바위산." },
 		},
 	},
 	{
@@ -1856,8 +1857,8 @@ local Events: { Event } = {
 			"가우초가 말고삐를 당긴다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_rio_plata", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_rio_plata", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_rio_plata", fame = 3 }, result = "라플라타 강에 관한 기록: 넓은 하구의 흙빛 물." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_rio_plata", affinity = 1 }, result = "라플라타 강의 관련 자료를 받았다. 선물에 대한 감사와 함께 넓은 하구의 흙빛 물." },
 		},
 	},
 	{
@@ -1867,8 +1868,8 @@ local Events: { Event } = {
 			"상인이 가죽 더미를 가리킨다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_colonial_deed", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_colonial_deed", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_colonial_deed", fame = 3 }, result = "식민지 토지 문서에 관한 기록: 양피지에 쓴 땅 문서." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_colonial_deed", affinity = 1 }, result = "식민지 토지 문서의 관련 자료를 받았다. 선물에 대한 감사와 함께 양피지에 쓴 땅 문서." },
 		},
 	},
 	{
@@ -1878,8 +1879,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_kangaroo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kangaroo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_kangaroo", fame = 3 }, result = "캥거루에 관한 기록: 주머니에 새끼를 넣어 뛰어다니는 남쪽 대륙의 짐승." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kangaroo", affinity = 1 }, result = "캥거루의 관련 자료를 받았다. 선물에 대한 감사와 함께 주머니에 새끼를 넣어 뛰어다니는 남쪽 대륙의 짐승." },
 		},
 	},
 	{
@@ -1889,8 +1890,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_emu", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_emu", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_emu", fame = 3 }, result = "에뮤에 관한 기록: 날지 못하는 거대한 새." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_emu", affinity = 1 }, result = "에뮤의 관련 자료를 받았다. 선물에 대한 감사와 함께 날지 못하는 거대한 새." },
 		},
 	},
 	{
@@ -1900,8 +1901,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_eucalyptus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_eucalyptus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_eucalyptus", fame = 3 }, result = "유칼립투스에 관한 기록: 향기 나는 잎의 큰 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_eucalyptus", affinity = 1 }, result = "유칼립투스의 관련 자료를 받았다. 선물에 대한 감사와 함께 향기 나는 잎의 큰 나무." },
 		},
 	},
 	{
@@ -1911,8 +1912,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_great_barrier", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_great_barrier", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_great_barrier", fame = 3 }, result = "거대 산호초 지대에 관한 기록: 수천 킬로미터 이어지는 산호초." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_great_barrier", affinity = 1 }, result = "거대 산호초 지대의 관련 자료를 받았다. 선물에 대한 감사와 함께 수천 킬로미터 이어지는 산호초." },
 		},
 	},
 	{
@@ -1922,8 +1923,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_kiwi", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kiwi", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_kiwi", fame = 3 }, result = "키위에 관한 기록: 날지 못하는 작은 밤 새." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_kiwi", affinity = 1 }, result = "키위의 관련 자료를 받았다. 선물에 대한 감사와 함께 날지 못하는 작은 밤 새." },
 		},
 	},
 	{
@@ -1933,8 +1934,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "zoo_bird_paradise", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_bird_paradise", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "zoo_bird_paradise", fame = 3 }, result = "극락조에 관한 기록: 기다란 깃털이 눈부신 신비의 새. 다리 없는 새라는 소문이 돌았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "zoo_bird_paradise", affinity = 1 }, result = "극락조의 관련 자료를 받았다. 선물에 대한 감사와 함께 기다란 깃털이 눈부신 신비의 새. 다리 없는 새라는 소문이 돌았다." },
 		},
 	},
 	{
@@ -1944,8 +1945,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_hibiscus", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_hibiscus", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_hibiscus", fame = 3 }, result = "히비스커스에 관한 기록: 붉은 열대 꽃." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_hibiscus", affinity = 1 }, result = "히비스커스의 관련 자료를 받았다. 선물에 대한 감사와 함께 붉은 열대 꽃." },
 		},
 	},
 	{
@@ -1955,8 +1956,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_bounty_nail", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_bounty_nail", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_bounty_nail", fame = 3 }, result = "안내인은 낡은 못에 관한 해상 교류의 기록을 들려주었다. 타히티 사람들의 항해 지식과 외래 선박의 기록을 구분했다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_bounty_nail", affinity = 1 }, result = "안내인은 낡은 못에 관한 해상 교류의 기록을 들려주었다. 타히티 사람들의 항해 지식과 외래 선박의 기록을 구분했다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -1966,8 +1967,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_sandalwood_hawaii", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_sandalwood_hawaii", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_sandalwood_hawaii", fame = 3 }, result = "하와이 백단나무에 관한 기록: 향기로운 속살의 섬 나무." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_sandalwood_hawaii", affinity = 1 }, result = "하와이 백단나무의 관련 자료를 받았다. 선물에 대한 감사와 함께 향기로운 속살의 섬 나무." },
 		},
 	},
 	{
@@ -1977,8 +1978,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "pac_coral_white", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_coral_white", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "pac_coral_white", fame = 3 }, result = "흰 산호에 관한 기록: 하얗게 마른 산호 조각." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "pac_coral_white", affinity = 1 }, result = "흰 산호의 관련 자료를 받았다. 선물에 대한 감사와 함께 하얗게 마른 산호 조각." },
 		},
 	},
 	{
@@ -1988,8 +1989,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_acapulco_fort", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_acapulco_fort", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_acapulco_fort", fame = 3 }, result = "아카풀코 요새에 관한 기록: 마닐라 갈레온을 맞이하던 요새." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_acapulco_fort", affinity = 1 }, result = "아카풀코 요새의 관련 자료를 받았다. 선물에 대한 감사와 함께 마닐라 갈레온을 맞이하던 요새." },
 		},
 	},
 	{
@@ -1999,8 +2000,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_panama_viejo", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_panama_viejo", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_panama_viejo", fame = 3 }, result = "옛 파나마에 관한 기록: 바닷가의 폐허가 된 옛 도시." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_panama_viejo", affinity = 1 }, result = "옛 파나마의 관련 자료를 받았다. 선물에 대한 감사와 함께 바닷가의 폐허가 된 옛 도시." },
 		},
 	},
 	{
@@ -2010,8 +2011,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_cacao_pod", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cacao_pod", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_cacao_pod", fame = 3 }, result = "카카오 꼬투리에 관한 기록: 씨앗으로 쓴 음료를 만드는 열매." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_cacao_pod", affinity = 1 }, result = "카카오 꼬투리의 관련 자료를 받았다. 선물에 대한 감사와 함께 씨앗으로 쓴 음료를 만드는 열매." },
 		},
 	},
 	{
@@ -2021,8 +2022,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "am_inca_quipu", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_inca_quipu", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "am_inca_quipu", fame = 3 }, result = "안내인은 매듭으로 정보를 표현한 키푸를 설명했다. 아직 해석되지 않은 기록을 마음대로 풀어 썼다고 주장하지 않았다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "am_inca_quipu", affinity = 1 }, result = "안내인은 매듭으로 정보를 표현한 키푸를 설명했다. 아직 해석되지 않은 기록을 마음대로 풀어 썼다고 주장하지 않았다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -2032,8 +2033,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_humboldt", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_humboldt", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_humboldt", fame = 3 }, result = "선원은 해안을 따라 흐르는 차가운 물살의 기록을 내놓았다. 훔볼트 해류와 어장의 관계를 참고 자료로 남겼다." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_humboldt", affinity = 1 }, result = "선원은 해안을 따라 흐르는 차가운 물살의 기록을 내놓았다. 훔볼트 해류와 어장의 관계를 참고 자료로 남겼다. 선물에 감사하는 인물의 말도 함께 기록했다." },
 		},
 	},
 	{
@@ -2043,8 +2044,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_golden_gate", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_golden_gate", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_golden_gate", fame = 3 }, result = "골든게이트에 관한 기록: 안개 속에서 열리는 만 입구." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_golden_gate", affinity = 1 }, result = "골든게이트의 관련 자료를 받았다. 선물에 대한 감사와 함께 안개 속에서 열리는 만 입구." },
 		},
 	},
 	{
@@ -2054,8 +2055,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "site_sitka_church", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_sitka_church", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "site_sitka_church", fame = 3 }, result = "싯카 러시아 교회에 관한 기록: 양파 지붕의 북쪽 교회." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "site_sitka_church", affinity = 1 }, result = "싯카 러시아 교회의 관련 자료를 받았다. 선물에 대한 감사와 함께 양파 지붕의 북쪽 교회." },
 		},
 	},
 	{
@@ -2065,8 +2066,8 @@ local Events: { Event } = {
 			"안내인이 해도 한 장을 펼쳐 보인다.",
 		},
 		choices = {
-			{ text = "이야기를 기록한다", effect = { cardId = "geo_inside_passage", fame = 3 }, result = "수첩에 귀한 이야기를 옮겨 적었다." },
-			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_inside_passage", affinity = 1 }, result = "상대가 기뻐하며 더 많은 이야기를 들려주었다." },
+			{ text = "이야기를 기록한다", effect = { cardId = "geo_inside_passage", fame = 3 }, result = "내부 항로에 관한 기록: 알래스카와 캐나다 해안의 섬 사이 물길." },
+			{ text = "작은 선물을 건넨다 (20코인)", cost = 20, effect = { cardId = "geo_inside_passage", affinity = 1 }, result = "내부 항로의 관련 자료를 받았다. 선물에 대한 감사와 함께 알래스카와 캐나다 해안의 섬 사이 물길." },
 		},
 	},
 }
@@ -2159,6 +2160,70 @@ for _, nid in { "england", "netherlands", "france", "ottoman", "swahili", "malab
 	end
 end
 
+
+-- 기존 선택 보상 카드가 우선이며, 카드 보상이 없는 국가·인물 사건만 참고 기록을 지정한다.
+local ReferenceCard: { [string]: string } = {
+	h_england_1 = "geo_gulfstream",
+	h_netherlands_1 = "finance_bill_exchange",
+	h_france_1 = "good_sugar",
+	h_ottoman_1 = "good_pepper",
+	h_swahili_1 = "geo_monsoon",
+	h_malabar_1 = "bot_pepper_vine",
+	h_japan_1 = "site_dejima",
+	h_new_spain_1 = "am_silver_ore_potosi",
+	h_portugal_1 = "relic_ship_log",
+	lc_1 = "nav_portolan",
+	hm_1 = "lang_ledger",
+	smith_1 = "min_swedish_iron",
+	england_lon = "geo_gulfstream",
+	england_cdz = "geo_trade_winds",
+	england_cap = "geo_cape_good_hope",
+	england_cal = "ast_old_observer",
+	england_syd = "nav_portolan",
+	netherlands_ams = "finance_bill_exchange",
+	netherlands_lis = "good_pepper",
+	netherlands_cap = "finance_marine_insurance",
+	netherlands_bat = "site_batavia_canal",
+	netherlands_nag = "site_dejima",
+	france_rou = "am_colonial_deed",
+	france_cdz = "good_sugar",
+	france_hav = "site_sugar_mill",
+	france_tah = "pac_hibiscus",
+	france_rou2 = "lang_ledger",
+	ottoman_ist = "good_pepper",
+	ottoman_ale = "geo_red_sea",
+	ottoman_ade = "good_pepper",
+	ottoman_mal = "finance_bill_exchange",
+	ottoman_ist2 = "site_bazaar_grand",
+	swahili_zan = "geo_monsoon",
+	swahili_kil = "site_kilwa",
+	swahili_ade = "geo_red_sea",
+	swahili_goa = "site_goa_church",
+	swahili_zan2 = "geo_monsoon",
+	malabar_cal = "bot_pepper_vine",
+	malabar_coc = "site_cochin_nets",
+	malabar_mal = "geo_monsoon",
+	malabar_can = "good_coffee",
+	malabar_cal2 = "good_pepper",
+	japan_nag = "site_dejima",
+	japan_osa = "good_silk",
+	japan_can = "lang_translation",
+	japan_mal = "geo_malacca_strait",
+	japan_edo = "pol_institution_records",
+	new_spain_ver = "am_silver_ore_potosi",
+	new_spain_hav = "geo_caribbean_sea",
+	new_spain_cad = "lang_ledger",
+	new_spain_aca = "am_emerald_colombia",
+	new_spain_ver2 = "finance_bill_exchange",
+	portugal_lis = "relic_ship_log",
+	portugal_elm = "site_elmina_castle",
+	portugal_cap = "geo_cape_good_hope",
+	portugal_cal = "good_pepper",
+	portugal_lis2 = "nav_portolan",
+}
+for _, e in Events do
+	e.loreCardId = ReferenceCard[e.id]
+end
 
 local ById: { [string]: Event } = {}
 for _, e in Events do
