@@ -340,6 +340,9 @@ local failedKeys = {}
 -- 원본 메시/UV/PBR, AssetId, 게임 진행 데이터, 실서버 성능은 변경하지 않는다.
 local geometryChecked, geometryInvalid = 0, 0
 local geometryIssues = {}
+-- [원본 재질 전수 진단] Studio에서만 수입 직후의 재질 상태를 분류한다.
+local materialGroups = {}
+local materialChecked, materialUnreadable, materialSuspects = 0, 0, 0
 if studioAudit then
 	ReplicatedStorage:SetAttribute("MareModelGeometryAuditState", "RUNNING")
 	ReplicatedStorage:SetAttribute("MareModelAuditState", "RUNNING")
@@ -391,6 +394,52 @@ for _ = 1, 12 do
 							geometryInvalid += 1
 							if #geometryIssues < 24 then table.insert(geometryIssues, item.key) end
 						end
+					end
+					-- [원본 재질 전수 진단] 기존 보정 전에 측정하며, 지도 접근 실패와 지도 없음은 구분한다.
+					if studioAudit then
+						materialChecked += 1
+						local detail = { parts = 0, grayPlasticWithoutMap = 0, colorMaps = 0, normalMaps = 0,
+							roughnessMaps = 0, metalnessMaps = 0, textureParts = 0, variants = 0, unreadableMaps = 0 }
+						for _, piece in model:GetDescendants() do
+							if piece:IsA("BasePart") and piece.Transparency < 0.95 then
+								detail.parts += 1
+								local textured = piece:IsA("MeshPart") and piece.TextureID ~= ""
+								for _, child in piece:GetChildren() do
+									if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true; break end
+								end
+								if textured then detail.textureParts += 1 end
+								local variant = piece.MaterialVariant ~= ""
+								if variant then detail.variants += 1 end
+								local surface = piece:FindFirstChildOfClass("SurfaceAppearance")
+								local colorMapped, colorUnreadable = false, false
+								if surface then
+									for _, map in { "ColorMap", "NormalMap", "RoughnessMap", "MetalnessMap" } do
+										local readable, present = pcall(function() return (surface :: any)[map] ~= "" end)
+										if not readable then
+											detail.unreadableMaps += 1
+											if map == "ColorMap" then colorUnreadable = true end
+										elseif present then
+											if map == "ColorMap" then detail.colorMaps += 1; colorMapped = true
+											elseif map == "NormalMap" then detail.normalMaps += 1
+											elseif map == "RoughnessMap" then detail.roughnessMaps += 1
+											else detail.metalnessMaps += 1 end
+										end
+									end
+								end
+								local low = math.min(piece.Color.R, piece.Color.G, piece.Color.B)
+								local high = math.max(piece.Color.R, piece.Color.G, piece.Color.B)
+								if not textured and not variant and not colorMapped and not colorUnreadable
+									and low >= 0.35 and high - low <= 0.10
+									and (piece.Material == Enum.Material.Plastic or piece.Material == Enum.Material.SmoothPlastic) then
+									detail.grayPlasticWithoutMap += 1
+								end
+							end
+						end
+						if detail.grayPlasticWithoutMap > 0 then materialSuspects += 1 end
+						materialUnreadable += detail.unreadableMaps
+						local category = materialGroups[item.kind]
+						if not category then category = {}; materialGroups[item.kind] = category end
+						category[item.name] = detail
 					end
 					-- [항구 우물] Studio 실측에서 콘텐츠 표현이 없는 5개 TextureID만 제거한다.
 					-- CC0 원본 모델의 메시·스케일·구조는 보존하며, 라이브러리 복제 전에 재질을 복구한다.
@@ -570,7 +619,14 @@ for _ = 1, 12 do
 				}))
 				ReplicatedStorage:SetAttribute("MareModelGeometryAuditState",
 					if geometryInvalid == 0 and geometryChecked == #queue then "PASS" else "FAIL")
-				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys}))
+				-- [전체 재질 결과] 종류별로 나누어 Studio 속성 크기를 제한한다. 지도 없는 회색은 의심 후보일 뿐 원본 유실 확정이 아니다.
+				for kind, details in materialGroups do
+					local group = library:FindFirstChild(kind)
+					if group then group:SetAttribute("MareMaterialAudit", HttpService:JSONEncode(details)) end
+				end
+				ReplicatedStorage:SetAttribute("MareModelAuditTotals", HttpService:JSONEncode({registered = #queue, loaded = loaded, failed = failed, errors = failedKeys,
+					materialChecked = materialChecked, materialSuspectModels = materialSuspects, materialUnreadableMaps = materialUnreadable,
+					materialEvidence = "IMPORTED_MODEL_ONLY_SOURCE_COMPARISON_REQUIRED"}))
 				ReplicatedStorage:SetAttribute("MareModelAuditState", if failed == 0 and loaded == #queue then "PASS" else "FAIL")
 			end
 		end
