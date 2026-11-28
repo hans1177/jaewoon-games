@@ -66,3 +66,8 @@
 
 ## 9. 비밀 협상 희귀 화물 해금
 - 기존 일반 희귀 화물이 없는 12일 주기에만, 해당 항구 길드 허가증과 비밀 협상 전 문항 성공으로 숨은 화물 제안을 연다. 금수 및 기존 특산 잠금 검증, 기존 8개 수량·가격·판매 배수·중복 구매 키를 유지한다. 협상 계약과 함께 만료되며 새 저장 키나 상품 정의를 만들지 않는다. 신규 불량 모델과 원화는 별도 승인 원본 필요.
+
+## 10. 지역 상인·계약서 연결 규격
+- 상인 표정 시트 6종: `ui_haggle_merchant_europe_sheet.png`, `ui_haggle_merchant_w_africa_sheet.png`, `ui_haggle_merchant_new_world_sheet.png`, `ui_haggle_merchant_indian_sheet.png`, `ui_haggle_merchant_far_east_sheet.png`, `ui_haggle_merchant_pacific_sheet.png`. 각 1024×768, 4×3칸, 3절과 동일한 움직임. 지역별 시대 복식·사실적인 가상 인물, 배경 투명.
+- 계약서 `ui_haggle_contract.png` (1024×512, 불투명 양피지, 여백 넓게, 글자 없음), 밀랍 인장 `ui_haggle_contract_seal.png` (512×512 투명, 17~18세기 청동 인장 문양과 붉은 밀랍). 모두 CardArt 기존 등록 경로. 등록 전에는 기존 승인 양피지와 체결 문구 사용. 임의 인장 대체 없음.
+- 실제 서버 거래 성공 응답에만 도장 연출. 거래 결과와 영수증을 읽고 확인 버튼으로 닫는다. 모션 줄이기 설정 준수. 지역별 신규 그림은 실제 등록 전 미완료.

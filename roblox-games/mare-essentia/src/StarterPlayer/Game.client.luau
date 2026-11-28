@@ -12608,7 +12608,9 @@ do
 			say.TextColor3 = INK
 			say.Parent = holder
 		end
-		local sheet = art("ui_haggle_merchant_sheet")
+		local region = view and view.haggle and view.haggle.region
+		local sheet = if region then art("ui_haggle_merchant_" .. region .. "_sheet") else nil
+		sheet = sheet or art("ui_haggle_merchant_sheet")
 		holder.Say.Text = FACE_TEXT[mood] or ""
 		local stageWidth = parent.AbsoluteSize.X
 		holder.Say.Size = UDim2.fromOffset(math.min(300, if stageWidth > 0 then math.max(100, stageWidth - 8) else 260), 32)
@@ -12635,8 +12637,12 @@ do
 				end)
 			end
 		else
-			holder.Image = ""
-			holder.Say.Position = UDim2.new(0.5, 0, 0.5, -13)
+			-- 지역 전용 시트가 등록되기 전에는 유럽의 기존 승인 상인 초상만 사용한다.
+			local portrait = if region == "europe" then AssetIds["Portraits/merchant"] else nil
+			holder.Image = if portrait then "rbxassetid://" .. tostring(portrait) else ""
+			holder.ImageRectSize = Vector2.zero
+			holder.ImageRectOffset = Vector2.zero
+			holder.Say.Position = if portrait then UDim2.new(0.5, 0, 1, 2) else UDim2.new(0.5, 0, 0.5, -13)
 		end
 		-- 표정이 바뀔 때 살짝 들썩
 		if not game:GetService("GuiService").ReducedMotionEnabled then
@@ -12741,6 +12747,16 @@ do
 				mood.BackgroundTransparency = 1
 				mood.Parent = stage
 				merchantFace(mood, "smile")
+				local paper = Instance.new("ImageLabel")
+				paper.Name = "TradeContractPaper"
+				paper.Position = UDim2.fromOffset(4, 184)
+				paper.Size = UDim2.new(1, -8, 0, 62)
+				paper.BackgroundColor3 = PAPER
+				paper.BorderSizePixel = 0
+				paper.Image = art("ui_haggle_contract") or art("ui_parchment") or ""
+				paper.ScaleType = Enum.ScaleType.Stretch
+				paper.Parent = stage
+				corner(paper, 6)
 				local receipt = mkLabel(stage, string.format("거래 조건 합의 · %d%% 할인\n%s %d개 · %s", pct, tostring(goodName), amount, if total then tostring(total) .. "코인" else "서버 재견적"), 16, INK, true)
 				receipt.Position = UDim2.fromOffset(4, 188)
 				receipt.Size = UDim2.new(1, -8, 0, 56)
@@ -12755,17 +12771,47 @@ do
 					if result and result.ok then
 						Sfx.play("sfx_card_coin", 0.55)
 						stage:ClearAllChildren()
-						local seal = mkLabel(stage, "계약 체결 완료", 28, INK, true)
+						scroll.CanvasPosition = Vector2.zero
+						local document = Instance.new("ImageLabel")
+						document.Name = "TradeContractDocument"
+						document.Position = UDim2.fromOffset(4, 4)
+						document.Size = UDim2.new(1, -8, 0, 246)
+						document.BackgroundColor3 = PAPER
+						document.BorderSizePixel = 0
+						document.Image = art("ui_haggle_contract") or art("ui_parchment") or ""
+						document.Parent = stage
+						corner(document, 6)
+						local sealArt = art("ui_haggle_contract_seal")
+						local seal = mkLabel(stage, "계약 체결 완료", 24, INK, true)
 						seal.Name = "TradeContractSeal"
 						seal.Size = UDim2.new(1, 0, 0, 90)
-						seal.Position = UDim2.fromOffset(0, 74)
+						seal.Position = UDim2.fromOffset(0, if sealArt then 118 else 24)
 						seal.AutomaticSize = Enum.AutomaticSize.None
 						seal.TextXAlignment = Enum.TextXAlignment.Center
+						local stamp = nil
+						if sealArt then
+							stamp = Instance.new("ImageLabel")
+							stamp.Name = "TradeContractWaxSeal"
+							stamp.AnchorPoint = Vector2.new(0.5, 0.5)
+							stamp.Position = UDim2.new(0.5, 0, 0, 82)
+							stamp.Size = UDim2.fromOffset(116, 116)
+							stamp.BackgroundTransparency = 1
+							stamp.Image = sealArt
+							stamp.ScaleType = Enum.ScaleType.Fit
+							stamp.Parent = stage
+						end
 						if not reduced then
-							local s = Instance.new("UIScale"); s.Scale = 1.3; s.Parent = seal
+							local s = Instance.new("UIScale"); s.Scale = 1.3; s.Parent = stamp or seal
 							TS:Create(s, TweenInfo.new(0.24, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 						end
-						task.delay(1.6, function() if g.Parent then g:Destroy() end end)
+						local detail = mkLabel(stage, tostring(result.message or "거래 완료"), 14, INK, false)
+						detail.Position = UDim2.fromOffset(8, 250)
+						detail.Size = UDim2.new(1, -16, 0, 100)
+						detail.AutomaticSize = Enum.AutomaticSize.None
+						detail.TextWrapped = true
+						local done = mkButton(stage, "확인", COLORS.gold, UDim2.new(1, -8, 0, 48), function() g:Destroy() end, true)
+						done.Position = UDim2.fromOffset(4, 358)
+						skip.Text = "닫기"
 					else
 						settling = result == nil -- 결과가 불명확하면 동일 창에서 재결제하지 않는다.
 						receipt.Text = tostring(result and result.message or "거래 결과를 확인하지 못했어. 거래 화면에서 다시 확인해.")
@@ -12784,7 +12830,7 @@ do
 					exchange.TextWrapped = true
 				elseif deal.mode == "secret" and view.tradeFun and view.tradeFun.lot and not view.tradeFun.lot.bought then
 					local lot = view.tradeFun.lot
-					local rare = mkButton(stage, string.format("희귀 %s %d개 · %d코인", lot.good, lot.qty, lot.total), COLORS.green, UDim2.new(1, -8, 0, 48), function()
+					local rare = mkButton(stage, string.format("%s %s %d개 · %d코인", if lot.secret then "비밀 해금" else "희귀", lot.good, lot.qty, lot.total), COLORS.green, UDim2.new(1, -8, 0, 48), function()
 						confirm("BuyRareLot", { haggleConfirm = true, contractGoodId = goodId, expectedGoodId = lot.goodId, expectedTotal = lot.total })
 					end, true)
 					rare.Position = UDim2.fromOffset(4, 306)

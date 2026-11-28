@@ -149,6 +149,7 @@ return function(D, S)
 			local intel = S.Harbor.intel(state)
 			local merchant = state.specialty == "merchant" or state.subSpecialty == "merchant"
 			view.haggle = {
+				region = D.Regions.of(port).id,
 				auto = intel >= 1 or merchant,
 				source = if merchant then "상인 전문" elseif intel >= 1 then "승선 동료 장사 감각" else "관련 능력 없음",
 				tried = if h and h.portId == port.id then h.tried or {} else {},
