@@ -387857,11 +387857,173 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_53aa9b118272bd0e9b4fe199",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15790",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "34950fdf3357b02f20dcbfdd686bc74abd8c5a8e",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15790,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-animal-forward-gait-20261128",
+        "baseSha": "34950fdf3357b02f20dcbfdd686bc74abd8c5a8e",
+        "headSha": "29a6750dc4fbdfcd1a6f990afe00ea0cb9b260d8",
+        "mergeCommitSha": "6b595afe9212d066587235328b8f8c3173a782f5",
+        "mergedAt": "2026-11-28T13:07:41Z",
+        "authorLogin": "hans1177",
+        "titleHash": "1b3f8d9dd8779742894a465174086365d1b8d21176ffb0baace0c0b503b29243",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-animal-forward-gait-20261128",
+        "candidateSha": "29a6750dc4fbdfcd1a6f990afe00ea0cb9b260d8"
+      },
+      "changeStats": {
+        "changedFileCount": 30,
+        "codingRelevantFileCount": 18,
+        "addedLineCount": 2943,
+        "deletedLineCount": 1068,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "START_HERE.md",
+          "qa/mare-boss-cards-map.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/fantasy-survival/docs/devloop/TELEMETRY.md",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/dropbox-imported.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/docs/ASSET_MANAGEMENT.md",
+          "roblox-games/mare-essentia/docs/BOSS_BRIEF.md",
+          "roblox-games/mare-essentia/docs/BRIEF_MAP.md",
+          "roblox-games/mare-essentia/docs/ENCYCLOPEDIA_BRIEF.md",
+          "roblox-games/mare-essentia/docs/FIELD_COMBAT_BRIEF.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/card_battle/MOBILE_GRADE_BRIEF.md",
+          "roblox-games/mare-essentia/docs/card_battle/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ActionCombat.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Bosses.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/devloop/dropbox_inbox.py",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-boss-cards-map.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/dropbox-imported.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ActionCombat.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Bosses.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/devloop/dropbox_inbox.py",
+          "tools/devloop/register_asset.py",
+          "tools/mare-essentia-upload-assets.mjs"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15790",
+        "merge-commit:6b595afe9212d066587235328b8f8c3173a782f5",
+        "base-main:34950fdf3357b02f20dcbfdd686bc74abd8c5a8e"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3043
+    "total": 3044
   }
 }
