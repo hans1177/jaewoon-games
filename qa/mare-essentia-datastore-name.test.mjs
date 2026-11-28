@@ -5230,7 +5230,9 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(trade.includes('if average <= 0 then "세계 평균 자료 없음"'));
  assert.ok(trade.includes('H.tradeProfit(sel, sellQty)'));
  assert.ok(trade.includes('elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60)'));
- assert.ok(trade.includes('else "흥정 게임", COLORS.grey'));
+ assert.ok(trade.includes('else "흥정하기\\n4~12% 할인", COLORS.gold'));
+ assert.ok(trade.includes('UDim2.new(0.42, -8'));
+ assert.ok(trade.includes('not sel.lock and not tried and not dealHere'));
  for(const action of ['Buy','Sell']) assert.ok(trade.includes('call("'+action+'"'));
 });
 
@@ -5271,4 +5273,23 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(source.includes('EncyclopediaBookmarkJump'));
  assert.ok(source.includes('H.encyclopediaTargetId = saved.id'));
  assert.ok(source.includes('ArtGallery = 10'));
+});
+
+ test('흥정은 확정 5종만 서버 출제하고 저울·화물·기억을 서버가 판정한다',()=>{
+ const trade=readText('roblox-games/mare-essentia/src/ServerScriptService/Services/Trade.luau');
+ const view=readText('roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau');
+ const client=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const game=trade.slice(trade.indexOf('local HAGGLE_GAMES'),trade.indexOf('-- 흥정: 물건마다'));
+ assert.ok(game.includes('{ "coin", "quiz", "balance", "cargo", "memory" }'));
+ assert.ok(!game.includes('p.game'));
+ assert.ok(!game.includes('pend.game == "face"'));
+ assert.ok(game.includes('h.tried[goodId] = true'));
+ assert.ok(game.includes('total == pend.target'));
+ assert.ok(game.includes('occupied[cell]'));
+ assert.ok(game.includes('count == 12'));
+ assert.ok(game.includes('index == pend.sequence[i]'));
+ assert.ok(game.includes('workspace:GetServerTimeNow()'));
+ for(const kind of ['balance','cargo','memory','coin','quiz']) assert.ok(client.includes('pend.game == "'+kind+'"'));
+ assert.ok(view.includes('pieces = pend.pieces'));
+ assert.ok(view.includes('sequence = pend.sequence'));
 });

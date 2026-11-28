@@ -184,11 +184,8 @@ return function(D, S)
 		return true, string.format("%s %d개 구매 (-%d)%s", D.Ports.Goods[goodId].name, amount, total, effect)
 	end
 
-	-- [흥정 미니게임 · 2026-11-28 오너 지시] 강제 아님. 물건마다 항구에서 한 번(자동 흥정과 같은 기회).
-	-- 저울 멈추기 · 상인 표정 읽기 · 진짜 동전 고르기 · 산지 퀴즈 중 하나. 판정은 서버가 한다.
-	-- 결과 할인 4~12%(완벽 12%), 실패하면 정가(손해 없음). 동료 장사 감각·우호도가 높으면 쉬워진다.
-	-- [저울 멈추기 제외 · 2026-11-29 오너: "교역소 미니게임 낚시처럼 멈추는 거 제거"] 타이밍 맞춰 멈추는 게임은 내지 않는다.
-	local HAGGLE_GAMES = { "face", "coin", "quiz" }
+	-- [흥정 미니게임 · 오너 확정 5종] 서버 무작위 출제, 판정 및 할인. 표정·타이밍 게임 제외.
+	local HAGGLE_GAMES = { "coin", "quiz", "balance", "cargo", "memory" }
 	local function haggleState(state)
 		local h = state.haggle
 		if not h or h.portId ~= state.portId then
@@ -209,8 +206,8 @@ return function(D, S)
 		local right = yes[math.floor(rng() * #yes) + 1]
 		local options = { right }
 		while #options < 4 do
-			local pick = no[math.floor(rng() * #no) + 1]
-			if not table.find(options, pick) then table.insert(options, pick) end
+			local index = math.floor(rng() * #no) + 1
+			table.insert(options, table.remove(no, index))
 		end
 		for i = #options, 2, -1 do
 			local j = math.floor(rng() * i) + 1
@@ -223,41 +220,76 @@ return function(D, S)
 
 	function handlers.HaggleStart(state, p, ctx)
 		local goodId = p.goodId
-		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] then
-			return false, "잘못된 요청"
-		end
+		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] then return false, "잘못된 요청" end
+		if embargoed(state) or lockOf(state, state.portId, goodId) then return false, "지금은 거래할 수 없어요" end
 		local h = haggleState(state)
-		if h.tried[goodId] then
-			return false, "이미 흥정해 봤어요. 다음 항구에서 다시 해 봐요"
-		end
-		if h.deal and h.deal.goodId == goodId then
-			return false, "이미 흥정한 값이 있어요. 먼저 사세요"
-		end
+		if h.tried[goodId] then return false, "이미 흥정해 봤어요. 다음 항구에서 다시 해 봐요" end
+		if h.deal and h.deal.goodId == goodId then return false, "이미 흥정한 값이 있어요. 먼저 사세요" end
 		local port = D.Ports.Ports[state.portId]
 		local ease = math.clamp(S.Harbor.intel(state) * 0.12 + (state.rep[port.country] or 0) / 100 * 0.15, 0, 0.4)
-		local game = if type(p.game) == "string" and table.find(HAGGLE_GAMES, p.game) then p.game else HAGGLE_GAMES[math.floor(ctx.rng() * #HAGGLE_GAMES) + 1]
-		local quiz = if game == "quiz" then quizFor(state, goodId, ctx.rng) else nil
-		if game == "quiz" and not quiz then game = "face" end
-		local pending = { goodId = goodId, game = game, ease = ease }
-		if game == "scale" then
-			-- 바늘: 0~1 을 왕복(주기 period 초). 금색 구간 중심 center, 반폭 width.
-			pending.period = 1.6 - ease
-			pending.center = 0.3 + ctx.rng() * 0.4
-			pending.width = 0.08 + ease * 0.12
-		elseif game == "face" then
-			-- 상인이 받아 줄 최대 할인(%). 표정 힌트: 제안이 한도보다 3% 이상 낮으면 웃음, 한도 안이면 망설임, 넘으면 찡그림.
-			pending.limit = math.floor(5 + ctx.rng() * 7 + ease * 5)
-			pending.faces = {}
-			for pct = 4, 12 do
-				pending.faces[pct] = if pct <= pending.limit - 3 then "smile" elseif pct <= pending.limit then "think" else "frown"
-			end
-		elseif game == "coin" then
+		local quiz = quizFor(state, goodId, ctx.rng)
+		local games = table.clone(HAGGLE_GAMES)
+		if not quiz then table.remove(games, 2) end -- 생산지 자료 없는 품목에는 정답 없는 문제를 내지 않는다.
+		local game = games[math.floor(ctx.rng() * #games) + 1]
+		local pending = { goodId = goodId, game = game, ease = ease, started = workspace:GetServerTimeNow() }
+		if game == "coin" then
 			pending.count = if ease >= 0.2 then 3 else 4
 			pending.real = math.floor(ctx.rng() * pending.count) + 1
-			pending.fakeTell = ({ "edge", "color", "stamp" })[math.floor(ctx.rng() * 3) + 1]
-		else
+		elseif game == "quiz" then
 			pending.quiz = quiz
+		elseif game == "balance" then
+			-- 다섯 추 중 임의 부분집합의 합: 항상 정확한 균형을 만들 수 있다.
+			pending.weights = { 1, 2, 3, 5, 8 }
+			pending.target = 0
+			for _, weight in pending.weights do
+				if ctx.rng() < 0.5 then pending.target += weight end
+			end
+			if pending.target == 0 or pending.target == 19 then pending.target = 9 end
+			pending.duration = 15
+		elseif game == "cargo" then
+			-- 4×3 직사각형을 다섯 조각으로 분할한다. 섞고 회전해도 원래 배치는 항상 해답이다.
+			local pieces = { { w = 4, h = 3 } }
+			while #pieces < 5 do
+				local candidates = {}
+				for i, piece in pieces do if piece.w > 1 or piece.h > 1 then table.insert(candidates, i) end end
+				local index = candidates[math.floor(ctx.rng() * #candidates) + 1]
+				local piece = table.remove(pieces, index)
+				if piece.w > 1 and (piece.h == 1 or ctx.rng() < 0.5) then
+					local n = math.floor(ctx.rng() * (piece.w - 1)) + 1
+					table.insert(pieces, { w = n, h = piece.h })
+					table.insert(pieces, { w = piece.w - n, h = piece.h })
+				else
+					local n = math.floor(ctx.rng() * (piece.h - 1)) + 1
+					table.insert(pieces, { w = piece.w, h = n })
+					table.insert(pieces, { w = piece.w, h = piece.h - n })
+				end
+			end
+			for i = #pieces, 2, -1 do
+				local j = math.floor(ctx.rng() * i) + 1
+				pieces[i], pieces[j] = pieces[j], pieces[i]
+			end
+			for _, piece in pieces do if ctx.rng() < 0.5 then piece.w, piece.h = piece.h, piece.w end end
+			pending.pieces = pieces
+			pending.duration = 20
+		else
+			local pool = {}
+			for id in D.Ports.Goods do table.insert(pool, id) end
+			table.sort(pool)
+			pending.goods = {}
+			for i = 1, 5 do
+				local index = math.floor(ctx.rng() * #pool) + 1
+				local id = table.remove(pool, index)
+				pending.goods[i] = { id = id, name = D.Ports.Goods[id].name }
+			end
+			pending.sequence = { 1, 2, 3, 4, 5 }
+			for i = 5, 2, -1 do
+				local j = math.floor(ctx.rng() * i) + 1
+				pending.sequence[i], pending.sequence[j] = pending.sequence[j], pending.sequence[i]
+			end
+			pending.duration = 18 -- 3초 공개 + 15초 입력
 		end
+		-- 시작 자체가 한 번의 도전이다. 창 닫기·재요청으로 문제를 바꿀 수 없다.
+		h.tried[goodId] = true
 		h.pending = pending
 		return true, "흥정을 시작해요"
 	end
@@ -265,29 +297,60 @@ return function(D, S)
 	function handlers.HagglePlay(state, p, ctx)
 		local h = state.haggle
 		local pend = h and h.portId == state.portId and h.pending
-		if not pend or pend.goodId ~= p.goodId then
-			return false, "흥정을 먼저 시작해요"
-		end
+		if not pend or pend.goodId ~= p.goodId then return false, "흥정을 먼저 시작해요" end
 		h.pending = nil
 		h.tried[pend.goodId] = true
 		local pct = 0
-		if pend.game == "scale" then
-			local t = tonumber(p.t) or -1
-			if t >= 0 and t < 30 then
-				local phase = (t / pend.period) % 2
-				local pos = if phase < 1 then phase else 2 - phase
-				local off = math.abs(pos - pend.center)
-				if off <= pend.width * 0.25 then pct = 12
-				elseif off <= pend.width * 0.6 then pct = 9
-				elseif off <= pend.width then pct = 6 end
-			end
-		elseif pend.game == "face" then
-			local offer = math.floor(tonumber(p.offer) or 0)
-			if offer >= 4 and offer <= 12 and offer <= pend.limit then pct = offer end
-		elseif pend.game == "coin" then
-			if math.floor(tonumber(p.pick) or 0) == pend.real then pct = 8 + math.floor(pend.ease * 10) end
+		local elapsed = if pend.started then math.max(0, workspace:GetServerTimeNow() - pend.started) else math.huge
+		local function integer(n, lo, hi)
+			return type(n) == "number" and n >= lo and n <= hi and n == math.floor(n)
+		end
+		local function timedPct()
+			return math.clamp(4 + math.floor(8 * (1 - elapsed / pend.duration) + 0.5), 4, 12)
+		end
+		if pend.game == "coin" then
+			if integer(p.pick, 1, pend.count) and p.pick == pend.real then pct = 8 + math.floor(pend.ease * 10) end
 		elseif pend.game == "quiz" then
-			if pend.quiz and math.floor(tonumber(p.pick) or 0) == pend.quiz.answer then pct = 10 end
+			if pend.quiz and integer(p.pick, 1, 4) and p.pick == pend.quiz.answer then pct = 10 end
+		elseif pend.game == "balance" and elapsed <= pend.duration + 2 then
+			if type(p.weights) == "table" and #p.weights <= #pend.weights then
+				local used, total, valid = {}, 0, true
+				for _, index in p.weights do
+					if not integer(index, 1, #pend.weights) or used[index] then valid = false; break end
+					used[index] = true
+					total += pend.weights[index]
+				end
+				if valid and total == pend.target then pct = timedPct() end
+			end
+		elseif pend.game == "cargo" and elapsed <= pend.duration + 2 then
+			if type(p.placements) == "table" and #p.placements == #pend.pieces then
+				local occupied, valid, count = {}, true, 0
+				for i, piece in pend.pieces do
+					local pos = p.placements[i]
+					if type(pos) ~= "table" or not integer(pos.x, 1, 4) or not integer(pos.y, 1, 3) or type(pos.rot) ~= "boolean" then valid = false; break end
+					local w, ht = if pos.rot then piece.h else piece.w, if pos.rot then piece.w else piece.h
+					if pos.x + w - 1 > 4 or pos.y + ht - 1 > 3 then valid = false; break end
+					for y = pos.y, pos.y + ht - 1 do
+						for x = pos.x, pos.x + w - 1 do
+							local cell = (y - 1) * 4 + x
+							if occupied[cell] then valid = false end
+							occupied[cell] = true; count += 1
+						end
+					end
+				end
+				if valid and count == 12 then pct = timedPct() end
+			end
+		elseif pend.game == "memory" and elapsed >= 3 and elapsed <= pend.duration + 2 then
+			if type(p.sequence) == "table" and #p.sequence == 5 then
+				local correct, used, valid = 0, {}, true
+				for i = 1, 5 do
+					local index = p.sequence[i]
+					if not integer(index, 1, 5) or used[index] then valid = false; break end
+					used[index] = true
+					if index == pend.sequence[i] then correct += 1 end
+				end
+				if valid and correct == 5 then pct = math.max(8, timedPct()) elseif valid and correct == 4 then pct = 4 end
+			end
 		end
 		pct = math.clamp(pct, 0, 12)
 		local name = D.Ports.Goods[pend.goodId].name
@@ -295,7 +358,7 @@ return function(D, S)
 			h.deal = { goodId = pend.goodId, mult = 1 - pct / 100 }
 			return true, string.format("흥정 성공! %s 다음 구매가 %d%% 싸져요", name, pct)
 		end
-		return false, "상인이 고개를 젓네요. 정가대로 사요 (손해는 없어요)"
+		return false, "정가대로 사요 (손해는 없어요)"
 	end
 
 	-- 흥정: 물건마다 항구에서 한 번만 시도할 수 있다. 성공하면 다음 구매가 4~8% 싸진다.
