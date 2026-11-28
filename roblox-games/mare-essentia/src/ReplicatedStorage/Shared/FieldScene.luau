@@ -854,6 +854,7 @@ function FieldScene.start(opts)
 			bergen_whale = "coast",
 			bergen_kelp_coast = "coast",
 			venice_lagoon = "coast",
+			venice_murano = "coast",
 			stockholm_woods = "forest",
 			antwerp_willow_river = "lake",
 			seville_groves = "lake",
