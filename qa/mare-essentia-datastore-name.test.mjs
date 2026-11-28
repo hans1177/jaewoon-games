@@ -5391,9 +5391,23 @@ test('결투는 기존 정예 대상 한 명과 구역 내 신규 적 공격 제
   assert.match(field,/mode == "duel" then enemy.tag.Text = "결투 상대 · "/);
   assert.match(field,/local duelActive = false/);
   assert.match(field,/not duelActive or o.model:GetAttribute\("FieldInterceptWave"\)/);
-  assert.match(field,/AC.stepEnemy\(e.ac, enemyDt, dist, not e.waiting and \(not duelActive or e.model:GetAttribute\("FieldInterceptWave"\) ~= nil\)\)/);
+  assert.match(field,/AC.stepEnemy\(e.ac, enemyDt, dist, not e.waiting\)/);
+  assert.match(field,/duelActive and not e.model:GetAttribute\("FieldInterceptWave"\)/);
   assert.match(field,/결투 승리 · 현장 기록 확보/);
   assert.match(field,/if not folder:GetAttribute\("FieldDefenseComplete"\) then/);
   assert.match(field,/if seconds == 0 then\s+folder:SetAttribute\("FieldDefenseSeconds", 0\)/);
   assert.doesNotMatch(field,/seconds == 0 or \(folder:GetAttribute\("FieldInterceptRemaining"\)/);
+});
+
+
+test('연속 두목전은 기존 두목을 순서대로 활성화하고 대기 중 공통 타격을 막는다',()=>{
+  assert.match(field,/if #bosses >= 2 then mode, troops = "bossrush", bosses end/);
+  assert.match(field,/FieldBossRushTotal", count/);
+  assert.match(field,/FieldBossRushOrder", i/);
+  assert.match(field,/rushOrder ~= folder:GetAttribute\("FieldBossRushNext"\)/);
+  assert.match(field,/os.clock\(\) < \(folder:GetAttribute\("FieldBossRushNextAt"\) or 0\)\) then return nil end/);
+  assert.match(field,/now < \(folder:GetAttribute\("FieldBossRushNextAt"\) or 0\)\) then continue end/);
+  assert.match(field,/FieldBossRushNextAt", os.clock\(\) \+ 1.5/);
+  assert.match(field,/if wave and not rushOrder then/);
+  assert.match(field,/연속 두목전 승리 · 기록 확보/);
 });
