@@ -388635,11 +388635,139 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_f7e4b60bfd274a57ba3add7e",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15825",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "8d23eaad647dd78c64d1810cb8e30636b4f8db45",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15825,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-ranch-stages",
+        "baseSha": "8d23eaad647dd78c64d1810cb8e30636b4f8db45",
+        "headSha": "c7029b0b96134c4985fb8e83ed115a58cb6ad742",
+        "mergeCommitSha": "963712265763cd35450cd8e9158feaa9903ddfe9",
+        "mergedAt": "2026-11-28T15:58:24Z",
+        "authorLogin": "hans1177",
+        "titleHash": "3dfbef38b4d25a1081e994644602ebfc3b65ffa5d4eb8e362a2dd30592c51d7b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-ranch-stages",
+        "candidateSha": "c7029b0b96134c4985fb8e83ed115a58cb6ad742"
+      },
+      "changeStats": {
+        "changedFileCount": 7,
+        "codingRelevantFileCount": 7,
+        "addedLineCount": 260,
+        "deletedLineCount": 106,
+        "changedFiles": [
+          "qa/mare-compact-town.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-prop-cap.test.mjs",
+          "qa/mare-ranch-stages.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-port-overlap.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-compact-town.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-prop-cap.test.mjs",
+          "qa/mare-ranch-stages.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-port-overlap.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15825",
+        "merge-commit:963712265763cd35450cd8e9158feaa9903ddfe9",
+        "base-main:8d23eaad647dd78c64d1810cb8e30636b4f8db45"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3049
+    "total": 3050
   }
 }
