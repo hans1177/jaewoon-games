@@ -321,6 +321,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1795904694019
+    },
+    "background:sparse-world:월드 부품이 적음(n)#a63c97d6e2": {
+      "sig": "background:sparse-world:월드 부품이 적음(n)",
+      "kind": "background",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "search": "terrain:FillBlock(filledChunks[key], Vector3.new(CH, 8, CH), Enum.Material.Water)",
+          "replace": "local t = terrain or workspace:FindFirstChildOfClass(\"Terrain\") or workspace:FindFirstChild(\"Terrain\")\nif t then\n    t:FillBlock(filledChunks[key], Vector3.new(CH, 8, CH), Enum.Material.Water)\nend"
+        }
+      ],
+      "summary": "terrain이 nil일 경우를 방지해 월드 부품 생성량을 늘림",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795905756038
     }
   }
 }
