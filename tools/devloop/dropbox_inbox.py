@@ -7,7 +7,7 @@
   이름:  소문자·숫자·밑줄·하이픈만 (예: eu_05.png, menu_harbor_02.jpg, zoo_tiger.glb)
 
 자동 검사(하나라도 실패하면 등록 안 함, 이유를 보고서에 기록):
-  - 확장자·이름 규칙, 크기(그림 4096px 이하, 128px 이상 / 모델 20MB 이하), 파일 머리(PNG·JPG·glTF·FBX)
+  - 확장자·이름 규칙, 크기(그림 4096px 이하, 128px 이상, 지시서 소형 UI 6종 개별 규격 / 모델 20MB 이하), 파일 머리(PNG·JPG·glTF·FBX)
   - 256색 금지(팔레트·감색) — asset_color_check.color_problem
   - 대륙 카드(eu_/ea_/me_/nw_/af_/sa_ 숫자)는 세로 7:10, 1049×1499 이상, RGB/RGBA 원본 바이트 유지. 기존 승인·시각검수와 다른 원본은 검수 대기.
   - 저장소에 같은 바이트가 이미 있으면 중복으로 건너뜀
@@ -133,7 +133,22 @@ def check_image(kind, fn, raw, tmp):
         return None, why
     im = Image.open(io.BytesIO(raw))
     w, h = im.size
-    if max(w, h) > 4096 or min(w, h) < 128:
+    # 메뉴/흥정 제작 지시서의 소형 UI 6종만 정확한 개별 규격으로 검사한다.
+    # 일반 이미지 최소 크기와 256색 금지 조건은 완화하지 않는다.
+    ui_size = {
+        "ui_frame_tab_on.png": (256, 96),
+        "ui_frame_tab_off.png": (256, 96),
+        "ui_button_gold.png": (256, 96),
+        "ui_button_green.png": (256, 96),
+        "ui_button_grey.png": (256, 96),
+        "ui_haggle_needle.png": (64, 256),
+    }.get(fn) if kind == "CardArt" else None
+    if ui_size is not None:
+        if (w, h) != ui_size:
+            return None, f"UI 크기 {w}×{h} (지시서 {ui_size[0]}×{ui_size[1]})"
+        if len(raw) < 33 or raw[24:26] != b"\x08\x06" or im.mode != "RGBA" or im.getchannel("A").getextrema()[0] != 0:
+            return None, "소형 UI는 8비트 RGBA PNG 및 투명 배경 필수"
+    elif max(w, h) > 4096 or min(w, h) < 128:
         return None, f"크기 {w}×{h} (128~4096px)"
     if im.mode not in ("RGB", "RGBA"):
         im = im.convert("RGBA" if "A" in im.mode else "RGB")

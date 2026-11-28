@@ -20,3 +20,25 @@ test('자동 검사 규칙', () => {
   assert.match(py, /register_asset\.py/, '기존 정본 등록기 사용');
   assert.ok(!/print\([^)]*DROPBOX_(APP|REFRESH)/.test(py), '비밀값 출력 금지');
 });
+
+test('지시서 소형 UI 6종만 정확한 규격을 허용한다', () => {
+  for (const name of ['ui_frame_tab_on','ui_frame_tab_off','ui_button_gold','ui_button_green','ui_button_grey']) {
+    assert.ok(py.includes('"' + name + '.png": (256, 96)'), name);
+  }
+  assert.ok(py.includes('"ui_haggle_needle.png": (64, 256)'));
+  assert.match(py, /if \(w, h\) != ui_size:/);
+  assert.match(py, /raw\[24:26\] != b"\\x08\\x06"/);
+  assert.match(py, /im\.getchannel\("A"\)\.getextrema\(\)\[0\] != 0/);
+  assert.match(py, /elif max\(w, h\) > 4096 or min\(w, h\) < 128:/);
+  assert.match(py, /why = color_problem\(tmp\)/);
+});
+test('일반 인입 후보 검사 완료 이벤트는 정확한 SHA 및 필수 검사 3종을 확인한다', () => {
+  assert.ok(wf.includes("branches: ['mare-dropbox-card-*', 'mare-dropbox-inbox-*']"));
+  assert.ok(wf.includes('(.head.ref | test("^mare-dropbox-inbox-[0-9]+$"))'));
+  assert.ok(wf.includes('.head.repo.full_name == $repo'));
+  assert.ok(wf.includes('.head.sha == $event_head'));
+  assert.ok(wf.includes('.head_sha == $sha and .app.slug == "github-actions"'));
+  assert.ok(wf.includes('group_by(.name)'));
+  assert.ok(wf.includes('length == 3 and all(.[]; .pass)'));
+  assert.ok(wf.includes('if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then exit 0; fi'));
+});
