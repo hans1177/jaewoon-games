@@ -1,5 +1,9 @@
 # 카드배틀 원화 제작·자산등록 인수인계
 
+> **드롭박스 올리는 곳 (필독)**
+> - `/Vibe2Transfer/inbox/CardArt/<카드id>.png` · UI 는 `ui_<이름>.png` (256색 금지, 기존 이름이면 교체)
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 > **필독:** 원화는 풀컬러(24/32비트)만 등록한다. **256색(팔레트·감색) 원화는 절대 등록 금지** — `docs/ASSET_MANAGEMENT.md` 1절. 등록기가 자동 거부한다.
 
 > **후속 작업자 필독 · 2026-11-22 작업 기준.** 대상: `hans1177/jaewoon-games` / `main` / `roblox-games/mare-essentia/`. 이 문서는 카드 제작의 작업 이력·미완료 항목·원화 기준을 정리한 실행 지침이다. **등록 상태는 반드시 작업 시작 시 최신 `main`에서 재조회**한다. 충돌 시 최신 오너 지시와 `company-learning/platform-release-roadmap.json`을 포함한 네 중앙정책을 최우선으로 한다.

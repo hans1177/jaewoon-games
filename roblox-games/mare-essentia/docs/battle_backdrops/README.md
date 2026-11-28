@@ -1,5 +1,12 @@
 # 퀘스트·전투 배경 지시서
 
+> **드롭박스 올리는 곳 (필독)**
+> - 지상 탐험 원경: `/Vibe2Transfer/inbox/Terrain/field_<탐험지id>.glb`
+> - 해전 배경: `/Vibe2Transfer/inbox/Naval/sea_<해역>_near|mid|far.glb`
+> - 항해(수동 항해 포함) 배경: `/Vibe2Transfer/inbox/Naval/voyage_<해역>_near|mid|far.glb` (없으면 해전 배경을 다시 씀)
+> - 해역 id: `src/ReplicatedStorage/Shared/SeaAreas.luau`
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 > 대상: 해전(NavalBattle)·지상전(FieldScene) 배경. 지역·대륙·항구·퀘스트마다 다르게. 먼저 `docs/RULES.md`.
 
 ## 지금 문제 (Studio 확인)

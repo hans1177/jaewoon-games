@@ -1,5 +1,10 @@
 # 지식카드 그림 제작 규칙 (GPT·에이전트용)
 
+> **드롭박스 올리는 곳 (필독)**
+> - `/Vibe2Transfer/inbox/CardArt/<카드id>.png` — 대륙 카드는 세로 7:10, 1049×1499 이상(자동으로 1400×2000), 지식·사건 원화는 자동 JPG 변환
+> - 메뉴창 원화 배너: `/Vibe2Transfer/inbox/CardArt/menu_<메뉴>_<번호>.jpg`
+> - 올린 뒤에는 자동 검사(이름·형식·크기·256색 금지·중복) → 자동 등록 → 자동 배치. 결과·거부 이유는 `docs/assets/dropbox_inbox_report.md`. 규칙 전체: `docs/ASSET_MANAGEMENT.md` 2-1절, 파일 이름 전체 목록: `docs/AUTO_PLACEMENT.md`.
+
 > **필독:** 원화는 풀컬러(24/32비트)만 등록한다. **256색(팔레트·감색) 원화는 절대 등록 금지** — `docs/ASSET_MANAGEMENT.md` 1절. 등록기가 자동 거부한다.
 
 카드 그림을 만들기 전에 **이 문서를 먼저 읽는다.** 읽지 못했으면 그림을 만들지 말고 알린다.
