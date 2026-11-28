@@ -2111,22 +2111,29 @@ function H.layoutBook()
   local statusInline = status and width >= 520
   local headerH = if status and not statusInline then 90 else 48
   local railW = if rail then math.clamp(math.floor(width * 0.18), 120, 172) else 0
-  local tabH, gap = 44, 4
+  local tabH, gap = if rail then 50 else 62, 4
   local bodyX = if rail then railW + 12 else 6
-  local bodyY = headerH + (if tabs and not rail then tabH + 8 else 6)
+  local bodyY = headerH + 6
+  local bottomInset = if tabs and not rail then tabH + 10 else 6
+  local recent = H.recentTab
+  local showRecent = status and recent and recent ~= currentTab and TAB_NAME[recent] ~= nil and width >= 380
+  local recentW = if showRecent then 88 else 0
+  local statusW = if statusInline then 200 else math.max(1, width - 16 - recentW - (if showRecent then 6 else 0))
 
   H.pageMasthead.Position = UDim2.fromOffset(4, 2)
   H.pageMasthead.Size = UDim2.new(1, -8, 0, headerH - 2)
   headerLabel.Position = UDim2.fromOffset(10, 4)
-  headerLabel.Size = UDim2.fromOffset(math.max(75, width - (if statusInline then 280 else 64)), 23)
+  headerLabel.Size = UDim2.fromOffset(math.max(75, width - (if statusInline then 266 + recentW else 64)), 23)
   H.pageDetails.Position = UDim2.fromOffset(6, 25)
-  H.pageDetails.Size = UDim2.fromOffset(math.max(75, width - (if statusInline then 280 else 64)), 18)
+  H.pageDetails.Size = UDim2.fromOffset(math.max(75, width - (if statusInline then 266 + recentW else 64)), 18)
   H.menuStatusLabel.Visible = status
   H.menuStatusLabel.AnchorPoint = Vector2.zero
-  H.menuStatusLabel.Position = if statusInline then UDim2.new(1, -270, 0, 5) else UDim2.fromOffset(8, 48)
-  H.menuStatusLabel.Size = if statusInline then UDim2.fromOffset(214, 38) else UDim2.new(1, -16, 0, 36)
+  H.menuStatusLabel.Position = if statusInline then UDim2.new(1, -256 - recentW, 0, 5) else UDim2.fromOffset(8, 48)
+  H.menuStatusLabel.Size = UDim2.fromOffset(statusW, 36)
   H.menuStatusLabel.TextSize = 14
-  H.menuRecentButton.Visible = false
+  H.menuRecentButton.Visible = not not showRecent
+  H.menuRecentButton.Position = if statusInline then UDim2.new(1, -54 - recentW, 0, 4) else UDim2.new(1, -8 - recentW, 0, 46)
+  H.menuRecentButton.Size = UDim2.fromOffset(recentW, 40)
   H.headerTabs = statusInline
   -- [기능 아이콘만] 시설 주인 초상은 실제 대화/상세에서 보이고 공통 머리줄에서는 사용하지 않는다.
   portraitImage.Visible = false
@@ -2139,10 +2146,10 @@ function H.layoutBook()
     list.Padding = UDim.new(0, gap)
   end
   tabBar.AnchorPoint = Vector2.zero
-  tabBar.Position = UDim2.fromOffset(6, headerH + 4)
+  tabBar.Position = if rail then UDim2.fromOffset(6, headerH + 4) else UDim2.new(0, 6, 1, -tabH - 6)
   local visibleW = math.max(1, width - 12)
   tabBar.Size = if rail then UDim2.new(0, railW, 1, -headerH - 10) else UDim2.fromOffset(visibleW, tabH + 3)
-  local tabWidth = if rail then railW - 5 else math.clamp(math.floor((visibleW - (tabCount - 1) * gap) / math.max(1, tabCount)), 86, 176)
+  local tabWidth = if rail then railW - 5 else math.clamp(math.floor((visibleW - (tabCount - 1) * gap) / math.max(1, tabCount)), 72, 176)
   H.tabWidth = tabWidth
   H.tabStrip.ScrollingDirection = if rail then Enum.ScrollingDirection.Y else Enum.ScrollingDirection.X
   local total = tabCount * (if rail then tabH else tabWidth) + math.max(0, tabCount - 1) * gap
@@ -2156,13 +2163,13 @@ function H.layoutBook()
       local icon = button:FindFirstChild("TabIcon")
       local caption = button:FindFirstChild("PrintedCaption")
       if icon then
-        icon.Size = UDim2.fromOffset(26, 26)
-        icon.Position = UDim2.new(0, 6, 0.5, -13)
+        icon.Size = UDim2.fromOffset(32, 32)
+        icon.Position = if rail then UDim2.new(0, 6, 0.5, -16) else UDim2.new(0.5, -16, 0, 4)
       end
       if icon and caption then
-        caption.Position = UDim2.fromOffset(36, 0)
-        caption.Size = UDim2.new(1, -42, 1, 0)
-        caption.TextXAlignment = Enum.TextXAlignment.Left
+        caption.Position = if rail then UDim2.fromOffset(42, 0) else UDim2.fromOffset(3, 38)
+        caption.Size = if rail then UDim2.new(1, -48, 1, 0) else UDim2.new(1, -6, 0, 21)
+        caption.TextXAlignment = if rail then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
         local limit = caption:FindFirstChildOfClass("UITextSizeConstraint")
         if limit then limit.MinTextSize = 13; limit.MaxTextSize = 16 end
       end
@@ -2181,7 +2188,7 @@ function H.layoutBook()
     H.lastTabLayoutId, H.lastTabViewport = currentTab, signature
   end
   content.Position = UDim2.fromOffset(bodyX, bodyY)
-  content.Size = UDim2.new(1, -bodyX - 6, 1, -bodyY - 6)
+  content.Size = UDim2.new(1, -bodyX - 6, 1, -bodyY - bottomInset)
   content.Visible = not facilityDetail
   local detail = mainInner:FindFirstChild("FacilityDetail")
   if detail then
@@ -15735,12 +15742,37 @@ function RENDERERS.quest()
 	end
 	local section = H.questSection or "active"
 	add(function()
-		return mkRow(content, "일지", "", {
+		local tabs = Instance.new("Frame")
+		tabs.Name = "JournalVisualSections"
+		tabs.Size = UDim2.new(1, -6, 0, 60)
+		tabs.BackgroundTransparency = 1
+		local grid = Instance.new("UIGridLayout")
+		grid.CellSize = UDim2.new(0.25, -3, 0, 58)
+		grid.CellPadding = UDim2.fromOffset(4, 4)
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = tabs
+		local specs = {
 			{ text = string.format("진행 %d", #view.quests.active), color = if section == "active" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "active"; H.questDetailId = nil; render() end },
 			{ text = string.format("목표 %d", #autos), color = if section == "auto" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "auto"; render() end },
 			{ text = "탐험", color = if section == "field" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "field"; render() end },
 			{ text = string.format("완료 %d", #view.quests.done), color = if section == "done" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "done"; render() end },
-		}, 78)
+		}
+		for i, spec in specs do
+			local button = mkButton(tabs, spec.text, spec.color, UDim2.fromOffset(80, 58), spec.onClick, true)
+			button.LayoutOrder = i
+			local key = ({ "quest", "todo", "map_pin", "reward" })[i]
+			if H.hasIconArt(key) then
+				local icon = modelIcon(button, "FacilityArt", key, nil, 26, spec.text)
+				icon.Position = UDim2.new(0.5, -13, 0, 3)
+				local caption = button:FindFirstChild("PrintedCaption")
+				if caption then
+					caption.Position = UDim2.fromOffset(2, 31)
+					caption.Size = UDim2.new(1, -4, 0, 24)
+					caption.TextSize = 13
+				end
+			end
+		end
+		return tabs
 	end)
 	-- 일지: 모든 퀘스트가 여기 기록된다. 소문을 듣거나 사람을 만나 이야기하면 저절로 올라오고, 조건을 채우면 저절로 보상이 들어온다.
 	local STRAND = { main = "서막", companion = "동료 이야기", history = "역사의 현장", person = "인물과 연구" }
@@ -15764,12 +15796,23 @@ function RENDERERS.quest()
 		if readyA ~= readyB then return readyA end
 		return order[a] < order[b]
 	end)
-	for _, q in active do
+	local selected
+	for _, quest in active do if quest.id == H.questDetailId then selected = quest; break end end
+	if not selected then H.questDetailId = nil end
+	if selected then
+		add(function()
+			return mkButton(content, "의뢰 목록", COLORS.leather, UDim2.new(1, -6, 0, 44), function()
+				H.questDetailId = nil; content.CanvasPosition = Vector2.zero; render()
+			end, true)
+		end)
+	end
+	for _, q in (if selected then { selected } else active) do
 		local expanded = H.questDetailId == q.id
 		add(function()
 			local buttons = {
 				{ text = if expanded then "접기" else "상세", color = COLORS.grey, onClick = function()
 					H.questDetailId = if expanded then nil else q.id
+					content.CanvasPosition = Vector2.zero
 					render()
 				end },
 			}
@@ -15794,7 +15837,7 @@ function RENDERERS.quest()
 			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
-			local compact = (if q.chapter and not string.find(q.summary, tostring(q.chapter), 1, true) then tostring(q.chapter) .. "\n" else "") .. q.summary
+			local compact = (if q.chapter then tostring(q.chapter) .. " · " else "") .. (if q.kind == "deliver" and done >= q.amount then "납품 가능" else "진행 중")
 			local row = mkRow(content, q.name, if expanded then strandText(q) .. (if q.problem or q.chapter or q.prevEnding then "" else said) else compact, buttons, 92)
 			local stamp = if q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
 			if H.hasIconArt(stamp) then withIcon(row, "FacilityArt", stamp, nil, 44) end
@@ -15853,9 +15896,38 @@ function RENDERERS.quest()
 			add(function()
 				local action = if route.here then "탐험지" else "항해 지도"
 				local targetTab = if route.here then "explore" else "map"
-				return mkRow(content, route.name,
-					string.format("%d/5단 · %s · 단서: %s\n%s", route.grade or 1, route.port, route.leadSource or "현지 탐험", route.summary),
-					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 112)
+				local row = mkRow(content, route.name,
+					string.format("%s · 난이도 %d/5\n%s", route.routeName or "현장 탐험", route.grade or 1, route.summary),
+					{ { text = action, color = COLORS.blue, onClick = function() openTab(targetTab) end } }, 148)
+				row.Name = "FieldRouteDecision"
+				local box = row:FindFirstChild("RowText")
+				if box then
+					local diagram = Instance.new("Frame")
+					diagram.Name = "FieldRoutePath"
+					diagram.Size = UDim2.new(1, -4, 0, 58)
+					diagram.BackgroundTransparency = 1
+					diagram.Parent = box
+					for i, item in { { "단서", route.leadSource or "현지 탐험", "cause" }, { "목적지", route.port, "map_pin" } } do
+						local cell = mkBox(diagram, UDim2.new((i - 1) * 0.5, 0, 0, 0), UDim2.new(0.5, -4, 1, 0), Color3.fromRGB(228, 209, 168))
+						corner(cell, 5)
+						local offset = 6
+						if H.hasIconArt(item[3]) then
+							local icon = modelIcon(cell, "FacilityArt", item[3], nil, 30, item[1])
+							icon.Position = UDim2.fromOffset(4, 14)
+							offset = 36
+						end
+						local title = mkLabel(cell, item[1], 13, INK_SOFT, false)
+						title.AutomaticSize = Enum.AutomaticSize.None
+						title.Position = UDim2.fromOffset(offset, 4)
+						title.Size = UDim2.new(1, -offset - 2, 0, 20)
+						local value = mkLabel(cell, tostring(item[2]), 14, INK, true)
+						value.AutomaticSize = Enum.AutomaticSize.None
+						value.Position = UDim2.fromOffset(offset, 25)
+						value.Size = UDim2.new(1, -offset - 2, 0, 30)
+						value.TextWrapped = true
+					end
+				end
+				return row
 			end)
 		end
 	else
@@ -16671,8 +16743,8 @@ function H.renderTabs()
 	end
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local compactTabs = false
-		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 144, if compactTabs then 58 else 48), function()
+		local compactTabs = not (mainInner.AbsoluteSize.X >= 700 and mainInner.AbsoluteSize.X > mainInner.AbsoluteSize.Y and currentTab ~= "trade" and currentTab ~= "yard" and currentTab ~= "route" and currentTab ~= "tech")
+		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 144, if compactTabs then 62 else 50), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
 		end, true)
@@ -16705,7 +16777,7 @@ function H.renderTabs()
 			local icon = modelIcon(b, if atlas then "FacilityArt" else ti[1], if atlas then id else ti[2], nil, 32, TAB_NAME[id])
 			icon.Name = "TabIcon"
 			-- [시설 탭 최초 배치] 화면 크기 갱신 전에 생성된 아이콘도 현재 모바일 규격을 따른다.
-			icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)
+			icon.Position = if not compactTabs then UDim2.new(0, 6, 0.5, -16) else UDim2.new(0.5, -16, 0, 4)
 			icon.ClipsDescendants = true
 			icon.ZIndex = b.ZIndex + 2
 			icon.Parent = b
@@ -16749,8 +16821,8 @@ function H.renderTabs()
 			if caption and caption:IsA("TextLabel") then
 				caption.Text = H.TAB_CAPTION[id] or TAB_NAME[id]
 				caption.TextColor3 = b.TextColor3
-				caption.Position = if compactTabs then UDim2.fromOffset(4, 36) else UDim2.fromOffset(45, 0)
-				caption.Size = if compactTabs then UDim2.new(1, -8, 0, 18) else UDim2.new(1, -51, 1, -4)
+				caption.Position = if compactTabs then UDim2.fromOffset(3, 38) else UDim2.fromOffset(42, 0)
+				caption.Size = if compactTabs then UDim2.new(1, -6, 0, 21) else UDim2.new(1, -48, 1, 0)
 				caption.TextWrapped = false
 				caption.TextScaled = true
 				caption.TextXAlignment = if compactTabs then Enum.TextXAlignment.Center else Enum.TextXAlignment.Left
