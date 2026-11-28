@@ -5104,3 +5104,17 @@ test('항해 목록과 상세 및 일지 구획은 기존 행동과 실제 진�
   assert.match(quest,/openTab\("war"\)/);
   assert.match(quest,/math\.clamp\(done \/ total, 0, 1\)/);
 });
+
+
+test('백과사전은 원화와 해설 양면 및 세로폰 단면 책 구조를 사용한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ for(const name of ['EncyclopediaLeaves','EncyclopediaPlate','DexHero','DexPage','EncyclopediaPageFooter','DexGrid']) assert.ok(dex.includes(name),name);
+ assert.match(dex,/hero\.ScaleType = Enum\.ScaleType\.Fit/);
+ assert.match(dex,/plate\.Visible = wide or not reading/);
+ assert.match(dex,/page\.Visible = reading/);
+ assert.match(dex,/math\.min\(block \+ 11, #found\)/);
+ assert.match(dex,/call\("SetEncyclopediaBookmark", \{ id = current\.id \}\)/);
+ for(const name of ['encyFacts','encyMap','encyTimeline','encySize','encyRelated','encyCollection']) assert.ok(dex.includes('H.'+name));
+ assert.doesNotMatch(dex,/DexHeroBackdrop|DexExpanded|Enum\.ScaleType\.Crop/);
+});
