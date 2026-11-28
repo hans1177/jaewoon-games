@@ -9435,6 +9435,19 @@ function H.startField(s)
 	-- [무기 숙련] 기존 서버 탐험 자격을 확인하고 이번 탐험의 정산 시작 시각을 기록한다.
 	local beginResult = call("FieldPracticeBegin", { siteId = s.id })
 	local practiceAllowed = beginResult ~= nil and beginResult.ok == true
+	if not practiceAllowed then
+		inField = false
+		applyView()
+		main.Visible = true
+		workspace:SetAttribute("FieldEntryStage", "FAILED")
+		message, messageOk = "탐험 기록을 연결하지 못했어요. 다시 시도해 주세요", false
+		render()
+		return
+	end
+	-- 서버 입장 확인에서 다시 읽은 현재 탐험 진행만 복원한다.
+	for _, site in (view and view.sites or {}) do
+		if site.id == s.id then s = site break end
+	end
 	workspace:SetAttribute("FieldEntryStage", "BUILDING")
 	local startOk, startResult = pcall(FieldScene.start, {
 		battleLevel = battleLevel,
@@ -9459,6 +9472,11 @@ function H.startField(s)
 		portScenery = PortScene and PortScene.Signatures and PortScene.Signatures[s.portId], -- 항구 경관 정본, 시각 전용
 		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
 		fieldStory = s.fieldStory, -- 현재 현장 의뢰와 다음 이야기의 정본 연결
+		fieldCheckpoint = s.fieldCheckpoint,
+		onCheckpoint = function(stage, cardId)
+			local response = call("FieldCheckpoint", { siteId = s.id, stage = stage, observedCardId = cardId })
+			return response ~= nil and response.ok == true
+		end,
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
 		seed = #s.id * 31 + s.days,
@@ -9474,9 +9492,9 @@ function H.startField(s)
 			end
 			if result == "clear" then
 				-- [현장 관찰] 서버가 기존 탐험지 pool·시대·미발견 상태를 재검증한 뒤 카드 후보를 선택한다.
-				call("Explore", { siteId = s.id, observedCardId = observedCardId })
+				call("Explore", { siteId = s.id, observedCardId = observedCardId, fieldCheckpoint = true })
 			else
-				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "탐험을 중단하고 항구로 돌아왔어요"
+				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "항구로 돌아왔어요. 마지막으로 접수된 탐험 단계에서 이어갈 수 있어요"
 				messageOk = false
 				render()
 			end
@@ -9624,7 +9642,7 @@ function RENDERERS.explore()
 				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일%s", math.clamp(s.minLevel or 1, 1, 5), s.left, s.days,
 					if s.fieldQuest then "\n현장 의뢰: " .. s.fieldQuest else ""),
 				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
-				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else "지상맵 입장",
+				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else (if s.fieldCheckpoint then "탐험 이어하기" else "지상맵 입장"),
 				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
 		end
 		-- [모바일 클릭 영역] 아이콘(86)·이름(26)·설명(20)·버튼(44)을 겹치지 않는 높이에 배치한다.

@@ -308,6 +308,7 @@ local function saveSession(player)
 		end)
 	end
 	if not ok then
+		session.dirty = true -- 저장 실패 시 기존 15초 자동저장 루프에서 재시도
 		warn("[Core] save failed:", err)
 	end
 end
@@ -433,6 +434,10 @@ local function onInvoke(player, action, payload)
 	if not ok then
 		warn("[Core] handler error:", action, success)
 		return reply(state, false, "오류가 발생했어요")
+	end
+	if action == "FieldCheckpoint" then
+		if success then session.dirty = true end
+		return { ok = success, message = message or "" } -- 기존 자동저장만 사용, 보상/세계 틱을 단계마다 실행하지 않음
 	end
 	if success then
 		-- [자산 우선순위] 서버가 확정한 항구 이동만 반영한다. 저장·원격 요청 계약은 그대로다.

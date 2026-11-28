@@ -3349,9 +3349,9 @@ function FieldScene.start(opts)
 	local eliteSlowUntil, bossPoisonUntil, bossPoisonNextAt = 0, 0, math.huge
 	local slowedHumanoid, originalFieldWalkSpeed = nil, nil
 	local fieldStreakResult = { hits = 0, speed = 0, accuracy = 100, credited = {} }
-	local found = 0
 	local nodeCount = math.max(1, opts.nodes or 1)
-	local observedCardId = nil -- [탐험] finish 콜백과 현장 조사에서 공유하는 이번 탐험 한정 값
+	local found = if type(opts.fieldCheckpoint) == "table" then math.clamp(math.floor(tonumber(opts.fieldCheckpoint.stage) or 0), 0, nodeCount) else 0
+	local observedCardId = if found > 0 then opts.fieldCheckpoint.cardId else nil -- 서버가 복원한 현장 카드
 	local finished = false
 	local enemies = {}
 	local conns = {}
@@ -3817,6 +3817,9 @@ function FieldScene.start(opts)
 		end
 	end
 	local targetCard = if #availableCards > 0 then KnowledgeCards.ById[availableCards[rng:NextInteger(1, #availableCards)]] else nil
+	if observedCardId and table.find(availableCards, observedCardId) then targetCard = KnowledgeCards.ById[observedCardId] end
+	folder:SetAttribute("FieldRouteStep", found)
+	folder:SetAttribute("FieldRouteTotal", nodeCount)
 	local isWildlife = targetCard and (targetCard.field == "Zoology" or (targetCard.meta and targetCard.meta.kind == "animal")) == true
 	local rareTrace = targetCard and (targetCard.rarity == "Rare" or targetCard.rarity == "Epic" or targetCard.rarity == "Legendary") == true
 	folder:SetAttribute("FieldTargetCard", targetCard and targetCard.id or "")
@@ -3835,9 +3838,12 @@ function FieldScene.start(opts)
 			else (if isWildlife then "지역 동물 관찰: " else "지식 단서 조사: ") .. targetCard.name
 	end
 
-	-- 기존 발견물 수/발견 완료 기준은 그대로 둔다. 첫 발견 지점만 지역 도감 실물/기록으로 연출한다.
+	-- [구역 경로] 기존 조사 수·보상은 유지하고 입구에서 깊은 지역으로 이어지는 실제 이동 경로를 구성한다.
+	if found > 0 then questHint.Text = string.format("이어하기 · 구역 %d/%d 완료", found, nodeCount) end
 	for i = 1, nodeCount do
-		local pos = ORIGIN + scatter(30)
+		local offset = scatter(30)
+		local pos = ORIGIN + (if nodeCount > 1 then Vector3.new(math.clamp(offset.X, -half * 0.24, half * 0.24), 0,
+			half - 40 - (2 * half - 80) * (i - 1) / (nodeCount - 1)) else offset)
 		local special = i == 1 and targetCard ~= nil
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon, Enum.PartType.Ball)
 		-- [발견 표시] 조사 판정 크기는 유지하고 네모난 발광 상자만 구형으로 바꾼다.
@@ -3846,6 +3852,12 @@ function FieldScene.start(opts)
 		anchor.CanCollide = false
 		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
+		anchor:SetAttribute("FieldRouteStep", i)
+		if i <= found then
+			if special and rareTrace then for _ = 1, 2 do scatter(36) end end
+			anchor:Destroy()
+			continue
+		end
 		if special then
 			anchor:SetAttribute("ObservationCardId", targetCard.id)
 			-- [승인된 동물 실물] 기존 Animals 폴더의 실제 종이 맞을 때만 3D 메시를 사용한다.
@@ -3894,7 +3906,7 @@ function FieldScene.start(opts)
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
 		pp.RequiresLineOfSight = false
-		pp.Enabled = not (special and rareTrace)
+		pp.Enabled = i == found + 1 and not (special and rareTrace)
 		pp.Parent = anchor
 		-- [발견물 외형] 대표 모양 실물·실루엣·조건·동물 반응·조사 방법
 		local stage = if special and DiscoveryStage then DiscoveryStage.setup({
@@ -3941,9 +3953,9 @@ function FieldScene.start(opts)
 			end
 		end
 		pp.Triggered:Connect(function()
-			if finished or not anchor.Parent then return end
+			if finished or not anchor.Parent or i ~= found + 1 or anchor:GetAttribute("FieldCheckpointPending")
+				or workspace:GetAttribute("FieldCombatReady") ~= true then return end
 			if special then
-				if workspace:GetAttribute("FieldCombatReady") ~= true then return end
 				if folder:GetAttribute("FieldBossClueState") == "guarded" then
 					for _, enemy in enemies do
 						if not enemy.ac.dead and enemy.model:GetAttribute("FieldBossProtectsClue") then
@@ -3952,13 +3964,29 @@ function FieldScene.start(opts)
 						end
 					end
 				end
+			end
+			-- 서버 응답 전에는 다음 구역을 열지 않는다. 응답 유실 시 같은 단계로 재시도한다.
+			anchor:SetAttribute("FieldCheckpointPending", true)
+			local recordCard = if special then targetCard.id else observedCardId
+			local recorded = not opts.onCheckpoint or opts.onCheckpoint(i, recordCard)
+			if finished or not anchor.Parent then return end
+			anchor:SetAttribute("FieldCheckpointPending", nil)
+			if not recorded then say("진행 기록을 연결하지 못했어. 다시 조사해.", 3.5); return end
+			if special then
 				observedCardId = targetCard.id
 				folder:SetAttribute("FieldBossClueState", "observed")
 				questHint.Text = "현장 기록 완료: " .. targetCard.name
 				if stage then pcall(stage.onObserved) end
 			end
 			found += 1
+			folder:SetAttribute("FieldRouteStep", found)
 			anchor:Destroy()
+			local nextAnchor = folder:FindFirstChild("Discovery" .. (found + 1))
+			local nextPrompt = nextAnchor and nextAnchor:FindFirstChildOfClass("ProximityPrompt")
+			if nextPrompt then
+				nextPrompt.Enabled = true
+				questHint.Text = string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
+			end
 			say(string.format(if special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
@@ -4252,7 +4280,7 @@ function FieldScene.start(opts)
 			model:SetAttribute("FieldBossPhase", 1)
 			-- 위험 지역의 유물·문헌·광물 기록을 지키는 첫 두목만 조사와 연결한다.
 			-- 살아 있는 동식물 관찰에는 격파를 요구하지 않는다.
-			if i == enemyCount + 1 and targetCard and not isWildlife
+			if i == enemyCount + 1 and found == 0 and targetCard and not isWildlife
 				and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
 					or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture")
 				and bossRole ~= "giant" then
@@ -5053,7 +5081,7 @@ function FieldScene.start(opts)
 				return true
 			end
 			for _, ch in folder:GetChildren() do
-				if ch:IsA("BasePart") and string.sub(ch.Name, 1, 9) == "Discovery" then
+				if ch:IsA("BasePart") and string.sub(ch.Name, 1, 9) == "Discovery" and ch:GetAttribute("FieldRouteStep") == found + 1 then
 					place(ch.Position, Color3.fromRGB(255, 214, 120), 8, true)
 				elseif ch:IsA("BasePart") and string.sub(ch.Name, 1, 13) == "FieldEvidence" then
 					-- [희귀 동물/지식 퀘스트] 추적해야 할 흔적은 미니맵에 청록색으로 표시한다.
@@ -10284,6 +10312,7 @@ function FieldScene.start(opts)
 		end
 	end))
 	workspace:SetAttribute("FieldCombatReady", true)
+	if found >= nodeCount then showCompletion() end -- 마지막 구역 기록이 있는 경우 귀환 정산을 이어간다
 
 	-- [적 R15 관절·전술 통합 루프] Animator 갱신 뒤 PreSimulation에서 모터를 적용해야 팔·무릎 자세가 사라지지 않는다.
 	-- 기존 적 공격·피해·스폰은 동일한 단일 업데이트 경로를 그대로 사용한다.

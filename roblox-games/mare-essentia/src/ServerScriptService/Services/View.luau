@@ -669,6 +669,7 @@ return function(D, S)
 					fieldQuest = fieldQuest, -- 현지 퀘스트 조건을 통과한 진행 단계만 알린다.
 					fieldStory = fieldStory, -- 기존 퀘스트·카드·후속 의뢰에서 읽은 현장 정보, 저장 없음.
 					observableCards = observableCards, -- 저장 상태가 아닌 탐험 화면용 임시 후보
+					fieldCheckpoint = S.Discovery.checkpointOf(state, site), -- 동일 탐험의 마지막 서버 접수 단계
 					fromYear = site.fromYear,
 					locked = blocked,
 					unlocked = blocked == nil,

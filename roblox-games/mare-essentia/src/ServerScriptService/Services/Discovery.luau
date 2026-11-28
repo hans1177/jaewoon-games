@@ -171,13 +171,50 @@ return function(D, S)
 		return nil
 	end
 
+	-- [현장 진행 저장] 한 개의 활성 탐험 기록만 기존 stats에 보관한다. 보상과 명중 판정은 기존 경로를 사용한다.
+	local function checkpointOf(state, site)
+		local cp = state.stats.fieldCheckpoint
+		if type(cp) ~= "table" or cp.version ~= 1 or cp.siteId ~= site.id or site.portId ~= state.portId
+			or type(cp.stage) ~= "number" or cp.stage ~= math.floor(cp.stage)
+			or cp.stage < 1 or cp.stage > math.clamp(site.days, 1, 3)
+			or type(cp.cardId) ~= "string" or not table.find(site.pool, cp.cardId)
+			or state.discovered[cp.cardId] or cardBlockReason(state, D.Cards.ById[cp.cardId]) then return nil end
+		return cp
+	end
+
 	-- [탐험 시작] 기존 서버 검증 조건과 동일한 탐험지만 숙련 기록을 시작한다.
 	function handlers.FieldPracticeBegin(state, p)
 		local site = type(p.siteId) == "string" and findSite(p.siteId)
 		if not site or site.portId ~= state.portId then return false, "잘못된 탐험지예요" end
 		local blocked = siteBlockReason(state, site)
 		if blocked then return false, blocked end
-		fieldRuns[state] = { siteId = site.id, started = os.clock() }
+		local cp = checkpointOf(state, site)
+		fieldRuns[state] = { siteId = site.id, started = os.clock(), stage = if cp then cp.stage else 0, cardId = if cp then cp.cardId else nil }
+		return true, ""
+	end
+
+	-- [구역 통과] 클라이언트 필드의 진행 기록이므로 서버는 실제 이동/전투를 직접 입증하지 못한다.
+	-- 순서·탐험 자격·카드 후보를 확인하고 동일 단계 재전송은 기록만 확인한다. 보상은 여기서 지급하지 않는다.
+	function handlers.FieldCheckpoint(state, p)
+		local run = fieldRuns[state]
+		local site = type(p.siteId) == "string" and findSite(p.siteId)
+		if not run or not site or run.siteId ~= site.id or site.portId ~= state.portId
+			or siteBlockReason(state, site) then return false, "탐험 기록을 확인할 수 없어요" end
+		local stage, cardId = p.stage, p.observedCardId
+		if type(stage) ~= "number" or stage ~= math.floor(stage) or stage < 1
+			or stage > math.clamp(site.days, 1, 3)
+			or type(cardId) ~= "string" or not table.find(site.pool, cardId)
+			or state.discovered[cardId] or cardBlockReason(state, D.Cards.ById[cardId]) then
+			return false, "유효하지 않은 탐험 단계예요"
+		end
+		if run.cardId and run.cardId ~= cardId then return false, "탐험 카드가 바뀌었어요" end
+		if stage == run.stage then
+			local cp = checkpointOf(state, site)
+			return cp ~= nil and cp.stage == stage and cp.cardId == cardId, ""
+		end
+		if stage ~= run.stage + 1 then return false, "앞 구역을 먼저 완료하세요" end
+		run.stage, run.cardId = stage, cardId
+		state.stats.fieldCheckpoint = { version = 1, siteId = site.id, stage = stage, cardId = cardId }
 		return true, ""
 	end
 
@@ -232,6 +269,14 @@ return function(D, S)
 		local blocked = siteBlockReason(state, site)
 		if blocked then return false, blocked end
 
+		local checkpoint = checkpointOf(state, site)
+		if p.fieldCheckpoint == true or checkpoint then
+			if not checkpoint or checkpoint.stage ~= math.clamp(site.days, 1, 3) then
+				return false, "마지막 구역까지 완료해야 귀환 보상을 받을 수 있어요"
+			end
+			p.observedCardId = checkpoint.cardId
+		end
+
 		local remaining = {}
 		for _, cardId in site.pool do
 			if not state.discovered[cardId] and not cardBlockReason(state, D.Cards.ById[cardId]) then
@@ -246,6 +291,7 @@ return function(D, S)
 		state.ship.supplies -= need
 		S.State.advanceDays(state, site.days)
 		state.stats.explored += 1
+		if type(state.stats.fieldCheckpoint) == "table" and state.stats.fieldCheckpoint.siteId == site.id then state.stats.fieldCheckpoint = nil end
 
 		local msgs = { string.format("%s 탐험 (%d일)", site.name, site.days) }
 		if ctx.rng() < 0.45 then
@@ -325,5 +371,5 @@ return function(D, S)
 		return true, table.concat(msgs, "\n")
 	end
 
-	return { handlers = handlers, grantCard = grantCard, grantVisitCards = grantVisitCards, methodOf = methodOf, pathOf = pathOf, rarityGuide = rarityGuide, cardBlockReason = cardBlockReason, siteBlockReason = siteBlockReason }
+	return { handlers = handlers, grantCard = grantCard, grantVisitCards = grantVisitCards, methodOf = methodOf, pathOf = pathOf, rarityGuide = rarityGuide, cardBlockReason = cardBlockReason, siteBlockReason = siteBlockReason, checkpointOf = checkpointOf }
 end

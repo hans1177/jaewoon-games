@@ -64,6 +64,44 @@ local function check(name, ok)
 	if ok then pass += 1 else fail += 1 print("FAIL: " .. name) end
 end
 
+-- [탐험 저장] 기존 서비스의 실제 시작·단계 접수·세이브 복원·최종 보상을 연결한다.
+do
+	local st = S.State.new("england", 1700)
+	local site, cardId
+	st.careers.adventure.level = 30
+	for _, candidate in D.Sites.Sites do
+		st.portId = candidate.portId
+		if candidate.days >= 2 and not S.Discovery.siteBlockReason(st, candidate) then
+			for _, id in candidate.pool do
+				if not st.discovered[id] and not S.Discovery.cardBlockReason(st, D.Cards.ById[id]) then site, cardId = candidate, id break end
+			end
+		end
+		if site then break end
+	end
+	check("탐험 구역 저장: 유효한 다단계 탐험지", site ~= nil and cardId ~= nil)
+	if site and cardId then
+		st.ship.supplies = 10000
+		local H = Registry.handlers
+		check("탐험 구역 저장: 입장", H.FieldPracticeBegin(st, { siteId = site.id }) == true)
+		check("탐험 구역 저장: 단계 건너뛰기 거부", H.FieldCheckpoint(st, { siteId = site.id, stage = 2, observedCardId = cardId }) == false)
+		check("탐험 구역 저장: 1단계", H.FieldCheckpoint(st, { siteId = site.id, stage = 1, observedCardId = cardId }) == true)
+		check("탐험 구역 저장: 재전송 멱등", H.FieldCheckpoint(st, { siteId = site.id, stage = 1, observedCardId = cardId }) == true)
+		check("탐험 구역 저장: 중간 보상 거부", H.Explore(st, { siteId = site.id, fieldCheckpoint = true }, ctx) == false and st.stats.explored == 0)
+		local loaded = S.State.sanitize(S.State.serialize(st))
+		local cp = loaded and S.Discovery.checkpointOf(loaded, site)
+		check("탐험 구역 저장: 세이브 왕복", cp and cp.stage == 1 and cp.cardId == cardId)
+		if loaded and cp then
+			loaded.ship.supplies = 10000
+			check("탐험 구역 저장: 재입장", H.FieldPracticeBegin(loaded, { siteId = site.id }) == true)
+			for stage = 2, math.clamp(site.days, 1, 3) do
+				check("탐험 구역 저장: 후속 단계 " .. stage, H.FieldCheckpoint(loaded, { siteId = site.id, stage = stage, observedCardId = cardId }) == true)
+			end
+			check("탐험 구역 저장: 최종 정산", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true }, ctx) == true)
+			check("탐험 구역 저장: 중복 정산 차단", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true }, ctx) == false and loaded.stats.explored == 1)
+		end
+	end
+end
+
 local allOk, heroes, legend, melee, ranged, cannon, specials = true, 0, 0, 0, 0, 0, 0
 for _, c in KC.Cards do
 	local d = BC.Units[c.id] or BC.Specials[c.id]

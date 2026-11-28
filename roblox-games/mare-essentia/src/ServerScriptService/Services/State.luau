@@ -684,6 +684,18 @@ return function(D)
 			end
 			-- [연타 기록 마이그레이션] 이전 저장은 0으로 복원하고, 개인 최고 기록은 보상과 독립해 보관한다.
 			s.stats.fieldStreakBest = math.floor(num(saved.stats.fieldStreakBest, 0, 0, 500))
+			-- [기존 저장 호환] 구역 진행 기록이 없는 옛 세이브는 그대로 읽는다.
+			local cp = saved.stats.fieldCheckpoint
+			if type(cp) == "table" and cp.version == 1 and type(cp.siteId) == "string" and type(cp.cardId) == "string"
+				and type(cp.stage) == "number" and cp.stage == math.floor(cp.stage) and cp.stage >= 1
+				and D.Cards.ById[cp.cardId] and not s.discovered[cp.cardId] then
+				for _, site in D.Sites.Sites do
+					if site.id == cp.siteId and cp.stage <= math.clamp(site.days, 1, 3) and table.find(site.pool, cp.cardId) then
+						(s.stats :: any).fieldCheckpoint = { version = 1, siteId = site.id, stage = cp.stage, cardId = cp.cardId }
+						break
+					end
+				end
+			end
 			if type(saved.stats.visited) == "table" then
 				for id, v in saved.stats.visited do
 					if v == true and D.Ports.Ports[id] then
