@@ -2164,6 +2164,9 @@ function Pose.work(model, kind, t, moving)
 		-- 뒤로 -1.25rad 젖혀 두던 어깨를 전방으로 교정하고 보행 다리는 유지한다.
 		set(m.leftArm, A(0.95, 0, 0.12)); set(m.rightArm, A(0.95, 0, -0.12))
 		set(m.leftElbow, A(-0.38, 0, 0)); set(m.rightElbow, A(-0.38, 0, 0))
+		-- [하역꾼·짐꾼] 상체만 짐의 무게를 받는 자세로 숙이고 보행·발 접지는 유지한다.
+		set(m.waist, A(if moving then 0.16 else 0.10, 0, 0))
+		set(m.neck, A(if moving then -0.08 else -0.04, 0, 0))
 	elseif kind == "look" then
 		-- 손을 흔들다 둘러보기로 돌아왔을 때 팔이 허공에 남지 않도록 중립으로 복귀.
 		if not moving then
