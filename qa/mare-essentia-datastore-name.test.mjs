@@ -5167,3 +5167,19 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(related.includes('H.encyclopediaSearchText = ""'));
  assert.ok(related.includes('Enum.ScaleType.Fit'));
 });
+
+ test('성장 동료 목록은 실제 호감도 막대와 선택 상세에서만 행동을 제공한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const grid=source.slice(source.indexOf('function H.tileGrid('),source.indexOf('local function mkHeader('));
+ assert.ok(grid.includes('CompanionAffinityFill'));
+ assert.ok(grid.includes('math.clamp(it.affinity / 100, 0, 1)'));
+ for(const [name,next,id] of [['recruit','crew','recruitDetailId'],['crew','status','crewDetailId']]){
+   const section=source.slice(source.indexOf('function RENDERERS.'+name+'()'),source.indexOf('function RENDERERS.'+next+'()'));
+   assert.ok(section.includes('H.'+id+' = c.id; render()'));
+   assert.ok(section.includes('H.'+id+' = nil; render()'));
+   assert.ok(section.includes('affinity = c.affinity'));
+   assert.ok(section.includes('if not selected then'));
+   for(const action of ['Recruit','Talk','Dismiss']) assert.ok(section.includes('call("'+action+'"'));
+   assert.ok(section.includes('H.tileGrid(tiles, content, 190, 210, not selected)'));
+ }
+});
