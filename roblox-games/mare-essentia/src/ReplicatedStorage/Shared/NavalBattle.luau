@@ -275,8 +275,32 @@ local function placeShip(parent, asset, at, length, yaw, tint)
 				d.Anchored = true
 				d.CanCollide = false
 				d.CanQuery = false
-				if tint and d:IsA("MeshPart") then
-					d.Color = tint
+				-- [선박 소재] 원본 지도·메시 텍스처·재질 변형을 보존한다.
+				local textured = d:FindFirstChildOfClass("SurfaceAppearance") ~= nil or d.MaterialVariant ~= ""
+					or (d:IsA("MeshPart") and d.TextureID ~= "")
+				for _, child in d:GetChildren() do
+					if child:IsA("SpecialMesh") and child.TextureId ~= "" then textured = true; break end
+					if (child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "" then textured = true; break end
+				end
+				local low = math.min(d.Color.R, d.Color.G, d.Color.B)
+				local high = math.max(d.Color.R, d.Color.G, d.Color.B)
+				if not textured and d.Transparency < 0.95 and low >= 0.35 and high - low <= 0.10
+					and (d.Material == Enum.Material.Plastic or d.Material == Enum.Material.SmoothPlastic) then
+					local role = d.Name:lower()
+					if role:find("sail", 1, true) or role:find("canvas", 1, true) or role:find("cloth", 1, true) then
+						d.Material, d.Color = Enum.Material.Fabric, Color3.fromRGB(216, 207, 182)
+					elseif role:find("cannon", 1, true) or role:find("iron", 1, true) or role:find("metal", 1, true) or role:find("anchor", 1, true) then
+						d.Material, d.Color = Enum.Material.Metal, Color3.fromRGB(84, 85, 83)
+					elseif role:find("rope", 1, true) or role:find("rigging", 1, true) then
+					d.Material, d.Color = Enum.Material.Fabric, Color3.fromRGB(144, 118, 80)
+				elseif role:find("glass", 1, true) or role:find("windowpane", 1, true) then
+					d.Material, d.Color = Enum.Material.Glass, Color3.fromRGB(177, 206, 214)
+				elseif role:find("hull", 1, true) or role:find("deck", 1, true) or role:find("mast", 1, true)
+						or role:find("wood", 1, true) or role:find("plank", 1, true) or role:find("rudder", 1, true) then
+						d.Material, d.Color = Enum.Material.WoodPlanks, tint or Color3.fromRGB(119, 85, 55)
+					elseif tint and d:IsA("MeshPart") then
+						d.Color = tint
+					end
 				end
 			end
 		end
@@ -811,19 +835,33 @@ function NavalBattle.play(opts)
 						if node:IsA("BasePart") then
 							node.Anchored = true
 							node.CanCollide, node.CanTouch, node.CanQuery = false, false, false
-							-- [중·원경 해안] 먼 절벽만 그림자를 생략하고 텍스처 없는 면에 해무색을 섞는다.
-							-- SurfaceAppearance/TextureID/특수 메시 텍스처는 그대로 보존한다.
-							if farShore then
-								node.CastShadow = false
-								if not node:FindFirstChildOfClass("SurfaceAppearance")
-									and (not node:IsA("MeshPart") or node.TextureID == "") then
-									local specialMap = false
-									for _, child in node:GetChildren() do
-										if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+							-- [해안 소재] 근·중·원경 모두 미채색 기본 플라스틱만 복구한다.
+							if farShore then node.CastShadow = false end
+							if not node:FindFirstChildOfClass("SurfaceAppearance") and node.MaterialVariant == ""
+								and (not node:IsA("MeshPart") or node.TextureID == "") then
+								local specialMap = false
+								for _, child in node:GetChildren() do
+									if child:IsA("SpecialMesh") and child.TextureId ~= "" then specialMap = true; break end
+									if (child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "" then specialMap = true; break end
+								end
+								if not specialMap and node.Transparency < 0.95 then
+									local low = math.min(node.Color.R, node.Color.G, node.Color.B)
+									local high = math.max(node.Color.R, node.Color.G, node.Color.B)
+									if low >= 0.35 and high - low <= 0.10 and (node.Material == Enum.Material.Plastic or node.Material == Enum.Material.SmoothPlastic) then
+										local role = node.Name:lower()
+										if role:find("trunk", 1, true) or role:find("bark", 1, true) or role:find("branch", 1, true) then
+											node.Material, node.Color = Enum.Material.Wood, Color3.fromRGB(116, 83, 53)
+										elseif role:find("leaf", 1, true) or role:find("leaves", 1, true) or role:find("grass", 1, true) or role:find("foliage", 1, true) then
+											node.Material, node.Color = Enum.Material.Grass, Color3.fromRGB(87, 137, 65)
+										elseif role:find("sand", 1, true) or role:find("beach", 1, true) then
+											node.Material, node.Color = Enum.Material.Sand, Color3.fromRGB(194, 168, 122)
+										elseif role:find("snow", 1, true) or role:find("ice", 1, true) then
+											node.Material, node.Color = Enum.Material.Snow, Color3.fromRGB(225, 234, 239)
+										elseif role:find("rock", 1, true) or role:find("cliff", 1, true) or role:find("stone", 1, true) then
+											node.Material, node.Color = Enum.Material.Rock, Color3.fromRGB(137, 126, 105)
+										end
 									end
-									if not specialMap then
-										node.Color = node.Color:Lerp(skyColor, if mode == "fog" then 0.34 else 0.22)
-									end
+									if farShore then node.Color = node.Color:Lerp(skyColor, if mode == "fog" then 0.34 else 0.22) end
 								end
 							end
 						end
