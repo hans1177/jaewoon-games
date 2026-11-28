@@ -306,7 +306,13 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     const found = findingsFrom(game, s);
     // 새 지시서 등록(같은 지문은 한 번만, 해결되면 사라짐)
     const now_ids = new Set(found.map(x => x.fingerprint));
-    for (const x of found) if (!out.orders[x.fingerprint]) out.orders[x.fingerprint] = { ...x, firstAt: now, lastAt: now, seen: 1 }; else { out.orders[x.fingerprint].lastAt = now; out.orders[x.fingerprint].seen++; out.orders[x.fingerprint].text = x.text; if (x.sourceFile) { out.orders[x.fingerprint].sourceFile = x.sourceFile; out.orders[x.fingerprint].sourceLine = x.sourceLine; } }
+    for (const x of found) {
+      const prior = out.orders[x.fingerprint];
+      const order = { ...prior, ...x, firstAt: prior?.firstAt ?? now, lastAt: now, seen: (prior?.seen || 0) + 1 };
+      // [재발] 동일 지문을 유지하되 과거 해결 판정은 현재 발견을 덮을 수 없다.
+      delete order.resolvedAt;
+      out.orders[x.fingerprint] = order;
+    }
     // [성공 학습] 실패·중단·사진 없는 결과는 이전 오류를 해결한 근거가 아니다.
     const report = reports[game] || {};
     const summary = report.summary || {};
@@ -316,9 +322,24 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
       && !(Number(summary.plannedFrames || 0) > s.captured)
       && !['models', 'registered', 'features'].some(key =>
         String(report.assetAudit?.[key]?.status || '').toUpperCase() === 'FAIL');
-    if (complete)
-      for (const [fp, o] of Object.entries(out.orders))
-        if (o.game === game && !now_ids.has(fp) && !o.resolvedAt) o.resolvedAt = now;
+    if (complete) {
+      // [재검증] 실제 측정한 항목만 해결할 수 있다. 다른 장면의 성공·누락된 신호는 해결 증거가 아니다.
+      const measured = (report.log || []).map(row => row.out || '').join('\n');
+      for (const [fp, o] of Object.entries(out.orders)) {
+        if (o.game !== game || now_ids.has(fp) || o.resolvedAt) continue;
+        const missingUi = o.id === 'ui-missing' && String(o.text || '').startsWith('화면에 없는 UI 글자: ')
+          ? o.text.slice('화면에 없는 UI 글자: '.length).split(', ').filter(Boolean) : [];
+        const verified = {
+          'console-errors': /HEALTH_ERR n=0(?:\s|$)/.test(measured) && s.err === 0,
+          'asset-fail': /HEALTH_ASSET fail=0 total=[1-9]\d*(?:\s|$)/.test(measured),
+          'no-mobs': s.mobs > 0,
+          'ui-missing': missingUi.length > 0 && missingUi.every(key => s.ui[key] > 0),
+          'sky-missing': s.light?.atmos === true && s.light?.sky === true,
+          'sparse-world': s.parts !== null && s.parts >= 300
+        }[o.id] === true;
+        if (verified) o.resolvedAt = now;
+      }
+    }
     if (pending) {
       const [k, rec] = pending;
       const hit = found.length > 0 ? 1 : 0;
