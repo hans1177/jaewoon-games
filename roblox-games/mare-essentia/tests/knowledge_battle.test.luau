@@ -1111,5 +1111,31 @@ do
 	check("완료 의뢰의 카드 이야기만 열림", lore ~= nil and #lore == 1 and lore[1].text == q.loreText)
 end
 
+-- 모든 항구 선택 사건은 기존 카드의 실제 선택 결과로 색인한다.
+do
+	local missing = {}
+	local count = 0
+	for _, e in D.Story.Events do
+		count += 1
+		for i, c in e.choices do
+			local id = c.effect.cardId or e.loreCardId
+			local found = false
+			for _, row in (id and D.Quests.Kit.LORE[id]) or {} do
+				if row.eventId == e.id and row.choice == i and row.text == c.result then found = true break end
+			end
+			if not id or not D.Cards.ById[id] or not found then table.insert(missing, e.id .. ":" .. i) end
+		end
+	end
+	check("항구 선택 사건 228개 전체 카드 연결: " .. table.concat(missing, ","), count == 228 and #missing == 0)
+	local st = S.State.new("england", 1700)
+	local e = D.Story.ById.lc_1
+	local id = e.loreCardId
+	check("미완료 숨겨진 해도 결말 차단", D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, id) == nil)
+	st.story[e.id] = 2
+	local lore = D.Quests.Kit.loreFor(st, D.Quests.Kit.LORE, id)
+	check("선택한 사건 결말만 표시", lore ~= nil and #lore == 1 and lore[1].text == e.choices[2].result)
+	check("거절한 해도 후속 사건 해금 차단", S.Story.blockReason(st, D.Story.ById.lc_2) ~= nil)
+end
+
 print(string.format("지식=전투 테스트: 통과 %d, 실패 %d", pass, fail))
 if fail > 0 then error("지식=전투 테스트 실패") end

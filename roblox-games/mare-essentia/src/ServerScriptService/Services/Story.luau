@@ -76,6 +76,10 @@ return function(D, S)
 			S.Perk.addAffinity(state, fx.affinity, msgs)
 		end
 		state.story[e.id] = math.floor(p.choice)
+		local related = D.Cards.ById[fx.cardId or e.loreCardId or ""]
+		if related then
+			table.insert(msgs, "관련 백과: " .. related.name .. (if state.discovered[related.id] then " · 선택한 결말 기록" else " · 발견 후 결말 열람"))
+		end
 		if state.autoStory == e.id then
 			state.autoStory = nil
 		end
