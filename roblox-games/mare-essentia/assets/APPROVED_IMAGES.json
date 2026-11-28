@@ -1431,5 +1431,29 @@
       "replacesAssetId": "122487478364635"
     }
   },
-  "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지."
+  "_모델원화": "원화는 이미지 생성 모델로 제작한다. 바이브가 원본 한 장을 시각 검수한 뒤 modelOriginals[CardArt/카드번호]에 원본 경로·원본 SHA256·검수 날짜·검수 항목을 기록한다. PNG 파일과 approved 해시가 모두 일치할 때만 기존 업로더가 등록한다. SVG·파츠·모션 시트·미검수 원화 금지.",
+  "dropboxPending": {
+    "CardArt/af_28": {
+      "bytes": 3101682,
+      "width": 1049,
+      "height": 1499,
+      "review": {
+        "sourceType": "IMAGE_GENERATION_MODEL",
+        "sourceFile": "assets/cardart/src/af_28-original.png",
+        "sourceSha256": "8e7cdbcf525e34095ab07b9d8c5b865532152d720b8a9d8148a57c401169656e",
+        "reviewer": "VIBE_AGENT_VISUAL_REVIEW",
+        "reviewedAt": "2026-11-28",
+        "license": "PROJECT_ORIGINAL_ART",
+        "subjectMatch": true,
+        "historicalContext": true,
+        "houseStyle": true,
+        "singleFinishedScene": true,
+        "noPartsOrSprites": true,
+        "robloxSafety": true,
+        "commercialRights": true,
+        "replacesSha256": "0f3503160050f2b0471011b44e09b623512bea841a98933a6db86f8dc84721db",
+        "replacesAssetId": "88567599792973"
+      }
+    }
+  }
 }
