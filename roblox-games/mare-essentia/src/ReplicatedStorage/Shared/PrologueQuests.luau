@@ -4,149 +4,149 @@
 local Q: { any } = {}
 local HAND: { [string]: { string } } = {}
 
-table.insert(Q, { id = "pr_england_1", name = "논문에 오르지 못한 이름", summary = "서막 · 이름 없는 숫자들 — 양모 6개를 플리머스에 납품", kind = "deliver", goodId = "wool", portId = "plymouth", amount = 6, nation = "england", strand = "main",
+table.insert(Q, { id = "pr_england_1", loreCardId = "clothing_wool_cloak", name = "논문에 오르지 못한 이름", summary = "서막 · 이름 없는 숫자들 — 양모 6개를 플리머스에 납품", kind = "deliver", goodId = "wool", portId = "plymouth", amount = 6, nation = "england", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "adventure", rewardXp = 40 })
-HAND["pr_england_1"] = { "윌은 고아로 자라 양털 짜는 마을 사람들 손에서 컸다. 학회 어른들의 논문 끝에는 그가 밤새 적은 관측 값이 쓰이지만 그의 이름은 한 번도 오르지 않았다. 사흘 전 밤 그의 풍향계가 동서남북을 한꺼번에 가리켰고, 이번만큼은 자기 이름으로 발표하고 싶어 한다. 플리머스 늙은 도선사의 옛 기록과 맞춰 보자며, 마을이 대 준 양모 한 짐을 길값으로 싣는다.", "늙은 도선사가 일지를 덮으며 낮게 말했다. \"그 밤을 나도 봤네. 하늘이 한 바퀴 돌았지.\" 윌은 자기 손이 떨리는 걸 보고 놀랐다. 이름이 필요한 게 아니라 이 떨림이 필요했던 것이다." }
-table.insert(Q, { id = "pr_england_2", name = "바람을 이어 붙이는 밤", summary = "서막 · 이름 없는 숫자들 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "england", strand = "main",
+HAND["pr_england_1"] = { [==[양모를 짜는 마을에서 자란 윌은 학자의 관측 기록에 자신의 이름이 빠진 것을 발견한다. 폭풍이 지난 밤의 풍향표에는 서로 어긋나는 화살표가 있다. 플리머스 도선사에게 기록을 보여 주기로 하고 양모 6개 납품을 맡는다.]==], [==[양모 주문을 마쳤다. 도선사는 윌의 기록을 보고 다른 항구의 관측도 찾아보라고 권한다. 윌은 이름을 되찾기 전에 숫자가 무엇을 뜻하는지 알고 싶어진다.]==] }
+table.insert(Q, { id = "pr_england_2", loreCardId = "wx_great_storm", name = "바람을 이어 붙이는 밤", summary = "서막 · 이름 없는 숫자들 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "england", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "adventure", rewardXp = 70, after = "pr_england_1" })
-HAND["pr_england_2"] = { "같은 밤의 기록을 항구 네 곳에서 모은다. 항구마다 바람이 다르다고 사람들은 말하지만, 윌은 그 다름 속에 순서가 있을 거라 믿는다. 양털 짜는 어머니들이 올마다 다른 실을 엮어 한 장의 천을 만들던 것처럼.", "네 항구의 풍향을 이어 붙이자 화살표가 원을 그렸다. 윌이 속삭였다. \"폭풍은 지나가는 게 아니었어요. 돌고 있었어요. 마치… 실타래처럼.\"" }
-table.insert(Q, { id = "pr_england_3", name = "리스본에 보내는 답례", summary = "서막 · 이름 없는 숫자들 — 직물 8개를 리스본에 납품", kind = "deliver", goodId = "cloth", portId = "lisbon", amount = 8, nation = "england", strand = "main",
+HAND["pr_england_2"] = { [==[윌은 풍향이 모두 한쪽으로만 불었다는 설명을 의심한다. 항구를 돌아다니며 폭풍의 기록을 비교할 경험을 쌓으려 한다. 1703년 대폭풍 자료는 이런 연구의 역사적 배경이다.]==], [==[항구 방문 목표를 채웠다. 윌은 원형으로 바람이 움직였을 가능성을 노트에 적되 관측이 부족한 곳은 빈칸으로 둔다. 리스본 선주에게 보낼 기록을 준비한다.]==] }
+table.insert(Q, { id = "pr_england_3", loreCardId = "goods_linen", name = "리스본에 보내는 답례", summary = "서막 · 이름 없는 숫자들 — 직물 8개를 리스본에 납품", kind = "deliver", goodId = "cloth", portId = "lisbon", amount = 8, nation = "england", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "adventure", rewardXp = 120, after = "pr_england_2" })
-HAND["pr_england_3"] = { "리스본 선주 조합이 원을 그리는 폭풍의 길에 값을 치르겠다고 한다. 윌은 자기를 키운 마을에 처음으로 돈을 보낼 수 있다. 마을 사람들이 짜 준 모직을 바다 건너 도시에 가져가는 일이 곧 은혜를 갚는 길이다.", "선주가 말했다. \"이 앎으로 배 열 척이 산다.\" 윌은 마을 아주머니들에게 편지를 쓰다가 울었다. 처음으로 \"저도 쓸모 있는 사람이 되었어요\"라고 썼다." }
-table.insert(Q, { id = "pr_england_4", name = "폭풍의 눈", summary = "서막 · 이름 없는 숫자들 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "england", strand = "main",
+HAND["pr_england_3"] = { [==[리스본 선주는 폭풍에 관한 윌의 자료를 읽어 보겠다고 한다. 윌을 키운 마을의 직물 주문도 함께 맡겼다. 직물 8개를 리스본에 납품하자.]==], [==[직물 납품이 기록됐다. 윌은 마을에 고마움을 전하는 편지를 쓴다. 선주는 폭풍에 관한 설명이 실제 자료로 검토될 수 있도록 학자를 소개한다.]==] }
+table.insert(Q, { id = "pr_england_4", loreCardId = "geo_trade_winds", name = "폭풍의 눈", summary = "서막 · 이름 없는 숫자들 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "england", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "adventure", rewardXp = 200, after = "pr_england_3" })
-HAND["pr_england_4"] = { "윌의 원을 본 학자는 말없이 한참 그림만 바라본다. 세 가지 지식을 이해하는 동안 학자는 윌에게, 이름보다 오래 남는 것이 무엇인지 묻는다. 원의 한가운데에는 아무것도 그려지지 않은 빈자리가 있다.", "학자가 빈자리에 점을 찍었다. \"여기가 폭풍의 눈이오. 모든 게 도는데 홀로 고요한 자리.\" 윌이 덧붙였다. \"그날 밤, 별 하나가 제자리에 없었어요.\"" }
-table.insert(Q, { id = "pr_netherlands_1", name = "쓰지 않은 줄", summary = "서막 · 정해진 줄, 고르는 손 — 치즈 6개를 로테르담에 납품", kind = "deliver", goodId = "cheese", portId = "rotterdam", amount = 6, nation = "netherlands", strand = "main",
+HAND["pr_england_4"] = { [==[학자는 바람의 방향과 그 변화에 관한 기록을 펼쳐 놓고 윌의 원형 그림이 아직 가설이라고 말한다. 지식 세 가지를 이해하며 관측의 근거와 빈칸을 구별해 보자.]==], [==[윌은 세 지식의 보고를 마친다. 자기 이름이 적힌 관측표를 접고 핼리의 바람 연구를 찾아갈 준비를 한다. 빈칸은 틀렸다는 표시가 아니라 다음 질문이다.]==] }
+table.insert(Q, { id = "pr_netherlands_1", loreCardId = "good_cheese", name = "쓰지 않은 줄", summary = "서막 · 정해진 줄, 고르는 손 — 치즈 6개를 로테르담에 납품", kind = "deliver", goodId = "cheese", portId = "rotterdam", amount = 6, nation = "netherlands", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "trade", rewardXp = 40 })
-HAND["pr_netherlands_1"] = { "칼뱅파 집안에서 자란 피터는 모든 일이 이미 정해져 있다고 들으며 컸다. 그의 장부에 내년 날짜의 줄이 하나 있다. 필체는 자신의 것이고 내용은 로테르담에서의 치즈 거래다. 쓰지 않은 줄을 확인하러 가는 길은 곧 자기 운명이 정해졌는지 확인하는 길이다.", "로테르담 상인이 부른 값이 장부의 숫자와 한 푼도 다르지 않았다. 피터의 이마에 식은땀이 맺혔다. \"정해져 있었던 건가?\"" }
-table.insert(Q, { id = "pr_netherlands_2", name = "틀린 줄도 있다", summary = "서막 · 정해진 줄, 고르는 손 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "netherlands", strand = "main",
+HAND["pr_netherlands_1"] = { [==[피터는 쓰지 않은 미래 날짜의 장부에 자신의 필체로 로테르담 치즈 주문이 적혀 있는 것을 발견한다. 예정된 운명인지 누군가의 장난인지 확인하고 싶어 치즈 6개 납품을 맡는다.]==], [==[치즈 주문을 마쳤다. 피터는 장부의 예측과 실제 거래가 닮았다는 점을 기록한다. 한 번 맞았다는 사실만으로 운명이 정해졌다고 말할 수는 없다.]==] }
+table.insert(Q, { id = "pr_netherlands_2", loreCardId = "finance_bill_exchange", name = "틀린 줄도 있다", summary = "서막 · 정해진 줄, 고르는 손 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "netherlands", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "trade", rewardXp = 70, after = "pr_netherlands_1" })
-HAND["pr_netherlands_2"] = { "피터는 같은 필체의 줄을 더 찾았고, 항구 네 곳을 돌며 하나씩 확인한다. 줄이 모두 맞는다면 인생은 이미 쓰인 책이고, 틀린다면 자신에게 고를 힘이 있다는 뜻이다.", "열 줄 중 일곱 줄이 맞았다. 피터가 웃음을 터뜨렸다. \"세 줄은 틀렸어요! 정해진 게 아니라, 거의 그렇다는 거였어요.\"" }
-table.insert(Q, { id = "pr_netherlands_3", name = "반만 거는 용기", summary = "서막 · 정해진 줄, 고르는 손 — 향신료 8개를 런던에 납품", kind = "deliver", goodId = "spice", portId = "london", amount = 8, nation = "netherlands", strand = "main",
+HAND["pr_netherlands_2"] = { [==[피터는 장부의 다른 줄도 확인하려 한다. 여러 항구의 거래 경험을 모아 맞은 예측과 틀린 예측을 함께 살펴보자.]==], [==[방문 목표를 달성했다. 피터는 맞은 줄만 기억했던 자신의 습관을 발견한다. 런던의 향신료 주문은 이번에는 예측이 아니라 계약을 기준으로 준비한다.]==] }
+table.insert(Q, { id = "pr_netherlands_3", loreCardId = "geo_spice_islands", name = "반만 거는 용기", summary = "서막 · 정해진 줄, 고르는 손 — 향신료 8개를 런던에 납품", kind = "deliver", goodId = "spice", portId = "london", amount = 8, nation = "netherlands", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "trade", rewardXp = 120, after = "pr_netherlands_2" })
-HAND["pr_netherlands_3"] = { "일곱 번 맞는 줄이라면 세 번은 틀린다. 피터는 향신료를 런던에 가져가며 전 재산의 절반만 걸기로 한다. 신의 뜻에 모든 걸 맡기는 믿음과, 틀릴 몫을 남겨 두는 지혜 사이에서 그는 두 번째를 택한다.", "값은 올랐고 피터는 남은 절반도 지켰다. \"틀릴 때를 위해 걸지 않은 몫이 가장 큰 이문이었어요. 신께서 그 몫을 허락하셨을 거예요.\"" }
-table.insert(Q, { id = "pr_netherlands_4", name = "확률이라는 이름", summary = "서막 · 정해진 줄, 고르는 손 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "netherlands", strand = "main",
+HAND["pr_netherlands_3"] = { [==[피터는 향신료 값이 오른다는 장부의 문장을 읽고도 모든 것을 걸지 않기로 한다. 런던의 확정된 향신료 8개 주문을 마치자.]==], [==[납품을 완료했다. 피터는 예측한 시장 가격이 아니라 실제 계약 이행을 장부에 기록한다. 불확실함을 이해할 학자의 조언이 필요하다.]==] }
+table.insert(Q, { id = "pr_netherlands_4", loreCardId = "phy_pendulum", name = "확률이라는 이름", summary = "서막 · 정해진 줄, 고르는 손 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "netherlands", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 200, after = "pr_netherlands_3" })
-HAND["pr_netherlands_4"] = { "피터의 장부를 본 학자가 말한다. 앞날을 맞추는 게 아니라, 틀릴 만큼을 헤아리는 학문이 있다고. 세 가지 지식을 이해하는 동안 피터는 처음으로 자기 직관에 이름을 붙인다. 정해진 운명도, 제멋대로의 우연도 아닌 제3의 길.", "학자가 장부 끝 줄을 가리켰다. \"다음 줄은 누가 쓰겠소?\" 피터가 펜을 들었다. \"이번엔 제가 쓸 겁니다. 틀릴 수도 있다는 걸 알면서요.\"" }
-table.insert(Q, { id = "pr_france_1", name = "부두 상자 속의 반지", summary = "서막 · 불탄 영지의 편지 — 직물 6개를 라로셸에 납품", kind = "deliver", goodId = "cloth", portId = "la_rochelle", amount = 6, nation = "france", strand = "main",
+HAND["pr_netherlands_4"] = { [==[학자는 앞날을 맞히는 일과 시간이나 가능성을 계산하는 일은 다르다고 말한다. 세 가지 지식을 보고하며 피터의 장부를 다시 읽어 보자.]==], [==[지식 목표를 채웠다. 피터는 장부 다음 줄을 자신의 손으로 쓴다. 하위헌스의 연구를 통해 아직 모르는 가능성을 알아보고 싶다.]==] }
+table.insert(Q, { id = "pr_france_1", loreCardId = "goods_linen", name = "부두 상자 속의 반지", summary = "서막 · 불탄 영지의 편지 — 직물 6개를 라로셸에 납품", kind = "deliver", goodId = "cloth", portId = "la_rochelle", amount = 6, nation = "france", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "trade", rewardXp = 40 })
-HAND["pr_france_1"] = { "영지가 불탄 밤 사라진 가문 인장 반지가 라로셸 부두의 상자에서 나왔다. 로랑은 몰락한 가문을 오래 지켜 온 시종이다. 귀족의 의무라는 말은 알아도 그 의무가 자기에게 무엇을 요구하는지는 모른다. 반지를 실어 보낸 배의 선주를 찾으러 직물 한 짐과 함께 간다.", "선주가 말했다. \"보수는 선불이었고 의뢰인은 얼굴을 가렸소.\" 로랑이 반지를 쥔 손을 떨었다. 가문이 사라진 뒤 처음으로 누군가 자신들을 기억한 것이다." }
-table.insert(Q, { id = "pr_france_2", name = "안쪽에 새겨진 이름들", summary = "서막 · 불탄 영지의 편지 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "france", strand = "main",
+HAND["pr_france_1"] = { [==[불탄 영지의 시종 로랑은 라로셸 부두에서 사라진 가문의 인장 반지가 발견됐다는 편지를 받는다. 직물 6개 주문을 맡은 선주에게 반지의 사연도 물어보려 한다.]==], [==[직물 납품을 마쳤다. 선주는 이야기 속 반지의 출처가 가문 자체가 아니라 익명의 의뢰인이라고 전한다. 로랑은 반지 안쪽의 지명을 살펴본다.]==] }
+table.insert(Q, { id = "pr_france_2", loreCardId = "nav_portolan", name = "안쪽에 새겨진 이름들", summary = "서막 · 불탄 영지의 편지 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "france", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "trade", rewardXp = 70, after = "pr_france_1" })
-HAND["pr_france_2"] = { "반지 안쪽에 항구 이름 네 개가 작게 새겨 있다. 그 항구들을 돌며 로랑은 가문이 한때 빚을 갚아 준 사람들을 만난다. 가진 것을 잃은 귀족은 무엇이 남는가 하는 물음이 따라온다.", "네 항구 모두 가문이 은혜를 베푼 이들이 살았다. 누군가가 빚을 되돌려 주고 있었다. 로랑이 말했다. \"우리가 베푼 게 사라지지 않았군요.\"" }
-table.insert(Q, { id = "pr_france_3", name = "런던의 마지막 수신인", summary = "서막 · 불탄 영지의 편지 — 와인 8개를 런던에 납품", kind = "deliver", goodId = "wine", portId = "london", amount = 8, nation = "france", strand = "main",
+HAND["pr_france_2"] = { [==[반지에 새겨진 지명들은 가문과 거래한 사람들의 기록과 닮았다. 로랑은 영지의 명예를 되찾을 단서를 찾으려 항구 방문 경험을 쌓는다.]==], [==[방문 목표를 채웠다. 로랑은 가문을 기억하는 사람들의 사연을 조사할 실마리를 정리한다. 런던에서 마지막 증서를 보관한다는 소식을 듣는다.]==] }
+table.insert(Q, { id = "pr_france_3", loreCardId = "good_wine", name = "런던의 마지막 수신인", summary = "서막 · 불탄 영지의 편지 — 와인 8개를 런던에 납품", kind = "deliver", goodId = "wine", portId = "london", amount = 8, nation = "france", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "trade", rewardXp = 120, after = "pr_france_2" })
-HAND["pr_france_3"] = { "마지막 항구는 런던이다. 포도주 한 짐은 영지의 포도밭이 마지막으로 남긴 선물을 이어 가는 의미가 된다. 문서를 건네받을 때 로랑은 이미 어떤 진실이든 받아들이겠다고 마음먹는다.", "런던 상인이 증서를 내밀었다. 영지는 적에게서 사람들을 지키려 아버지가 직접 불을 지른 것이었다. 로랑은 말없이 인장을 쥐었다. 지킨다는 것이 때로는 태우는 것임을 알았다." }
-table.insert(Q, { id = "pr_france_4", name = "먹이 말해 주는 것", summary = "서막 · 불탄 영지의 편지 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "france", strand = "main",
+HAND["pr_france_3"] = { [==[영지의 포도밭을 기억하는 로랑에게 런던 상인이 포도주 8개 주문을 보냈다. 그는 납품을 마치고 가문의 증서가 말하는 과거를 확인하고 싶다.]==], [==[포도주 주문을 마쳤다. 이야기 속 증서는 영지의 화재가 의도적인 결정이었을 가능성을 보여 준다. 로랑은 아버지의 명예를 위해서라도 문서의 진위를 검토하려 한다.]==] }
+table.insert(Q, { id = "pr_france_4", loreCardId = "lang_manuscript_reading", name = "먹이 말해 주는 것", summary = "서막 · 불탄 영지의 편지 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "france", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 200, after = "pr_france_3" })
-HAND["pr_france_4"] = { "증서의 먹과 종이를 학자가 살핀다. 세 가지 지식을 이해하는 동안 날짜가 이상하다는 걸 알게 된다. 증서는 진본인데 날짜가 아버지의 사후다. 죽은 이의 손으로 지금도 누군가가 쓰고 있다.", "학자가 말했다. \"이 먹은 아직 마르지 않았소. 아버지의 이름으로 지금도 누군가 쓰고 있군.\" 로랑이 인장을 가슴에 얹었다. 가문은 끝나지 않았다." }
-table.insert(Q, { id = "pr_portugal_1", name = "아버지의 필체로 적힌 새 장", summary = "서막 · 사우다드의 계산표 — 소금 6개를 포르투에 납품", kind = "deliver", goodId = "salt", portId = "porto", amount = 6, nation = "portugal", strand = "main",
+HAND["pr_france_4"] = { [==[로랑은 증서의 날짜와 가문의 기록이 맞지 않는 것을 발견한다. 세 가지 지식을 이해해 필사본과 문서의 근거를 비교하자.]==], [==[지식 보고를 마쳤다. 증서가 후대에 덧쓰였을 가능성을 남겼다. 로랑은 카시니의 관측 기록과 비교해 다음 조사를 준비한다.]==] }
+table.insert(Q, { id = "pr_portugal_1", loreCardId = "good_salt_trade", name = "아버지의 필체로 적힌 새 장", summary = "서막 · 사우다드의 계산표 — 소금 6개를 포르투에 납품", kind = "deliver", goodId = "salt", portId = "porto", amount = 6, nation = "portugal", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "adventure", rewardXp = 40 })
-HAND["pr_portugal_1"] = { "페드루의 아버지는 바다에서 돌아오지 않았다. 어머니는 사십 년을 부두에서 기다렸고, 그 그리움에 이름이 있다면 사우다드일 것이다. 그런데 아버지의 일지에 사후 날짜의 새 장이 나타났다. 필체는 분명 아버지다. 포르투 도선사 길드의 노인에게 소금을 들고 찾아간다.", "노인이 낮게 말했다. \"네 아버지는 죽기 전에 이상한 계산을 하고 있었다.\" 페드루는 오랜만에 아버지의 이름을 소리 내어 불렀다." }
-table.insert(Q, { id = "pr_portugal_2", name = "표식이 찍힌 항구들", summary = "서막 · 사우다드의 계산표 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "portugal", strand = "main",
+HAND["pr_portugal_1"] = { [==[바다에서 돌아오지 않은 아버지를 기다리던 페드루는 일지에서 실종 뒤 날짜가 적힌 계산표를 발견한다. 포르투 도선사에게 보여 주기로 하고 소금 6개 주문을 맡는다.]==], [==[소금 납품을 마쳤다. 도선사는 이 표가 미래 날짜를 미리 적은 관측 계획일 수 있다고 말한다. 페드루는 아버지의 옛 항로를 더 알고 싶다.]==] }
+table.insert(Q, { id = "pr_portugal_2", loreCardId = "nav_cross_staff", name = "표식이 찍힌 항구들", summary = "서막 · 사우다드의 계산표 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "portugal", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "adventure", rewardXp = 70, after = "pr_portugal_1" })
-HAND["pr_portugal_2"] = { "새 장에는 항구 네 곳이 적혀 있다. 각 항구에서 아버지의 옛 동료들을 만나 그들이 기억하는 선장의 모습을 듣는다. 페드루는 몰랐던 아버지를 처음 만난다.", "동료들이 한결같이 말했다. \"그날 선장은 해가 사라질 시각을 정확히 말했네.\" 페드루가 숨을 삼켰다. 아버지는 웃으며 하늘을 말하던 사람이었다." }
-table.insert(Q, { id = "pr_portugal_3", name = "후추를 고향으로", summary = "서막 · 사우다드의 계산표 — 후추 6개를 리스본에 납품", kind = "deliver", goodId = "pepper", portId = "lisbon", amount = 6, nation = "portugal", strand = "main",
+HAND["pr_portugal_2"] = { [==[페드루는 일지의 항구 표식과 천체 그림이 어떤 관계인지 궁금하다. 여러 항구의 방문 경험을 쌓으며 옛 도선사의 관측 기록을 비교할 준비를 한다.]==], [==[방문 목표를 채웠다. 아버지가 해와 별의 움직임을 연구했을 가능성을 기록한다. 마지막 장의 리스본 후추 주문을 살펴본다.]==] }
+table.insert(Q, { id = "pr_portugal_3", loreCardId = "good_pepper", name = "후추를 고향으로", summary = "서막 · 사우다드의 계산표 — 후추 6개를 리스본에 납품", kind = "deliver", goodId = "pepper", portId = "lisbon", amount = 6, nation = "portugal", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "adventure", rewardXp = 120, after = "pr_portugal_2" })
-HAND["pr_portugal_3"] = { "일지의 마지막 줄에는 '후추를 리스본으로'뿐이다. 아버지가 마지막 항해에서 끝내 하지 못한 일이다. 페드루는 후추를 싣고 정해진 날 부두에 내려야 한다. 어머니가 기다리던 그 부두에.", "후추 자루를 내리는 순간 부두가 어두워졌다. 일식이었다. 일지의 마지막 줄이 정확히 맞았다. 부두의 늙은 아낙이 손수건을 흔들었다. 어머니였다." }
-table.insert(Q, { id = "pr_portugal_4", name = "그리움이 남긴 표", summary = "서막 · 사우다드의 계산표 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "portugal", strand = "main",
+HAND["pr_portugal_3"] = { [==[일지에 남은 리스본 후추 주문은 아버지가 마치지 못했던 항해를 떠올리게 한다. 페드루는 후추 6개를 리스본에 납품하기로 한다.]==], [==[후추 주문을 마쳤다. 페드루는 아버지가 남긴 표와 실제 납품 기록을 따로 보관한다. 표의 날짜가 일식 예측인지 학자에게 물어볼 차례다.]==] }
+table.insert(Q, { id = "pr_portugal_4", loreCardId = "ast_solar_eclipse", name = "그리움이 남긴 표", summary = "서막 · 사우다드의 계산표 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "portugal", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "adventure", rewardXp = 200, after = "pr_portugal_3" })
-HAND["pr_portugal_4"] = { "페드루는 알게 된다. 이것은 죽음 뒤에 쓴 일지가 아니라 생전에 하늘을 계산해 미리 적어 둔 표였다. 학자가 세 가지 지식을 풀어 주는 동안 그는 아버지가 남기고 간 것이 사랑이었다는 걸 깨닫는다.", "학자가 말했다. \"당신 아버지는 죽은 뒤에도 하늘을 읽어 주고 계시군.\" 페드루가 일지를 가슴에 안았다. 그리움에도 쓸모가 있었다." }
-table.insert(Q, { id = "pr_ottoman_1", name = "세 번째의 우물", summary = "서막 · 환대의 우물 — 융단 5개를 이즈미르에 납품", kind = "deliver", goodId = "carpet", portId = "smyrna", amount = 5, nation = "ottoman", strand = "main",
+HAND["pr_portugal_4"] = { [==[페드루는 일식 기록과 계산표를 펼쳐 놓고 아버지의 마지막 항해를 이해하고 싶다. 세 가지 지식을 보고하며 예측표와 실제 사건 기록을 구별하자.]==], [==[지식 목표를 마쳤다. 페드루는 사후의 기적보다 생전에 기록한 아버지의 노력을 기억한다. 누녜스의 항해 수학을 배울 다음 길이 열린다.]==] }
+table.insert(Q, { id = "pr_ottoman_1", loreCardId = "goods_linen", name = "세 번째의 우물", summary = "서막 · 환대의 우물 — 융단 5개를 이즈미르에 납품", kind = "deliver", goodId = "carpet", portId = "smyrna", amount = 5, nation = "ottoman", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "trade", rewardXp = 40 })
-HAND["pr_ottoman_1"] = { "카심의 대상은 사막에서 같은 우물로 세 번 돌아왔다. 우물은 지도에 없었다. 카심의 집안에서는 손님을 받는 일을 신의 선물로 여겨 우물 곁에 누구든 쉬게 해 왔다. 지도 상인에게 양탄자를 전하며 지도를 맞춰 본다.", "지도 상인이 확대경을 들이대더니 얼굴이 굳었다. \"이 지도는 한쪽이 거울처럼 뒤집혀 있소.\" 카심이 웃지 않고 대답했다. \"그럼 길을 잃은 건 우리 잘못이 아니군요.\"" }
-table.insert(Q, { id = "pr_ottoman_2", name = "같은 곳, 다른 자리", summary = "서막 · 환대의 우물 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "ottoman", strand = "main",
+HAND["pr_ottoman_1"] = { [==[카심은 대상이 같은 우물로 되돌아온 뒤 지도의 방향을 의심한다. 이즈미르 지도상에게 융단 5개를 납품하면서 지도에 남은 이상한 선을 알아보고 싶다.]==], [==[융단 납품이 기록됐다. 지도상은 서로 다른 방향 기준으로 그린 지도를 비교해 보라고 권한다. 카심은 우물이 사라졌다는 설명을 보류한다.]==] }
+table.insert(Q, { id = "pr_ottoman_2", loreCardId = "nav_portolan", name = "같은 곳, 다른 자리", summary = "서막 · 환대의 우물 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "ottoman", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "trade", rewardXp = 70, after = "pr_ottoman_1" })
-HAND["pr_ottoman_2"] = { "항구 네 곳의 지도를 비교한다. 같은 곶이 지도마다 다른 자리에 있다. 카심은 아버지가 가르쳐 준 말을 떠올린다. 길을 아는 사람은 길 잃은 사람을 먼저 재워 준다.", "누구의 지도도 틀리지 않았고 누구의 지도도 맞지 않았다. 카심이 말했다. \"기준이 다르면 모두 맞고 모두 틀려요. 그러니 손님을 믿어야 해요.\"" }
-table.insert(Q, { id = "pr_ottoman_3", name = "베네치아의 새 지도", summary = "서막 · 환대의 우물 — 커피 6개를 베네치아 공화국에 납품", kind = "deliver", goodId = "coffee", portId = "venice", amount = 6, nation = "ottoman", strand = "main",
+HAND["pr_ottoman_2"] = { [==[카심은 항구마다 해도의 방향과 표기가 다른 이유를 묻는다. 항구 방문 목표를 수행하며 지도 읽기의 여러 관점을 알아볼 토대를 마련하자.]==], [==[방문 목표를 채웠다. 같은 장소라도 지도에 표현되는 방식이 다를 수 있음을 일지에 남겼다. 베네치아 지도 공방의 주문을 준비한다.]==] }
+table.insert(Q, { id = "pr_ottoman_3", loreCardId = "good_coffee", name = "베네치아의 새 지도", summary = "서막 · 환대의 우물 — 커피 6개를 베네치아 공화국에 납품", kind = "deliver", goodId = "coffee", portId = "venice", amount = 6, nation = "ottoman", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "trade", rewardXp = 120, after = "pr_ottoman_2" })
-HAND["pr_ottoman_3"] = { "베네치아 지도 공방은 커피 값을 지도로 치른다. 사막의 길에서 마시던 커피를 바다 건너 도시의 탁자에 올리는 일은 환대를 나누는 일이기도 하다.", "공방 주인이 펜을 놓았다. \"이 선은 당신이 걸어 온 대로 그렸소.\" 카심이 선을 짚으며 눈시울이 붉어졌다. 걸음이 지도가 된 것이다." }
-table.insert(Q, { id = "pr_ottoman_4", name = "우물이 있던 자리", summary = "서막 · 환대의 우물 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "ottoman", strand = "main",
+HAND["pr_ottoman_3"] = { [==[베네치아 지도 공방에서 커피 주문이 왔다. 카심은 사막에서 길 잃은 여행자를 맞던 가족의 환대 전통을 떠올리며 커피 6개를 납품하려 한다.]==], [==[커피 주문을 마쳤다. 카심은 자신의 여행기를 지도 공방에 전한다. 새 지도가 정확하다고 단정하기 전에 학자의 검토를 받기로 한다.]==] }
+table.insert(Q, { id = "pr_ottoman_4", loreCardId = "lang_manuscript_reading", name = "우물이 있던 자리", summary = "서막 · 환대의 우물 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "ottoman", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 200, after = "pr_ottoman_3" })
-HAND["pr_ottoman_4"] = { "카심은 새 지도를 들고 학자를 찾는다. 세 가지 지식을 이해하는 동안 우물은 사라진 게 아니라 자기 위치가 틀렸음을 알게 된다. 사라진 것은 우물이 아니라 우리가 믿던 자리였다.", "학자가 말했다. \"우물은 늘 그 자리에 있었소. 움직인 건 당신들이 믿던 위치였소.\" 카심이 우물을 향해 깊이 고개를 숙였다." }
-table.insert(Q, { id = "pr_swahili_1", name = "바람이 약속을 어긴 날", summary = "서막 · 할머니의 노래 — 상아 5개를 몸바사에 납품", kind = "deliver", goodId = "ivory", portId = "mombasa", amount = 5, nation = "swahili", strand = "main",
+HAND["pr_ottoman_4"] = { [==[카심은 우물의 위치를 적은 지도와 필사본을 비교한다. 세 가지 지식을 이해하며 기록의 방향과 기준에 관한 문제를 살펴보자.]==], [==[지식 목표를 채웠다. 우물의 기적을 증명하는 대신 지도에 관한 질문을 정리했다. 카티프 첼레비의 지리 문헌을 찾아가려 한다.]==] }
+table.insert(Q, { id = "pr_swahili_1", loreCardId = "geo_monsoon", name = "바람이 약속을 어긴 날", summary = "서막 · 할머니의 노래 — 상아 5개를 몸바사에 납품", kind = "deliver", goodId = "ivory", portId = "mombasa", amount = 5, nation = "swahili", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "adventure", rewardXp = 40 })
-HAND["pr_swahili_1"] = { "올해 계절풍이 하루 늦게 바뀌었다. 한 번도 어긴 적 없는 바람이다. 주마는 글이 아니라 노래로 바람의 때를 배웠다. 돌아가신 할머니가 불러 준 노래다. 몸바사의 늙은 선원들이 같은 노래를 아는지 들으러 상아를 싣고 간다.", "노인이 노래를 불러 주었다. 주마의 눈이 커졌다. 할머니의 노래와 같았다. 다만 끝 소절이 올해만 어딘가 모자랐다." }
-table.insert(Q, { id = "pr_swahili_2", name = "노래가 달력이었다", summary = "서막 · 할머니의 노래 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "swahili", strand = "main",
+HAND["pr_swahili_1"] = { [==[주마는 할머니에게 배운 바람 노래와 올해의 항해 기록이 맞지 않아 당황한다. 몸바사의 선원들이 간직한 다른 소절을 듣고 싶어 기존 상아 5개 주문을 맡는다. 상아 교역의 역사와 동물의 삶도 구별해 기록하자.]==], [==[상아 납품을 마쳤다. 주마는 바람 노래의 여러 판본에 관심을 갖는다. 이 역사적 교역을 오늘날의 거래 권유로 기록하지 않는다.]==] }
+table.insert(Q, { id = "pr_swahili_2", loreCardId = "culture_oral_history", name = "노래가 달력이었다", summary = "서막 · 할머니의 노래 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "swahili", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "adventure", rewardXp = 70, after = "pr_swahili_1" })
-HAND["pr_swahili_2"] = { "항구 네 곳의 선원들이 같은 노래를 조금씩 다르게 부른다. 소절을 하나씩 모아 비교하면서 주마는 노래가 달력이라는 걸 깨닫는다. 할머니는 글을 몰랐지만 바다의 모든 날을 입속에 담고 계셨다.", "네 항구의 노래를 이어 부르자 일 년이 한 바퀴 돌았다. 주마가 목이 메었다. \"한 소절이 빠져 있었어요. 할머니도 몰랐던 소절이요.\"" }
-table.insert(Q, { id = "pr_swahili_3", name = "바다 건너의 남은 소절", summary = "서막 · 할머니의 노래 — 정향 6개를 캘리컷에 납품", kind = "deliver", goodId = "cloves", portId = "calicut", amount = 6, nation = "swahili", strand = "main",
+HAND["pr_swahili_2"] = { [==[항구마다 전해지는 항해 노래에는 서로 다른 기억이 담겨 있다. 주마는 할머니의 노래를 틀렸다고 지우지 않고 여러 항구의 방문 경험을 쌓으려 한다.]==], [==[방문 목표를 채웠다. 주마는 한 소절이 모든 계절을 설명하지는 않는다고 적는다. 캘리컷의 노래꾼이 알고 있다는 다른 판본이 다음 단서다.]==] }
+table.insert(Q, { id = "pr_swahili_3", loreCardId = "bot_clove_tree", name = "바다 건너의 남은 소절", summary = "서막 · 할머니의 노래 — 정향 6개를 캘리컷에 납품", kind = "deliver", goodId = "cloves", portId = "calicut", amount = 6, nation = "swahili", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "adventure", rewardXp = 120, after = "pr_swahili_2" })
-HAND["pr_swahili_3"] = { "캘리컷의 노래꾼이 빠진 소절을 안다고 한다. 정향을 가져가 대가로 노래를 얻는다. 인도양을 건너는 정향의 향이 노래와 함께 오간 오래된 인연을 잇는 일이기도 하다.", "캘리컷 노래꾼이 빠진 소절을 불러 주었다. 그것은 사 년마다 하루를 더하는 소절이었다. 주마는 그날 밤 할머니를 위해 처음으로 혼자 노래를 끝까지 불렀다." }
-table.insert(Q, { id = "pr_swahili_4", name = "노래를 적는 학자", summary = "서막 · 할머니의 노래 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "swahili", strand = "main",
+HAND["pr_swahili_3"] = { [==[캘리컷 상인의 정향 6개 주문을 맡자. 주마는 인도양을 오가던 향신료와 항해 지식의 교류를 기억하며 노래꾼에게 전해 줄 편지를 준비한다.]==], [==[정향 납품을 마쳤다. 주마는 다른 소절을 전해 들었다는 이야기와 실제 바람의 기록을 구별한다. 학자에게 노래를 보여 줄 차례다.]==] }
+table.insert(Q, { id = "pr_swahili_4", loreCardId = "geo_monsoon", name = "노래를 적는 학자", summary = "서막 · 할머니의 노래 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "swahili", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "adventure", rewardXp = 200, after = "pr_swahili_3" })
-HAND["pr_swahili_4"] = { "학자는 주마의 노래를 달력으로 받아 적는다. 세 가지 지식을 이해하는 동안 노래와 별의 움직임이 같은 박자임을 알게 된다. 글보다 오래된 지혜가 입에서 입으로 이어져 왔다.", "학자가 말했다. \"이건 글보다 오래된 천문서요.\" 주마가 노래의 끝 소절을 새로 불렀다. 이제 할머니의 노래는 책이 되어도 노래였다." }
-table.insert(Q, { id = "pr_malabar_1", name = "하루 먼저 우는 종", summary = "서막 · 먼저 우는 종 — 후추 6개를 코친에 납품", kind = "deliver", goodId = "pepper", portId = "cochin", amount = 6, nation = "malabar", strand = "main",
+HAND["pr_swahili_4"] = { [==[주마는 노래를 글로 옮기면 할머니의 목소리가 사라질까 걱정한다. 세 지식을 이해해 계절풍의 기록과 구술 전통을 함께 살펴보자.]==], [==[지식 목표를 채웠다. 주마는 노래를 바람의 정확한 예언으로 바꾸지 않고 항해 경험을 전하는 기억으로 남겼다. 이븐 마지드의 항해 시를 찾아가려 한다.]==] }
+table.insert(Q, { id = "pr_malabar_1", loreCardId = "good_pepper", name = "하루 먼저 우는 종", summary = "서막 · 먼저 우는 종 — 후추 6개를 코친에 납품", kind = "deliver", goodId = "pepper", portId = "cochin", amount = 6, nation = "malabar", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "trade", rewardXp = 40 })
-HAND["pr_malabar_1"] = { "마을 사당의 종이 배가 오기 하루 전에 저절로 운다. 마을 사람들은 신의 징조라 믿지만 쿠티는 이유가 있을 거라 생각한다. 수확의 첫 후추를 신께 올리던 풍습처럼, 첫 후추를 들고 코친까지 가서 배가 오는 길을 직접 본다.", "코친 만 입구에서 쿠티는 낮은 울림을 들었다. 큰 배가 들어올 때 물이 먼저 신음했다. 그는 믿음과 앎이 서로 적이 아님을 알았다." }
-table.insert(Q, { id = "pr_malabar_2", name = "바다가 먼저 말한다", summary = "서막 · 먼저 우는 종 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "malabar", strand = "main",
+HAND["pr_malabar_1"] = { [==[쿠티의 마을에서 배가 오기 전에 종소리가 들린다는 전승이 있다. 그는 믿음을 조롱하지 않고 소리가 들리는 환경을 궁금해한다. 코친에 후추 6개를 납품하며 항구 이야기를 살펴보려 한다.]==], [==[후추 주문을 마쳤다. 쿠티는 종소리와 배의 접근 시각을 비교할 필요가 있다고 적는다. 실제 원인을 알아냈다고 단정하지 않는다.]==] }
+table.insert(Q, { id = "pr_malabar_2", loreCardId = "geo_monsoon", name = "바다가 먼저 말한다", summary = "서막 · 먼저 우는 종 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "malabar", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "trade", rewardXp = 70, after = "pr_malabar_1" })
-HAND["pr_malabar_2"] = { "항구 네 곳에서 배가 닿기 전에 어떤 소리가 나는지 듣는다. 종이 우는 건 배가 와서가 아니라 배가 밀어내는 물 때문이다. 쿠티는 마을 노인들께 이 이야기를 어떻게 전할지 걱정한다. 믿음을 꺾고 싶지 않아서다.", "네 항구 모두에서 물이 먼저 울었다. 쿠티가 말했다. \"종은 우리를 속인 게 아니라 일러 준 거였어요.\"" }
-table.insert(Q, { id = "pr_malabar_3", name = "리스본이 사는 소식", summary = "서막 · 먼저 우는 종 — 후추 8개를 리스본에 납품", kind = "deliver", goodId = "pepper", portId = "lisbon", amount = 8, nation = "malabar", strand = "main",
+HAND["pr_malabar_2"] = { [==[쿠티는 여러 항구의 바람과 물길에 관한 이야기를 들으며 종소리 전승이 어떻게 전해졌는지 궁금해한다. 항구 방문 경험을 쌓아 조사할 범위를 넓히자.]==], [==[방문 목표를 채웠다. 쿠티는 바다의 환경과 소리의 관측을 비교할 질문을 마련했다. 리스본 후추 거래를 맡을 차례다.]==] }
+table.insert(Q, { id = "pr_malabar_3", loreCardId = "bot_pepper_vine", name = "리스본이 사는 소식", summary = "서막 · 먼저 우는 종 — 후추 8개를 리스본에 납품", kind = "deliver", goodId = "pepper", portId = "lisbon", amount = 8, nation = "malabar", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "trade", rewardXp = 120, after = "pr_malabar_2" })
-HAND["pr_malabar_3"] = { "배가 언제 닿는지 미리 알면 후추값을 흥정할 시간이 생긴다. 쿠티는 마을의 오랜 축제 때 한 해의 첫 값을 정하던 일을 떠올리며, 후추를 리스본까지 직접 가져가 이 앎으로 값을 맞춘다.", "리스본 상인이 놀라 물었다. \"어떻게 배가 올 시각까지 아오?\" 쿠티가 웃으며 답했다. \"우리 마을에는 물과 종이 있지요.\"" }
-table.insert(Q, { id = "pr_malabar_4", name = "소리의 이치", summary = "서막 · 먼저 우는 종 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "malabar", strand = "main",
+HAND["pr_malabar_3"] = { [==[쿠티는 종소리 덕분에 시장을 예측할 수 있다고 주장하는 상인의 말을 의심한다. 후추 농가와의 약속에 따라 리스본에 후추 8개를 납품하자.]==], [==[납품을 마쳤다. 쿠티는 예언이 아니라 실제 계약을 지킨 일을 기록한다. 소리에 관한 질문을 학자와 검토하려 한다.]==] }
+table.insert(Q, { id = "pr_malabar_4", loreCardId = "phi_scientific_method", name = "소리의 이치", summary = "서막 · 먼저 우는 종 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "malabar", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 200, after = "pr_malabar_3" })
-HAND["pr_malabar_4"] = { "학자는 종과 물과 배가 한 이치로 이어져 있다고 한다. 세 가지 지식을 이해하는 동안 쿠티의 마을 이야기가 학문의 한 장이 된다. 노인들께 가져갈 이야기는 믿음을 부수는 것이 아니라 믿음에 이유를 더하는 이야기였다.", "학자가 말했다. \"당신들 마을은 가장 오래된 관측소였군요.\" 쿠티는 마을로 돌아가 노인들 앞에서 종을 쓰다듬었다." }
-table.insert(Q, { id = "pr_japan_1", name = "울음을 터뜨린 칼", summary = "서막 · 한 번뿐인 만남 — 청주 5개를 오사카에 납품", kind = "deliver", goodId = "sake", portId = "osaka", amount = 5, nation = "japan", strand = "main",
+HAND["pr_malabar_4"] = { [==[마을의 종소리를 믿는 노인과 관측을 원하는 쿠티의 의견은 다르다. 세 가지 지식을 이해하며 전승과 검증 가능한 설명을 나누어 보자.]==], [==[지식 목표를 채웠다. 쿠티는 마을의 이야기를 존중하면서도 원인에 관한 가설을 남겼다. 이티 아추탄의 자연 지식으로 다음 연구를 이어 가려 한다.]==] }
+table.insert(Q, { id = "pr_japan_1", loreCardId = "good_wine", name = "울음을 터뜨린 칼", summary = "서막 · 한 번뿐인 만남 — 청주 5개를 오사카에 납품", kind = "deliver", goodId = "sake", portId = "osaka", amount = 5, nation = "japan", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "adventure", rewardXp = 40 })
-HAND["pr_japan_1"] = { "겐지는 주인을 잃고 길을 찾는 낭인이다. 칼은 무사의 혼이라 배웠는데 그 칼이 오사카 항구 어귀에서 낮게 울었다. 겐지는 스승이 즐기던 술을 신주처럼 한 병 가져가 오사카 대장장이를 찾는다.", "대장장이가 칼날을 쥐고 고개를 갸웃했다. \"이 칼은 지금 어딘가로 끌리고 있소.\" 겐지가 낮게 중얼거렸다. \"주인 없는 칼이 주인을 찾는 건가.\"" }
-table.insert(Q, { id = "pr_japan_2", name = "끌리는 쪽", summary = "서막 · 한 번뿐인 만남 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "japan", strand = "main",
+HAND["pr_japan_1"] = { [==[주인을 잃은 겐지는 오사카에서 칼이 낮게 울었다는 기이한 경험을 기록한다. 납품할 청주 5개를 준비하고 대장장이에게 칼의 사연을 보여 주고 싶다.]==], [==[청주 납품을 마쳤다. 대장장이는 칼의 울음에 대한 여러 설명을 제시한다. 겐지는 전승을 믿기 전에 관찰할 자료가 필요하다고 생각한다.]==] }
+table.insert(Q, { id = "pr_japan_2", loreCardId = "phy_magnetism", name = "끌리는 쪽", summary = "서막 · 한 번뿐인 만남 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "japan", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "adventure", rewardXp = 70, after = "pr_japan_1" })
-HAND["pr_japan_2"] = { "네 항구를 돌 때마다 칼이 우는 방향이 같다. 겐지는 지도에 칼이 가리키는 선을 긋는다. 한 번 스친 인연이 평생을 좌우하기도 한다는 말을 그는 처음으로 믿는다.", "네 개의 선이 바다 한가운데 한 점에서 만났다. 겐지가 말했다. \"저 아래에 뭔가 있다. 만나야 할 무엇이.\"" }
-table.insert(Q, { id = "pr_japan_3", name = "광저우의 구리 상인", summary = "서막 · 한 번뿐인 만남 — 구리 6개를 광저우에 납품", kind = "deliver", goodId = "copper", portId = "canton", amount = 6, nation = "japan", strand = "main",
+HAND["pr_japan_2"] = { [==[겐지는 칼이 특정 방향을 가리킨다는 이야기와 오래된 나침반의 원리를 비교하고 싶다. 여러 항구를 방문하며 방향 기록을 조사할 경험을 쌓자.]==], [==[방문 목표를 채웠다. 겐지는 방향이 겹치는 것만으로 바다 아래의 물체를 증명할 수 없다고 적는다. 광저우의 금속 상인을 찾으려 한다.]==] }
+table.insert(Q, { id = "pr_japan_3", loreCardId = "min_copper_ingot", name = "광저우의 구리 상인", summary = "서막 · 한 번뿐인 만남 — 구리 6개를 광저우에 납품", kind = "deliver", goodId = "copper", portId = "canton", amount = 6, nation = "japan", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "adventure", rewardXp = 120, after = "pr_japan_2" })
-HAND["pr_japan_3"] = { "광저우의 구리 상인이 같은 현상을 안다고 한다. 겐지는 구리를 들고 바다를 건너는 일이 낯선 땅에서 새로 시작하는 일임을 안다. 낭인이 이국의 시장에 선다.", "상인이 낡은 쇳조각을 내밀었다. 겐지의 칼이 쇳조각 앞에서 울음을 멈췄다. 둘은 같은 돌에서 나온 쇠였다." }
-table.insert(Q, { id = "pr_japan_4", name = "돌이 쇠를 부르는 이치", summary = "서막 · 한 번뿐인 만남 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "japan", strand = "main",
+HAND["pr_japan_3"] = { [==[광저우 금속 상인이 구리 6개를 주문했다. 겐지는 금속 거래를 마치고 칼의 현상과 다른 금속의 성질을 비교할 자료를 알아보려 한다.]==], [==[구리 납품을 완료했다. 겐지는 구리와 자성을 띠는 물질을 같은 것으로 보지 않고 관련 지식을 찾기로 한다.]==] }
+table.insert(Q, { id = "pr_japan_4", loreCardId = "phy_magnetism", name = "돌이 쇠를 부르는 이치", summary = "서막 · 한 번뿐인 만남 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "japan", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "adventure", rewardXp = 200, after = "pr_japan_3" })
-HAND["pr_japan_4"] = { "학자가 쇠를 끄는 돌 이야기를 한다. 세 가지 지식을 이해하는 동안 칼의 울음이 자기라는 현상임을 알게 된다. 칼은 주인을 찾는 게 아니라 대답을 하고 있었다. 겐지는 자신도 누군가의 부름에 대답하는 중인지 생각한다.", "학자가 말했다. \"칼은 우는 게 아니라 부름에 대답하는 것이오.\" 겐지가 칼을 어루만졌다. 이 만남은 다시 오지 않을 일기일회였다." }
-table.insert(Q, { id = "pr_china_1", name = "바늘이 어긋난 이유", summary = "서막 · 어머니 같은 바다의 신 — 차 6개를 샤먼에 납품", kind = "deliver", goodId = "tea", portId = "amoy", amount = 6, nation = "china", strand = "main",
+HAND["pr_japan_4"] = { [==[학자는 쇠와 자석의 성질을 설명하며 칼이 실제로 울었다는 기록은 별도의 검토가 필요하다고 말한다. 지식 세 가지를 이해하자.]==], [==[지식 목표를 마쳤다. 겐지는 칼을 주인의 귀환을 예고하는 물건으로 보지 않기로 한다. 세키 다카카즈의 수학을 통해 자신의 방향 기록을 다시 읽고 싶다.]==] }
+table.insert(Q, { id = "pr_china_1", loreCardId = "good_tea", name = "바늘이 어긋난 이유", summary = "서막 · 어머니 같은 바다의 신 — 차 6개를 샤먼에 납품", kind = "deliver", goodId = "tea", portId = "amoy", amount = 6, nation = "china", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "trade", rewardXp = 40 })
-HAND["pr_china_1"] = { "린의 낡은 나침반이 샤먼 앞바다에서 북이 아니라 바다 한가운데를 가리킨다. 뱃사람들은 항해를 지켜 주는 바다의 여신께 향을 올리며 출항한다. 린은 여신의 사당에 차를 올리고 나침반 장인을 만난다.", "장인이 바늘을 보고 말했다. \"이건 고장이 아니라 대답이오. 문제는 누가 묻고 있느냐요.\"" }
-table.insert(Q, { id = "pr_china_2", name = "항구마다 다른 각도", summary = "서막 · 어머니 같은 바다의 신 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "china", strand = "main",
+HAND["pr_china_1"] = { [==[샤먼 앞바다에서 나침반이 어긋났다는 린의 기록은 마조 신앙의 이야기와 얽혀 있다. 차 6개 주문을 맡고 나침반 장인에게 원인을 물어보려 한다.]==], [==[차 납품을 마쳤다. 장인은 나침반의 상태와 지리적 차이를 모두 검토할 필요가 있다고 말한다. 린은 바다의 여신을 탓하지 않는다.]==] }
+table.insert(Q, { id = "pr_china_2", loreCardId = "relic_compass", name = "항구마다 다른 각도", summary = "서막 · 어머니 같은 바다의 신 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "china", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "trade", rewardXp = 70, after = "pr_china_1" })
-HAND["pr_china_2"] = { "항구 네 곳에서 나침반의 어긋남을 재 본다. 각도는 제멋대로가 아니라 어떤 규칙을 따르는 것 같다. 린은 돌아가신 아버지가 늘 말씀하셨다고 떠올린다. 배는 길을 알지만 사람은 길을 묻는다고.", "표에 적자 각도가 곡선처럼 이어졌다. 린이 말했다. \"북쪽이 북쪽이 아니었어요. 아버지도 몰랐던 이야기예요.\"" }
-table.insert(Q, { id = "pr_china_3", name = "리스본의 자기 값", summary = "서막 · 어머니 같은 바다의 신 — 도자기 8개를 리스본에 납품", kind = "deliver", goodId = "porcelain", portId = "lisbon", amount = 8, nation = "china", strand = "main",
+HAND["pr_china_2"] = { [==[린은 여러 항구의 방향 기록이 서로 다르다는 사실에 관심을 가진다. 항구 방문 경험을 쌓으며 나침반과 실제 해도의 관계를 조사할 토대를 마련하자.]==], [==[방문 목표를 채웠다. 린은 관측값이 다를 수 있다는 질문을 일지에 남겼다. 리스본의 자기 주문을 준비한다.]==] }
+table.insert(Q, { id = "pr_china_3", loreCardId = "good_porcelain", name = "리스본의 자기 값", summary = "서막 · 어머니 같은 바다의 신 — 도자기 8개를 리스본에 납품", kind = "deliver", goodId = "porcelain", portId = "lisbon", amount = 8, nation = "china", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "trade", rewardXp = 120, after = "pr_china_2" })
-HAND["pr_china_3"] = { "린은 이 곡선이 먼 나라의 항해사들에게 큰 값이 될 거라 믿는다. 자기를 가져가 곡선과 맞바꾼다. 오랜 세월 바다에서 쌓인 지혜가 처음으로 바다를 건넌다.", "리스본의 늙은 항해사가 곡선표를 받아 들고 입을 다물지 못했다. 평생 찾던 오차의 이름이었다. 린은 사당을 향해 속으로 절을 올렸다." }
-table.insert(Q, { id = "pr_china_4", name = "북쪽의 두 얼굴", summary = "서막 · 어머니 같은 바다의 신 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "china", strand = "main",
+HAND["pr_china_3"] = { [==[리스본의 교역상은 자기 8개를 주문했다. 린은 바다를 건너는 물품과 항해 지식의 교류를 떠올리며 거래를 마치려 한다.]==], [==[자기 납품을 완료했다. 린은 물품 장부와 방향 기록을 따로 보관한다. 자북과 진북의 차이를 학자에게 물어볼 차례다.]==] }
+table.insert(Q, { id = "pr_china_4", loreCardId = "phy_magnetism", name = "북쪽의 두 얼굴", summary = "서막 · 어머니 같은 바다의 신 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "china", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 200, after = "pr_china_3" })
-HAND["pr_china_4"] = { "학자는 두 개의 북쪽을 설명한다. 세 가지 지식을 이해하는 동안 린은 자기가 가진 것이 지도를 바꿀 표라는 걸 알게 된다. 어머니 같은 바다는 늘 편지를 보내고 있었는데 사람들이 읽지 못했을 뿐이다.", "학자가 말했다. \"당신은 바다에게서 편지를 받았군요.\" 린이 나침반을 쓰다듬었다. 아버지의 손을 잡은 것 같았다." }
-table.insert(Q, { id = "pr_spain_1", name = "모르는 각인", summary = "서막 · 가난한 손이 캔 도시 — 은 5개를 카디스에 납품", kind = "deliver", goodId = "silver", portId = "cadiz", amount = 5, nation = "spain", strand = "main",
+HAND["pr_china_4"] = { [==[학자는 나침반의 방향과 지리적 북쪽이 항상 같지 않은 이유를 설명한다. 세 가지 지식을 이해하며 린의 관측 가설을 살펴보자.]==], [==[지식 목표를 채웠다. 린은 관측과 신앙을 서로 적으로 만들지 않기로 한다. 송응성의 기술 기록을 찾아가려 한다.]==] }
+table.insert(Q, { id = "pr_spain_1", loreCardId = "min_silver_ore", name = "모르는 각인", summary = "서막 · 가난한 손이 캔 도시 — 은 5개를 카디스에 납품", kind = "deliver", goodId = "silver", portId = "cadiz", amount = 5, nation = "spain", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "battle", rewardXp = 40 })
-HAND["pr_spain_1"] = { "알론소는 은광에서 자랐고 그가 캔 은으로 먼 도시의 성당 종이 만들어진다는 말을 들었다. 정작 자기는 그 성당을 본 적이 없다. 그가 가져온 은괴에 아무 조폐국에서도 찍지 않은 각인이 있다. 카디스의 은 감정사를 찾아간다.", "감정사가 은괴를 불빛에 비추더니 속삭였다. \"이 각인은 어느 나라에도 없소.\" 알론소가 낮게 말했다. \"내가 캔 은인데, 이름은 내가 모르는 사람의 것이군요.\"" }
-table.insert(Q, { id = "pr_spain_2", name = "각인이 있는 항구들", summary = "서막 · 가난한 손이 캔 도시 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "spain", strand = "main",
+HAND["pr_spain_1"] = { [==[은광에서 자란 알론소는 은괴의 낯선 각인을 보고 그 물건의 출처와 광부의 삶을 궁금해한다. 카디스에 은 5개를 납품하고 감정 기록을 알아보려 한다.]==], [==[은 주문을 마쳤다. 감정사는 각인만으로 광산을 특정하기 어렵다고 말한다. 알론소는 은이 지나온 여러 항구의 역사를 조사하려 한다.]==] }
+table.insert(Q, { id = "pr_spain_2", loreCardId = "am_silver_ore_potosi", name = "각인이 있는 항구들", summary = "서막 · 가난한 손이 캔 도시 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "spain", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "battle", rewardXp = 70, after = "pr_spain_1" })
-HAND["pr_spain_2"] = { "같은 각인이 다른 항구에서도 나왔다는 소문이 있다. 항구 네 곳을 돌며 알론소는 자기가 캔 은이 어디서 누구의 손에 닿는지 처음 본다. 가난한 손이 만든 부는 어디서 멈추는가.", "각인은 네 항구에서 모두 나왔다. 지도에 점을 찍자 은이 지나온 길이 선이 되었다. 알론소가 말했다. \"이 길 끝에 사람이 있을까.\"" }
-table.insert(Q, { id = "pr_spain_3", name = "안트베르펜의 감정", summary = "서막 · 가난한 손이 캔 도시 — 코치닐 6개를 안트베르펀에 납품", kind = "deliver", goodId = "cochineal", portId = "antwerp", amount = 6, nation = "spain", strand = "main",
+HAND["pr_spain_2"] = { [==[알론소는 은이 다른 항구에서 어떤 값으로 거래되는지 알고 싶다. 항구 방문 경험을 쌓으며 광산에서 시장까지 이어진 역사와 노동을 생각하자.]==], [==[방문 목표를 채웠다. 알론소는 모든 은괴를 추적했다고 주장하지 않고 교역과 노동의 관계를 질문으로 남긴다. 안트베르펜 주문이 다음이다.]==] }
+table.insert(Q, { id = "pr_spain_3", loreCardId = "chem_indigo", name = "안트베르펜의 감정", summary = "서막 · 가난한 손이 캔 도시 — 코치닐 6개를 안트베르펀에 납품", kind = "deliver", goodId = "cochineal", portId = "antwerp", amount = 6, nation = "spain", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "battle", rewardXp = 120, after = "pr_spain_2" })
-HAND["pr_spain_3"] = { "안트베르펜의 은 상인이 각인을 알아볼지도 모른다. 알론소는 연지벌레 염료를 들고 간다. 붉은 염료 한 줌이 값싼 노동에서 나오듯, 이 거래에도 보이지 않는 손들이 있다.", "상인이 말했다. \"이 은은 어느 광산에서도 캔 적이 없는 은이오.\" 알론소의 손이 멎었다. 그러면 누가 캤단 말인가." }
-table.insert(Q, { id = "pr_spain_4", name = "은의 족보", summary = "서막 · 가난한 손이 캔 도시 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "spain", strand = "main",
+HAND["pr_spain_3"] = { [==[안트베르펜 상인이 코치닐 6개를 주문했다. 알론소는 염료의 가치 뒤에 놓인 생산자의 노동을 생각하며 기존 거래를 마치려 한다.]==], [==[코치닐 납품을 완료했다. 알론소는 염료와 은의 장부를 구분하며 생산자의 기록을 더 살펴보기로 한다.]==] }
+table.insert(Q, { id = "pr_spain_4", loreCardId = "min_silver_ore", name = "은의 족보", summary = "서막 · 가난한 손이 캔 도시 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "spain", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "battle", rewardXp = 200, after = "pr_spain_3" })
-HAND["pr_spain_4"] = { "학자는 은의 성분을 분석한다. 세 가지 지식을 이해하는 동안 은의 불순물이 지문처럼 광산을 말해 준다는 걸 알게 된다. 알론소는 가난한 손이 만든 부에서 자기 몫이 어디 있는지 묻는다.", "학자가 말했다. \"이 은은 당신이 캐던 산과 같은 산에서 왔소. 단지 당신이 가 본 적 없는 갱도에서.\" 알론소가 낮게 되물었다. \"그럼 거기에도 누군가 있겠군요.\"" }
-table.insert(Q, { id = "pr_korea_1", name = "배가 없는 바다의 포성", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 인삼 5개를 인천에 납품", kind = "deliver", goodId = "ginseng", portId = "incheon", amount = 5, nation = "korea", strand = "main",
+HAND["pr_spain_4"] = { [==[학자는 각인과 광석 성분에 관한 자료가 있어도 정확한 출처를 단정하려면 더 많은 근거가 필요하다고 말한다. 세 지식을 이해하자.]==], [==[지식 목표를 채웠다. 알론소는 광산의 위치보다 그곳에서 일한 사람들의 삶을 잊지 않기로 한다. 아코스타의 기록을 찾아갈 준비를 한다.]==] }
+table.insert(Q, { id = "pr_korea_1", loreCardId = "bot_ginseng_root", name = "배가 없는 바다의 포성", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 인삼 5개를 인천에 납품", kind = "deliver", goodId = "ginseng", portId = "incheon", amount = 5, nation = "korea", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "battle", rewardXp = 40 })
-HAND["pr_korea_1"] = { "도현은 새벽 안개 속에서 포성을 들었다. 사방을 살폈지만 배는 없었다. 그는 수군으로 지켜 온 바다에서 아직 못 지킨 이들의 소리가 아니냐고 속으로 묻는다. 인천으로 인삼을 싣고 가서 같은 일을 겪은 어부들을 만난다.", "어부들이 입을 모았다. \"그 소리는 늘 맑은 날 먼저 들리지요.\" 도현이 눈을 가늘게 떴다. \"그날 먼저 간 동료들 같군.\"" }
-table.insert(Q, { id = "pr_korea_2", name = "소리가 오는 길", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "korea", strand = "main",
+HAND["pr_korea_1"] = { [==[도현은 안개 낀 바다에서 배가 보이지 않는데도 포성이 들렸던 일을 잊지 못한다. 인천의 어민이 남긴 소리 기록을 알아보기 위해 인삼 5개 주문을 맡는다.]==], [==[인삼 주문을 마쳤다. 어민의 이야기에서 날씨와 소리의 관계라는 질문을 얻었다. 도현은 잃은 동료의 기억과 실제 관측을 나누어 적는다.]==] }
+table.insert(Q, { id = "pr_korea_2", loreCardId = "wx_thunderstorm", name = "소리가 오는 길", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "korea", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "battle", rewardXp = 70, after = "pr_korea_1" })
-HAND["pr_korea_2"] = { "항구 네 곳에서 포성이 들린 날과 날씨를 맞춰 본다. 소리가 들리는 날에는 공통점이 있다. 도현은 한 맺힌 일일수록 오래 남아 어딘가로 전해진다는 노인들 말을 떠올린다.", "항구마다 소리가 들린 날 아침 안개 낀 바다 위가 따뜻했다. 도현이 말했다. \"소리가 구부러져 오는 거다. 누가 일부러 보내는 게 아니라.\"" }
-table.insert(Q, { id = "pr_korea_3", name = "나가사키의 포대", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 인삼 6개를 나가사키에 납품", kind = "deliver", goodId = "ginseng", portId = "nagasaki", amount = 6, nation = "korea", strand = "main",
+HAND["pr_korea_2"] = { [==[도현은 같은 소리가 여러 항구에서 들렸다는 소문을 확인하고 싶다. 항구를 방문하며 바람과 기상 조건의 기록을 비교할 토대를 마련하자.]==], [==[방문 목표를 채웠다. 소리가 들린 원인을 확정하지 않고 기상과 소리의 관계를 질문으로 남긴다. 나가사키의 인삼 주문을 준비한다.]==] }
+table.insert(Q, { id = "pr_korea_3", loreCardId = "bot_ginseng_root", name = "나가사키의 포대", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 인삼 6개를 나가사키에 납품", kind = "deliver", goodId = "ginseng", portId = "nagasaki", amount = 6, nation = "korea", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "battle", rewardXp = 120, after = "pr_korea_2" })
-HAND["pr_korea_3"] = { "나가사키의 포대장이 같은 소리를 들었다고 한다. 도현은 인삼을 들고 바다 건너 이웃을 찾는다. 오랜 싸움 뒤 처음으로 이웃의 문을 두드리는 일이다.", "포대장이 기록을 내밀었다. 소리가 난 시각과 방향이 도현의 기록과 정확히 이어졌다. 소리는 바다 위 천 리를 건너 온 것이었다. 두 사람은 말없이 차를 나눴다." }
-table.insert(Q, { id = "pr_korea_4", name = "휘어지는 소리", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "korea", strand = "main",
+HAND["pr_korea_3"] = { [==[나가사키에서 인삼 6개 주문이 들어왔다. 도현은 교역을 마치고 그곳 사람들이 간직한 소리와 항해의 이야기도 듣고 싶다.]==], [==[인삼 납품을 완료했다. 도현은 이웃 항구의 기록과 자신의 추억을 구분한다. 서로 다른 설명을 학자와 검토할 차례다.]==] }
+table.insert(Q, { id = "pr_korea_4", loreCardId = "phi_scientific_method", name = "휘어지는 소리", summary = "서막 · 들리지 않는 곳에 닿는 소리 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "korea", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "battle", rewardXp = 200, after = "pr_korea_3" })
-HAND["pr_korea_4"] = { "학자가 소리가 휘어지는 이치를 설명한다. 세 가지 지식을 이해하는 동안 도현은 포성이 아무도 쏘지 않은 소리라는 걸 알게 된다. 슬픔처럼 보이던 소리에 이유가 있었다.", "학자가 말했다. \"바다는 가끔 소리를 멀리 보내 주오. 누군가 듣기를 바라는 것처럼.\" 도현이 바다를 향해 천천히 절을 했다." }
-table.insert(Q, { id = "pr_new_spain_1", name = "돌에 새겨진 점들", summary = "서막 · 죽은 이들의 하늘 — 카카오 6개를 캄페체에 납품", kind = "deliver", goodId = "cocoa", portId = "campeche", amount = 6, nation = "new_spain", strand = "main",
+HAND["pr_korea_4"] = { [==[학자는 기상 조건에 따라 소리가 다르게 전해질 가능성을 이야기한다. 도현은 포성의 출처를 단정하지 않고 세 가지 지식을 이해하려 한다.]==], [==[지식 목표를 채웠다. 도현은 동료를 기억하는 마음과 소리의 원인을 알아보는 일이 함께 갈 수 있다고 적는다. 허준의 의학 기록을 찾을 준비를 한다.]==] }
+table.insert(Q, { id = "pr_new_spain_1", loreCardId = "am_cacao_pod", name = "돌에 새겨진 점들", summary = "서막 · 죽은 이들의 하늘 — 카카오 6개를 캄페체에 납품", kind = "deliver", goodId = "cocoa", portId = "campeche", amount = 6, nation = "new_spain", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "adventure", rewardXp = 40 })
-HAND["pr_new_spain_1"] = { "마테오는 어머니 쪽은 이 땅의 사람이고 아버지 쪽은 바다 건너 사람이다. 어느 쪽 세상에도 완전히 속하지 못했다. 갱도에서 캔 돌에 규칙적인 점 무늬가 있다. 죽은 이들을 기리는 날 제단에 올리던 카카오를 챙겨 캄페체의 늙은 석공을 찾아간다.", "석공이 돌을 쥐고 하늘을 올려다봤다. \"이건 밤하늘이오. 누군가 별을 돌에 옮겼소.\" 마테오가 속으로 말했다. 어머니 쪽 조상들이다." }
-table.insert(Q, { id = "pr_new_spain_2", name = "하늘이 새겨진 곳들", summary = "서막 · 죽은 이들의 하늘 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "new_spain", strand = "main",
+HAND["pr_new_spain_1"] = { [==[마테오는 서로 다른 집안의 문화 속에서 자랐다. 돌에 새겨진 점들이 하늘을 그린 것인지 궁금해 캄페체 석공을 찾아가려 한다. 카카오 6개 주문부터 마치자.]==], [==[카카오 주문을 마쳤다. 석공은 문양의 해석에 여러 가능성이 있다고 설명한다. 마테오는 조상의 기록을 존중하며 다른 유물을 알아보고 싶다.]==] }
+table.insert(Q, { id = "pr_new_spain_2", loreCardId = "am_maya_stela", name = "하늘이 새겨진 곳들", summary = "서막 · 죽은 이들의 하늘 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "new_spain", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "adventure", rewardXp = 70, after = "pr_new_spain_1" })
-HAND["pr_new_spain_2"] = { "같은 무늬의 돌이 다른 항구에도 있다고 한다. 항구 네 곳을 돌며 돌의 무늬와 하늘을 맞춰 본다. 마테오는 어느 쪽에도 속하지 못한 자기 자신도 이 하늘 아래에서는 하나라는 걸 느낀다.", "네 항구의 돌이 한 하늘의 서로 다른 계절을 그렸다. 마테오가 중얼거렸다. \"이건 달력이야. 죽은 이들이 우리에게 남긴 달력.\"" }
-table.insert(Q, { id = "pr_new_spain_3", name = "세비야의 눈", summary = "서막 · 죽은 이들의 하늘 — 은 8개를 세비야에 납품", kind = "deliver", goodId = "silver", portId = "seville", amount = 8, nation = "new_spain", strand = "main",
+HAND["pr_new_spain_2"] = { [==[마테오는 마야 석비와 별 그림을 비교하며 문양의 의미를 알아보고자 한다. 여러 항구를 방문해 서로 다른 문화의 기록을 조사할 경험을 쌓자.]==], [==[방문 목표를 채웠다. 돌의 점을 모두 해독했다고 말하지 않고 천문과 문자에 관한 질문을 남긴다. 세비야의 은 주문을 준비한다.]==] }
+table.insert(Q, { id = "pr_new_spain_3", loreCardId = "am_silver_ore_potosi", name = "세비야의 눈", summary = "서막 · 죽은 이들의 하늘 — 은 8개를 세비야에 납품", kind = "deliver", goodId = "silver", portId = "seville", amount = 8, nation = "new_spain", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "adventure", rewardXp = 120, after = "pr_new_spain_2" })
-HAND["pr_new_spain_3"] = { "세비야의 항해사들이 하늘을 안다. 은을 가져가 돌의 무늬를 해석해 달라고 청한다. 바다 건너 아버지의 땅에 처음 닿는 일이다. 마테오는 두 세계의 눈이 같은 하늘을 본다고 믿고 싶다.", "항해사가 무늬를 보고 별의 이름을 불렀다. 그 별은 수백 년 뒤에 다시 올 것이라고 돌은 말하고 있었다. 마테오가 낮게 웃었다. 두 세계의 하늘이 같았다." }
-table.insert(Q, { id = "pr_new_spain_4", name = "돌에 적힌 천문", summary = "서막 · 죽은 이들의 하늘 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "new_spain", strand = "main",
+HAND["pr_new_spain_3"] = { [==[세비야 상인의 은 8개 주문을 맡은 마테오는 은 교역이 두 지역을 이은 역사와 그 과정에서 일한 사람들을 떠올린다. 돌의 그림은 별도의 연구 자료로 간직한다.]==], [==[은 납품을 완료했다. 마테오는 거래 장부와 천문 자료를 나누어 보관한다. 두 문화의 기록을 학자와 비교할 차례다.]==] }
+table.insert(Q, { id = "pr_new_spain_4", loreCardId = "ast_old_observer", name = "돌에 적힌 천문", summary = "서막 · 죽은 이들의 하늘 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "new_spain", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "adventure", rewardXp = 200, after = "pr_new_spain_3" })
-HAND["pr_new_spain_4"] = { "학자는 돌의 무늬를 관측기록으로 읽는다. 세 가지 지식을 이해하는 동안 마테오는 자기 발밑에 천문대가 있었다는 걸 알게 된다. 아무도 몰랐던 하늘의 기록이 가난한 광부의 손에서 발견되었다.", "학자가 말했다. \"당신이 캔 건 돌이 아니라 누군가 기록해 둔 하늘이오.\" 마테오가 제단에 카카오를 올렸다. 죽은 이들이 이제 대답해 주는 것 같았다." }
+HAND["pr_new_spain_4"] = { [==[학자는 문양과 실제 천체의 관계를 확인하려면 시대와 유물의 맥락이 필요하다고 말한다. 마테오는 세 가지 지식을 이해하며 해석의 근거를 찾아보려 한다.]==], [==[지식 목표를 채웠다. 마테오는 조상의 하늘을 모두 해독했다는 주장 대신 더 배울 질문을 남겼다. 시구엔사 이 공고라의 천문 연구를 찾아가려 한다.]==] }
 
 return { Quests = Q, Hand = HAND }
