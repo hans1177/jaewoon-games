@@ -3854,6 +3854,8 @@ function FieldScene.start(opts)
 		anchor.Name = "Discovery" .. i
 		anchor:SetAttribute("FieldRouteStep", i)
 		if i <= found then
+			-- [재개 좌표] 서버의 완료 단계만 사용하고 실제 월드 좌표는 현재 맵에서 다시 계산한다.
+			if i == found then folder:SetAttribute("FieldResumeAnchor", pos) end
 			if special and rareTrace then for _ = 1, 2 do scatter(36) end end
 			anchor:Destroy()
 			continue
@@ -11236,6 +11238,47 @@ function FieldScene.start(opts)
 	end)()
 
 	-- 이동 감시: 다른 화면 코드(항구 전경 등)가 캐릭터를 다시 고정하거나 조작을 끄지 못하게 매 프레임 되돌린다.
+	-- [안전 구역 재개] 맵이 모두 만들어진 뒤 기존 지면·장애물·살아 있는 적을 확인한다.
+	-- 검증 가능한 위치가 없으면 기존 입구를 그대로 사용한다. 클라이언트 좌표는 저장하지 않는다.
+	do
+		local resumeAnchor = folder:GetAttribute("FieldResumeAnchor")
+		if typeof(resumeAnchor) == "Vector3" then
+			local surfaceRay = RaycastParams.new()
+			surfaceRay.FilterType = Enum.RaycastFilterType.Include
+			surfaceRay.FilterDescendantsInstances = { workspace.Terrain, ground }
+			surfaceRay.IgnoreWater = false
+			local clearance = OverlapParams.new()
+			clearance.FilterType = Enum.RaycastFilterType.Include
+			clearance.FilterDescendantsInstances = { folder }
+			clearance.RespectCanCollide = true
+			local resumeCharacter = player.Character
+			local resumeRoot = resumeCharacter and resumeCharacter:FindFirstChild("HumanoidRootPart")
+			if resumeRoot and resumeRoot:IsA("BasePart") then
+				for _, offset in { Vector3.new(0, 0, 12), Vector3.new(-12, 0, 12), Vector3.new(12, 0, 12),
+					Vector3.new(0, 0, 24), Vector3.new(-24, 0, 24), Vector3.new(24, 0, 24), Vector3.new(0, 0, -12) } do
+					local point = resumeAnchor + offset
+					if math.abs(point.X - ORIGIN.X) > half - 8 or math.abs(point.Z - ORIGIN.Z) > half - 8 then continue end
+					local hit = workspace:Raycast(Vector3.new(point.X, ORIGIN.Y + 100, point.Z), Vector3.new(0, -140, 0), surfaceRay)
+					if not hit or hit.Material == Enum.Material.Water or hit.Normal.Y < 0.8 then continue end
+					local candidate = hit.Position + Vector3.new(0, 4, 0)
+					if #workspace:GetPartBoundsInBox(CFrame.new(candidate), Vector3.new(5, 6, 5), clearance) > 0 then continue end
+					local safe = true
+					for _, enemy in enemies do
+						if not enemy.ac.dead and enemy.root and enemy.root.Parent
+							and (enemy.root.Position - candidate).Magnitude < 36 then safe = false; break end
+					end
+					if not safe then continue end
+					spawn = candidate
+					resumeCharacter:PivotTo(CFrame.new(spawn))
+					resumeRoot.AssemblyLinearVelocity = Vector3.zero
+					resumeRoot.AssemblyAngularVelocity = Vector3.zero
+					folder:SetAttribute("FieldResumeRestored", true)
+					break
+				end
+			end
+			if not folder:GetAttribute("FieldResumeRestored") then folder:SetAttribute("FieldResumeRestored", false) end
+		end
+	end
 	local lastSafe = CFrame.new(spawn)
 	pcall(function()
 		local controls = require(player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule", 3)):GetControls()

@@ -315,7 +315,17 @@ test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격
   assert.match(field,/elseif wpn\.ranged then[\s\S]*?pulseAt\("SHAPE_BURST", hrp\.CFrame/);
   assert.match(field,/elseif family == "bow" then[\s\S]*?Color3\.fromRGB\(165, 231, 165\)/);
   assert.match(field,/-- 추가 공격은 R15 무기 자세와 이펙트뿐이다/);
-  assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId \}\)/);
+  assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId, fieldCheckpoint = true \}\)/);
+  assert.match(discovery,/checkpoint\.stage ~= math\.clamp\(site\.days, 1, 3\)/);
+  assert.match(discovery,/state\.stats\.fieldCheckpoint = nil/);
+  assert.match(field,/local recorded = not opts\.onCheckpoint or opts\.onCheckpoint\(i, recordCard\)/);
+  assert.match(field,/if not recorded then say/);
+  assert.match(field,/ch:GetAttribute\("FieldRouteStep"\) == found \+ 1/);
+  assert.match(field,/if i == found then folder:SetAttribute\("FieldResumeAnchor", pos\) end/);
+  assert.match(field,/hit\.Material == Enum\.Material\.Water or hit\.Normal\.Y < 0\.8/);
+  assert.match(field,/workspace:GetPartBoundsInBox\(CFrame\.new\(candidate\)/);
+  assert.match(field,/enemy\.root\.Position - candidate\)\.Magnitude < 36/);
+  assert.match(field,/spawn = candidate\s+resumeCharacter:PivotTo\(CFrame\.new\(spawn\)\)/);
   assert.doesNotMatch(discovery,/state\.coins\s*\+=\s*earned/);
 });
 
