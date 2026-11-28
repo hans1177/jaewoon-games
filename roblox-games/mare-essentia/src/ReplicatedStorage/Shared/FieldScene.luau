@@ -3708,10 +3708,14 @@ function FieldScene.start(opts)
 			end
 		end
 		table.clear(enemies)
+		local previousFieldMusic = folder:GetAttribute("FieldPreviousMusic")
 		gui:Destroy()
 		folder:Destroy()
 		-- [현장 음향 복구] 항구·전투 화면에 탐험 풍향/폭풍 루프가 남지 않도록 원래 음향 관리자로 반환한다.
-		pcall(function() Sfx.ambient(nil) end)
+		pcall(function()
+			Sfx.ambient(nil)
+			if previousFieldMusic then Sfx.music(previousFieldMusic) end
+		end)
 		if opts.onFinish then
 			local ok, err = pcall(opts.onFinish, result, observedCardId, earnedPractice, fieldStreakResult)
 			if not ok then warn("[MareEssentia] 탐험 복귀 오류", err) end
@@ -7303,7 +7307,7 @@ function FieldScene.start(opts)
 		-- 무기 없는 적/원거리 탄환/강타에는 무기 막기를 적용하지 않는다.
 		local parryRole = e.ac.kind == "grunt" or e.ac.kind == "charger" or e.boss
 		local weaponParry = not quiet and not stagger and not impactWeapon.ranged and not shieldBlocked
-			and parryRole and approach.Magnitude > 0.1
+			and parryRole and evadeAt >= (e.disarmedUntil or 0) and approach.Magnitude > 0.1
 			and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.22
 			and (e.ac.state == "chase" or e.ac.state == "recover")
 			and evadeAt >= (e.nextParryAt or 0)
@@ -7336,6 +7340,48 @@ function FieldScene.start(opts)
 			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
 			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1)
 			* (if e.boss and os.clock() < (e.armorUntil or 0) then 0.6 else 1), mult, shieldBlocked == true, stagger)
+		-- [방패 파괴·무장 견제] 실제 명중한 강타와 약점 공격만 내구도에 반영한다.
+		if not died and dealt > 0 and not quiet and ownerAttack ~= false then
+			if e.shieldModel and e.model:FindFirstChild("FieldShield") and (stagger or shieldBlocked) then
+				e.shieldDurability = (e.shieldDurability or (if e.boss then 5 else 3)) - 1
+				e.model:SetAttribute("FieldShieldDurability", math.max(0, e.shieldDurability))
+				if e.shieldDurability <= 0 then
+					e.model.FieldShield:Destroy()
+					e.shieldModel = nil
+					e.model:SetAttribute("EnemyShieldModel", "")
+					e.model:SetAttribute("EquippedShieldModel", "")
+					e.model:SetAttribute("FieldShieldBroken", true)
+					e.guardUntil = 0
+					e.ac.def = table.clone(e.ac.def)
+					e.ac.def.frontGuard = false
+					showCombo("방패 파괴!", true, Color3.fromRGB(255, 215, 125))
+					shards(e.root.Position, 12, Color3.fromRGB(255, 215, 125), 9)
+					sfx("sfx_metal_clash", 0.85, 0.72)
+				end
+			end
+			if e.boss and not shieldBlocked and not weaponParry and weakMult >= 1.8 then
+				e.weakPartHits = (e.weakPartHits or 0) + 1
+				if e.weakPartHits >= 4 and not e.weakPartBroken then
+					e.weakPartBroken = true
+					e.armorUntil = 0
+					e.model:SetAttribute("FieldBossArmorBroken", true)
+					e.bossWeakUntil = math.max(e.bossWeakUntil or 0, evadeAt + 2.5)
+					showCombo("두목 방어구 파괴!", true, Color3.fromRGB(255, 210, 110))
+					shards(e.root.Position, 16, Color3.fromRGB(255, 210, 110), 12)
+					sfx("sfx_metal_clash", 0.85, 0.65)
+				end
+			end
+			if stagger and not e.boss and e.weapon and not e.weapon.ranged and not shieldBlocked
+				and evadeAt >= (e.nextDisarmAt or 0) then
+				e.disarmHits = (e.disarmHits or 0) + 1
+				if e.disarmHits >= 2 then
+					e.disarmHits, e.disarmedUntil, e.nextDisarmAt = 0, evadeAt + 3, evadeAt + 12
+					e.model:SetAttribute("FieldDisarmedUntil", e.disarmedUntil)
+					e.parryUntil, e.counterUntil = 0, 0
+					showCombo("무기 방어 무력화!", true, Color3.fromRGB(145, 225, 245))
+				end
+			end
+		end
 		if counterHit then
 			showCombo("반격 ×2!", true, Color3.fromRGB(122, 240, 246))
 		elseif weakLabel then
@@ -9155,14 +9201,45 @@ function FieldScene.start(opts)
 		return function(e, now: number, hrp: BasePart?, dist: number)
 			if finished or not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
 			local phase = bossPhaseOf(e)
+			local role = e.model:GetAttribute("FieldBossRole")
+			local accent = if role == "hunter" then Color3.fromRGB(113, 218, 114)
+				elseif role == "mountain" then Color3.fromRGB(143, 214, 255)
+				elseif role == "pirate" then Color3.fromRGB(255, 174, 72)
+				elseif role == "looter" then Color3.fromRGB(202, 157, 255)
+				elseif role == "warden" then Color3.fromRGB(232, 218, 151)
+				else Color3.fromRGB(255, 109, 72)
+			if not e.bossIntroduced and dist <= 18 then
+				e.bossIntroduced = true
+				e.model:SetAttribute("FieldBossIntroPlayed", true)
+				if not folder:GetAttribute("FieldBossMusicActive") then
+					folder:SetAttribute("FieldBossMusicActive", true)
+					pcall(function()
+						folder:SetAttribute("FieldPreviousMusic", Sfx.currentName())
+						Sfx.music(if role == "pirate" then "music_pirate" elseif role == "looter" then "music_story_ruins"
+							elseif role == "warden" then "music_history_war" elseif role == "mountain" then "music_story_storm" else "music_battle")
+					end)
+				end
+				showCombo(e.tag.Text .. " 등장!", true, accent)
+				shockRing(bossFeet(e), 12, accent, 0.7)
+				auraOn(e.model, accent, Color3.fromRGB(255, 242, 200), 0.8)
+				sfx("sfx_horn", 0.75, 0.7)
+				shakeUntil, shakeAmp = now + 0.22, if visualMobile then 0.3 else 0.7
+			end
 			if e.model:GetAttribute("FieldBossPhase") ~= phase then
 				e.model:SetAttribute("FieldBossPhase", phase)
 			end
+			if phase > (e.lastSkillPhase or 1) then
+				e.lastSkillPhase = phase
+				shockRing(bossFeet(e), 14, accent, 0.65)
+				shards(e.root.Position, if visualMobile then 6 else 14, accent, 12)
+				auraOn(e.model, accent, Color3.fromRGB(255, 232, 180), 0.75)
+				sfx("sfx_event_war", 0.65, 0.7 + phase * 0.08)
+			end
 			if phase >= 4 and not e.bossPhase4 then
 				e.bossPhase4 = true
-				e.armorUntil = now + 6
+				e.armorUntil = if e.weakPartBroken then now else now + 6
 				e.model:SetAttribute("FieldBossPhase", 4)
-				showCombo("두목 최후 발악! · 6초간 단단해짐 — 피하며 버텨라", true, Color3.fromRGB(255, 60, 60))
+				showCombo(if e.weakPartBroken then "두목 최후 발악! · 방어구 파괴 상태" else "두목 최후 발악! · 6초간 단단해짐", true, Color3.fromRGB(255, 60, 60))
 				screenFlash(Color3.fromRGB(255, 50, 40), 0.8)
 				sfx("sfx_event_war", 0.8, 0.7)
 			end
@@ -9176,6 +9253,16 @@ function FieldScene.start(opts)
 				e.model:SetAttribute("FieldBossWeakUntil", e.bossWeakUntil)
 				e.nextBossSkillAt = math.max(e.nextBossSkillAt or 0, e.bossWeakUntil)
 				local dmg = e.ac.def.dmg
+				e.swingAt = now
+				e.bossImpactUntil = now + 0.38
+				e.model:SetAttribute("FieldBossImpactSkill", cast.id)
+				pulseAt(if cast.id == "guard" or cast.id == "rally" then "BUFF_PULSE" else "CRITICAL_BURST",
+					CFrame.new(cast.origin + Vector3.new(0, 1.2, 0)), accent, Color3.fromRGB(255, 235, 185),
+					if visualMobile then 9 else 15, if visualMobile then 3 else 9)
+				if cast.id == "wave" or cast.id == "sweep" or cast.id == "rupture" then
+					shards(e.root.Position, if visualMobile then 5 else 12, accent, 13)
+					screenFlash(accent, if visualMobile then 0.96 else 0.91)
+				end
 				local flatTo = (hrp.Position - cast.origin) * Vector3.new(1, 0, 1)
 				if cast.id == "wave" then
 					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 90, 60), 0.45)
@@ -9187,7 +9274,7 @@ function FieldScene.start(opts)
 					sfx("sfx_event_danger", 0.5, 0.8)
 					if flatTo.Magnitude <= cast.radius and flatTo.Magnitude >= cast.inner then hurtPlayerBy(dmg * 0.95) end
 				elseif cast.id == "guard" then
-					e.armorUntil = math.max(e.armorUntil or 0, now + 0.65)
+					if not e.weakPartBroken then e.armorUntil = math.max(e.armorUntil or 0, now + 0.65) end
 					shockRing(cast.origin, 5 * STUD, Color3.fromRGB(205, 196, 150), 0.4)
 					sfx("sfx_horn", 0.5, 0.9)
 				elseif cast.id == "rally" then
@@ -9204,7 +9291,8 @@ function FieldScene.start(opts)
 				elseif cast.id == "ambush" or cast.id == "volley" or cast.id == "rupture" or cast.id == "crossfire" or cast.id == "snare" then
 					local hit = false
 					for _, point in cast.points do
-						shockRing(point, cast.radius, Color3.fromRGB(255, 135, 70), 0.45)
+						shockRing(point, cast.radius, accent, 0.45)
+						pulseAt("IMPACT_FLASH", CFrame.new(point + Vector3.new(0, 1, 0)), accent, Color3.fromRGB(255, 240, 205), 5, if visualMobile then 1 else 3)
 						if ((hrp.Position - point) * Vector3.new(1, 0, 1)).Magnitude <= cast.radius then hit = true end
 					end
 					sfx("sfx_event_danger", 0.55, 0.8)
@@ -9266,11 +9354,15 @@ function FieldScene.start(opts)
 				if sk.phase <= phase and now >= (e.skillReady[sk.id] or 0) then table.insert(options, sk) end
 			end
 			if #options == 0 then return end
+			-- 새 단계의 새 기술은 최소 한 번 반드시 보여 준 뒤 기존 기술과 섞는다.
 			local sk = options[math.random(1, #options)]
+			for _, candidate in options do
+				if candidate.phase == phase and not e.skillReady[candidate.id] then sk = candidate break end
+			end
 			e.skillReady[sk.id] = now + sk.cd
 			e.nextBossSkillAt = now + (if phase >= 4 then 3.5 elseif phase == 3 then 5 elseif phase == 2 then 6.5 else 8)
 			local origin = bossFeet(e)
-			local c = { id = sk.id, at = now + sk.warn, origin = origin }
+			local c = { id = sk.id, at = now + sk.warn, started = now, origin = origin }
 			if sk.id == "wave" then
 				c.radius = 9 * STUD
 				groundRing(origin, c.radius, sk.warn)
@@ -9319,6 +9411,8 @@ function FieldScene.start(opts)
 			pl.nextEnemyTurnAt = math.max(pl.nextEnemyTurnAt or 0, now + sk.warn + 0.2)
 			e.warnUntil = now + sk.warn
 			e.model:SetAttribute("FieldBossSkill", sk.id)
+			auraOn(e.model, accent, Color3.fromRGB(255, 110, 75), sk.warn)
+			sfx("sfx_event_danger", 0.45, 0.8)
 			showCombo("⚠ " .. sk.name .. "!", true, Color3.fromRGB(255, 120, 70))
 			burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 		end
@@ -9416,6 +9510,14 @@ function FieldScene.start(opts)
 		end)
 	end
 	local function mineEvent()
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		local effect = if theme == "volcanic" then "용암 분출" elseif theme == "glacier" then "얼음 균열"
+			elseif theme == "swamp" then "습지 수렁" elseif theme == "jungle" or theme == "forest" then "덩굴 함정"
+			elseif theme == "coast" then "밀물 충격" elseif theme == "desert" then "모래 돌풍"
+			elseif theme == "ruins" or theme == "archive" then "유적 낙하물" else "낙석 위험"
+		local color = if theme == "glacier" or theme == "coast" then Color3.fromRGB(128, 207, 255)
+			elseif theme == "swamp" or theme == "jungle" or theme == "forest" then Color3.fromRGB(116, 194, 99)
+			elseif theme == "desert" then Color3.fromRGB(222, 178, 98) else Color3.fromRGB(255, 120, 60)
 		local _, hrp = char3()
 		if not hrp then
 			return
@@ -9423,17 +9525,23 @@ function FieldScene.start(opts)
 		local at = hrp.Position + Vector3.new(rng:NextNumber(-22, 22), 0, rng:NextNumber(-22, 22))
 		at = Vector3.new(math.clamp(at.X, ORIGIN.X - half + 8, ORIGIN.X + half - 8), ORIGIN.Y, math.clamp(at.Z, ORIGIN.Z - half + 8, ORIGIN.Z + half - 8))
 		groundRing(at, 9, 1.6)
+		say("⚠ " .. effect .. " — 경고 범위에서 벗어나라")
+		folder:SetAttribute("FieldEnvironmentAttack", effect)
 		task.delay(1.6, function()
 			if finished then
 				return
 			end
 			burst(at + Vector3.new(0, 1.5, 0), 50, true)
-			shockRing(at, 10, Color3.fromRGB(255, 120, 60), 0.5)
+			shockRing(at, 10, color, 0.5)
+			pulseAt("SHAPE_BURST", CFrame.new(at + Vector3.new(0, 1, 0)), color, Color3.fromRGB(255, 240, 205), 10, if visualMobile then 3 else 8)
 			sfx("sfx_naval_cannon", 0.7, 1.2)
 			shakeUntil, shakeAmp = os.clock() + 0.3, 1.2
 			local _, h3 = char3()
 			if h3 and ((h3.Position - at) * Vector3.new(1, 0, 1)).Magnitude < 9 then
 				hurtPlayerBy(10)
+				if not AC.isInvulnerable(pl, os.clock()) and (theme == "glacier" or theme == "swamp" or theme == "jungle") then
+					eliteSlowUntil = math.max(eliteSlowUntil, os.clock() + 2)
+				end
 			end
 			for _, e in table.clone(enemies) do
 				if e.root.Parent and ((e.root.Position - at) * Vector3.new(1, 0, 1)).Magnitude < 9 then
@@ -9447,7 +9555,8 @@ function FieldScene.start(opts)
 		local k = 0
 		while not finished do
 			k += 1
-			if k % 2 == 1 then
+			local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+			if k % 2 == 1 and (theme == "highland" or theme == "mine" or theme == "ruins" or theme == "glacier" or theme == "volcanic") then
 				boulderEvent()
 			else
 				mineEvent()
@@ -10790,6 +10899,10 @@ function FieldScene.start(opts)
 					st, ph = "EVADE", math.clamp((now - (e.dodgeT0 or now)) / 0.36, 0, 1)
 				elseif hurtProgress >= 0 and hurtProgress < 1 then
 					st, ph = "HIT", hurtProgress
+				elseif e.bossCast then
+					st, ph = "ANTICIPATION", math.clamp((now - e.bossCast.started) / math.max(0.05, e.bossCast.at - e.bossCast.started), 0, 1)
+				elseif now < (e.bossImpactUntil or 0) then
+					st, ph = "ATTACK", math.clamp(1 - (e.bossImpactUntil - now) / 0.38, 0, 1)
 				elseif acs == "windup" then
 					st, ph = "ANTICIPATION", math.clamp(e.ac.t / math.max(e.ac.def.windup, 0.05), 0, 1)
 				elseif acs == "active" then
