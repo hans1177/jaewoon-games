@@ -5094,7 +5094,7 @@ function FieldScene.start(opts)
 	pulseRim.Transparency = 1
 	pulseRim.Parent = attackPulse
 	end
-	-- [자동 강타 충전] 공격 버튼 둘레에 명중 5칸만 표시한다. 신규 스킬 버튼·저장 키는 없다.
+	-- [무기 숙련] 공격 버튼 둘레에 10단계를 표시한다. 기존 경험치 저장 키를 유지한다.
 	local autoHitPips = {}
 	for i = 1, 10 do
 		local pip = Instance.new("Frame")
@@ -5112,7 +5112,7 @@ function FieldScene.start(opts)
 		autoHitPips[i] = pip
 	end
 	local function refreshAutoHitPips()
-		-- [숙련 표시] 5칸 = 무기 숙련 1~5단(채운 칸 = 지금 단계). 스킬 자동 발동은 2단부터 확률.
+		-- [숙련 표시] 10칸 = 무기 숙련 1~10단(채운 칸 = 지금 단계). 스킬 자동 발동은 2단부터 확률.
 		local charged = math.clamp(pl.masteryRank or 1, 1, 10)
 		for i, pip in autoHitPips do
 			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 233, 151) else Color3.fromRGB(91, 45, 35)
@@ -8379,7 +8379,7 @@ function FieldScene.start(opts)
 		if moveId == "rush" then
 			-- [연속 공격 10박자] 1회 입력당 피해 판정은 기존 1회. 무기별 전신 포즈만 10단 순환.
 			local pressedAt = os.clock()
-			-- [오너 지시 2026-11-28] 연속 공격은 처음부터 안 됨: 숙련 1단 단타(2자세 번갈아), 2단 3 · 3단 5 · 4단 7 · 5단 10박자
+			-- [오너 지시 2026-11-28] 숙련 1~10단에 맞춰 입력 연속 자세를 1~10박자로 해금한다.
 			local maxBeat = ({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 })[math.clamp(pl.masteryRank or 1, 1, 10)]
 			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % maxBeat + 1 else 1
 			swingBridge.basicBeat, swingBridge.basicAt = basicBeat, pressedAt
@@ -8879,7 +8879,7 @@ function FieldScene.start(opts)
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 				attackBtn:SetAttribute("WeaponMasteryRank", rank)
 				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
-				-- [숙련 연타 2~3타] 5단계 숙련 데이터는 유지한다. 전투 레벨 가산 최대 2%, 전 무기 공용 7초 제한.
+				-- [숙련 연타 2~3타] 기존 1~5단 경험치 기준을 보존하고 6~10단을 확장한다. 전투 레벨 가산 최대 2%, 전 무기 공용 7초 제한.
 				-- 민첩 무기는 발동·3타가 약간 유리하고, 도끼·철퇴·화기는 2타 위주로 묵직하게 표현한다.
 				-- 1단에서는 절대 발동하지 않으며 추가 타격 판정·피해·보상·드롭·재사용시간을 만들지 않는다.
 				local baseChance = if rank == 2 then 0.07 elseif rank == 3 then 0.10
@@ -10767,7 +10767,7 @@ function FieldScene.start(opts)
 			local cost = if automatic then 35 else 60
 			if finished or pl.hp <= 0 or support.gauge < cost or now < support.nextAt or (member.ready[id] or 0) > now then return false end
 			support.gauge -= cost
-			support.nextAt, support.failed = now + 4, 0
+			support.nextAt, support.failed = now + (if automatic then 12 else 4), 0
 			member.ready[id] = now + JobSkills.Skills[id].cooldown
 			member.status:SetAttribute("FieldSupportSkill", id)
 			member.status:SetAttribute("FieldSupportMode", if automatic then "automatic" else "called")
@@ -10778,7 +10778,8 @@ function FieldScene.start(opts)
 			return true
 		end
 		local ultimate = btn(gui, "필살기 8단", Color3.fromRGB(99, 69, 119),
-			UDim2.fromOffset(80, 42), UDim2.new(1, -12, 0, 12), Vector2.new(1, 0))
+			UDim2.fromOffset(88, 42), if compactTouch then UDim2.new(0, 12, 1, -226) else UDim2.new(1, -12, 0, 62),
+			if compactTouch then Vector2.zero else Vector2.new(1, 0))
 		ultimate.Name = "FieldUltimate"
 		ultimate.TextSize = 13
 		ultimate.TextYAlignment = Enum.TextYAlignment.Center

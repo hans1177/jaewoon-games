@@ -26,3 +26,10 @@ test('START_HERE: 모든 AI 입구 파일이 가리키고, 정책 4종 경로·�
     assert.ok(fs.readFileSync(entry, 'utf8').includes('START_HERE.md'), entry);
   }
 });
+test('PR 양식·푸시 전 컴파일 검사(R5)', () => {
+  const tpl = fs.readFileSync('.github/pull_request_template.md', 'utf8');
+  for (const k of ['main 커밋 SHA', '미검증 항목', 'STUDIO_STEP_OUT']) assert.ok(tpl.includes(k), k);
+  const lint = fs.readFileSync('tools/devloop/lint_luau.py', 'utf8');
+  assert.match(lint, /subprocess\.run\(\[compiler, "--null", path\]/);
+  assert.ok(fs.readFileSync('START_HERE.md', 'utf8').includes('pull_request_template.md'));
+});

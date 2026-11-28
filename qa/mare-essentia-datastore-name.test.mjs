@@ -324,7 +324,11 @@ test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3�
   assert.match(field,/local comboRng = Random\.new\(\)/);
   assert.match(field,/local lastMasteryComboAt = -100/);
   assert.match(field,/local baseChance = if rank == 2 then 0\.07 elseif rank == 3 then 0\.10/);
-  assert.match(field,/rank == 4 then 0\.13 elseif rank == 5 then 0\.16 else 0/);
+  assert.match(field,/rank == 4 then 0\.13 elseif rank >= 5 then math\.min\(0\.24, 0\.16 \+ \(rank - 5\) \* 0\.016\) else 0/);
+  assert.match(field,/xp >= 720 then 10 elseif xp >= 530 then 9 elseif xp >= 380 then 8/);
+  assert.match(field,/xp >= 260 then 7 elseif xp >= 170 then 6 elseif xp >= 100 then 5/);
+  assert.match(field,/xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1/);
+  assert.match(field,/local maxBeat = \(\{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 \}\)/);
   assert.match(field,/local weaponChance = if wpn\.family == "dagger" then 0\.02/);
   assert.match(field,/elseif wpn\.id == "crossbow" then -0\.025/);
   assert.match(field,/local battleBonus = math\.min\(0\.02,/);
@@ -383,7 +387,8 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
       ['카메라',box(width-120,12,108,44)],
       ['동료1',allies[0]],['동료2',allies[1]],
     ];
-    const buttons=[['공격',attack],['회피',dodge],['교체',weapon]];
+    const ultimate=portrait?box(12,height-226,88,42):box(width-100,62,88,42);
+    const buttons=[['공격',attack],['회피',dodge],['교체',weapon],['필살기',ultimate]];
     for(const [name,a] of buttons){
       for(const [other,b] of [...rest,...buttons.filter(([n])=>n!==name)]){
         assert.equal(overlaps(a,b),false, width+'×'+height+' '+name+'/'+other+' HUD 겹침');
@@ -420,7 +425,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/pl\.cd\[key\] = now \+ 8/);
 });
 
-test('영입 동료는 지상전투에 출전하지 않고 기존 파티 명단과 초상만 유지한다',()=>{
+test('영입 동료는 상시 출전하지 않고 기존 초상·직업별 호출과 자동 지원을 사용한다',()=>{
   assert.match(field,/local party = if type\(opts\.allies\) == "table" then opts\.allies else \{\}/);
   assert.match(field,/for _, member in party do/);
   assert.match(field,/status:SetAttribute\("CompanionId", member\.id\)/);
@@ -430,7 +435,18 @@ test('영입 동료는 지상전투에 출전하지 않고 기존 파티 명단�
   assert.doesNotMatch(field,/local function prepareAllyDefs\(\)/,'지상전투 동료 리그 생성 제거');
   assert.doesNotMatch(field,/m\.Name = "FieldAlly"/,'전투 지역 동료 모델 금지');
   assert.doesNotMatch(field,/equipFieldWeapon\(m, ad\.weapon\)/,'동료 무기 생성 금지');
-  assert.match(field,/무기 숙련 시 2~3연타 확률 발동/);
+  assert.match(field,/공격 F · 회피 R · 방어 G · 숙련 연타 · 동료 호출 · 8단 필살기/);
+  assert.match(field,/status:SetAttribute\("SupportEnabled", true\)/);
+  assert.match(field,/call\.Name = "FieldAllyCall" \.\. count/);
+  assert.match(field,/ultimate\.Name = "FieldUltimate"/);
+  assert.match(field,/if compactTouch then UDim2\.new\(0, 12, 1, -226\) else UDim2\.new\(1, -12, 0, 62\)/);
+  assert.match(field,/JobSkills\.Categories\[role\]\.skills/);
+  assert.match(field,/member\.ready\[id\] = now \+ JobSkills\.Skills\[id\]\.cooldown/);
+  assert.match(field,/support\.nextAt, support\.failed = now \+ \(if automatic then 12 else 4\), 0/);
+  assert.match(field,/support\.failed >= 5 or comboRng:NextNumber\(\) < chance/);
+  assert.match(field,/support\.ultimate < 100/);
+  assert.match(field,/local success = useMove\(move, true\)/);
+  assert.match(field,/if not success then return end\s+support\.ultimate, support\.nextUltimate = 0, os\.clock\(\) \+ 18/);
   assert.doesNotMatch(field,/무기 숙련 시 2~5단 확률 발동/);
 });
 
@@ -487,8 +503,8 @@ test('적 무기 모션과 비전투 파티 표시는 R15 전투 및 원본 PBR�
   assert.match(field,/e\.visualElapsed = math\.min\(0\.15, \(e\.visualElapsed or 0\) \+ enemyDt\)/);
   assert.match(field,/local visualDt = if farVisual and not visualChanged then e\.visualElapsed else enemyDt/);
   assert.match(field,/FM\.actor\(e\.fm, st, ph, visualDt, e\.boss/);
-  // [파티 전용 회귀] 기존 영입·초상·직업 데이터는 표시하고, 필드 동료 공격·치유·3D 소환은 모두 제외한다.
-  const party = field.slice(field.indexOf('-- [비전투 파티]'),field.indexOf('-- 폰: 기본 터치'));
+  // [파티 전용 회귀] 영입·초상·직업 지원은 유지하고 상시 동료 모델과 직접 추가 피해 판정은 금지한다.
+  const party = field.slice(field.indexOf('-- [직업 지원 파티]'),field.indexOf('-- 폰: 기본 터치'));
   assert.ok(party.length>1000,'파티 UI 코드 누락');
   assert.match(party,/local party = if type\(opts\.allies\) == "table"/);
   assert.match(party,/if count >= 2 then break end/);
@@ -497,7 +513,10 @@ test('적 무기 모션과 비전투 파티 표시는 R15 전투 및 원본 PBR�
   assert.match(party,/FieldAllyPortrait/);
   assert.match(party,/FieldAllyName/);
   assert.match(party,/FieldAllyPartyRole/);
-  assert.doesNotMatch(party,/Pose\.createR15|equipFieldWeapon|FM\.actor|strikeEnemy|castEffect/);
+  assert.doesNotMatch(party,/Pose\.createR15|equipFieldWeapon|FM\.actor|strikeEnemy/);
+  assert.match(party,/castEffect\(id, member\.name, ctx\.ch, ctx\.root, member\.role\)/);
+  assert.match(party,/if finished or pl\.hp <= 0 or support\.gauge < cost/);
+  assert.match(party,/support\.gauge -= cost/);
   assert.doesNotMatch(field,/local activeHealers = \{\}/,'파티 치유 보정 제거');
   assert.match(field,/pl\.hp = math\.min\(pl\.maxHp, pl\.hp \+ 0\.12 \* math\.min\(dt, 0\.1\)\)/);
   assert.match(field,/local companionRows: \{ any \} = \{\}/,'지상 대화 연출은 독립 유지');
@@ -4651,7 +4670,7 @@ test('Mare mobile distant regular enemies restore only original casting shadows 
 
 test('Mare limits only distant idle and chase joint sampling under frame pressure',()=>{
   const field=read('ReplicatedStorage/Shared/FieldScene.luau');
-  const loop=field.slice(field.indexOf('[적 R15 관절·전술 통합 루프]'),field.indexOf('[비전투 파티]'));
+  const loop=field.slice(field.indexOf('[적 R15 관절·전술 통합 루프]'),field.indexOf('[직업 지원 파티]'));
   const visual=loop.slice(loop.indexOf('local constrainedVisual'),loop.indexOf('FM.actor(e.fm'));
   assert.ok(loop.indexOf('AC.stepEnemy(e.ac, enemyDt')<loop.indexOf('local constrainedVisual'));
   const moveWrite=loop.indexOf('e.model:PivotTo(nextPivot)');
