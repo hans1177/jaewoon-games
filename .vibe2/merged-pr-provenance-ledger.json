@@ -385087,11 +385087,169 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_6ab9d12e08643afa29fa7f4c",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15740",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "d8fd4b8030a94fd8fade8224cfe7d71571127fe6",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15740,
+        "baseBranch": "main",
+        "headBranch": "mare-encyclopedia-navigation-20261128",
+        "baseSha": "d8fd4b8030a94fd8fade8224cfe7d71571127fe6",
+        "headSha": "3a036b9b36789b414ee45471204b511d09d71bd9",
+        "mergeCommitSha": "47f460f7bd3db9319430cb59bf30c6e263d3b040",
+        "mergedAt": "2026-11-28T09:34:44Z",
+        "authorLogin": "hans1177",
+        "titleHash": "a6d9fd5f9e6c50043bee158bb0d1289f6a55f04097ef988929f199e4cee6396d",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "mare-encyclopedia-navigation-20261128",
+        "candidateSha": "3a036b9b36789b414ee45471204b511d09d71bd9"
+      },
+      "changeStats": {
+        "changedFileCount": 24,
+        "codingRelevantFileCount": 20,
+        "addedLineCount": 1712,
+        "deletedLineCount": 89,
+        "changedFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/mare-battle-button-sea.test.mjs",
+          "qa/mare-dex-clean.test.mjs",
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-encyclopedia-visual.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-event-card-fx.test.mjs",
+          "qa/mare-flow-story-menu.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/docs/ENCYCLOPEDIA_BRIEF.md",
+          "roblox-games/mare-essentia/docs/MENU_UI_BRIEF.md",
+          "roblox-games/mare-essentia/docs/NAVAL_QUEST_EXPANSION_BRIEF.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BattleButtonFx.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/SeaAreas.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-dex-clean.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/company-development-roblox-studio-local-play.test.mjs",
+          "qa/company-roblox-dedicated-experience.test.mjs",
+          "qa/mare-battle-button-sea.test.mjs",
+          "qa/mare-dex-clean.test.mjs",
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-encyclopedia-visual.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-event-card-fx.test.mjs",
+          "qa/mare-flow-story-menu.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/BattleButtonFx.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/NavalBattle.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/SeaAreas.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/View.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tests/run.sh",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-dex-clean.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15740",
+        "merge-commit:47f460f7bd3db9319430cb59bf30c6e263d3b040",
+        "base-main:d8fd4b8030a94fd8fade8224cfe7d71571127fe6"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3023
+    "total": 3024
   }
 }
