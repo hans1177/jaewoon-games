@@ -3994,7 +3994,17 @@ function FieldScene.start(opts)
 				say("기록을 가져간 척후병을 먼저 따라잡아.", 3.5)
 				return
 			end
-			if guardedTransit or extraction then
+			if i == 2 and folder:GetAttribute("FieldStrongholdRoute") then
+				local remaining = 0
+				for _, enemy in enemies do
+					if not enemy.ac.dead and enemy.model:GetAttribute("FieldStrongholdGuard") then remaining += 1 end
+				end
+				if remaining > 0 then
+					say(string.format("거점 수비병 %d명 남음 · 먼저 물리쳐.", remaining), 3.5)
+					return
+				end
+			end
+			if guardedTransit or extraction or (i == 2 and folder:GetAttribute("FieldStrongholdRoute")) then
 				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
 				if folder:GetAttribute("FieldRescueRoute") then
@@ -4033,7 +4043,8 @@ function FieldScene.start(opts)
 			if nextPrompt then
 				nextPrompt.Enabled = true
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
-				questHint.Text = if nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
+				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
+					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
 					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldPursuitPending") then "척후병 추적 · 미니맵의 청록색 적을 따라가"
@@ -4398,6 +4409,40 @@ function FieldScene.start(opts)
 		end
 	end
 
+	end
+
+	-- [거점 탈환] 기존 2단계 성채 탐험의 실제 수비병을 격파하고 기록을 확보한다.
+	-- 별도 적, 보상, 난수, 저장 필드를 만들지 않는다. 클라이언트 전투 입증을 서버 권한으로 확대하지 않는다.
+	do
+		if nodeCount == 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
+			and (targetCard.field == "Site" or targetCard.field == "Relic" or targetCard.field == "Architecture")
+			and table.find({ "acre_crusader", "kingston_royal", "auto_architecture_antwerp_mid", "auto_site_stockholm_mid" }, opts.siteId) then
+			local anchor = folder:FindFirstChild("Discovery2")
+			if anchor and anchor:IsA("BasePart") then
+				local guards = {}
+				for _, enemy in enemies do
+					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(guards, enemy) end
+				end
+				table.sort(guards, function(a, b)
+					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
+				end)
+				local count = math.min(3, #guards)
+				if count > 0 then
+					folder:SetAttribute("FieldStrongholdRoute", true)
+					folder:SetAttribute("FieldStrongholdRemaining", count)
+					for i = 1, count do
+						local enemy = guards[i]
+						enemy.model:SetAttribute("FieldStrongholdGuard", true)
+						enemy.tag.Text = "거점 수비병 · " .. enemy.tag.Text
+					end
+					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
+					if prompt then prompt.ActionText, prompt.ObjectText = "거점 탈환 확인", "점거된 기록 보관소" end
+					if found == 1 then questHint.Text = "이어하기 · 거점 수비병 격파 후 기록 확보" end
+				else
+					warn("[MareEssentia] 거점 수비병 배치 불가", opts.siteId)
+				end
+			end
+		end
 	end
 
 	-- [구출·호위] 기존 승인 주민 R15/걷기 모션과 현재 탐험 장면 수명주기를 재사용한다.
@@ -5251,7 +5296,9 @@ function FieldScene.start(opts)
 			end
 			for _, e in enemies do
 				if e.root and e.root.Parent then
-					if found == 1 and e.model:GetAttribute("FieldPursuitTarget") then
+					if found == 1 and e.model:GetAttribute("FieldStrongholdGuard") then
+						place(e.root.Position, Color3.fromRGB(255, 192, 70), 9, true)
+					elseif found == 1 and e.model:GetAttribute("FieldPursuitTarget") then
 						place(e.root.Position, Color3.fromRGB(98, 232, 203), 9, true)
 					else
 						place(e.root.Position, if e.boss then Color3.fromRGB(255, 150, 60) else Color3.fromRGB(226, 80, 76), if e.boss then 9 else 4, false)
@@ -7970,7 +8017,17 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = os.clock() + 0.5, 2.2
 				end
 			end
-			if e.model:GetAttribute("FieldPursuitTarget") then
+			if e.model:GetAttribute("FieldStrongholdGuard") then
+				local remaining = 0
+				for _, guard in enemies do
+					if not guard.ac.dead and guard.model:GetAttribute("FieldStrongholdGuard") then remaining += 1 end
+				end
+				folder:SetAttribute("FieldStrongholdRemaining", remaining)
+				if found == 1 then
+					questHint.Text = if remaining == 0 then "거점 확보 · 기록 보관소 조사" else string.format("거점 수비병 %d명 남음", remaining)
+				end
+				say(if remaining == 0 then "수비병을 모두 물리쳤다. 기록을 확보하자." else string.format("거점 수비병 %d명 남음", remaining), 3)
+			elseif e.model:GetAttribute("FieldPursuitTarget") then
 				folder:SetAttribute("FieldPursuitPending", false)
 				if found == 1 then questHint.Text = "추적 완료 · 깊은 경계 구역에서 기록 확보" end
 				say("척후병을 따라잡았다. 경계 구역의 기록을 확인해.", 3.5)
