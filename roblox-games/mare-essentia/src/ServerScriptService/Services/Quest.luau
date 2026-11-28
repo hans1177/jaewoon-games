@@ -21,7 +21,20 @@ return function(D, S)
 	end
 
 	local function isAuto(quest)
+		-- 이야기 전투는 현재 장의 작전·대결을 시작해야 진행된다.
+		if quest.chapter and (quest.kind == "war_clear" or quest.kind == "duel_leader") then return false end
 		return AUTO_KINDS[quest.kind] == true
+	end
+
+	-- 기존 수락 레코드의 baseWins를 새 이야기 전투의 시작 시점 카운터로 사용한다.
+	local function acceptRecord(state, quest)
+		local base = state.stats.battlesWon
+		if quest.chapter and (quest.kind == "war_clear" or quest.kind == "duel_leader") then
+			base = D.Quests.Kit.progress(state, quest) or 0
+		end
+		local a = { delivered = 0, baseWins = base }
+		state.quests.active[quest.id] = a
+		return a
 	end
 
 	-- a: 수락 기록(없으면 수락 전이라 0). 자동 보고 퀘스트는 수락 기록 없이도 계산한다.
@@ -34,12 +47,17 @@ return function(D, S)
 		elseif quest.kind == "discover" then
 			return S.State.countDiscovered(state)
 		elseif quest.kind == "discover_card" then
+			if quest.chapter and quest.portId and state.portId ~= quest.portId then return 0 end
 			return if quest.cardId and state.discovered[quest.cardId] then 1 else 0
 		elseif quest.kind == "win" then
 			return state.stats.battlesWon - a.baseWins
 		elseif quest.kind == "war_clear" or quest.kind == "duel_leader" or quest.kind == "choice" then
 			-- [이야기 퀘스트 시스템] 함대전 완수·지도자 대결·선택 분기 (판정은 StoryKit)
-			return D.Quests.Kit.progress(state, quest) or 0
+			local value = D.Quests.Kit.progress(state, quest) or 0
+			if quest.chapter and (quest.kind == "war_clear" or quest.kind == "duel_leader") then
+				return math.max(0, value - (a.baseWins or 0))
+			end
+			return value
 		elseif quest.kind == "visit" then
 			return S.State.countVisited(state)
 		elseif quest.kind == "field" then
@@ -130,6 +148,7 @@ return function(D, S)
 
 	-- 수락 전이어도 지금 상태로 진행도를 본다 (자동 보고 퀘스트 표시용)
 	local function progressAny(state, quest)
+		if quest.chapter and not isAuto(quest) and not state.quests.active[quest.id] then return 0 end
 		return progressWith(state, quest, state.quests.active[quest.id] or { delivered = 0, baseWins = state.stats.battlesWon })
 	end
 
@@ -145,7 +164,14 @@ return function(D, S)
 	local function visible(state, quest)
 		-- [지역 탐험] 신규 현장 의뢰는 지정된 항구에서만 보여 주고 자동 완료한다.
 		-- 기존 퀘스트와 이미 저장된 도감·완료 기록에는 영향을 주지 않는다.
-		if quest.exploreSite and quest.portId ~= state.portId then return false end
+		if quest.exploreSite and not quest.chapter and quest.portId ~= state.portId then return false end
+		if quest.afterAny then
+			local completed = false
+			for _, id in quest.afterAny do
+				if state.quests.done[id] then completed = true break end
+			end
+			if not completed then return false end
+		end
 		if quest.after and not state.quests.done[quest.after] then
 			return false
 		end
@@ -184,7 +210,7 @@ return function(D, S)
 		if countActive(state) >= MAX_ACTIVE then
 			return false, string.format("동시에 %d개까지만 받을 수 있어요", MAX_ACTIVE)
 		end
-		state.quests.active[quest.id] = { delivered = 0, baseWins = state.stats.battlesWon }
+		acceptRecord(state, quest)
 		return true, "퀘스트 수락: " .. quest.name
 	end
 
@@ -262,12 +288,26 @@ return function(D, S)
 		for _ = 1, 8 do
 			local again = false
 			for _, quest in D.Quests.Quests do
-				if (AUTO_KINDS[quest.kind] or state.quests.active[quest.id]) and not state.quests.done[quest.id] and visible(state, quest) then
-					local a = state.quests.active[quest.id] or { delivered = 0, baseWins = state.stats.battlesWon }
-					if progressWith(state, quest, a) >= quest.amount then
-						payout(state, quest, if AUTO_KINDS[quest.kind] then "일지 기록 완료" else "의뢰 완료", msgs)
-						reported += 1
-						again = true
+				if not state.quests.done[quest.id] and visible(state, quest) then
+					local a = state.quests.active[quest.id]
+					-- 장 이야기는 이전 단계 완료 시 일지에 바로 올라간다. 기존 동시 진행 한도는 유지한다.
+					if quest.chapter and not a and countActive(state) < MAX_ACTIVE then
+						a = acceptRecord(state, quest)
+						local hook = storyOf(quest)
+						table.insert(msgs, "다음 이야기: 「" .. quest.name .. "」\n" .. hook)
+						if state._autoEventPort ~= state.portId and not (state.history and state.history.pending) then
+							state._scenes = state._scenes or {}
+							table.insert(state._scenes, sceneMeta({ kind = "start", name = quest.name, text = hook, summary = quest.summary }, quest))
+							state._autoEventPort = state.portId
+						end
+					end
+					if a or (not quest.chapter and isAuto(quest)) then
+						a = a or { delivered = 0, baseWins = state.stats.battlesWon }
+						if progressWith(state, quest, a) >= quest.amount then
+							payout(state, quest, if isAuto(quest) then "일지 기록 완료" else "의뢰 완료", msgs)
+							reported += 1
+							again = true
+						end
 					end
 				end
 			end
@@ -286,7 +326,7 @@ return function(D, S)
 		end
 		local pick = nil
 		for _, quest in D.Quests.Quests do
-			if not state.quests.done[quest.id] and not state.quests.active[quest.id] and not AUTO_KINDS[quest.kind] and visible(state, quest)
+			if not state.quests.done[quest.id] and not state.quests.active[quest.id] and not isAuto(quest) and visible(state, quest)
 				and (quest.kind ~= "deliver" or quest.portId == state.portId) then
 				if quest.companionId then
 					if quest.companionId == personId then
@@ -301,7 +341,7 @@ return function(D, S)
 		if not pick then
 			return nil
 		end
-		state.quests.active[pick.id] = { delivered = 0, baseWins = state.stats.battlesWon }
+		acceptRecord(state, pick)
 		local hook = storyOf(pick)
 		state._scenes = state._scenes or {}
 		table.insert(state._scenes, sceneMeta({ kind = "start", name = pick.name, text = hook, summary = pick.summary }, pick))
