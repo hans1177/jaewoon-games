@@ -5006,3 +5006,13 @@ test('항구 주민 최초 발바닥과 이동 지면 높이를 분리하여 보
  assert.ok(Math.abs(target(0.42,0.17,0)-0.25)<1e-9);
  assert.equal(target(8,0.17,0.25),0.25);
 });
+
+// [메뉴 실수치 시각화] 가격·적재·보급은 원본 서버 수치만 사용한다.
+test('교역과 항해의 승인 아이콘 및 실제 수치 막대 유지',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ for(const key of ['TradeIndexPriceMeter','TradeBuyMeter','TradeSellMeter','TradeCargoMeter','RouteSupplyMeter','RouteCoalMeter']) assert.ok(source.includes(key),key);
+ assert.match(source,/math\.clamp\(ship\.cargoUsed \/ math\.max\(1, ship\.cargoCapacity\), 0, 1\)/);
+ assert.match(source,/local priceMax = math\.max\(1, unitBuy, sel\.sell\)/);
+ assert.match(source,/math\.clamp\(data\[3\] \/ math\.max\(1, data\[2\]\), 0, 1\)/);
+ assert.match(source,/Create\(H\.galleryBackdrop,/);
+});
