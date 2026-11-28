@@ -1599,6 +1599,22 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 				local surface = part:FindFirstChildOfClass("SurfaceAppearance")
 				local textured = surfaceHasMaps(surface) or part.MaterialVariant ~= ""
 					or (part:IsA("MeshPart") and part.TextureID ~= "")
+				-- 원본 특수 메시·데칼·텍스처도 무텍스처 복원 대상에서 제외한다.
+				if not textured then
+					for _, child in part:GetChildren() do
+						if (child:IsA("SpecialMesh") and child.TextureId ~= "")
+							or ((child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "") then
+							textured = true
+							break
+						end
+					end
+				end
+				-- Roblox 수입 기본 회색(163,162,165)만 식별한다. 정상 회색 원본 재질은 보호한다.
+				local defaultImportGray = npcOutfit and not textured
+					and (part.Material == Enum.Material.Plastic or part.Material == Enum.Material.SmoothPlastic)
+					and math.abs(part.Color.R - 163 / 255) <= 1 / 255
+					and math.abs(part.Color.G - 162 / 255) <= 1 / 255
+					and math.abs(part.Color.B - 165 / 255) <= 1 / 255
 				-- [색상 지도 없는 경우] TextureID만 가져온 헤어는 SurfaceAppearance 경로를
 				-- 지나지 않는다. 머리카락 메시의 원본 TextureID를 유지한 채 색상 배율만 적용한다.
 				-- PBR SurfaceAppearance가 있는 모델은 아래 기존 PBR 분기에서 처리한다.
@@ -1762,8 +1778,8 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 					-- 애매한 수입 모델까지 대표색 하나로 덮지 않아 소매·안감·단추를 보존한다.
 					if bestError < 0.0064 then
 						part.Material = bestMaterial
-					elseif fallback and color.R > 0.80 and color.G > 0.80 and color.B > 0.80
-						and math.max(color.R, color.G, color.B) - math.min(color.R, color.G, color.B) < 0.09 then
+					elseif fallback and (defaultImportGray or (color.R > 0.80 and color.G > 0.80 and color.B > 0.80
+						and math.max(color.R, color.G, color.B) - math.min(color.R, color.G, color.B) < 0.09)) then
 						-- [수입기 무채색 복구] 미지의 회백색 기본 재질만 승인 GLB 주색으로 되돌린다.
 						-- 실제 색차가 큰 원본 소매·안감·단추 및 PBR 텍스처는 보호한다.
 						part.Material = fallback[2]
@@ -1862,7 +1878,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 						else target.Color
 					local neutral = math.max(part.Color.R, part.Color.G, part.Color.B)
 						- math.min(part.Color.R, part.Color.G, part.Color.B) < 0.11
-					local faded = neutral and part.Color.R > 0.87
+					local faded = (neutral and part.Color.R > 0.87) or (hair and defaultImportGray)
 					-- [기존 채색 보존] 이미 컬러가 들어간 메시를 황토색으로 몰아넣지 않는다.
 					-- 원본 색상 누락만 복구한다. 무텍스처라도 이미 유색인 주민 머리는 다시 어둡게 하지 않는다.
 					if faded or (npcOutfit and not hair and (ribbon or headwear)) then
@@ -1966,7 +1982,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- [계절·날씨 상의 정리] 항구 겨울 상태와 개별 주민의 비옷 요구가 달라도,
 	-- 현재 specs가 요청한 상의만 정답으로 본다. 숨겨진/미장착 상의는 성공으로 세지 않는다.
 	-- 원본 전신복·소매·장화는 보존하고 조끼/외투 중 이전 슬롯만 정리한다.
-	if winterWardrobe then
+	if detailAllowed then
 		local wanted = nil
 		for _, spec in specs do
 			if spec[2] == "UpperTorso" and (spec[1] == "outfit_vest" or spec[1] == "outfit_coat") then
@@ -1980,7 +1996,7 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 			if mounted then
 				for _, part in mounted:GetDescendants() do
 					if part:IsA("BasePart") and part.Transparency < 0.95
-						and part.LocalTransparencyModifier < 0.99 then
+						and part.LocalTransparencyModifier < 0.95 then
 						visible = true
 						break
 					end
@@ -1997,7 +2013,18 @@ function Pose.applyRegisteredMobOutfit(model, throttled)
 	-- 미등록·모델 로딩 실패일 때는 기존 깃털모자·배지·머리핀을 보존한다.
 	if npcOutfit and accessory and AssetIds["People/" .. accessory[1]] then
 		local selectedSlot = "R15Asset_" .. accessory[1] .. "_" .. accessory[2]
-		if model:FindFirstChild(selectedSlot) then
+		local selected = model:FindFirstChild(selectedSlot)
+		local selectedVisible = false
+		if selected then
+			for _, mesh in selected:GetDescendants() do
+				if mesh:IsA("BasePart") and mesh.Transparency < 0.95
+					and mesh.LocalTransparencyModifier < 0.95 then
+					selectedVisible = true
+					break
+				end
+			end
+		end
+		if selectedVisible then
 			for _, worn in model:GetChildren() do
 				if worn:IsA("Model") and worn.Name ~= selectedSlot
 					and (string.sub(worn.Name, 1, 13) == "R15Asset_cc0_"
@@ -2137,6 +2164,9 @@ function Pose.work(model, kind, t, moving)
 		-- 뒤로 -1.25rad 젖혀 두던 어깨를 전방으로 교정하고 보행 다리는 유지한다.
 		set(m.leftArm, A(0.95, 0, 0.12)); set(m.rightArm, A(0.95, 0, -0.12))
 		set(m.leftElbow, A(-0.38, 0, 0)); set(m.rightElbow, A(-0.38, 0, 0))
+		-- [하역꾼·짐꾼] 상체만 짐의 무게를 받는 자세로 숙이고 보행·발 접지는 유지한다.
+		set(m.waist, A(if moving then 0.16 else 0.10, 0, 0))
+		set(m.neck, A(if moving then -0.08 else -0.04, 0, 0))
 	elseif kind == "look" then
 		-- 손을 흔들다 둘러보기로 돌아왔을 때 팔이 허공에 남지 않도록 중립으로 복귀.
 		if not moving then

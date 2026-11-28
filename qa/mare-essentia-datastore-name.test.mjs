@@ -1520,6 +1520,11 @@ test('경제 공사 종류·건축자 모션·도시 장식 성장 모두 기존
  assert.match(scene,/mark:SetAttribute\("EconomicConstructionNeed"/);
  assert.match(scene,/"stoop" else "hammer"/);
  assert.match(scene,/"carry", 1\.7, \{ role = "Barbarian", hat = "cap" \}/);
+ const carryPose=read('ReplicatedStorage/Shared/Pose.luau');
+ const carryBlock=carryPose.slice(carryPose.indexOf('if kind == "carry" then'),carryPose.indexOf('elseif kind == "look" then',carryPose.indexOf('if kind == "carry" then')));
+ assert.ok(carryBlock.includes('set(m.waist, A(if moving then 0.16 else 0.10, 0, 0))'));
+ assert.ok(carryBlock.includes('set(m.neck, A(if moving then -0.08 else -0.04, 0, 0))'));
+ assert.doesNotMatch(carryBlock,/set\(m\.(?:leftLeg|rightLeg|leftKnee|rightKnee|leftAnkle|rightAnkle|root),/);
  assert.match(plan,/function B\.decorativeVisual\(level, buildings, prosperity\)/);
  assert.match(plan,/count >= 12 and healthy/);
  for(const kind of ['market','religious','farm','industry','civic']) assert.ok(plan.includes(kind + ' = grade('),kind);
@@ -2072,7 +2077,7 @@ test('실물 재단복 9종은 실제 GLB 메시와 무료 원본·문화권 R15
   assert.match(pose,/for colorIndex = 1, 3, 2 do/);
   assert.match(pose,/local sourceColor = candidate\[colorIndex\]/);
   assert.match(pose,/if bestError < 0\.0064 then/);
-  assert.match(pose,/elseif fallback and color\.R > 0\.80 and color\.G > 0\.80 and color\.B > 0\.80/);
+  assert.match(pose,/elseif fallback and \(defaultImportGray or \(color\.R > 0\.80 and color\.G > 0\.80 and color\.B > 0\.80/);
   assert.match(pose,/math\.max\(color\.R, color\.G, color\.B\) - math\.min\(color\.R, color\.G, color\.B\) < 0\.09/);
   // [실물 스크린샷 회귀] 얼굴·치마·허리띠·중첩 상의가 다시 원통/흰 갑옷으로 돌아가지 않도록 고정.
   assert.doesNotMatch(pose,/MareFaceSurface/);
@@ -3801,7 +3806,7 @@ test('주민 계절 외투와 개별 비옷은 현재 착용 목록을 기준으
   assert.ok(cleanup.includes('wanted = spec[1]'),'현재 필요 상의를 기준으로 판정');
   assert.ok(!cleanup.includes('if winterCoat then'),'항구 겨울 플래그로 개별 비옷을 제거하는 오류 방지');
   assert.ok(cleanup.includes('part.Transparency < 0.95'),'숨겨진/투명 상의를 착용 성공으로 오판하지 않음');
-  assert.ok(cleanup.includes('part.LocalTransparencyModifier < 0.99'),'모바일 LOD 숨김 상의를 성공으로 오판하지 않음');
+  assert.ok(cleanup.includes('part.LocalTransparencyModifier < 0.95'),'모바일 LOD 숨김 상의를 성공으로 오판하지 않음');
   assert.ok(cleanup.includes('if visible then'),'실제 보이는 상의가 확인된 뒤만 옛 상의 제거');
   assert.ok(!cleanup.includes('male_peasant_body'),'원본 전신복 보존');
   assert.ok(pose.includes('model:GetAttribute("NpcWeatherLayer") == "outer_coat"'),'개별 날씨 외투 선택 보존');
@@ -3858,6 +3863,13 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('if npcOutfit and surface and surfaceHasColorMap(surface) then'));
   assert.match(pose,/if pale then\s+local softTint = hairTint:Lerp\(Color3\.new\(1, 1, 1\), 0\.85\)\s+surface\.Color = surface\.Color:Lerp\(softTint, 0\.35\)/, 'PBR 머리 원본 색상 보존');
   assert.match(pose,/local textured = surfaceHasMaps\(surface\) or part\.MaterialVariant ~= ""/);
+  const fitting=pose.slice(pose.indexOf('local textured = surfaceHasMaps(surface)'),pose.indexOf('local weld = Instance.new("WeldConstraint")',pose.indexOf('local textured = surfaceHasMaps(surface)')));
+  assert.ok(fitting.includes('child:IsA("SpecialMesh") and child.TextureId ~= ""'));
+  assert.ok(fitting.includes('child:IsA("Decal") or child:IsA("Texture")'));
+  assert.ok(fitting.includes('local defaultImportGray = npcOutfit and not textured'));
+  assert.ok(fitting.includes('math.abs(part.Color.R - 163 / 255) <= 1 / 255'));
+  assert.ok(fitting.includes('elseif fallback and (defaultImportGray or'));
+  assert.ok(fitting.includes('(hair and defaultImportGray)'));
   assert.match(pose,/and part\.MaterialVariant == "" and string\.sub\(assetName, 1, 5\) == "hair_" then/);
   assert.match(pose,/local pale = part\.Color\.R >= 0\.90 and part\.Color\.G >= 0\.90 and part\.Color\.B >= 0\.90/);
   assert.match(pose,/local pale = base\.R >= 0\.90 and base\.G >= 0\.90 and base\.B >= 0\.90/);
@@ -3888,6 +3900,10 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
   assert.ok(pose.includes('local featherHat = model:FindFirstChild("R15Asset_acc_feather_hat_Head")'), '실제 깃털모자 슬롯으로 판정');
+  const accessoryCleanup=pose.slice(pose.indexOf('local selectedSlot = "R15Asset_"'),pose.indexOf('if npcOutfit and UserInputService.TouchEnabled and detailLimit == 3 then',pose.indexOf('local selectedSlot = "R15Asset_"')));
+  assert.ok(accessoryCleanup.includes('mesh.Transparency < 0.95') && accessoryCleanup.includes('mesh.LocalTransparencyModifier < 0.95'));
+  assert.ok(accessoryCleanup.indexOf('if selectedVisible then') < accessoryCleanup.indexOf('worn:Destroy()'));
+  assert.match(pose,/if detailAllowed then\s+local wanted = nil\s+for _, spec in specs do/);
   assert.match(pose,/if featherHat then\s+for _, mesh in featherHat:GetDescendants\(\) do\s+if mesh:IsA\("BasePart"\) and mesh.Transparency < 0.95 and mesh.LocalTransparencyModifier < 0.95 then\s+featherVisible = true/, '실물 모자의 가시성 확인 후 중첩을 정리');
   assert.ok(!pose.includes('local fittedUpperReady = false'), '기본복 삭제 조건 제거');
   assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
