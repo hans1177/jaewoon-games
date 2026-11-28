@@ -2552,8 +2552,160 @@
   "ms": 6000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP london top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
   "type": "capture",
-  "name": "all_london_top"
+  "name": "london_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP london oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP london oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP london plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP london street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP london houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP london harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP london ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP london animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP london animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP london resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP london edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT london edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "london_edge"
  },
  {
   "type": "luau",
@@ -2565,8 +2717,160 @@
   "ms": 6000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP istanbul top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
   "type": "capture",
-  "name": "all_istanbul_top"
+  "name": "istanbul_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP istanbul oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP istanbul oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP istanbul plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP istanbul street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP istanbul houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP istanbul harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP istanbul ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP istanbul animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP istanbul animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP istanbul resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP istanbul edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT istanbul edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_edge"
  },
  {
   "type": "luau",
@@ -2578,8 +2882,160 @@
   "ms": 6000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP nagasaki top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
   "type": "capture",
-  "name": "all_nagasaki_top"
+  "name": "nagasaki_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP nagasaki oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP nagasaki oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP nagasaki plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP nagasaki street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP nagasaki houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP nagasaki harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP nagasaki ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP nagasaki animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP nagasaki animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP nagasaki resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP nagasaki edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT nagasaki edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_edge"
  },
  {
   "type": "luau",
@@ -2591,8 +3047,160 @@
   "ms": 6000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP zanzibar top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
   "type": "capture",
-  "name": "all_zanzibar_top"
+  "name": "zanzibar_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP zanzibar oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP zanzibar oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP zanzibar plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP zanzibar street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP zanzibar houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP zanzibar harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP zanzibar ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP zanzibar animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP zanzibar animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP zanzibar resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP zanzibar edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT zanzibar edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "zanzibar_edge"
  },
  {
   "type": "luau",
@@ -2604,8 +3212,160 @@
   "ms": 6000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP havana top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
   "type": "capture",
-  "name": "all_havana_top"
+  "name": "havana_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP havana oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP havana oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP havana plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP havana street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP havana houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP havana harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP havana ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP havana animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP havana animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP havana resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP havana edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT havana edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "havana_edge"
  },
  {
   "type": "luau",
@@ -2617,7 +3377,1149 @@
   "ms": 6000
  },
  {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP busan top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
   "type": "capture",
-  "name": "all_busan_top"
+  "name": "busan_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP busan oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP busan oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP busan plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP busan street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP busan houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP busan harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP busan ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP busan animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP busan animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP busan resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP busan edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT busan edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "busan_edge"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='calicut',portName='calicut',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP calicut top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP calicut oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP calicut oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP calicut plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP calicut street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP calicut houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP calicut harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP calicut ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP calicut animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP calicut animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP calicut resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP calicut edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT calicut edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "calicut_edge"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='dakar',portName='dakar',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP dakar top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP dakar oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP dakar oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP dakar plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP dakar street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP dakar houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP dakar harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP dakar ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP dakar animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP dakar animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP dakar resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP dakar edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT dakar edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "dakar_edge"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='batavia',portName='batavia',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP batavia top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP batavia oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP batavia oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP batavia plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP batavia street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP batavia houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP batavia harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP batavia ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP batavia animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP batavia animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP batavia resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP batavia edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT batavia edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "batavia_edge"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='canton',portName='canton',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP canton top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP canton oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP canton oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP canton plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP canton street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP canton houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP canton harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP canton ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP canton animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP canton animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP canton resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP canton edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT canton edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "canton_edge"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='tahiti',portName='tahiti',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP tahiti top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP tahiti oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP tahiti oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP tahiti plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP tahiti street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP tahiti houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP tahiti harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP tahiti ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP tahiti animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP tahiti animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP tahiti resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP tahiti edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT tahiti edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "tahiti_edge"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='amsterdam',portName='amsterdam',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 6000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0)),60 end local cf,fov=pick() if not cf then return 'SKIP amsterdam top' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam top'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(60,120,-150),Vector3.new(-90,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP amsterdam oblique_sea' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam oblique_sea'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_oblique_sea"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-320,110,140),Vector3.new(-80,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP amsterdam oblique_land' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam oblique_land'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_oblique_land"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local p=f:GetAttribute('CityPortPlazaLocation') or Vector3.new(-6,0,0) return CFrame.lookAt(p+Vector3.new(26,6,18),p+Vector3.new(0,3,0)),60 end local cf,fov=pick() if not cf then return 'SKIP amsterdam plaza_eye' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam plaza_eye'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_plaza_eye"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(-20,7,0),Vector3.new(-140,4,0)),62 end local cf,fov=pick() if not cf then return 'SKIP amsterdam street' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam street'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local h=find(function(m) return m.Name=='HarborHouse' end) if not h then return nil end local p=h:GetPivot().Position return CFrame.lookAt(p+Vector3.new(22,10,(p.Z>0 and -24 or 24)),p+Vector3.new(0,4,0)),50 end local cf,fov=pick() if not cf then return 'SKIP amsterdam houses' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam houses'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_houses"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() return CFrame.lookAt(Vector3.new(20,22,60),Vector3.new(45,2,0)),58 end local cf,fov=pick() if not cf then return 'SKIP amsterdam harbor' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam harbor'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local g=find(function(m) return m.Name=='OpenPasture' or m.Name=='PigYard' end) if not g then return nil end local p=g.Position return CFrame.lookAt(p+Vector3.new(40,30,40),p),55 end local cf,fov=pick() if not cf then return 'SKIP amsterdam ranch' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam ranch'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_ranch"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.RightVector*8+Vector3.new(0,2.5,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP amsterdam animal_side' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam animal_side'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_animal_side"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local a=find(function(m) local s=m:GetAttribute('AnimalSpecies') return s and s~='pigeon' and s~='seagull' end) if not a then return nil end local p=a:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*7+p.RightVector*3+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.2,0)),40 end local cf,fov=pick() if not cf then return 'SKIP amsterdam animal_front' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam animal_front'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_animal_front"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local r=find(function(m) return m:FindFirstChildOfClass('Humanoid')~=nil end) if not r then return nil end local p=r:GetPivot() return CFrame.lookAt(p.Position+p.LookVector*6+Vector3.new(0,2,0),p.Position+Vector3.new(0,1.5,0)),40 end local cf,fov=pick() if not cf then return 'SKIP amsterdam resident' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam resident'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_resident"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local function find(ok) for _,d in ipairs(f:GetDescendants()) do if (d:IsA('Model') or d:IsA('BasePart')) and ok(d) then return d end end return nil end local function pick() local x=-(f:GetAttribute('TownLandWidth') or 300)+40 return CFrame.lookAt(Vector3.new(x-30,35,90),Vector3.new(x+40,0,0)),55 end local cf,fov=pick() if not cf then return 'SKIP amsterdam edge' end workspace:SetAttribute('ShotFov',fov) workspace:SetAttribute('ShotCF',cf) return 'SHOT amsterdam edge'"
+ },
+ {
+  "type": "wait",
+  "ms": 700
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_edge"
  }
 ]
