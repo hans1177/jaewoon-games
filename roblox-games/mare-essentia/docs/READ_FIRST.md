@@ -11,6 +11,7 @@
 ## 1. 무엇을 하든 공통
 | 문서 | 내용 |
 |---|---|
+| **`docs/BRIEF_MAP.md`** | **지시서 지도 — 만드는 것별 정본 1개·드롭박스 폴더·파일 이름 예를 한 장에. 여기서 먼저 찾는다** |
 | `docs/RULES.md` | 에셋 출처, 원본 가공 허용, 오너 제작 원화, 코드 한도(Game.client 최상위 local 추가 금지) |
 | `docs/CODE_MAP.md` | 코드 위치 지도 |
 | `docs/DESIGN.md` | 게임 전체 설계 |
@@ -39,6 +40,8 @@
 | 지상 탐험 발견물(식물·동물·광물·유물·유적) 외형·모델 | `docs/discoveries/README.md` + `docs/discoveries/MISSING.md` |
 | 동물 뼈대·애니메이션·리액션, 동물→몬스터 변형 | `docs/discoveries/ANIMAL_RIG_MOTION.md` + `docs/discoveries/README.md` |
 | HUD·아이콘·버튼 효과 | 아래 3절 |
+| **보스(지상 두목·해상 신화 괴물) 단계·스킬·모션·체력** | `docs/BOSS_BRIEF.md` |
+| **카드배틀 모바일 궨트급(메뉴·규칙·연출·자산·프롬프트)** | `docs/card_battle/MOBILE_GRADE_BRIEF.md` (카드배틀 정본 묶음) |
 
 ## 3. HUD·아이콘·버튼 효과 규칙 (2026-11-24 오너 지시)
 - **아이콘은 기존 청동 원화 시트만** 쓴다: `CardArt/ui_facility_icons`(512px, 4×4), `CardArt/ui_reserve_icons`, `CardArt/ui_reserve_icons_2`(768px, 4×4). 코드는 `Game.client`의 `H.facilityIconCells`, `H.reserveIconCells`, `H.hasIconArt`. 도형 그리기(Glyph)·임의 새 아이콘으로 바꾸지 않는다. 아이콘을 새로 만들 때도 같은 청동 컨셉으로 한다.
