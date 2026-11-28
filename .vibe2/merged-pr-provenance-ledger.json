@@ -390484,11 +390484,150 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_0dd09b4dc28bfeb2f0b6b033",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15854",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "86cfc32ad495e1d72e42e5a23f4af3290121a554",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15854,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-haggle-no-stop",
+        "baseSha": "86cfc32ad495e1d72e42e5a23f4af3290121a554",
+        "headSha": "44191e2938396ee08061117196c5c4bf06d46225",
+        "mergeCommitSha": "48b351611305935bc18946f292ef946e0dd2dc0c",
+        "mergedAt": "2026-11-28T17:16:05Z",
+        "authorLogin": "hans1177",
+        "titleHash": "d88921544aceb53ca3afb6b924df0ae2fff6c6306e8e59b42077314dde0db1a3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-haggle-no-stop",
+        "candidateSha": "44191e2938396ee08061117196c5c4bf06d46225"
+      },
+      "changeStats": {
+        "changedFileCount": 14,
+        "codingRelevantFileCount": 11,
+        "addedLineCount": 219,
+        "deletedLineCount": 156,
+        "changedFiles": [
+          "qa/mare-haggle-minigame.test.mjs",
+          "qa/mare-nation-link.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/animals/cat_v2.glb",
+          "roblox-games/mare-essentia/assets/animals/cat_v2.glb.license.json",
+          "roblox-games/mare-essentia/docs/VILLAGE_LAYOUT_SPEC.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Econ.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Trade.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Village.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-haggle-minigame.test.mjs",
+          "qa/mare-nation-link.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/animals/cat_v2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Econ.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Trade.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Village.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15854",
+        "merge-commit:48b351611305935bc18946f292ef946e0dd2dc0c",
+        "base-main:86cfc32ad495e1d72e42e5a23f4af3290121a554"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3063
+    "total": 3064
   }
 }
