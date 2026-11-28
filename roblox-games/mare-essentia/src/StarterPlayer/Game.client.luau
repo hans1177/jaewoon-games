@@ -12240,6 +12240,12 @@ do
 	-- 결과 연출: 퀘스트를 끝내면 '당신 덕분에' 결말 + 장의 마지막이면 장 완료 장면
 	function H.showQuestResult(d)
 		local g = overlayGui("QuestResult", 72)
+		local chapterEnd = d.chapterEnd == true
+		local grade = if d.id then math.clamp(math.floor(tonumber(d.grade) or 1), 1, 5) else 0
+		local reduced = game:GetService("GuiService").ReducedMotionEnabled
+		local rankName = ({ "일반", "숙련", "희귀", "영웅", "전설" })[grade]
+		local tone = ({ Color3.fromRGB(161, 115, 70), Color3.fromRGB(174, 178, 183), Color3.fromRGB(89, 152, 220), Color3.fromRGB(176, 116, 220), Color3.fromRGB(242, 191, 70) })[grade] or Color3.fromRGB(196, 150, 70)
+		g:SetAttribute("QuestRewardGrade", grade)
 		local root = Instance.new("TextButton")
 		root.Size = UDim2.fromScale(1, 1)
 		root.AutoButtonColor = false
@@ -12264,8 +12270,8 @@ do
 		lim.MaxSize = Vector2.new(680, 640)
 		lim.Parent = box
 		local st = Instance.new("UIStroke")
-		st.Color = Color3.fromRGB(196, 150, 70)
-		st.Thickness = 3
+		st.Color = tone
+		st.Thickness = if grade >= 4 or chapterEnd then 5 else 3
 		st.Parent = box
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 16), UDim.new(0, 16), UDim.new(0, 18), UDim.new(0, 18)
@@ -12275,7 +12281,6 @@ do
 		list.SortOrder = Enum.SortOrder.LayoutOrder
 		list.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		list.Parent = box
-		local chapterEnd = d.chapterEnd == true
 		-- [대화 연출] 의뢰를 준 사람이 결말을 말한다(초상)
 		local talk = d.id and H.questTalkMemo and H.questTalkMemo[d.id]
 		if talk and H.portraitFor then
@@ -12327,11 +12332,32 @@ do
 			head.Size = UDim2.new(1, 0, 0, 0)
 			head.TextXAlignment = Enum.TextXAlignment.Center
 		end
+		if grade > 0 then
+			local seal = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 46), Color3.fromRGB(55, 37, 25))
+			seal.Name = "QuestRewardRank"
+			seal.LayoutOrder = 2
+			corner(seal, 8)
+			local edge = Instance.new("UIStroke")
+			edge.Color = tone
+			edge.Thickness = 2
+			edge.Parent = seal
+			local caption = mkLabel(seal, string.format("%s 의뢰 · 난이도 %d단계", rankName, grade), 23, tone, true)
+			caption.AutomaticSize = Enum.AutomaticSize.None
+			caption.Size = UDim2.fromScale(1, 1)
+			caption.TextXAlignment = Enum.TextXAlignment.Center
+			if grade >= 3 and not reduced then
+				local shine = Instance.new("UIGradient")
+				shine.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, tone), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 246, 210)), ColorSequenceKeypoint.new(1, tone) })
+				shine.Offset = Vector2.new(-1, 0)
+				shine.Parent = caption
+				TS:Create(shine, TweenInfo.new(0.9, Enum.EasingStyle.Quad), { Offset = Vector2.new(1, 0) }):Play()
+			end
+		end
 		if d.result then
-			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 22, Color3.fromRGB(40, 90, 50), true, 2)
+			local res = mkLabel(box, "당신 덕분에 — " .. tostring(d.result), 22, Color3.fromRGB(40, 90, 50), true, 3)
 			res.Size = UDim2.new(1, 0, 0, 0)
 		end
-		local body = mkLabel(box, "", 22, Color3.fromRGB(52, 38, 24), false, 3)
+		local body = mkLabel(box, "", 22, Color3.fromRGB(52, 38, 24), false, 4)
 		body.Size = UDim2.new(1, 0, 0, 0)
 		body.Text = tostring(d.ending or "")
 		-- [보상 장부] 기존 서버 지급 영수증을 표시한다. 클라이언트는 지급하지 않는다.
@@ -12452,16 +12478,24 @@ do
 		local hint = mkLabel(box, if chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
-		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end
-		Sfx.play(if chapterEnd then "sfx_fanfare" else "sfx_bell", if chapterEnd then 0.55 else 0.35, 1, "sfx_card_coin")
+		local epic = chapterEnd or grade >= 4
+		if not reduced and H.cinemaBars and (epic or grade == 3) then H.cinemaBars(g, if epic then 2.8 else 1.4) end
+		Sfx.play(if epic then "sfx_fanfare" else "sfx_bell", if epic then 0.55 else 0.35, 1, "sfx_card_coin")
 		local sc = Instance.new("UIScale")
-		sc.Scale = if game:GetService("GuiService").ReducedMotionEnabled then 1 else 0.85
+		sc.Scale = if reduced then 1 elseif epic then 0.88 else 0.97
 		sc.Parent = box
-		TS:Create(sc, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
-		if chapterEnd and H.cardGainFlair then
-			pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 4, gold = Color3.fromRGB(255, 217, 124),
-				tone = Color3.fromRGB(255, 196, 92), w = 360, h = 220, reduced = game:GetService("GuiService").ReducedMotionEnabled,
-				viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600), combat = false, hero = false })
+		if not reduced then
+			TS:Create(sc, TweenInfo.new(if epic then 0.48 else 0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		end
+		-- 기존 카드 전용 효과는 카드에서만 사용한다. 의뢰는 난이도 문장과 독립적인 금빛 테두리로 연출한다.
+		if epic and not reduced then
+			local pulse = Instance.new("UIStroke")
+			pulse.Color = tone
+			pulse.Thickness = 10
+			pulse.Transparency = 0.4
+			pulse.Parent = root
+			TS:Create(pulse, TweenInfo.new(1.15), { Transparency = 1, Thickness = 2 }):Play()
+			task.delay(1.2, function() if pulse.Parent then pulse:Destroy() end end)
 		end
 		local closed = false
 		local function close()
@@ -12492,7 +12526,7 @@ do
 		task.spawn(function()
 			local pg = player:WaitForChild("PlayerGui")
 			for _, d in fresh do
-				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
+				while player.Parent and (inField or newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
 					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene") or pg:FindFirstChild("IntroDialog")) do
 					task.wait(0.3)
