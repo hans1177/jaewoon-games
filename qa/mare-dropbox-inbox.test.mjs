@@ -42,3 +42,15 @@ test('일반 인입 후보 검사 완료 이벤트는 정확한 SHA 및 필수 �
   assert.ok(wf.includes('length == 3 and all(.[]; .pass)'));
   assert.ok(wf.includes('if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then exit 0; fi'));
 });
+
+test('재질은 기존 실제 업로더의 CC0 출처 및 해시 조건을 먼저 검증한다', () => {
+  const register = fs.readFileSync('tools/devloop/register_asset.py', 'utf8');
+  const start = register.indexOf('if not why and kind == "Materials":');
+  assert.ok(start >= 0);
+  const guard = register.slice(start, register.indexOf('if not why and h in blocked', start));
+  assert.ok(guard.includes('m.get("license") != "CC0-1.0"'));
+  assert.ok(guard.includes('CC0_MATERIAL_SOURCE_METADATA_REQUIRED'));
+  assert.ok(guard.includes('m["sourceSha256"] != h'));
+  assert.ok(guard.includes('CC0_MATERIAL_SOURCE_HASH_MISMATCH'));
+  assert.ok(start < register.indexOf('shutil.move(src, dst)'));
+});

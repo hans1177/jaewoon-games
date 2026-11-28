@@ -58,6 +58,13 @@ for kind in sorted(d for d in os.listdir(inbox) if os.path.isdir(os.path.join(in
                 elif not str(m.get("source", "")).startswith("http") and m.get("license") != "PROJECT_ORIGINAL_ART": why = "출처 URL 없음"
                 elif not m.get("author"): why = "제작자(author) 없음"
         h = sha(p)
+        # [재질 출처] 실제 등록기의 기존 CC0 원본·해시 조건을 정식 폴더 승격 전에 검사한다.
+        # 오너 원화는 별도 검수 대상이며 이미 등록된 CC0 재질을 덮어쓰지 않는다.
+        if not why and kind == "Materials":
+            if m.get("license") != "CC0-1.0" or not m.get("sourceSha256") or not m.get("source") or not m.get("author"):
+                why = "CC0_MATERIAL_SOURCE_METADATA_REQUIRED"
+            elif m["sourceSha256"] != h:
+                why = "CC0_MATERIAL_SOURCE_HASH_MISMATCH"
         if not why and h in blocked: why = "차단된 해시"
         if not why and h in known: why = f"중복(이미 {known[h]})"
         if not why and fn.lower().endswith((".png", ".jpg", ".jpeg")):
