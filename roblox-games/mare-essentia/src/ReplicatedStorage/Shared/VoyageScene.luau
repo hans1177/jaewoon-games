@@ -1394,40 +1394,35 @@ function VoyageScene.play(info)
 		island = "미지의 섬!", ghost = "유령선...", blockade = "해상 봉쇄!", storm = "폭풍!", pirates = "해적선 출현!", drift = "표류물 발견", fever = "열병 발생", tailwind = "순풍!", calm = "잔잔한 바다",
 		current = "숨은 해류!", wreck = "침몰선 발견!", rainbow = "쌍무지개!", mermaid = "인어의 노래...", pigeon = "전서구 도착", bottle = "병 편지 발견", rats = "쥐떼 습격!", vortex = "소용돌이!", fire = "선상 화재!", mutiny = "선상 반란!", shark = "상어 떼!", cursed = "저주받은 보물", phantom = "유령선을 따라간다", kraken = "크라켄 출현!!", volcano = "바다 화산!", meteor = "별똥별!", rival = "라이벌과 경주!",
 	}
+	-- 기존 사건 알림을 상단 공용 안내 위치에서 한 번에 하나만 표시한다.
 	local banner = title:Clone()
-	banner.Position = UDim2.new(0, 0, 0.22, 0)
-	banner.Size = UDim2.new(1, 0, 0, 44)
-	banner.TextSize = 34
+	banner.AnchorPoint = Vector2.new(0.5, 0)
+	banner.Position = UDim2.new(0.5, 0, 0, 80)
+	banner.Size = UDim2.new(0.94, 0, 0, 48)
+	banner.TextSize = 22
+	banner.TextWrapped = true
 	banner.TextColor3 = Color3.fromRGB(255, 220, 120)
+	banner.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+	banner.BackgroundTransparency = 0.2
 	banner.Text = eventBanner[ev.kind] or ""
-	banner.TextTransparency = 1
-	banner.TextStrokeTransparency = 1
+	banner.Visible = false
+	banner.ZIndex = 9
 	banner.Parent = gui
-	-- 긴 항해의 추가 사건: 항해 진행도에 맞춰 차례로 알림이 뜬다
+	local eventLimit = Instance.new("UISizeConstraint", banner)
+	eventLimit.MaxSize = Vector2.new(520, 48)
+	local eventCorner = Instance.new("UICorner", banner)
+	eventCorner.CornerRadius = UDim.new(0, 10)
 	local extraKinds = {}
 	for i, kd in (ev.all or {}) do
-		if i > 1 then
-			table.insert(extraKinds, kd)
-		end
+		if i > 1 then table.insert(extraKinds, kd) end
 	end
 	local banner2 = banner:Clone()
-	banner2.Position = UDim2.new(0, 0, 0.30, 0)
-	banner2.TextSize = 26
+	banner2.TextSize = 19
 	banner2.TextColor3 = Color3.fromRGB(190, 225, 255)
 	banner2.Text = ""
 	banner2.Parent = gui
-	-- 수동 항해: 화면 한가운데(바람 고리·안내·콤보 팝업 자리)를 비우고, 이벤트 알림은 위쪽 띠로 옮긴다.
-	-- 날짜 줄 아래 가운데에 작은 알림 띠 두 줄(주 사건·추가 사건)만 쓰고, 좌우 HUD(지도·자동 전환·점수)는 피한다.
-	if manual then
-		banner.Position = UDim2.new(0.5, 0, 0, 100)
-		banner.AnchorPoint = Vector2.new(0.5, 0)
-		banner.Size = UDim2.new(0, 280, 0, 30)
-		banner.TextSize = 24
-		banner2.Position = UDim2.new(0.5, 0, 0, 132)
-		banner2.AnchorPoint = Vector2.new(0.5, 0)
-		banner2.Size = UDim2.new(0, 280, 0, 26)
-		banner2.TextSize = 19
-	end
+	local seaCaption: TextLabel? = nil
+	local departureSeaInfo, arrivalSeaInfo
 	-- [자동 배치 · 해역 배경] 목적지(없으면 출발지) 해역의 Naval/voyage_<해역>_near|mid|far 모델을 양옆에 띄운다.
 	-- 항해 전용 모델이 없으면 같은 해역의 해전 배경(Naval/sea_<해역>_*)을 다시 쓴다. 둘 다 없으면 아무것도 안 놓는다.
 	do
@@ -1447,31 +1442,20 @@ function VoyageScene.play(info)
 			end
 		end
 		folder:SetAttribute("VoyageSeaArea", sea or "")
-		-- [해역 이야기 자막 · 2026-11-28] 해역 이름과 한 줄 사연을 출항 직후 4초
-		local seaInfo = okSea and sea and SeaAreas.INFO and SeaAreas.INFO[sea]
-		if seaInfo and not info.intro then
-			local cap = Instance.new("TextLabel")
+		-- 실제 출발/목적지 항구의 해역을 사용한다. 외해 경계는 추정하지 않는다.
+		local fromSea = okSea and SeaAreas.seaOf(info.fromId)
+		local toSea = okSea and SeaAreas.seaOf(info.toId)
+		departureSeaInfo = fromSea and SeaAreas.INFO[fromSea]
+		arrivalSeaInfo = toSea and toSea ~= fromSea and SeaAreas.INFO[toSea]
+		if (departureSeaInfo or arrivalSeaInfo) and not info.intro then
+			local cap = banner:Clone()
 			cap.Name = "VoyageSeaCaption"
-			cap.AnchorPoint = Vector2.new(0.5, 0)
-			cap.Position = UDim2.new(0.5, 0, 0.16, 0)
-			cap.Size = UDim2.new(0.86, 0, 0, 64)
-			cap.BackgroundTransparency = 1
-			cap.Font = Enum.Font.GothamBlack
-			cap.TextSize = 26
-			cap.TextColor3 = Color3.fromRGB(255, 236, 190)
-			cap.TextStrokeTransparency = 0.35
-			cap.TextWrapped = true
 			cap.RichText = true
-			cap.Text = seaInfo[1] .. "<br/><font size=\"16\" face=\"Gotham\">" .. seaInfo[2] .. "</font>"
-			cap.TextTransparency = 1
+			cap.TextSize = 18
+			cap.TextColor3 = Color3.fromRGB(255, 236, 190)
+			cap.Text = ""
 			cap.Parent = gui
-			task.spawn(function()
-				task.wait(1.2)
-				for i = 1, 10 do if not cap.Parent then return end cap.TextTransparency = 1 - i / 10; cap.TextStrokeTransparency = 1 - i * 0.065; task.wait(0.03) end
-				task.wait(3.6)
-				for i = 1, 12 do if not cap.Parent then return end cap.TextTransparency = i / 12; cap.TextStrokeTransparency = 0.35 + i * 0.055; task.wait(0.04) end
-				cap:Destroy()
-			end)
+			seaCaption = cap
 		end
 		folder:SetAttribute("VoyageAutoSlotCount", placed)
 	end
@@ -1507,6 +1491,9 @@ function VoyageScene.play(info)
 		for i = 1, 4 do
 			addProp("Naval", "palm-detailed-straight", 16, 132 + i * 8, 0.12, i, -1, "mid")
 		end
+	elseif ev.kind == "wreck" then
+		-- 기존 등록 난파선 원본만 사용하고 보상·인양 판정은 서버 결과를 유지한다.
+		addProp("Naval", "ship-wreck", 18, 32, 0.5, math.pi / 2, -2)
 	elseif ev.kind == "ghost" then
 		addProp("Naval", "ship-ghost", 18, -80, 0.35, math.pi, 0)
 	elseif ev.kind == "blockade" then
@@ -1519,6 +1506,48 @@ function VoyageScene.play(info)
 			if m then
 				table.insert(fish, { m = m, side = 18 + (i % 4) * 9, phase = i * 0.8, along = (i - 4) * 14 })
 			end
+		end
+	end
+
+	-- 실제 사건 소품 위에만 표지를 붙인다. 모델이 없다면 기존 상단 사건 알림만 남긴다.
+	local eventMarker: BillboardGui? = nil
+	local markerTarget: BasePart? = nil
+	local markerKinds = { pirates = true, wreck = true, rescue = true, whale = true, reef = true, merchant = true, ghost = true, drift = true }
+	if not info.intro and markerKinds[ev.kind] then
+		if enemy then
+			markerTarget = enemy:FindFirstChildWhichIsA("BasePart", true)
+		elseif barrel then
+			markerTarget = barrel
+		else
+			for _, rec in props do
+				if not rec.always then
+					markerTarget = if rec.m:IsA("BasePart") then rec.m else rec.m:FindFirstChildWhichIsA("BasePart", true)
+					if markerTarget then break end
+				end
+			end
+		end
+		if markerTarget then
+			local mark = Instance.new("BillboardGui")
+			mark.Name = "VoyageSeaEventMarker"
+			mark.Adornee = markerTarget
+			mark.Size = UDim2.fromOffset(164, 36)
+			mark.StudsOffsetWorldSpace = Vector3.new(0, markerTarget.Size.Y / 2 + 5, 0)
+			mark.MaxDistance = 260
+			mark.AlwaysOnTop = true
+			mark.Enabled = false
+			mark.Parent = folder
+			local label = Instance.new("TextLabel", mark)
+			label.Size = UDim2.fromScale(1, 1)
+			label.Font = Enum.Font.GothamBold
+			label.TextSize = 17
+			label.TextColor3 = Color3.fromRGB(255, 232, 170)
+			label.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+			label.BackgroundTransparency = 0.2
+			label.Text = eventBanner[ev.kind] or ""
+			label.TextWrapped = true
+			local round = Instance.new("UICorner", label)
+			round.CornerRadius = UDim.new(0, 8)
+			eventMarker = mark
 		end
 	end
 
@@ -1850,7 +1879,7 @@ function VoyageScene.play(info)
 			if modeBadge then modeBadge.Text = if autoOn then "⚓ 자동 항해 중" else "🎮 직접 조종 중" end
 			helmMsg.Text = if seaNote ~= "" then seaNote elseif relWind < math.rad(40) and not info.steam and not autoOn then "맞바람 — 방향을 옆으로 틀어요" else ""
 			helmMsg.Visible = helmMsg.Text ~= ""
-			if nextStepLabel then nextStepLabel.Visible = not helmMsg.Visible end
+			-- 다음 할 일 표시는 아래 공용 사건 안내에서 결정한다.
 			-- 미니맵: 동쪽=오른쪽, 북쪽(-Z)=위
 			local mid = (pts[1] + helmDest) / 2
 			local half = math.max(helmStartDist * 0.75, 260)
@@ -2097,7 +2126,7 @@ function VoyageScene.play(info)
 					if autoRing or tally.hits >= 4 then
 						s_guide.hint:Destroy()
 						s_guide = nil
-						if nextStepLabel then nextStepLabel.Visible = true end
+						-- 다음 할 일 표시는 아래 공용 사건 안내에서 복구한다.
 						for _, sb in sideBtns do
 							sb.BackgroundColor3 = Color3.fromRGB(40, 80, 130)
 						end
@@ -2373,21 +2402,32 @@ function VoyageScene.play(info)
 				f.m:PivotTo(CFrame.new(p.X, if jump >= 0 then jump * 7 + 0.5 else -500, p.Z) * CFrame.Angles(0, yaw + math.pi / 2, -(1 - jump) * 0.8))
 			end
 
+			if eventMarker then
+				eventMarker.Enabled = active and markerTarget ~= nil and markerTarget.Position.Y > -100
+			end
+			local guidance = s_guide ~= nil or (helmMsg ~= nil and helmMsg.Visible)
+			local mainEvent = active and eventBanner[ev.kind] ~= nil
+			banner.Visible = not guidance and mainEvent
+			local extraEvent = nil
 			if #extraKinds > 0 then
-				local slot = math.floor(k * (#extraKinds + 1) * 1.0)
+				local slot = math.floor(k * (#extraKinds + 1))
 				local within = (k * (#extraKinds + 1)) % 1
-				local kd = extraKinds[slot]
-				if kd and within > 0.15 and within < 0.55 then
-					banner2.Text = eventBanner[kd] or ""
-					banner2.TextTransparency = 0.1
-					banner2.TextStrokeTransparency = 0.4
-				else
-					banner2.TextTransparency = 1
-					banner2.TextStrokeTransparency = 1
+				if within > 0.15 and within < 0.55 then extraEvent = extraKinds[slot] end
+			end
+			banner2.Visible = not guidance and not mainEvent and extraEvent ~= nil and eventBanner[extraEvent] ~= nil
+			if banner2.Visible then banner2.Text = eventBanner[extraEvent] end
+			local captionInfo = if t < 5 and k < 0.25 then departureSeaInfo elseif k > 0.78 and k < 0.92 then arrivalSeaInfo else nil
+			if seaCaption then
+				seaCaption.Visible = not guidance and not banner.Visible and not banner2.Visible and captionInfo ~= nil
+				if seaCaption.Visible and captionInfo then
+					local heading = if captionInfo == departureSeaInfo then "출발 해역 · " else "도착 해역 · "
+					local captionText = heading .. captionInfo[1] .. "<br/><font size=\"16\">" .. captionInfo[2] .. "</font>"
+					if seaCaption.Text ~= captionText then seaCaption.Text = captionText end
 				end
 			end
-			banner.TextTransparency = 1 - math.clamp(intensity * 2.2, 0, 1)
-			banner.TextStrokeTransparency = 1 - math.clamp(intensity * 1.6, 0, 0.6)
+			if nextStepLabel then
+				nextStepLabel.Visible = not guidance and not banner.Visible and not banner2.Visible and not (seaCaption and seaCaption.Visible)
+			end
 		end
 		for i = #flashes, 1, -1 do
 			local f = flashes[i]
