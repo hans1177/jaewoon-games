@@ -864,13 +864,14 @@ local function modelIcon(parent, kind, asset, tint, px, labelText, smallArt, por
 		local portrait = Instance.new("ImageLabel")
 		portrait.Size = UDim2.fromOffset(px, px)
 		portrait.Image = "rbxassetid://" .. tostring(AssetIds["Portraits/" .. asset])
-		if portraitOffset then
+		local useAtlas = portraitOffset ~= nil and string.sub(asset, 1, 5) ~= "comp_"
+		if useAtlas then
 			local k = sheetK(asset)
 			portrait.ImageRectOffset = portraitOffset * k
 			-- 정사각 칸에 세로로 긴 초상(256x336)을 넣으면 위아래가 잘려 머리가 잘린다: 위쪽 정사각(머리~어깨)만 쓴다.
 			portrait.ImageRectSize = Vector2.new(256, 256) * k
 		end
-		portrait.ScaleType = if portraitOffset then Enum.ScaleType.Crop else Enum.ScaleType.Fit
+		portrait.ScaleType = if useAtlas then Enum.ScaleType.Crop else Enum.ScaleType.Fit
 		H.iconPaper(portrait, px)
 		portrait.Parent = parent
 		return portrait
@@ -1785,6 +1786,13 @@ for _, nid in NATION_LIST do
 	end
 	H.captainChoices[nid] = out
 end
+-- [개별 동료 초상] 등록된 원본만 기존 배정표에 연결한다.
+for key in AssetIds do
+	local id = string.match(key, "^Portraits/comp_([%w_]+)$")
+	if id then
+		COMPANION_PORTRAIT[id] = { atlas = "comp_" .. id, offset = Vector2.zero, size = Vector2.zero }
+	end
+end
 end
 local PORTRAIT_GROUP = {
 	["교역소"] = "merchant", ["항만청"] = "harbor", ["조선소"] = "yard",
@@ -1821,6 +1829,8 @@ local HERO_TILE = {
 }
 -- 연도와 항구에 맞는 승인·등록 초상을 고른다.
 function H.heroPortraitAsset(nationId)
+	local own = nationId and AssetIds["Portraits/hero_" .. nationId]
+	if own then return own, Vector2.zero, Vector2.zero end
 	local year = if view and view.player and not newGameMode then view.player.year else chosenYear
 	local atlas = if year and year >= 1700 then AssetIds["Portraits/heroes_color"]
 		elseif year and year < 1600 then AssetIds["Portraits/heroes_1517"] else nil
@@ -1875,6 +1885,9 @@ do
 		west_africa = { harbor = 2, yard = 6 },
 	}
 	function H.facilityPortraitAsset(portId, role)
+		local keeperKey = if role == "merchant" then "trade" else role
+		local own = keeperKey and AssetIds["Portraits/npc_keeper_" .. keeperKey]
+		if own then return own, Vector2.zero, Vector2.zero end
 		local playerView = view and view.player
 		local port = portId and PortData.Ports[portId]
 		if not port or not playerView or (role ~= "merchant" and role ~= "tavern" and role ~= "harbor" and role ~= "yard" and role ~= "scholar") then -- 연도와 상관없이 그 지역 사람 얼굴을 쓴다
@@ -1960,6 +1973,7 @@ local function setPortrait(groupName)
 	portraitImage.Image = if imageId then "rbxassetid://" .. tostring(imageId) else ""
 	portraitImage.ImageRectOffset = offset or Vector2.zero
 	portraitImage.ImageRectSize = heroSize or regionalSize or (if offset then PORTRAIT_SIZE else Vector2.zero)
+	portraitImage.ScaleType = if portraitImage.ImageRectSize == Vector2.zero then Enum.ScaleType.Fit else Enum.ScaleType.Crop
 	-- 이미지 전환 시 이전 3D 모델까지 정리해 불필요한 뷰포트 객체가 남지 않도록 한다.
 	for _, c in portraitFrame:GetChildren() do
 		if c:IsA("Model") then
@@ -5493,6 +5507,7 @@ function playStory(ev)
 		local pk = if cport.atlas then sheetK(cport.atlas) else 1
 		ph.ImageRectOffset = cport.offset * pk
 		ph.ImageRectSize = (cport.size or Vector2.new(256, 336)) * pk
+		if ph.ImageRectSize == Vector2.zero then ph.ScaleType = Enum.ScaleType.Fit end
 		corner(ph, 10)
 		local pst = Instance.new("UIStroke")
 		pst.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -13183,11 +13198,11 @@ do
 			local spec = COMPANION_PORTRAIT[id]
 			if spec and AssetIds["Portraits/" .. spec.atlas] then
 				local k = sheetK(spec.atlas)
-				return AssetIds["Portraits/" .. spec.atlas], spec.offset * k, Vector2.new(256, 336) * k
+				return AssetIds["Portraits/" .. spec.atlas], spec.offset * k, (spec.size or Vector2.new(256, 336)) * k
 			end
 			if string.sub(id, 1, 2) == "h_" then
-				local hid, hoff = H.heroPortraitAsset(string.sub(id, 3))
-				if hid then return hid, hoff, Vector2.new(256, 336) end
+				local hid, hoff, hsize = H.heroPortraitAsset(string.sub(id, 3))
+				if hid then return hid, hoff, hsize end
 			end
 		elseif kind == "keeper" then
 			local own = AssetIds["Portraits/npc_keeper_" .. id]
@@ -13202,8 +13217,8 @@ do
 		elseif kind == "hero" then
 			local own = AssetIds["Portraits/hero_" .. id]
 			if own then return own end
-			local hid, hoff = H.heroPortraitAsset(id)
-			if hid then return hid, hoff, Vector2.new(256, 336) end
+			local hid, hoff, hsize = H.heroPortraitAsset(id)
+			if hid then return hid, hoff, hsize end
 		end
 		-- 정확한 화자 초상이 없을 때 상세 화면은 이름만 표시한다.
 		if exact then return nil end
@@ -19770,9 +19785,9 @@ end
 			elseif string.find(spec.speaker, "상인", 1, true) then "merchant"
 			elseif string.find(spec.speaker, "주점", 1, true) then "tavern"
 			else "hero"
-		local heroId, heroOffset
+		local heroId, heroOffset, heroSize
 		if not portraitSpec and tile == "hero" then
-			heroId, heroOffset = H.heroPortraitAsset(chosenNation)
+			heroId, heroOffset, heroSize = H.heroPortraitAsset(chosenNation)
 		end
 		local regId, regOffset, regSize
 		if not portraitSpec and tile ~= "hero" then
@@ -19795,9 +19810,12 @@ end
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
 		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
 		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
-		-- [빈 초상 방지 · 2026-11-28] 새 개별 담당자 초상(npc_keeper_*)이 있으면 그것, 없고 칸도 못 찾으면 공용 초상 찾기
-		do
-			local keeperKey = if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" elseif tile ~= "hero" then tile else nil
+		-- [개별 초상] 원본 크기를 보존하고 동료 얼굴은 담당자 초상으로 덮지 않는다.
+		face.ImageRectSize = if portraitSpec then (portraitSpec.size or PORTRAIT_SIZE) * fk
+			elseif regId then regSize elseif heroId then heroSize elseif portraitOffset then PORTRAIT_SIZE else Vector2.zero
+		if not portraitSpec then
+			local keeperKey = if string.find(spec.speaker, "서기", 1, true) then "trade"
+				elseif tile == "merchant" then "trade" elseif tile ~= "hero" then tile else nil
 			local own = keeperKey and AssetIds["Portraits/npc_keeper_" .. keeperKey]
 			if own then
 				face.Image = "rbxassetid://" .. tostring(own)
@@ -19811,10 +19829,7 @@ end
 				end
 			end
 		end
-		if not face:GetAttribute("PortraitFallback") and not (tile ~= "hero" and AssetIds["Portraits/npc_keeper_" .. (if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" else tile)]) then
-			face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
-		end
-		face.ScaleType = Enum.ScaleType.Crop
+		face.ScaleType = if face.ImageRectSize == Vector2.zero then Enum.ScaleType.Fit else Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		face.Visible = not narration
 		corner(face, 6)
@@ -20198,6 +20213,9 @@ end
 			if n.name == view.player.nation then
 				nid = id
 			end
+		end
+		if nid and AssetIds["Portraits/hero_" .. nid] then
+			table.insert(out, "hero:" .. nid)
 		end
 		for _, v in H.captainChoices[nid or ""] or {} do
 			table.insert(out, v)
