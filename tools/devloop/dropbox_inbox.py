@@ -27,6 +27,7 @@ IMAGE_KINDS = {"CardArt", "Icons", "Portraits", "Goods", "Materials"}
 MODEL_KINDS = {"Animals", "Terrain", "Relics", "Town", "Castle", "Naval", "People", "Monsters", "Interior", "Cargo"}
 NAME = re.compile(r"^[a-z0-9][a-z0-9_\-]{1,60}\.(png|jpg|jpeg|glb)$")
 CONTINENT = re.compile(r"^(eu|ea|me|nw|af|sa)_(0[1-9]|[1-4][0-9])\.png$")
+FACILITY_STRIP = re.compile(r"^ui_strip_(trade|route|diplomacy|yard|board|battle|scholar|status)\.png$")
 MAX_MODEL = 20 * 1024 * 1024
 MAX_IMAGE = 25 * 1024 * 1024
 
@@ -133,6 +134,13 @@ def check_image(kind, fn, raw, tmp):
         return None, why
     im = Image.open(io.BytesIO(raw))
     w, h = im.size
+    if kind == "CardArt" and fn.startswith("ui_strip_"):
+        if not FACILITY_STRIP.fullmatch(fn) or (w, h) != (2400, 800):
+            return None, "시설 원화는 지정 파일명 및 2400×800 PNG 필수"
+        if len(raw) < 33 or raw[24] != 8 or raw[25] not in (2, 6) or im.mode not in ("RGB", "RGBA"):
+            return None, "시설 원화는 8비트 RGB/RGBA PNG 원본만 허용"
+        if im.mode == "RGBA" and im.getchannel("A").getextrema()[0] != 255:
+            return None, "시설 가로 원화는 빈 영역 없이 완성된 불투명 그림 필수"
     # 메뉴/흥정 제작 지시서의 소형 UI 6종만 정확한 개별 규격으로 검사한다.
     # 일반 이미지 최소 크기와 256색 금지 조건은 완화하지 않는다.
     ui_size = {
@@ -213,8 +221,9 @@ def main():
             if prev.get("status") != "pending_review":
                 continue
             card = "CardArt/" + os.path.splitext(fn)[0]
-            if (approved_doc.get("approved", {}).get(card) != prev.get("sha256")
-                    or approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256")):
+            if approved_doc.get("approved", {}).get(card) != prev.get("sha256"):
+                continue
+            if CONTINENT.match(fn) and approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256"):
                 continue
         rec = {"content_hash": e.get("content_hash"), "at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "kind": kind}
         why, result = None, None
@@ -240,6 +249,14 @@ def main():
         if result and not why:
             out_name, data = result
             digest = hashlib.sha256(data).hexdigest()
+            # 시설 원화도 기존 승인표의 정확한 원본 해시만 허용한다. 자동 반입은 시각 검수를 대신하지 않는다.
+            if kind == "CardArt" and FACILITY_STRIP.fullmatch(fn):
+                card = "CardArt/" + os.path.splitext(fn)[0]
+                if approved_doc.get("approved", {}).get(card) != digest:
+                    rec.update(status="pending_review", file=out_name, sha256=digest, reason="시설 원화 시각 검수 및 기존 승인표 확인 대기")
+                    state["files"][path] = rec
+                    log("DROPBOX_INBOX_CARD_REVIEW_PENDING", card)
+                    continue
             # 대륙 원화는 기존 시각 검수/승인 해시를 자동 반입만으로 바꾸지 않는다.
             if kind == "CardArt" and CONTINENT.match(fn):
                 card = "CardArt/" + os.path.splitext(fn)[0]
