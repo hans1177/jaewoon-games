@@ -12107,14 +12107,15 @@ do
 			holder.Image = sheet
 			holder.ImageRectSize = Vector2.new(256, 256)
 			holder:SetAttribute("Row", FACE_ROW[mood] or 1)
-			if not holder:GetAttribute("Animating") then
+			holder.ImageRectOffset = Vector2.new(0, (FACE_ROW[mood] or 1) * 256)
+			if not game:GetService("GuiService").ReducedMotionEnabled and not holder:GetAttribute("Animating") then
 				holder:SetAttribute("Animating", true)
 				task.spawn(function()
 					local f = 0
-					while holder.Parent do
-						f = (f + 1) % 4
+					while holder:IsDescendantOf(game) do
 						holder.ImageRectOffset = Vector2.new(f * 256, (holder:GetAttribute("Row") or 1) * 256)
-						task.wait(if f == 0 then 1.2 else 0.12) -- 가만히 있다가 깜빡·끄덕
+						task.wait(if f == 0 then 1.2 else 0.12)
+						f = (f + 1) % 4 -- 가만히 있다가 깜빡·끄덕
 					end
 				end)
 			end
@@ -12131,7 +12132,12 @@ do
 	end
 
 	function H.openHaggle(goodId, goodName)
+		local pg = player:FindFirstChildOfClass("PlayerGui")
+		if pg and pg:FindFirstChild("HaggleGame") then return end
+		if H.haggleOpening then return end
+		H.haggleOpening = true
 		local r = H.call("HaggleStart", { goodId = goodId })
+		H.haggleOpening = false
 		local pend = view and view.haggle and view.haggle.pending
 		if not (r and r.ok ~= false) or not pend or pend.goodId ~= goodId then return end
 		local g = overlayGui("HaggleGame", 80)
@@ -12155,33 +12161,44 @@ do
 		local lim = Instance.new("UISizeConstraint")
 		lim.MaxSize = Vector2.new(460, 460)
 		lim.Parent = box
-		local asp = Instance.new("UIAspectRatioConstraint")
-		asp.AspectRatio = 1
-		asp.Parent = box
 		local st = Instance.new("UIStroke")
 		st.Color = GOLD
 		st.Thickness = 3
 		st.Parent = box
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-		if vp.X < 500 then box.Size = UDim2.fromOffset(vp.X - 24, vp.X - 24) end
+		local boxWidth, boxHeight = math.min(460, math.max(1, vp.X - 24)), math.min(460, math.max(1, vp.Y - 24))
+		box.Size = UDim2.fromOffset(boxWidth, boxHeight)
+		local reduced = game:GetService("GuiService").ReducedMotionEnabled
 		local title = mkLabel(box, "흥정 · " .. tostring(goodName or ""), 18, INK, true)
 		title.Position = UDim2.fromOffset(14, 10)
-		title.Size = UDim2.new(1, -120, 0, 24)
+		title.Size = UDim2.new(1, -120, 0, 40)
+		title.TextTruncate = Enum.TextTruncate.AtEnd
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local skip = mkButton(box, "그냥 사기", COLORS.grey, UDim2.fromOffset(96, 34), function() g:Destroy() end, true)
+		local skip = mkButton(box, "그냥 사기", COLORS.grey, UDim2.fromOffset(96, 44), function() g:Destroy() end, true)
 		skip.Position = UDim2.new(1, -106, 0, 8)
+		local scroll = Instance.new("ScrollingFrame")
+		scroll.Name = "StageScroll"
+		scroll.Position = UDim2.fromOffset(12, 56)
+		scroll.Size = UDim2.new(1, -24, 1, -68)
+		scroll.BackgroundTransparency = 1
+		scroll.BorderSizePixel = 0
+		scroll.ScrollBarThickness = 4
+		scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+		scroll.Parent = box
+		local stageHeight = math.max(336, boxHeight - 68)
+		scroll.CanvasSize = UDim2.fromOffset(0, stageHeight)
 		local stage = Instance.new("Frame")
 		stage.Name = "Stage"
-		stage.Position = UDim2.fromOffset(12, 44)
-		stage.Size = UDim2.new(1, -24, 1, -56)
+		stage.Size = UDim2.new(1, -6, 0, stageHeight)
 		stage.BackgroundTransparency = 1
-		stage.Parent = box
-		local finished = false
+		stage.Parent = scroll
+		local finished, selecting = false, false
 		local function finish(payload)
-			if finished then return end
+			if finished or not g.Parent then return end
 			finished = true
 			payload.goodId = goodId
 			local res = H.call("HagglePlay", payload)
+			if not g.Parent then return end
 			local ok = res and res.ok ~= false
 			Sfx.play(if ok then "sfx_card_coin" else "sfx_error", 0.5)
 			local banner = mkLabel(box, if ok then "흥정 성공!" else "정가대로…", 30, if ok then Color3.fromRGB(40, 120, 60) else Color3.fromRGB(150, 60, 50), true)
@@ -12191,10 +12208,7 @@ do
 			banner.AutomaticSize = Enum.AutomaticSize.None
 			banner.TextXAlignment = Enum.TextXAlignment.Center
 			banner.ZIndex = 30
-			if ok and H.cardGainFlair then
-				pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 2, gold = GOLD, tone = Color3.fromRGB(255, 210, 120),
-					w = 260, h = 260, reduced = game:GetService("GuiService").ReducedMotionEnabled, viewport = vp, combat = false, hero = false })
-			end
+
 			task.delay(1.4, function() if g.Parent then g:Destroy() end end)
 		end
 
@@ -12246,7 +12260,7 @@ do
 			local t0 = os.clock()
 			local conn
 			conn = RS.RenderStepped:Connect(function()
-				if not needle.Parent or finished then conn:Disconnect() return end
+				if not g.Parent or not needle.Parent or finished then conn:Disconnect() return end
 				local phase = ((os.clock() - t0) / pend.period) % 2
 				needle.Position = UDim2.fromScale(if phase < 1 then phase else 2 - phase, 0.5)
 			end)
@@ -12268,18 +12282,22 @@ do
 			local function show() label.Text = string.format("%d%% 깎아 주세요 (남은 시도 %d)", offer, 3 - tries) end
 			show()
 			local function ask(delta)
-				if finished then return end
+				if finished or selecting or not g.Parent or tries >= 3 then return end
 				offer = math.clamp(offer + delta, 4, 12)
 				tries += 1
 				merchantFace(stage, pend.faces and pend.faces[offer] or "think")
 				show()
-				if tries >= 3 then task.delay(0.6, function() finish({ offer = offer }) end) end
+				if tries >= 3 then
+					selecting = true
+					local finalOffer = offer
+					task.delay(0.6, function() finish({ offer = finalOffer }) end)
+				end
 			end
 			local less = mkButton(stage, "− 덜 깎기", COLORS.blue, UDim2.new(0.32, -6, 0, 48), function() ask(-2) end, true)
 			less.Position = UDim2.new(0, 0, 0, 226)
 			local more = mkButton(stage, "+ 더 깎기", COLORS.red, UDim2.new(0.32, -6, 0, 48), function() ask(2) end, true)
 			more.Position = UDim2.new(0.34, 0, 0, 226)
-			local deal = mkButton(stage, "이걸로 하자", COLORS.green, UDim2.new(0.32, 0, 0, 48), function() finish({ offer = offer }) end, true)
+			local deal = mkButton(stage, "이걸로 하자", COLORS.green, UDim2.new(0.32, 0, 0, 48), function() if not selecting then finish({ offer = offer }) end end, true)
 			deal.Position = UDim2.new(0.68, 0, 0, 226)
 		elseif pend.game == "coin" then
 			-- 3) 진짜 동전 고르기: 맨 위 정품 견본과 같은 동전
@@ -12327,14 +12345,20 @@ do
 			lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
 			lay.Padding = UDim.new(0, 14)
 			lay.Parent = row
+			local coinCount = math.max(1, #(pend.looks or {}))
+			local coinSize = math.max(44, math.min(80, math.floor((boxWidth - 30 - 14 * (coinCount - 1)) / coinCount)))
 			for i, look in pend.looks or {} do
-				local c = coin(row, look, 80)
+				local c = coin(row, look, coinSize)
 				c.LayoutOrder = i
 				c.Activated:Connect(function()
-					if finished then return end
-					-- 동전을 뒤집어 보는 움직임
-					TS:Create(c, TweenInfo.new(0.12), { Size = UDim2.fromOffset(6, 80) }):Play()
-					task.delay(0.13, function() TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(80, 80) }):Play() end)
+					if finished or selecting or not g.Parent then return end
+					selecting = true
+					if reduced then finish({ pick = i }); return end
+					-- 첫 선택만 뒤집고, 닫힌 창에는 지연 연출을 실행하지 않는다.
+					TS:Create(c, TweenInfo.new(0.12), { Size = UDim2.fromOffset(6, coinSize) }):Play()
+					task.delay(0.13, function()
+						if g.Parent and c.Parent then TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(coinSize, coinSize) }):Play() end
+					end)
 					task.delay(0.35, function() finish({ pick = i }) end)
 				end)
 			end
@@ -12351,10 +12375,12 @@ do
 				b.Position = UDim2.new(if i % 2 == 1 then 0 else 0.5, if i % 2 == 1 then 0 else 6, 0, 70 + math.floor((i - 1) / 2) * 60)
 			end
 		end
-		local sc = Instance.new("UIScale")
-		sc.Scale = 0.85
-		sc.Parent = box
-		TS:Create(sc, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		if not reduced then
+			local sc = Instance.new("UIScale")
+			sc.Scale = 0.85
+			sc.Parent = box
+			TS:Create(sc, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		end
 		Sfx.play("sfx_card_deal", 0.35)
 	end
 end
