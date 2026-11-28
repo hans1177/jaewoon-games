@@ -134,6 +134,18 @@ test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', 
   assert.match(captain, /view\.weaponPractice/);
   assert.match(captain, /local thresholds = \{ 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 \}/);
   assert.match(captain, /WeaponMasteryExperience/);
+  assert.match(captain, /Weapons\.actionDesign\(weapon\)/);
+  assert.match(captain, /stage:SetAttribute\("MasteryUnlocked", i <= rank\)/);
+  assert.match(captain, /stage\.Activated:Connect/);
+  assert.match(captain, /MasteryMotionPreview/);
+  assert.match(captain, /if activePreview then activePreview:Destroy\(\) end/);
+  assert.match(captain, /fm\.weaponCombo\(profile, i\)/);
+  assert.match(captain, /fm\.new\(model, false\)/);
+  assert.match(captain, /model:GetAttribute\("FieldJointReady"\)/);
+  assert.match(captain, /fm\.sample\(combo, math\.min\(elapsed, duration\), rig\.canon\)/);
+  assert.match(captain, /while panel\.Parent and main\.Visible and elapsed < duration do/);
+  assert.match(captain, /fm\.destroy\(rig\)/);
+  assert.match(captain, /local reduced = motionSettings\.ReducedMotionEnabled/);
   assert.match(captain, /if rank >= 8 then "필살기 해금/);
   assert.match(captain, /math\.floor\(\(i - 1\) \/ 5\) \* 28/);
   assert.match(captain, /view\.fieldStreakBest/);
