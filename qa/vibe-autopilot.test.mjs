@@ -268,3 +268,24 @@ test('최신 실행만 학습하고 오래된 결과나 실패 검사로 해결 
   apply(report('10004','HEALTH_ERR n=0 first='), 5);
   assert.equal(ledger.orders[fp].resolvedAt, 5);
 });
+
+test('출처가 있는 검사 결과는 동일 작업만 완료 처리한다',()=>{
+  const game='mare-essentia', now=Date.now(), revision='a'.repeat(40);
+  let ledger=markDispatched(emptyLedger(),{game,kind:'health'},now-2000,revision);
+  ledger=markDispatched(ledger,{game,kind:'cards'},now-1000,revision);
+  const make=(runId,scriptPath,result='PASS')=>({
+    ...mkReport('HEALTH_ERR n=0 first='),sourceRevision:revision,
+    autopilotEvidence:{runId,scriptPath,scriptSha256:'b'.repeat(64),result}
+  });
+  const apply=r=>{ledger=learn({ledger,reports:{[game]:r},signals:{[game]:parseReport(r)},now});};
+  apply(make('20001','unknown'));
+  assert.equal(ledger.tasks[game+':health'].pending,true);
+  assert.equal(ledger.tasks[game+':cards'].pending,true);
+  apply(make('20002',GAMES[game].scripts.health,'FAIL'));
+  assert.equal(ledger.tasks[game+':health'].pending,false);
+  assert.equal(ledger.tasks[game+':health'].lastResult,'FAILED');
+  assert.equal(ledger.tasks[game+':cards'].pending,true);
+  apply(make('20003',GAMES[game].scripts.cards));
+  assert.equal(ledger.tasks[game+':cards'].pending,false);
+  assert.equal(ledger.tasks[game+':cards'].lastResult,'CLEAN');
+});

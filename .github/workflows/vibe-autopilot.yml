@@ -65,7 +65,7 @@ jobs:
               fi
               jq -e --arg run "$run_id" --slurpfile checks build/checks-candidate.json '
                 select((.log | type) == "array" and (.errors | type) == "array") |
-                . + {autopilotEvidence: {runId: $run, kind: $checks[0].kind, result: $checks[0].result}}
+                . + {autopilotEvidence: {runId: $run, kind: $checks[0].kind, result: $checks[0].result, scriptPath: $checks[0].scriptPath, scriptSha256: $checks[0].scriptSha256}}
               ' build/report-candidate.json > build/report-selected.json || continue
               mv build/report-selected.json "build/reports/${g}.json"
               best=$run_id
