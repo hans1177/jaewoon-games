@@ -1282,6 +1282,7 @@ function VoyageScene.play(info)
 							local hasTexture = false
 							for _, mesh in piece:GetChildren() do
 								if mesh:IsA("SpecialMesh") and mesh.TextureId ~= "" then hasTexture = true; break end
+								if (mesh:IsA("Decal") or mesh:IsA("Texture")) and mesh.Texture ~= "" then hasTexture = true; break end
 							end
 							if not hasTexture then piece.Color = piece.Color:Lerp(Color3.fromRGB(133, 169, 190), 0.21) end
 						end
