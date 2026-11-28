@@ -4523,6 +4523,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			x -= S * (1 + P.gapf * (countryPlan and countryPlan.gap or 1) * rng:NextNumber(0.6, 1.4))
 		end
 	end
+	-- [발전도별 종합 필지] 주택 줄 시작점: 1단계는 광장 바로 옆(-45), 5단계는 예전처럼 멀리(-210).
+	-- 예전엔 모든 단계가 -260 이라 광장과 집 사이 260 스터드가 빈 길·맨땅이었다. 겹침은 reserved() 가 그대로 막는다.
+	local cityRowStart = if isRoyalCity then -260 else PortBuildings.cityPlan(lvl).rowStart
 	for _, side in { 1, -1 } do
 		-- 큰길(가운데 길) 앞 두 줄: 광장과 시설을 지나 안쪽부터
 		-- 구시가지 시설 옆 주거 건설을 중단하고 신도시 외곽의 독립 주거 구역으로 확장한다.
@@ -4559,11 +4562,11 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				-- [계단식·골목형] 동일한 주택 수를 유지한 채 행 시작점만 교차 배치한다.
 				local rowShift = if villageLayout == "terrace" and p % 2 == 1 then -4
 					elseif villageLayout == "organic" and p % 2 == 1 then 3 else 0
-				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, -260 + rowShift, side, p, 1)
+				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, cityRowStart + rowShift, side, p, 1)
 				local nextBend = if villageLayout == "organic" then (if (p + 1) % 2 == 0 then -3 else 3)
 					elseif villageLayout == "terrace" then (p + 1) * 2 else 0
 				local nextLaneZ = 152 + laneOffset + (p + 1) * laneL + nextBend
-				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, -260 - rowShift, side, p, 2)
+				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, cityRowStart - rowShift, side, p, 2)
 			end
 		end
 	end
@@ -4584,7 +4587,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		-- 지시서 항구는 단계별 집 수 상한(6~24채)이 있는데 땅은 510×880 그대로라 텅 비었다.
 		-- 실제 놓인 집·시설·광장 범위 + 40 으로 땅을 줄이고, 그 밖으로 뻗은 빈 길 띠도 잘라낸다.
 		-- 왕궁 도시는 기존 최소 폭 유지. 농촌 바닥·집 배치·저장은 바꾸지 않는다(보이는 땅·길만).
-		if identity and not isRoyalCity and #placedLots > 0 then
+		-- [발전도별 땅 크기] 단계 표의 땅 크기를 기본으로 하되, 실제 놓인 집·시설은 항상 덮는다(아래 범위 계산).
+		local plan = PortBuildings.cityPlan(lvl)
+		local planLeft, planHalfZ = townRight - plan.landW, plan.landD / 2
+		if not isRoyalCity and #placedLots > 0 then
 			local bx0, bz0, bz1 = 0, -40, 40
 			for _, lot in placedLots do
 				local hx = lot.HX or lot.H or 8
@@ -4598,8 +4604,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				bz0 = math.min(bz0, at.Z - 24)
 				bz1 = math.max(bz1, at.Z + 24)
 			end
-			local compactLeft = math.max(townLeft, bx0 - 40)
-			local compactHalfZ = math.min(townHalfZ, math.max(-bz0, bz1) + 40)
+			-- 지시서 항구는 집 범위까지 더 줄이고, 그 외 항구는 단계 표 크기. 어느 쪽이든 집·시설은 덮는다.
+			local wantLeft = if identity then bx0 - 40 else math.min(planLeft, bx0 - 40)
+			local wantHalfZ = if identity then math.max(-bz0, bz1) + 40 else math.max(planHalfZ, math.max(-bz0, bz1) + 40)
+			local compactLeft = math.max(townLeft, wantLeft)
+			local compactHalfZ = math.min(townHalfZ, wantHalfZ)
+			folder:SetAttribute("CityPlanLevel", lvl)
 			if compactLeft > townLeft + 20 or compactHalfZ < townHalfZ - 20 then
 				townLeft, townHalfZ = compactLeft, compactHalfZ
 				local trimmed = 0
