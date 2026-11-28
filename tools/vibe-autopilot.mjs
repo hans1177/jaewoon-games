@@ -151,7 +151,14 @@ export function parseReport(report, root = process.cwd()) {
   s.captured = Number(report.summary?.capturedFrames || 0);
   s.studioErrors = (report.errors || []).map(e => String(e).slice(0, 200)).slice(0, 5);
   // [단계 단언] 잘리기 전 원문으로 실패 단계·마커·책임 함수를 찾는다.
-  s.stepFailure = studioStepFailure(String((report.errors || [])[0] || ''), root);
+  const evidence = report.autopilotEvidence;
+  const script = String(evidence?.scriptPath || '');
+  const validScript = Object.values(GAMES).some(game => Object.values(game.scripts).includes(script));
+  // [검사 출처] 다른 장면의 검사 코드를 현재 오류의 책임 함수로 오인하지 않는다.
+  s.stepFailure = evidence
+    ? (validScript && /^[a-f0-9]{64}$/.test(String(evidence.scriptSha256 || ''))
+      ? studioStepFailure(String((report.errors || [])[0] || ''), root, script) : null)
+    : studioStepFailure(String((report.errors || [])[0] || ''), root);
   // [실물 Studio] HEALTH_* 로그가 없는 241단계 점검도 콘솔 오류를 작업으로 인식한다.
   const capturedConsole = Array.isArray(report.consoleCapture?.errors)
     ? report.consoleCapture.errors.filter(e => e?.type === 'studio-console-error' && String(e.signature || '').trim())
@@ -293,36 +300,76 @@ export function decide({ signals, ledger, now = Date.now(), queued = 0, budget =
 }
 
 // ---- 원장 갱신: 지난번에 보낸 점검의 결과를 새 report 로 평가해 학습한다 ------------------------
-export function reportHash(r) { return r ? JSON.stringify([r.summary, (r.errors || []).length, (r.log || []).length, (r.log || []).slice(-1)]) : ''; }
+export function reportHash(r) {
+  if (!r) return '';
+  const runId = String(r.autopilotEvidence?.runId || '');
+  if (/^[1-9]\d{4,14}$/.test(runId) && /^[a-f0-9]{40}$/.test(String(r.sourceRevision || '')))
+    return 'studio:' + runId + ':' + r.sourceRevision;
+  return JSON.stringify([r.summary, (r.errors || []).length, (r.log || []).length, (r.log || []).slice(-1)]);
+}
 
 export function learn({ ledger, reports, signals, now = Date.now() }) {
   const out = JSON.parse(JSON.stringify(ledger));
   for (const game of Object.keys(GAMES)) {
     const h = reportHash(reports[game]);
     if (!h || out.lastReport[game] === h) continue;                 // 새 결과가 아니면 건너뜀
+    const previousRun = /^studio:(\d+):/.exec(out.lastReport[game] || '');
+    const observedRun = /^studio:(\d+):/.exec(h);
+    // 최신 검사를 이미 반영했다면 오래된 보고서나 출처 미확인 보고서로 원장을 되돌리지 않는다.
+    if (previousRun && (!observedRun || Number(observedRun[1]) <= Number(previousRun[1]))) continue;
     out.lastReport[game] = h;
-    const pending = Object.entries(out.tasks).filter(([k, r]) => k.startsWith(game + ':') && r.pending).sort((a, b) => b[1].lastAt - a[1].lastAt)[0];
+    const evidence = reports[game]?.autopilotEvidence;
+    const script = String(evidence?.scriptPath || '');
+    const matchedKind = Object.keys(GAMES[game].scripts).find(kind => GAMES[game].scripts[kind] === script);
+    const candidates = Object.entries(out.tasks).filter(([k, r]) => k.startsWith(game + ':') && r.pending);
+    // [작업 일치] 실제 출처가 있는 결과는 같은 검사에만 연결한다. 기존 시험용 보고서 형식은 보존한다.
+    const pending = evidence
+      ? (matchedKind && /^[a-f0-9]{64}$/.test(String(evidence.scriptSha256 || ''))
+        ? candidates.find(([k]) => k === taskKey(game, matchedKind)) : null)
+      : candidates.sort((a, b) => b[1].lastAt - a[1].lastAt)[0];
     const s = signals[game];
     const found = findingsFrom(game, s);
     // 새 지시서 등록(같은 지문은 한 번만, 해결되면 사라짐)
     const now_ids = new Set(found.map(x => x.fingerprint));
-    for (const x of found) if (!out.orders[x.fingerprint]) out.orders[x.fingerprint] = { ...x, firstAt: now, lastAt: now, seen: 1 }; else { out.orders[x.fingerprint].lastAt = now; out.orders[x.fingerprint].seen++; out.orders[x.fingerprint].text = x.text; if (x.sourceFile) { out.orders[x.fingerprint].sourceFile = x.sourceFile; out.orders[x.fingerprint].sourceLine = x.sourceLine; } }
+    for (const x of found) {
+      const prior = out.orders[x.fingerprint];
+      const order = { ...prior, ...x, firstAt: prior?.firstAt ?? now, lastAt: now, seen: (prior?.seen || 0) + 1 };
+      // [재발] 동일 지문을 유지하되 과거 해결 판정은 현재 발견을 덮을 수 없다.
+      delete order.resolvedAt;
+      out.orders[x.fingerprint] = order;
+    }
     // [성공 학습] 실패·중단·사진 없는 결과는 이전 오류를 해결한 근거가 아니다.
     const report = reports[game] || {};
     const summary = report.summary || {};
     const complete = s.ok && !s.aborted && s.captured > 0
+      && (!report.autopilotEvidence || report.autopilotEvidence.result === 'PASS')
       && !(Array.isArray(report.errors) && report.errors.length)
       && !(Number(summary.plannedSteps || 0) > Number(summary.completedSteps || 0))
       && !(Number(summary.plannedFrames || 0) > s.captured)
       && !['models', 'registered', 'features'].some(key =>
         String(report.assetAudit?.[key]?.status || '').toUpperCase() === 'FAIL');
-    if (complete)
-      for (const [fp, o] of Object.entries(out.orders))
-        if (o.game === game && !now_ids.has(fp) && !o.resolvedAt) o.resolvedAt = now;
+    if (complete) {
+      // [재검증] 실제 측정한 항목만 해결할 수 있다. 다른 장면의 성공·누락된 신호는 해결 증거가 아니다.
+      const measured = (report.log || []).map(row => row.out || '').join('\n');
+      for (const [fp, o] of Object.entries(out.orders)) {
+        if (o.game !== game || now_ids.has(fp) || o.resolvedAt) continue;
+        const missingUi = o.id === 'ui-missing' && String(o.text || '').startsWith('화면에 없는 UI 글자: ')
+          ? o.text.slice('화면에 없는 UI 글자: '.length).split(', ').filter(Boolean) : [];
+        const verified = {
+          'console-errors': /HEALTH_ERR n=0(?:\s|$)/.test(measured) && s.err === 0,
+          'asset-fail': /HEALTH_ASSET fail=0 total=[1-9]\d*(?:\s|$)/.test(measured),
+          'no-mobs': s.mobs > 0,
+          'ui-missing': missingUi.length > 0 && missingUi.every(key => s.ui[key] > 0),
+          'sky-missing': s.light?.atmos === true && s.light?.sky === true,
+          'sparse-world': s.parts !== null && s.parts >= 300
+        }[o.id] === true;
+        if (verified) o.resolvedAt = now;
+      }
+    }
     if (pending) {
       const [k, rec] = pending;
       const hit = found.length > 0 ? 1 : 0;
-      const failed = s.aborted || !s.ok;
+      const failed = evidence ? !complete : s.aborted || !s.ok;
       rec.runs = (rec.runs || 0) + 1;
       rec.ema = +(0.7 * (rec.ema ?? 0.5) + 0.3 * hit).toFixed(3);
       rec.failStreak = failed ? (rec.failStreak || 0) + 1 : 0;

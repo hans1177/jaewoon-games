@@ -25,3 +25,25 @@ test('교역소 버튼·4가지 화면·그냥 사기', () => {
   assert.match(game, /ui_haggle_merchant_sheet/);
   assert.ok(fs.existsSync(`${root}/docs/HAGGLE_MINIGAME_BRIEF.md`));
 });
+
+test('상인 말풍선은 화면 폭에 맞고 동작 줄이기에서 반복을 중단', () => {
+  const face = game.split('local function merchantFace(parent, mood)')[1].split('function H.openHaggle(')[0];
+  assert.match(face, /stageWidth - 8/);
+  assert.match(face, /holder\.Say\.TextWrapped = true/);
+  assert.match(face, /while holder:IsDescendantOf\(game\) and not game:GetService\("GuiService"\)\.ReducedMotionEnabled/);
+  assert.match(face, /holder:SetAttribute\("Animating", false\)/);
+  assert.match(face, /ImageRectSize = Vector2\.new\(256, 256\)/);
+});
+
+test('흥정 저울·고정 동전 슬롯·서버 응답 결과 표시', () => {
+  const haggle = game.split('function H.openHaggle(goodId, goodName)')[1].split('-- [퀘스트 대화 연출')[0];
+  assert.match(haggle, /track\.SliceCenter = Rect\.new\(64, 24, 960, 104\)/);
+  assert.match(haggle, /needle\.BackgroundTransparency = 1/);
+  assert.match(haggle, /slot\.Name = "CoinSlot"/);
+  assert.match(haggle, /local c = coin\(slot, look, coinSize\)/);
+  assert.match(haggle, /c\.AnchorPoint = Vector2\.new\(0\.5, 0\.5\)/);
+  assert.match(haggle, /ok and deal and deal\.goodId == goodId then tonumber\(deal\.pct\)/);
+  assert.match(haggle, /if not res then "결과 확인 불가"/);
+  assert.match(haggle, /finish\(\{ t = os\.clock\(\) - t0 \}\)/);
+  assert.match(haggle, /finish\(\{ pick = i \}\)/);
+});

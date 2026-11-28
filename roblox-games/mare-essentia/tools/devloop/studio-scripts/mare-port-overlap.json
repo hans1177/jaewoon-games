@@ -1,0 +1,197 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "for _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA('ScreenGui') then g.Enabled=false end end local RS=game:GetService('RunService') pcall(function() RS:UnbindFromRenderStep('MareShot') end) RS:BindToRenderStep('MareShot',Enum.RenderPriority.Last.Value+1,function() local cam=workspace.CurrentCamera local cf=workspace:GetAttribute('ShotCF') if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=workspace:GetAttribute('ShotFov') or 65 end end) return 'bound'"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='london',portName='london',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 10000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local h={} for _,d in ipairs(f:GetDescendants()) do if d:IsA('Humanoid') and d.Parent:IsA('Model') then local p=d.Parent:GetPivot().Position table.insert(h,p) end end local pairs2=0 for i=1,#h do for j=i+1,#h do local v=h[i]-h[j] if v.X*v.X+v.Z*v.Z<1.5*1.5 then pairs2+=1 end end end local a=function(k) return tostring(f:GetAttribute(k)) end return 'PORTQA london_L3 npc='..#h..' npcOverlapPairs='..pairs2..' route='..a('NpcRouteAudit')..' checked='..a('NpcRouteChecked')..' relocated='..a('NpcRouteRelocated')..' blocked='..a('NpcRouteBlocked')..' prop='..a('PropOverlapAudit')..' propChecked='..a('PropOverlapChecked')..' moved='..a('PropOverlapMoved')..' hidden='..a('PropOverlapHidden')"
+ },
+ {
+  "type": "capture",
+  "name": "london_L3_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotFov',70) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-40,16,55),Vector3.new(-100,6,65),Vector3.new(0,1,0))) return 'ok'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "london_L3_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='lisbon',portName='lisbon',level=4,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 10000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local h={} for _,d in ipairs(f:GetDescendants()) do if d:IsA('Humanoid') and d.Parent:IsA('Model') then local p=d.Parent:GetPivot().Position table.insert(h,p) end end local pairs2=0 for i=1,#h do for j=i+1,#h do local v=h[i]-h[j] if v.X*v.X+v.Z*v.Z<1.5*1.5 then pairs2+=1 end end end local a=function(k) return tostring(f:GetAttribute(k)) end return 'PORTQA lisbon_L4 npc='..#h..' npcOverlapPairs='..pairs2..' route='..a('NpcRouteAudit')..' checked='..a('NpcRouteChecked')..' relocated='..a('NpcRouteRelocated')..' blocked='..a('NpcRouteBlocked')..' prop='..a('PropOverlapAudit')..' propChecked='..a('PropOverlapChecked')..' moved='..a('PropOverlapMoved')..' hidden='..a('PropOverlapHidden')"
+ },
+ {
+  "type": "capture",
+  "name": "lisbon_L4_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotFov',70) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-40,16,55),Vector3.new(-100,6,65),Vector3.new(0,1,0))) return 'ok'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "lisbon_L4_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='amsterdam',portName='amsterdam',level=4,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 10000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local h={} for _,d in ipairs(f:GetDescendants()) do if d:IsA('Humanoid') and d.Parent:IsA('Model') then local p=d.Parent:GetPivot().Position table.insert(h,p) end end local pairs2=0 for i=1,#h do for j=i+1,#h do local v=h[i]-h[j] if v.X*v.X+v.Z*v.Z<1.5*1.5 then pairs2+=1 end end end local a=function(k) return tostring(f:GetAttribute(k)) end return 'PORTQA amsterdam_L4 npc='..#h..' npcOverlapPairs='..pairs2..' route='..a('NpcRouteAudit')..' checked='..a('NpcRouteChecked')..' relocated='..a('NpcRouteRelocated')..' blocked='..a('NpcRouteBlocked')..' prop='..a('PropOverlapAudit')..' propChecked='..a('PropOverlapChecked')..' moved='..a('PropOverlapMoved')..' hidden='..a('PropOverlapHidden')"
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_L4_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotFov',70) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-40,16,55),Vector3.new(-100,6,65),Vector3.new(0,1,0))) return 'ok'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "amsterdam_L4_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='istanbul',portName='istanbul',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 10000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local h={} for _,d in ipairs(f:GetDescendants()) do if d:IsA('Humanoid') and d.Parent:IsA('Model') then local p=d.Parent:GetPivot().Position table.insert(h,p) end end local pairs2=0 for i=1,#h do for j=i+1,#h do local v=h[i]-h[j] if v.X*v.X+v.Z*v.Z<1.5*1.5 then pairs2+=1 end end end local a=function(k) return tostring(f:GetAttribute(k)) end return 'PORTQA istanbul_L3 npc='..#h..' npcOverlapPairs='..pairs2..' route='..a('NpcRouteAudit')..' checked='..a('NpcRouteChecked')..' relocated='..a('NpcRouteRelocated')..' blocked='..a('NpcRouteBlocked')..' prop='..a('PropOverlapAudit')..' propChecked='..a('PropOverlapChecked')..' moved='..a('PropOverlapMoved')..' hidden='..a('PropOverlapHidden')"
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_L3_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotFov',70) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-40,16,55),Vector3.new(-100,6,65),Vector3.new(0,1,0))) return 'ok'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "istanbul_L3_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='nagasaki',portName='nagasaki',level=3,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 10000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local h={} for _,d in ipairs(f:GetDescendants()) do if d:IsA('Humanoid') and d.Parent:IsA('Model') then local p=d.Parent:GetPivot().Position table.insert(h,p) end end local pairs2=0 for i=1,#h do for j=i+1,#h do local v=h[i]-h[j] if v.X*v.X+v.Z*v.Z<1.5*1.5 then pairs2+=1 end end end local a=function(k) return tostring(f:GetAttribute(k)) end return 'PORTQA nagasaki_L3 npc='..#h..' npcOverlapPairs='..pairs2..' route='..a('NpcRouteAudit')..' checked='..a('NpcRouteChecked')..' relocated='..a('NpcRouteRelocated')..' blocked='..a('NpcRouteBlocked')..' prop='..a('PropOverlapAudit')..' propChecked='..a('PropOverlapChecked')..' moved='..a('PropOverlapMoved')..' hidden='..a('PropOverlapHidden')"
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_L3_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotFov',70) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-40,16,55),Vector3.new(-100,6,65),Vector3.new(0,1,0))) return 'ok'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "nagasaki_L3_street"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local ok,err=pcall(function() local PS=require(RS.Shared.PortScene) PS.build({portId='venice',portName='venice',level=4,shipId='galleon',hasShipyard=true,facilities={'bank','guild','harbormaster'},storyCount=0,companions={}},function() end) end) local c=game.Players.LocalPlayer.Character if c and c:FindFirstChild('HumanoidRootPart') then c.HumanoidRootPart.Anchored=true c:PivotTo(CFrame.new(-6,6,10)) end workspace:SetAttribute('ShotFov',60) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-100,330,1),Vector3.new(-100,0,0),Vector3.new(0,1,0))) return tostring(ok)..tostring(err)"
+ },
+ {
+  "type": "wait",
+  "ms": 10000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local f=workspace:FindFirstChild('PortScene') if not f then return 'NOSCENE' end local h={} for _,d in ipairs(f:GetDescendants()) do if d:IsA('Humanoid') and d.Parent:IsA('Model') then local p=d.Parent:GetPivot().Position table.insert(h,p) end end local pairs2=0 for i=1,#h do for j=i+1,#h do local v=h[i]-h[j] if v.X*v.X+v.Z*v.Z<1.5*1.5 then pairs2+=1 end end end local a=function(k) return tostring(f:GetAttribute(k)) end return 'PORTQA venice_L4 npc='..#h..' npcOverlapPairs='..pairs2..' route='..a('NpcRouteAudit')..' checked='..a('NpcRouteChecked')..' relocated='..a('NpcRouteRelocated')..' blocked='..a('NpcRouteBlocked')..' prop='..a('PropOverlapAudit')..' propChecked='..a('PropOverlapChecked')..' moved='..a('PropOverlapMoved')..' hidden='..a('PropOverlapHidden')"
+ },
+ {
+  "type": "capture",
+  "name": "venice_L4_top"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('ShotFov',70) workspace:SetAttribute('ShotCF',CFrame.lookAt(Vector3.new(-40,16,55),Vector3.new(-100,6,65),Vector3.new(0,1,0))) return 'ok'"
+ },
+ {
+  "type": "wait",
+  "ms": 2500
+ },
+ {
+  "type": "capture",
+  "name": "venice_L4_street"
+ }
+]

@@ -1091,15 +1091,34 @@ function VoyageScene.play(info)
 	-- [항해 카메라] 실제 확대된 선박의 중심 오차와 전체 크기를 포함한 회전 불변 경계.
 	-- 선체 안으로 들어가지 않도록 출항 때 한 번 계산하고, 매 프레임 모델을 다시 훑지 않는다.
 	local cameraFit
-	do
+	-- [돛줄 안 카메라 수정 · 2026-11-28] 배 모델이 늦게 도착(지연 로딩)하면 출항 순간 경계가 작게 잡혀
+	-- 카메라가 돛·밧줄 안으로 들어갔다. 부품이 더 붙으면 경계를 다시 재고, 줄어들지는 않게 한다.
+	local function fitCamera()
 		local boundsCF, boundsSize = ship:GetBoundingBox()
-		local radius = (boundsCF.Position - shipBase.Position).Magnitude + boundsSize.Magnitude * 0.5
-		cameraFit = {
-			back = math.max(36, radius + 12),
-			height = math.max(13, baseY + radius + 10),
+		local radius = (boundsCF.Position - ship:GetPivot().Position).Magnitude + boundsSize.Magnitude * 0.5
+		local nextFit = {
+			back = math.max(36, radius + 14),
+			height = math.max(13, baseY + boundsSize.Y * 0.75 + 8, baseY + radius * 0.6 + 10),
 			ahead = math.max(46, radius * 2.5),
 		}
+		if cameraFit then
+			nextFit.back = math.max(nextFit.back, cameraFit.back)
+			nextFit.height = math.max(nextFit.height, cameraFit.height)
+			nextFit.ahead = math.max(nextFit.ahead, cameraFit.ahead)
+		end
+		cameraFit = nextFit
 	end
+	fitCamera()
+	local fitDirty = false
+	ship.DescendantAdded:Connect(function() fitDirty = true end)
+	task.spawn(function()
+		-- 처음 12초 동안 0.5초마다 늦게 붙은 부품이 있으면 다시 잰다
+		for _ = 1, 24 do
+			task.wait(0.5)
+			if not ship.Parent then return end
+			if fitDirty then fitDirty = false; pcall(fitCamera) end
+		end
+	end)
 	local heel = 0
 	local wheels = {}
 	for _, name in { "PaddleWheelPort", "PaddleWheelStarboard" } do
@@ -1392,6 +1411,32 @@ function VoyageScene.play(info)
 			end
 		end
 		folder:SetAttribute("VoyageSeaArea", sea or "")
+		-- [해역 이야기 자막 · 2026-11-28] 해역 이름과 한 줄 사연을 출항 직후 4초
+		local seaInfo = okSea and sea and SeaAreas.INFO and SeaAreas.INFO[sea]
+		if seaInfo and not info.intro then
+			local cap = Instance.new("TextLabel")
+			cap.Name = "VoyageSeaCaption"
+			cap.AnchorPoint = Vector2.new(0.5, 0)
+			cap.Position = UDim2.new(0.5, 0, 0.16, 0)
+			cap.Size = UDim2.new(0.86, 0, 0, 64)
+			cap.BackgroundTransparency = 1
+			cap.Font = Enum.Font.GothamBlack
+			cap.TextSize = 26
+			cap.TextColor3 = Color3.fromRGB(255, 236, 190)
+			cap.TextStrokeTransparency = 0.35
+			cap.TextWrapped = true
+			cap.RichText = true
+			cap.Text = seaInfo[1] .. "<br/><font size=\"16\" face=\"Gotham\">" .. seaInfo[2] .. "</font>"
+			cap.TextTransparency = 1
+			cap.Parent = gui
+			task.spawn(function()
+				task.wait(1.2)
+				for i = 1, 10 do if not cap.Parent then return end cap.TextTransparency = 1 - i / 10; cap.TextStrokeTransparency = 1 - i * 0.065; task.wait(0.03) end
+				task.wait(3.6)
+				for i = 1, 12 do if not cap.Parent then return end cap.TextTransparency = i / 12; cap.TextStrokeTransparency = 0.35 + i * 0.055; task.wait(0.04) end
+				cap:Destroy()
+			end)
+		end
 		folder:SetAttribute("VoyageAutoSlotCount", placed)
 	end
 	if ev.kind == "dolphins" then
@@ -1585,6 +1630,86 @@ function VoyageScene.play(info)
 		fade.Visible = false
 	end)
 
+	-- [목적지 표시 · 2026-11-28] 도착 지점에 금빛 빛기둥 + 이름·남은 거리, 화면 밖이면 가장자리 화살표.
+	-- 의뢰 목적지면 📜. 항해 경로·속도·판정은 그대로.
+	local beacon, edgeArrow, beaconLabel = nil, nil, nil
+	if not info.intro then
+		local endPos = positionAt(pts, cum, total)
+		-- 기본 도형 없이 지형 Attachment 에 빌보드만 단다(AGENTS.md 도형 금지)
+		beacon = Instance.new("Attachment")
+		beacon.Name = "VoyageDestinationBeacon"
+		beacon.Parent = workspace.Terrain
+		beacon.WorldPosition = endPos + Vector3.new(0, 4, 0)
+		folder.Destroying:Connect(function() if beacon then beacon:Destroy() end end)
+		local bb = Instance.new("BillboardGui")
+		bb.Name = "BeaconBillboard"
+		bb.Size = UDim2.fromOffset(160, 260)
+		bb.StudsOffsetWorldSpace = Vector3.new(0, 60, 0)
+		bb.AlwaysOnTop = true
+		bb.LightInfluence = 0
+		bb.MaxDistance = 100000
+		bb.Adornee = beacon
+		bb.Parent = folder
+		local pillar = Instance.new("ImageLabel")
+		pillar.AnchorPoint = Vector2.new(0.5, 0)
+		pillar.Position = UDim2.new(0.5, 0, 0, 40)
+		pillar.Size = UDim2.new(0, 34, 1, -40)
+		pillar.BackgroundColor3 = Color3.fromRGB(255, 214, 110)
+		pillar.BackgroundTransparency = 0.35
+		pillar.BorderSizePixel = 0
+		local okIdsB, IdsB = pcall(function() return require(script.Parent:WaitForChild("AssetIds", 3)) end)
+		local beam = okIdsB and IdsB["CardArt/ui_quest_beacon"]
+		if beam then pillar.Image = "rbxassetid://" .. tostring(beam); pillar.BackgroundTransparency = 1 end
+		pillar.Parent = bb
+		local pg = Instance.new("UIGradient")
+		pg.Rotation = 90
+		pg.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.85), NumberSequenceKeypoint.new(0.6, 0.2), NumberSequenceKeypoint.new(1, 0) })
+		pg.Parent = pillar
+		beaconLabel = Instance.new("TextLabel")
+		beaconLabel.Size = UDim2.new(1, 0, 0, 40)
+		beaconLabel.BackgroundTransparency = 1
+		beaconLabel.Font = Enum.Font.GothamBlack
+		beaconLabel.TextSize = 16
+		beaconLabel.TextColor3 = Color3.fromRGB(255, 236, 190)
+		beaconLabel.TextStrokeTransparency = 0.3
+		beaconLabel.TextWrapped = true
+		beaconLabel.Parent = bb
+		edgeArrow = Instance.new("TextLabel")
+		edgeArrow.Name = "VoyageDestinationArrow"
+		edgeArrow.AnchorPoint = Vector2.new(0.5, 0.5)
+		edgeArrow.Size = UDim2.fromOffset(150, 46)
+		edgeArrow.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+		edgeArrow.BackgroundTransparency = 0.15
+		edgeArrow.Font = Enum.Font.GothamBold
+		edgeArrow.TextSize = 14
+		edgeArrow.TextColor3 = Color3.fromRGB(255, 220, 130)
+		edgeArrow.Visible = false
+		edgeArrow.Parent = gui
+		local ac = Instance.new("UICorner")
+		ac.CornerRadius = UDim.new(0, 10)
+		ac.Parent = edgeArrow
+	end
+	-- 항해 중에도 '다음 할 일' 한 줄(도착하면 할 일)
+	if info.nextStep and not info.intro then
+		local ns = Instance.new("TextLabel")
+		ns.Name = "VoyageNextStep"
+		ns.AnchorPoint = Vector2.new(0.5, 0)
+		ns.Position = UDim2.new(0.5, 0, 0, 86)
+		ns.Size = UDim2.new(0.8, 0, 0, 30)
+		ns.BackgroundColor3 = Color3.fromRGB(46, 34, 24)
+		ns.BackgroundTransparency = 0.2
+		ns.Font = Enum.Font.GothamBold
+		ns.TextSize = 15
+		ns.TextColor3 = Color3.fromRGB(255, 244, 222)
+		ns.TextTruncate = Enum.TextTruncate.AtEnd
+		ns.Text = "▶ 도착하면: " .. tostring(info.nextStep)
+		ns.Parent = gui
+		local nc = Instance.new("UICorner")
+		nc.CornerRadius = UDim.new(0, 10)
+		nc.Parent = ns
+	end
+	local beaconTick = 0
+
 	local t = 0
 	local yaw = yawOf(select(2, positionAt(pts, cum, 0)))
 	local dist = 0
@@ -1592,6 +1717,28 @@ function VoyageScene.play(info)
 	while not skipped and dist < total and gui.Parent do
 		local dt = RunService.Heartbeat:Wait()
 		t += dt
+		beaconTick += dt
+		if beacon and beaconTick > 0.2 then
+			beaconTick = 0
+			local leftDays = math.max(0, math.ceil((1 - dist / math.max(1, total)) * math.max(info.days or 1, 1)))
+			beaconLabel.Text = (if info.questTarget then "📜 " else "⚓ ") .. tostring(info.toName or "목적지") .. string.format("\n남은 %d일", leftDays)
+			local cam = workspace.CurrentCamera
+			if cam then
+				local sp, onScreen = cam:WorldToViewportPoint(beacon.WorldPosition + Vector3.new(0, 60, 0))
+				local vp = cam.ViewportSize
+				local inside = onScreen and sp.Z > 0 and sp.X > 0 and sp.X < vp.X and sp.Y > 0 and sp.Y < vp.Y
+				edgeArrow.Visible = not inside
+				if not inside then
+					local cx, cy = vp.X / 2, vp.Y / 2
+					local dx, dy = sp.X - cx, sp.Y - cy
+					if sp.Z < 0 then dx, dy = -dx, -dy end
+					local k = math.min((cx - 90) / math.max(1, math.abs(dx)), (cy - 40) / math.max(1, math.abs(dy)))
+					edgeArrow.Position = UDim2.fromOffset(cx + dx * k, cy + dy * k)
+					local arrow = if math.abs(dx) > math.abs(dy) then (if dx > 0 then "▶" else "◀") else (if dy > 0 then "▼" else "▲")
+					edgeArrow.Text = arrow .. " " .. tostring(info.toName or "목적지") .. string.format(" · %d일", leftDays)
+				end
+			end
+		end
 		local pos, dir
 		if helm then
 			-- 수동 항해: 키·스틱으로 방향과 돛을 정하고, 바람에 따라 속도가 정해진다

@@ -102,7 +102,15 @@ jobs:
             fi
             echo "STUDIO_SCREENSHOT_STALE=$frames_branch:$source_sha"
           done
-          gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
+          # [실증 학습] 한 번 읽은 동일 원장에서 열린 작업과 해결 증거를 함께 가져온다.
+          if gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-ledger.json &&
+             jq -e '.orders | type == "object"' build/autopilot-ledger.json >/dev/null; then
+            jq '[.orders[] | select(.resolvedAt | not)]' build/autopilot-ledger.json > build/autopilot-orders.json
+          else
+            rm -f build/autopilot-ledger.json
+            echo '[]' > build/autopilot-orders.json
+            echo 'BRAIN_ORDER_EVIDENCE_UNAVAILABLE'
+          fi
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-playbook.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-playbook.json 2>/dev/null || rm -f build/brain-playbook.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-dataset.jsonl?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-dataset.jsonl 2>/dev/null || rm -f build/brain-dataset.jsonl
@@ -114,7 +122,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
-        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --studio-dir build/studio-photos --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
+        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --autopilot-ledger build/autopilot-ledger.json --studio-ref refs/vibe/brain-studio-report --studio-dir build/studio-photos --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
         id: verify
         run: |
@@ -164,7 +172,11 @@ jobs:
           git commit -q -m "fix(vibe-brain): ${summary}"
           git push -q origin "$branch"
           body="바이브 두뇌가 자동으로 만든 수정입니다.\n\n- 지시서: ${fp}\n- 내용: ${text}\n- 모델: ${prov}\n- 검증: 문법 오류 증가 없음 + 게임 테스트 통과\n- 병합 후 자동 판단기가 Studio 점검으로 결과를 다시 확인합니다."
-          pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$(printf "$body")" --jq .number)
+          # [재촬영 근거] 동일 장면의 경로·해시를 수정본에 연결한다. 검사 선택에만 쓰이며 배포 승인은 아니다.
+          retest=$(node -e 'const r=require("./build/brain-result.json").retestScript;if(r && /^roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-[a-z0-9-]+\.json$/.test(r.path) && /^[a-f0-9]{64}$/.test(r.sha256) && /^[1-9][0-9]{4,14}$/.test(r.runId))process.stdout.write("STUDIO_RETEST="+r.path+" "+r.sha256+" "+r.runId)')
+          body="$(printf '%b' "$body")"
+          if [[ -n "$retest" ]]; then body="$body"$'\n\n'"$retest"; fi
+          pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$body" --jq .number)
           echo "PR #$pr"
           if [[ "$fp" == *:visual:* ]]; then
             echo "화면 수정 후보는 Studio 재검증이 필요해 PR만 열어 두었다."

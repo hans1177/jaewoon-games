@@ -30,7 +30,8 @@ A.Enemies = {
 	archer = { id = "archer", name = "사수", hp = 28, speed = 10, dmg = 7, pattern = "ARROW_SHOT", windup = 0.9, active = 0.15, recover = 1.2, range = 28, aggro = 55, keepAway = 14 },
 	shield = { id = "shield", name = "방패병", hp = 70, speed = 9, dmg = 8, pattern = "SHIELD_BASH", windup = 0.8, active = 0.25, recover = 1.0, range = 4, aggro = 40, frontGuard = 0.7 },
 	charger = { id = "charger", name = "돌진병", hp = 50, speed = 13, dmg = 12, pattern = "BANDIT_SLASH", windup = 1.0, active = 0.25, recover = 1.3, range = 12, aggro = 50, charge = true },
-	boss = { id = "boss", name = "거인 두목", hp = 300, speed = 8, dmg = 20, pattern = "GOLEM_SLAM", windup = 1.1, active = 0.3, recover = 1.4, range = 10, aggro = 80, aoe = true, boss = true },
+	boss = { id = "boss", name = "거인 두목", hp = 720, -- 2026-11-28 오너 "쉽게 안 죽게": 300→720, 단계 4개·스킬 4종(FieldScene bossSkillTick)
+			 speed = 8, dmg = 20, pattern = "GOLEM_SLAM", windup = 1.1, active = 0.3, recover = 1.4, range = 10, aggro = 80, aoe = true, boss = true },
 }
 
 -- ── 주인공 상태 ──────────────────────────────────────────────────────────────────
@@ -161,6 +162,25 @@ function A.damageEnemy(e: any, base: number, mult: number, fromFront: boolean, s
 		e.state = "stagger"
 	end
 	return d, false
+end
+
+-- [적마다 약점 · 2026-11-28 오너 지시: 단순 때리기 대신 노릴 곳] 돌려주는 값: 피해 배수, 약점 이름(없으면 nil).
+-- 방패병=등 뒤·옆, 돌진병=돌진 뒤 빈틈(회복 중), 사수=가까이 붙기, 졸개=공격 준비 중 끊기, 두목=내려친 뒤 빈틈.
+A.WEAK = {
+	shield = { label = "등 뒤", mult = 1.6 }, charger = { label = "돌진 뒤 빈틈", mult = 2.0 },
+	archer = { label = "가까이 붙기", mult = 1.6 }, grunt = { label = "공격 준비 중 끊기", mult = 1.4 },
+	boss = { label = "내려친 뒤 빈틈", mult = 1.8 },
+}
+function A.weakness(e: any, fromFront: boolean, dist: number): (number, string?)
+	if e.dead then return 1, nil end
+	local w = A.WEAK[e.kind]
+	if not w then return 1, nil end
+	local hit = (e.kind == "shield" and not fromFront)
+		or ((e.kind == "charger" or e.kind == "boss") and e.state == "recover")
+		or (e.kind == "archer" and dist <= 6)
+		or (e.kind == "grunt" and e.state == "windup")
+	if hit then return w.mult, w.label end
+	return 1, nil
 end
 
 -- 공격 범위 판정: 거리와 정면 각도(도). arc 360 은 사방.

@@ -72,7 +72,16 @@ jobs:
           $volume = [IO.DriveInfo]::new('E:\')
           $before = $volume.AvailableFreeSpace
           Write-Host "RUNNER_DISK_FREE_MB_BEFORE=$([math]::Round($before/1MB))"
-          $cut = (Get-Date).AddHours(-6)
+          # [용량 진단 · 2026-11-28] E: 최상위 폴더 크기(읽기만). 무엇이 공간을 차지하는지 기록해 정리 대상을 찾는다.
+          try {
+            foreach ($top in @(Get-ChildItem -LiteralPath 'E:\' -Directory -Force -ErrorAction SilentlyContinue)) {
+              if ($top.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+              $mb = [math]::Round(((Get-ChildItem -LiteralPath $top.FullName -Recurse -File -Force -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum)/1MB)
+              if ($mb -ge 200) { Write-Host "RUNNER_DISK_TOP=E:\$($top.Name) MB=$mb" }
+            }
+          } catch { Write-Warning 'RUNNER_DISK_TOP=UNREADABLE' }
+          # [최근 사진만 · 2026-11-28 오너] 지난 촬영본·임시 파일은 1시간 지나면 정리(사진은 1일 Actions 결과물에 남음).
+          $cut = (Get-Date).AddHours(-1)
           # [원본 보호] 기존 체크아웃의 .git이 포함된 폴더는 전체 보존한다.
           $repos = @(Get-ChildItem -LiteralPath $work -Directory -Recurse -Depth 4 -Force -Filter '.git' -ErrorAction SilentlyContinue |
             ForEach-Object { $_.Parent.FullName.TrimEnd('\') + '\' })
@@ -219,7 +228,7 @@ jobs:
           }
           $free = ([IO.DriveInfo]::new('E:\')).AvailableFreeSpace
           Write-Host "RUNNER_DISK_FREE_MB_AFTER_CHECKOUT=$([math]::Round($free/1MB,2))"
-          if ($free -lt 2GB) {
+          if ($free -lt 1GB) {
             Write-Host 'STUDIO_QA_FAILURE_STAGE=STUDIO_EXECUTION'
             Write-Host 'STUDIO_QA_FAILURE_SIGNATURE=STUDIO_RUNNER_DISK_EXHAUSTED_AFTER_CHECKOUT'
             throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED_AFTER_CHECKOUT'
@@ -477,7 +486,7 @@ jobs:
           # [메인] 자동개발 빌드 임시 파일은 기존 E: 인증 실행기 작업 경로만 사용한다.
           $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
           if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
-          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 1GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' } # [2026-11-28] 체크아웃 뒤 약 2GB만 남아 2GB 하한에 걸려 멈춤 → 플레이스·사진(수백 MB)에 충분한 1GB
           $env:TEMP = $jobTemp
           $env:TMP = $jobTemp
           Write-Host 'ROBLOX_STUDIO_BUILD_TEMP_DRIVE=E'
@@ -527,7 +536,7 @@ jobs:
           # LOCALAPPDATA·로블록스 설치·계정/저장 경로는 이동하지 않는다.
           $jobTemp = [IO.Path]::GetFullPath($env:RUNNER_TEMP)
           if ([IO.Path]::GetPathRoot($jobTemp) -ne 'E:\') { throw 'ROBLOX_STUDIO_E_RUNNER_TEMP_REQUIRED' }
-          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 2GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' }
+          if (([IO.DriveInfo]::new('E:\')).AvailableFreeSpace -lt 1GB) { throw 'ROBLOX_STUDIO_E_DRIVE_FREE_SPACE_REQUIRED' } # [2026-11-28] 체크아웃 뒤 약 2GB만 남아 2GB 하한에 걸려 멈춤 → 플레이스·사진(수백 MB)에 충분한 1GB
           $env:TEMP = $jobTemp
           $env:TMP = $jobTemp
           Write-Host 'ROBLOX_STUDIO_PROCESS_TEMP_DRIVE=E'
@@ -1350,7 +1359,9 @@ jobs:
         shell: powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
         run: |
           # [검사 디스크 자동 정리] 스크린샷·임시 Git 아카이브는 1일 결과물 업로드 성공 뒤에만 로컬에서 지운다.
-          # [MYBOX 정책] QA 스크린샷을 N:에 복사하지 않는다. 게임 코드·승인 자산·러너 등록정보도 이동하지 않는다.
+          # [MYBOX 정책 · 2026-11-28 오너 지시 "N 드라이브 적극 활용"] 지우기 전에 QA 사진(이미지 파일만)을
+          # N:\개인\Jaewoon3D\mare-essentia-qa\<날짜>\<실행번호> 로 옮겨 보관하고 E:에서는 지운다. 14일 지난 날짜 폴더는 N:에서 정리.
+          # 게임 코드·.git·러너 등록정보·게임 저장 파일은 여전히 옮기지 않는다. N:이 없거나 쓰기 실패면 그냥 기존대로 지운다.
           $cleanRoot = [IO.Path]::GetFullPath($env:RUNNER_TEMP).TrimEnd('\')
           $expectedCleanRoot = [IO.Path]::GetFullPath('E:\JaewoonRobloxStudioRunner\_work\_temp').TrimEnd('\')
           if (-not [string]::Equals($cleanRoot, $expectedCleanRoot, [StringComparison]::OrdinalIgnoreCase)) {
@@ -1358,6 +1369,24 @@ jobs:
           } else {
             $localCleanCount = 0
             $localCleanBytes = [long]0
+            $qaArchive = $null
+            $archivedBytes = [long]0
+            $archivedFiles = 0
+            try {
+              $qaParent = Join-Path (Join-Path (Join-Path 'N:\' (-join ([char]0xAC1C, [char]0xC778))) 'Jaewoon3D') 'mare-essentia-qa'
+              if ((Test-Path -LiteralPath 'N:\' -PathType Container) -and ([IO.DriveInfo]::new('N:\')).AvailableFreeSpace -gt 2GB -and ([IO.DriveInfo]::new('C:\')).AvailableFreeSpace -gt 1GB) {
+                $qaArchive = Join-Path (Join-Path $qaParent (Get-Date -Format 'yyyyMMdd')) $env:GITHUB_RUN_ID
+                New-Item -ItemType Directory -Path $qaArchive -Force -ErrorAction Stop | Out-Null
+                # 14일 지난 날짜 폴더 정리(이 QA 보관 폴더 안에서만)
+                $old = (Get-Date).AddDays(-14).ToString('yyyyMMdd')
+                foreach ($day in @(Get-ChildItem -LiteralPath $qaParent -Directory -ErrorAction SilentlyContinue)) {
+                  if ($day.Name -match '^\d{8}$' -and $day.Name -lt $old) { Remove-Item -LiteralPath $day.FullName -Recurse -Force -ErrorAction SilentlyContinue }
+                }
+              }
+            } catch {
+              Write-Warning "STUDIO_QA_MYBOX_ARCHIVE=UNAVAILABLE:$($_.Exception.GetType().Name)"
+              $qaArchive = $null
+            }
             foreach ($name in @('mare-frames','mare-first-attempt','mare-publish','mare-autopilot-publish','mare-baseline-photos')) {
               $folder = Join-Path $cleanRoot $name
               if (-not (Test-Path -LiteralPath $folder -PathType Container)) { continue }
@@ -1369,6 +1398,18 @@ jobs:
               try {
                 $bytes = (Get-ChildItem -LiteralPath $folder -Recurse -File -Force -ErrorAction Stop |
                   Measure-Object Length -Sum).Sum
+                if ($qaArchive -and $archivedBytes -lt 400MB) {
+                  try {
+                    $dest = Join-Path $qaArchive $name
+                    New-Item -ItemType Directory -Path $dest -Force -ErrorAction Stop | Out-Null
+                    foreach ($img in @(Get-ChildItem -LiteralPath $folder -Recurse -File -Force -ErrorAction Stop | Where-Object { $_.Extension -in @('.png','.jpg','.jpeg','.webp') })) {
+                      if ($archivedBytes + $img.Length -gt 400MB) { break }
+                      Copy-Item -LiteralPath $img.FullName -Destination (Join-Path $dest $img.Name) -Force -ErrorAction Stop
+                      $archivedBytes += $img.Length
+                      $archivedFiles++
+                    }
+                  } catch { Write-Warning "STUDIO_QA_MYBOX_ARCHIVE_COPY_FAILED=$name" }
+                }
                 Remove-Item -LiteralPath $folder -Recurse -Force -ErrorAction Stop
                 $localCleanBytes += [long]$bytes
                 $localCleanCount++
@@ -1376,6 +1417,7 @@ jobs:
                 Write-Warning "STUDIO_LOCAL_EVIDENCE_CLEAN_FAILED=$name"
               }
             }
+            Write-Host "STUDIO_QA_MYBOX_ARCHIVE=$(if ($qaArchive) { 'N:QA/' + (Get-Date -Format 'yyyyMMdd') + '/' + $env:GITHUB_RUN_ID } else { 'SKIPPED' }) FILES=$archivedFiles MB=$([math]::Round($archivedBytes/1MB,2))"
             Write-Host "STUDIO_LOCAL_EVIDENCE_CLEANED_FOLDERS=$localCleanCount"
             Write-Host "STUDIO_LOCAL_EVIDENCE_CLEANED_MB=$([math]::Round($localCleanBytes/1MB,2))"
             Write-Host "STUDIO_E_DRIVE_FREE_MB_AFTER_ARCHIVE=$([math]::Round(([IO.DriveInfo]::new('E:\')).AvailableFreeSpace/1MB,2))"

@@ -52,6 +52,7 @@ export type Quest = {
 	chapter: string?,
 	guide: string?,
 	afterPrologue: boolean?, -- 시작 국가 서막(pr_<국가>_4)을 마쳐야 보인다
+	rewardPermit: string?, -- 완료하면 이 항구 길드 허가증(특산품·명품 거래 열림)
 }
 
 local Quests: { Quest } = {
@@ -684,6 +685,38 @@ end
 local Chapters = require(script.Parent.StoryChapters)
 for _, cq in Chapters.Quests do
 	table.insert(Quests, cq :: Quest)
+end
+
+-- [길드 허가증 의뢰 · 2026-11-28 오너 지시] 항구마다: 그 항구가 필요로 하는 물건을 가져다주면 길드가 믿고 특산품·명품을 판다.
+-- (특산품 잠금 규칙: Services/Trade.luau lockOf). 주점 게시판에서 그 항구에 있을 때 보인다.
+do
+	local PortsData = require(script.Parent.Ports) :: any
+	local ids = {}
+	for id in PortsData.Ports do table.insert(ids, id) end
+	table.sort(ids)
+	for _, portId in ids do
+		local port = PortsData.Ports[portId]
+		if type(port.produces) == "table" and #port.produces >= 1 and type(port.demands) == "table" then
+			local need = nil
+			for _, g in port.demands do
+				if not table.find(port.produces, g) and PortsData.Goods[g] then need = g; break end
+			end
+			if need then
+				local goodName = PortsData.Goods[need].name
+				local special = PortsData.Goods[port.produces[1]] and PortsData.Goods[port.produces[1]].name or "특산품"
+				table.insert(Quests, {
+					id = "permit_" .. portId, name = port.name .. " 길드 허가증",
+					summary = string.format("길드 허가증 — %s 6개를 %s에 납품", goodName, port.name), kind = "deliver",
+					goodId = need, portId = portId, amount = 6, rewardPermit = portId, afterPrologue = true,
+					problem = string.format("%s 상인 길드는 낯선 선장에게 %s 같은 특산품을 넘기지 않는다.", port.name, special),
+					cause = string.format("믿을 만한 거래 기록이 없다. 마침 길드는 %s이(가) 모자라 애를 먹고 있다.", goodName),
+					result = string.format("길드 허가증을 받아 %s의 특산품과 명품을 살 수 있다.", port.name),
+					story = string.format("%s 길드 서기가 장부를 덮는다. \"우리 특산품은 아무에게나 안 팔아요. 다만 요즘 %s이(가) 모자라서… 그걸 구해 오는 선장이라면 믿을 수 있겠죠.\"", port.name, goodName),
+					rewardCoins = 200, rewardFame = 8, rewardCareer = "trade", rewardXp = 50,
+				} :: Quest)
+			end
+		end
+	end
 end
 
 local ById: { [string]: Quest } = {}

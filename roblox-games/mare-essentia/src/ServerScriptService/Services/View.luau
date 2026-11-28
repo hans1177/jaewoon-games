@@ -227,6 +227,8 @@ return function(D, S)
 				supply = stockLimit.supply,
 				absorb = stockLimit.absorb,
 				owned = state.cargo[goodId] or 0,
+				-- [특산품 단계 잠금] 못 사는 이유와 여는 방법(우호도·투자·길드 허가증 의뢰)
+				lock = S.Trade.lockOf(state, port.id, goodId),
 			})
 		end
 
@@ -724,6 +726,24 @@ return function(D, S)
 					rewardCoins = q.rewardCoins,
 					rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil,
 					story2 = D.Quests.Kit.questExtras(state, q), -- [이야기 퀘스트 시스템] 선택지·대결 상대·인물 대사
+					-- [퀘스트 대화 연출 · 2026-11-28] 누가 말하는지(초상·이름·역할). 판정·저장 무관.
+					talk = (function()
+						local comp = q.companionId and D.Specialties.CompanionById[q.companionId]
+						if q.speaker then return { name = q.speaker, role = q.speakerRole or "", key = "name" } end
+						if comp then return { name = comp.name, role = "동료", key = "comp:" .. q.companionId } end
+						local scholar = string.match(q.summary or "", "학자의 길 · ([^ ]+)")
+						if scholar then return { name = scholar, role = "학자", key = "keeper:scholar" } end
+						local nation = D.Ports.Nations[state.nationId]
+						if string.sub(q.id, 1, 3) == "pr_" then
+							local first = D.Specialties.CompanionById["n_" .. tostring(state.nationId)]
+							return { name = if first then first.name else "첫 동료", role = (nation and nation.name or "") .. " 동료", key = "comp:n_" .. tostring(state.nationId) }
+						end
+						if string.sub(q.id, 1, 7) == "permit_" then return { name = "길드 서기", role = "상인 길드", key = "keeper:trade" } end
+						if q.kind == "win" or q.kind == "war_clear" then return { name = "전투 교관", role = "전투 본부", key = "keeper:battle" } end
+						if q.kind == "discover" or q.kind == "discover_card" or q.kind == "field" or q.kind == "understand" then return { name = "학자", role = "서재", key = "keeper:scholar" } end
+						if q.kind == "deliver" then return { name = "상인 길드 서기", role = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or "", key = "keeper:trade" } end
+						return { name = "주점 주인", role = "주점", key = "keeper:tavern" }
+					end)(),
 					-- [다음 할 일 안내 · 2026-11-28] 목적지·상품·인과(문제→원인→결과)·장 표시용. 판정·저장은 그대로.
 					portId = q.portId, portName = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or nil,
 					goodId = q.goodId, goodName = q.goodId and D.Ports.Goods[q.goodId] and D.Ports.Goods[q.goodId].name or nil,
@@ -923,6 +943,18 @@ return function(D, S)
 				-- 존재 형태·시대·지역·선행 지식은 카드 종류와 독립적으로 도감에 전달한다.
 				era = c.meta and c.meta.era or nil,
 				region = c.meta and c.meta.region and D.Ports.Ports[c.meta.region] and D.Ports.Ports[c.meta.region].name or (c.visitPort and D.Ports.Ports[c.visitPort] and D.Ports.Ports[c.visitPort].name) or nil,
+				-- [백과 분포 지도 · 2026-11-28] 대표 지역·처음 발견한 항구의 위경도(지도 금색 점). 표시용.
+				mapPoints = (function()
+					local pts = {}
+					local function addPort(id, label)
+						local port = id and D.Ports.Ports[id]
+						if port and port.lat and port.lon then table.insert(pts, { lat = port.lat, lon = port.lon, name = port.name, label = label }) end
+					end
+					addPort(c.meta and c.meta.region, "대표 지역")
+					if c.visitPort ~= (c.meta and c.meta.region) then addPort(c.visitPort, "발견 항구") end
+					if origin and origin.portId and origin.portId ~= (c.meta and c.meta.region) then addPort(origin.portId, "내가 발견") end
+					return pts
+				end)(),
 				-- [개인 백과] 자료의 대표 지역과 실제 플레이어 최초 습득 장소를 구별한다.
 				nextClue = if found and nextRouteByCard[c.id] then {
 					quest = nextRouteByCard[c.id].name,

@@ -261,6 +261,13 @@ return function(D, S)
 		if quest.rewardCardId then
 			S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
 		end
+		if quest.rewardPermit then
+			-- [길드 허가증] 이 항구 특산품·명품 거래가 열린다
+			state.stats.permits = state.stats.permits or {}
+			state.stats.permits[quest.rewardPermit] = true
+			local port = D.Ports.Ports[quest.rewardPermit]
+			table.insert(msgs, string.format("📜 %s 길드 허가증을 받았다! 이제 특산품·명품을 살 수 있어요", port and port.name or quest.rewardPermit))
+		end
 		S.Cardbook.reward(state, "quest", msgs, nil, nil, quest.id)
 		-- 어려운 기술 퀘스트(연속 퀘스트·지식 이해)를 해내면 역사가 앞당겨진다
 		if quest.after or quest.kind == "understand_card" or quest.kind == "understand" then

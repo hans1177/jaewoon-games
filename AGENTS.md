@@ -1,5 +1,7 @@
 # 저장소 작업 지침
 
+> 👉 **처음이면 `START_HERE.md`(1분)부터.** 정책 4종 위치·읽는 법·"정책이 없다/비어 있다/검증기 연결 실패"로 멈추지 않는 법이 한 장에 있다.
+
 이 저장소에서 작업하는 모든 GPT·코딩 에이전트는 작업 전에 최신 main의 다음 중앙문서를 읽어야 한다.
 
 - company-learning/platform-release-roadmap.json
@@ -7,6 +9,13 @@
 - company-learning/company-log-map.json
 - company-learning/company-architecture-map.json
 - company-learning/security-immune-system.json
+
+### 중앙 사전점검(preflight)이 뜻하는 것 — "검증기에 연결 못 해서 수정 보류"로 멈추지 않는다 (2026-11-28 오너 지시)
+- **사전점검 = 최신 main에서 위 4종을 읽고, 읽은 main 커밋 SHA(또는 각 파일 blob SHA)를 작업 기록·PR 본문에 적는 것**이다. 이것으로 `startupSync.documentHashesRequired`를 채운다.
+- `tools/company-shared-context.mjs` 같은 **중앙 검증기는 작업자가 직접 돌리는 것이 아니다.** 중앙문서·AGENTS.md가 바뀌는 PR에서 GitHub Actions `company-central-policy-contract-qa`가 실행한다. 게임 소스 PR은 기존 PR 검사(`devloop-gates`·`vibe-qa`·`discover-and-verify` 등)가 검증한다.
+- 그래서 **채팅형 GPT가 node·셸을 직접 실행할 수 없는 것은 사전점검 실패가 아니다.** `noSourceOrRuntimeWriteWhenCentralPreflightFails`의 "실패"는 ① 4종을 못 읽었거나 ② 오너 요청이 중앙정책과 정면 충돌할 때만이다.
+- 오너가 수정을 지시했으면(`chatExecution.chatgptDirectCoding: true`, 지시어 "진행·적용·넣어·수정·작업진행·구현") 순서: 4종 읽기 → SHA 기록 → 기존 책임 소스 직접 수정 → 후보 브랜치 PR(main 직접 푸시 금지) → 기존 검사 통과 시 기존 경로로 병합. 검사가 실패하면 그 원인을 고친다.
+- 실행 환경이 없어 **직접 확인 못 한 것은 "미검증"으로 보고**하면 된다. 그것을 이유로 수정·PR 자체를 보류하지 않는다. 새 검증 파이프라인·래퍼를 만들지 않는다.
 
 ## 오너 전역 게임 제작 필수 규칙: 파츠·원형·임의 생성물 금지
 

@@ -1,5 +1,7 @@
 # 초상화 목록 (등록 완료 · 게임 연결 전)
 
+> **2026-11-28 오너 지시: 초상화 전면 재제작·정리 → `docs/VISUAL_REMAKE_BRIEF.md` (주인공 15·동료 49·담당자 8, 한 사람 한 파일, 프롬프트 포함)**
+
 모두 `assets/portraits/` 에 등록되어 있다 (PROJECT_ORIGINAL_ART, 사용자 제공 AI 시트를 칸별로 자름).
 **Roblox 업로드는 아직 하지 않았다.** 업로드(owner-mare-essentia-assets 워크플로) 전에는 AssetIds 에 없어서 게임에서 보이지 않는다.
 

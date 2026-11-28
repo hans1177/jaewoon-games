@@ -1,5 +1,7 @@
 # 주민(NPC) 외형·모션 지시서
 
+> **만들 파일 이름·부위·색·프롬프트는 `OUTFIT_SPEC.md`.** 그 이름으로 올리면 그 문화권 주민에게 자동으로 입혀진다.
+
 > **드롭박스 올리는 곳 (필독)**
 > - 옷·머리·장신구: `/Vibe2Transfer/inbox/People/outfit_<이름>.glb` · `hair_<이름>.glb` · `acc_<이름>.glb`
 > - 주민 초상(그림): `/Vibe2Transfer/inbox/Portraits/<이름>.png`

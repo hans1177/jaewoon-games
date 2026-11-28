@@ -57,7 +57,7 @@ table.insert(Q, { id = "ch1_5a", name = "순찰선이 지키는 길", chapter = 
 	summary = "제1장 · 막힌 항로 — 열린 항로로 양모 10개를 암스테르담에 납품", kind = "deliver", goodId = "wool", portId = "amsterdam", amount = 10,
 	problem = "한 달 밀린 주문 때문에 직조소에 양모가 아직 모자란다.",
 	cause = "항로가 막혀 있던 동안 주문이 쌓였다.",
-	result = "직조소가 밤낮으로 돌고, 암스테르담 양모값이 내려간다. 얀센이 당신을 길드에 추천한다.",
+	result = "직조소가 밤낮으로 돌고, 암스테르담 양모값이 내려간다. 얀센의 추천으로 암스테르담 길드 허가증을 받는다(특산품·명품 거래).", rewardPermit = "amsterdam",
 	speaker = "얀센", speakerRole = "양모 상인", line = "항만청 순찰선이 붙었다네! 이제 마음 놓고 실어 오게.",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 220 })
 HAND["ch1_5a"] = { "항만청이 현상금과 함께 순찰선 두 척을 북해에 붙였다. 이제 양모선이 줄지어 들어올 수 있다. 밀린 주문을 채우려면 양모 열 짐이 더 필요하다.",
@@ -67,7 +67,7 @@ table.insert(Q, { id = "ch1_5b", name = "해적이 알려 준 지름길", chapte
 	summary = "제1장 · 막힌 항로 — 브로디의 지름길로 양모 10개를 암스테르담에 납품", kind = "deliver", goodId = "wool", portId = "amsterdam", amount = 10,
 	problem = "한 달 밀린 주문 때문에 직조소에 양모가 아직 모자란다.",
 	cause = "항로가 막혀 있던 동안 주문이 쌓였다.",
-	result = "직조소가 다시 돌고, 브로디의 옛 선원들도 상선 일을 얻는다. 얀센이 당신을 길드에 추천한다.",
+	result = "직조소가 다시 돌고, 브로디의 옛 선원들도 상선 일을 얻는다. 얀센의 추천으로 암스테르담 길드 허가증을 받는다(특산품·명품 거래).", rewardPermit = "amsterdam",
 	speaker = "브로디", speakerRole = "전직 해적 선장", line = "모래톱 사이 물길은 우리만 알았소. 이번엔 양모를 싣고 지나가 봅시다.",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 220 })
 HAND["ch1_5b"] = { "브로디가 해도에 연필로 선을 그었다. 모래톱 사이 좁은 물길, 해적들만 쓰던 지름길이다. 밀린 주문을 채우려면 양모 열 짐이 더 필요하다. 이번엔 그 길이 훔치는 길이 아니라 나르는 길이 된다.",

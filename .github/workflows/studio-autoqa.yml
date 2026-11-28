@@ -171,6 +171,40 @@ jobs:
               FIELD) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json ;;
               *) scope=FULL ;;
             esac
+            # [동일 장면 재검증] 기존 자동 수정본 병합에 한해 촬영 근거와 현행 스크립트 해시를 확인한다.
+            # 게시 완료의 전체 회귀와 일반 소스 변경 검사는 그대로 유지한다.
+            prs=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" 2>/dev/null || true)
+            retest=$(jq -r --arg sha "$GITHUB_SHA" --arg repo "$GITHUB_REPOSITORY" '
+              [.[] | select(.merged_at != null and .merge_commit_sha == $sha and .base.ref == "main" and
+                .head.repo.full_name == $repo and (.head.ref | test("^vibe-brain/run-[0-9]+$"))) |
+                (.body // "" | split("\n")[] | select(test("^STUDIO_RETEST=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-[a-z0-9-]+\\.json [a-f0-9]{64} [1-9][0-9]{4,14}$"))) ] |
+                if length == 1 then .[0] else empty end' <<< "$prs" 2>/dev/null || true)
+            if [[ -n "$retest" && "$head" == "$GITHUB_SHA" ]]; then
+              read -r retest_path retest_hash retest_run <<< "${retest#STUDIO_RETEST=}"
+              # [파일 검증] 다운로드한 바이트는 실행하지 않고 임시 파일의 해시만 계산한다.
+              current_hash=""
+              retest_file=$(mktemp)
+              if gh api "repos/$GITHUB_REPOSITORY/contents/$retest_path?ref=$head" --jq .content > "$retest_file.b64" 2>/dev/null &&
+                 base64 --decode "$retest_file.b64" > "$retest_file"; then
+                current_hash=$(sha256sum "$retest_file" | cut -d' ' -f1)
+              fi
+              rm -f "$retest_file" "$retest_file.b64"
+              # [원본 회차 검증] PR 메모만 믿지 않고 기존 보관 검사표를 대조한다.
+              original=$(gh api "repos/$GITHUB_REPOSITORY/contents/runs/$retest_run/checks.json?ref=mare-essentia-studio-frames" --jq .content 2>/dev/null | base64 -d 2>/dev/null) || original=""
+              if ! jq -e --arg run "$retest_run" --arg path "$retest_path" --arg hash "$retest_hash" '
+                (.runId | tostring) == $run and .scriptPath == $path and .scriptSha256 == $hash and
+                (.portBatch // 0) == 0 and (.sourceRevision | test("^[a-f0-9]{40}$"))
+              ' <<< "$original" >/dev/null 2>&1; then
+                current_hash=""
+                echo 'STUDIO_EXACT_RETEST_UNVERIFIED=ORIGINAL_EVIDENCE_MISSING'
+              fi
+              if [[ "$current_hash" == "$retest_hash" ]]; then
+                script="$retest_path"
+                echo "STUDIO_EXACT_RETEST=$retest_run:$script"
+              else
+                echo "STUDIO_EXACT_RETEST_UNVERIFIED=SCRIPT_CHANGED"
+              fi
+            fi
             echo "STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope"
           elif [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             echo "STUDIO_WATCHDOG_RECOVERY=SOURCE_NOT_YET_CHECKED:$head"

@@ -50,9 +50,36 @@ test('HUD 아이콘은 도형보다 기존 청동 원화 시트를 우선한다'
   assert.ok(start >= 0 && end > start, '기존 메뉴 생성 함수 확인');
   const renderer = client.slice(start, end);
   assert.match(renderer, /if H\.hasIconArt\(key\) then/, '청동 원화 우선');
-  assert.match(client, /H\.reserveIconAtlas = \{ AssetIds\["CardArt\/ui_reserve_icons"\], AssetIds\["CardArt\/ui_reserve_icons_2"\], AssetIds\["CardArt\/ui_menu_icons_3"\] \}/, '예비 청동 시트');
+  assert.match(client, /H\.reserveIconAtlas = \{ AssetIds\["CardArt\/ui_reserve_icons"\], AssetIds\["CardArt\/ui_reserve_icons_2"\], AssetIds\["CardArt\/ui_menu_icons_3"\], AssetIds\["CardArt\/ui_menu_icons_4"\] \}/, '예비 청동 시트');
   for (const key of ['tavern', 'deck', 'journal', 'gear', 'status', 'view', 'help']) {
     assert.match(client, new RegExp('[{ ,\\t]' + key + ' = \\d+'), '시설 시트 칸 누락: ' + key);
   }
   assert.match(renderer, /icon\.Name = "MenuArt"/, '기존 메뉴 표시 흐름 유지');
+});
+
+test('책 프레임과 가로 탭 및 인과 카드에 승인 원화만 연결', () => {
+  assert.match(client, /surfaceTexture = if AssetIds\["CardArt\/ui_frame_book"\]/);
+  assert.match(client, /Rect\.new\(64, 64, 448, 448\)/);
+  const tabs = client.split('function H.renderTabs()')[1];
+  assert.match(tabs, /local tabSkins = tabOn ~= nil and tabOff ~= nil/);
+  assert.match(tabs, /grain\.SliceCenter = Rect\.new\(24, 24, 232, 72\)/);
+  assert.match(tabs, /grain\.Image = "rbxassetid:\/\/" \.\. tostring\(if selected then tabOn else tabOff\)/);
+  const cause = client.split('function H.questCauseCard(q)')[1].split('function H.showQuestResult(d)')[0];
+  assert.match(cause, /Instance\.new\(if frameArt then "ImageLabel" else "Frame"\)/);
+  assert.match(cause, /card\.SliceCenter = Rect\.new\(24, 24, 232, 232\)/);
+  assert.match(cause, /\{ "problem", "cause", "todo", "result" \}/);
+  assert.match(cause, /card\.AutomaticSize = Enum\.AutomaticSize\.Y/);
+  assert.match(cause, /openTab\(step\.tab\)/);
+});
+
+
+test('추가 청동 아이콘 시트 16칸과 메뉴 수치 표시 연결', () => {
+  assert.match(client, /if H\.reserveIconAtlas\[4\] then/);
+  assert.match(client, /H\.reserveIconRowH = \{ 184, 189, 192, 192 \}/);
+  assert.ok(client.includes('{ "quest", "shipyard", "lock", "war", "gift", "star", "profit_up", "profit_down", "cargo", "supply", "hull", "crew", "coin", "fame", "map_pin", "close" }'));
+  assert.ok(client.includes('H.reserveIconCells[key] = { 4, i - 1 }'));
+  const stat = client.split('function H.statStrip(items)')[1].split('\nend')[0];
+  assert.ok(stat.includes('H.reserveIconAtlas[4] and H.hasIconArt(key)'));
+  assert.ok(stat.includes('modelIcon(chip, "FacilityArt", key, nil, 20, it[1])'));
+  assert.ok(stat.includes('vl.Text = it[2]'));
 });

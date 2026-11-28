@@ -16,7 +16,7 @@ cp "$ROOT"/src/ReplicatedStorage/Shared/*.luau "$TMP/Shared/"
 cp "$ROOT"/src/ServerScriptService/Services/*.luau "$TMP/Services/"
 cp "$ROOT"/tests/*.luau "$TMP/"
 # Roblox 엔진 전용 장면과 카드 UI는 CLI 타입 검사 대상에서 제외한다.
-rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/CommonVFX.luau "$TMP"/Shared/CommonMotion.luau "$TMP"/Shared/FieldMotion.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/CardGallery.luau "$TMP"/Shared/DeckBuilder.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/CardSymbols.luau "$TMP"/Shared/CardTheme.luau "$TMP"/Shared/DiscoveryStage.luau "$TMP"/Shared/PlacementOverrides.luau
+rm -f "$TMP"/Shared/PortScene.luau "$TMP"/Shared/VoyageScene.luau "$TMP"/Shared/FieldScene.luau "$TMP"/Shared/CommonVFX.luau "$TMP"/Shared/CommonMotion.luau "$TMP"/Shared/FieldMotion.luau "$TMP"/Shared/Pose.luau "$TMP"/Shared/Flags.luau "$TMP"/Shared/NavalBattle.luau "$TMP"/Shared/Sfx.luau "$TMP"/Shared/CardGallery.luau "$TMP"/Shared/DeckBuilder.luau "$TMP"/Shared/PortCultures.luau "$TMP"/Shared/CardSymbols.luau "$TMP"/Shared/CardTheme.luau "$TMP"/Shared/DiscoveryStage.luau "$TMP"/Shared/PlacementOverrides.luau "$TMP"/Shared/BattleButtonFx.luau
 
 sed -i -E 's/require\(script\.Parent\.([A-Za-z0-9]+)\)/require(".\/\1")/g' "$TMP"/Shared/*.luau "$TMP"/Services/*.luau
 

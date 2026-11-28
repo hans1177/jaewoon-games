@@ -542,6 +542,7 @@ local function label(parent, text, size, color)
 	return l
 end
 
+local okButtonFx, ButtonFx = pcall(function() return require(script.Parent:WaitForChild("BattleButtonFx", 5)) end)
 local function btn(parent, text, color, size, pos, anchor)
 	local b = Instance.new("TextButton")
 	b.Text = text
@@ -646,6 +647,8 @@ local function btn(parent, text, color, size, pos, anchor)
 		end
 	end)
 	b.Parent = parent
+	-- [전투 버튼 효과 · 2026-11-28] 누를 때 충격 고리·불꽃·섬광(해상과 같은 모듈)
+	if okButtonFx and ButtonFx then ButtonFx.attach(b) end
 	return b
 end
 
@@ -4208,12 +4211,30 @@ function FieldScene.start(opts)
 		tag.Text = string.format("[%d단] ", math.clamp(danger0, 1, 5))
 			.. (if isBoss then "두목 " elseif isElite then "정예 " else "")
 			.. (if throwAsset then "투척 " else "") .. style[1]
+			.. (if AC.WEAK[ac.kind] then " · 약점: " .. AC.WEAK[ac.kind].label else "")
 		tag.TextSize = if isBoss then 14 else 12
 		tag.TextTruncate = Enum.TextTruncate.AtEnd
 		local fm = if FM then FM.new(model, false) else nil
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
+	end
+	-- [전투 목표 · 2026-11-28 오너 지시] 매번 다른 목표 하나(속도·무피해·두목 먼저·약점 5번). 별 3개 평가(표시용).
+	do
+		local hasBoss = false
+		for _, o in enemies do if o.boss then hasBoss = true end end
+		local options = {
+			{ kind = "speed", text = "빨리 끝내기" }, { kind = "untouched", text = "체력 70% 이상 지키기" },
+			{ kind = "weak", text = "약점 5번 노리기" },
+		}
+		if hasBoss then table.insert(options, { kind = "boss", text = "두목부터 쓰러뜨리기" }) end
+		if #enemies > 0 then
+			local pick = options[math.random(1, #options)]
+			pl.fieldChallenge = { kind = pick.kind, text = pick.text, startAt = os.clock(), limit = 25 + #enemies * 8 }
+			if pick.kind == "speed" then pl.fieldChallenge.text = string.format("%d초 안에 끝내기", pl.fieldChallenge.limit) end
+			folder:SetAttribute("FieldChallenge", pick.kind)
+			task.delay(1.5, function() say("이번 목표: " .. pl.fieldChallenge.text, 3) end)
+		end
 	end
 
 	end
@@ -5090,7 +5111,8 @@ function FieldScene.start(opts)
 		autoHitPips[i] = pip
 	end
 	local function refreshAutoHitPips()
-		local charged = (pl.autoNormalHits or 0) % 5
+		-- [숙련 표시] 5칸 = 무기 숙련 1~5단(채운 칸 = 지금 단계). 스킬 자동 발동은 2단부터 확률.
+		local charged = math.clamp(pl.masteryRank or 1, 1, 5)
 		for i, pip in autoHitPips do
 			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 233, 151) else Color3.fromRGB(91, 45, 35)
 			pip.BackgroundTransparency = if i <= charged then 0 else 0.15
@@ -5133,6 +5155,8 @@ function FieldScene.start(opts)
 	weaponRankLabel.ZIndex = attackBtn.ZIndex + 3
 	do -- [Luau 지역변수 한도] 시작 숙련 표시값 초기화 지역화
 		local initialPractice = weaponPractice[wpn.id]
+		pl.masteryRank = initialPractice and initialPractice.rank or 1
+		refreshAutoHitPips()
 		weaponRankLabel.Text = string.format("무기 숙련 %d단", initialPractice and initialPractice.rank or 1)
 		attackBtn:SetAttribute("WeaponMasteryRank", initialPractice and initialPractice.rank or 1)
 		attackBtn:SetAttribute("WeaponMasteryExperience", initialPractice and initialPractice.xp or 0)
@@ -7244,9 +7268,48 @@ function FieldScene.start(opts)
 			end
 			e.model:SetAttribute("FieldEnemyReaction", "shield")
 		end
+		-- [약점·반격 · 2026-11-28] 적마다 노릴 곳(AC.weakness) + 완벽 회피 직후 1.6초 반격 ×2.
+		local inFront = approach.Magnitude > 0.1 and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
+		local weakMult, weakLabel = AC.weakness(e.ac, inFront, approach.Magnitude / 2)
+		local counterHit = not quiet and os.clock() < (pl.counterUntil or 0)
+		if counterHit then pl.counterUntil = 0 end
+		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
 		local dealt, died = AC.damageEnemy(e.ac, BASE_DMG * (if quiet then 1 else wpn.power)
 			* (if os.clock() < (pl.buffUntil or 0) then 1.3 else 1)
-			* (if weaponParry then 0.52 else 1), mult, shieldBlocked == true, stagger)
+			* (if weaponParry then 0.52 else 1) * weakMult * (if counterHit then 2 else 1)
+			* (if e.boss and os.clock() < (e.armorUntil or 0) then 0.6 else 1), mult, shieldBlocked == true, stagger)
+		if counterHit then
+			showCombo("반격 ×2!", true, Color3.fromRGB(122, 240, 246))
+		elseif weakLabel then
+			showCombo("약점! " .. weakLabel, true, Color3.fromRGB(255, 196, 90))
+			e.model:SetAttribute("FieldWeakHit", weakLabel)
+			if pl.fieldChallenge then pl.fieldChallenge.weakHits = (pl.fieldChallenge.weakHits or 0) + 1 end
+		end
+		-- [두목 단계 · 2026-11-28] 체력 2/3 아래 분노(빨라짐), 1/3 아래 최후의 일격(사거리↑·빈틈 길어짐)
+		if e.boss and not died then
+			local ratio = e.ac.hp / math.max(1, e.maxHp)
+			if ratio < 0.66 and not e.bossPhase2 then
+				e.bossPhase2 = true
+				e.ac.def = table.clone(e.ac.def)
+				e.ac.def.speed *= 1.25
+				e.ac.def.windup *= 0.85
+				e.speed = e.ac.def.speed
+				e.model:SetAttribute("FieldBossPhase", 2)
+				showCombo("두목 분노! · 2단계 — 더 빨라졌다", true, Color3.fromRGB(255, 110, 80))
+				screenFlash(Color3.fromRGB(255, 90, 60), 0.82)
+				sfx("sfx_horn", 0.5, 0.8)
+			elseif ratio < 0.33 and not e.bossPhase3 then
+				e.bossPhase3 = true
+				e.ac.def = table.clone(e.ac.def)
+				e.ac.def.range *= 1.2
+				e.ac.def.recover *= 1.6
+				e.model:SetAttribute("FieldBossPhase", 3)
+				showCombo("최후의 일격! · 크게 내려친 뒤가 빈틈", true, Color3.fromRGB(255, 70, 60))
+				screenFlash(Color3.fromRGB(255, 60, 40), 0.78)
+				shakeUntil, shakeAmp = os.clock() + 0.4, 1.4
+				sfx("sfx_event_danger", 0.6, 0.75)
+			end
+		end
 		e.hp = e.ac.hp
 		if died or stagger then e.counterUntil = 0 end -- 기절·쓰러진 몹은 방어 뒤 반격을 예약하지 않는다.
 		e.hurtAt = os.clock()
@@ -7303,7 +7366,18 @@ function FieldScene.start(opts)
 				-- 다음 공격이 먼저 입력돼도 0.14초 지연된 이전 평타의 명중은 정확하게 1회 기록한다.
 				if basicAttack == true then
 					pl.autoNormalHits = (pl.autoNormalHits or 0) + 1
-					if pl.autoNormalHits % 5 == 0 then
+					-- [오너 지시 2026-11-28] 스킬은 처음부터 안 됨: 무기 숙련(경험치) 2단부터 열리고, 명중할 때 확률로 자동 발동.
+					-- 2단 8% · 3단 11% · 4단 14% · 5단 17%, 최소 4초 간격. 4단부터 적 2명 이상 가까우면 회전 베기도 확률 발동.
+					local rankNow = pl.masteryRank or 1
+					local chanceNow = if rankNow >= 5 then 0.17 elseif rankNow == 4 then 0.14 elseif rankNow == 3 then 0.11 elseif rankNow == 2 then 0.08 else 0
+					if chanceNow > 0 and hitAt - (pl.lastAutoSkillAt or -100) >= 4 and comboRng:NextNumber() < chanceNow then
+						pl.lastAutoSkillAt = hitAt
+						pl.autoHeavyFire = pl.autoNormalHits
+						local near = 0
+						for _, o in enemies do
+							if not o.ac.dead and (o.root.Position - hrpPos).Magnitude < 14 then near += 1 end
+						end
+						pl.autoSkillKind = if rankNow >= 4 and near >= 2 and comboRng:NextNumber() < 0.5 then "sweep" else "heavy"
 						local owner = player.Character
 						if owner then owner:SetAttribute("FieldAutoSkillPending", pl.autoNormalHits) end
 					end
@@ -7341,11 +7415,11 @@ function FieldScene.start(opts)
 				end
 				-- [스킬 축하 충돌 방지] 5번째 명중에 발동할 자동 강타는 실제 성공 후 한 번만 축하한다.
 				local autoHeavyReady = basicAttack == true
-					and (pl.autoNormalHits or 0) > 0 and pl.autoNormalHits % 5 == 0
+					and (pl.autoNormalHits or 0) > 0 and pl.autoHeavyFire == pl.autoNormalHits
 					and (pl.cd.heavy or -100) <= hitAt and pl.hp > 0
 				if autoHeavyReady then
 					pl.autoHeavyRecord = isRecord -- 저장되지 않는 장면 임시 표시. 25타 등 최고 기록 축하를 자동 강타까지 전달.
-					showCombo(string.format("%d연타 · 필살 준비!", streakN), false, Color3.fromRGB(255, 226, 156))
+					showCombo(string.format("숙련 %d단 · %s 발동!", pl.masteryRank or 2, if pl.autoSkillKind == "sweep" then "회전 베기" else "강타"), false, Color3.fromRGB(255, 226, 156))
 				elseif streakN % 5 == 0 then
 					comboCinema(streakN, isRecord)
 				elseif miracle and not isRecord then
@@ -7358,7 +7432,7 @@ function FieldScene.start(opts)
 					elseif basicHit and streakN == 3 then
 						screenFlash(accent, if visualMobile then 0.965 else 0.935)
 						trailsOn(player.Character, { "RightHand", "RightLowerArm", "LeftHand" }, accent, 0.17, 0.25)
-					elseif basicHit and (pl.autoNormalHits or 0) % 5 == 4 then
+					elseif false then
 						local rim = attackBtn:FindFirstChildOfClass("UIStroke")
 						if rim then
 							TweenService:Create(rim, TweenInfo.new(0.12), { Color = Color3.fromRGB(255, 236, 143), Thickness = 5 }):Play()
@@ -7370,8 +7444,8 @@ function FieldScene.start(opts)
 							end)
 						end
 					end
-					showCombo(if basicHit and (pl.autoNormalHits or 0) % 5 == 4
-						then string.format("%d연타 · 강타 준비!", streakN)
+					showCombo(if false
+						then ""
 						else string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 역대 신기록!" else ""), isRecord, accent)
 					if isRecord then sfx("sfx_card_ring", 0.52, 1.24) end
 				end
@@ -7599,6 +7673,27 @@ function FieldScene.start(opts)
 				end
 			end
 			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+			-- [전투 목표 · 2026-11-28] 모두 쓰러뜨리면 이번 목표 달성 별(표시용, 보상·저장 불변)
+			if pl.fieldChallenge and not pl.fieldChallenge.done then
+				local alive = 0
+				for _, o in enemies do if not o.ac.dead then alive += 1 end end
+				if pl.fieldChallenge.kind == "boss" and e.boss then pl.fieldChallenge.bossFirst = alive > 0 end
+				if alive == 0 then
+					pl.fieldChallenge.done = true
+					local elapsed = os.clock() - pl.fieldChallenge.startAt
+					local ok = (pl.fieldChallenge.kind == "speed" and elapsed <= pl.fieldChallenge.limit)
+						or (pl.fieldChallenge.kind == "untouched" and pl.hp / math.max(1, pl.maxHp) >= 0.7)
+						or (pl.fieldChallenge.kind == "boss" and pl.fieldChallenge.bossFirst == true)
+						or (pl.fieldChallenge.kind == "weak" and (pl.fieldChallenge.weakHits or 0) >= 5)
+					local stars = 1 + (if ok then 1 else 0) + (if elapsed <= pl.fieldChallenge.limit * 1.5 and pl.hp / math.max(1, pl.maxHp) >= 0.5 then 1 else 0)
+					folder:SetAttribute("FieldChallengeStars", stars)
+					task.delay(1.2, function()
+						showCombo(string.rep("★", stars) .. string.rep("☆", 3 - stars) .. "  " .. (if ok then "목표 달성! " else "목표 실패 · ") .. pl.fieldChallenge.text, true,
+							if ok then Color3.fromRGB(255, 214, 90) else Color3.fromRGB(200, 190, 170))
+						sfx(if ok then "sfx_fanfare" else "sfx_card_chain", 0.5, 1)
+					end)
+				end
+			end
 			sfx(if e.boss then "sfx_fanfare" else "sfx_card_chain", 0.6, 1)
 			-- 전리품: 쓰러뜨리면 체력 회복약을 줍는다 (두목은 항상, 졸개는 40%)
 			if e.boss or math.random() < 0.4 then
@@ -8280,7 +8375,9 @@ function FieldScene.start(opts)
 		if moveId == "rush" then
 			-- [연속 공격 10박자] 1회 입력당 피해 판정은 기존 1회. 무기별 전신 포즈만 10단 순환.
 			local pressedAt = os.clock()
-			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % 10 + 1 else 1
+			-- [오너 지시 2026-11-28] 연속 공격은 처음부터 안 됨: 숙련 1단 단타(2자세 번갈아), 2단 3 · 3단 5 · 4단 7 · 5단 10박자
+			local maxBeat = ({ 2, 3, 5, 7, 10 })[math.clamp(pl.masteryRank or 1, 1, 5)]
+			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % maxBeat + 1 else 1
 			swingBridge.basicBeat, swingBridge.basicAt = basicBeat, pressedAt
 		end
 		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4, basicBeat)
@@ -8764,6 +8861,7 @@ function FieldScene.start(opts)
 				local rank = practiceRank(practice.xp)
 				local promoted = rank > practice.rank
 				practice.rank = rank
+				pl.masteryRank = rank
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 				attackBtn:SetAttribute("WeaponMasteryRank", rank)
 				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
@@ -8791,7 +8889,8 @@ function FieldScene.start(opts)
 						elseif comboRng:NextNumber() < math.clamp(threeHitBase + threeHitBias, 0, 0.5) then 3 else 2
 				end
 				if promoted then
-					showCombo(string.format("%s 숙련 %d단!", wpn.name, rank))
+					showCombo(string.format("%s 숙련 %d단! · %s", wpn.name, rank,
+						if rank == 2 then "연속 공격 3박자·강타 자동 발동 열림" elseif rank == 3 then "연속 5박자" elseif rank == 4 then "연속 7박자·회전 베기 열림" else "연속 10박자·발동 확률 최고"))
 					sfx("sfx_coin", 0.55, 1.3)
 				end
 				if chain > 1 then
@@ -8921,6 +9020,117 @@ function FieldScene.start(opts)
 			end
 		end
 	end
+	-- [두목 스킬 · 2026-11-28 오너: "보스답게 페이즈·스킬·모션·피통·액션 다양하게, 쉽게 안 죽게"]
+	-- 체력 단계 1(100~70%)·2(70~40%)·3(40~15%)·4(15% 아래). 단계가 오를수록 쓸 수 있는 스킬이 늘고 간격이 짧아진다.
+	-- 모든 스킬은 바닥 원·이름·붉은 빛으로 예고한 뒤 발동 → 피하면(회피 무적) 안 맞는다. 일반 공격 중엔 쓰지 않는다.
+	-- [레지스터 200 한도] 이 큰 함수에 지역 이름을 늘리지 않게 두목 스킬 묶음을 즉시 실행 함수 하나로 감싼다.
+	local bossSkillTick = (function()
+		local BOSS_SKILLS = {
+			{ id = "wave", phase = 1, name = "대지 충격파", warn = 1.1, cd = 9 },
+			{ id = "charge", phase = 2, name = "돌진", warn = 0.85, cd = 8 },
+			{ id = "roar", phase = 3, name = "포효", warn = 0.7, cd = 11 },
+			{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.5, cd = 14 },
+		}
+		local function bossPhaseOf(e)
+			local r = e.ac.hp / math.max(1, e.maxHp)
+			return if r < 0.15 then 4 elseif r < 0.4 then 3 elseif r < 0.7 then 2 else 1
+		end
+		local function bossFeet(e)
+			return e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0)
+		end
+		return function(e, now: number, hrp: BasePart?, dist: number)
+			if not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
+			local phase = bossPhaseOf(e)
+			if phase >= 4 and not e.bossPhase4 then
+				e.bossPhase4 = true
+				e.armorUntil = now + 6
+				e.model:SetAttribute("FieldBossPhase", 4)
+				showCombo("두목 최후 발악! · 6초간 단단해짐 — 피하며 버텨라", true, Color3.fromRGB(255, 60, 60))
+				screenFlash(Color3.fromRGB(255, 50, 40), 0.8)
+				sfx("sfx_event_war", 0.8, 0.7)
+			end
+			local cast = e.bossCast
+			if cast then
+				if now < cast.at then return end
+				e.bossCast = nil
+				local dmg = e.ac.def.dmg
+				local flatTo = (hrp.Position - cast.origin) * Vector3.new(1, 0, 1)
+				if cast.id == "wave" then
+					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 90, 60), 0.45)
+					shakeUntil, shakeAmp = now + 0.35, 1.2
+					sfx("sfx_cannon", 0.5, 0.55)
+					if flatTo.Magnitude <= cast.radius then hurtPlayerBy(dmg * 0.9) end
+				elseif cast.id == "roar" then
+					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 200, 90), 0.4)
+					sfx("sfx_horn", 0.7, 0.6)
+					if flatTo.Magnitude <= cast.radius and not AC.isInvulnerable(pl, now) then
+						hurtPlayerBy(dmg * 0.4)
+						eliteSlowUntil = math.max(eliteSlowUntil, now + 2.5)
+						say("포효에 몸이 굳었다! 2.5초 둔화")
+					end
+				elseif cast.id == "charge" then
+					local dir = cast.dir
+					local hitDone = false
+					local start = e.model:GetPivot()
+					local t0 = os.clock()
+					sfx("sfx_event_danger", 0.6, 0.8)
+					task.spawn(function()
+						while e.root.Parent and not e.ac.dead and os.clock() - t0 < 0.45 do
+							local k = (os.clock() - t0) / 0.45
+							local pos = start.Position + dir * cast.length * k
+							e.model:PivotTo(CFrame.lookAt(pos, pos + dir))
+							local _, h = char3()
+							if not hitDone and h and ((h.Position - e.root.Position) * Vector3.new(1, 0, 1)).Magnitude < 5 then
+								hitDone = true
+								hurtPlayerBy(dmg * 1.2)
+							end
+							RunService.Heartbeat:Wait()
+						end
+					end)
+				elseif cast.id == "frenzy" then
+					local base = e.ac.def
+					local fast = table.clone(base)
+					fast.windup *= 0.55
+					fast.recover *= 0.6
+					e.ac.def = fast
+					say("두목 광폭 연타! 5초")
+					task.delay(5, function()
+						if e.ac and not e.ac.dead and e.ac.def == fast then e.ac.def = base end
+					end)
+				end
+				return
+			end
+			if e.ac.state ~= "chase" and e.ac.state ~= "idle" then return end
+			if dist > 28 or now < (e.nextBossSkillAt or 2) then return end
+			e.skillReady = e.skillReady or {}
+			local options = {}
+			for _, sk in BOSS_SKILLS do
+				if sk.phase <= phase and now >= (e.skillReady[sk.id] or 0) then table.insert(options, sk) end
+			end
+			if #options == 0 then return end
+			local sk = options[math.random(1, #options)]
+			e.skillReady[sk.id] = now + sk.cd
+			e.nextBossSkillAt = now + (if phase >= 4 then 3.5 elseif phase == 3 then 5 elseif phase == 2 then 6.5 else 8)
+			local origin = bossFeet(e)
+			local c = { id = sk.id, at = now + sk.warn, origin = origin }
+			if sk.id == "wave" then
+				c.radius = 9 * STUD
+				groundRing(origin, c.radius, sk.warn)
+			elseif sk.id == "roar" then
+				c.radius = 6 * STUD
+				groundRing(origin, c.radius, sk.warn)
+			elseif sk.id == "charge" then
+				local to = (hrp.Position - e.root.Position) * Vector3.new(1, 0, 1)
+				c.dir = if to.Magnitude > 0.1 then to.Unit else e.root.CFrame.LookVector
+				c.length = math.clamp(to.Magnitude + 6, 12, 34)
+				groundRing(e.root.Position + c.dir * c.length - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), 4, sk.warn)
+			end
+			e.bossCast = c
+			e.model:SetAttribute("FieldBossSkill", sk.id)
+			showCombo("⚠ " .. sk.name .. "!", true, Color3.fromRGB(255, 120, 70))
+			burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
+		end
+	end)()
 	local function boulderEvent()
 		local _, hrp = char3()
 		if not hrp then
@@ -9293,6 +9503,8 @@ function FieldScene.start(opts)
 			table.clear(swingBridge.last)
 			local practice = weaponPractice[wpn.id]
 			local rank = practice and practice.rank or 1
+			pl.masteryRank = rank
+			refreshAutoHitPips()
 			weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 			attackBtn:SetAttribute("WeaponMasteryRank", rank)
 			attackBtn:SetAttribute("WeaponMasteryExperience", practice and practice.xp or 0)
@@ -9530,11 +9742,17 @@ function FieldScene.start(opts)
 					-- 위 strikeEnemy에서는 이 경우 5타 일반 축하를 생략해 화면·카메라·효과음 중복을 막는다.
 					local record = pl.autoHeavyRecord == true
 					pl.autoHeavyRecord = nil
+					local autoKind = pl.autoSkillKind or "heavy"
+					if autoKind == "sweep" and (pl.cd.sweep or -100) > os.clock() then autoKind = "heavy" end
+					local swept = autoKind == "sweep" and useMove("sweep")
+					if swept then comboCinema(streakN, record, true) end
+					if not swept then
 					if useMove("heavy") then
 						comboCinema(streakN, record, true)
 					else
 						-- 중간에 시전 조건이 바뀌었으면 기존 5타 축하는 복원한다.
 						comboCinema(streakN, record)
+					end
 					end
 				end
 			end
@@ -9664,6 +9882,7 @@ function FieldScene.start(opts)
 					sb.wasCooling = true
 				elseif sb.wasCooling then
 					sb.wasCooling = false
+					if okButtonFx and ButtonFx then ButtonFx.ready(sb.btn, if key == "dodge" then Color3.fromRGB(114, 244, 228) else nil) end
 					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
 					if stroke then
 						stroke.Color = Color3.fromRGB(255, 247, 164)
@@ -9803,6 +10022,7 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
+			if e.boss then bossSkillTick(e, now, hrp, dist) end
 			-- [모바일 원거리 그림자] 일반 적의 실제 원본 그림자만 거리별로 관리한다.
 			-- 100/80스터드 히스테리시스로 경계 반복 갱신 방지. 근접·정예·두목·공격 모션은 보존.
 			if visualMobile and not e.elite and not e.ac.dead then
@@ -9868,6 +10088,9 @@ function FieldScene.start(opts)
 				e.warnUntil = now + e.ac.def.windup
 				burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
 				sfx("sfx_event_danger", 0.35, 1.2)
+				-- [타이밍 안내] 처음 몇 번은 무엇을 해야 하는지 말해 준다
+				pl.fieldTeach = (pl.fieldTeach or 0) + 1
+				if pl.fieldTeach <= 3 then say("빨간 신호! 맞기 직전에 회피 → 반격 ×2", 1.6) end
 				if e.ac.def.aoe then
 					groundRing(e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), e.ac.def.range * STUD * 0.85, e.ac.def.windup)
 				end
@@ -10123,7 +10346,8 @@ function FieldScene.start(opts)
 					-- [매트릭스식 성공 연출] 피해/보상/시전 횟수 추가 없이 적 AI·이동만 0.72초 동안 24% 속도로 재생.
 					pl.matrixDodgeConsumed = true
 					pl.matrixSlowUntil = now + 0.72
-					showCombo("완벽 회피! · 매트릭스 슬로모션", true, Color3.fromRGB(122, 240, 246))
+					pl.counterUntil = now + 1.6 -- [반격] 다음 한 방 ×2
+					showCombo("완벽 회피! · 지금 치면 반격 ×2", true, Color3.fromRGB(122, 240, 246))
 					screenFlash(Color3.fromRGB(122, 236, 248), if visualMobile then 0.91 else 0.82)
 					pulseAt("DODGE_EVASION_PULSE", hrp.CFrame * CFrame.new(0, -2.2, 0),
 						Color3.fromRGB(98, 220, 242), Color3.fromRGB(238, 255, 255), 13, if visualMobile then 5 else 12)
