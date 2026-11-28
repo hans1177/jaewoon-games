@@ -378747,11 +378747,157 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_18ad57c6f4a9f683f682ff2d",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15672",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "b742277afcc0c5b8f42a2d6d13fe99d318294553",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15672,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-dropbox-no-main-push",
+        "baseSha": "b742277afcc0c5b8f42a2d6d13fe99d318294553",
+        "headSha": "5971b743a3042c5f5177542c4a219c2315db6a90",
+        "mergeCommitSha": "4c9cf9d483a3235a722a6cb299e5f1d06339fcad",
+        "mergedAt": "2026-11-28T03:24:37Z",
+        "authorLogin": "hans1177",
+        "titleHash": "126fa1ef4ff712767eaf4d20c9be3437ebe1ea14fb3b01ede76602865d8a2b3b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-dropbox-no-main-push",
+        "candidateSha": "5971b743a3042c5f5177542c4a219c2315db6a90"
+      },
+      "changeStats": {
+        "changedFileCount": 23,
+        "codingRelevantFileCount": 9,
+        "addedLineCount": 5114,
+        "deletedLineCount": 24,
+        "changedFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "AGENTS.md",
+          "qa/mare-auto-placement.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/docs/AUTO_PLACEMENT.md",
+          "roblox-games/mare-essentia/docs/CARD_ART_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/CARD_BATTLE_HANDOFF.md",
+          "roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/RULES.md",
+          "roblox-games/mare-essentia/docs/auto_placement_needed.csv",
+          "roblox-games/mare-essentia/docs/battle_backdrops/README.md",
+          "roblox-games/mare-essentia/docs/card_battle/README.md",
+          "roblox-games/mare-essentia/docs/discoveries/ANIMAL_RIG_MOTION.md",
+          "roblox-games/mare-essentia/docs/ports/README.md",
+          "roblox-games/mare-essentia/docs/residents/README.md",
+          "roblox-games/mare-essentia/docs/ships/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/SeaAreas.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/gen_auto_placement.py"
+        ],
+        "codingRelevantFiles": [
+          ".github/workflows/owner-mare-essentia-assets.yml",
+          "qa/mare-auto-placement.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/SeaAreas.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/VoyageScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "tools/gen_auto_placement.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15672",
+        "merge-commit:4c9cf9d483a3235a722a6cb299e5f1d06339fcad",
+        "base-main:b742277afcc0c5b8f42a2d6d13fe99d318294553"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 2994
+    "total": 2995
   }
 }
