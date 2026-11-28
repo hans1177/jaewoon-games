@@ -5918,6 +5918,37 @@ local RENDERERS: { [string]: any } = {}
 
 function RENDERERS.harbor()
 	local h = view.harbor
+	if H.harborPagePort ~= view.player.portId then H.harborPage = "overview"; H.harborPagePort = view.player.portId end
+	if H.bankVisitPending then H.harborPage = "finance" end
+	local page = H.harborPage or "overview"
+	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "HarborFacilityIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 100)
+		local grid = Instance.new("UIGridLayout")
+		grid.CellPadding = UDim2.fromOffset(4, 4)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = bar
+		for i, item in {{ "항구 현황", "overview", "harbor" }, { "교역 소식", "trade", "trade" }, { "금융 시설", "finance", "coin" }, { "건설·행정", "build", "yard" }, { "길드·출항", "depart", "route" }, { "주점", "tavern", "crew" }} do
+			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+				H.harborPage = item[2]
+				content.CanvasPosition = Vector2.zero
+				render()
+			end, true)
+			button.LayoutOrder = i
+			button.TextSize = 14
+			if H.hasIconArt(item[3]) then
+				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
+				icon.Position = UDim2.new(0, 4, 0.5, -12)
+				local pad = Instance.new("UIPadding")
+				pad.PaddingLeft = UDim.new(0, 28)
+				pad.Parent = button
+			end
+		end
+		return bar
+	end)
 	H.walletBar("harbor")
 	-- [항구 수요·산업] 특산/수요/발전의 실측 항목을 한눈에 확인.
 	H.statStrip({
@@ -5926,6 +5957,7 @@ function RENDERERS.harbor()
 		{ "항구 발전", tostring(h.level) .. "단계", tone = "key" },
 	})
 	-- [교역 재미] 상회 등급·축제 예고·라이벌 상단·희귀 화물·신상품 열풍
+	if page == "trade" then
 	local tf = view.tradeFun
 	if tf then
 		add(function() return mkHeader(content, "교역 소식") end)
@@ -5990,6 +6022,8 @@ function RENDERERS.harbor()
 			return mkLabel(content, "팁: 이 항구 특산이 아닌 상품을 처음 팔면 '최초 수입' +25%, 이후 5일 열풍 +12%.", 14, COLORS.text, true)
 		end)
 	end
+	end
+	if page == "overview" then
 	add(function() return mkHeader(content, view.player.portName .. " · " .. h.name .. " (" .. h.level .. "단계)") end)
 	add(function()
 		return mkLabel(content, string.format("특산: %s\n수요: %s", table.concat(h.produces, ", "), table.concat(h.demands, ", ")), 16, COLORS.text, true)
@@ -6055,6 +6089,7 @@ function RENDERERS.harbor()
 		local nextText = if h.nextAt then string.format("다음 단계까지 %d 더 투자", h.nextAt - h.invested) else "최고 단계예요"
 		return mkLabel(content, string.format("누적 투자 %d · %s\n혜택: 이 항구에서 팔 때 +%d%%, 수리·고용·보급 비용 -%d%%", h.invested, nextText, math.floor(h.sellBonus * 100 + 0.5), math.floor(h.discount * 100 + 0.5)), 13, COLORS.text, false)
 	end)
+	end
 	local function section(title)
 		add(function()
 			local heading = mkHeader(content, title)
@@ -6067,6 +6102,7 @@ function RENDERERS.harbor()
 		fac[k] = true
 	end
 
+	if page == "finance" then
 	if fac.bank then
 		local b = view.bank
 		section("은행")
@@ -6105,6 +6141,8 @@ function RENDERERS.harbor()
 		end
 	end
 
+	end
+	if page == "build" then
 	if view.portBuildings then
 		section("항구 건물 계통 (상인 조합소에서 은행까지, 항구도 단계마다 발전해요)")
 		for _, ch in view.portBuildings do
@@ -6113,9 +6151,26 @@ function RENDERERS.harbor()
 				if ch.next then
 					sub ..= string.format("\n다음: %s (%d코인) — %s\n%s", ch.next.name, ch.next.cost, if ch.next.can then "지을 수 있어요" else tostring(ch.next.why), ch.next.lore)
 				end
-				return mkRow(content, ch.name, sub, {
+				local row = mkRow(content, ch.name, sub, {
 					{ text = "건축", color = COLORS.gold, onClick = function() call("BuildStage", { chain = ch.id }) end, enabled = ch.next ~= nil and ch.next.can },
 				}, 112)
+			local box = row:FindFirstChild("RowText")
+			if box then
+				local track = Instance.new("Frame")
+				track.Name = "HarborConstructionProgress"
+				track.Size = UDim2.new(1, -4, 0, 10)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = box
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(math.clamp(ch.stage / math.max(1, ch.total), 0, 1), 1)
+				fill.BackgroundColor3 = if ch.stage >= ch.total then Color3.fromRGB(47, 122, 58) else UI_BRASS_DARK
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+			end
+				return row
 			end)
 		end
 	end
@@ -6159,6 +6214,8 @@ function RENDERERS.harbor()
 		end
 	end
 
+	end
+	if page == "depart" then
 	add(function() return mkHeader(content, "길드 의뢰 보드 (7일마다 바뀌어요)") end)
 	for _, b in view.board or {} do
 		add(function()
@@ -6204,6 +6261,8 @@ function RENDERERS.harbor()
 			end },
 		}, 64)
 	end)
+	end
+	if page == "build" then
 	add(function() return mkHeader(content, "교역소 투자") end)
 	for _, amt in h.options do
 		add(function()
@@ -6221,6 +6280,8 @@ function RENDERERS.harbor()
 			{ text = btn, color = COLORS.gold, enabled = o.cooldownLeft <= 0, onClick = function() call("OrderPatrol", {}) end },
 		}, 88)
 	end)
+	end
+	if page == "tavern" then
 	add(function() return mkHeader(content, "주점") end)
 	add(function()
 		return mkRow(content, "소문 듣기", string.format("술값 %d · 지금 여기서 사서 다른 항구에 팔면 남는 상품\n(지금 정보 수준: %s)", h.rumorCost, intelName(view.intel or 0)), {
@@ -6249,6 +6310,7 @@ function RENDERERS.harbor()
 		withIcon(mrow, "Relics", "map-rolled", nil, 52)
 		return mrow
 	end)
+	end
 end
 
 -- 주점 '동료' 탭: 영입할 수 있는 동료를 위에 모아 표시한다
@@ -6338,6 +6400,37 @@ function RENDERERS.crew()
 		{ "미배치", tostring(math.max(0, joined - filled)) .. "명", tone = if joined > filled then "bad" else "good" },
 		{ "빈 직책", tostring(#(view.companions.stations or {}) - filled) .. "곳", tone = "key" },
 	})
+	local page = H.crewPage or "roster"
+	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "CrewSectionIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 100)
+		local grid = Instance.new("UIGridLayout")
+		grid.CellPadding = UDim2.fromOffset(4, 4)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = bar
+		for i, item in {{ "동료 명단", "roster", "crew" }, { "직책 배치", "station", "route" }, { "동료 영입", "recruit", "recruit" }} do
+			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+				H.crewPage = item[2]
+				H.crewDetailId = nil
+				content.CanvasPosition = Vector2.zero
+				render()
+			end, true)
+			button.LayoutOrder = i
+			button.TextSize = 14
+			if H.hasIconArt(item[3]) then
+				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
+				icon.Position = UDim2.new(0, 4, 0.5, -12)
+				local pad = Instance.new("UIPadding")
+				pad.PaddingLeft = UDim.new(0, 28)
+				pad.Parent = button
+			end
+		end
+		return bar
+	end)
+	if page == "station" then
 	add(function() return mkHeader(content, string.format("내 배 · 동료 자리 %d칸", view.companions.max)) end)
 	add(function()
 		local sh = view.ship
@@ -6389,9 +6482,14 @@ function RENDERERS.crew()
 					call("Station", { companionId = nxt.id, station = st.id })
 				end })
 			end
-			return mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 60)
+			local row = mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 86)
+			local accent = row:FindFirstChild("AccentBar")
+			if accent and accent:IsA("Frame") then accent.BackgroundColor3 = if not st.seatId then COLORS.red elseif st.matched then Color3.fromRGB(47, 122, 58) else UI_BRASS end
+			return row
 		end)
 	end
+	end
+	if page == "station" then return end
 	local selected = nil
 	for _, c in view.companions.list do if c.id == H.crewDetailId then selected = c; break end end
 	if not selected then H.crewDetailId = nil end
@@ -6439,6 +6537,7 @@ function RENDERERS.crew()
 	add(function()
 		local tiles = {}
 		for _, c in (if selected then { selected } else view.companions.list) do
+			if not selected and ((page == "recruit" and c.joined) or (page == "roster" and not c.joined)) then continue end
 			local tier = ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier]
 			local tile: any = {
 				title = c.name .. (if c.joined then " (합류)" else ""),
@@ -6474,7 +6573,38 @@ end
 
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
+	local page = H.captainPage or "captain"
+	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "CaptainSectionIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 100)
+		local grid = Instance.new("UIGridLayout")
+		grid.CellPadding = UDim2.fromOffset(4, 4)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = bar
+		for i, item in {{ "선장 현황", "captain", "status" }, { "장비", "gear", "cargo" }, { "성장·숙련", "skills", "tech" }, { "마을 발전", "village", "harbor" }, { "설정", "settings", "route" }, { "기록", "records", "codex" }} do
+			local button = mkButton(bar, item[1], if page == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+				H.captainPage = item[2]
+				content.CanvasPosition = Vector2.zero
+				render()
+			end, true)
+			button.LayoutOrder = i
+			button.TextSize = 14
+			if H.hasIconArt(item[3]) then
+				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
+				icon.Position = UDim2.new(0, 4, 0.5, -12)
+				local pad = Instance.new("UIPadding")
+				pad.PaddingLeft = UDim.new(0, 28)
+				pad.Parent = button
+			end
+		end
+		return bar
+	end)
+	if page == "captain" then
 	H.counselRows(1)
+	if H.visualStatus then H.visualStatus() end
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
 		{ "선체", string.format("%d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
@@ -6499,13 +6629,33 @@ function RENDERERS.status()
 			{ text = "덱 짜기", color = COLORS.blue, onClick = function() if H.openDeck then H.openDeck() end end },
 		}, 110)
 	end)
-	add(function() return mkHeader(content, "직업") end)
+	end
+	if page == "skills" then
+	add(function() return mkHeader(content, "직업 성장") end)
 	for _, c in view.careers do
 		add(function()
-			return mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 48)
+			local row = mkRow(content, string.format("%s Lv.%d", c.name, c.level), string.format("경험치 %d / %d", c.xp, c.nextXp), nil, 88)
+			local box = row:FindFirstChild("RowText")
+			if box then
+				local track = Instance.new("Frame")
+				track.Name = "CareerExperienceMeter"
+				track.Size = UDim2.new(1, -4, 0, 10)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = box
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(math.clamp(if c.nextXp > 0 then c.xp / c.nextXp else 1, 0, 1), 1)
+				fill.BackgroundColor3 = Color3.fromRGB(47, 122, 58)
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+			end
+			return row
 		end)
 	end
-	if view.village then
+	end
+	if page == "village" and view.village then
 		add(function() return mkHeader(content, "마을 발전 (학문을 이해할수록 자라요)") end)
 		H.statStrip({
 			{ "마을", string.format("Lv.%d %s", view.village.level, view.village.name), tone = "key" },
@@ -6551,6 +6701,7 @@ function RENDERERS.status()
 			end)
 		end
 	end
+	if page == "settings" then
 	add(function() return mkHeader(content, "설정") end)
 	add(function()
 		local manualOn = player:GetAttribute("ManualHelm") ~= false
@@ -6578,6 +6729,8 @@ function RENDERERS.status()
 			{ text = "크게", color = COLORS.blue, onClick = function() Sfx.stepSfx(1); render() end },
 		}, 52)
 	end)
+	end
+	if page == "skills" then
 	add(function() return mkHeader(content, "전문 분야 · 21개 학문은 직업과 무관하게 연구 가능") end)
 	add(function()
 		local sv = view.specialties
@@ -6609,9 +6762,31 @@ function RENDERERS.status()
 			if sv.subOpen and not mine and sp.unlocked then
 				table.insert(buttons, { text = if isSub then "부직업 해제" else "부직업", color = COLORS.green, onClick = function() call("SetSubSpecialty", { specialtyId = sp.id }) end })
 			end
-			return mkRow(content, title, sub, buttons, 64)
+			local row = mkRow(content, title, sub, buttons, 92)
+			local box = row:FindFirstChild("RowText")
+			if box then
+				local track = Instance.new("Frame")
+				track.Name = "SpecialtyExperienceMeter"
+				track.Size = UDim2.new(1, -4, 0, 10)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = box
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(math.clamp(if sp.nextXp > 0 then sp.xp / sp.nextXp else 1, 0, 1), 1)
+				fill.BackgroundColor3 = if sp.unlocked then UI_BRASS_DARK else COLORS.grey
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+			end
+			return row
 		end)
 	end
+	end
+	if page == "gear" then
+	local equippedCount = 0
+	for _, g in view.gear.list do if g.equipped then equippedCount += 1 end end
+	H.statStrip({ { "장착", tostring(equippedCount) .. "/" .. tostring(view.gear.slots), tone = "key" } })
 	add(function() return mkHeader(content, string.format("항해 장비 (장착 최대 %d개)", view.gear.slots)) end)
 	for _, g in view.gear.list do
 		add(function()
@@ -6629,7 +6804,12 @@ function RENDERERS.status()
 					call("BuyGear", { gearId = g.id })
 				end }
 			end
-			local grow = mkRow(content, g.name .. (if g.equipped then "  (장착)" else ""), g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else ""), { btn }, 60)
+			local expanded = H.gearSelectedId == g.id
+			local status = if g.equipped then "장착 중" elseif g.owned then "보유" elseif view.player.fame < g.minFame then "명성 잠김" else "구매 가능"
+			local grow = mkRow(content, g.name .. " · " .. status, if expanded then g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else "") else status,
+				if expanded then { { text = "접기", color = COLORS.grey, onClick = function() H.gearSelectedId = nil; render() end }, btn } else { { text = "상세", color = COLORS.paper, onClick = function() H.gearSelectedId = g.id; render() end } }, 88)
+			local accent = grow:FindFirstChild("AccentBar")
+			if accent and accent:IsA("Frame") then accent.BackgroundColor3 = if g.equipped then Color3.fromRGB(47, 122, 58) elseif not g.owned and view.player.fame < g.minFame then COLORS.red else UI_BRASS end
 			local gi = ({
 				sextant = { "Relics", "compass-base" }, brass_telescope = { "Relics", "magnifying-glass" }, ledger = { "Relics", "journal-closed" },
 				medicine_chest = { "Cargo", "mortar" }, lucky_charm = { "Cargo", "gem-medium" }, naval_chart = { "Relics", "map-rolled" },
@@ -6640,6 +6820,8 @@ function RENDERERS.status()
 			return grow
 		end)
 	end
+	end
+	if page == "records" then
 	add(function() return mkHeader(content, "명성 랭킹 (서버 전체 상위 10)") end)
 	add(function()
 		return mkRow(content, "랭킹 보기", "다른 항해자들의 명성 순위를 불러와요", {
@@ -6663,6 +6845,7 @@ function RENDERERS.status()
 		return mkRow(content, string.format("%s · %d년 (항해 %d일째)", p.nation, p.year, p.day),
 			string.format("명성 %d · 도감 %d/%d · 완료한 퀘스트 %d", p.fame, view.codex.found, view.codex.total, view.quests.doneCount), nil, 52)
 	end)
+	end
 end
 
 function intelName(level)
@@ -9023,20 +9206,84 @@ function RENDERERS.explore()
 			add(function() return mkButton(content, "항해 지도에서 탐험 항구 찾기", COLORS.blue, UDim2.new(1, -6, 0, 44), function() openTab("map") end) end)
 		end
 	end
+	local selected
+	for _, site in view.sites do if site.id == H.exploreSiteId then selected = site; break end end
+	if not selected then H.exploreSiteId = nil end
+	local filter = H.exploreFilter or "all"
 	add(function()
-		local tiles = {}
-		for _, s in view.sites do
-			table.insert(tiles, { icon = "explore", title = s.name,
-				sub = if s.left == 0 then "모두 조사했어요" elseif not s.unlocked then s.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일%s", math.clamp(s.minLevel or 1, 1, 5), s.left, s.days,
-					if s.fieldQuest then "\n현장 의뢰: " .. s.fieldQuest else ""),
-				-- [탐험 진입] 이용할 수 없는 버튼을 "지상맵 입장"으로 오인하지 않도록 실제 상태를 표시한다. 해금·발견 규칙은 그대로.
-				btn = if s.left == 0 then "조사 완료" elseif not s.unlocked then "연구 조건" else "지상맵 입장",
-				color = COLORS.green, enabled = s.unlocked and s.left > 0, onClick = function() H.startField(s) end })
+		local bar = Instance.new("Frame")
+		bar.Name = "ExploreFilterIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 100)
+		local grid = Instance.new("UIGridLayout")
+		grid.CellPadding = UDim2.fromOffset(4, 4)
+		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
+		grid.SortOrder = Enum.SortOrder.LayoutOrder
+		grid.Parent = bar
+		for i, item in {{ "전체", "all", "explore" }, { "탐험 가능", "ready", "route" }, { "조건 잠김", "locked", "lock" }, { "조사 완료", "done", "cc0_yes" }} do
+			local button = mkButton(bar, item[1], if filter == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
+				H.exploreFilter = item[2]
+				content.CanvasPosition = Vector2.zero
+				render()
+			end, true)
+			button.LayoutOrder = i
+			button.TextSize = 14
+			if H.hasIconArt(item[3]) then
+				local icon = modelIcon(button, "FacilityArt", item[3], nil, 24, item[1])
+				icon.Position = UDim2.new(0, 4, 0.5, -12)
+				local pad = Instance.new("UIPadding")
+				pad.PaddingLeft = UDim.new(0, 28)
+				pad.Parent = button
+			end
 		end
-		-- [모바일 클릭 영역] 아이콘(86)·이름(26)·설명(20)·버튼(44)을 겹치지 않는 높이에 배치한다.
-		-- 기존 156px에서는 설명과 입장 버튼이 최대 36px 겹쳐 실제 터치 대상이 불명확했다.
-		return H.tileGrid(tiles, content, 176, 210)
+		return bar
 	end)
+
+	if selected then
+		add(function()
+			return mkButton(content, "탐험지 목록", COLORS.leather, UDim2.new(1, -6, 0, 44), function() H.exploreSiteId = nil; content.CanvasPosition = Vector2.zero; render() end, true)
+		end)
+		add(function()
+			local site = selected
+			local reason = if site.left == 0 then "모두 조사했어요" elseif not site.unlocked then site.locked or "연구 조건 필요" else string.format("난이도 %d/5단 · 발견 %d · %d일", math.clamp(site.minLevel or 1, 1, 5), site.left, site.days)
+			local row = mkRow(content, site.name, reason .. (if site.fieldQuest then "\n현장 의뢰: " .. site.fieldQuest else ""), {
+				{ text = if site.left == 0 then "조사 완료" elseif not site.unlocked then "조건 잠김" else "지상맵 입장", color = COLORS.gold, enabled = site.unlocked and site.left > 0, onClick = function() H.startField(site) end },
+			}, 136)
+			if H.hasIconArt("explore") then withIcon(row, "FacilityArt", "explore", nil, 66) end
+			local box = row:FindFirstChild("RowText")
+			if box then
+				local track = Instance.new("Frame")
+				track.Name = "ExploreDifficultyMeter"
+				track.Size = UDim2.new(1, -4, 0, 10)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = box
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(math.clamp(math.clamp(site.minLevel or 1, 1, 5) / 5, 0, 1), 1)
+				fill.BackgroundColor3 = UI_BRASS_DARK
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+			end
+
+			return row
+		end)
+	else
+		for _, site in view.sites do
+			local state = if site.left == 0 then "done" elseif site.unlocked then "ready" else "locked"
+			if filter ~= "all" and filter ~= state then continue end
+			add(function()
+				local caption = if state == "done" then "조사 완료" elseif state == "locked" then "조건 잠김" else string.format("발견 %d · %d일", site.left, site.days)
+				local row = mkRow(content, site.name, caption, {
+					{ text = "상세", color = COLORS.paper, onClick = function() H.exploreSiteId = site.id; content.CanvasPosition = Vector2.zero; render() end },
+				}, 86)
+				local key = if state == "locked" then "lock" elseif state == "done" then "cc0_yes" else "explore"
+				if H.hasIconArt(key) then withIcon(row, "FacilityArt", key, nil, 44) end
+				return row
+			end)
+		end
+	end
 	end
 	-- 학자 방문·지식 보고·학회 발표는 서재(보고 탭)에서만 한다. 전투 본부의 탐험 탭은 여기서 끝난다.
 	if not H.exploreScholarView then return end
@@ -18008,7 +18255,6 @@ function render()
 		add(function() return mkLabel(content, message, 17, if messageOk then COLORS.gold else COLORS.red, true) end)
 	end
 	-- 기능별 실제 목록과 버튼을 첫 화면에 배치한다. 중복 공통 요약/스크롤 유도 버튼은 제거한다.
-	if currentTab == "status" and H.visualStatus then H.visualStatus() end
 	-- [시설별 기존 콘텐츠] 교역·조선은 기존 상세 렌더러를 탭 본문에 바로 표시한다.
 	-- 서재의 보고·도감·연구·백과는 기존 탭 렌더러를 그대로 사용한다.
 	if currentTab == "trade" then
