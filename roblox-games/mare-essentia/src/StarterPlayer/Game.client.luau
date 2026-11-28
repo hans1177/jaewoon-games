@@ -9458,6 +9458,7 @@ function H.startField(s)
 		siteId = s.id, -- 기존 Sites의 지역·도감 후보를 탐험 시각 연출에 그대로 연결한다.
 		portScenery = PortScene and PortScene.Signatures and PortScene.Signatures[s.portId], -- 항구 경관 정본, 시각 전용
 		observableCards = s.observableCards, -- 서버에서 미발견/시대/선행지식 검증한 카드만 표시한다.
+		fieldStory = s.fieldStory, -- 현재 현장 의뢰와 다음 이야기의 정본 연결
 		nodes = math.clamp(s.days, 1, 3),
 		danger = s.minLevel,
 		seed = #s.id * 31 + s.days,
