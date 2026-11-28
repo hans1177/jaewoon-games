@@ -4575,7 +4575,8 @@ function FieldScene.start(opts)
 		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
 			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
 			and not folder:GetAttribute("FieldStrongholdRoute")
-			and table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme) then
+			and (targetCard.field == "Goods" or targetCard.field == "Shipbuilding"
+				or table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme)) then
 			local anchor = folder:FindFirstChild("Discovery2")
 			if anchor and anchor:IsA("BasePart") then
 				local troops = {}
