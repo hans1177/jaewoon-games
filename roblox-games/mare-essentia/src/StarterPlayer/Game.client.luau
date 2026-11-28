@@ -15803,7 +15803,8 @@ function RENDERERS.quest()
 		return mkRow(content, "일지", "", {
 			{ text = string.format("진행 %d", #view.quests.active), color = if section == "active" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "active"; H.questDetailId = nil; render() end },
 			{ text = string.format("목표 %d", #autos), color = if section == "auto" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "auto"; render() end },
-			{ text = "탐험", color = if section == "field" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "field"; render() end },
+			{ text = "지상 탐험", color = if section == "field" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "field"; render() end },
+			{ text = "해상 전투", color = if section == "sea" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "sea"; render() end },
 			{ text = string.format("완료 %d", #view.quests.done), color = if section == "done" then COLORS.gold else COLORS.grey, onClick = function() H.questSection = "done"; render() end },
 		}, 78)
 	end)
@@ -15861,7 +15862,8 @@ function RENDERERS.quest()
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
 			local compact = (if q.chapter and not string.find(q.summary, tostring(q.chapter), 1, true) then tostring(q.chapter) .. "\n" else "") .. q.summary
 			local row = mkRow(content, q.name, if expanded then strandText(q) .. (if q.problem or q.chapter or q.prevEnding then "" else said) else compact, buttons, 92)
-			local stamp = if q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
+			local stamp = if q.kind == "win" then "battle" elseif q.kind == "war_clear" then "war"
+				elseif q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
 			if H.hasIconArt(stamp) then withIcon(row, "FacilityArt", stamp, nil, 44) end
 			local textBox = row:FindFirstChild("RowText")
 			if textBox then
@@ -15925,6 +15927,64 @@ function RENDERERS.quest()
 		end
 	else
 		add(function() return mkLabel(content, "기록된 탐험 항로 없음", 14, INK_SOFT, true) end)
+	end
+	elseif section == "sea" then
+	-- [해상 일지] 지상 탐험과 같은 승인 원화 카드·직접 진입 버튼을 사용한다.
+	-- 기존 서버 Hunt/WarStart/WarNext만 호출하며 의뢰 진행·보상·해금은 그대로.
+	local tiles, seen = {}, {}
+	local function navalTile(q, active)
+		if seen[q.id] or (q.kind ~= "win" and q.kind ~= "war_clear") then return end
+		seen[q.id] = true
+		local done = math.min(q.progress or 0, q.amount or 1)
+		local total = math.max(1, q.amount or 1)
+		local w = view.war
+		local targetId = q.warId or (q.story2 and q.story2.warId)
+		if not targetId and q.regionId then targetId = "war_" .. q.regionId end
+		local operation
+		for _, candidate in view.wars or {} do
+			if targetId and candidate.id == targetId then operation = candidate; break end
+		end
+		local caption, enabled, action = "출격", true, nil
+		local detail = string.format("%d/%d · 난이도 %d/5", done, total, math.clamp(q.grade or 1, 1, 5))
+		if done >= total then
+			caption, enabled = "목표 달성", false
+		elseif not active and not q.auto then
+			caption, action = "의뢰 확인", function() openTab("board") end
+		elseif q.portId and q.portId ~= view.player.portId then
+			caption, action = "항해 지도", function() openTab("map") end
+			detail ..= " · " .. (q.portName or "목적지")
+		elseif q.kind == "war_clear" then
+			if w then
+				if w.id == targetId then
+					caption, enabled, action = "해전 이어하기", w.next == true, function() call("WarNext") end
+					detail ..= string.format(" · %d/%d파도", w.wave, w.total)
+				else
+					caption, enabled = "다른 작전 진행 중", false
+				end
+			elseif operation then
+				caption, enabled, action = "해상맵 입장", operation.blocked == nil, function() call("WarStart", { id = operation.id }) end
+				detail ..= if operation.blocked then " · " .. operation.blocked else string.format(" · %d파도", operation.waves)
+			else
+				caption, action = "작전 확인", function() openTab("war") end
+			end
+		elseif w then
+			-- Hunt는 진행 중인 함대전을 종료하므로 일지에서 실수로 포기하지 않게 한다.
+			caption, enabled = "함대전 진행 중", false
+		elseif view.ship.hull < view.ship.maxHull * 0.3 then
+			caption, enabled = "선체 수리 필요", false
+		else
+			caption, action = "해상맵 입장", function() call("Hunt") end
+		end
+		table.insert(tiles, { kind = "FacilityArt", icon = if q.kind == "war_clear" then "war" else "battle",
+			title = q.name, sub = detail, btn = caption, color = COLORS.red, enabled = enabled and action ~= nil, onClick = action,
+			btn2 = if operation and operation.blocked and not w and done < total then { text = "해도", color = COLORS.blue, onClick = function() openTab("map") end } else nil })
+	end
+	for _, q in view.quests.active do navalTile(q, true) end
+	for _, q in view.quests.available do navalTile(q, false) end
+	if #tiles > 0 then
+		add(function() return H.tileGrid(tiles, content, 176, 210) end)
+	else
+		add(function() return mkLabel(content, "진행 가능한 해상 전투 의뢰 없음", 14, INK_SOFT, true) end)
 	end
 	elseif section == "done" then
 	if #view.quests.done == 0 then
