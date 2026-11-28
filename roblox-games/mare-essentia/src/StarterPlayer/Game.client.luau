@@ -12294,7 +12294,11 @@ do
 		end
 		local sheet = art("ui_haggle_merchant_sheet")
 		holder.Say.Text = FACE_TEXT[mood] or ""
+		local stageWidth = parent.AbsoluteSize.X
+		holder.Say.Size = UDim2.fromOffset(math.min(300, if stageWidth > 0 then math.max(100, stageWidth - 8) else 260), 32)
+		holder.Say.TextWrapped = true
 		if sheet then
+			holder.Say.Position = UDim2.new(0.5, 0, 1, 2)
 			holder.Image = sheet
 			holder.ImageRectSize = Vector2.new(256, 256)
 			holder:SetAttribute("Row", FACE_ROW[mood] or 1)
@@ -12303,10 +12307,14 @@ do
 				holder:SetAttribute("Animating", true)
 				task.spawn(function()
 					local f = 0
-					while holder:IsDescendantOf(game) do
+					while holder:IsDescendantOf(game) and not game:GetService("GuiService").ReducedMotionEnabled do
 						holder.ImageRectOffset = Vector2.new(f * 256, (holder:GetAttribute("Row") or 1) * 256)
 						task.wait(if f == 0 then 1.2 else 0.12)
 						f = (f + 1) % 4 -- 가만히 있다가 깜빡·끄덕
+					end
+					if holder:IsDescendantOf(game) then
+						holder.ImageRectOffset = Vector2.new(0, (holder:GetAttribute("Row") or 1) * 256)
+						holder:SetAttribute("Animating", false)
 					end
 				end)
 			end
@@ -12391,16 +12399,38 @@ do
 			local res = H.call("HagglePlay", payload)
 			if not g.Parent then return end
 			local ok = res and res.ok ~= false
-			Sfx.play(if ok then "sfx_card_coin" else "sfx_error", 0.5)
-			local banner = mkLabel(box, if ok then "흥정 성공!" else "정가대로…", 30, if ok then Color3.fromRGB(40, 120, 60) else Color3.fromRGB(150, 60, 50), true)
+			local deal = view and view.haggle and view.haggle.deal
+			local pct = if ok and deal and deal.goodId == goodId then tonumber(deal.pct) else nil
+			if ok then Sfx.play("sfx_card_coin", 0.5) end -- 실패 음향은 기존 H.call에서 재생
+			scroll.Visible = false
+			local banner = mkLabel(box, if not res then "결과 확인 불가" elseif ok then "흥정 성공!" else "정가대로…", 26, Color3.fromRGB(255, 239, 202), true)
 			banner.AnchorPoint = Vector2.new(0.5, 0.5)
-			banner.Position = UDim2.fromScale(0.5, 0.5)
-			banner.Size = UDim2.new(1, 0, 0, 44)
+			banner.Position = UDim2.fromScale(0.5, 0.44)
+			banner.Size = UDim2.new(1, -32, 0, 58)
 			banner.AutomaticSize = Enum.AutomaticSize.None
 			banner.TextXAlignment = Enum.TextXAlignment.Center
+			banner.BackgroundColor3 = if ok then Color3.fromRGB(43, 82, 52) else Color3.fromRGB(101, 60, 45)
+			banner.BackgroundTransparency = 0
 			banner.ZIndex = 30
-
-			task.delay(1.4, function() if g.Parent then g:Destroy() end end)
+			corner(banner, 8)
+			local detail = mkLabel(box, if pct then string.format("다음 구매 %d%% 할인", pct) elseif not res then "서버 응답을 확인하지 못했어." elseif ok then "다음 구매에 적용돼." else "추가 손해 없이 정가 구매", 17, INK, true)
+			detail.AnchorPoint = Vector2.new(0.5, 0.5)
+			detail.Position = UDim2.fromScale(0.5, 0.64)
+			detail.Size = UDim2.new(1, -32, 0, 44)
+			detail.AutomaticSize = Enum.AutomaticSize.None
+			detail.TextWrapped = true
+			detail.TextXAlignment = Enum.TextXAlignment.Center
+			detail.BackgroundColor3 = PAPER
+			detail.BackgroundTransparency = 0.08
+			detail.ZIndex = 30
+			corner(detail, 6)
+			if not reduced then
+				local scale = Instance.new("UIScale")
+				scale.Scale = 0.9
+				scale.Parent = banner
+				TS:Create(scale, TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+			end
+			task.delay(1.8, function() if g.Parent then g:Destroy() end end)
 		end
 
 		local hint = mkLabel(stage, "", 14, INK, false)
@@ -12418,7 +12448,9 @@ do
 			track.Size = UDim2.new(1, -20, 0, 40)
 			track.BackgroundColor3 = Color3.fromRGB(120, 92, 60)
 			track.Image = art("ui_haggle_scale") or ""
-			track.ScaleType = Enum.ScaleType.Stretch
+			track.ScaleType = if track.Image ~= "" then Enum.ScaleType.Slice else Enum.ScaleType.Stretch
+			track.SliceCenter = Rect.new(64, 24, 960, 104)
+			track.SliceScale = 0.5
 			track.BorderSizePixel = 0
 			track.Parent = stage
 			corner(track, 10)
@@ -12445,6 +12477,11 @@ do
 			needle.Size = UDim2.new(0, 8, 1.6, 0)
 			needle.BackgroundColor3 = Color3.fromRGB(60, 30, 20)
 			needle.Image = art("ui_haggle_needle") or ""
+			if needle.Image ~= "" then
+				needle.BackgroundTransparency = 1
+				needle.Size = UDim2.new(0, 16, 1.6, 0)
+				needle.ScaleType = Enum.ScaleType.Fit
+			end
 			needle.BorderSizePixel = 0
 			needle.ZIndex = 5
 			needle.Parent = track
@@ -12539,16 +12576,24 @@ do
 			local coinCount = math.max(1, #(pend.looks or {}))
 			local coinSize = math.max(44, math.min(80, math.floor((boxWidth - 30 - 14 * (coinCount - 1)) / coinCount)))
 			for i, look in pend.looks or {} do
-				local c = coin(row, look, coinSize)
-				c.LayoutOrder = i
+				-- 고정 슬롯 안의 동전만 세로축 회전: 옆 동전과 터치 위치는 움직이지 않는다.
+				local slot = Instance.new("Frame")
+				slot.Name = "CoinSlot"
+				slot.LayoutOrder = i
+				slot.Size = UDim2.fromOffset(coinSize, coinSize)
+				slot.BackgroundTransparency = 1
+				slot.Parent = row
+				local c = coin(slot, look, coinSize)
+				c.AnchorPoint = Vector2.new(0.5, 0.5)
+				c.Position = UDim2.fromScale(0.5, 0.5)
 				c.Activated:Connect(function()
 					if finished or selecting or not g.Parent then return end
 					selecting = true
 					if reduced then finish({ pick = i }); return end
 					-- 첫 선택만 뒤집고, 닫힌 창에는 지연 연출을 실행하지 않는다.
-					TS:Create(c, TweenInfo.new(0.12), { Size = UDim2.fromOffset(6, coinSize) }):Play()
+					TS:Create(c, TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.In), { Size = UDim2.fromOffset(6, coinSize) }):Play()
 					task.delay(0.13, function()
-						if g.Parent and c.Parent then TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(coinSize, coinSize) }):Play() end
+						if g.Parent and c.Parent then TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(coinSize, coinSize) }):Play() end
 					end)
 					task.delay(0.35, function() finish({ pick = i }) end)
 				end)
