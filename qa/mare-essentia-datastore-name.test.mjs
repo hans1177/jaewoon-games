@@ -391,6 +391,10 @@ test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격
   assert.match(discovery,/state\.stats\.fieldCheckpoint = nil/);
   assert.match(field,/local recorded = not opts\.onCheckpoint or opts\.onCheckpoint\(i, recordCard\)/);
   assert.match(field,/if not recorded then say/);
+  assert.match(field,/local requestOk, recorded = pcall\(function\(\)[\s\S]{0,220}?return recorded\s+end\)/);
+  assert.match(field,/anchor:SetAttribute\("FieldCheckpointPending", nil\)\s+recorded = requestOk and recorded == true\s+if not recorded then say/);
+  assert.match(core,/local previousCheckpoint = if action == "FieldCheckpoint" then state\.stats\.fieldCheckpoint else nil/);
+  assert.match(core,/if success and state\.stats\.fieldCheckpoint ~= previousCheckpoint then session\.dirty = true end/);
   assert.match(field,/ch:GetAttribute\("FieldRouteStep"\) == found \+ 1/);
   assert.match(field,/if i == found then folder:SetAttribute\("FieldResumeAnchor", pos\) end/);
   assert.match(field,/hit\.Material == Enum\.Material\.Water or hit\.Normal\.Y < 0\.8/);
