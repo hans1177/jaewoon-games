@@ -98,6 +98,7 @@ end
 function A.fieldEnemyMaxHp(kind: string): number
 	local def = A.Enemies[kind]
 	if not def then error("알 수 없는 적: " .. tostring(kind)) end
+	assert(type(def.hp) == "number", "적 체력 정의 오류: " .. kind)
 	return math.floor(def.hp * (if kind == "boss" then 2.75 elseif kind == "shield" or kind == "charger" then 2.55 else 2.35) + 0.5)
 end
 
