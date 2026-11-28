@@ -6920,6 +6920,25 @@ end
 function RENDERERS.status()
 	local p, ship = view.player, view.ship
 	H.counselRows(1)
+	-- [캐릭터 성장] 실제 서버 숙련 경험치 및 무기 정의를 표시한다. 독립 스킬 경험치는 생성하지 않는다.
+	add(function() return mkHeader(content, "캐릭터 · 무기 숙련과 스킬") end)
+	for _, weapon in Weapons.playerChoices() do
+		add(function()
+			local xp = math.max(0, math.floor(tonumber((view.weaponPractice or {})[weapon.id]) or 0))
+			local rank = Weapons.masteryRank(xp)
+			local nextXp = Weapons.MasteryXp[rank + 1]
+			local design = Weapons.actionDesign(weapon)
+			local stages = string.split(design.cadence, "·")
+			local progress = if nextXp then string.format("경험치 %d/%d · 다음 %d타까지 %d", xp, nextXp, rank + 1, nextXp - xp) else string.format("경험치 %d · 최고 단계", xp)
+			local skills = (if rank >= 2 then design.heavyName else "강타 잠김(2단)") .. " · " .. (if rank >= 4 then design.sweepName else "회전기 잠김(4단)")
+				.. " · " .. (if rank >= 8 then "필살기" else "필살기 잠김(8단)") .. " · " .. (if rank >= 9 then "동료 연계" else "동료 연계 잠김(9단)")
+			local item = mkRow(content, string.format("%s · 숙련 %d단 · %d타", weapon.name, rank, rank), progress .. "\n" .. table.concat(stages, "·", 1, math.min(rank, #stages)) .. "\n" .. skills, nil, 108)
+			item.Name = "CharacterWeaponMastery_" .. weapon.id
+			item:SetAttribute("WeaponMasteryRank", rank)
+			item:SetAttribute("WeaponMasteryExperience", xp)
+			return item
+		end)
+	end
 	add(function() return mkHeader(content, "선박") end)
 	H.statStrip({
 		{ "선체", string.format("%d/%d", ship.hull, ship.maxHull), tone = if ship.hull < ship.maxHull * 0.5 then "bad" else "good" },
@@ -18982,10 +19001,22 @@ function H.openCabin()
 		title.Position = UDim2.fromOffset(12, 6)
 		title.Size = UDim2.new(1, -184, 0, 24)
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local hint = mkLabel(top, "직책을 고르고 동료 선택", 12, Color3.fromRGB(90, 70, 50), false)
-		hint.Position = UDim2.fromOffset(12, 32)
-		hint.Size = UDim2.new(1, -184, 0, 20)
-		hint.AutomaticSize = Enum.AutomaticSize.None
+		-- [선장실 성장 요약] 출신 무기의 실제 저장 경험치와 해금 단계를 표시하고 캐릭터 상세로 연결한다.
+		local mainWeapon = Weapons.originWeapon(view.captain and view.captain.origin and view.captain.origin.id, view.player and view.player.year)
+		local xp = math.max(0, math.floor(tonumber((view.weaponPractice or {})[mainWeapon.id]) or 0))
+		local rank = Weapons.masteryRank(xp)
+		local nextXp = Weapons.MasteryXp[rank + 1]
+		local masteryText = string.format("%s %d단 · %s · %s", mainWeapon.name, rank, if nextXp then tostring(xp) .. "/" .. tostring(nextXp) else "최고", if rank >= 8 then "필살기" else tostring(rank) .. "타")
+		local hint = mkButton(top, masteryText, COLORS.leather, UDim2.new(1, -184, 0, 22), function()
+			close()
+			openTab("status")
+		end, true)
+		hint.Name = "CabinWeaponMastery"
+		hint.Position = UDim2.fromOffset(12, 31)
+		hint.TextSize = 12
+		hint.TextTruncate = Enum.TextTruncate.AtEnd
+		hint:SetAttribute("WeaponMasteryRank", rank)
+		hint:SetAttribute("WeaponMasteryExperience", xp)
 		local closeBtn = mkButton(top, "닫기", COLORS.leather, UDim2.fromOffset(70, 40), close, true)
 		closeBtn.AnchorPoint = Vector2.new(1, 0.5)
 		closeBtn.Position = UDim2.new(1, -8, 0.5, 0)
