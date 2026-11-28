@@ -6765,7 +6765,7 @@ local function openTradeHall()
 		local inset = 8
 		local availableW = width - inset - 16
 		local listWidth = if narrow then availableW else math.floor(availableW * 0.43)
-		local detailWidth = if narrow then availableW else availableW - listWidth + 8
+		local detailWidth = if narrow then availableW else availableW - listWidth
 		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
 		-- [교역 머리줄] 공통 머리줄의 시설·항구 이름을 반복하지 않는다.
 		-- 자금·최근 메뉴 한 줄, 실제 거래 결과나 목록 복귀가 있을 때만 두 번째 줄.
@@ -6937,11 +6937,10 @@ local function openTradeHall()
 			chip("specialty", "특산")
 			chip("demand", "수요")
 			chip("owned", "보유")
-			local ownedCount, ownedValue = 0, 0
+			local ownedCount = 0
 			for _, g in goods do
 				if g.owned > 0 then
 					ownedCount += 1
-					ownedValue += g.sell * g.owned
 				end
 			end
 			local sellAll = mkButton(chips, "일괄 판매", COLORS.green, UDim2.new(0.2, -4, 0, 44), function()
@@ -7159,7 +7158,7 @@ local function openTradeHall()
 		detail.BorderSizePixel = 0
 		detail.ScrollBarThickness = 4
 		local infoTop = 62
-		local detailHeight = infoTop + 532
+		local detailHeight = infoTop + 536
 		detail.CanvasSize = UDim2.fromOffset(0, detailHeight)
 		detail.ScrollingDirection = Enum.ScrollingDirection.Y
 		detail.Visible = not narrow or detailOpen
@@ -7176,12 +7175,16 @@ local function openTradeHall()
 			hn.RichText = true
 			hn.Text = '<font color="' .. (if diff > 0.5 then "#B12F39" elseif diff < -0.5 then "#236BAC" else "#655849") .. '"><b>' .. detailIcon .. '</b></font> ' .. hn.Text
 			hn.Position = UDim2.fromOffset(68, 4)
-			hn.Size = UDim2.new(1, -76, 0, 25)
+			hn.Size = UDim2.new(1, -144, 0, 25)
+			hn.TextSize = 17
+			hn.TextTruncate = Enum.TextTruncate.AtEnd
 			hn.AutomaticSize = Enum.AutomaticSize.None
 			local note = sel.category or "교역품"
 			local hnote = mkLabel(right, note, 16, INK_SOFT, false)
 			hnote.Position = UDim2.fromOffset(68, 30)
-			hnote.Size = UDim2.new(1, -76, 0, 22)
+			hnote.Size = UDim2.new(1, -144, 0, 22)
+			hnote.TextSize = 13
+			hnote.TextTruncate = Enum.TextTruncate.AtEnd
 			hnote.AutomaticSize = Enum.AutomaticSize.None
 			-- 식별용 견본을 누르면 기존 백과 상세를 연다. 거래 화면에 긴 백과를 반복하지 않는다.
 			local icon = if gi then modelIcon(right, gi[1], gi[2], gi[3], 48, sel.name, gi[4]) else modelIcon(right, nil, nil, nil, 48, sel.name)
@@ -7195,6 +7198,10 @@ local function openTradeHall()
 			artTap.ZIndex = icon.ZIndex + 2
 			artTap.Parent = right
 			artTap.Activated:Connect(openSelectedGoodEncyclopedia)
+			local bookButton = mkButton(right, "백과", COLORS.grey, UDim2.fromOffset(60, 44), openSelectedGoodEncyclopedia, true)
+			bookButton.AnchorPoint = Vector2.new(1, 0)
+			bookButton.Position = UDim2.new(1, -8, 0, 7)
+			bookButton.TextSize = 14
 			local qty = math.clamp(hallQty, 1, 20)
 			local free = ship.cargoCapacity - ship.cargoUsed
 			local deal = view.haggle and view.haggle.deal
@@ -7218,13 +7225,13 @@ local function openTradeHall()
 			prices.Name = "TradeDecisionPrices"
 			corner(prices, 7)
 			local buyPrice = mkLabel(prices, "매입가\n" .. H.commas(unitBuy) .. "코인",
-				22, Color3.fromRGB(255, 226, 135), true)
+				17, Color3.fromRGB(255, 226, 135), true)
 			buyPrice.Position = UDim2.fromOffset(8, 5)
 			buyPrice.Size = UDim2.new(0.5, -10, 0, 40)
 			buyPrice.AutomaticSize = Enum.AutomaticSize.None
 			buyPrice.TextWrapped = true
 			local sellPrice = mkLabel(prices, "판매가\n" .. H.commas(sel.sell) .. "코인",
-				22, Color3.fromRGB(246, 217, 161), true)
+				17, Color3.fromRGB(246, 217, 161), true)
 			sellPrice.Position = UDim2.new(0.5, 4, 0, 5)
 			sellPrice.Size = UDim2.new(0.5, -12, 0, 40)
 			sellPrice.AutomaticSize = Enum.AutomaticSize.None
@@ -7251,14 +7258,14 @@ local function openTradeHall()
 			local meanStatus = if average <= 0 then "세계 평균 자료 없음" elseif diff > 0.5 then string.format("▲ 평균보다 %.1f%% 비쌈", diff)
 				elseif diff < -0.5 then string.format("▼ 평균보다 %.1f%% 저렴", -diff)
 				else "－ 세계 평균과 비슷함"
-			local meanLabel = mkLabel(right, meanStatus, 23,
+			local meanLabel = mkLabel(right, meanStatus, 16,
 				if diff > 0.5 then Color3.fromRGB(177, 47, 57)
 					elseif diff < -0.5 then Color3.fromRGB(35, 107, 177) else INK_SOFT, true)
 			meanLabel.Position = UDim2.fromOffset(12, infoTop + 68)
 			meanLabel.Size = UDim2.new(1, -24, 0, 24)
 			meanLabel.AutomaticSize = Enum.AutomaticSize.None
 			local worldPrice = mkLabel(right, (if average > 0 then "세계 평균 매입가 " .. H.commas(average) .. "코인" else "비교 기준가 미확인")
-				.. (if dealPct > 0 then " · 흥정 할인 적용" else ""), 16, INK_SOFT, false)
+				.. (if dealPct > 0 then " · 흥정 할인 적용" else ""), 13, INK_SOFT, false)
 			worldPrice.Position = UDim2.fromOffset(12, infoTop + 94)
 			worldPrice.Size = UDim2.new(1, -24, 0, 25)
 			worldPrice.AutomaticSize = Enum.AutomaticSize.None
@@ -7269,7 +7276,7 @@ local function openTradeHall()
 			corner(profitBox, 6)
 			local profitLabel = mkLabel(profitBox,
 				"1개 세후 예상손익\n" .. (if profit == nil then "매입 기록 없음" else profitText .. "코인"),
-				22, if profit and profit < 0 then Color3.fromRGB(177, 47, 57)
+				17, if profit and profit < 0 then Color3.fromRGB(177, 47, 57)
 					elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60)
 					else Color3.fromRGB(96, 78, 41), true)
 			profitLabel.Position = UDim2.fromOffset(10, 5)
@@ -7278,7 +7285,7 @@ local function openTradeHall()
 			profitLabel.TextWrapped = true
 			local inventory = mkLabel(right, string.format("내 보유 %d개 · %s\n내 평균 매입가 %s\n빈 화물칸 %d · 이번 판매 한도 %d개",
 				sel.owned, if sel.lock then "구매 잠김" else "구매 가능 " .. tostring(maxBuy) .. "개",
-				if basis == "미구매" then basis else basis .. "코인", free, maxSell), 18, INK, true)
+				if basis == "미구매" then basis else basis .. "코인", free, maxSell), 14, INK, true)
 			inventory.Position = UDim2.fromOffset(12, infoTop + 180)
 			inventory.Size = UDim2.new(1, -24, 0, 50)
 			inventory.AutomaticSize = Enum.AutomaticSize.None
