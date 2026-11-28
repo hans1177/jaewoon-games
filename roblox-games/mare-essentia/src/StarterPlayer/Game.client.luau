@@ -6052,7 +6052,8 @@ function playStory(ev)
 	chapter.Parent = overlay
 
 	-- 대화창
-	local box = mkBox(overlay, UDim2.fromScale(0, 0.5), UDim2.fromScale(1, 0.5), Color3.fromRGB(24, 28, 38))
+	local split = if storyViewport.Y < 460 then 0.34 else 0.46
+	local box = mkBox(overlay, UDim2.fromScale(0, split), UDim2.fromScale(1, 1 - split), Color3.fromRGB(24, 28, 38))
 	local nameTag = Instance.new("TextLabel")
 	nameTag.BackgroundTransparency = 1
 	nameTag.Position = UDim2.fromOffset(14, 6)
@@ -6063,21 +6064,37 @@ function playStory(ev)
 	nameTag.TextColor3 = COLORS.gold
 	nameTag.Text = ev.npc
 	nameTag.Parent = box
+	local dialogue = Instance.new("ScrollingFrame")
+	dialogue.Name = "StoryDialogueScroll"
+	dialogue.BackgroundTransparency = 1
+	dialogue.BorderSizePixel = 0
+	dialogue.Position = UDim2.fromOffset(14, 38)
+	dialogue.Size = UDim2.new(1, -28, 1, -94)
+	dialogue.CanvasSize = UDim2.new()
+	dialogue.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	dialogue.ScrollBarThickness = 5
+	dialogue.ScrollingDirection = Enum.ScrollingDirection.Y
+	dialogue.Parent = box
 	local text = Instance.new("TextLabel")
 	text.BackgroundTransparency = 1
-	text.Position = UDim2.fromOffset(14, 38)
-	text.Size = UDim2.new(1, -28, 1, -56)
+	text.Size = UDim2.new(1, -8, 0, 0)
+	text.AutomaticSize = Enum.AutomaticSize.Y
 	text.Font = Enum.Font.Gotham
 	text.TextSize = if storyViewport.Y < 460 then 22 else 26
 	text.TextWrapped = true
 	text.TextXAlignment = Enum.TextXAlignment.Left
 	text.TextYAlignment = Enum.TextYAlignment.Top
 	text.TextColor3 = COLORS.text
-	text.Parent = box
+	text.Parent = dialogue
 	local next = Instance.new("TextButton")
-	next.BackgroundTransparency = 1
-	next.Size = UDim2.fromScale(1, 1)
-	next.Text = ""
+	next.Name = "StoryNext"
+	next.BackgroundColor3 = Color3.fromRGB(65, 48, 29)
+	next.BackgroundTransparency = 0.1
+	next.Position = UDim2.new(0, 14, 1, -50)
+	next.Size = UDim2.new(1, -28, 0, 44)
+	next.Text = "다음 대사"
+	next.TextSize = 20
+	next.TextColor3 = COLORS.gold
 	next.ZIndex = 2
 	next.Parent = box
 	local hint = Instance.new("TextLabel")
@@ -6088,10 +6105,11 @@ function playStory(ev)
 	hint.TextSize = 18
 	hint.TextXAlignment = Enum.TextXAlignment.Right
 	hint.TextColor3 = COLORS.muted
-	hint.Text = "화면을 누르면 다음"
+	hint.Text = ""
 	hint.Parent = box
 
 	local function typeLine(line)
+		dialogue.CanvasPosition = Vector2.zero
 		text.Text = line
 		if game:GetService("GuiService").ReducedMotionEnabled then text.MaxVisibleGraphemes = -1; return end
 		text.MaxVisibleGraphemes = 0
@@ -6116,7 +6134,9 @@ function playStory(ev)
 	local function showChoices()
 		next:Destroy()
 		hint.Text = ""
-		text.Size = UDim2.new(1, -28, 0, 64)
+		dialogue.Size = UDim2.new(1, -28, 0.32, 0)
+		dialogue.CanvasPosition = Vector2.zero
+		text.MaxVisibleGraphemes = -1
 		text.Text = ev.lines[#ev.lines]
 		text.TextSize = 22
 		local list = Instance.new("ScrollingFrame")
@@ -6124,8 +6144,8 @@ function playStory(ev)
 		list.AutomaticCanvasSize = Enum.AutomaticSize.Y
 		list.ScrollBarThickness = 5
 		list.BackgroundTransparency = 1
-		list.Position = UDim2.fromOffset(14, 108)
-		list.Size = UDim2.new(1, -28, 1, -114)
+		list.Position = UDim2.new(0, 14, 0.32, 44)
+		list.Size = UDim2.new(1, -28, 0.68, -70)
 		list.Parent = box
 		local lay = Instance.new("UIListLayout")
 		lay.Padding = UDim.new(0, 5)
@@ -6151,8 +6171,9 @@ function playStory(ev)
 						end
 					end
 					nameTag.Text = ""
-					text.TextSize = 20
-					text.Size = UDim2.new(1, -28, 1, -90)
+					text.TextSize = 22
+					dialogue.Size = UDim2.new(1, -28, 1, -100)
+					dialogue.CanvasPosition = Vector2.zero
 					text.Text = result.message
 					text.MaxVisibleGraphemes = -1
 					if ev.art == "epilogue" then
@@ -6177,7 +6198,7 @@ function playStory(ev)
 		if idx > #ev.lines then
 			showChoices()
 		else
-			typeLine(ev.lines[idx])
+			task.spawn(typeLine, ev.lines[idx])
 		end
 		advancing = false
 	end)
@@ -11064,7 +11085,9 @@ do
 					-- 출항 전 사건은 완료하고, 바다·전투 중 사건은 뒤로 미룬다.
 					while inField or (sceneHold and not departureEventPhase) or workspace:GetAttribute("VoyageActive")
 						or H.sceneBusy or player.PlayerGui:FindFirstChild("StoryScene", true)
-						or player.PlayerGui:FindFirstChild("WonderScene", true) do
+						or player.PlayerGui:FindFirstChild("WonderScene", true)
+						or player.PlayerGui:FindFirstChild("QuestResult") or player.PlayerGui:FindFirstChild("QuestTalk")
+						or player.PlayerGui:FindFirstChild("WorldEventScene") or player.PlayerGui:FindFirstChild("CardGain") or player.PlayerGui:FindFirstChild("CardFan") do
 						task.wait(0.2)
 					end
 					local sc = table.remove(pending, 1)
@@ -11740,7 +11763,8 @@ do
 			for _, a in fresh do
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true)
-					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")) do
+					or pg:FindFirstChild("HistoryEvent", true) or pg:FindFirstChild("CardGain") or pg:FindFirstChild("CardFan")
+					or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene") or inField) do
 					task.wait(0.3)
 				end
 				if not player.Parent then return end
@@ -13405,7 +13429,7 @@ do
 				if i > 2 then break end -- 한꺼번에 여러 개 받으면 앞의 둘만(나머지는 일지에)
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
-					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("IntroDialog")) do
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("IntroDialog") or pg:FindFirstChild("WorldEventScene") or inField) do
 					task.wait(0.3)
 				end
 				if not player.Parent then return end
@@ -13481,7 +13505,8 @@ function H.checkNewCards()
 			-- [연결 수정 · 2026-11-28] 지상 탐험 중 발견한 카드도 바로 보여 준다(예전엔 탐험이 끝날 때까지 밀렸다).
 			while player.Parent and (newGameMode or sceneHold or H.sceneBusy
 				or H.questScenesPlaying or pg:FindFirstChild("StoryScene", true)
-				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)) do
+				or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("HistoryEvent", true)
+				or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene")) do
 				task.wait(0.2)
 			end
 			if not player.Parent then break end
