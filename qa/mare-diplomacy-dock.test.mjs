@@ -88,7 +88,7 @@ test('추가 청동 아이콘 시트 16칸과 메뉴 수치 표시 연결', () =
 test('시설 전용 가로 원화는 기존 시설표 기준 첫 화면 우선, 기존 선택과 순환 유지', () => {
   const gallery = client.split('function H.renderFacilityGallery()')[1].split('-- [자동 넘김]')[0];
   assert.ok(gallery.includes('AssetIds["CardArt/ui_strip_" .. facility.tabs[1]]'));
-  assert.ok(gallery.includes('if stripId then 1 else math.random(1, #matches)'));
+  assert.match(gallery, /if stripId then\s+H\.galleryIndex = 1[^\n]*\n\s+else\s+H\.galleryIndex = math\.random\(1, #matches\)/);
   assert.ok(gallery.includes('card.found == true'));
   assert.ok(gallery.includes('if selection and selection.tab == tab then'));
   assert.ok(gallery.includes('if chartName and not selection then matched = nil end'));
