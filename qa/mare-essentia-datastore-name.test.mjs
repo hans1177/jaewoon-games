@@ -303,6 +303,18 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
+test('전 세계 거점 탈환은 지형과 위험도로 선택하며 구출과 추격을 보존한다',()=>{
+  assert.match(field,/nodeCount >= 2 and found < 2 and \(opts.danger or 1\) >= 3/);
+  assert.match(field,/not folder:GetAttribute\("FieldRescueRoute"\) and not folder:GetAttribute\("FieldPursuitRoute"\)/);
+  assert.match(field,/theme == "fort" or \(\(theme == "ruins" or theme == "archive"\)/);
+  assert.match(field,/local count = math.min\(math.clamp\(\(opts.danger or 1\), 3, 5\), #guards\)/);
+  assert.match(field,/if i == 2 and folder:GetAttribute\("FieldStrongholdRoute"\) then/);
+  assert.match(field,/enemy.model:SetAttribute\("FieldStrongholdGuard", true\)/);
+  assert.match(field,/folder:SetAttribute\("FieldStrongholdRemaining", remaining\)/);
+  assert.ok(field.indexOf('-- [전 세계 거점 탈환]') > field.indexOf('-- [구출·호위]'));
+  assert.doesNotMatch(field,/and table\.find\(\{ "acre_crusader", "kingston_royal", "auto_architecture_antwerp_mid", "auto_site_stockholm_mid" \}, opts\.siteId\)/);
+});
+
 test('탐험 자동저장과 종료 저장은 동일 세션에서 겹치지 않는다',()=>{
   assert.match(core,/if final then\s+session\.closing = true\s+while session\.saving and sessions\[player\] == session do/);
   assert.match(core,/elseif session\.saving or session\.closing then\s+return/);
