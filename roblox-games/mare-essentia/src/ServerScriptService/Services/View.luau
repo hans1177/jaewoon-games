@@ -62,7 +62,7 @@ return function(D, S)
 		return keys
 	end
 
-	function View.build(state, ctx)
+	function View.build(state: any, ctx)
 		local port = D.Ports.Ports[state.portId]
 		local def = S.State.shipDef(state)
 		local year = S.State.year(state)

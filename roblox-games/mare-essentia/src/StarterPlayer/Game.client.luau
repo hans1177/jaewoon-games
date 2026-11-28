@@ -12412,7 +12412,44 @@ do
 				end
 			end
 		end
-		local hint = mkLabel(box, if chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 9)
+		-- 카드의 기존 획득 장면은 한 번만 재생하고 결과 장부에는 실제 지급 항목만 기록한다.
+		if d.receipt then
+			for i, item in {
+				{ "발견 등록", d.receipt.discovery },
+				{ "카드 획득", d.receipt.card },
+				{ "길드 허가증 · 특산품 해금", d.receipt.permit },
+			} do
+				if item[2] then
+					local itemBox = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 88), Color3.fromRGB(232, 211, 165))
+					itemBox.LayoutOrder = 8 + i
+					itemBox.Name = "QuestUnlock_" .. i
+					corner(itemBox, 8)
+					local artId = item[2].id and AssetIds["CardArt/" .. tostring(item[2].id)]
+					if artId then
+						local art = Instance.new("ImageLabel")
+						art.BackgroundTransparency = 1
+						art.Position = UDim2.fromOffset(8, 6)
+						art.Size = UDim2.fromOffset(52, 76)
+						art.ScaleType = Enum.ScaleType.Fit
+						art.Image = "rbxassetid://" .. tostring(artId)
+						art.Parent = itemBox
+					elseif H.hasIconArt("reward") then
+						local art = modelIcon(itemBox, "FacilityArt", "reward", COLORS.gold, 44)
+						art.Position = UDim2.fromOffset(10, 22)
+					end
+					local label = mkLabel(itemBox, tostring(item[1]), 18, INK, true)
+					label.AutomaticSize = Enum.AutomaticSize.None
+					label.Position = UDim2.fromOffset(70, 5)
+					label.Size = UDim2.new(1, -80, 0, 28)
+					local name = mkLabel(itemBox, tostring(item[2].name), 22, INK, true)
+					name.AutomaticSize = Enum.AutomaticSize.None
+					name.Position = UDim2.fromOffset(70, 34)
+					name.Size = UDim2.new(1, -80, 0, 48)
+					name.TextWrapped = true
+				end
+			end
+		end
+		local hint = mkLabel(box, if chapterEnd then "다음 장은 일지에서 확인해 줘." elseif d.nextName then "다음 이야기: " .. tostring(d.nextName) else "일지에서 다시 확인할 수 있어.", 18, Color3.fromRGB(110, 96, 76), false, 12)
 		hint.Size = UDim2.new(1, 0, 0, 0)
 		hint.TextXAlignment = Enum.TextXAlignment.Center
 		if H.cinemaBars then H.cinemaBars(g, if chapterEnd then 4.5 else 3) end
@@ -12433,7 +12470,7 @@ do
 			if g.Parent then g:Destroy() end
 		end
 		local confirm = mkButton(box, "확인", COLORS.gold, UDim2.new(1, 0, 0, 48), close, true)
-		confirm.LayoutOrder = 10
+		confirm.LayoutOrder = 13
 		confirm.TextSize = 22
 	end
 
@@ -12448,7 +12485,7 @@ do
 			local key = tostring(d.id or d.name)
 			if not H.seenDoneQuests[key] then
 				H.seenDoneQuests[key] = true
-				if not first and d.id ~= "q_first_discovery" then table.insert(fresh, d) end
+				if not first and d.id ~= "q_first_discovery" and (not d.receipt or d.receipt.showScene or d.result or d.chapter or d.strand == "main") then table.insert(fresh, d) end
 			end
 		end
 		if #fresh == 0 then return end

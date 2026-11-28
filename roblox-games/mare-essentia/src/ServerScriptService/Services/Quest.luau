@@ -212,7 +212,7 @@ return function(D, S)
 		return D.Quests.Story(quest, good and good.name, port and port.name)
 	end
 
-	local function payout(state, quest, label, msgs)
+	local function payout(state: any, quest: any, label: string, msgs: {string})
 		state.quests.active[quest.id] = nil
 		state.quests.done[quest.id] = true
 		state.coins += quest.rewardCoins
@@ -223,14 +223,15 @@ return function(D, S)
 		-- [첫 카드] '첫 발견' 보상·일지는 유지하지만 자동 퀘스트 컷신을 재생하지 않는다.
 		-- [도시 자동 이벤트] 자동 달성 퀘스트는 같은 방문에서 한 편만 연출한다.
 		-- 플레이어가 수동으로 수행한 일반 의뢰 완료 장면은 종전처럼 모두 재생한다.
-		if quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
-			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending))) then
+		local showScene = quest.id ~= "q_first_discovery" and (not AUTO_KINDS[quest.kind]
+			or (state._autoEventPort ~= state.portId and not (state.history and state.history.pending)))
+		if showScene then
 			state._scenes = state._scenes or {}
 			table.insert(state._scenes, sceneMeta({ kind = "end", name = quest.name, text = ending }, quest))
 			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
 		end
 		-- [보상 영수증] 지급 전후 직업 수치만 이번 응답에 전달한다. 저장 대상 아님.
-		local receipt = { coins = quest.rewardCoins, fame = quest.rewardFame } :: any
+		local receipt: { [string]: any } = { coins = quest.rewardCoins, fame = quest.rewardFame, showScene = showScene }
 		if quest.rewardCareer then
 			local before = state.careers[quest.rewardCareer]
 			local beforeLevel, beforeXp = before.level, before.xp
@@ -250,16 +251,25 @@ return function(D, S)
 		state._questRewards = state._questRewards or {}
 		state._questRewards[quest.id] = receipt
 		if quest.rewardCardId then
-			S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
+			local granted = S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
+			if granted then
+				local card = D.Cards.ById[quest.rewardCardId]
+				receipt.discovery = { id = quest.rewardCardId, name = card.name }
+			end
 		end
 		if quest.rewardPermit then
 			-- [길드 허가증] 이 항구 특산품·명품 거래가 열린다
 			state.stats.permits = state.stats.permits or {}
+			local newlyGranted = not state.stats.permits[quest.rewardPermit]
 			state.stats.permits[quest.rewardPermit] = true
 			local port = D.Ports.Ports[quest.rewardPermit]
+			if newlyGranted then receipt.permit = { name = port and port.name or quest.rewardPermit } end
 			table.insert(msgs, string.format("📜 %s 길드 허가증을 받았다! 이제 특산품·명품을 살 수 있어요", port and port.name or quest.rewardPermit))
 		end
 		S.Cardbook.reward(state, "quest", msgs, nil, nil, quest.id)
+		local cardId = state.cardbook and state.cardbook.lastGranted
+		local card = cardId and D.CardBook.def(cardId)
+		if card then receipt.card = { id = cardId, name = card.name } end
 		-- 어려운 기술 퀘스트(연속 퀘스트·지식 이해)를 해내면 역사가 앞당겨진다
 		if quest.after or quest.kind == "understand_card" or quest.kind == "understand" then
 			S.Pace.addMsg(state, 5 + math.floor(quest.rewardFame / 10), msgs, "퀘스트 완수")
