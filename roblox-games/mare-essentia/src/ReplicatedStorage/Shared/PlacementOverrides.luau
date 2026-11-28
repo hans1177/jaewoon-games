@@ -35,13 +35,31 @@ local function overlapCount(m, cf, size)
 	local n = 0
 	for _, part in workspace:GetPartBoundsInBox(cf, size * 0.8, params) do
 		local isPath = string.find(part.Name, "Road", 1, true) or string.find(part.Name, "Street", 1, true) or string.find(part.Name, "Path", 1, true)
-		if part.Anchored and (isPath or (part.CanCollide and part.Size.Magnitude > 4 and part.Size.Y > 2)) then n += 1 end
+		local l = string.lower(part.Name)
+		local flat = string.find(l, "ground", 1, true) or string.find(l, "floor", 1, true) or string.find(l, "water", 1, true)
+		local solidish = (part.CanCollide or part.Transparency < 0.6) and part.Size.Magnitude > 4 and part.Size.Y > 2 and not flat
+		if part.Anchored and (isPath or solidish) then n += 1 end
 	end
 	return n
 end
 
+-- 마을은 workspace 밖에서 지어진 뒤 붙는다. 공간 질의는 workspace 안에서만 되므로 그 전에는 줄 세워 두고
+-- 마을이 붙은 직후 flush() 로 한꺼번에 처리한다(2026-11-28: 예전엔 검사가 늘 0건이라 겹침이 그대로였음).
+PlacementOverrides.pending = {}
+function PlacementOverrides.flush()
+	local list = PlacementOverrides.pending
+	PlacementOverrides.pending = {}
+	for _, m in list do
+		if m.Parent and m:IsDescendantOf(workspace) then PlacementOverrides.avoidOverlap(m) end
+	end
+end
+
 function PlacementOverrides.avoidOverlap(m)
 	if not (m and m.Parent) then return end
+	if not m:IsDescendantOf(workspace) then
+		table.insert(PlacementOverrides.pending, m)
+		return
+	end
 	local ok, cf, size = pcall(function() return m:GetBoundingBox() end)
 	if not ok then return end
 	if overlapCount(m, cf, size) == 0 then return end

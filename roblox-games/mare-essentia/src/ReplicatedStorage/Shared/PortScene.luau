@@ -9176,6 +9176,77 @@ function PortScene.build(info, onFacility)
 	folder:SetAttribute("PortSceneActive", true)
 	sliceMark("parentToWorkspace")
 
+	-- [오브젝트 겹침 정리 · 2026-11-28 오너: "오브젝트 겹치고 항구마다 개판"]
+	-- 이전에는 마을을 workspace 밖에서 지은 뒤 겹침 검사를 해서 아무것도 못 찾았다(공간 질의는 workspace 안에서만 동작).
+	-- 이제 연결된 직후 한 번: ① 자동 슬롯 모델 겹침 피하기 ② 땅에 놓인 작은 소품(통·상자·수레·가판·나무 등)이
+	-- 큰 건물 안에 박혀 있으면 주변 8스터드 안 빈자리로 옮기고, 빈자리가 없으면 숨긴다. 건물·상징물·주민은 옮기지 않는다.
+	local propOk, propError = pcall(function()
+		local okOv, Overrides = pcall(function() return require(script.Parent:WaitForChild("PlacementOverrides", 3)) end)
+		if okOv and Overrides and Overrides.flush then Overrides.flush() end
+		local params = OverlapParams.new()
+		params.FilterType = Enum.RaycastFilterType.Include
+		params.FilterDescendantsInstances = { folder }
+		local SKIP = { "sign", "lantern", "lamp", "chimney", "roof", "window", "door", "balcony", "detail",
+			"flag", "banner", "landmark", "palace", "castle", "wall", "house", "temple", "church", "tower",
+			"ship", "boat", "pier", "dock", "bridge", "fence", "stall", "market", "display", "workshop",
+			"well", "fountain", "statue", "interior", "furniture", "counter", "shelf" }
+		local function skipName(name)
+			local l = string.lower(name)
+			for _, k in SKIP do
+				if string.find(l, k, 1, true) then return true end
+			end
+			return false
+		end
+		local function embedded(prop, cf, size)
+			local bottom = cf.Position.Y - size.Y / 2
+			local box = CFrame.new(cf.Position.X, bottom + math.min(size.Y, 4) / 2 + 0.3, cf.Position.Z)
+			local probe = Vector3.new(math.max(1, size.X * 0.6), math.max(1, math.min(size.Y, 4) - 0.6), math.max(1, size.Z * 0.6))
+			for _, hit in workspace:GetPartBoundsInBox(box, probe, params) do
+				if not hit:IsDescendantOf(prop) and hit.Anchored and hit.Transparency < 0.9
+					and hit.Size.Y >= 6 and hit.Size.X >= 6 and hit.Size.Z >= 6 then
+					local l = string.lower(hit.Name)
+					if not (string.find(l, "ground", 1, true) or string.find(l, "floor", 1, true)
+						or string.find(l, "water", 1, true) or string.find(l, "road", 1, true)
+						or string.find(l, "plaza", 1, true) or string.find(l, "terrain", 1, true)) then
+						local owner = hit:FindFirstAncestorOfClass("Model")
+						if not (owner and owner:FindFirstChildOfClass("Humanoid")) then return true end
+					end
+				end
+			end
+			return false
+		end
+		local moved, hidden, checked = 0, 0, 0
+		for _, child in folder:GetChildren() do
+			if child:IsA("Model") and not child:FindFirstChildOfClass("Humanoid") and not skipName(child.Name) then
+				local okBox, cf, size = pcall(function() return child:GetBoundingBox() end)
+				if okBox and math.max(size.X, size.Z) <= 12 and size.Y <= 14 then
+					checked += 1
+					if embedded(child, cf, size) then
+						local fixed = false
+						for _, d in { Vector3.new(4, 0, 0), Vector3.new(-4, 0, 0), Vector3.new(0, 0, 4), Vector3.new(0, 0, -4),
+							Vector3.new(8, 0, 0), Vector3.new(-8, 0, 0), Vector3.new(0, 0, 8), Vector3.new(0, 0, -8) } do
+							if not embedded(child, cf + d, size) then
+								child:PivotTo(child:GetPivot() + d)
+								child:SetAttribute("PropOverlapNudge", tostring(d))
+								moved += 1
+								fixed = true
+								break
+							end
+						end
+						if not fixed then
+							child:SetAttribute("PropOverlapHidden", true)
+							child.Parent = nil -- 건물 속에 박힌 장식만 뺀다(저장·경제·충돌벽 무관)
+							hidden += 1
+						end
+					end
+				end
+			end
+		end
+		folder:SetAttribute("PropOverlapChecked", checked)
+		folder:SetAttribute("PropOverlapMoved", moved)
+		folder:SetAttribute("PropOverlapHidden", hidden)
+	end)
+	folder:SetAttribute("PropOverlapAudit", if propOk then "PASS" else "FAIL:" .. tostring(propError))
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
 	-- 이동형·고정형·일과형 모두 생성 직후 한 번만 검사한다(프레임별 공간 질의 금지).
 	local routeOk, routeError = pcall(function()
@@ -9195,7 +9266,17 @@ function PortScene.build(info, onFacility)
 				-- 비충돌 승인 가판대와 특산품도 주민이 시각적으로 관통하지 않도록 기존 생성 직후 검사에 포함한다.
 				local visualMarket = hit:FindFirstAncestor("CityMarketStall") ~= nil
 					or (owner and string.find(owner.Name, "MarketSpecialtyDisplay_", 1, true) == 1)
-				if (hit.CanCollide or visualMarket) and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
+				-- [관통 방지 · 2026-11-28 오너: "주민들 동선 끼임"] 충돌을 끈 장식 건물·나무 줄기도 눈에 보이면 막힘으로 본다.
+				local lname = string.lower(hit.Name)
+				local flatName = string.find(lname, "water", 1, true) or string.find(lname, "sea", 1, true)
+					or string.find(lname, "canal", 1, true) or string.find(lname, "road", 1, true)
+					or string.find(lname, "street", 1, true) or string.find(lname, "path", 1, true)
+					or string.find(lname, "plaza", 1, true) or string.find(lname, "grass", 1, true)
+					or string.find(lname, "soil", 1, true) or string.find(lname, "furrow", 1, true)
+					or string.find(lname, "floor", 1, true) or string.find(lname, "ground", 1, true)
+				local visualSolid = not hit.CanCollide and not flatName and hit.Transparency < 0.6
+					and hit.Size.Y >= 3 and hit.Size.X >= 1.2 and hit.Size.Z >= 1.2
+				if (hit.CanCollide or visualMarket or visualSolid) and hit.Name ~= "Ground" and hit.Name ~= "TownFloor"
 					and hit.Name ~= "SafetyFloor" and hit.Size.Y >= (if visualMarket then 0.5 else 2)
 					and not (actor and hit:IsDescendantOf(actor))
 					and not (owner and owner:FindFirstChildOfClass("Humanoid")) then
@@ -9205,6 +9286,15 @@ function PortScene.build(info, onFacility)
 			return false
 		end
 		local relocated, stopped, inspected = 0, 0, 0
+		-- [주민끼리 겹침 방지] 제자리 주민은 서로 2.4스터드 안에 서지 않는다(한 몸에 두 사람 겹침 방지).
+		local claimed = {}
+		local function crowded(pos)
+			for _, other in claimed do
+				local d = other - pos
+				if d.X * d.X + d.Z * d.Z < 2.4 * 2.4 then return true end
+			end
+			return false
+		end
 		for _, walker in walkers do
 			if not walker.model.Parent or walker.mode == "sparring" or walker.mode == "animal" then
 				continue
@@ -9251,7 +9341,8 @@ function PortScene.build(info, onFacility)
 						walker.home, walker.morning, walker.market, walker.evening = home, morning, market, evening
 						break
 					end
-				elseif not blocked(candidate, if moving then walker.len else 0, walker.model) then
+				elseif not blocked(candidate, if moving then walker.len else 0, walker.model)
+					and (moving or not crowded(candidate.Position)) then
 					safe = candidate
 					break
 				end
@@ -9260,7 +9351,7 @@ function PortScene.build(info, onFacility)
 				-- 이동 경로가 막혔으면 빈 정지 위치를 찾고, 그것도 없으면 시각 NPC만 숨긴다.
 				for _, offset in offsets do
 					local candidate = original + offset
-					if not blocked(candidate, 0, walker.model) then
+					if not blocked(candidate, 0, walker.model) and not crowded(candidate.Position) then
 						safe = candidate
 						walker.mode, walker.kind = "stay", "look"
 						stopped += 1
@@ -9269,6 +9360,7 @@ function PortScene.build(info, onFacility)
 				end
 			end
 			if safe then
+				if not (moving or scheduled or circling) or walker.mode == "stay" then table.insert(claimed, safe.Position) end
 				if (safe.Position - original.Position).Magnitude > 0.1 then relocated += 1 end
 				walker.base = safe
 				-- [주민 첫 화면] 항구 재입장 시 게임 시각에 맞는 일터·시장·집에서 출발한다.
