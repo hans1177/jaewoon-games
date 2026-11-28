@@ -4004,7 +4004,15 @@ function FieldScene.start(opts)
 					return
 				end
 			end
-			if guardedTransit or extraction or (i == 2 and folder:GetAttribute("FieldStrongholdRoute")) then
+			if i == 2 and folder:GetAttribute("FieldInterceptRoute") then
+				if not folder:GetAttribute("FieldInterceptStartedAt") then say("경계 구역에 접근해 적의 움직임을 확인해.", 3); return end
+				local remaining = 0
+				for _, enemy in enemies do
+					if not enemy.ac.dead and enemy.model:GetAttribute("FieldInterceptWave") then remaining += 1 end
+				end
+				if remaining > 0 then say(string.format("적 %d명 남음 · 전투를 끝내야 기록을 확보할 수 있어.", remaining), 3); return end
+			end
+			if guardedTransit or extraction or (i == 2 and (folder:GetAttribute("FieldStrongholdRoute") or folder:GetAttribute("FieldInterceptRoute"))) then
 				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
 				if folder:GetAttribute("FieldRescueRoute") then
@@ -4044,6 +4052,7 @@ function FieldScene.start(opts)
 				nextPrompt.Enabled = true
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
 				questHint.Text = if found == 1 and folder:GetAttribute("FieldStrongholdRoute") then "거점 탈환 · 표시된 수비병을 물리치고 기록 확보"
+					elseif found == 1 and folder:GetAttribute("FieldInterceptRoute") then "경계 구역 · 적의 움직임을 살펴"
 					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
 					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
@@ -4546,6 +4555,38 @@ function FieldScene.start(opts)
 					if found == 1 then questHint.Text = string.format("이어하기 · 거점 수비병 %d명 격파 후 기록 확보", count) end
 				else
 					warn("[MareEssentia] 거점 수비병 배치 불가", opts.siteId)
+				end
+			end
+		end
+	end
+
+	-- [전 세계 매복·증원 차단] 기존 적 중 경계 지점에 가까운 병력을 두 차례로 움직인다.
+	-- 기존 적 수·체력·공격 간격·보상·저장은 그대로이며 앞서 격파한 적을 다시 만들지 않는다.
+	do
+		local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+		if nodeCount >= 2 and found < 2 and (opts.danger or 1) >= 3 and targetCard and not isWildlife
+			and not folder:GetAttribute("FieldRescueRoute") and not folder:GetAttribute("FieldPursuitRoute")
+			and not folder:GetAttribute("FieldStrongholdRoute")
+			and table.find({ "forest", "jungle", "highland", "desert", "coast", "mine", "swamp", "plains" }, theme) then
+			local anchor = folder:FindFirstChild("Discovery2")
+			if anchor and anchor:IsA("BasePart") then
+				local troops = {}
+				for _, enemy in enemies do
+					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(troops, enemy) end
+				end
+				table.sort(troops, function(a, b) return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude end)
+				local count = math.min(4, #troops)
+				if count >= 2 then
+					local mode = if theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
+					folder:SetAttribute("FieldInterceptRoute", mode)
+					folder:SetAttribute("FieldInterceptRemaining", count)
+					for i = 1, count do
+						local enemy = troops[i]
+						enemy.model:SetAttribute("FieldInterceptWave", if i <= 2 then 1 else 2)
+					end
+					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
+					if prompt then prompt.ActionText = if mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인" end
+					if found == 1 then questHint.Text = "이어하기 · 경계 구역으로 이동" end
 				end
 			end
 		end
@@ -5322,6 +5363,8 @@ function FieldScene.start(opts)
 				if e.root and e.root.Parent then
 					if found == 1 and e.model:GetAttribute("FieldStrongholdGuard") then
 						place(e.root.Position, Color3.fromRGB(255, 192, 70), 9, true)
+					elseif found == 1 and folder:GetAttribute("FieldInterceptStartedAt") and e.model:GetAttribute("FieldInterceptWave") then
+						place(e.root.Position, Color3.fromRGB(255, 150, 70), 9, true)
 					elseif found == 1 and e.model:GetAttribute("FieldPursuitTarget") then
 						place(e.root.Position, Color3.fromRGB(98, 232, 203), 9, true)
 					else
@@ -8051,6 +8094,16 @@ function FieldScene.start(opts)
 					questHint.Text = if remaining == 0 then "거점 확보 · 기록 보관소 조사" else string.format("거점 수비병 %d명 남음", remaining)
 				end
 				say(if remaining == 0 then "수비병을 모두 물리쳤다. 기록을 확보하자." else string.format("거점 수비병 %d명 남음", remaining), 3)
+			elseif e.model:GetAttribute("FieldInterceptWave") then
+				local remaining = 0
+				for _, guard in enemies do
+					if not guard.ac.dead and guard.model:GetAttribute("FieldInterceptWave") then remaining += 1 end
+				end
+				folder:SetAttribute("FieldInterceptRemaining", remaining)
+				if found == 1 and folder:GetAttribute("FieldInterceptStartedAt") then
+					questHint.Text = if remaining == 0 then "전투 종료 · 기록 확보" else string.format("경계 전투 · 적 %d명 남음", remaining)
+					say(questHint.Text, 3)
+				end
 			elseif e.model:GetAttribute("FieldPursuitTarget") then
 				folder:SetAttribute("FieldPursuitPending", false)
 				if found == 1 then questHint.Text = "추적 완료 · 깊은 경계 구역에서 기록 확보" end
@@ -10598,6 +10651,17 @@ function FieldScene.start(opts)
 		local enemyDt = dtc * (if now < (pl.matrixSlowUntil or 0) then 0.24 else 1)
 		-- [전투 프레임] 적 상태는 기존 ActionCombat 집계 함수가 원본 배열에서 직접 확인한다.
 		-- 매 프레임 임시 31개 엔트리 배열을 만들지 않으며 공격 순서/판정은 동일하다.
+		-- [경계 사건 발동] 실제 구역 접근으로 한 번만 시작. 기존 적 루프에서 두 번째 병력이 늦게 합류한다.
+		if found == 1 and folder:GetAttribute("FieldInterceptRoute") and not folder:GetAttribute("FieldInterceptStartedAt") then
+			local destination = folder:FindFirstChild("Discovery2")
+			if destination and destination:IsA("BasePart") and (hrp.Position - destination.Position).Magnitude <= 28 then
+				folder:SetAttribute("FieldInterceptStartedAt", now)
+				local remaining = folder:GetAttribute("FieldInterceptRemaining") or 0
+				questHint.Text = if remaining == 0 then "경계 확보 · 기록 조사" else
+					(if folder:GetAttribute("FieldInterceptRoute") == "ambush" then "매복 발생" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
+				say(questHint.Text, 3.5)
+			end
+		end
 		local attackers = AC.attackersCount(enemies)
 		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.
 		-- 기존 동시 공격 상한·실제 예고시간·개인 공격 간격은 그대로 둔다.
@@ -10641,6 +10705,18 @@ function FieldScene.start(opts)
 							table.insert(e.shadowParts, part)
 							part.CastShadow = false
 						end
+					end
+				end
+			end
+			-- [매복·증원 대기] 이미 교전한 적은 그대로 두고 대기 중인 기존 병력만 시간차로 합류시킨다.
+			if not e.ac.dead and e.ac.state == "idle" and found < 2 then
+				local wave = e.model:GetAttribute("FieldInterceptWave")
+				if wave then
+					local startedAt = folder:GetAttribute("FieldInterceptStartedAt")
+					if not startedAt or now < startedAt + (wave - 1) * 4 then
+						if flat.Magnitude > 18 then continue end -- 가까이 발견한 병력은 선제 교전 가능
+					elseif dist <= e.ac.def.aggro * 1.5 then
+						e.ac.state, e.ac.t = "chase", 0
 					end
 				end
 			end
