@@ -1021,6 +1021,7 @@ local SpecificCard: { [string]: string } = {
 	q_med_tour = "lang_lingua_franca", q_world_tour = "relic_world_map_old", q_world_tour2 = "nav_mercator",
 	q_west_africa_tour = "geo_guinea_gulf", q_indian_tour = "geo_monsoon",
 	q_east_asia_tour = "geo_south_china_sea", q_americas_tour = "geo_caribbean_sea", q_pacific_tour = "geo_pacific_vast",
+	q_stock_1 = "lang_ledger", q_stock_2 = "lang_ledger", q_stock_3 = "lang_ledger",
 	q_era_2 = "ship_caravel", q_era_3 = "phi_scientific_method", q_era_4 = "phi_enlightenment", q_era_5 = "phy_newcomen_engine",
 }
 local KindCard: { [string]: string } = {
@@ -1036,8 +1037,8 @@ local KindCard: { [string]: string } = {
 	era = "phi_enlightenment", choice = "law_code_interpretation", duel_leader = "relic_ship_log",
 }
 local GoodCard: { [string]: string } = {
-	wool = "org_hanseatic_league", fish = "zoo_cod", saffron = "chem_dye", carpet = "art_tapestry",
-	incense = "culture_festival_observation", gum_arabic = "bot_acacia", camphor = "chem_distillation",
+	wool = "clothing_wool_cloak", fish = "zoo_cod", saffron = "chem_dye", carpet = "art_tapestry",
+	incense = "bot_sandalwood_tree", gum_arabic = "bot_acacia", camphor = "chem_distillation",
 	cochineal = "chem_dye", copper = "min_copper_ingot",
 }
 local PortCard: { [string]: string } = {}
