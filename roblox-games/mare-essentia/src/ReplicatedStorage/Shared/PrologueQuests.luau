@@ -88,7 +88,7 @@ HAND["pr_malabar_3"] = { [==[쿠티는 종소리 덕분에 시장을 예측할 �
 table.insert(Q, { id = "pr_malabar_4", loreCardId = "phi_scientific_method", name = "소리의 이치", summary = "서막 · 먼저 우는 종 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "malabar", strand = "main",
 	rewardCoins = 1500, rewardFame = 35, rewardCareer = "trade", rewardXp = 200, after = "pr_malabar_3" })
 HAND["pr_malabar_4"] = { [==[마을의 종소리를 믿는 노인과 관측을 원하는 쿠티의 의견은 다르다. 세 가지 지식을 이해하며 전승과 검증 가능한 설명을 나누어 보자.]==], [==[지식 목표를 채웠다. 쿠티는 마을의 이야기를 존중하면서도 원인에 관한 가설을 남겼다. 이티 아추탄의 자연 지식으로 다음 연구를 이어 가려 한다.]==] }
-table.insert(Q, { id = "pr_japan_1", loreCardId = "good_wine", name = "울음을 터뜨린 칼", summary = "서막 · 한 번뿐인 만남 — 청주 5개를 오사카에 납품", kind = "deliver", goodId = "sake", portId = "osaka", amount = 5, nation = "japan", strand = "main",
+table.insert(Q, { id = "pr_japan_1", loreCardId = "bot_rice_paddy", name = "울음을 터뜨린 칼", summary = "서막 · 한 번뿐인 만남 — 청주 5개를 오사카에 납품", kind = "deliver", goodId = "sake", portId = "osaka", amount = 5, nation = "japan", strand = "main",
 	rewardCoins = 300, rewardFame = 8, rewardCareer = "adventure", rewardXp = 40 })
 HAND["pr_japan_1"] = { [==[주인을 잃은 겐지는 오사카에서 칼이 낮게 울었다는 기이한 경험을 기록한다. 납품할 청주 5개를 준비하고 대장장이에게 칼의 사연을 보여 주고 싶다.]==], [==[청주 납품을 마쳤다. 대장장이는 칼의 울음에 대한 여러 설명을 제시한다. 겐지는 전승을 믿기 전에 관찰할 자료가 필요하다고 생각한다.]==] }
 table.insert(Q, { id = "pr_japan_2", loreCardId = "phy_magnetism", name = "끌리는 쪽", summary = "서막 · 한 번뿐인 만남 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "japan", strand = "main",
@@ -118,7 +118,7 @@ HAND["pr_spain_1"] = { [==[은광에서 자란 알론소는 은괴의 낯선 각
 table.insert(Q, { id = "pr_spain_2", loreCardId = "am_silver_ore_potosi", name = "각인이 있는 항구들", summary = "서막 · 가난한 손이 캔 도시 — 서로 다른 항구 4곳 방문", kind = "visit", amount = 4, nation = "spain", strand = "main",
 	rewardCoins = 500, rewardFame = 12, rewardCareer = "battle", rewardXp = 70, after = "pr_spain_1" })
 HAND["pr_spain_2"] = { [==[알론소는 은이 다른 항구에서 어떤 값으로 거래되는지 알고 싶다. 항구 방문 경험을 쌓으며 광산에서 시장까지 이어진 역사와 노동을 생각하자.]==], [==[방문 목표를 채웠다. 알론소는 모든 은괴를 추적했다고 주장하지 않고 교역과 노동의 관계를 질문으로 남긴다. 안트베르펜 주문이 다음이다.]==] }
-table.insert(Q, { id = "pr_spain_3", loreCardId = "chem_indigo", name = "안트베르펜의 감정", summary = "서막 · 가난한 손이 캔 도시 — 코치닐 6개를 안트베르펀에 납품", kind = "deliver", goodId = "cochineal", portId = "antwerp", amount = 6, nation = "spain", strand = "main",
+table.insert(Q, { id = "pr_spain_3", loreCardId = "chem_dye", name = "안트베르펜의 감정", summary = "서막 · 가난한 손이 캔 도시 — 코치닐 6개를 안트베르펀에 납품", kind = "deliver", goodId = "cochineal", portId = "antwerp", amount = 6, nation = "spain", strand = "main",
 	rewardCoins = 900, rewardFame = 20, rewardCareer = "battle", rewardXp = 120, after = "pr_spain_2" })
 HAND["pr_spain_3"] = { [==[안트베르펜 상인이 코치닐 6개를 주문했다. 알론소는 염료의 가치 뒤에 놓인 생산자의 노동을 생각하며 기존 거래를 마치려 한다.]==], [==[코치닐 납품을 완료했다. 알론소는 염료와 은의 장부를 구분하며 생산자의 기록을 더 살펴보기로 한다.]==] }
 table.insert(Q, { id = "pr_spain_4", loreCardId = "min_silver_ore", name = "은의 족보", summary = "서막 · 가난한 손이 캔 도시 — 지식 3가지를 학자에게 보고해 이해", kind = "understand", amount = 3, nation = "spain", strand = "main",
