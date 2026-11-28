@@ -251,3 +251,20 @@ test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순�
  assert.ok(yard.includes('if showGallery then'));
  assert.ok(yard.includes('H.yardMenuPage = page'));
 });
+
+test('출항·설정·역사 팝업은 모바일 화면과 기존 조작을 보존한다', () => {
+  const depart = game.split('local function confirmSail(r)')[1].split('-- 이야기 장면:')[0];
+  const options = game.split('openOptions = function(helpOnly)')[1].split('local function draw()')[0];
+  const optionDraw = game.split('openOptions = function(helpOnly)')[1].split('section("⛵ 항해 방식")')[0];
+  const history = game.split('local function openPopup(ev)')[1].split('task.spawn(function()')[0];
+  for (const token of ['UDim2.fromScale(0.94, 0.88)', 'AutomaticCanvasSize = Enum.AutomaticSize.Y', 'modelIcon(card, "FacilityArt", "harbor"', 'player:SetAttribute("ManualHelm"', 'sail(r.id)', 'UDim2.new(0.58, -16, 0, 50)']) assert.ok(depart.includes(token), token);
+  assert.ok(options.includes('UDim2.fromOffset(56, 44)'));
+  assert.ok(optionDraw.includes('mkRow(body, name, sub, buttons, 78)'));
+  for (const token of ['Instance.new("ScrollingFrame")', 'AutomaticCanvasSize = Enum.AutomaticSize.Y', 'call("HistoryChoose"', 'recordHistory()', 'dismissed[ev.id] = true', 'UDim2.new(1, -8, 0, 54)']) assert.ok(history.includes(token), token);
+  for (const [width,height] of [[320,568],[375,667],[568,320],[832,384],[1024,768]]) {
+    const w=Math.min(560,width*.94), h=Math.min(460,height*.88);
+    assert.ok(w*.42-16>=44 && w*.58-16>=44);
+    assert.ok(h-126>=100);
+    assert.ok(12+w*.42-16 < w*.42+4);
+  }
+});
