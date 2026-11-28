@@ -186,9 +186,9 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
   assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
-  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 120 else 68/);
+  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 112 else 68/);
   assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, sectionTop\)/);
-  assert.match(layout,/local bodyTop = sectionTop \+ \(if tabs then tabHeight \+ 12 else 0\)/);
+  assert.match(layout,/local bodyTop = if headerTabs then 68 else sectionTop \+ \(if tabs then tabHeight \+ 8 else 0\)/);
   assert.match(layout,/H\.tabWidth = tabWidth/);
   assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
   assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
@@ -3612,7 +3612,12 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
-  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 300 else 340\)/,'낮은 화면은 원화보다 본문 우선');
+  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 340 else 360\)/,'실행 버튼 높이를 제외한 본문이 충분할 때만 원화 표시');
+  assert.match(source,/local bodyH = height - bodyTop - dockH/);
+  assert.doesNotMatch(source,/local posterW =/);
+  assert.match(source,/H\.galleryCard\.Visible = true\s+H\.galleryImage\.ImageTransparency = 1/);
+  assert.match(source,/H\.menuActionButton\.Parent = H\.menuActionDock/);
+  assert.match(source,/nav = 2, tradeg = 0, adventure = 4, growth = 6, records = 7/);
   // [선택 대상과 원화] 실제 항로/국가/항구를 눌러도 기존 출항·외교·저장 흐름은 분리한다.
   assert.match(source,/H\.gallerySelection = nil -- \[시설 변경\]/,'시설 변경 시 이전 선택 정리');
   assert.match(source,/H\.gallerySearchTerm or/,'백과 링크에 선택 대상 검색어 전달');
