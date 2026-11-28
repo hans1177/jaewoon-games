@@ -14079,14 +14079,16 @@ do
 		local f = Instance.new("Frame")
 		f.Size = UDim2.new(1, -8, 0, height or 0)
 		if not height then f.AutomaticSize = Enum.AutomaticSize.Y end
+		-- [고딕 필사본] 현대식 둥근 정보 상자 대신 종이 위 얇은 금박 테두리.
 		f.BackgroundColor3 = Color3.fromRGB(236, 220, 186)
+		f.BackgroundTransparency = 0.84
 		f.BorderSizePixel = 0
 		f.LayoutOrder = order
 		f.Parent = parent
-		corner(f, 6)
 		local st = Instance.new("UIStroke")
-		st.Color = Color3.fromRGB(176, 140, 84)
+		st.Color = Color3.fromRGB(152, 110, 49)
 		st.Thickness = 1
+		st.Transparency = 0.28
 		st.Parent = f
 		return f
 	end
@@ -14228,7 +14230,7 @@ do
 				h.Parent = map
 			end
 		end
-		local title = mkLabel(box, "🗺 분포 · 발견 지도", 14, INK_C, true)
+		local title = mkLabel(box, "분포와 발견 지도", 14, INK_C, true)
 		title.Position = UDim2.fromOffset(8, 4)
 		title.Size = UDim2.new(1, -16, 0, 18)
 		title.AutomaticSize = Enum.AutomaticSize.None
@@ -14262,7 +14264,7 @@ do
 		if not a then return end
 		local box = boxed(sheet, order, 70)
 		box.Name = "EncyTimeline"
-		local title = mkLabel(box, "⏳ 연표", 14, INK_C, true)
+		local title = mkLabel(box, "시대 연표", 14, INK_C, true)
 		title.Position = UDim2.fromOffset(8, 4)
 		title.Size = UDim2.new(1, -16, 0, 18)
 		title.AutomaticSize = Enum.AutomaticSize.None
@@ -14319,7 +14321,7 @@ do
 		if unit == "cm" then meters /= 100 end
 		local box = boxed(sheet, order, 120)
 		box.Name = "EncySizeCompare"
-		local title = mkLabel(box, "📏 크기 비교 (사람 1.7m)", 14, INK_C, true)
+		local title = mkLabel(box, "크기 비교 · 사람 1.7m", 14, INK_C, true)
 		title.Position = UDim2.fromOffset(8, 4)
 		title.Size = UDim2.new(1, -16, 0, 18)
 		title.AutomaticSize = Enum.AutomaticSize.None
@@ -14357,14 +14359,20 @@ do
 		if #rel == 0 then return end
 		local box = boxed(sheet, order, 128)
 		box.Name = "EncyRelatedCards"
-		local title = mkLabel(box, "🔗 함께 보면 좋은 카드", 14, INK_C, true)
+		local title = mkLabel(box, "관련 도판", 14, INK_C, true)
 		title.Position = UDim2.fromOffset(8, 4)
 		title.Size = UDim2.new(1, -16, 0, 18)
 		title.AutomaticSize = Enum.AutomaticSize.None
-		local row = Instance.new("Frame")
+		local row = Instance.new("ScrollingFrame")
+		row.Name = "EncyRelatedScroll"
 		row.Position = UDim2.fromOffset(8, 26)
 		row.Size = UDim2.new(1, -16, 0, 96)
 		row.BackgroundTransparency = 1
+		row.BorderSizePixel = 0
+		row.ScrollingDirection = Enum.ScrollingDirection.X
+		row.CanvasSize = UDim2.new()
+		row.AutomaticCanvasSize = Enum.AutomaticSize.X
+		row.ScrollBarThickness = 3
 		row.Parent = box
 		local lay = Instance.new("UIListLayout")
 		lay.FillDirection = Enum.FillDirection.Horizontal
@@ -14574,14 +14582,26 @@ do
 			end
 			para(tostring(category.name or "세계 지식"), 14, Color3.fromRGB(37, 71, 98), true)
 			para(current.name, 26, Color3.fromRGB(110, 39, 33), true)
-			if article and article.latin then para(article.latin, 15, SOFTT, false) end
+			if article and article.latin then
+				local latin = para(article.latin, 16, SOFTT, false)
+				latin.Font = Enum.Font.Garamond
+			end
 			local meta = {}
 			if current.region then table.insert(meta, tostring(current.region)) end
 			if current.era then table.insert(meta, tostring(current.era)) end
 			if #meta > 0 then para(table.concat(meta, " · "), 14, SOFTT, false) end
 			local function section(titleText, value)
 				if not value or value == "" then return end
-				para(titleText, 18, Color3.fromRGB(110, 39, 33), true)
+				local rubric = para(titleText, 18, Color3.fromRGB(110, 39, 33), true)
+				rubric.Name = "EncyclopediaRubric"
+				local rule = Instance.new("Frame")
+				rule.Name = "EncyclopediaGoldRule"
+				rule.LayoutOrder = nextOrder()
+				rule.Size = UDim2.new(1, 0, 0, 1)
+				rule.BackgroundColor3 = Color3.fromRGB(152, 110, 49)
+				rule.BackgroundTransparency = 0.25
+				rule.BorderSizePixel = 0
+				rule.Parent = page
 				para(value, 16, INKD, false)
 			end
 			section("개요", if article and article.summary and article.summary ~= "" then article.summary else current.description)
