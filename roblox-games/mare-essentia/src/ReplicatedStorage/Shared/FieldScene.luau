@@ -3931,7 +3931,7 @@ function FieldScene.start(opts)
 						pp.Enabled = true
 						say("희귀 단서 확보! 지도에 표시된 " .. targetCard.name .. "을(를) 관찰해.")
 					else
-						say("흔적을 찾았어. 한 곳 더 확인해.")
+						say(if isWildlife then "첫 생태 흔적을 확인했어. 다른 흔적과 비교하자." else "첫 기록의 출처를 찾았어. 두 번째 단서와 대조하자.")
 					end
 				end)
 			end
@@ -3939,7 +3939,17 @@ function FieldScene.start(opts)
 		pp.Triggered:Connect(function()
 			if finished or not anchor.Parent then return end
 			if special then
+				if workspace:GetAttribute("FieldCombatReady") ~= true then return end
+				if folder:GetAttribute("FieldBossClueState") == "guarded" then
+					for _, enemy in enemies do
+						if not enemy.ac.dead and enemy.model:GetAttribute("FieldBossProtectsClue") then
+							say("두목이 기록을 막고 있어. 공격을 피한 뒤 빈틈을 노려.", 3.5)
+							return
+						end
+					end
+				end
 				observedCardId = targetCard.id
+				folder:SetAttribute("FieldBossClueState", "observed")
 				questHint.Text = "현장 기록 완료: " .. targetCard.name
 				if stage then pcall(stage.onObserved) end
 			end
@@ -4067,6 +4077,22 @@ function FieldScene.start(opts)
 		if ac.kind == "archer" and (opts.year or 1517) >= 1650
 			and bombReady and math.floor((i - 1) / 4) % 6 == 4 then styleN = 7 end
 		local style = looks[ac.kind][styleN]
+		-- [현장 사건의 두목] 승인된 인간형 리그만 사용한다. 미등록 짐승·석상은 대체하지 않는다.
+		local bossRole = nil
+		if isBoss then
+			local theme = folder:GetAttribute("FieldQuestTerrainTheme")
+			bossRole = if theme == "ruins" or theme == "archive" then "looter"
+				elseif theme == "coast" or theme == "fort" then "pirate"
+				elseif theme == "forest" or theme == "highland" or theme == "desert" or theme == "mine" then "bandit"
+				else "giant"
+			if bossRole == "looter" then
+				style = { "유적 약탈단 수장", "Knight", Color3.fromRGB(99, 84, 67), "mace" }
+			elseif bossRole == "pirate" then
+				style = { "밀수단 선장", "Rogue", Color3.fromRGB(62, 92, 124), "sword" }
+			elseif bossRole == "bandit" then
+				style = { "길목 산적 두목", "Rogue_Hooded", Color3.fromRGB(84, 91, 70), "axe" }
+			end
+		end
 		if style[6] == "bomb" and ((opts.year or 1517) < 1650 or not bombReady) then
 			styleN = 1
 			style = looks.archer[1]
@@ -4139,7 +4165,7 @@ function FieldScene.start(opts)
 			elseif isBoss then Color3.fromRGB(53, 41, 41) else Color3.fromRGB(65, 58, 52)
 		-- [승인 R15 몹 외형] 기존 적의 병종·시대·무기를 따라 부위별 실물 복식을 선택한다.
 		-- 몬스터 원본을 통째로 고정하지 않고 R15 관절·원본 전투 판정은 유지한다.
-		local mobProfile = if isBoss then "warlord"
+		local mobProfile = if isBoss then (if bossRole == "pirate" then "pirate" elseif bossRole == "bandit" then "rogue" else "warlord")
 			elseif throwAsset == "bomb" then "bombard"
 			elseif weapon.id == "ship_pistol" or weapon.id == "cutlass" then (if styleN % 2 == 0 then "pirate_female" else "pirate")
 			elseif ac.kind == "shield" then "knight"
@@ -4202,6 +4228,20 @@ function FieldScene.start(opts)
 		bar.BorderSizePixel = 0
 		bar.Parent = barBack
 		model:SetAttribute("FieldDifficultyGrade", math.clamp(danger0, 1, 5))
+		if isBoss then
+			model:SetAttribute("FieldBossRole", bossRole)
+			model:SetAttribute("FieldBossPhase", 1)
+			-- 위험 지역의 유물·문헌·광물 기록을 지키는 첫 두목만 조사와 연결한다.
+			-- 살아 있는 동식물 관찰에는 격파를 요구하지 않는다.
+			if i == enemyCount + 1 and targetCard and not isWildlife
+				and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
+					or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture")
+				and bossRole ~= "giant" then
+				model:SetAttribute("FieldBossProtectsClue", true)
+				folder:SetAttribute("FieldBossClueState", "guarded")
+				questHint.Text = style[1] .. "이(가) " .. targetCard.name .. " 기록을 지키고 있다"
+			end
+		end
 		model:SetAttribute("EnemyWeaponId", weapon.id)
 		model:SetAttribute("EnemyShieldModel", style[5] or "")
 		model:SetAttribute("MotionRole", if isBoss then "boss" elseif throwAsset then "thrower" else ac.kind) -- 게임 규칙이 아닌 관절 동작 선택용
@@ -7271,6 +7311,9 @@ function FieldScene.start(opts)
 		-- [약점·반격 · 2026-11-28] 적마다 노릴 곳(AC.weakness) + 완벽 회피 직후 1.6초 반격 ×2.
 		local inFront = approach.Magnitude > 0.1 and e.root.CFrame.LookVector:Dot(approach.Unit) > 0.35
 		local weakMult, weakLabel = AC.weakness(e.ac, inFront, approach.Magnitude / 2)
+		if e.boss and os.clock() < (e.bossWeakUntil or 0) then
+			weakMult, weakLabel = math.max(weakMult, 1.8), "두목 기술 후 빈틈"
+		end
 		local counterHit = not quiet and os.clock() < (pl.counterUntil or 0)
 		if counterHit then pl.counterUntil = 0 end
 		if weaponParry or shieldBlocked then weakMult, weakLabel = 1, nil end
@@ -7672,7 +7715,13 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = os.clock() + 0.5, 2.2
 				end
 			end
-			say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+			if e.boss and e.model:GetAttribute("FieldBossProtectsClue") then
+				folder:SetAttribute("FieldBossClueState", "released")
+				questHint.Text = "길이 열렸다 · " .. (targetCard and targetCard.name or "현장 기록") .. " 조사"
+				say("두목을 물리쳐 기록으로 가는 길이 열렸어. 현장 단서를 조사하자.", 3.5)
+			else
+				say(if e.boss then "두목을 쓰러뜨렸다!" else "적을 물리쳤다!")
+			end
 			-- [전투 목표 · 2026-11-28] 모두 쓰러뜨리면 이번 목표 달성 별(표시용, 보상·저장 불변)
 			if pl.fieldChallenge and not pl.fieldChallenge.done then
 				local alive = 0
@@ -9026,10 +9075,30 @@ function FieldScene.start(opts)
 	-- [레지스터 200 한도] 이 큰 함수에 지역 이름을 늘리지 않게 두목 스킬 묶음을 즉시 실행 함수 하나로 감싼다.
 	local bossSkillTick = (function()
 		local BOSS_SKILLS = {
-			{ id = "wave", phase = 1, name = "대지 충격파", warn = 1.1, cd = 9 },
-			{ id = "charge", phase = 2, name = "돌진", warn = 0.85, cd = 8 },
-			{ id = "roar", phase = 3, name = "포효", warn = 0.7, cd = 11 },
-			{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.5, cd = 14 },
+			giant = {
+				{ id = "wave", phase = 1, name = "대지 충격파", warn = 1.1, cd = 9 },
+				{ id = "charge", phase = 2, name = "돌진", warn = 0.85, cd = 8 },
+				{ id = "roar", phase = 3, name = "포효", warn = 0.7, cd = 11 },
+				{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.5, cd = 14 },
+			},
+			bandit = {
+				{ id = "ambush", phase = 1, name = "매복 기습", warn = 0.85, cd = 8 },
+				{ id = "charge", phase = 2, name = "길목 돌격", warn = 1, cd = 9 },
+				{ id = "volley", phase = 3, name = "삼방위 습격", warn = 1.1, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.7, cd = 14 },
+			},
+			pirate = {
+				{ id = "volley", phase = 1, name = "삼방위 투척", warn = 1.1, cd = 10 },
+				{ id = "ambush", phase = 2, name = "갑작스런 기습", warn = 0.85, cd = 8 },
+				{ id = "roar", phase = 3, name = "위협의 고함", warn = 0.9, cd = 11 },
+				{ id = "frenzy", phase = 4, name = "선장 광폭 연타", warn = 0.7, cd = 14 },
+			},
+			looter = {
+				{ id = "wave", phase = 1, name = "철퇴 내려찍기", warn = 1.1, cd = 9 },
+				{ id = "rupture", phase = 2, name = "연속 지면 강타", warn = 1.2, cd = 10 },
+				{ id = "volley", phase = 3, name = "삼방위 투척", warn = 1.1, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "수장 광폭 연타", warn = 0.7, cd = 14 },
+			},
 		}
 		local function bossPhaseOf(e)
 			local r = e.ac.hp / math.max(1, e.maxHp)
@@ -9041,6 +9110,9 @@ function FieldScene.start(opts)
 		return function(e, now: number, hrp: BasePart?, dist: number)
 			if not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
 			local phase = bossPhaseOf(e)
+			if e.model:GetAttribute("FieldBossPhase") ~= phase then
+				e.model:SetAttribute("FieldBossPhase", phase)
+			end
 			if phase >= 4 and not e.bossPhase4 then
 				e.bossPhase4 = true
 				e.armorUntil = now + 6
@@ -9053,6 +9125,11 @@ function FieldScene.start(opts)
 			if cast then
 				if now < cast.at then return end
 				e.bossCast = nil
+				if e.ac.stagger > 0 or now < (e.riseUntil or 0) then return end
+				e.bossWeakUntil = now + (if cast.id == "charge" then 1.5 else 1.3)
+				e.ac.state, e.ac.t = "recover", 0
+				e.model:SetAttribute("FieldBossWeakUntil", e.bossWeakUntil)
+				e.nextBossSkillAt = math.max(e.nextBossSkillAt or 0, e.bossWeakUntil)
 				local dmg = e.ac.def.dmg
 				local flatTo = (hrp.Position - cast.origin) * Vector3.new(1, 0, 1)
 				if cast.id == "wave" then
@@ -9060,6 +9137,14 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = now + 0.35, 1.2
 					sfx("sfx_cannon", 0.5, 0.55)
 					if flatTo.Magnitude <= cast.radius then hurtPlayerBy(dmg * 0.9) end
+				elseif cast.id == "ambush" or cast.id == "volley" or cast.id == "rupture" then
+					local hit = false
+					for _, point in cast.points do
+						shockRing(point, cast.radius, Color3.fromRGB(255, 135, 70), 0.45)
+						if ((hrp.Position - point) * Vector3.new(1, 0, 1)).Magnitude <= cast.radius then hit = true end
+					end
+					sfx("sfx_event_danger", 0.55, 0.8)
+					if hit then hurtPlayerBy(dmg * (if cast.id == "rupture" then 1.05 else 0.85)) end
 				elseif cast.id == "roar" then
 					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 200, 90), 0.4)
 					sfx("sfx_horn", 0.7, 0.6)
@@ -9101,10 +9186,12 @@ function FieldScene.start(opts)
 				return
 			end
 			if e.ac.state ~= "chase" and e.ac.state ~= "idle" then return end
+			if now < (e.bossWeakUntil or 0) or now < (pl.nextEnemyTurnAt or 0)
+				or AC.attackersCount(enemies) >= AC.MELEE_TOKENS then return end
 			if dist > 28 or now < (e.nextBossSkillAt or 2) then return end
 			e.skillReady = e.skillReady or {}
 			local options = {}
-			for _, sk in BOSS_SKILLS do
+			for _, sk in (BOSS_SKILLS[e.model:GetAttribute("FieldBossRole")] or BOSS_SKILLS.giant) do
 				if sk.phase <= phase and now >= (e.skillReady[sk.id] or 0) then table.insert(options, sk) end
 			end
 			if #options == 0 then return end
@@ -9116,6 +9203,21 @@ function FieldScene.start(opts)
 			if sk.id == "wave" then
 				c.radius = 9 * STUD
 				groundRing(origin, c.radius, sk.warn)
+			elseif sk.id == "ambush" or sk.id == "volley" or sk.id == "rupture" then
+				local aim = Vector3.new(hrp.Position.X, origin.Y, hrp.Position.Z)
+				c.radius = if sk.id == "ambush" then 5 * STUD else 3.5 * STUD
+				c.points = { aim }
+				if sk.id == "volley" then
+					local side = e.root.CFrame.RightVector * Vector3.new(1, 0, 1) * (c.radius * 1.5)
+					table.insert(c.points, aim + side)
+					table.insert(c.points, aim - side)
+				elseif sk.id == "rupture" then
+					local to = (aim - origin) * Vector3.new(1, 0, 1)
+					local dir = if to.Magnitude > 0.1 then to.Unit else Vector3.new(1, 0, 0)
+					table.insert(c.points, aim + dir * c.radius * 1.5)
+					table.insert(c.points, aim - dir * c.radius * 1.5)
+				end
+				for _, point in c.points do groundRing(point, c.radius, sk.warn) end
 			elseif sk.id == "roar" then
 				c.radius = 6 * STUD
 				groundRing(origin, c.radius, sk.warn)
@@ -9123,9 +9225,14 @@ function FieldScene.start(opts)
 				local to = (hrp.Position - e.root.Position) * Vector3.new(1, 0, 1)
 				c.dir = if to.Magnitude > 0.1 then to.Unit else e.root.CFrame.LookVector
 				c.length = math.clamp(to.Magnitude + 6, 12, 34)
-				groundRing(e.root.Position + c.dir * c.length - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0), 4, sk.warn)
+				for along = 0, c.length, 5 do
+					groundRing(origin + c.dir * along, 5, sk.warn)
+				end
+				groundRing(origin + c.dir * c.length, 5, sk.warn)
 			end
 			e.bossCast = c
+			pl.nextEnemyTurnAt = math.max(pl.nextEnemyTurnAt or 0, now + sk.warn + 0.2)
+			e.warnUntil = now + sk.warn
 			e.model:SetAttribute("FieldBossSkill", sk.id)
 			showCombo("⚠ " .. sk.name .. "!", true, Color3.fromRGB(255, 120, 70))
 			burst(e.root.Position + Vector3.new(0, 3, 0), 0, false, "telegraph")
@@ -10058,7 +10165,7 @@ function FieldScene.start(opts)
 				e.ac.stagger = math.max(0.05, e.riseUntil - now)
 				e.ac.state = "stagger"
 			end
-			local frozen = knocked or now < (e.holdUntil or 0)
+			local frozen = knocked or e.bossCast ~= nil or now < (e.holdUntil or 0)
 				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0)
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local duration = math.max(e.kbUntil - e.kbT0, 0.05)
