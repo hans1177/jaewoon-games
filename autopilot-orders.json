@@ -1,5 +1,49 @@
 [
   {
+    "id": "no-mobs",
+    "kind": "combat",
+    "task": "combat",
+    "text": "월드에 몹이 하나도 없음(전투 점검 필요)",
+    "game": "mare-essentia",
+    "fingerprint": "mare-essentia:no-mobs",
+    "firstAt": 1794371928830,
+    "lastAt": 1795896472066,
+    "seen": 17
+  },
+  {
+    "id": "sky-missing",
+    "kind": "background",
+    "task": "background",
+    "text": "배경 연출 약함: 대기 없음, 하늘 없음",
+    "game": "mare-essentia",
+    "fingerprint": "mare-essentia:sky-missing",
+    "firstAt": 1794371928830,
+    "lastAt": 1795896472066,
+    "seen": 17
+  },
+  {
+    "id": "sparse-world",
+    "kind": "background",
+    "task": "background",
+    "text": "월드 부품이 적음(18)",
+    "game": "mare-essentia",
+    "fingerprint": "mare-essentia:sparse-world",
+    "firstAt": 1794371928830,
+    "lastAt": 1795896472066,
+    "seen": 17
+  },
+  {
+    "id": "ui-missing",
+    "kind": "ui",
+    "task": "ui",
+    "text": "화면에 없는 UI 글자: 퀘스트, 백과",
+    "game": "mare-essentia",
+    "fingerprint": "mare-essentia:ui-missing",
+    "firstAt": 1794456463187,
+    "lastAt": 1795896472066,
+    "seen": 12
+  },
+  {
     "id": "studio-unreachable",
     "kind": "infra",
     "task": "health",
