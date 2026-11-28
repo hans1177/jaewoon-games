@@ -648,6 +648,7 @@ H.facilityIconCells = {
 	nav = 2, tradeg = 0, adventure = 4, growth = 6, records = 7,
 	nextstep = 2, reward = 0, recommend = 11, chapter = 7, problem = 4,
 	cause = 11, todo = 7, result = 2, recap = 7, coach = 11, defeat = 4,
+	hull = 3, cargo = 0, supply = 0, coin = 0, fame = 6, gift = 0, lock = 10, map_pin = 2, shipyard = 3,
 	trade = 0, market = 0, tavern = 1, board = 1, route = 2, map = 2, harbor = 2, yard = 3,
 	battle = 4, codex = 5, encyclopedia = 5, status = 6, journal = 7,
 	deck = 8, gwent = 8, view = 9, gear = 10, help = 11, diplomacy = 5, close = 15, -- 외교: 예비 손그림 2번 시트의 봉인 서신(2행 2열)
@@ -12278,46 +12279,49 @@ do
 			local t = mkLabel(card, "한눈에 보기", 15, Color3.fromRGB(110, 70, 30), true, 0)
 			t.Size = UDim2.new(1, 0, 0, 0)
 			local rows = {
-				{ "⛵ 선체", ship.hull or 0, ship.maxHull or 1, "yard" },
-				{ "👥 선원", ship.crew or 0, ship.maxCrew or 1, "recruit" },
-				{ "🍞 보급", ship.supplies or 0, math.max(ship.supplies or 0, view.supplyMax or 60), "yard" },
-				{ "📦 화물", ship.cargoUsed or 0, ship.cargoCapacity or 1, "trade" },
+				{ "선체", ship.hull or 0, ship.maxHull or 1, "yard", "hull" },
+				{ "선원", ship.crew or 0, ship.maxCrew or 1, "recruit", "crew" },
+				{ "보급", ship.supplies or 0, math.max(ship.supplies or 0, view.supplyMax or 60), "yard", "supply" },
+				{ "화물", ship.cargoUsed or 0, ship.cargoCapacity or 1, "trade", "cargo" },
 			}
 			for i, r in rows do
 				local ratio = math.clamp(r[2] / math.max(1, r[3]), 0, 1)
 				local row = Instance.new("TextButton")
 				row.LayoutOrder = i
-				row.Size = UDim2.new(1, 0, 0, 30)
+				row.Size = UDim2.new(1, 0, 0, 44)
 				row.BackgroundTransparency = 1
 				row.Text = ""
 				row.AutoButtonColor = false
 				row.Parent = card
-				local name = mkLabel(row, r[1], 13, Color3.fromRGB(52, 38, 24), true)
-				name.Position = UDim2.fromOffset(0, 6)
-				name.Size = UDim2.fromOffset(70, 18)
+				local icon = modelIcon(row, "FacilityArt", r[5], nil, 32, r[1])
+				icon.Name = "StatusMetricArt"
+				icon.Position = UDim2.fromOffset(0, 6)
+				local name = mkLabel(row, r[1], 14, Color3.fromRGB(52, 38, 24), true)
+				name.Position = UDim2.fromOffset(36, 3)
+				name.Size = UDim2.new(1, -118, 0, 18)
 				name.AutomaticSize = Enum.AutomaticSize.None
 				local track = Instance.new("Frame")
-				track.Position = UDim2.new(0, 74, 0, 9)
-				track.Size = UDim2.new(1, -150, 0, 12)
+				track.Position = UDim2.new(0, 36, 0, 27)
+				track.Size = UDim2.new(1, -40, 0, 12)
 				track.BackgroundColor3 = Color3.fromRGB(210, 196, 166)
 				track.BorderSizePixel = 0
 				track.Parent = row
 				corner(track, 6)
 				local fill = Instance.new("Frame")
 				fill.Size = UDim2.fromScale(ratio, 1)
-				fill.BackgroundColor3 = if r[1] == "📦 화물" then Color3.fromRGB(80, 120, 170)
+				fill.BackgroundColor3 = if r[5] == "cargo" then (if ratio >= 1 then COLORS.red else UI_BRASS_DARK)
 					elseif ratio < 0.35 then Color3.fromRGB(196, 70, 56) elseif ratio < 0.7 then Color3.fromRGB(214, 160, 60) else Color3.fromRGB(70, 150, 90)
 				fill.BorderSizePixel = 0
 				fill.Parent = track
 				corner(fill, 6)
 				local num = mkLabel(row, string.format("%d/%d", r[2], r[3]), 12, Color3.fromRGB(80, 64, 44), false)
-				num.Position = UDim2.new(1, -72, 0, 6)
+				num.Position = UDim2.new(1, -72, 0, 3)
 				num.Size = UDim2.fromOffset(72, 18)
 				num.AutomaticSize = Enum.AutomaticSize.None
 				num.TextXAlignment = Enum.TextXAlignment.Right
-				if ratio < 0.35 and r[1] ~= "📦 화물" then
-					row.Activated:Connect(function() openTab(r[4]) end)
-					num.Text = "⚠ " .. num.Text
+				row.Activated:Connect(function() openTab(r[4]) end)
+				if (r[5] ~= "cargo" and ratio < 0.35) or (r[5] == "cargo" and ratio >= 1) then
+					num.TextColor3 = COLORS.red
 				end
 			end
 			return card
@@ -15346,10 +15350,37 @@ function RENDERERS.quest()
 				table.insert(buttons, { text = "작전", color = COLORS.red, onClick = function() openTab("war") end })
 			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
-			local filled = math.clamp(math.floor(done / total * 10 + 0.5), 0, 10)
-			local progress = string.rep("▰", filled) .. string.rep("▱", 10 - filled)
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
-			return mkRow(content, q.name, string.format("%s%s\n%s  %d/%d · 보상 %d코인", strandText(q), said, progress, done, q.amount, q.rewardCoins), buttons, if q.story or said ~= "" then 136 else 92)
+			local row = mkRow(content, q.name, strandText(q) .. said, buttons, if q.story or said ~= "" then 136 else 92)
+			local textBox = row:FindFirstChild("RowText")
+			if textBox then
+				local meter = Instance.new("Frame")
+				meter.Name = "QuestProgressMeter"
+				meter.Size = UDim2.new(1, 0, 0, 46)
+				meter.BackgroundTransparency = 1
+				meter.Parent = textBox
+				local icon = modelIcon(meter, "FacilityArt", "reward", nil, 24, "보상")
+				icon.Position = UDim2.fromOffset(0, 0)
+				local label = mkLabel(meter, string.format("%d/%d · 보상 %s코인", done, q.amount, H.commas(q.rewardCoins)), 14, INK, true)
+				label.Position = UDim2.fromOffset(28, 0)
+				label.Size = UDim2.new(1, -28, 0, 24)
+				label.AutomaticSize = Enum.AutomaticSize.None
+				label.TextTruncate = Enum.TextTruncate.AtEnd
+				local track = Instance.new("Frame")
+				track.Position = UDim2.fromOffset(0, 29)
+				track.Size = UDim2.new(1, -4, 0, 12)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = meter
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(math.clamp(done / total, 0, 1), 1)
+				fill.BackgroundColor3 = if done >= q.amount then Color3.fromRGB(77, 125, 81) else UI_BRASS_DARK
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+			end
+			return row
 		end)
 	end
 	-- 자동으로 기록되는 발견·방문·연구 목표 (진행도만 보여 준다)
