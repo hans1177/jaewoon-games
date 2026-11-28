@@ -454,6 +454,9 @@ export function readStudioVisualOrder(ref, coverage = {}, photoDir = '') {
       images,
       labels,
       sourceRevision: revision,
+      retestScript: /^roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-[a-z0-9-]+\.json$/.test(checks.scriptPath || '') &&
+        /^[a-f0-9]{64}$/.test(checks.scriptSha256 || '') && !checks.portBatch
+        ? { path: checks.scriptPath, sha256: checks.scriptSha256, runId: String(checks.runId || '') } : null,
       order: {
         game,
         kind: 'visual',
@@ -525,6 +528,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   }
   ledger = recordAttempt(ledger, result);
   save(ledgerFile, ledger); save(playbookFile, playbook);
-  save(outFile, { ok: result.ok, skipped: result.skipped || '', rejected: result.rejected || [], provider: result.provider || '', replayed: !!result.replayed, summary: result.summary || '', files: result.files || [], fingerprint: result.order?.fingerprint || '', kind: result.order?.kind || '', text: result.order?.text || '', sig: result.sig || '', pbKey: result.pbKey || '' });
+  save(outFile, { ok: result.ok, skipped: result.skipped || '', rejected: result.rejected || [], provider: result.provider || '', replayed: !!result.replayed, summary: result.summary || '', files: result.files || [], fingerprint: result.order?.fingerprint || '', kind: result.order?.kind || '', retestScript: result.ok && result.order?.kind === 'visual' ? visual?.retestScript || null : null, text: result.order?.text || '', sig: result.sig || '', pbKey: result.pbKey || '' });
   console.log(result.ok ? `적용${result.replayed ? '(플레이북 재적용, 모델 호출 없음)' : ''}: ${result.summary} (${result.files.join(', ')}) by ${result.provider}` : `건너뜀/거부: ${result.skipped || result.rejected?.join(',')}`);
 }

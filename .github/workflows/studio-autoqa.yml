@@ -171,6 +171,24 @@ jobs:
               FIELD) script=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-field.json ;;
               *) scope=FULL ;;
             esac
+            # [동일 장면 재검증] 기존 자동 수정본 병합에 한해 촬영 근거와 현행 스크립트 해시를 확인한다.
+            # 게시 완료의 전체 회귀와 일반 소스 변경 검사는 그대로 유지한다.
+            prs=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" 2>/dev/null || true)
+            retest=$(jq -r --arg sha "$GITHUB_SHA" --arg repo "$GITHUB_REPOSITORY" '
+              [.[] | select(.merged_at != null and .merge_commit_sha == $sha and .base.ref == "main" and
+                .head.repo.full_name == $repo and (.head.ref | test("^vibe-brain/run-[0-9]+$"))) |
+                (.body // "" | split("\n")[] | select(test("^STUDIO_RETEST=roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-[a-z0-9-]+\\.json [a-f0-9]{64} [1-9][0-9]{4,14}$"))) ] |
+                if length == 1 then .[0] else empty end' <<< "$prs" 2>/dev/null || true)
+            if [[ -n "$retest" && "$head" == "$GITHUB_SHA" ]]; then
+              read -r retest_path retest_hash retest_run <<< "${retest#STUDIO_RETEST=}"
+              current_hash=$(gh api "repos/$GITHUB_REPOSITORY/contents/$retest_path?ref=$head" --jq .content 2>/dev/null | base64 -d | sha256sum | cut -d' ' -f1) || current_hash=""
+              if [[ "$current_hash" == "$retest_hash" ]]; then
+                script="$retest_path"
+                echo "STUDIO_EXACT_RETEST=$retest_run:$script"
+              else
+                echo "STUDIO_EXACT_RETEST_UNVERIFIED=SCRIPT_CHANGED"
+              fi
+            fi
             echo "STUDIO_PUSH_DEVELOPMENT_SCOPE=$scope"
           elif [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             echo "STUDIO_WATCHDOG_RECOVERY=SOURCE_NOT_YET_CHECKED:$head"
