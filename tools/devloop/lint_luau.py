@@ -5,6 +5,8 @@
  R2 [변경분만] 기본 도형 Instance.new("Part"/"WedgePart"/"TrussPart"/"CornerWedgePart") 추가 → AGENTS.md 금지(모델 대용 도형)
  R3 [변경분만] 디버그 출력 print( 추가 / TODO·FIXME 새로 추가
  R4 같은 파일에서 'local function X' 가 두 번 정의됨(뒤가 앞을 가림)
+ R5 [변경 파일만] luau-compile 실패(예: 한 함수 지역 변수 200개 한도 'Out of local registers')
+    → 2026-11-28 PR 검사에서야 잡혀 지상 전투가 안 뜰 뻔함. luau-compile 이 PATH 에 있을 때만 검사.
 종료 코드 1 이면 위반 있음. 예외는 줄 끝에 '-- lint:ok' 를 적는다."""
 import re, sys, glob, os, subprocess
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -44,6 +46,17 @@ if diff_ref:
             if re.search(r"^\s*print\(", t): bad.append((cur, ln, "R3", "디버그 print 추가"))
             if re.search(r"\b(TODO|FIXME)\b", t): bad.append((cur, ln, "R3", "TODO/FIXME 추가"))
         elif not line.startswith("-"): pass
+if diff_ref:
+    import shutil
+    compiler = shutil.which("luau-compile")
+    if compiler:
+        changed = subprocess.run(["git", "diff", "--name-only", diff_ref, "--", root + "/src"], capture_output=True, text=True).stdout.split()
+        for path in changed:
+            if path.endswith(".luau") and os.path.exists(path):
+                r = subprocess.run([compiler, "--null", path], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+                if r.returncode != 0:
+                    msg = r.stderr.decode("utf-8", "replace").strip().splitlines()
+                    bad.append((path, 0, "R5", "컴파일 실패: " + (msg[0][:200] if msg else "알 수 없음")))
 for f, i, r, msg in sorted(set(bad)): print(f"{r} {f}:{i}: {msg}")
 print(f"린트: 위반 {len(set(bad))}건")
 sys.exit(1 if bad else 0)
