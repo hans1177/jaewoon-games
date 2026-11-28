@@ -82,9 +82,12 @@ test('등록된 청동 안내 원화와 9분할 프레임만 선택적으로 연
 test("전면 재구성 메뉴: 가로 기능 레일, 세로 탭, 장식 전시장 제거, 실제 기능 본문 우선", () => {
   const layout = game.split("function H.layoutBook()")[1].split("mainInner:GetPropertyChangedSignal")[0];
   assert.match(layout, /local rail = tabs and width >= 700 and width > height and not facilityDetail/);
+  assert.match(layout, /local bottomInset = if tabs and not rail then tabH \+ 10 else 6/);
+  assert.match(layout, /H\.menuRecentButton\.Visible = not not showRecent/);
+  assert.match(layout, /icon\.Size = UDim2\.fromOffset\(32, 32\)/);
   assert.match(layout, /Enum\.ScrollingDirection\.Y else Enum\.ScrollingDirection\.X/);
   assert.match(layout, /local tabH, gap = 44, 4/);
-  assert.match(layout, /content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - 6\)/);
+  assert.match(layout, /content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - bottomInset\)/);
   assert.doesNotMatch(game, /function H\.renderFacilityGallery|H\.facilityGallery|H\.menuFocusBanner|H\.menuActionDock/);
   const render = game.split("function render()")[1].split("-- [단일 시작 화면]")[0];
   assert.ok(render.indexOf("RENDERERS[currentTab]()") < render.indexOf("H.menuHomeStrip()"));
@@ -143,4 +146,15 @@ test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', 
   assert.match(explore, /ExploreDifficultyMeter/);
   assert.match(explore, /enabled = site\.unlocked and site\.left > 0/);
   assert.match(explore, /H\.startField\(site\)/);
+});
+
+test('의뢰 선택 시 실제 상세만 노출하고 탐험 경로를 단서와 목적지로 표시한다', () => {
+  const quest = game.split('function RENDERERS.quest()')[1].split('-- 주점의 지식 카드 배틀')[0];
+  assert.match(quest,/JournalVisualSections/);
+  assert.match(quest,/for _, q in \(if selected then \{ selected \} else active\) do/);
+  assert.match(quest,/H\.questDetailId = nil; content\.CanvasPosition = Vector2\.zero; render\(\)/);
+  assert.match(quest,/FieldRoutePath/);
+  assert.match(quest,/route\.leadSource or "현지 탐험"/);
+  assert.match(quest,/route\.port/);
+  assert.match(quest,/openTab\(targetTab\)/);
 });
