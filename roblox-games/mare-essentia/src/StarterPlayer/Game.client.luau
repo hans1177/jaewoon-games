@@ -14522,16 +14522,21 @@ do
 			plate.Visible = wide or not reading
 			plate.Parent = leaf
 			corner(plate, 3)
+			if not bookId then
+				local grain = bookMaterial(plate, "parchment", 192)
+				if grain then grain.ImageTransparency = 0.45 end
+			end
 			local heading = mkLabel(plate, tostring(category.name or "세계 지식") .. "  ·  도판 " .. string.format("%03d", pageNo), 15, SOFTT, true)
 			heading.Position = UDim2.fromOffset(10, 6)
 			heading.Size = UDim2.new(1, -20, 0, 24)
 			heading.AutomaticSize = Enum.AutomaticSize.None
 			heading.TextXAlignment = Enum.TextXAlignment.Center
+			heading.Font = Enum.Font.Garamond
 			heading.TextColor3 = Color3.fromRGB(37, 71, 98)
 			local hero = Instance.new("ImageLabel")
 			hero.Name = "DexHero"
 			hero.Position = UDim2.fromOffset(12, 34)
-			hero.Size = UDim2.new(1, -24, 1, -100)
+			hero.Size = UDim2.new(1, -24, 1, -112)
 			hero.BackgroundTransparency = 1
 			hero.Image = artOf(current)
 			hero.ScaleType = Enum.ScaleType.Fit
@@ -14543,11 +14548,12 @@ do
 				missing.TextXAlignment = Enum.TextXAlignment.Center
 			end
 			local title = mkLabel(plate, tostring(current.name), 22, Color3.fromRGB(110, 39, 33), true)
-			title.Position = UDim2.new(0, 10, 1, -60)
-			title.Size = UDim2.new(1, -20, 0, 54)
+			title.Position = UDim2.new(0, 10, 1, -72)
+			title.Size = UDim2.new(1, -20, 0, 66)
 			title.AutomaticSize = Enum.AutomaticSize.None
 			title.TextWrapped = true
 			title.TextXAlignment = Enum.TextXAlignment.Center
+			title.Font = Enum.Font.Garamond
 
 			local page = Instance.new("ScrollingFrame")
 			page.Name = "DexPage"
@@ -14578,6 +14584,8 @@ do
 				l.AutomaticSize = Enum.AutomaticSize.Y
 				l.TextWrapped = true
 				l.TextTruncate = Enum.TextTruncate.None
+				l.Font = if bold then Enum.Font.Garamond else Enum.Font.SourceSans
+				l.LineHeight = 1.18
 				return l
 			end
 			para(tostring(category.name or "세계 지식"), 14, Color3.fromRGB(37, 71, 98), true)
@@ -14589,6 +14597,8 @@ do
 			local meta = {}
 			if current.region then table.insert(meta, tostring(current.region)) end
 			if current.era then table.insert(meta, tostring(current.era)) end
+			local rarityName = ({ Common = "일반", Uncommon = "고급", Rare = "희귀", Epic = "영웅", Legendary = "전설" })[current.rarity or ""]
+			if rarityName then table.insert(meta, rarityName) end
 			if #meta > 0 then para(table.concat(meta, " · "), 14, SOFTT, false) end
 			local function section(titleText, value)
 				if not value or value == "" then return end
@@ -14602,7 +14612,7 @@ do
 				rule.BackgroundTransparency = 0.25
 				rule.BorderSizePixel = 0
 				rule.Parent = page
-				para(value, 16, INKD, false)
+				para(value, 18, INKD, false)
 			end
 			section("개요", if article and article.summary and article.summary ~= "" then article.summary else current.description)
 			if article then
@@ -14679,15 +14689,29 @@ do
 			footer.Size = UDim2.new(1, -20, 0, 44)
 			footer.Parent = root
 			local function button(text, x, width, action, enabled)
-				local b = mkButton(footer, text, COLORS.leather, UDim2.new(width, -4, 1, 0), action, enabled)
+				local b = Instance.new("TextButton")
+				b.Name = "EncyclopediaPrintedButton"
+				b.Size = UDim2.new(width, -4, 1, 0)
 				b.Position = UDim2.new(x, 2, 0, 0)
-				b.TextSize = 14
+				b.BackgroundColor3 = if enabled then Color3.fromRGB(226, 205, 162) else Color3.fromRGB(166, 149, 123)
+				b.BorderSizePixel = 0
+				b.TextColor3 = if enabled then Color3.fromRGB(83, 37, 30) else Color3.fromRGB(75, 65, 53)
+				b.Font = Enum.Font.Garamond
+				b.TextSize = 17
+				b.TextWrapped = true
+				b.Text = text
+				b.AutoButtonColor = enabled
+				b.Active = enabled
+				b.Interactable = enabled
+				b.Selectable = enabled
+				b.Parent = footer
+				if enabled then b.Activated:Connect(action) end
 				return b
 			end
 			local stride = if H.dexPlateIndex then 12 else 1
 			button("이전", 0, 0.19, function() onPick(math.max(1, pageNo - stride)) end, pageNo > 1)
 			button(if H.dexPlateIndex then "책으로" else "도판", 0.19, 0.19, function() H.dexPlateIndex = not H.dexPlateIndex; render() end, true)
-			button(if wide then string.format("%d/%d", pageNo, #found) else (if reading then "그림" else "해설"), 0.38, 0.24, function() if not wide then H.dexReading = not reading; H.dexPlateIndex = false; render() end end, not wide)
+			button(if wide then string.format("%d/%d", pageNo, #found) else (if reading then "도판 보기" else "해설 읽기"), 0.38, 0.24, function() if not wide then H.dexReading = not reading; H.dexPlateIndex = false; render() end end, not wide)
 			if not current.combatArt then
 				button(if H.encyclopediaBookmarkId == current.id then "책갈피 빼기" else "책갈피", 0.62, 0.19, function()
 					local result = call("SetEncyclopediaBookmark", { id = current.id })
