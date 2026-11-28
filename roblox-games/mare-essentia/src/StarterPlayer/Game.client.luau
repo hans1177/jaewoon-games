@@ -11562,7 +11562,7 @@ do
 			end)
 			H.nextStepChip = chip
 		end
-		local show = view ~= nil and hud.Visible and not main.Visible and not newGameMode and not inField and not sailingNow
+		local show = gui.Enabled and view ~= nil and hud.Visible and not main.Visible and not newGameMode and not inField and not sailingNow
 			and not H.sceneBusy and not H.questScenesPlaying
 		local step = if show then H.nextStep() else nil
 		H.currentStep = step
@@ -11572,14 +11572,17 @@ do
 			return
 		end
 		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
-		local w = math.min(460, vp.X - 24)
-		chip.Size = UDim2.fromOffset(w, if step.why then 46 else 36)
-		local top = if dock.Visible and dock.AbsoluteSize.Y > 0 then dock.AbsolutePosition.Y else vp.Y - 120
-		chip.Position = UDim2.fromOffset(vp.X / 2, top - 6)
+		-- [다음 할 일] 상단 도크 위치에서 빼면 화면 밖으로 나간다. 하단 중앙에서 이동 조작 영역을 피한다.
+		local touch = game:GetService("UserInputService").TouchEnabled
+		local w = math.max(1, math.min(460, vp.X - 24))
+		local chipHeight = if step.why then 52 else 44
+		local bottomInset = if touch then math.min(132, math.floor(vp.Y * 0.25)) else 16
+		chip.Size = UDim2.fromOffset(w, chipHeight)
+		chip.Position = UDim2.fromOffset(vp.X / 2, math.max(chipHeight + 8, vp.Y - bottomInset))
 		chip.StepText.Text = step.text
 		chip.WhyText.Text = if step.why then "왜? " .. tostring(step.why) else ""
 		chip.WhyText.Visible = step.why ~= nil
-		chip.StepText.Position = UDim2.fromOffset(64, if step.why then 3 else 7)
+		chip.StepText.Position = UDim2.fromOffset(64, if step.why then 5 else 11)
 		local key = tostring(step.tab) .. "|" .. tostring(step.text)
 		if key ~= H.lastStepKey then
 			H.lastStepKey = key
