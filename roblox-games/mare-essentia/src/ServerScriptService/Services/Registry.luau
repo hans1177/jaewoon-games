@@ -2,8 +2,13 @@
 -- 모든 서비스를 만들어 하나의 액션 표(handlers)로 묶는다.
 -- 서비스는 Roblox API를 쓰지 않으므로 서버 밖(Luau CLI)에서도 테스트할 수 있다.
 
-return function(D: any)
-	local S = {}
+-- 서비스 등록부는 이름을 키로 조회하는 이종 서비스 사전이다. 각 서비스 모듈 내부 타입 검사는 그대로 수행한다.
+type ServiceMap = { [string]: any }
+type ActionHandler = (any, any, any) -> (boolean, string?)
+type ActionMap = { [string]: ActionHandler }
+
+return function(D: any): { S: ServiceMap, handlers: ActionMap }
+	local S: ServiceMap = {}
 	S.State = require(script.Parent.State)(D)
 	S.MarketClass = require(script.Parent.Market)(D)
 	S.Trade = require(script.Parent.Trade)(D, S)
@@ -38,7 +43,7 @@ return function(D: any)
 	S.Advice = require(script.Parent.Advice)(D, S) :: any -- 타입 검사 복잡도 한계 회피
 	S.View = require(script.Parent.View)(D, S)
 
-	local handlers = {}
+	local handlers: ActionMap = {}
 	for _, name in { "Advice", "Cardbook", "Trade", "Harbor", "Order", "Perk", "Shipyard", "Battle", "Boss", "Tavern", "Sailing", "Discovery", "Facility", "Story", "Codex", "Research", "Knowledge", "History", "Stock", "People", "World", "Diplomacy", "Pace", "Build", "Chronicle", "Quest", "Intro" } do
 		for action, fn in S[name].handlers do
 			assert(handlers[action] == nil, "duplicate action: " .. action)
