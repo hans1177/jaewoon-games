@@ -5311,48 +5311,95 @@ testCardsAndArt()
 -- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물
 local function testTradeFun()
 
--- [흥정 미니게임] 저울·표정·동전·퀴즈: 서버 판정, 물건마다 항구에서 한 번, 할인 4~12%, 실패해도 손해 없음
+-- [흥정 미니게임] 실제 서버 핸들러로 5종 무작위 출제와 정답·실패·재시도·시간 제한 검증.
 local function testHaggleGames()
 	local D: any = D
-	do
+	local S: any = S
+	local newState: any = newState
+	local check: any = check
+	local trade = S.Trade.handlers
+	local now = 1000
+	local goodId = "wool"
+	local function start(index)
 		local st = newState()
-		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
-		act(st, "HaggleStart", { goodId = goodId, game = "scale" })
-		check("흥정: 저울 멈추기 게임은 안 나옴", st.haggle and st.haggle.pending and st.haggle.pending.game ~= "scale")
+		local c = { rng = function() return (index - 0.5) / 5 end, now = function() return now end, market = S.MarketClass.new() }
+		now = 1000
+		local ok, msg = trade.HaggleStart(st, { goodId = goodId, game = "face" }, c)
+		check("흥정 시작 " .. tostring(index), ok == true, msg)
+		return st, c
 	end
-	for _, game in { "face", "coin", "quiz" } do
-		local st = newState()
-		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
-		local ok = act(st, "HaggleStart", { goodId = goodId, game = game })
-		local pend = st.haggle and st.haggle.pending
-		check("흥정 게임 시작: " .. game, ok == true and pend ~= nil)
-		if pend then
-			local payload: any = { goodId = goodId }
-			if pend.game == "scale" then
-				payload.t = pend.center * pend.period -- 바늘이 금색 칸 한가운데 있는 순간
-			elseif pend.game == "face" then
-				payload.offer = pend.limit
-			elseif pend.game == "coin" then
-				payload.pick = pend.real
-			else
-				payload.pick = pend.quiz.answer
+	local function pack(pieces)
+		local occupied, result = {}, {}
+		local function solve(i)
+			if i > #pieces then return true end
+			local p = pieces[i]
+			for _, rot in { false, true } do
+				local w, h = if rot then p.h else p.w, if rot then p.w else p.h
+				for y = 1, 4 - h do
+					for x = 1, 5 - w do
+						local cells, free = {}, true
+						for yy = y, y + h - 1 do
+							for xx = x, x + w - 1 do
+								local k = (yy - 1) * 4 + xx
+								if occupied[k] then free = false end
+								table.insert(cells, k)
+							end
+						end
+						if free then
+							for _, k in cells do occupied[k] = true end
+							result[i] = { x = x, y = y, rot = rot }
+							if solve(i + 1) then return true end
+							for _, k in cells do occupied[k] = nil end
+						end
+					end
+				end
 			end
-			local won = act(st, "HagglePlay", payload)
-			local pct = st.haggle.deal and math.floor((1 - st.haggle.deal.mult) * 100 + 0.5) or 0
-			check("흥정 게임 정답 성공: " .. pend.game, won == true and pct >= 4 and pct <= 12)
-			check("흥정 게임 한 번만: " .. pend.game, act(st, "HaggleStart", { goodId = goodId }) == false)
-			check("흥정 게임 화면 문제에 정답 없음: " .. pend.game, (function()
-				local v = S.View.build(st, ctx)
-				return v.haggle == nil or v.haggle.pending == nil
-			end)())
+			return false
 		end
+		return if solve(1) then result else nil
 	end
-	local st = newState()
-	local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
-	act(st, "HaggleStart", { goodId = goodId, game = "face" })
-	local lost = act(st, "HagglePlay", { goodId = goodId, offer = 12 + 0 * st.haggle.pending.limit })
-	check("흥정 게임 실패는 정가(손해 없음)", (lost == false or st.haggle.pending == nil) and (st.haggle.deal == nil or st.haggle.deal.goodId == goodId))
-	check("흥정 게임 시작 없이 결과 못 냄", act(newState(), "HagglePlay", { goodId = goodId, pick = 1 }) == false)
+	for index, expected in { "coin", "quiz", "balance", "cargo", "memory" } do
+		local st, c = start(index)
+		local pend: any = st.haggle and st.haggle.pending
+		check("흥정 무작위 출제: " .. expected, pend and pend.game == expected)
+		if not pend or pend.game ~= expected then continue end
+		local v = S.View.build(st, c).haggle.pending
+		check("흥정 공개 데이터 정답 필드 제외: " .. expected, v and v.real == nil and v.answer == nil and v.quiz == nil)
+		check("흥정 창 다시 열어도 기회 보존", trade.HaggleStart(st, { goodId = goodId }, c) == false)
+		local payload: any = { goodId = goodId }
+		if expected == "coin" then payload.pick = pend.real
+		elseif expected == "quiz" then payload.pick = pend.quiz.answer
+		elseif expected == "balance" then
+			for mask = 1, 31 do
+				local sum, picks = 0, {}
+				for n, w in pend.weights do
+					if bit32.band(mask, bit32.lshift(1, n - 1)) ~= 0 then sum += w; table.insert(picks, n) end
+				end
+				if sum == pend.target then payload.weights = picks; break end
+			end
+		elseif expected == "cargo" then payload.placements = pack(pend.pieces)
+		else payload.sequence = table.clone(pend.sequence); now += 3 end
+		local won, msg = trade.HagglePlay(st, payload, c)
+		local pct = st.haggle.deal and math.floor((1 - st.haggle.deal.mult) * 100 + 0.5) or 0
+		check("흥정 정답 할인: " .. expected, won and pct >= 4 and pct <= 12, msg)
+		check("흥정 재전송 차단: " .. expected, trade.HagglePlay(st, payload, c) == false)
+	end
+	do
+		local st, c = start(3)
+		local before = st.coins
+		local lost = trade.HagglePlay(st, { goodId = goodId, weights = { 1, 1 } }, c)
+		check("흥정 중복 추 실패 및 정가 유지", not lost and st.coins == before and not st.haggle.deal)
+	end
+	do
+		local st, c = start(4)
+		now += 30
+		check("흥정 시간 초과 실패", trade.HagglePlay(st, { goodId = goodId, placements = pack(st.haggle.pending.pieces) }, c) == false and not st.haggle.deal)
+	end
+	do
+		local st, c = start(5)
+		check("기억 공개 중 제출 차단", trade.HagglePlay(st, { goodId = goodId, sequence = st.haggle.pending.sequence }, c) == false)
+		check("흥정 시작 없이 결과 못 냄", trade.HagglePlay(newState(), { goodId = goodId, pick = 1 }, c) == false)
+	end
 end
 testHaggleGames()
 
