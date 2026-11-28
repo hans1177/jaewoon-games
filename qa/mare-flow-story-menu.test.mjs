@@ -129,6 +129,10 @@ test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', 
   for (const key of ['CaptainSectionIndex', 'CaptainFullBody', 'CaptainApprovedPortrait', 'WeaponMasteryStages', 'CareerExperienceMeter','SpecialtyExperienceMeter']) assert.ok(captain.includes(key), key);
   assert.match(captain, /character:Clone\(\)/);
   assert.match(captain, /view\.weaponPractice/);
+  assert.match(captain, /local thresholds = \{ 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 \}/);
+  assert.match(captain, /WeaponMasteryExperience/);
+  assert.match(captain, /if rank >= 8 then "필살기 해금/);
+  assert.match(captain, /math\.floor\(\(i - 1\) \/ 5\) \* 28/);
   assert.match(captain, /view\.fieldStreakBest/);
   assert.match(captain, /gearDefs\[g\.id\]\.perk/);
   for (const key of ['ToggleGear','BuyGear','SetSpecialty','SetSubSpecialty']) assert.ok(captain.includes('call("' + key + '"'), key);
