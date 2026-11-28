@@ -4977,7 +4977,7 @@ test('광장 가장자리 장식과 시장 가판대의 보행 간섭을 검사�
  assert.match(scene,/originalStall.Name = "CityMarketStall"/);
  assert.match(scene,/extra.Name = "CityMarketStall"/);
  assert.match(scene,/hit:FindFirstAncestor\("CityMarketStall"\)/);
- assert.match(scene,/\(hit.CanCollide or visualMarket\)/);
+ assert.match(scene,/\(hit.CanCollide or visualMarket or visualSolid\)/);
 });
 
  
