@@ -3066,6 +3066,20 @@ local SIG_ANCHOR = Vector3.new(-42, 0, 0) -- [모든 항구 새 랜드마크 구
 -- [유럽 항구] 실제 Ports.country를 사용한다. 저장된 국가·항구·발전도 값은 변경하지 않는다.
 -- lot/gap/density는 배경 구획과 집의 모양에만 적용한다. 경제·시설 해금에는 관여하지 않는다.
 local COUNTRY_PLAN = {
+	-- [국가별 건축 차이 · 2026-11-29] 유럽 밖 나라도 필지 크기·간격·밀도가 다르게(같은 문화권 안에서도 나라별 차이).
+	-- 동아시아: 담장 골목에 촘촘(중국) / 넓은 마당(일본 무가). 이슬람권: 좁은 미로. 신대륙 식민: 넓은 필지.
+	china = { lot = 0.9, gap = 0.82, density = 1.1 }, korea = { lot = 0.96, gap = 0.95, density = 0.96 },
+	japan = { lot = 1.0, gap = 1.04, density = 0.98 }, ottoman = { lot = 0.9, gap = 0.8, density = 1.1 },
+	morocco = { lot = 0.86, gap = 0.74, density = 1.12 }, algeria = { lot = 0.86, gap = 0.74, density = 1.12 },
+	tunisia = { lot = 0.86, gap = 0.74, density = 1.12 }, tripoli = { lot = 0.88, gap = 0.78, density = 1.1 },
+	egypt = { lot = 0.9, gap = 0.8, density = 1.1 }, levant = { lot = 0.88, gap = 0.78, density = 1.1 },
+	yemen = { lot = 0.86, gap = 0.76, density = 1.08 }, gujarat = { lot = 0.9, gap = 0.84, density = 1.08 },
+	malabar = { lot = 1.0, gap = 1.12, density = 0.94 }, malay = { lot = 1.06, gap = 1.2, density = 0.9 },
+	moluccas = { lot = 1.08, gap = 1.24, density = 0.88 }, swahili = { lot = 0.92, gap = 0.86, density = 1.04 },
+	senegal = { lot = 1.08, gap = 1.22, density = 0.88 }, angola = { lot = 1.06, gap = 1.18, density = 0.9 },
+	brazil = { lot = 1.1, gap = 1.16, density = 0.92 }, new_spain = { lot = 1.08, gap = 1.1, density = 0.94 },
+	panama = { lot = 1.06, gap = 1.1, density = 0.94 }, rio_de_la_plata = { lot = 1.12, gap = 1.18, density = 0.9 },
+	australia = { lot = 1.14, gap = 1.3, density = 0.86 },
 	portugal = { lot = 0.94, gap = 0.9, density = 1.06 }, spain = { lot = 1.04, gap = 1.05, density = 0.94 },
 	canary = { lot = 1.04, gap = 1.05, density = 0.94 }, madeira = { lot = 0.94, gap = 0.9, density = 1.06 },
 	azores = { lot = 0.94, gap = 0.9, density = 1.06 }, mallorca = { lot = 1.04, gap = 1.05, density = 0.94 },
@@ -9296,6 +9310,70 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("PropOverlapHidden", hidden)
 	end)
 	folder:SetAttribute("PropOverlapAudit", if propOk then "PASS" else "FAIL:" .. tostring(propError))
+	-- [마을에 국가 표시 · 2026-11-29 오너: "항구별 국가별 연결"] 지금 주인 나라(점령·식민 반영, Econ.portNation)의
+	-- 국기 색을 마을 깃발에 입히고, 항만청 앞에 국기 2개. 식민지는 원래 나라 작은 깃발, 전쟁 중이면 붉은 전쟁 깃발.
+	-- 화면 표시만(저장·경제 판정 불변).
+	local nationOk, nationError = pcall(function()
+		local link = info.sim and info.sim.nationLink
+		local port = PortData.Ports[info.portId] or {}
+		local owner = (link and link.owner) or port.country
+		if type(owner) ~= "string" then return end
+		local okFlags, Flags = pcall(function() return require(script.Parent:WaitForChild("Flags", 3)) end)
+		local function mainColor(id: string?)
+			local f = id and okFlags and Flags and Flags.Ids and Flags.Ids[id]
+			if not f then return nil end
+			local best, area = nil, -1
+			for _, shape in f do
+				if type(shape[1]) == "number" then
+					local a = (shape[3] or 0) * (shape[4] or 0)
+					if a > area then best, area = shape[5], a end
+				end
+			end
+			return best
+		end
+		local color = mainColor(owner)
+		folder:SetAttribute("PortNationOwner", owner)
+		folder:SetAttribute("PortNationColony", link and link.colony or false)
+		folder:SetAttribute("PortNationWar", link and link.war or false)
+		if not color then return end
+		local recolored = 0
+		for _, child in folder:GetChildren() do
+			local key = child:IsA("Model") and child:GetAttribute("ImportedAsset")
+			if type(key) == "string" and string.find(key, "Castle/flag", 1, true) then
+				for _, p in child:GetDescendants() do
+					if p:IsA("BasePart") then
+						local n = string.lower(p.Name)
+						if not (string.find(n, "pole", 1, true) or string.find(n, "stick", 1, true) or string.find(n, "base", 1, true)) then
+							p.Color = color
+							recolored += 1
+						end
+					end
+				end
+			end
+		end
+		local harbor = folder:GetAttribute("CityFacilityPosition_route")
+		local placed = 0
+		if typeof(harbor) == "Vector3" then
+			for _, dx in { -7, 7 } do
+				local flag = importedModel(folder, "Castle", "flag-banner-long", harbor + Vector3.new(dx, 0, 9), 11, false, color)
+				if flag then flag.Name = "NationFlag_" .. owner placed += 1 end
+			end
+			if link and link.colony and port.country and port.country ~= owner then
+				local native = mainColor(port.country)
+				local small = native and importedModel(folder, "Castle", "flag-banner-short", harbor + Vector3.new(0, 0, 12), 6, false, native)
+				if small then small.Name = "NativeFlag_" .. port.country placed += 1 end
+			end
+			if link and link.war then
+				for _, at in { Vector3.new(-6, 0, 30), Vector3.new(-6, 0, -30), harbor + Vector3.new(0, 0, -10) } do
+					local war = importedModel(folder, "Castle", "flag-banner-short", at, 8, false, Color3.fromRGB(150, 30, 30))
+					if war then war.Name = "WarBanner" placed += 1 end
+				end
+			end
+		end
+		folder:SetAttribute("PortNationFlagsRecolored", recolored)
+		folder:SetAttribute("PortNationFlagsPlaced", placed)
+	end)
+	folder:SetAttribute("PortNationAudit", if nationOk then "PASS" else "FAIL:" .. tostring(nationError))
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
 	-- 이동형·고정형·일과형 모두 생성 직후 한 번만 검사한다(프레임별 공간 질의 금지).
 	local routeOk, routeError = pcall(function()

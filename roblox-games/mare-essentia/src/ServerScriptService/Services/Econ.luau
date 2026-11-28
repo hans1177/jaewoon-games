@@ -73,6 +73,27 @@ return function(D, S)
 		return nil
 	end
 
+	-- [항구-국가 연결 · 2026-11-29 오너: "항구별 국가별 연결"] 화면·발전 계산용 구조화 요약.
+	-- owner(현재 주인 나라, 점령 반영)·colony·unrest·war·rank·hegemon. 실패하면 nil(기존 화면 유지).
+	function X.portNation(state: any, w: any, portId: any): any
+		local ok, result = pcall(function()
+			if not w or not w.nations then return nil end
+			local N = E.Nations
+			local pv = N.portView(w.nations, w, portId)
+			if not pv then return nil end
+			local st = w.nations.states[pv.owner]
+			local v = N.view(w.nations, pv.owner)
+			return {
+				owner = pv.owner, colony = pv.colony == true,
+				unrest = math.floor((tonumber(pv.unrest) or 0) * 100 + 0.5),
+				war = st ~= nil and st.war ~= nil, foe = st and st.war and st.war.foe or nil,
+				rank = v and v.rank or nil, hegemon = w.nations.hegemon == pv.owner,
+			}
+		end)
+		if ok then return result end
+		return nil
+	end
+
 	-- 플레이어의 외교 개입(군수 납품·중재·용병 해군). 반환: ok, 설명. 재화 차감은 호출한 쪽이 처리한다.
 	function X.aid(state: any, kind: any, targetNation: any, amount: any): (boolean, string)
 		local ok, success, text = pcall(function()
@@ -165,6 +186,7 @@ return function(D, S)
 			work = { jobs = math.floor(E.jobsCap(t)), unemployment = math.floor(t.unemp * 100 + 0.5) },
 			service = svc, construction = construction,
 			nation = X.nationSummary(state, w, portId),
+			nationLink = X.portNation(state, w, portId),
 		}
 	end
 
