@@ -10046,7 +10046,9 @@ function H.showCardGain(card, moreCount)
 	local rarityLevel = ({ Common = 0, Uncommon = 1, Rare = 2, Epic = 3, Legendary = 4 })[card.rarity] or 0
 	local gold = Color3.fromRGB(255, 217, 124):Lerp(tone, if rarityLevel >= 2 then 0.22 else 0.5)
 	local viewport = if workspace.CurrentCamera then workspace.CurrentCamera.ViewportSize else Vector2.new(720, 900)
-	local revealHeight = math.floor(math.min(if rarityLevel >= 3 then 280 else 254, math.max(185, viewport.Y * 0.41)))
+	-- 세로 7:10은 유지하고 가로/세로 화면의 제목 안전 여백 안에서 크게 표시한다.
+	local revealHeight = math.floor(math.max(80, math.min(if rarityLevel >= 3 then 500 else 460,
+		viewport.Y * (if rarityLevel >= 3 then 0.72 else 0.68), viewport.Y * 0.92 - 88, viewport.X * 0.72 / 0.7)))
 	local revealWidth = math.floor(revealHeight * 0.7)
 	local center = UDim2.fromScale(0.5, 0.46)
 	local reducedMotion = game:GetService("GuiService").ReducedMotionEnabled
@@ -10106,10 +10108,10 @@ function H.showCardGain(card, moreCount)
 	frame.Name = "AcquiredCardReveal"
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
 	frame.Position = center
-	frame.Size = UDim2.fromOffset(58, 83)
+	frame.Size = UDim2.fromOffset(8, math.floor(revealHeight * 0.38))
 	frame.BackgroundColor3 = Color3.fromRGB(234, 212, 166)
 	frame.BorderSizePixel = 0
-	frame.Rotation = -7
+	frame.Rotation = 0
 	frame.ClipsDescendants = true
 	frame.ZIndex = 8
 	frame.Parent = g
@@ -10180,7 +10182,7 @@ function H.showCardGain(card, moreCount)
 	foil.BackgroundColor3 = gold
 	foil.BackgroundTransparency = 0.58
 	foil.BorderSizePixel = 0
-	foil.ZIndex = 10
+	foil.ZIndex = 12
 	foil.Parent = frame
 
 	-- [봉인 해제] 황동 문장으로 뒷면을 먼저 보여 주고, 가로 축을 좁혔다 펴며 실제 원화를 드러낸다.
@@ -10200,11 +10202,26 @@ function H.showCardGain(card, moreCount)
 	sealGradient.Color = ColorSequence.new(Color3.fromRGB(103, 72, 49), Color3.fromRGB(44, 39, 41))
 	sealGradient.Rotation = 35
 	sealGradient.Parent = seal
+	-- 기존 승인 뒷면 원화를 실제 양면 회전에 재사용한다(없으면 기존 봉인 문장 유지).
+	local backId = AssetIds["CardArt/battle_card_back"]
+	local backArt: ImageLabel? = nil
+	if backId then
+		backArt = Instance.new("ImageLabel")
+		backArt.Name = "CardGainBackArt"
+		backArt.Size = UDim2.fromScale(1, 1)
+		backArt.BackgroundTransparency = 1
+		backArt.Image = "rbxassetid://" .. tostring(backId)
+		backArt.ScaleType = Enum.ScaleType.Stretch
+		backArt.ZIndex = 11
+		backArt.Parent = seal
+		corner(backArt, 10)
+		seal.TextTransparency = 1
+	end
 
 	local spotlightName = Instance.new("TextLabel")
 	spotlightName.Name = "CardGainTitle"
 	spotlightName.AnchorPoint = Vector2.new(0.5, 0)
-	spotlightName.Position = UDim2.new(0.5, 0, 0.46, math.floor(revealHeight * 0.5) + 12)
+	spotlightName.Position = UDim2.new(0.5, 0, 0.46, math.floor(revealHeight * 0.5) + 5)
 	spotlightName.Size = UDim2.new(0.88, 0, 0, 38)
 	spotlightName.BackgroundTransparency = 1
 	spotlightName.Font = Enum.Font.GothamBold
@@ -10240,8 +10257,8 @@ function H.showCardGain(card, moreCount)
 	local caption = Instance.new("TextLabel")
 	caption.Name = "CardAcquired"
 	caption.AnchorPoint = Vector2.new(0.5, 0)
-	local captionY = -math.floor(revealHeight * 0.5) - 55
-	caption.Position = UDim2.new(0.5, 0, 0.46, captionY - 10)
+	local captionY = -math.floor(revealHeight * 0.5) - 38
+	caption.Position = UDim2.new(0.5, 0, 0.46, captionY - 3)
 	caption.Size = UDim2.new(0.92, 0, 0, 36)
 	caption.BackgroundTransparency = 1
 	caption.Font = Enum.Font.GothamBold
@@ -10254,7 +10271,7 @@ function H.showCardGain(card, moreCount)
 	caption.ZIndex = 10
 	caption.Parent = g
 
-	local sparkleCount = if viewport.X < 540 then 4 + rarityLevel * 2 else 6 + rarityLevel * 3
+	local sparkleCount = if reducedMotion then 0 elseif viewport.X < 540 or viewport.Y < 480 then 4 + rarityLevel * 2 else 6 + rarityLevel * 3
 	for i = 1, sparkleCount do
 		local angle = (i - 1) * math.pi * 2 / sparkleCount
 		local glint = Instance.new("TextLabel")
@@ -10282,10 +10299,9 @@ function H.showCardGain(card, moreCount)
 	end
 	-- [효과음] 기존 등록 음원만 사용하며 모바일에서 과도하게 중첩하지 않는다.
 	Sfx.play("sfx_card_deal", 0.35, 1.05, "sfx_book_turn")
-	if rarityLevel >= 2 then Sfx.play("sfx_card_coin", 0.5, 1 + rarityLevel * 0.035) end
-	if rarityLevel >= 3 then task.delay(0.48, Sfx.play, "sfx_fanfare", if rarityLevel == 4 then 0.64 else 0.35, 1.02) end
+	if rarityLevel >= 2 then Sfx.play("sfx_card_ring", 0.24, 0.92 + rarityLevel * 0.025, "sfx_card_coin") end
 	TS:Create(frame, TweenInfo.new(0.36, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-		Size = UDim2.fromOffset(revealWidth, revealHeight), Rotation = 0,
+		Size = UDim2.fromOffset(revealWidth, revealHeight),
 	}):Play()
 	for i, pair in rings do
 		TS:Create(pair[1], TweenInfo.new(0.85 + i * 0.13, Enum.EasingStyle.Quart), {
@@ -10304,10 +10320,17 @@ function H.showCardGain(card, moreCount)
 		}):Play()
 		task.delay(0.14, function()
 			if not frame.Parent then return end
-			seal:Destroy()
+			seal.Visible = false
 			-- [공개 충격파] 카드가 펼쳐지는 바로 그 순간 황동 문장 파편이 튀고 한 번 크게 울린다.
-			Sfx.play("sfx_card_page", 0.26, 1.13, "sfx_book_turn")
-			if rarityLevel == 2 then task.delay(0.11, Sfx.play, "sfx_bell", 0.24, 1.12) end
+			Sfx.play("sfx_card_page", 0.32, 1.13, "sfx_book_turn")
+			if rarityLevel >= 2 then
+				Sfx.play("sfx_card_magic", if rarityLevel >= 3 then 0.40 else 0.25, 1.05, "sfx_bell")
+			end
+			if rarityLevel >= 3 then
+				task.delay(0.18, function()
+					if g.Parent then Sfx.play("sfx_fanfare", if rarityLevel == 4 then 0.64 else 0.40, 1.02) end
+				end)
+			end
 			if not reducedMotion then
 				local impact = Instance.new("Frame")
 				impact.Name = "CardSealShockwave"
@@ -10388,7 +10411,7 @@ function H.showCardGain(card, moreCount)
 	end)
 	-- [팽이 수납 · 메인] 원화 공개 후 가속 회전·곡선 축소·잔상을 거쳐 기존 서재/내 카드 버튼으로 흡수한다.
 	-- 별도 UI 시스템·음원·저장 경로를 만들지 않으며, 움직임 감소 설정과 모바일 도크 스크롤을 존중한다.
-	task.delay(1.43, function()
+	task.delay(1.65, function()
 		if not g.Parent or not frame.Parent then return end
 		local icon = if isCombat then hudTop:FindFirstChild("DeckButton", true) else H.dockButtons and (H.dockButtons.scholar or H.dockButtons.codex)
 		local canTarget = icon and icon.Parent and icon.Visible and hudTopGui.Enabled and icon.AbsoluteSize.X > 0
@@ -10408,8 +10431,8 @@ function H.showCardGain(card, moreCount)
 
 		local startPoint = Vector2.new(viewport.X * center.X.Scale, viewport.Y * center.Y.Scale)
 		local fallbackPoint = Vector2.new(viewport.X - 44, 70)
-		local revolutions = if rarityLevel >= 4 then 4 elseif rarityLevel >= 3 then 3.5
-			elseif rarityLevel >= 2 then 3 else 2.5
+		local revolutions = if rarityLevel >= 4 then 4 elseif rarityLevel >= 3 then 3
+			elseif rarityLevel >= 2 then 3 else 2
 		local trails, ribbons, orbit = {}, {}, {}
 		if not reducedMotion then
 			-- [빛 궤적] 카드 바퀴 뒤에서 길게 휘어지는 황동빛 선과 주변의 작은 마법 문장.
@@ -10462,7 +10485,12 @@ function H.showCardGain(card, moreCount)
 				table.insert(trails, { ghost, outline })
 			end
 		end
-		Sfx.play("sfx_card_swing", 0.31, 1.14, "sfx_card_deal")
+		Sfx.play("sfx_card_swing", 0.34, 1.05, "sfx_card_deal")
+		if not reducedMotion then
+			task.delay(0.32, function()
+				if g.Parent then Sfx.play("sfx_card_page", 0.18, 1.22, "sfx_card_deal") end
+			end)
+		end
 		TS:Create(caption, TweenInfo.new(0.32), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
 		TS:Create(spotlightName, TweenInfo.new(0.3), { TextTransparency = 1 }):Play()
 
@@ -10485,14 +10513,21 @@ function H.showCardGain(card, moreCount)
 				else startPoint * ((1 - t) ^ 2) + control * (2 * (1 - t) * t) + target * (t ^ 2)
 			local spin = if reducedMotion then 0 else revolutions * 360 * t
 			local scale = math.max(0.035, (1 - t) ^ 1.35)
-			local widthRipple = if reducedMotion then 1 else 0.74 + 0.26 * math.abs(math.cos(math.rad(spin)))
+			-- 동전처럼 선 상태로 세로축 회전: 옆면에서는 폭만 좁아지고 앞/뒷면이 교대된다.
+			local facing = math.cos(math.rad(spin))
+			local widthRipple = if reducedMotion then 1 else math.max(0.035, math.abs(facing))
+			seal.Visible = not reducedMotion and facing < 0
+			seal.BackgroundTransparency = math.clamp((t - 0.72) / 0.28, 0, 1)
+			if backArt then backArt.ImageTransparency = seal.BackgroundTransparency end
 			frame.Position = UDim2.fromOffset(current.X, current.Y)
 			frame.Size = UDim2.fromOffset(
 				math.max(2, math.floor(revealWidth * scale * widthRipple)),
 				math.max(3, math.floor(revealHeight * scale)))
-			frame.Rotation = spin
-			paper.Rotation = 90 + spin * 0.15
-			foil.Size = UDim2.new(0, math.max(2, math.floor(5 + (1 - widthRipple) * 26)), 1, 0)
+			frame.Rotation = 0
+			paper.Rotation = 90
+			foil.Size = UDim2.new(0, math.max(1, math.min(frame.Size.X.Offset, math.floor((3 + (1 - widthRipple) * 9) * scale))), 1, 0)
+			foil.AnchorPoint = Vector2.new(if math.sin(math.rad(spin)) >= 0 then 1 else 0, 0)
+			foil.Position = UDim2.fromScale(foil.AnchorPoint.X, 0)
 			foil.BackgroundTransparency = math.clamp(0.34 + t * 0.65, 0, 1)
 			frame.BackgroundTransparency = math.clamp((t - 0.72) / 0.28, 0, 1)
 			art.ImageTransparency = math.clamp((t - 0.74) / 0.26, 0, 1)
@@ -10524,14 +10559,14 @@ function H.showCardGain(card, moreCount)
 				local echoPos = startPoint * ((1 - lag) ^ 2) + control * (2 * (1 - lag) * lag) + target * (lag ^ 2)
 				pair[1].Position = UDim2.fromOffset(echoPos.X, echoPos.Y)
 				pair[1].Size = UDim2.fromOffset(
-					math.max(2, math.floor(revealWidth * (1 - lag) ^ 1.35)),
+					math.max(2, math.floor(revealWidth * (1 - lag) ^ 1.35 * math.max(0.035, math.abs(math.cos(revolutions * 2 * math.pi * lag))))),
 					math.max(3, math.floor(revealHeight * (1 - lag) ^ 1.35)))
-				pair[1].Rotation = revolutions * 360 * lag - i * 13
+				pair[1].Rotation = 0
 				pair[2].Transparency = math.clamp(0.55 + i * 0.11 + t * 0.20, 0, 1)
 			end
 		end)
 		local flight = TS:Create(progress, TweenInfo.new(
-			if reducedMotion then 0.38 else 0.72, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Value = 1 })
+			if reducedMotion then 0.38 else 0.90, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Value = 1 })
 		flight.Completed:Once(function()
 			changed:Disconnect()
 			progress:Destroy()
@@ -10629,7 +10664,7 @@ function H.showCardGain(card, moreCount)
 		end)
 		flight:Play()
 	end)
-	task.delay(3.04, function()
+	task.delay(3.30, function()
 		if g.Parent then g:Destroy() end
 	end)
 end
@@ -10899,12 +10934,12 @@ do
 		task.delay(flip, function()
 			if not g.Parent then return end
 			-- 3) 전면 섬광(등급색, 전설은 흰빛)
-			if level >= 2 then
+			if level >= 2 and not o.reduced then
 				local flash = Instance.new("Frame")
 				flash.Name = "CardGainFlash"
 				flash.Size = UDim2.fromScale(1, 1)
 				flash.BackgroundColor3 = if level >= 4 then Color3.fromRGB(255, 250, 230) else tone
-				flash.BackgroundTransparency = if level >= 4 then 0.15 else 0.45
+				flash.BackgroundTransparency = if level >= 4 then 0.48 else 0.62
 				flash.BorderSizePixel = 0
 				flash.ZIndex = 30
 				flash.Parent = g
@@ -10949,7 +10984,7 @@ do
 			end
 			-- 6) 색종이·금가루(희귀 이상, 전설은 많이)
 			if level >= 2 and not o.reduced then
-				local small = o.viewport.X < 540
+				local small = o.viewport.X < 540 or o.viewport.Y < 480
 				local count = (if level >= 4 then 30 elseif level >= 3 then 20 else 10) // (if small then 2 else 1)
 				local palette = { gold, tone, Color3.fromRGB(255, 255, 255), Color3.fromRGB(255, 196, 92) }
 				for i = 1, count do
@@ -10979,7 +11014,7 @@ do
 				local stamp = Instance.new("TextLabel")
 				stamp.Name = "CardRarityStamp"
 				stamp.AnchorPoint = Vector2.new(0.5, 0.5)
-				stamp.Position = UDim2.new(o.center.X.Scale, o.w * 0.36, o.center.Y.Scale, -o.h * 0.42)
+				stamp.Position = UDim2.new(o.center.X.Scale, math.min(o.w * 0.36, o.viewport.X * 0.30), o.center.Y.Scale, -o.h * 0.36)
 				stamp.Size = UDim2.fromOffset(150, 56)
 				stamp.BackgroundColor3 = Color3.fromRGB(120, 24, 20)
 				stamp.BackgroundTransparency = 0.05
@@ -12760,7 +12795,7 @@ function H.checkNewCards()
 				task.wait(1.3)
 			else
 				H.showCardGain(found.card, found.extra)
-				task.wait(3.14)
+				task.wait(3.40)
 				if H.checkSetComplete then H.checkSetComplete(found.card) end
 				-- [원더 첫 습득] 불가사의 카드를 처음 얻으면 원더 연출씬을 한 번 자동 재생(이후엔 '다시 보기')
 				local okW, WS = pcall(function() return require(Shared:WaitForChild("WonderScenes")) end)

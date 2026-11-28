@@ -31,3 +31,25 @@ test('움직임 줄이기 존중·촬영 점검', () => {
   assert.match(game, /fx:sub\(1, 8\) == "FxCheck:"/);
   assert.ok(fs.existsSync(`${root}/tools/devloop/studio-scripts/mare-event-card-fx.json`));
 });
+
+test('카드 습득: 세로축 양면 회전·큰 원화·기존 음향·수납 큐', () => {
+  const gain = game.split('function H.showCardGain(card, moreCount)')[1].split('-- 개발 확인용: workspace 속성 DevSail')[0];
+  assert.match(gain, /viewport\.Y \* \(if rarityLevel >= 3 then 0\.72 else 0\.68\)/);
+  assert.match(gain, /viewport\.Y \* 0\.92 - 88/);
+  assert.match(gain, /revealWidth = math\.floor\(revealHeight \* 0\.7\)/);
+  assert.match(gain, /AssetIds\["CardArt\/battle_card_back"\]/);
+  assert.match(gain, /local facing = math\.cos\(math\.rad\(spin\)\)/);
+  assert.match(gain, /math\.max\(0\.035, math\.abs\(facing\)\)/);
+  assert.match(gain, /seal\.Visible = not reducedMotion and facing < 0/);
+  assert.doesNotMatch(gain, /frame\.Rotation = spin|seal:Destroy\(\)|pair\[1\]\.Rotation = revolutions/);
+  assert.match(gain, /frame\.Rotation = 0/);
+  assert.match(gain, /sfx_card_magic/);
+  assert.match(gain, /sfx_fanfare/);
+  assert.match(gain, /task\.delay\(3\.30/);
+  assert.match(game, /H\.showCardGain\(found\.card, found\.extra\)\s*task\.wait\(3\.40\)/);
+  for (const h of [320, 384, 720, 900]) for (const w of [320, 400, 832, 1440]) {
+    const height = Math.floor(Math.max(80, Math.min(500, h * .72, h * .92 - 88, w * .72 / .7)));
+    assert.ok(h * .46 - height / 2 - 41 >= 0, 'caption fits');
+    assert.ok(h * .46 + height / 2 + 43 <= h, 'title fits');
+  }
+});
