@@ -12736,11 +12736,33 @@ do
 			beam.BackgroundTransparency = 1
 			beam.ScaleType = Enum.ScaleType.Fit
 			beam.Parent = stage
-			local arm = mkLabel(beam, "◀━━━━━━━━━━━━▶", 24, INK, true)
-			arm.Size = UDim2.fromScale(1, 1)
-			arm.AutomaticSize = Enum.AutomaticSize.None
-			arm.TextScaled = true
-			arm.Visible = beam.Image == ""
+			-- 기존 승인 교역 청동 원화와 상품 원화를 사용. 신규 저울 원화가 없어도 제작 대기하지 않는다.
+			if beam.Image == "" and H.hasIconArt("tradeg") then
+				local scaleArt = modelIcon(beam, "FacilityArt", "tradeg", nil, 74, "저울")
+				scaleArt.Name = "ExistingTradeScaleArt"
+				scaleArt.AnchorPoint = Vector2.new(0.5, 0.5)
+				scaleArt.Position = UDim2.fromScale(0.5, 0.5)
+			end
+			local leftArt = Instance.new("ImageLabel")
+			leftArt.Name = "BalanceProductArt"
+			leftArt.AnchorPoint = Vector2.new(0.5, 0.5)
+			leftArt.Position = UDim2.fromScale(0.13, 0.5)
+			leftArt.Size = UDim2.fromOffset(52, 52)
+			leftArt.BackgroundTransparency = 1
+			leftArt.ScaleType = Enum.ScaleType.Fit
+			local productId = AssetIds["Goods/" .. goodId]
+			leftArt.Image = if productId then "rbxassetid://" .. tostring(productId) else ""
+			leftArt.Parent = beam
+			local rightWeight = mkLabel(beam, "0", 24, INK, true)
+			rightWeight.Name = "BalanceSelectedWeight"
+			rightWeight.AnchorPoint = Vector2.new(0.5, 0.5)
+			rightWeight.Position = UDim2.fromScale(0.87, 0.5)
+			rightWeight.Size = UDim2.fromOffset(54, 48)
+			rightWeight.AutomaticSize = Enum.AutomaticSize.None
+			rightWeight.TextXAlignment = Enum.TextXAlignment.Center
+			rightWeight.BackgroundColor3 = PAPER
+			rightWeight.BackgroundTransparency = 0.1
+			corner(rightWeight, 6)
 			local weights = {}
 			local go
 			local function refresh()
@@ -12750,6 +12772,8 @@ do
 					if weights[i] then weights[i].Text = tostring(weight) .. (if chosen[i] then " ✓" else "") end
 				end
 				info.Text = string.format("상품 %d  /  추 %d", pend.target, total)
+				rightWeight.Text = tostring(total)
+				rightWeight.TextColor3 = if total == pend.target then Color3.fromRGB(43, 108, 55) else INK
 				local tilt = math.clamp((total - pend.target) * 3, -20, 20)
 				if reduced then beam.Rotation = tilt else TS:Create(beam, TweenInfo.new(0.18), { Rotation = tilt }):Play() end
 				if go then go.Text = if total == pend.target then "균형 확인" else "균형 맞추기" end
@@ -12773,7 +12797,7 @@ do
 			hint.Text = "화물을 끌어 놓거나 선택 후 칸 터치. 회전·빼기로 빈칸 없이 채워!"
 			local pieces = pend.pieces or {}
 			local chosen, placed, rotated = 1, {}, {}
-			local cells, buttons = {}, {}
+			local cells, buttons, placedArt = {}, {}, {}
 			local UIS = game:GetService("UserInputService")
 			local drag
 			local cargoArt = { {"Naval", "crate", "상자"}, {"Cargo", "barrel", "술통"}, {"Cargo", "bag", "자루"}, {"Naval", "crate", "상자"}, {"Cargo", "bag", "자루"} }
@@ -12797,6 +12821,14 @@ do
 					local id = occupied[i]
 					b.Text = if id then tostring(id) else ""
 					b.BackgroundColor3 = if id then colors[id] else PAPER
+				end
+				for i, icon in placedArt do
+					local pos = placed[i]
+					icon.Visible = pos ~= nil
+					if pos then
+						local w, ht = dims(i, pos.rot)
+						icon.Position = UDim2.new((pos.x - 1 + w / 2) / 4, 0, 0, 48 + (pos.y - 1) * 42 + ht * 21)
+					end
 				end
 				for i, b in buttons do
 					local w, ht = dims(i, rotated[i] == true)
@@ -12835,6 +12867,14 @@ do
 				local icon = modelIcon(b, asset[1], asset[2], nil, 24, asset[3])
 				icon.Position = UDim2.new(0.5, -12, 0, 0)
 				icon.Active = false
+				-- 실제 적재된 화물도 같은 등록 모델을 한 개만 표시한다(칸마다 모델 복제하지 않음).
+				local display = modelIcon(stage, asset[1], asset[2], nil, 32, asset[3])
+				display.Name = "PlacedCargoArt_" .. i
+				display.AnchorPoint = Vector2.new(0.5, 0.5)
+				display.ZIndex = b.ZIndex + 1
+				display.Active = false
+				display.Visible = false
+				placedArt[i] = display
 				b.InputBegan:Connect(function(input)
 					if finished or drag or (input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1) then return end
 					chosen = i; refresh()

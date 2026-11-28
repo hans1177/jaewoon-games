@@ -2,7 +2,7 @@
 -- logic.test.luau · 기존 전체 게임 회귀검사(전문 분야·연구 연결 보강)
 -- Roblox 없이 Luau CLI로 돌리는 로직 테스트. 실행: tests/run.sh
 
-local D = {
+local D: { [string]: any } = {
 	Ports = require("./Shared/Ports"),
 	PortEras = require("./Shared/PortEras"),
 	SeaCards = require("./Shared/SeaCards"),
@@ -53,7 +53,7 @@ local D = {
 }
 -- [교역 재미] 타입 검사기 한도 때문에 D 표 밖에서 붙인다.
 ;(D :: any).TradeFun = require("./Shared/TradeFun")
-local Registry = require("./Services/Registry")(D)
+local Registry = (require("./Services/Registry") :: (any) -> any)(D)
 local S, handlers = Registry.S, Registry.handlers
 
 math.randomseed(987654)

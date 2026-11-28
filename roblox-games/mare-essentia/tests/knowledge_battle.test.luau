@@ -5,7 +5,7 @@ local BC = require("./Shared/BoardingCards")
 local CB = require("./Shared/CardBook")
 local KB = require("./Shared/KnowledgeBattle")
 
-local D = {
+local D: { [string]: any } = {
 	Ports = require("./Shared/Ports"),
 	PortEras = require("./Shared/PortEras"),
 	SeaCards = require("./Shared/SeaCards"),
@@ -55,7 +55,7 @@ local D = {
 	PortBuildings = require("./Shared/PortBuildings"),
 	Economy = require("./Shared/Economy"),
 }
-local Registry = require("./Services/Registry")(D)
+local Registry = (require("./Services/Registry") :: (any) -> any)(D)
 local S = Registry.S
 local ctx = { rng = math.random, market = S.MarketClass.new() }
 local pass, fail = 0, 0
