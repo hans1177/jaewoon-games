@@ -4027,27 +4027,28 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityDistrictPlaced", #districts)
 	folder:SetAttribute("CityDistrictMoved", districtMoved)
 	folder:SetAttribute("CityDistrictRejectedCandidates", districtRejected)
+	local reserveWhy = { last = "" }
 	local function reserved(x, z, halfX, halfZ)
 		-- 시설·지역별 시장/농장·랜드마크·문명 산업 필지를 주택과 분리한다.
 		-- [새 도시 예약] 방문 시설·광장·왕궁의 실제 배치 좌표와 주거 충돌을 검증한다.
 		halfZ = halfZ or halfX
 		for _, site in facilityLocations do
-			if math.abs(x - site.X) < halfX + 25 and math.abs(z - site.Z) < halfZ + 25 then return true end
+			if math.abs(x - site.X) < halfX + 25 and math.abs(z - site.Z) < halfZ + 25 then reserveWhy.last = "facility" return true end
 		end
 		if typeof(plazaLocation) == "Vector3"
 			and math.abs(x - plazaLocation.X) < halfX + 25
-			and math.abs(z - plazaLocation.Z) < halfZ + 25 then return true end
-		if x < -211 + halfX and math.abs(z) < 145 + halfZ then return true end
-		if isRoyalCity and x < -215 + halfX and x > -630 - halfX and math.abs(z) < 320 + halfZ then return true end
+			and math.abs(z - plazaLocation.Z) < halfZ + 25 then reserveWhy.last = "plaza" return true end
+		if x < -211 + halfX and math.abs(z) < 145 + halfZ then reserveWhy.last = "west" return true end
+		if isRoyalCity and x < -215 + halfX and x > -630 - halfX and math.abs(z) < 320 + halfZ then reserveWhy.last = "royal" return true end
 		for _, d in districts do
-			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then return true end
+			if math.abs(x - d.at.X) < d.hx + halfX and math.abs(z - d.at.Z) < d.hz + halfZ then reserveWhy.last = "district:" .. tostring(d.kind) return true end
 		end
 		for _, a in landmarkSites do
-			if math.abs(x - a.X) < 29 + halfX and math.abs(z - a.Z) < 29 + halfZ then return true end
+			if math.abs(x - a.X) < 29 + halfX and math.abs(z - a.Z) < 29 + halfZ then reserveWhy.last = "landmark" return true end
 		end
 		for _, lot in placedLots do
 			if math.abs(x - lot.X) < halfX + (lot.HX or lot.H) + 2
-				and math.abs(z - lot.Z) < halfZ + (lot.HZ or lot.H) + 2 then return true end
+				and math.abs(z - lot.Z) < halfZ + (lot.HZ or lot.H) + 2 then reserveWhy.last = "lot:" .. tostring(lot.kind or lot.Kind or "?") return true end
 		end
 		return false
 	end
@@ -4147,7 +4148,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							ground:SetAttribute("BuildEconomicCount", count)
 							ground:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 							placed += 1
-							table.insert(placedLots, { X = x, Z = z, H = 18 })
+							table.insert(placedLots, { X = x, Z = z, H = 18, kind = "econ" })
 							-- 한쪽이 실제로 열린 3면 작업장: 승인된 벽·지붕을 사용해 안에 들어갈 수 있다.
 							local back = nil
 							if not portWorkshop then
@@ -4437,6 +4438,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 								homeRejectStreet += 1
 							elseif reserved(at.X, at.Z, actualHalfX, actualHalfZ) then
 								homeRejectReserved += 1
+								reserveWhy[reserveWhy.last] = (reserveWhy[reserveWhy.last] or 0) + 1
 							else
 								chosenShift = shift
 								break
@@ -4560,7 +4562,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 									if newGrade then stageDecoration(detail, placeAt, delay) end
 								end
 							end
-							table.insert(placedLots, { X = pos.X, Z = pos.Z,
+							table.insert(placedLots, { X = pos.X, Z = pos.Z, kind = "house",
 								H = math.max(actualHalfX, actualHalfZ), HX = actualHalfX, HZ = actualHalfZ })
 							if smokers < 28 and rng:NextNumber() < 0.22 then
 								smokers += 1
@@ -4614,7 +4616,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 								model:SetAttribute("ShowcaseOnly", true)
 								wildernessQuota -= 1
 								wildernessPlaced += 1
-								table.insert(placedLots, { X = x, Z = z0, H = half })
+								table.insert(placedLots, { X = x, Z = z0, H = half, kind = "wild" })
 								-- [근경 밀도] 고성능 PC는 작은 꽃·풀 한 개만 추가. 모바일은 원본 1개로 제한.
 								if not wildernessTouch and plotRng:NextInteger(1, 3) == 1 then
 									local accent = if biome == "arid" then "arid-cactus-short"
@@ -4792,7 +4794,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 									model:SetAttribute("BuildAuthority", "VISUAL_ONLY")
 									model:SetAttribute("ShowcaseOnly", true)
 									model:SetAttribute("CityOpenLandBiome", biome)
-									table.insert(placedLots, { X = x, Z = z, H = half })
+									table.insert(placedLots, { X = x, Z = z, H = half, kind = "fringe" })
 									fringeBudget -= 1
 									wildernessFringe += 1
 								end
@@ -4820,6 +4822,12 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityHousingRejectSize", homeRejectSize)
 	folder:SetAttribute("CityHousingPreLoose", homePreLoose)
 	folder:SetAttribute("CityHousingRejectBody", homeRejectBody)
+	do
+		local why = {}
+		for k, v in reserveWhy do if k ~= "last" then table.insert(why, k .. ":" .. tostring(v)) end end
+		table.sort(why)
+		folder:SetAttribute("CityHousingRejectWhy", table.concat(why, " "))
+	end
 	folder:SetAttribute("CityHousingRejectStreet", homeRejectStreet)
 	folder:SetAttribute("CityHousingRejectReserved", homeRejectReserved)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
@@ -5368,7 +5376,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 						end
 						body:SetAttribute("BuildingFootprintX", hx * 2)
 						body:SetAttribute("BuildingFootprintZ", hz * 2)
-						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz) })
+						table.insert(placedLots, { X = chosen.X, Z = chosen.Z, HX = hx, HZ = hz, H = math.max(hx, hz), kind = "specialty" })
 						specialtyPlaced += 1
 						-- 기존 생산품 3D 전시·간판과 동일한 수량 상한을 유지한다.
 						for j = -1, 1 do
