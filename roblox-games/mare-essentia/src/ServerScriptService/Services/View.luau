@@ -157,8 +157,9 @@ return function(D, S)
 				pending = (function()
 					local pend = h and h.portId == port.id and h.pending
 					if not pend then return nil end
-					return { goodId = pend.goodId, game = pend.game, period = pend.period, center = pend.center, width = pend.width,
-						faces = pend.faces, count = pend.count, looks = (function()
+					return { goodId = pend.goodId, game = pend.game, started = pend.started, duration = pend.duration,
+						weights = pend.weights, target = pend.target, pieces = pend.pieces, goods = pend.goods, sequence = pend.sequence,
+						count = pend.count, looks = (function()
 							-- 동전 생김새(보고 고르는 게 놀이): 진짜 1개 + 가짜는 저마다 다른 흠(테두리 깨짐·색 다름·문양 흐림) — 맨 위 '정품 견본'과 비교
 							if not pend.count then return nil end
 							local l = {}
