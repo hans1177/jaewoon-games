@@ -7082,7 +7082,7 @@ function RENDERERS.status()
 								note.Text = "실제 관절 연결 부족 · 재생 불가"
 								return
 							end
-							local reduced = motionSettings.ReducedMotionEnabled
+							local reduced = game:GetService("GuiService").ReducedMotionEnabled
 							local duration = math.max(0.05, combo.duration + (combo.fadeDuration or 0))
 							local elapsed = 0
 							if reduced then

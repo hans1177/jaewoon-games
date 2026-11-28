@@ -148,7 +148,7 @@ test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', 
   assert.match(captain, /fm\.sample\(combo, math\.min\(elapsed, duration\), rig\.canon\)/);
   assert.match(captain, /while panel\.Parent and main\.Visible and elapsed < duration do/);
   assert.match(captain, /fm\.destroy\(rig\)/);
-  assert.match(captain, /local reduced = motionSettings\.ReducedMotionEnabled/);
+  assert.match(captain, /local reduced = game:GetService\("GuiService"\)\.ReducedMotionEnabled/);
   assert.match(captain, /if rank >= 8 then "필살기 해금/);
   assert.match(captain, /local cols = math\.clamp\(math\.floor\(\(width \+ 4\) \/ 48\), 1, 5\)/);
   assert.match(captain, /local height = math\.ceil\(10 \/ cols\) \* 48 - 4/);
@@ -190,7 +190,9 @@ test('숙련 시연은 기존 실전 무기 장착 책임 함수와 실제 단�
 
 
 test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순서를 표시한다',()=>{
-  const cabin=game.slice(game.indexOf('function H.openCabin()'),game.indexOf('-- [방문 단일화]'));
+  const start=game.indexOf('function H.openCabin()');
+  const cabin=game.slice(start,game.indexOf('-- [방문 단일화]',start));
+  assert.ok(start>=0 && cabin.length>1000);
   for(const name of ['CabinStationBoard','CabinCompanionRoster','StationMatched','SelectedCompanionFits','FieldSupportOrder','CurrentStation','CabinSupportSkills']) assert.ok(cabin.includes(name),name);
   assert.match(cabin,/c\.joined and supportCount < 2/);
   assert.match(cabin,/jobs\.Categories\[c\.role or ""\]/);
