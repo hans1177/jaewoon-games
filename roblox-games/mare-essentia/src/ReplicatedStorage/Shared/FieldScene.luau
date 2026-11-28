@@ -4008,8 +4008,8 @@ function FieldScene.start(opts)
 					if not enemy.ac.dead and enemy.model:GetAttribute("FieldInterceptWave") then remaining += 1 end
 				end
 				if folder:GetAttribute("FieldInterceptRoute") == "survival" then
-					if remaining > 0 and not folder:GetAttribute("FieldDefenseComplete") then
-						say("방어 구역을 지키거나 공격 병력을 모두 물리쳐.", 3); return
+					if not folder:GetAttribute("FieldDefenseComplete") then
+						say("적을 모두 물리쳐도 지정 구역을 20초 지켜야 해.", 3); return
 					end
 				elseif remaining > 0 then say(string.format("적 %d명 남음 · 전투를 끝내야 기록을 확보할 수 있어.", remaining), 3); return end
 			end
@@ -4058,7 +4058,8 @@ function FieldScene.start(opts)
 						if folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 탈환 · 상자와 경비병을 찾아"
 						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 · 지정 구역으로 이동"
 						elseif folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵 저지 · 동물 대신 밀렵단을 물리쳐"
-						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 · 지정 적을 추적해" else "경계 구역 · 적의 움직임을 살펴"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 · 지정 적을 추적해"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 · 지정 상대에게 접근해" else "경계 구역 · 적의 움직임을 살펴"
 					elseif nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
 					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
@@ -4581,6 +4582,7 @@ function FieldScene.start(opts)
 				local mode = if targetCard.field == "Goods" or targetCard.field == "Shipbuilding" then "supply"
 					elseif isWildlife then "poacher"
 					elseif (opts.danger or 1) >= 4 and portVisualSeed % 3 == 1 then "bounty"
+					elseif (opts.danger or 1) >= 4 and portVisualSeed % 3 == 2 and (theme == "highland" or theme == "coast" or theme == "plains") then "duel"
 					elseif (theme == "plains" or theme == "desert" or theme == "coast") and (opts.danger or 1) >= 4 then "survival"
 					elseif theme == "forest" or theme == "jungle" or theme == "swamp" or theme == "highland" then "ambush" else "reinforcement"
 				local troops = {}
@@ -4588,28 +4590,30 @@ function FieldScene.start(opts)
 					if not enemy.boss and not enemy.ac.dead and enemy.root and enemy.root.Parent then table.insert(troops, enemy) end
 				end
 				table.sort(troops, function(a, b)
-					if mode == "bounty" and a.elite ~= b.elite then return a.elite == true end
+					if (mode == "bounty" or mode == "duel") and a.elite ~= b.elite then return a.elite == true end
 					return (a.home - anchor.Position).Magnitude < (b.home - anchor.Position).Magnitude
 				end)
-				local count = math.min(if mode == "bounty" then 1 elseif mode == "poacher" then 3 else 4, #troops)
-				if count >= (if mode == "bounty" then 1 else 2) then
+				local count = math.min(if mode == "bounty" or mode == "duel" then 1 elseif mode == "poacher" then 3 else 4, #troops)
+				if count >= (if mode == "bounty" or mode == "duel" then 1 else 2) then
 					folder:SetAttribute("FieldInterceptRoute", mode)
 					folder:SetAttribute("FieldInterceptRemaining", count)
 					for i = 1, count do
 						local enemy = troops[i]
 						enemy.model:SetAttribute("FieldInterceptWave", if i <= 2 then 1 else 2)
 						if mode == "poacher" then enemy.tag.Text = "밀렵단 · " .. enemy.tag.Text
-						elseif mode == "bounty" then enemy.tag.Text = "현상 수배 대상 · " .. enemy.tag.Text end
+						elseif mode == "bounty" then enemy.tag.Text = "현상 수배 대상 · " .. enemy.tag.Text
+						elseif mode == "duel" then enemy.tag.Text = "결투 상대 · " .. enemy.tag.Text end
 					end
 					local prompt = anchor:FindFirstChildOfClass("ProximityPrompt")
 					if prompt then
-						prompt.ActionText = if mode == "supply" then "보급품 회수" elseif mode == "survival" then "방어 완료 확인" elseif mode == "poacher" then "밀렵 저지 확인" elseif mode == "bounty" then "수배 대상 격파 확인" elseif mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인"
+						prompt.ActionText = if mode == "supply" then "보급품 회수" elseif mode == "survival" then "방어 완료 확인" elseif mode == "poacher" then "밀렵 저지 확인" elseif mode == "bounty" then "수배 대상 격파 확인" elseif mode == "duel" then "결투 승리 확인" elseif mode == "ambush" then "매복 돌파 확인" else "증원 차단 확인"
 						if mode == "supply" then prompt.ObjectText = "탈환할 보급품 상자" end
 					end
 					if found == 1 then questHint.Text = if mode == "supply" then "이어하기 · 보급품 상자 탈환"
 						elseif mode == "survival" then "이어하기 · 생존 방어 구역으로 이동"
 						elseif mode == "poacher" then "이어하기 · 밀렵단 저지"
-						elseif mode == "bounty" then "이어하기 · 현상 수배 대상 추적" else "이어하기 · 경계 구역으로 이동" end
+						elseif mode == "bounty" then "이어하기 · 현상 수배 대상 추적"
+						elseif mode == "duel" then "이어하기 · 결투 구역으로 이동" else "이어하기 · 경계 구역으로 이동" end
 				end
 			end
 		end
@@ -8124,9 +8128,12 @@ function FieldScene.start(opts)
 				end
 				folder:SetAttribute("FieldInterceptRemaining", remaining)
 				if found == 1 and folder:GetAttribute("FieldInterceptStartedAt") then
-					questHint.Text = if remaining == 0 then
+					questHint.Text = if folder:GetAttribute("FieldInterceptRoute") == "survival" and not folder:GetAttribute("FieldDefenseComplete") then
+						string.format("생존 방어 · %d초 · 구역 유지", folder:GetAttribute("FieldDefenseSeconds") or 20)
+						elseif remaining == 0 then
 						(if folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵단 저지 · 생태 기록 확보"
-						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "수배 대상 격파 · 현장 기록 확보" else "전투 종료 · 기록 확보")
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "수배 대상 격파 · 현장 기록 확보"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 승리 · 현장 기록 확보" else "전투 종료 · 기록 확보")
 						else string.format("경계 전투 · 적 %d명 남음", remaining)
 					say(questHint.Text, 3)
 				end
@@ -10714,7 +10721,8 @@ function FieldScene.start(opts)
 						elseif folder:GetAttribute("FieldInterceptRoute") == "supply" then "보급품 경비병 접근"
 						elseif folder:GetAttribute("FieldInterceptRoute") == "survival" then "생존 방어 시작"
 						elseif folder:GetAttribute("FieldInterceptRoute") == "poacher" then "밀렵단 발견"
-						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 대상 발견" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
+						elseif folder:GetAttribute("FieldInterceptRoute") == "bounty" then "현상 수배 대상 발견"
+						elseif folder:GetAttribute("FieldInterceptRoute") == "duel" then "결투 시작 · 회피와 반격" else "적 증원 접근") .. string.format(" · 적 %d명", remaining)
 				say(questHint.Text, 3.5)
 			end
 		end
@@ -10728,7 +10736,8 @@ function FieldScene.start(opts)
 				if inside and not started then folder:SetAttribute("FieldDefenseHoldAt", now); started = now
 				elseif not inside and started then folder:SetAttribute("FieldDefenseHoldAt", nil); started = nil end
 				local seconds = if started then math.max(0, math.ceil(20 - (now - started))) else 20
-				if seconds == 0 or (folder:GetAttribute("FieldInterceptRemaining") or 0) == 0 then
+				if seconds == 0 then
+					folder:SetAttribute("FieldDefenseSeconds", 0)
 					folder:SetAttribute("FieldDefenseComplete", true)
 					questHint.Text = "방어 성공 · 안전 지점 확인"
 					say(questHint.Text, 3)
@@ -10738,13 +10747,21 @@ function FieldScene.start(opts)
 				end
 			end
 		end
+		-- [결투] 실제 구역 안에서 지정 상대만 새 공격을 시작한다. 이미 발동한 공격은 취소하지 않는다.
+		-- 이탈하거나 상대를 격파하면 기존 전투 루프로 즉시 돌아간다.
+		local duelActive = false
+		if found == 1 and folder:GetAttribute("FieldInterceptRoute") == "duel"
+			and folder:GetAttribute("FieldInterceptStartedAt") and (folder:GetAttribute("FieldInterceptRemaining") or 0) > 0 then
+			local destination = folder:FindFirstChild("Discovery2")
+			duelActive = destination ~= nil and destination:IsA("BasePart") and (hrp.Position - destination.Position).Magnitude <= 28
+		end
 		local attackers = AC.attackersCount(enemies)
 		-- [협동 반격권] 준비가 끝난 방어 성공 몹 한 명만 다음 순서를 우선 사용한다.
 		-- 기존 동시 공격 상한·실제 예고시간·개인 공격 간격은 그대로 둔다.
 		local nextCounter = nil
 		if now >= (pl.nextEnemyTurnAt or 0) and attackers < AC.MELEE_TOKENS then
 			for _, o in enemies do
-				if not o.ac.dead and o.ac.state == "chase" and now >= (o.counterReadyAt or math.huge)
+				if not o.ac.dead and (not duelActive or o.model:GetAttribute("FieldInterceptWave")) and o.ac.state == "chase" and now >= (o.counterReadyAt or math.huge)
 					and now < (o.counterUntil or 0) and now >= (o.nextDuelAt or 0)
 					and now >= (o.riseUntil or 0) and now >= (o.parryUntil or 0)
 					and (o.root.Position - hrp.Position).Magnitude <= o.ac.def.range * STUD + 5 then
@@ -10759,7 +10776,7 @@ function FieldScene.start(opts)
 			local to = hrp.Position - e.root.Position
 			local flat = Vector3.new(to.X, 0, to.Z)
 			local dist = flat.Magnitude / STUD -- 규칙의 거리 단위
-			if e.boss then bossSkillTick(e, now, hrp, dist) end
+			if e.boss and (not duelActive or e.model:GetAttribute("FieldInterceptWave") or e.bossCast ~= nil) then bossSkillTick(e, now, hrp, dist) end
 			-- [모바일 원거리 그림자] 일반 적의 실제 원본 그림자만 거리별로 관리한다.
 			-- 100/80스터드 히스테리시스로 경계 반복 갱신 방지. 근접·정예·두목·공격 모션은 보존.
 			if visualMobile and not e.elite and not e.ac.dead then
@@ -10822,7 +10839,7 @@ function FieldScene.start(opts)
 				e.waiting = e.ac.state == "chase" and (others >= AC.MELEE_TOKENS
 					or now < (pl.nextEnemyTurnAt or 0) or now < (e.nextDuelAt or 0)
 					or (nextCounter ~= nil and nextCounter ~= e))
-				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, not e.waiting)
+				event, hit = AC.stepEnemy(e.ac, enemyDt, dist, not e.waiting and (not duelActive or e.model:GetAttribute("FieldInterceptWave") ~= nil))
 			end
 			if event == "telegraph" then
 				-- [적 무기 연속 동작] 공격 차례에 따라 기존 공용 무기 1~3타를 순환한다. 피해·판정은 동일.

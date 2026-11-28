@@ -309,8 +309,8 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
 test('밀렵 저지와 현상 수배는 기존 적과 지점별 유형을 재사용한다',()=>{
   assert.match(field,/elseif isWildlife then "poacher"/);
   assert.match(field,/portVisualSeed % 3 == 1 then "bounty"/);
-  assert.match(field,/mode == "bounty" and a.elite ~= b.elite/);
-  assert.match(field,/if mode == "bounty" then 1 elseif mode == "poacher" then 3 else 4/);
+  assert.match(field,/\(mode == "bounty" or mode == "duel"\) and a.elite ~= b.elite/);
+  assert.match(field,/if mode == "bounty" or mode == "duel" then 1 elseif mode == "poacher" then 3 else 4/);
   assert.match(field,/enemy.tag.Text = "밀렵단 · "/);
   assert.match(field,/enemy.tag.Text = "현상 수배 대상 · "/);
   assert.match(field,/and \(not isWildlife or portVisualSeed % 2 == 0\)/);
@@ -5383,4 +5383,17 @@ test('선장실·캐릭터창과 전투는 동일한 무기별 숙련 경험치 
     /if rank >= 8 and not visualMobile then afterimage/,
     /showCombo\("새 동작 · " \.\. demoName/]) assert.match(promotion,check);
   assert.doesNotMatch(promotion,/strikeEnemy\(|damageEnemy\(|arrowTrail\(|useMove\(|earnedPractice\[/);
+});
+
+
+test('결투는 기존 정예 대상 한 명과 구역 내 신규 적 공격 제한을 사용하고 생존 방어는 20초를 요구한다',()=>{
+  assert.match(field,/portVisualSeed % 3 == 2 and .* then "duel"/);
+  assert.match(field,/mode == "duel" then enemy.tag.Text = "결투 상대 · "/);
+  assert.match(field,/local duelActive = false/);
+  assert.match(field,/not duelActive or o.model:GetAttribute\("FieldInterceptWave"\)/);
+  assert.match(field,/AC.stepEnemy\(e.ac, enemyDt, dist, not e.waiting and \(not duelActive or e.model:GetAttribute\("FieldInterceptWave"\) ~= nil\)\)/);
+  assert.match(field,/결투 승리 · 현장 기록 확보/);
+  assert.match(field,/if not folder:GetAttribute\("FieldDefenseComplete"\) then/);
+  assert.match(field,/if seconds == 0 then\s+folder:SetAttribute\("FieldDefenseSeconds", 0\)/);
+  assert.doesNotMatch(field,/seconds == 0 or \(folder:GetAttribute\("FieldInterceptRemaining"\)/);
 });
