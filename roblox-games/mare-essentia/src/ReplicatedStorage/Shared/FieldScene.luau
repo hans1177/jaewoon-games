@@ -4082,8 +4082,13 @@ function FieldScene.start(opts)
 		if isBoss then
 			local theme = folder:GetAttribute("FieldQuestTerrainTheme")
 			bossRole = if theme == "ruins" or theme == "archive" then "looter"
-				elseif theme == "coast" or theme == "fort" then "pirate"
-				elseif theme == "forest" or theme == "highland" or theme == "desert" or theme == "mine" then "bandit"
+				elseif theme == "coast" then "pirate"
+				elseif theme == "fort" then "warden"
+				elseif theme == "jungle" or theme == "swamp" then "hunter"
+				elseif theme == "desert" then "caravan"
+				elseif theme == "mine" or theme == "volcanic" then "mine"
+				elseif theme == "glacier" or theme == "highland" then "mountain"
+				elseif theme == "forest" then "bandit"
 				else "giant"
 			if bossRole == "looter" then
 				style = { "유적 약탈단 수장", "Knight", Color3.fromRGB(99, 84, 67), "mace" }
@@ -4091,6 +4096,16 @@ function FieldScene.start(opts)
 				style = { "밀수단 선장", "Rogue", Color3.fromRGB(62, 92, 124), "sword" }
 			elseif bossRole == "bandit" then
 				style = { "길목 산적 두목", "Rogue_Hooded", Color3.fromRGB(84, 91, 70), "axe" }
+			elseif bossRole == "warden" then
+				style = { "요새 용병 지휘관", "Knight", Color3.fromRGB(91, 86, 78), "sword", "shield-rectangle" }
+			elseif bossRole == "hunter" then
+				style = { "밀림 밀렵단 수장", "Rogue_Hooded", Color3.fromRGB(65, 89, 60), "spear" }
+			elseif bossRole == "caravan" then
+				style = { "대상로 약탈단 수장", "Rogue", Color3.fromRGB(145, 110, 72), "sword" }
+			elseif bossRole == "mine" then
+				style = { "광맥 점거단 수장", "Barbarian", Color3.fromRGB(108, 74, 63), "warhammer" }
+			elseif bossRole == "mountain" then
+				style = { "고갯길 용병 두목", "Barbarian", Color3.fromRGB(90, 110, 127), "axe" }
 			end
 		end
 		if style[6] == "bomb" and ((opts.year or 1517) < 1650 or not bombReady) then
@@ -4165,7 +4180,7 @@ function FieldScene.start(opts)
 			elseif isBoss then Color3.fromRGB(53, 41, 41) else Color3.fromRGB(65, 58, 52)
 		-- [승인 R15 몹 외형] 기존 적의 병종·시대·무기를 따라 부위별 실물 복식을 선택한다.
 		-- 몬스터 원본을 통째로 고정하지 않고 R15 관절·원본 전투 판정은 유지한다.
-		local mobProfile = if isBoss then (if bossRole == "pirate" then "pirate" elseif bossRole == "bandit" then "rogue" else "warlord")
+		local mobProfile = if isBoss then (if bossRole == "pirate" then "pirate" elseif bossRole == "bandit" or bossRole == "hunter" or bossRole == "caravan" then "rogue" else "warlord")
 			elseif throwAsset == "bomb" then "bombard"
 			elseif weapon.id == "ship_pistol" or weapon.id == "cutlass" then (if styleN % 2 == 0 then "pirate_female" else "pirate")
 			elseif ac.kind == "shield" then "knight"
@@ -9084,12 +9099,12 @@ function FieldScene.start(opts)
 			bandit = {
 				{ id = "ambush", phase = 1, name = "매복 기습", warn = 0.85, cd = 8 },
 				{ id = "charge", phase = 2, name = "길목 돌격", warn = 1, cd = 9 },
-				{ id = "volley", phase = 3, name = "삼방위 습격", warn = 1.1, cd = 12 },
+				{ id = "rally", phase = 3, name = "산적 포위 신호", warn = 1.1, cd = 12 },
 				{ id = "frenzy", phase = 4, name = "광폭 연타", warn = 0.7, cd = 14 },
 			},
 			pirate = {
 				{ id = "volley", phase = 1, name = "삼방위 투척", warn = 1.1, cd = 10 },
-				{ id = "ambush", phase = 2, name = "갑작스런 기습", warn = 0.85, cd = 8 },
+				{ id = "crossfire", phase = 2, name = "갑판 교차 투척", warn = 1.1, cd = 10 },
 				{ id = "roar", phase = 3, name = "위협의 고함", warn = 0.9, cd = 11 },
 				{ id = "frenzy", phase = 4, name = "선장 광폭 연타", warn = 0.7, cd = 14 },
 			},
@@ -9098,6 +9113,36 @@ function FieldScene.start(opts)
 				{ id = "rupture", phase = 2, name = "연속 지면 강타", warn = 1.2, cd = 10 },
 				{ id = "volley", phase = 3, name = "삼방위 투척", warn = 1.1, cd = 12 },
 				{ id = "frenzy", phase = 4, name = "수장 광폭 연타", warn = 0.7, cd = 14 },
+			},
+			warden = {
+				{ id = "guard", phase = 1, name = "방패 방진", warn = 1.2, cd = 9 },
+				{ id = "charge", phase = 2, name = "방진 돌파", warn = 1.2, cd = 10 },
+				{ id = "rally", phase = 3, name = "용병 진형 재편", warn = 1.2, cd = 12 },
+				{ id = "sweep", phase = 4, name = "최후의 원형 베기", warn = 1.2, cd = 14 },
+			},
+			hunter = {
+				{ id = "snare", phase = 1, name = "사냥꾼 덫", warn = 1.2, cd = 9 },
+				{ id = "ambush", phase = 2, name = "수풀 매복", warn = 1.2, cd = 10 },
+				{ id = "crossfire", phase = 3, name = "포획망 포위", warn = 1.2, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "사냥꾼 연격", warn = 0.7, cd = 14 },
+			},
+			caravan = {
+				{ id = "sweep", phase = 1, name = "모래바람 회전 베기", warn = 1.2, cd = 9 },
+				{ id = "charge", phase = 2, name = "대상로 돌격", warn = 1.2, cd = 10 },
+				{ id = "crossfire", phase = 3, name = "사방의 매복", warn = 1.2, cd = 12 },
+				{ id = "frenzy", phase = 4, name = "약탈단 최후 연격", warn = 0.7, cd = 14 },
+			},
+			mine = {
+				{ id = "rupture", phase = 1, name = "광맥 지면 강타", warn = 1.2, cd = 9 },
+				{ id = "wave", phase = 2, name = "광산 충격파", warn = 1.2, cd = 10 },
+				{ id = "crossfire", phase = 3, name = "낙석 위험 지대", warn = 1.2, cd = 12 },
+				{ id = "sweep", phase = 4, name = "전투망치 회전", warn = 1.2, cd = 14 },
+			},
+			mountain = {
+				{ id = "volley", phase = 1, name = "고갯길 투척", warn = 1.2, cd = 9 },
+				{ id = "charge", phase = 2, name = "내리막 돌진", warn = 1.2, cd = 10 },
+				{ id = "snare", phase = 3, name = "발목을 노린 덫", warn = 1.2, cd = 12 },
+				{ id = "sweep", phase = 4, name = "고개를 지키는 회전 베기", warn = 1.2, cd = 14 },
 			},
 		}
 		local function bossPhaseOf(e)
@@ -9108,7 +9153,7 @@ function FieldScene.start(opts)
 			return e.root.Position - Vector3.new(0, e.root.Size.Y * 0.5 + 2.6, 0)
 		end
 		return function(e, now: number, hrp: BasePart?, dist: number)
-			if not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
+			if finished or not e.boss or e.ac.dead or not hrp or not e.root.Parent then return end
 			local phase = bossPhaseOf(e)
 			if e.model:GetAttribute("FieldBossPhase") ~= phase then
 				e.model:SetAttribute("FieldBossPhase", phase)
@@ -9126,7 +9171,7 @@ function FieldScene.start(opts)
 				if now < cast.at then return end
 				e.bossCast = nil
 				if e.ac.stagger > 0 or now < (e.riseUntil or 0) then return end
-				e.bossWeakUntil = now + (if cast.id == "charge" then 1.5 else 1.3)
+				e.bossWeakUntil = now + (if cast.id == "charge" then 1.9 else 1.3)
 				e.ac.state, e.ac.t = "recover", 0
 				e.model:SetAttribute("FieldBossWeakUntil", e.bossWeakUntil)
 				e.nextBossSkillAt = math.max(e.nextBossSkillAt or 0, e.bossWeakUntil)
@@ -9137,14 +9182,39 @@ function FieldScene.start(opts)
 					shakeUntil, shakeAmp = now + 0.35, 1.2
 					sfx("sfx_cannon", 0.5, 0.55)
 					if flatTo.Magnitude <= cast.radius then hurtPlayerBy(dmg * 0.9) end
-				elseif cast.id == "ambush" or cast.id == "volley" or cast.id == "rupture" then
+				elseif cast.id == "sweep" then
+					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 175, 95), 0.45)
+					sfx("sfx_event_danger", 0.5, 0.8)
+					if flatTo.Magnitude <= cast.radius and flatTo.Magnitude >= cast.inner then hurtPlayerBy(dmg * 0.95) end
+				elseif cast.id == "guard" then
+					e.armorUntil = math.max(e.armorUntil or 0, now + 0.65)
+					shockRing(cast.origin, 5 * STUD, Color3.fromRGB(205, 196, 150), 0.4)
+					sfx("sfx_horn", 0.5, 0.9)
+				elseif cast.id == "rally" then
+					-- 기존 생존 병력만 진형 재편. 적 수와 공격 토큰은 유지.
+					for _, mate in enemies do
+						if mate ~= e and not mate.boss and not mate.ac.dead and mate.root.Parent
+							and (mate.root.Position - e.root.Position).Magnitude <= 32 then
+							mate.tacticSide = -(mate.tacticSide or 1)
+							mate.tacticAt = 0
+						end
+					end
+					sfx("sfx_horn", 0.7, 0.8)
+					shockRing(cast.origin, 10 * STUD, Color3.fromRGB(255, 215, 120), 0.5)
+				elseif cast.id == "ambush" or cast.id == "volley" or cast.id == "rupture" or cast.id == "crossfire" or cast.id == "snare" then
 					local hit = false
 					for _, point in cast.points do
 						shockRing(point, cast.radius, Color3.fromRGB(255, 135, 70), 0.45)
 						if ((hrp.Position - point) * Vector3.new(1, 0, 1)).Magnitude <= cast.radius then hit = true end
 					end
 					sfx("sfx_event_danger", 0.55, 0.8)
-					if hit then hurtPlayerBy(dmg * (if cast.id == "rupture" then 1.05 else 0.85)) end
+					if hit then
+						if cast.id == "snare" and not AC.isInvulnerable(pl, now) then
+							eliteSlowUntil = math.max(eliteSlowUntil, now + 2)
+							say("덫에 걸렸다! 2초 둔화")
+						end
+						hurtPlayerBy(dmg * (if cast.id == "rupture" then 1.05 elseif cast.id == "snare" then 0.55 else 0.85))
+					end
 				elseif cast.id == "roar" then
 					shockRing(cast.origin, cast.radius, Color3.fromRGB(255, 200, 90), 0.4)
 					sfx("sfx_horn", 0.7, 0.6)
@@ -9155,12 +9225,13 @@ function FieldScene.start(opts)
 					end
 				elseif cast.id == "charge" then
 					local dir = cast.dir
+					e.holdUntil = math.max(e.holdUntil or 0, now + 0.5)
 					local hitDone = false
 					local start = e.model:GetPivot()
 					local t0 = os.clock()
 					sfx("sfx_event_danger", 0.6, 0.8)
 					task.spawn(function()
-						while e.root.Parent and not e.ac.dead and os.clock() - t0 < 0.45 do
+						while not finished and e.root.Parent and not e.ac.dead and os.clock() - t0 < 0.45 do
 							local k = (os.clock() - t0) / 0.45
 							local pos = start.Position + dir * cast.length * k
 							e.model:PivotTo(CFrame.lookAt(pos, pos + dir))
@@ -9203,11 +9274,25 @@ function FieldScene.start(opts)
 			if sk.id == "wave" then
 				c.radius = 9 * STUD
 				groundRing(origin, c.radius, sk.warn)
-			elseif sk.id == "ambush" or sk.id == "volley" or sk.id == "rupture" then
+			elseif sk.id == "sweep" then
+				c.radius, c.inner = 9 * STUD, 3 * STUD
+				groundRing(origin, c.radius, sk.warn)
+				shockRing(origin, c.inner, Color3.fromRGB(115, 225, 160), sk.warn)
+			elseif sk.id == "guard" or sk.id == "rally" then
+				shockRing(origin, 6 * STUD, Color3.fromRGB(255, 215, 120), sk.warn)
+			elseif sk.id == "ambush" or sk.id == "volley" or sk.id == "rupture" or sk.id == "crossfire" or sk.id == "snare" then
 				local aim = Vector3.new(hrp.Position.X, origin.Y, hrp.Position.Z)
 				c.radius = if sk.id == "ambush" then 5 * STUD else 3.5 * STUD
 				c.points = { aim }
-				if sk.id == "volley" then
+				if sk.id == "crossfire" then
+					local to = (aim - origin) * Vector3.new(1, 0, 1)
+					local dir = if to.Magnitude > 0.1 then to.Unit else Vector3.new(1, 0, 0)
+					local side = Vector3.new(-dir.Z, 0, dir.X) * c.radius * 1.8
+					table.insert(c.points, aim + side)
+					table.insert(c.points, aim - side)
+					table.insert(c.points, aim + dir * c.radius * 1.8)
+					table.insert(c.points, aim - dir * c.radius * 1.8)
+				elseif sk.id == "volley" then
 					local side = e.root.CFrame.RightVector * Vector3.new(1, 0, 1) * (c.radius * 1.5)
 					table.insert(c.points, aim + side)
 					table.insert(c.points, aim - side)
@@ -10165,8 +10250,8 @@ function FieldScene.start(opts)
 				e.ac.stagger = math.max(0.05, e.riseUntil - now)
 				e.ac.state = "stagger"
 			end
-			local frozen = knocked or e.bossCast ~= nil or now < (e.holdUntil or 0)
-				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0)
+			local frozen = knocked or now < (e.holdUntil or 0)
+				or now < (e.guardUntil or 0) or now < (e.parryUntil or 0) or e.bossCast ~= nil
 			if e.kbUntil and now < e.kbUntil and not e.ac.def.boss then
 				local duration = math.max(e.kbUntil - e.kbT0, 0.05)
 				local k = 1 - (now - e.kbT0) / duration
