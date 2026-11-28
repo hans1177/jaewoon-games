@@ -659,6 +659,8 @@ H.MENU_SHEET_CELLS = { nav = 0, tradeg = 1, adventure = 2, growth = 3, records =
 H.reserveIconCells = {
 	nav = { 3, 0 }, tradeg = { 3, 1 }, adventure = { 3, 2 }, growth = { 3, 3 }, records = { 3, 4 },
 	nextstep = { 3, 5 }, reward = { 3, 6 }, recommend = { 3, 7 }, chapter = { 3, 8 },
+	problem = { 3, 9 }, cause = { 3, 10 }, todo = { 3, 11 }, result = { 3, 12 },
+	recap = { 3, 13 }, coach = { 3, 14 }, defeat = { 3, 15 },
 	diplomacy = { 2, 5 }, quest = { 1, 8 }, recruit = { 2, 0 }, crew = { 2, 0 }, explore = { 2, 4 },
 	harbor = { 1, 0 }, war = { 2, 8 }, scholar = { 2, 14 }, tech = { 2, 6 }, chart = { 1, 2 },
 }
@@ -1467,14 +1469,20 @@ H.bookTheme = CommonUI.CreateTheme({
 	Primary = COLORS.brown, PrimaryTop = Color3.fromRGB(163, 115, 65), PrimaryBottom = COLORS.leather,
 	Accent = COLORS.gold, Positive = COLORS.green, Danger = COLORS.red,
 })
-local main, mainInner = CommonUI.CreatePanel({ name = "Main", size = UDim2.new(1, -16, 1, -16), theme = H.bookTheme })
+local main, mainInner = CommonUI.CreatePanel({
+	name = "Main", size = UDim2.new(1, -16, 1, -16), theme = H.bookTheme,
+	-- 승인된 512×512 책 표지: 공용 패널의 기존 9분할 기능을 사용한다.
+	surfaceTexture = if AssetIds["CardArt/ui_frame_book"] then "rbxassetid://" .. tostring(AssetIds["CardArt/ui_frame_book"]) else nil,
+	sliceCenter = if AssetIds["CardArt/ui_frame_book"] then Rect.new(64, 64, 448, 448) else nil,
+	sliceScale = if AssetIds["CardArt/ui_frame_book"] then 0.5 else nil,
+})
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.Position = UDim2.fromScale(0.5, 0.5)
 main.BackgroundColor3 = COLORS.cover
 main.Parent = gui
 -- 시설 페이지는 읽을 수 있는 본문 면을 바로 노출한다.
 mainInner.BackgroundColor3 = COLORS.coverRaised
-mainInner.BackgroundTransparency = 0.08
+mainInner.BackgroundTransparency = if AssetIds["CardArt/ui_frame_book"] then 0.45 else 0.08
 do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
 	local sizeLimit = Instance.new("UISizeConstraint")
 	sizeLimit.MaxSize = Vector2.new(4000, 3000)
@@ -11710,7 +11718,16 @@ do
 		local step = H.nextStep and H.nextStep()
 		local doText = if step and step.quest and step.quest.id == q.id then step.text else q.summary
 		add(function()
-			local card = Instance.new("Frame")
+			local frameArt = AssetIds["CardArt/ui_frame_card"]
+			-- 자체 배경을 가진 카드로 생성해 자동 높이/UIListLayout 자식 수를 바꾸지 않는다.
+			local card = Instance.new(if frameArt then "ImageLabel" else "Frame")
+			if card:IsA("ImageLabel") then
+				card.Image = "rbxassetid://" .. tostring(frameArt)
+				card.ScaleType = Enum.ScaleType.Slice
+				card.SliceCenter = Rect.new(24, 24, 232, 232)
+				card.SliceScale = 0.5
+				card.Active = false
+			end
 			card.Name = "QuestCauseCard"
 			card.Size = UDim2.new(1, -6, 0, 0)
 			card.AutomaticSize = Enum.AutomaticSize.Y
@@ -11754,6 +11771,15 @@ do
 					tag.Text = (if i > 1 then "→ " else "") .. spec[1]
 					tag.Parent = row
 					corner(tag, 6)
+					local key = ({ "problem", "cause", "todo", "result" })[i]
+					if H.hasIconArt(key) then
+						local icon = modelIcon(tag, "FacilityArt", key, nil, 16, spec[1])
+						icon.Position = UDim2.fromOffset(2, 3)
+						icon.ZIndex = tag.ZIndex + 1
+						icon.Active = false
+						tag.Text = spec[1] .. " "
+						tag.TextXAlignment = Enum.TextXAlignment.Right
+					end
 					local body = mkLabel(row, tostring(v), 13, Color3.fromRGB(52, 38, 24), i == 3)
 					body.Position = UDim2.fromOffset(78, 2)
 					body.Size = UDim2.new(1, -78, 0, 0)
@@ -15160,6 +15186,9 @@ function H.renderTabs()
 	-- 매 프레임 갱신이나 무한 반복은 사용하지 않아 모바일 배터리·입력 성능을 유지한다.
 	local motionService = game:GetService("TweenService")
 	local motionSettings = game:GetService("GuiService")
+	-- 두 상태 원화가 모두 등록됐을 때만 기존 탭 재질을 교체한다.
+	local tabOn, tabOff = AssetIds["CardArt/ui_frame_tab_on"], AssetIds["CardArt/ui_frame_tab_off"]
+	local tabSkins = tabOn ~= nil and tabOff ~= nil
 	-- [시설 탭 재사용] 같은 시설 안에서 이동할 때 아이콘·원화를 다시 생성하지 않는다.
 	-- 소속 시설이 바뀌거나 버튼이 없을 때에만 기존 생성 경로를 사용한다.
 	local g = groupOf(currentTab)
@@ -15185,8 +15214,14 @@ function H.renderTabs()
 				end
 				local grain = b:FindFirstChild("BookMaterial")
 				if grain then
-					grain.ImageColor3 = if selected then Color3.fromRGB(252, 220, 148) else Color3.fromRGB(138, 111, 78)
-					grain.ImageTransparency = if selected then 0.55 else 0.58
+					if tabSkins then
+						grain.Image = "rbxassetid://" .. tostring(if selected then tabOn else tabOff)
+						grain.ImageColor3 = Color3.new(1, 1, 1)
+						grain.ImageTransparency = 0
+					else
+						grain.ImageColor3 = if selected then Color3.fromRGB(252, 220, 148) else Color3.fromRGB(138, 111, 78)
+						grain.ImageTransparency = if selected then 0.55 else 0.58
+					end
 				end
 				local border = b:FindFirstChildOfClass("UIStroke")
 				if border then
@@ -15222,6 +15257,16 @@ function H.renderTabs()
 		b:SetAttribute("SelectedTab", selected)
 		b.TextColor3 = if selected then INK else Color3.fromRGB(255, 241, 210)
 		b.TextSize = 18
+		local grain = b:FindFirstChild("BookMaterial")
+		if tabSkins and grain and grain:IsA("ImageLabel") then
+			-- 원래 인쇄 글자와 아이콘 층은 유지하고 기존 재질만 9분할 원화로 바꾼다.
+			grain.Image = "rbxassetid://" .. tostring(if selected then tabOn else tabOff)
+			grain.ScaleType = Enum.ScaleType.Slice
+			grain.SliceCenter = Rect.new(24, 24, 232, 72)
+			grain.SliceScale = 0.5
+			grain.ImageColor3 = Color3.new(1, 1, 1)
+			grain.ImageTransparency = 0
+		end
 		for _, name in { "PressedEdge", "BookRibbon", "BrassRivet" } do
 			local decoration = b:FindFirstChild(name)
 			if decoration then decoration.Visible = false end
