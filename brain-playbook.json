@@ -226,6 +226,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1795898583885
+    },
+    "combat:no-mobs:월드에 몹이 하나도 없음(전투 점검 필요)#0995a4d4d6": {
+      "sig": "combat:no-mobs:월드에 몹이 하나도 없음(전투 점검 필요)",
+      "kind": "combat",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "search": "local Weapons = require(script.Parent:WaitForChild(\"Weapons\"))",
+          "replace": "local Weapons = require(script.Parent:WaitForChild(\"Weapons\")); local Combat = require(script.Parent:WaitForChild(\"Combat\"))"
+        }
+      ],
+      "summary": "필드 장면에서 전투 모듈을 로드해 몹 스폰을 활성화했습니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795899655321
     }
   }
 }
