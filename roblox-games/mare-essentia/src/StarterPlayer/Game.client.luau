@@ -4179,6 +4179,7 @@ local function call(action, payload)
 		if H.checkNewCards then H.checkNewCards() end
 		if H.checkWorldEvents then H.checkWorldEvents() end
 		if H.checkQuestResults then H.checkQuestResults() end
+		if H.checkQuestTalks then H.checkQuestTalks() end
 		if view.scenes and #view.scenes > 0 and H.playQuestScenes then H.playQuestScenes(view.scenes) end
 	end
 	if result.message and result.message ~= "" then
@@ -7542,7 +7543,8 @@ local function openTradeHall()
 			ownedLine.TextTruncate = Enum.TextTruncate.AtEnd
 			if g.tag and g.tag ~= "" then
                 local badge = Instance.new("TextLabel")
-				badge.Text = g.tag
+				-- [특산품 잠금] 아직 못 사는 특산품·명품은 자물쇠 도장
+				badge.Text = if g.lock then "🔒" .. tostring(g.lock.tierName or "잠김") else g.tag
 				badge.TextSize = 16
 				badge.Font = Enum.Font.GothamBold
 				-- [특산·수요 도장] 어두운 잉크/밝은 황동으로 밝은 양피지와 대비.
@@ -7748,7 +7750,7 @@ local function openTradeHall()
 			local unitBuy = unitBuyOf(sel)
 			-- [실제 수량 한도] 상품을 살수록 단가가 오르므로 단가×수량 추정으로 구매를 허용하지 않는다.
 			local maxBuy = 0
-			for n = 1, math.min(20, view.orderCap or 20, free, sel.supply or 20) do
+			for n = 1, if sel.lock then 0 else math.min(20, view.orderCap or 20, free, sel.supply or 20) do
 				local cost = if sel.buyTotals and sel.buyTotals[n] then sel.buyTotals[n] else unitBuy * n
 				if cost <= p.coins then maxBuy = n end
 			end
@@ -7869,12 +7871,17 @@ local function openTradeHall()
 				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
 			local dealHere = bargain.deal and bargain.deal.goodId == sel.id
 			if dealHere then status = string.format("흥정 성공 · 다음 구매 %d%% 할인 적용", bargain.deal.pct or 0) end
-			local alert = mkLabel(right, status, 14, if bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
+			-- [특산품 잠금 이유] 무엇이 모자란지 + 여는 의뢰(주점)
+			if sel.lock then
+				status = "🔒 " .. tostring(sel.lock.text) .. (if sel.lock.quest then " · 여는 의뢰: 「" .. sel.lock.quest .. "」(주점)" else "")
+				tried = true
+			end
+			local alert = mkLabel(right, status, 14, if sel.lock then Color3.fromRGB(150, 60, 40) elseif bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
 			alert.Position = UDim2.fromOffset(14, infoTop + 390)
 			alert.Size = UDim2.new(1, -28, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			local hg = mkButton(desk, if dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			local hg = mkButton(desk, if sel.lock then "🔒 잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "🎲 흥정 게임", COLORS.gold, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
 			hg.Name = "HaggleGameButton"
 			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
 			hg.TextSize = if narrow then 14 else 16
@@ -11765,6 +11772,28 @@ do
 		list.HorizontalAlignment = Enum.HorizontalAlignment.Center
 		list.Parent = box
 		local chapterEnd = d.chapterEnd == true
+		-- [대화 연출] 의뢰를 준 사람이 결말을 말한다(초상)
+		local talk = d.id and H.questTalkMemo and H.questTalkMemo[d.id]
+		if talk and H.portraitFor then
+			local img, off, size = H.portraitFor(talk)
+			if img then
+				local face = Instance.new("ImageLabel")
+				face.Name = "ResultSpeaker"
+				face.LayoutOrder = 0
+				face.Size = UDim2.fromOffset(96, 126)
+				face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
+				face.BorderSizePixel = 0
+				face.Image = "rbxassetid://" .. tostring(img)
+				face.ImageRectOffset = off or Vector2.zero
+				face.ImageRectSize = size or Vector2.zero
+				face.ScaleType = Enum.ScaleType.Crop
+				face.Parent = box
+				corner(face, 10)
+				local who = mkLabel(box, tostring(talk.name) .. (if talk.role and talk.role ~= "" then " · " .. tostring(talk.role) else ""), 13, Color3.fromRGB(110, 80, 40), true, 0)
+				who.Size = UDim2.new(1, 0, 0, 0)
+				who.TextXAlignment = Enum.TextXAlignment.Center
+			end
+		end
 		local head = mkLabel(box, if chapterEnd then "📖 " .. tostring(d.chapter) .. " 완료!" else "✔ 의뢰 완료 · " .. tostring(d.name), if chapterEnd then 24 else 19, Color3.fromRGB(120, 70, 20), true, 1)
 		head.Size = UDim2.new(1, 0, 0, 0)
 		head.TextXAlignment = Enum.TextXAlignment.Center
@@ -12359,6 +12388,276 @@ do
 			TS:Create(sc, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
 		end
 		Sfx.play("sfx_card_deal", 0.35)
+	end
+end
+
+-- [퀘스트 대화 연출 · 2026-11-28 오너 지시: 퀘스트 전체 자연스러운 이야기 — 초상화·대사]
+-- 새 의뢰를 받으면 말하는 사람 초상 + 사연을 2~4마디로 나눠 대화처럼 보여 주고(누르면 다음, 건너뛰기),
+-- 마지막에 '지금 할 일'을 한 줄로. 끝내면 같은 사람이 결말을 말한다(결과 장면에 초상).
+-- 새 개별 초상(Portraits/comp_<id>, npc_keeper_<시설>, hero_<국가>)이 등록되면 그것부터 쓴다.
+do
+	local TS = game:GetService("TweenService")
+	local KEEPER_ROLE = { trade = "merchant", tavern = "tavern", scholar = "scholar", harbor = "harbor", yard = "yard", battle = "tavern" }
+	H.questTalkMemo = H.questTalkMemo or {}
+
+	-- 초상: (이미지, 칸 위치, 칸 크기) — 개별 파일이면 칸 없음
+	function H.portraitFor(talk)
+		if type(talk) ~= "table" then return nil end
+		local key = tostring(talk.key or "")
+		local kind, id = string.match(key, "^(%a+):(.+)$")
+		if kind == "comp" then
+			local own = AssetIds["Portraits/comp_" .. id]
+			if own then return own end
+			local spec = COMPANION_PORTRAIT[id]
+			if spec and AssetIds["Portraits/" .. spec.atlas] then
+				local k = sheetK(spec.atlas)
+				return AssetIds["Portraits/" .. spec.atlas], spec.offset * k, Vector2.new(256, 336) * k
+			end
+			if string.sub(id, 1, 2) == "h_" then
+				local hid, hoff = H.heroPortraitAsset(string.sub(id, 3))
+				if hid then return hid, hoff, Vector2.new(256, 336) end
+			end
+		elseif kind == "keeper" then
+			local own = AssetIds["Portraits/npc_keeper_" .. id]
+			if own then return own end
+			local role = KEEPER_ROLE[id] or "tavern"
+			local rid, roff, rsize = H.facilityPortraitAsset(view and view.player and view.player.portId, role)
+			if rid then return rid, roff, rsize end
+			if FACILITY_ATLAS and FACILITY_TILE[role] then
+				local k = sheetK("crew_facilities")
+				return FACILITY_ATLAS, FACILITY_TILE[role] * k, Vector2.new(256, 336) * k
+			end
+		elseif kind == "hero" then
+			local own = AssetIds["Portraits/hero_" .. id]
+			if own then return own end
+			local hid, hoff = H.heroPortraitAsset(id)
+			if hid then return hid, hoff, Vector2.new(256, 336) end
+		end
+		-- 이름만 있는 인물(장 이야기): 동료 목록에서 같은 이름을 찾는다
+		if view and view.companions and view.companions.list then
+			for _, m in view.companions.list do
+				if m.name == talk.name then return H.portraitFor({ key = "comp:" .. m.id }) end
+			end
+		end
+		return H.portraitFor({ key = "keeper:tavern" })
+	end
+
+	-- 사연을 말풍선 단위로 자른다: 따옴표 대사는 인물, 나머지는 해설. 한 마디 최대 두 문장.
+	local function beats(text, talk)
+		local out = {}
+		text = string.gsub(tostring(text or ""), "^제%d+장%. ", "")
+		local sentences = {}
+		for piece in string.gmatch(text .. " ", "(.-[%.%?!…\"]+)%s+") do
+			if #piece > 1 then table.insert(sentences, piece) end
+		end
+		if #sentences == 0 and #text > 0 then sentences = { text } end
+		local buf, bufQuote = {}, nil
+		local function flush()
+			if #buf == 0 then return end
+			table.insert(out, { quote = bufQuote, text = table.concat(buf, " ") })
+			buf, bufQuote = {}, nil
+		end
+		for _, sen in sentences do
+			local q = string.find(sen, "\"", 1, true) ~= nil
+			if bufQuote ~= nil and bufQuote ~= q then flush() end
+			bufQuote = q
+			table.insert(buf, sen)
+			if #buf >= 2 then flush() end
+		end
+		flush()
+		while #out > 4 do
+			local last = table.remove(out)
+			out[#out].text ..= " " .. last.text
+		end
+		return out
+	end
+
+	-- 대화 장면: lines = { {speaker, role, talk, text, narration} ... }, onDone
+	function H.storyTalk(lines, onDone)
+		local pg = player:WaitForChild("PlayerGui")
+		local old = pg:FindFirstChild("QuestTalk")
+		if old then old:Destroy() end
+		local g = overlayGui("QuestTalk", 71)
+		local dim = Instance.new("TextButton")
+		dim.Name = "TalkDim"
+		dim.Size = UDim2.fromScale(1, 1)
+		dim.AutoButtonColor = false
+		dim.Text = ""
+		dim.BackgroundColor3 = Color3.new(0, 0, 0)
+		dim.BackgroundTransparency = 0.5
+		dim.BorderSizePixel = 0
+		dim.Parent = g
+		if H.cinemaBars then H.cinemaBars(g, 60) end
+		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+		local narrow = vp.X < 600
+		-- 초상(왼쪽 아래, 크게)
+		local face = Instance.new("ImageLabel")
+		face.Name = "TalkPortrait"
+		face.AnchorPoint = Vector2.new(0, 1)
+		face.Position = UDim2.new(0, 16, 1, if narrow then -170 else -150)
+		face.Size = if narrow then UDim2.fromOffset(150, 196) else UDim2.fromOffset(220, 288)
+		face.BackgroundColor3 = Color3.fromRGB(40, 30, 22)
+		face.BorderSizePixel = 0
+		face.ScaleType = Enum.ScaleType.Crop
+		face.ZIndex = 5
+		face.Parent = g
+		corner(face, 12)
+		local fs = Instance.new("UIStroke")
+		fs.Color = Color3.fromRGB(214, 170, 82)
+		fs.Thickness = 3
+		fs.Parent = face
+		-- 대사 상자(아래 전체 폭)
+		local box = Instance.new("Frame")
+		box.Name = "TalkBox"
+		box.AnchorPoint = Vector2.new(0.5, 1)
+		box.Position = UDim2.new(0.5, 0, 1, -16)
+		box.Size = UDim2.new(1, -32, 0, if narrow then 150 else 132)
+		box.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
+		box.BorderSizePixel = 0
+		box.ZIndex = 6
+		box.Parent = g
+		corner(box, 12)
+		local bs = Instance.new("UIStroke")
+		bs.Color = Color3.fromRGB(196, 150, 70)
+		bs.Thickness = 3
+		bs.Parent = box
+		local nameTag = Instance.new("TextLabel")
+		nameTag.Name = "TalkName"
+		nameTag.Position = UDim2.fromOffset(14, -18)
+		nameTag.Size = UDim2.fromOffset(240, 32)
+		nameTag.BackgroundColor3 = Color3.fromRGB(70, 44, 24)
+		nameTag.BorderSizePixel = 0
+		nameTag.Font = Enum.Font.GothamBlack
+		nameTag.TextSize = 16
+		nameTag.TextColor3 = Color3.fromRGB(255, 230, 170)
+		nameTag.ZIndex = 7
+		nameTag.Parent = box
+		corner(nameTag, 8)
+		local body = Instance.new("TextLabel")
+		body.Name = "TalkText"
+		body.Position = UDim2.fromOffset(18, 22)
+		body.Size = UDim2.new(1, -36, 1, -48)
+		body.BackgroundTransparency = 1
+		body.Font = Enum.Font.Gotham
+		body.TextSize = if narrow then 15 else 17
+		body.TextWrapped = true
+		body.TextXAlignment = Enum.TextXAlignment.Left
+		body.TextYAlignment = Enum.TextYAlignment.Top
+		body.TextColor3 = Color3.fromRGB(52, 38, 24)
+		body.ZIndex = 7
+		body.Parent = box
+		local next = Instance.new("TextLabel")
+		next.AnchorPoint = Vector2.new(1, 1)
+		next.Position = UDim2.new(1, -14, 1, -6)
+		next.Size = UDim2.fromOffset(160, 20)
+		next.BackgroundTransparency = 1
+		next.Font = Enum.Font.GothamBold
+		next.TextSize = 12
+		next.TextXAlignment = Enum.TextXAlignment.Right
+		next.TextColor3 = Color3.fromRGB(130, 100, 60)
+		next.ZIndex = 7
+		next.Parent = box
+		local skip = mkButton(g, "건너뛰기 ▶▶", COLORS.grey, UDim2.fromOffset(120, 40), function() end, true)
+		skip.AnchorPoint = Vector2.new(1, 0)
+		skip.Position = UDim2.new(1, -16, 0, 70)
+		skip.ZIndex = 8
+		local index, closed = 0, false
+		local function close()
+			if closed then return end
+			closed = true
+			if g.Parent then g:Destroy() end
+			if onDone then task.spawn(onDone) end
+		end
+		local lastFace = nil
+		local function show()
+			index += 1
+			local ln = lines[index]
+			if not ln then close() return end
+			local narration = ln.narration == true
+			nameTag.Text = if narration then "이야기" else (tostring(ln.speaker or "") .. (if ln.role and ln.role ~= "" then " · " .. ln.role else ""))
+			nameTag.BackgroundColor3 = if narration then Color3.fromRGB(70, 70, 80) else Color3.fromRGB(70, 44, 24)
+			body.Font = if narration then Enum.Font.GothamMedium else Enum.Font.Gotham
+			body.TextColor3 = if narration then Color3.fromRGB(86, 74, 60) else Color3.fromRGB(52, 38, 24)
+			next.Text = if index < #lines then "누르면 다음 ▼" else "누르면 닫기"
+			-- 초상: 해설일 땐 흐리게, 말할 땐 또렷하게 + 바뀌면 살짝 튀어나옴
+			local img, off, size = H.portraitFor(ln.talk)
+			face.Visible = img ~= nil
+			if img then
+				face.Image = "rbxassetid://" .. tostring(img)
+				face.ImageRectOffset = off or Vector2.zero
+				face.ImageRectSize = size or Vector2.zero
+			end
+			face.ImageTransparency = if narration then 0.45 else 0
+			local faceKey = tostring(img) .. tostring(off)
+			if faceKey ~= lastFace and not game:GetService("GuiService").ReducedMotionEnabled then
+				local base = face.Position
+				face.Position = base + UDim2.fromOffset(-30, 0)
+				TS:Create(face, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = base }):Play()
+			end
+			lastFace = faceKey
+			if H.typewrite then H.typewrite(body, tostring(ln.text or ""), 0.02) else body.Text = tostring(ln.text or "") end
+			Sfx.play("sfx_card_page", 0.25, 1)
+		end
+		dim.Activated:Connect(function()
+			-- 글자가 아직 나오는 중이면 한 번에 다 보여 주고, 다 나왔으면 다음
+			if body.MaxVisibleGraphemes ~= -1 then body.MaxVisibleGraphemes = -1 return end
+			show()
+		end)
+		skip.Activated:Connect(close)
+		show()
+	end
+
+	-- 의뢰 하나를 대화로: 사연 → (인물 한마디) → 지금 할 일
+	function H.questTalkLines(q)
+		local talk = q.talk or { name = "주점 주인", role = "주점", key = "keeper:tavern" }
+		local lines = {}
+		if q.chapter then
+			table.insert(lines, { narration = true, text = "📖 " .. tostring(q.chapter) .. " — " .. tostring(q.name or ""), talk = talk })
+		end
+		for _, b in beats(q.story, talk) do
+			table.insert(lines, { speaker = talk.name, role = talk.role, talk = talk, text = b.text, narration = not b.quote })
+		end
+		local extra = q.story2
+		if extra and extra.speaker and extra.line then
+			table.insert(lines, { speaker = extra.speaker, role = talk.role, talk = { name = extra.speaker, key = talk.key }, text = "\"" .. tostring(extra.line) .. "\"" })
+		end
+		local step = H.nextStep and H.nextStep()
+		local todo = if step and step.quest and step.quest.id == q.id then step.text else q.summary
+		table.insert(lines, { speaker = talk.name, role = talk.role, talk = talk,
+			text = (if q.problem then "왜? " .. tostring(q.problem) .. "\n" else "") .. "▶ 할 일: " .. tostring(todo) .. (if q.result then "\n✦ 하면: " .. tostring(q.result) else "") })
+		return lines
+	end
+
+	-- 새로 받은 의뢰 감지(첫 화면은 기준선) → 차례로 대화
+	function H.checkQuestTalks()
+		local active = view and view.quests and view.quests.active
+		if type(active) ~= "table" then return end
+		for _, q in active do H.questTalkMemo[q.id] = q.talk end
+		local first = H.seenActiveQuests == nil
+		H.seenActiveQuests = H.seenActiveQuests or {}
+		local fresh = {}
+		for _, q in active do
+			if not H.seenActiveQuests[q.id] then
+				H.seenActiveQuests[q.id] = true
+				if not first and q.story and #tostring(q.story) > 0 then table.insert(fresh, q) end
+			end
+		end
+		if #fresh == 0 then return end
+		task.spawn(function()
+			local pg = player:WaitForChild("PlayerGui")
+			for i, q in fresh do
+				if i > 2 then break end -- 한꺼번에 여러 개 받으면 앞의 둘만(나머지는 일지에)
+				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
+					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("IntroDialog")) do
+					task.wait(0.3)
+				end
+				if not player.Parent then return end
+				local done = false
+				H.storyTalk(H.questTalkLines(q), function() done = true end)
+				while player.Parent and not done do task.wait(0.2) end
+			end
+		end)
 	end
 end
 
@@ -17532,7 +17831,25 @@ end
 		face.Image = if portraitId then "rbxassetid://" .. tostring(portraitId) else ""
 		local fk = if portraitSpec then sheetK(portraitSpec.atlas) else 1
 		face.ImageRectOffset = (portraitOffset or Vector2.zero) * fk
-		face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
+		-- [빈 초상 방지 · 2026-11-28] 새 개별 담당자 초상(npc_keeper_*)이 있으면 그것, 없고 칸도 못 찾으면 공용 초상 찾기
+		do
+			local keeperKey = if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" elseif tile ~= "hero" then tile else nil
+			local own = keeperKey and AssetIds["Portraits/npc_keeper_" .. keeperKey]
+			if own then
+				face.Image = "rbxassetid://" .. tostring(own)
+				face.ImageRectOffset, face.ImageRectSize = Vector2.zero, Vector2.zero
+			elseif not portraitId and H.portraitFor then
+				local img, off, size = H.portraitFor({ key = "keeper:" .. tostring(keeperKey or "tavern") })
+				if img then
+					face.Image = "rbxassetid://" .. tostring(img)
+					face.ImageRectOffset, face.ImageRectSize = off or Vector2.zero, size or Vector2.zero
+					face:SetAttribute("PortraitFallback", true)
+				end
+			end
+		end
+		if not face:GetAttribute("PortraitFallback") and not (tile ~= "hero" and AssetIds["Portraits/npc_keeper_" .. (if tile == "scholar" and string.find(spec.speaker, "서기", 1, true) then "trade" else tile)]) then
+			face.ImageRectSize = if regId then regSize elseif portraitOffset then PORTRAIT_SIZE * fk else Vector2.zero
+		end
 		face.ScaleType = Enum.ScaleType.Crop
 		face.Parent = speakerBar
 		face.Visible = not narration

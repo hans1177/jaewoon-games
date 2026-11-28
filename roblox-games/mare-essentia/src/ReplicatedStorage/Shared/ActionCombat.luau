@@ -163,6 +163,25 @@ function A.damageEnemy(e: any, base: number, mult: number, fromFront: boolean, s
 	return d, false
 end
 
+-- [적마다 약점 · 2026-11-28 오너 지시: 단순 때리기 대신 노릴 곳] 돌려주는 값: 피해 배수, 약점 이름(없으면 nil).
+-- 방패병=등 뒤·옆, 돌진병=돌진 뒤 빈틈(회복 중), 사수=가까이 붙기, 졸개=공격 준비 중 끊기, 두목=내려친 뒤 빈틈.
+A.WEAK = {
+	shield = { label = "등 뒤", mult = 1.6 }, charger = { label = "돌진 뒤 빈틈", mult = 2.0 },
+	archer = { label = "가까이 붙기", mult = 1.6 }, grunt = { label = "공격 준비 중 끊기", mult = 1.4 },
+	boss = { label = "내려친 뒤 빈틈", mult = 1.8 },
+}
+function A.weakness(e: any, fromFront: boolean, dist: number): (number, string?)
+	if e.dead then return 1, nil end
+	local w = A.WEAK[e.kind]
+	if not w then return 1, nil end
+	local hit = (e.kind == "shield" and not fromFront)
+		or ((e.kind == "charger" or e.kind == "boss") and e.state == "recover")
+		or (e.kind == "archer" and dist <= 6)
+		or (e.kind == "grunt" and e.state == "windup")
+	if hit then return w.mult, w.label end
+	return 1, nil
+end
+
 -- 공격 범위 판정: 거리와 정면 각도(도). arc 360 은 사방.
 function A.inReach(range: number, arc: number, dist: number, angleDeg: number): boolean
 	if dist > range then return false end

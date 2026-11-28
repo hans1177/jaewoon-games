@@ -4743,9 +4743,12 @@ test('Mare voyage camera stays outside the scaled ship envelope without changing
   const voyage=read('ReplicatedStorage/Shared/VoyageScene.luau');
   const fit=voyage.slice(voyage.indexOf('local cameraFit'),voyage.indexOf('local heel = 0'));
   assert.match(fit,/local boundsCF, boundsSize = ship:GetBoundingBox\(\)/);
-  assert.match(fit,/local radius = \(boundsCF\.Position - shipBase\.Position\)\.Magnitude \+ boundsSize\.Magnitude \* 0\.5/);
-  assert.match(fit,/back = math\.max\(36, radius \+ 12\)/);
-  assert.match(fit,/height = math\.max\(13, baseY \+ radius \+ 10\)/);
+  // [2026-11-28 돛줄 안 카메라 수정] 늦게 도착한 배 부품까지 다시 재고, 경계는 줄지 않는다.
+  assert.match(fit,/local radius = \(boundsCF\.Position - ship:GetPivot\(\)\.Position\)\.Magnitude \+ boundsSize\.Magnitude \* 0\.5/);
+  assert.match(fit,/back = math\.max\(36, radius \+ 14\)/);
+  assert.match(fit,/height = math\.max\(13, baseY \+ boundsSize\.Y \* 0\.75 \+ 8, baseY \+ radius \* 0\.6 \+ 10\)/);
+  assert.match(fit,/nextFit\.back = math\.max\(nextFit\.back, cameraFit\.back\)/);
+  assert.match(fit,/ship\.DescendantAdded:Connect/);
   assert.match(fit,/ahead = math\.max\(46, radius \* 2\.5\)/);
   assert.ok(voyage.indexOf('ship:ScaleTo(1.7)') < voyage.indexOf('local cameraFit'));
   assert.ok(voyage.indexOf('local cameraFit') < voyage.indexOf('while not skipped and dist < total'));
@@ -4758,7 +4761,7 @@ test('Mare voyage camera stays outside the scaled ship envelope without changing
   // 실제 메시가 아닌 보수적인 가상 경계로 수학적 안전 여유를 검사한다.
   for(const [length,width,height,offset] of [[20,8,15,0],[80,24,65,4],[180,60,110,15],[400,120,260,35]]){
     const radius=Math.hypot(length,width,height)*0.5+offset;
-    const back=Math.max(36,radius+12);
+    const back=Math.max(36,radius+14);
     assert.ok(back-2.2>radius+8,'선박 회전 및 최대 흔들림 후에도 선체 경계 밖');
   }
 });

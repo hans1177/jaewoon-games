@@ -68,6 +68,41 @@ return function(D, S)
 		state.priceBook[goodId][state.portId] = { sell = T.sellPrice(state.portId, goodId, m, sellRateFor(state), e), day = state.day }
 	end
 
+	-- [특산품 단계 잠금 · 2026-11-28 오너 지시] 처음부터 특산품을 마음대로 살 수 없다.
+	-- [오너 결정 2026-11-28: 어렵게, 이야기를 진행할수록 열리게 · 기존 거래 기록 예외 없음(초기화)]
+	-- 일반품: 언제나 · 특산품: 우호도 25 이상 / 항구 투자 2단계 / 길드 허가증 중 하나 (시작 항구만 처음부터)
+	-- 명품(그 항구 특산 중 가장 비싼 것, 특산 2개 이상일 때): 길드 허가증 + (우호도 50 또는 투자 3단계)
+	-- 길드 허가증 의뢰는 시작 국가 서막을 마친 뒤 열린다(이야기 진행에 묶임).
+	local SPECIAL_REP, PREMIUM_REP, PREMIUM_LEVEL, SPECIAL_LEVEL = 25, 50, 3, 2
+	local function premiumOf(port)
+		if type(port.produces) ~= "table" or #port.produces < 2 then return nil end
+		local best, price = nil, -1
+		for _, g in port.produces do
+			local def = D.Ports.Goods[g]
+			if def and (def.basePrice or 0) > price then best, price = g, def.basePrice or 0 end
+		end
+		return best
+	end
+	local function lockOf(state, portId, goodId)
+		local port = D.Ports.Ports[portId]
+		if not port or type(port.produces) ~= "table" or not table.find(port.produces, goodId) then return nil end
+		local rep = state.rep[port.country] or 0
+		local level = S.Harbor.level(state, portId)
+		local permit = state.stats and state.stats.permits and state.stats.permits[portId] == true
+		local nation = D.Ports.Nations[state.nationId]
+		local home = nation and nation.startPort == portId
+		local permitQuest = D.Quests.ById["permit_" .. portId]
+		local questName = permitQuest and permitQuest.name or nil
+		if goodId == premiumOf(port) then
+			if permit and (rep >= PREMIUM_REP or level >= PREMIUM_LEVEL) then return nil end
+			return { tier = "premium", tierName = "명품", rep = rep, needRep = PREMIUM_REP, level = level, needLevel = PREMIUM_LEVEL, quest = questName,
+				text = string.format("명품 · 길드 허가증%s + (우호도 %d/%d 또는 투자 %d/%d단계)", if permit then "✔" else "✘", rep, PREMIUM_REP, level, PREMIUM_LEVEL) }
+		end
+		if home or permit or rep >= SPECIAL_REP or level >= SPECIAL_LEVEL then return nil end
+		return { tier = "special", tierName = "특산품", rep = rep, needRep = SPECIAL_REP, level = level, needLevel = SPECIAL_LEVEL, quest = questName,
+			text = string.format("특산품 · 우호도 %d/%d 또는 투자 %d단계 또는 길드 허가증", rep, SPECIAL_REP, SPECIAL_LEVEL) }
+	end
+
 	function handlers.Buy(state, p, ctx)
 		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
@@ -75,6 +110,11 @@ return function(D, S)
 		end
 		if embargoed(state) then
 			return false, "전쟁 중인 나라의 항구라 정식 거래가 막혔어요 (암시장은 가능해요)"
+		end
+		local lock = lockOf(state, state.portId, goodId)
+		if lock then
+			return false, string.format("🔒 %s 아직 못 사요 — %s%s", D.Ports.Goods[goodId].name, lock.text,
+				if lock.quest then " · 주점 의뢰 「" .. lock.quest .. "」" else "")
 		end
 		local lim = limits(state, goodId)
 		if lim and amount > lim.supply then
@@ -401,5 +441,5 @@ return function(D, S)
 		return true, string.format("%s %d개를 몰래 팔았다 (+%d, 관세 없음)", D.Ports.Goods[goodId].name, amount, revenue)
 	end
 
-	return { handlers = handlers, sellRateFor = sellRateFor, repBonus = repBonus, tariffRate = tariffRate }
+	return { handlers = handlers, sellRateFor = sellRateFor, repBonus = repBonus, tariffRate = tariffRate, lockOf = lockOf }
 end

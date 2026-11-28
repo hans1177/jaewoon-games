@@ -1091,15 +1091,34 @@ function VoyageScene.play(info)
 	-- [항해 카메라] 실제 확대된 선박의 중심 오차와 전체 크기를 포함한 회전 불변 경계.
 	-- 선체 안으로 들어가지 않도록 출항 때 한 번 계산하고, 매 프레임 모델을 다시 훑지 않는다.
 	local cameraFit
-	do
+	-- [돛줄 안 카메라 수정 · 2026-11-28] 배 모델이 늦게 도착(지연 로딩)하면 출항 순간 경계가 작게 잡혀
+	-- 카메라가 돛·밧줄 안으로 들어갔다. 부품이 더 붙으면 경계를 다시 재고, 줄어들지는 않게 한다.
+	local function fitCamera()
 		local boundsCF, boundsSize = ship:GetBoundingBox()
-		local radius = (boundsCF.Position - shipBase.Position).Magnitude + boundsSize.Magnitude * 0.5
-		cameraFit = {
-			back = math.max(36, radius + 12),
-			height = math.max(13, baseY + radius + 10),
+		local radius = (boundsCF.Position - ship:GetPivot().Position).Magnitude + boundsSize.Magnitude * 0.5
+		local nextFit = {
+			back = math.max(36, radius + 14),
+			height = math.max(13, baseY + boundsSize.Y * 0.75 + 8, baseY + radius * 0.6 + 10),
 			ahead = math.max(46, radius * 2.5),
 		}
+		if cameraFit then
+			nextFit.back = math.max(nextFit.back, cameraFit.back)
+			nextFit.height = math.max(nextFit.height, cameraFit.height)
+			nextFit.ahead = math.max(nextFit.ahead, cameraFit.ahead)
+		end
+		cameraFit = nextFit
 	end
+	fitCamera()
+	local fitDirty = false
+	ship.DescendantAdded:Connect(function() fitDirty = true end)
+	task.spawn(function()
+		-- 처음 12초 동안 0.5초마다 늦게 붙은 부품이 있으면 다시 잰다
+		for _ = 1, 24 do
+			task.wait(0.5)
+			if not ship.Parent then return end
+			if fitDirty then fitDirty = false; pcall(fitCamera) end
+		end
+	end)
 	local heel = 0
 	local wheels = {}
 	for _, name in { "PaddleWheelPort", "PaddleWheelStarboard" } do
