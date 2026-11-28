@@ -1316,7 +1316,9 @@ local function mkRow(parent, title, subtitle, buttons, height)
 		local narrow = width > 0 and btnCount > 0 and width < math.max(520, left + btnWidth + 240)
 		local buttonSpace = if narrow then 0 else btnWidth
 		textBox.Size = UDim2.new(1, -(left + buttonSpace + 12), if narrow then 0 else 1, if narrow then math.max(30, layout.AbsoluteContentSize.Y + 10) else -8)
-		local textHeight = layout.AbsoluteContentSize.Y + 12
+		local rowIcon = row:FindFirstChild("RowIcon")
+		local iconHeight = if rowIcon then rowIcon.Size.Y.Offset + 16 else 0
+		local textHeight = math.max(layout.AbsoluteContentSize.Y + 12, iconHeight)
 		-- [모바일 조작] 좁은 화면의 3~4개 버튼을 두 줄로 나눠 읽기 쉬운 너비 확보.
         local buttonColumns = if narrow and width < 480 then math.min(2, btnCount) else btnCount
         local buttonRows = if narrow then math.ceil(btnCount / math.max(1, buttonColumns)) else 0
@@ -1335,7 +1337,6 @@ local function mkRow(parent, title, subtitle, buttons, height)
 				button.Size = UDim2.fromOffset(104, 54)
 			end
 		end
-		local rowIcon = row:FindFirstChild("RowIcon")
 		if rowIcon then
 			rowIcon.Position = if narrow then UDim2.fromOffset(8, 8)
 				else UDim2.new(0, 8, 0.5, -rowIcon.Size.Y.Offset / 2)
@@ -1351,14 +1352,19 @@ end
 -- [시설 공통 카드] 기존 그림·양피지·황동 디자인을 모바일과 PC에 같은 비율로 배치한다.
 function H.tileGrid(items, parent, cellW, cellH, quick)
 	-- [방문 메뉴] 주점의 원화 카드 문법을 유지하면서 시설 바로가기는 모바일 한눈형으로 압축한다.
-	if quick then
-		cellW, cellH = 216, 166
+	local compactCards = true
+	for _, it in items do
+		if it.desc or it.portrait or it.affinity ~= nil then compactCards = false; break end
+	end
+	compactCards = quick == true or compactCards
+	if compactCards then
+		cellW, cellH = if quick then 216 else 236, if quick then 166 else 152
 	else
 		cellW, cellH = math.floor((cellW or 176) * 1.3), math.max(316, math.floor((cellH or 156) * 1.55))
 		for _, it in items do
-			if it.desc then cellH = math.max(cellH, 366)
+			if it.desc then cellH = math.max(cellH, 380)
 			elseif it.portrait then cellH = math.max(cellH, 342) end
-			if it.affinity ~= nil then cellH = math.max(cellH, 386) end
+			if it.affinity ~= nil then cellH = math.max(cellH, 400) end
 		end
 	end
 	local grid = Instance.new("Frame")
@@ -1375,6 +1381,8 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 		local tile = Instance.new("Frame")
 		tile.LayoutOrder = i
 		tile.Name = "BookTile"
+		tile:SetAttribute("CompactActionCard", compactCards)
+		tile:SetAttribute("ActionAvailable", on)
 		tile.BackgroundColor3 = if on then COLORS.paper else Color3.fromRGB(193, 177, 149)
 		tile.BorderSizePixel = 0
 		corner(tile, 8)
@@ -1397,25 +1405,26 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 		seal.Size = UDim2.new(1, -12, 0, 3)
 		seal.Parent = tile
 		-- 초상(주점 동료 등)은 더 크게. 아래 글자는 그만큼 내려간다.
-		local iconPx = if quick then 66 elseif it.portrait then 164 else 148
+		local iconPx = if quick then 66 elseif compactCards then 56 elseif it.portrait then 164 else 148
 		local ic = modelIcon(tile, if it.portrait then "Portraits" else (it.kind or "Menu"), if it.portrait then it.portrait.atlas else it.icon, nil, iconPx, it.title, nil, if it.portrait then it.portrait.offset else nil)
-		ic.AnchorPoint = if quick then Vector2.zero else Vector2.new(0.5, 0)
-		ic.Position = if quick then UDim2.fromOffset(10, 12) else UDim2.new(0.5, 0, 0, 8)
+		ic.AnchorPoint = if compactCards then Vector2.zero else Vector2.new(0.5, 0)
+		ic.Position = if compactCards then UDim2.fromOffset(10, 12) else UDim2.new(0.5, 0, 0, 8)
 		local textY = iconPx + 14
-		local nm = mkLabel(tile, it.title, if quick then 19 else 21, INK, true)
+		local textX = iconPx + 20
+		local nm = mkLabel(tile, it.title, if compactCards then 17 else 21, INK, true)
 		nm.AutomaticSize = Enum.AutomaticSize.None
-		nm.Position = if quick then UDim2.fromOffset(82, 12) else UDim2.fromOffset(4, textY)
-		nm.Size = if quick then UDim2.new(1, -90, 0, 28) else UDim2.new(1, -8, 0, 26)
-		nm.TextXAlignment = Enum.TextXAlignment.Center
+		nm.Position = if compactCards then UDim2.fromOffset(textX, 10) else UDim2.fromOffset(4, textY)
+		nm.Size = if compactCards then UDim2.new(1, -textX - 8, 0, 38) else UDim2.new(1, -8, 0, 26)
+		nm.TextXAlignment = if compactCards then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
 		nm.TextTruncate = Enum.TextTruncate.AtEnd
 		if it.sub then
 			local sb = mkLabel(tile, it.sub, 17, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
-			sb.Position = if quick then UDim2.fromOffset(82, 42) else UDim2.fromOffset(4, textY + 28)
-			sb.Size = if quick then UDim2.new(1, -90, 0, if it.affinity ~= nil then 44 else 54) else UDim2.new(1, -8, 0, 40)
-			sb.TextSize = if quick then 14 else 17
+			sb.Position = if compactCards then UDim2.fromOffset(textX, 49) else UDim2.fromOffset(4, textY + 28)
+			sb.Size = if compactCards then UDim2.new(1, -textX - 8, 0, if it.affinity ~= nil then 38 else 42) else UDim2.new(1, -8, 0, 40)
+			sb.TextSize = if compactCards then 14 else 17
 			sb.TextWrapped = true
-			sb.TextXAlignment = Enum.TextXAlignment.Center
+			sb.TextXAlignment = if compactCards then Enum.TextXAlignment.Left else Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
 		if it.affinity ~= nil then
@@ -1423,8 +1432,8 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 			track.Name = "CompanionAffinityTrack"
 			track.BackgroundColor3 = Color3.fromRGB(177, 151, 111)
 			track.BorderSizePixel = 0
-			track.Position = if quick then UDim2.fromOffset(82, 92) else UDim2.fromOffset(12, textY + 70)
-			track.Size = if quick then UDim2.new(1, -94, 0, 8) else UDim2.new(1, -24, 0, 8)
+			track.Position = if compactCards then UDim2.fromOffset(textX, 92) else UDim2.fromOffset(12, textY + 70)
+			track.Size = if compactCards then UDim2.new(1, -textX - 12, 0, 8) else UDim2.new(1, -24, 0, 8)
 			track.Parent = tile
 			corner(track, 4)
 			local fill = Instance.new("Frame")
@@ -1445,7 +1454,7 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 			ds.TextXAlignment = Enum.TextXAlignment.Center
 			ds.TextTruncate = Enum.TextTruncate.AtEnd
 		end
-		local buttonHeight = if quick then 48 else 54
+		local buttonHeight = if compactCards then 48 else 54
 		if it.btn and it.btn2 then
 			local b1 = mkButton(tile, it.btn, it.color or COLORS.gold, UDim2.new(0.5, -12, 0, buttonHeight), it.onClick, on)
 			b1.Position = UDim2.new(0, 8, 1, -buttonHeight - 8)
@@ -5865,6 +5874,7 @@ function H.walletBar(mode)
 end
 
 function H.statStrip(items)
+	if #items == 0 then return end
 	local metricArt = { ["선체"] = "hull", ["화물"] = "cargo", ["화물칸"] = "cargo", ["명성"] = "fame", ["코인"] = "coin", ["보유 코인"] = "coin", ["승조원"] = "crew", ["승선 동료"] = "crew", ["동료"] = "crew", ["조건 잠금"] = "lock", ["잠긴 지점"] = "lock", ["오늘 보상"] = "gift", ["함대전"] = "war" }
 	-- [전체 메뉴 공통 지표] 작은 화면은 2열로 나눠 수치가 잘리지 않게 한다.
 	add(function()
@@ -5909,7 +5919,33 @@ function H.statStrip(items)
 			vl.TextTruncate = Enum.TextTruncate.AtEnd
 			vl.TextColor3 = H.TONE[it.tone or "key"] or INK
 			vl.Text = it[2]
+			vl.TextScaled = true
 			vl.Parent = chip
+			local valueLimit = Instance.new("UITextSizeConstraint")
+			valueLimit.MinTextSize = 13
+			valueLimit.MaxTextSize = 20
+			valueLimit.Parent = vl
+			-- [실수치 그래프] 실제 분자/분모가 있는 지표만 막대로 표시한다.
+			local used, capacity = string.match(tostring(it[2]), "^(%d+)%s*/%s*(%d+)$")
+			local maximum = tonumber(capacity) or 0
+			if used and maximum > 0 then
+				local track = Instance.new("Frame")
+				track.Name = "MenuMetricTrack"
+				track.BackgroundColor3 = Color3.fromRGB(178, 151, 112)
+				track.BorderSizePixel = 0
+				track.Position = UDim2.new(0, 8, 1, -7)
+				track.Size = UDim2.new(1, -16, 0, 4)
+				track.ClipsDescendants = true
+				track.Parent = chip
+				corner(track, 2)
+				local fill = Instance.new("Frame")
+				fill.Name = "MenuMetricFill"
+				fill.BorderSizePixel = 0
+				fill.BackgroundColor3 = H.TONE[it.tone or "key"] or UI_BRASS
+				fill.Size = UDim2.fromScale(math.clamp((tonumber(used) or 0) / maximum, 0, 1), 1)
+				fill.Parent = track
+				corner(fill, 2)
+			end
 			local key = metricArt[it[1]]
 			if key and H.reserveIconAtlas[4] and H.hasIconArt(key) then
 				local icon = modelIcon(chip, "FacilityArt", key, nil, 20, it[1])
@@ -5922,7 +5958,7 @@ function H.statStrip(items)
 		local function fitStrip()
 			local width = strip.AbsoluteSize.X
 			if width <= 0 then return end
-			local cols = if width < 460 and #items >= 3 then 2 else math.max(1, #items)
+			local cols = math.clamp(math.floor((width + 6) / 136), 1, #items)
 			local rows = math.ceil(#items / cols)
 			lay.CellSize = UDim2.new(1 / cols, -6 * (cols - 1) / cols, 0, 56)
 			local height = rows * 56 + (rows - 1) * 6
@@ -18881,7 +18917,7 @@ function render()
 	local tabName = TAB_NAME[currentTab] or ""
 	headerLabel.Text = if #grp.tabs <= 1 and currentTab ~= "yard" and placeName ~= tabName
 		then placeName .. " · " .. tabName else placeName
-	H.pageDetails.Text = p.portName
+	H.pageDetails.Text = if #grp.tabs > 1 and tabName ~= placeName then p.portName .. " · " .. tabName else p.portName
 	coinValue.Text = tostring(p.coins)
 	H.updateHud(p, ship)
 	-- [현재 시설 표시] 가죽 도크의 선택 상태와 실제 열려 있는 시설을 동기화한다.

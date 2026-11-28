@@ -3586,7 +3586,7 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('H.tradeHall = openTradeHall'));
   const yard=source.slice(source.indexOf('function openYardHall()'),source.indexOf('H.yardHall = openYardHall'));
   assert.match(source,/width < math\.max\(520, left \+ btnWidth \+ 240\)/,'중간 폭 메뉴에서도 버튼과 설명 분리');
-  assert.match(source,/local iconPx = if quick then 66 elseif it.portrait then 164 else 148/,'기존 모바일 한눈형은 유지하고 일반 시설 원화·초상 확대');
+  assert.match(source,/local iconPx = if quick then 66 elseif compactCards then 56 elseif it.portrait then 164 else 148/,'일반 기능은 압축하고 동료 초상 및 상세 원화 크기는 유지');
   assert.match(trade,/H\.marketPriceSignal\(sel\)/,'교역 판단 정보 연결 유지');
   assert.match(yard,/local cardW = math\.floor\(math\.max\(34, math\.min\(heroWidth - 20, availableArtH \* 0\.7\)\)\)/,'실제 창 높이를 기준으로 7:10 너비 계산');
   assert.match(yard,/local cardH = math\.floor\(cardW \* 10 \/ 7\)/,'선박 전시 카드비 7:10');
@@ -5250,4 +5250,31 @@ test('항구 지도는 현재 장면의 실제 해금 시설만 표시하며 기
   assert.match(map,/pin:SetAttribute\("FacilityWorldPosition", site.pos\)/);
   assert.match(map,/H.harborPage = "finance"/);
   assert.match(map,/openTab\(site.tab\)/);
+});
+
+// [전체 메뉴 3원칙] 공통 카드·지표·버튼 배치 회귀.
+test('기능 카드와 상세 카드를 구분하고 실제 수치와 터치 영역을 보존한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const grid=source.slice(source.indexOf('function H.tileGrid('),source.indexOf('local function mkHeader('));
+ assert.ok(grid.includes('if it.desc or it.portrait or it.affinity ~= nil then compactCards = false'));
+ assert.ok(grid.includes('if quick then 166 else 152'));
+ assert.ok(grid.includes('local buttonHeight = if compactCards then 48 else 54'));
+ assert.ok(grid.includes('it.btn2.onClick, it.btn2.enabled ~= false'));
+ assert.ok(grid.includes('CompanionAffinityFill'));
+ const row=source.slice(source.indexOf('local function mkRow('),source.indexOf('function H.tileGrid('));
+ assert.ok(row.includes('math.max(layout.AbsoluteContentSize.Y + 12, iconHeight)'));
+ assert.ok(row.includes('buttonRows * 60 + 6'));
+ const metrics=source.slice(source.indexOf('function H.statStrip('),source.indexOf('function RENDERERS.harbor('));
+ assert.ok(metrics.includes('math.clamp(math.floor((width + 6) / 136), 1, #items)'));
+ assert.ok(metrics.includes('if used and maximum > 0 then'));
+ assert.ok(metrics.includes('math.clamp((tonumber(used) or 0) / maximum, 0, 1)'));
+ assert.ok(source.includes('p.portName .. " · " .. tabName'));
+ for(const width of [240,280,320,384,520,800]){
+  for(const count of [1,2,3,5,8]){
+   const cols=Math.min(count,Math.max(1,Math.floor((width+6)/136)));
+   assert.ok((width-6*(cols-1))/cols>=130);
+  }
+ }
+ assert.ok(49+42<=152-48-8,'일반 카드 설명과 행동 버튼이 겹치지 않는다');
+ assert.ok(92+8<=166-48-8,'동료 호감도와 행동 버튼이 겹치지 않는다');
 });
