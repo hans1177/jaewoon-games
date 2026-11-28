@@ -172,7 +172,11 @@ jobs:
           git commit -q -m "fix(vibe-brain): ${summary}"
           git push -q origin "$branch"
           body="바이브 두뇌가 자동으로 만든 수정입니다.\n\n- 지시서: ${fp}\n- 내용: ${text}\n- 모델: ${prov}\n- 검증: 문법 오류 증가 없음 + 게임 테스트 통과\n- 병합 후 자동 판단기가 Studio 점검으로 결과를 다시 확인합니다."
-          pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$(printf "$body")" --jq .number)
+          # [재촬영 근거] 동일 장면의 경로·해시를 수정본에 연결한다. 검사 선택에만 쓰이며 배포 승인은 아니다.
+          retest=$(node -e 'const r=require("./build/brain-result.json").retestScript;if(r && /^roblox-games\/mare-essentia\/tools\/devloop\/studio-scripts\/mare-[a-z0-9-]+\.json$/.test(r.path) && /^[a-f0-9]{64}$/.test(r.sha256) && /^[1-9][0-9]{4,14}$/.test(r.runId))process.stdout.write("STUDIO_RETEST="+r.path+" "+r.sha256+" "+r.runId)')
+          body="$(printf '%b' "$body")"
+          if [[ -n "$retest" ]]; then body="$body"$'\n\n'"$retest"; fi
+          pr=$(gh api -X POST "repos/${GITHUB_REPOSITORY}/pulls" -f title="fix(vibe-brain): ${summary}" -f head="$branch" -f base=main -f body="$body" --jq .number)
           echo "PR #$pr"
           if [[ "$fp" == *:visual:* ]]; then
             echo "화면 수정 후보는 Studio 재검증이 필요해 PR만 열어 두었다."

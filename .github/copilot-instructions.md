@@ -1,6 +1,6 @@
 # GPT / Copilot / developer assistant shared instructions
 
-Read the latest main branch `AGENTS.md` and `DIRECT_DEV.md` before making changes to any of the owner's games.
+**Start with `START_HERE.md` (1 minute: where the 4 central policy files are, how to read the 1.3MB one, phrases that must not stop work).** Then read the latest main branch `AGENTS.md` and `DIRECT_DEV.md` before making changes to any of the owner's games.
 
 **mare-essentia:** before touching `roblox-games/mare-essentia`, read `roblox-games/mare-essentia/docs/READ_FIRST.md` and every brief it lists for your task, and follow them exactly.
 

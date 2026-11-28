@@ -601,3 +601,27 @@ test('자동 수정기는 한 원장의 열린 작업과 해결 기록을 분리
   assert.ok(workflow.includes('--autopilot-ledger build/autopilot-ledger.json'));
   assert.ok(brain.includes('labelOutcomes({ ledger, playbook, orders: evidenceOrders })'));
 });
+
+test('visual repair preserves source scenario and reuses canonical Studio dispatch after merge',()=>{
+  const brain=fs.readFileSync('tools/vibe-brain.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/vibe-brain.yml','utf8');
+  const dispatch=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(brain.includes('path: checks.scriptPath, sha256: checks.scriptSha256'));
+  assert.ok(brain.includes('!checks.portBatch'));
+  assert.ok(workflow.includes('STUDIO_RETEST='));
+  assert.ok(dispatch.includes('.merge_commit_sha == $sha'));
+  assert.ok(dispatch.includes('.head.repo.full_name == $repo'));
+  assert.ok(dispatch.includes('"$current_hash" == "$retest_hash"'));
+  assert.ok(dispatch.includes('script="$retest_path"'));
+  assert.ok(dispatch.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  assert.equal((dispatch.match(/gh workflow run devloop-studio\.yml/g)||[]).length,1);
+});
+
+test('exact Studio retest hashes an inert local file and validates archived original checks',()=>{
+  const dispatch=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(dispatch.includes('base64 --decode "$retest_file.b64" > "$retest_file"'));
+  assert.ok(dispatch.includes('sha256sum "$retest_file"'));
+  assert.ok(dispatch.includes('contents/runs/$retest_run/checks.json?ref=mare-essentia-studio-frames'));
+  assert.ok(dispatch.includes('.scriptPath == $path and .scriptSha256 == $hash'));
+  assert.ok(dispatch.includes('STUDIO_EXACT_RETEST_UNVERIFIED=ORIGINAL_EVIDENCE_MISSING'));
+});
