@@ -5366,9 +5366,18 @@ test('선장실·캐릭터창과 전투는 동일한 무기별 숙련 경험치 
   assert.match(status,/CharacterWeaponMastery_/);
   assert.match(status,/필살기 잠김\(8단\)/);
   assert.match(cabin,/CabinWeaponMastery/);
-  const promotion=field.split('if promoted then')[1].split('if chain > 1 then')[0];
+  const promotion=field.split('if promoted then')[1].split('\n\t\t\t\tif chain > 1 then')[0];
   assert.match(promotion,/shockRing\(/);
   assert.match(promotion,/pulseAt\("BUFF_PULSE"/);
   assert.match(promotion,/sfx_fanfare/);
-  assert.doesNotMatch(promotion,/strikeEnemy\(|damageEnemy\(/);
+  for(const check of [/if rank > chain then/,
+    /Weapons\.actionDesign\(wpn\)\.cadence/,
+    /wpn\.id ~= demoWeapon or chainMotionSerial ~= demoSerial/,
+    /pl\.guarding or os\.clock\(\) - swingT0 < 0\.28/,
+    /startSwing\("slash", 0\.4, rank, true\)/,
+    /if not wpn\.ranged then/,
+    /if rank >= 6 then trailsOn/,
+    /if rank >= 8 and not visualMobile then afterimage/,
+    /showCombo\("새 동작 · " \.\. demoName/]) assert.match(promotion,check);
+  assert.doesNotMatch(promotion,/strikeEnemy\(|damageEnemy\(|arrowTrail\(|useMove\(|earnedPractice\[/);
 });
