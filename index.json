@@ -2,33 +2,59 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "46196461744",
-    "kind": "studio",
+    "runId": "46197834473",
+    "kind": "deep",
     "portBatch": null,
-    "at": "2026-11-28T22:39:00.569Z",
-    "sourceRevision": "2b62d003e2e1dbd390cf76bfc4489706bf8ad231",
+    "at": "2026-11-28T22:47:40.963Z",
+    "sourceRevision": "e56abb42a6bd3bd58b4f91bdfcbc34422a84b296",
     "captureArtifact": {
-      "name": "studio-frames-46196461744",
+      "name": "studio-frames-46197834473",
       "retentionDays": 1,
-      "runId": "46196461744"
+      "runId": "46197834473"
     },
     "result": "FAIL",
-    "frames": 15,
-    "changedFrames": 0,
+    "frames": 9,
+    "changedFrames": 9,
     "summary": {
-      "plannedSteps": 58,
-      "completedSteps": 46,
-      "plannedClicks": 0,
-      "successfulClicks": 0,
+      "plannedSteps": 1000,
+      "completedSteps": 36,
+      "plannedClicks": 12,
+      "successfulClicks": 3,
       "skippedOptionalClicks": 0,
-      "plannedFrames": 19,
-      "capturedFrames": 15,
+      "plannedFrames": 70,
+      "capturedFrames": 9,
       "abortedEarly": true
     },
-    "path": "runs/46196461744"
+    "path": "runs/46197834473"
   },
-  "lastDeepAt": "2026-11-28T22:30:18.152Z",
+  "lastDeepAt": "2026-11-28T22:47:40.963Z",
   "runs": [
+    {
+      "runId": "46197834473",
+      "kind": "deep",
+      "portBatch": null,
+      "at": "2026-11-28T22:47:40.963Z",
+      "sourceRevision": "e56abb42a6bd3bd58b4f91bdfcbc34422a84b296",
+      "captureArtifact": {
+        "name": "studio-frames-46197834473",
+        "retentionDays": 1,
+        "runId": "46197834473"
+      },
+      "result": "FAIL",
+      "frames": 9,
+      "changedFrames": 9,
+      "summary": {
+        "plannedSteps": 1000,
+        "completedSteps": 36,
+        "plannedClicks": 12,
+        "successfulClicks": 3,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 70,
+        "capturedFrames": 9,
+        "abortedEarly": true
+      },
+      "path": "runs/46197834473"
+    },
     {
       "runId": "46196461744",
       "kind": "studio",
@@ -262,32 +288,6 @@
         "abortedEarly": true
       },
       "path": "runs/46182056060"
-    },
-    {
-      "runId": "46180656230",
-      "kind": "deep",
-      "portBatch": null,
-      "at": "2026-11-28T19:32:31.293Z",
-      "sourceRevision": "a7153f83dc60cc31a1e9bee31d290d79081c6aac",
-      "captureArtifact": {
-        "name": "studio-frames-46180656230",
-        "retentionDays": 1,
-        "runId": "46180656230"
-      },
-      "result": "FAIL",
-      "frames": 9,
-      "changedFrames": 9,
-      "summary": {
-        "plannedSteps": 1000,
-        "completedSteps": 36,
-        "plannedClicks": 12,
-        "successfulClicks": 3,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 70,
-        "capturedFrames": 9,
-        "abortedEarly": true
-      },
-      "path": "runs/46180656230"
     }
   ]
 }
