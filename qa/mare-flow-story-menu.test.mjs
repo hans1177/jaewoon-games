@@ -115,3 +115,19 @@ test('위험 3단계 유적은 깊은 경계 구역과 실제 입구 탈출을 �
   assert.ok(route.indexOf('if not recorded then') < route.indexOf('found += 1'));
   assert.doesNotMatch(route, /grantCard\(|gainXp\(|finish\("clear"\)/);
 });
+
+test('미스터리 탐험은 기존 척후병 추적을 실제 이동과 격파에 연결하고 재개 단계는 보존한다', () => {
+  const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  for (const check of [/elseif type\(opts\.fieldStory\) == "table" and table\.find\(availableCards, opts\.fieldStory\.cardId\)/,
+    /FieldPursuitRoute", folder:GetAttribute\("FieldEscapeRoute"\) == true/,
+    /guardedTransit and folder:GetAttribute\("FieldPursuitPending"\)/,
+    /found < 2 and not isBoss and ac\.kind == "archer"/,
+    /not folder:GetAttribute\("FieldPursuitAssigned"\)/,
+    /model:SetAttribute\("FieldPursuitTarget", true\)/,
+    /found == 1 and e\.model:GetAttribute\("FieldPursuitTarget"\)/,
+    /folder:SetAttribute\("FieldPursuitPending", false\)/,
+    /local destination = folder:FindFirstChild\("Discovery2"\)/,
+    /desired = route\.Unit \* math\.min\(e\.ac\.def\.speed \* 0\.85/]) assert.match(field, check);
+  assert.ok(field.indexOf('if observedCardId and table.find(availableCards, observedCardId)') < field.indexOf('elseif type(opts.fieldStory) == "table"'));
+  assert.ok(field.indexOf('if guardedTransit and folder:GetAttribute("FieldPursuitPending")') < field.indexOf('opts.onCheckpoint(i, recordCard)'));
+});
