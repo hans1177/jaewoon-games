@@ -8753,8 +8753,8 @@ local function renderYard(page)
 		if candidate.id == H.shipPreviewId then previewShip = candidate; break end
 	end
 	if not previewShip then previewShip = yard.ships[1] end
+	if previewShip then H.shipPreviewId = previewShip.id end
 	if previewShip and not H.yardHallActive then
-		H.shipPreviewId = previewShip.id
 		add(function()
 			local f = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 164), Color3.fromRGB(229, 208, 169))
 			f.Name = "YardSelectedShipPreview"
@@ -8793,7 +8793,8 @@ local function renderYard(page)
 		maxCargo, maxSpeed, maxHull = math.max(maxCargo, s.capacityAfter or s.cargo), math.max(maxSpeed, s.speed), math.max(maxHull, s.hull)
 		maxCannons, maxCrew = math.max(maxCannons, s.cannons), math.max(maxCrew, s.crew)
 	end
-	for _, s in yard.ships do
+	-- 선택 함종만 비교 막대와 구매 조건을 펼친다. 나머지는 가벼운 목록으로 유지한다.
+	for _, s in (if previewShip then { previewShip } else {}) do
 		add(function()
 			local pay = math.max(0, s.netCost)
 			local refund = if s.netCost < 0 then " · 차액 환급 " .. H.commas(-s.netCost) else ""
@@ -8829,7 +8830,7 @@ local function renderYard(page)
 			local row = mkRow(content, string.format("[등급%d] %s%s", s.class, s.name, if s.id == H.shipPreviewId then " · 중앙 3D 선택" elseif s.owned then " · 현재 기함" elseif s.steam then " · 증기" else ""),
 				sub, {
 					{ text = if s.owned then "현재 배" elseif s.locked then "잠김" elseif not s.canCarry then "화물 초과" elseif s.netCost > view.player.coins then "코인 부족" else "교체\n" .. H.commas(pay),
-						color = if s.steam then COLORS.steam else COLORS.blue,
+						color = if s.steam then COLORS.steam else COLORS.gold,
 						enabled = yard.available and not s.owned and not s.locked and s.canCarry and s.netCost <= view.player.coins,
 						onClick = function() call("BuyShip", { shipId = s.id }) end },
 				}, if s.id == "galleon" and AssetIds["Naval/galleon-heritage"] then 236 else 210)
@@ -8909,14 +8910,40 @@ local function renderYard(page)
 				current.Parent = track
 			end
 			local function fitChart()
-				local narrow = row.AbsoluteSize.X < 450
-				chart.Position = UDim2.new(0, if narrow then 12 else 118, 1, if narrow then -161 else -112)
-				chart.Size = UDim2.new(1, if narrow then -24 else -232, 0, 100)
+				local textBox = row:FindFirstChild("RowText")
+				local left = if textBox and textBox:IsA("Frame") then textBox.Position.X.Offset else 8
+				-- mkRow의 버튼 전환 기준과 동일: 좁으면 하단 66px 버튼 영역을 비운다.
+				local narrow = row.AbsoluteSize.X < math.max(520, left + 120 + 240)
+				chart.Position = UDim2.new(0, if narrow then 12 else left, 1, if narrow then -178 else -112)
+				chart.Size = UDim2.new(1, if narrow then -24 else -left - 132, 0, 100)
 			end
 			row:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitChart)
 			task.defer(fitChart)
 			return row
 		end)
+	end
+	if #yard.ships > 1 then
+		add(function() return mkHeader(content, "다른 선박 선택") end)
+	end
+	for _, s in yard.ships do
+		if s ~= previewShip then
+			add(function()
+				local status = if s.owned then "현재 기함" elseif s.locked then tostring(s.locked)
+					elseif not s.canCarry then "화물 초과" elseif s.netCost > view.player.coins then "자금 부족"
+					else "실결제 " .. H.commas(math.max(0, s.netCost)) .. "코인"
+				local inYardHall = H.yardHallActive
+				local row = mkRow(content, s.name, string.format("등급 %d · %s", s.class, status), {{
+					text = "비교", color = COLORS.leather, onClick = function()
+						H.shipPreviewId = s.id
+						if inYardHall and tradeHallRefresh then tradeHallRefresh() else render() end
+					end,
+				}}, 82)
+				row.Name = "YardShipChoice_" .. tostring(s.id)
+				local si = SHIP_ICON[s.id]
+				if si then withIcon(row, si[1], si[2], si[3], 56) end
+				return row
+			end)
+		end
 	end
 end
 
