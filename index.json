@@ -2,15 +2,15 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "46147375357",
+    "runId": "46148147977",
     "kind": "deep",
     "portBatch": null,
-    "at": "2026-11-28T13:08:34.655Z",
-    "sourceRevision": "b157d5c101f060e36f8a4d0cadbbd782b650cb4d",
+    "at": "2026-11-28T13:17:41.570Z",
+    "sourceRevision": "c46b9d8c609ac977bdfaf472edb0bf6b7ffd348a",
     "captureArtifact": {
-      "name": "studio-frames-46147375357",
+      "name": "studio-frames-46148147977",
       "retentionDays": 1,
-      "runId": "46147375357"
+      "runId": "46148147977"
     },
     "result": "FAIL",
     "frames": 9,
@@ -25,10 +25,36 @@
       "capturedFrames": 9,
       "abortedEarly": true
     },
-    "path": "runs/46147375357"
+    "path": "runs/46148147977"
   },
-  "lastDeepAt": "2026-11-28T13:08:34.655Z",
+  "lastDeepAt": "2026-11-28T13:17:41.570Z",
   "runs": [
+    {
+      "runId": "46148147977",
+      "kind": "deep",
+      "portBatch": null,
+      "at": "2026-11-28T13:17:41.570Z",
+      "sourceRevision": "c46b9d8c609ac977bdfaf472edb0bf6b7ffd348a",
+      "captureArtifact": {
+        "name": "studio-frames-46148147977",
+        "retentionDays": 1,
+        "runId": "46148147977"
+      },
+      "result": "FAIL",
+      "frames": 9,
+      "changedFrames": 9,
+      "summary": {
+        "plannedSteps": 1000,
+        "completedSteps": 36,
+        "plannedClicks": 12,
+        "successfulClicks": 3,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 70,
+        "capturedFrames": 9,
+        "abortedEarly": true
+      },
+      "path": "runs/46148147977"
+    },
     {
       "runId": "46147375357",
       "kind": "deep",
@@ -132,32 +158,6 @@
         "abortedEarly": true
       },
       "path": "runs/46139298155"
-    },
-    {
-      "runId": "46138295401",
-      "kind": "deep",
-      "portBatch": null,
-      "at": "2026-11-28T11:13:02.044Z",
-      "sourceRevision": "25a2b8ca258c38bf389a8d79117ebf6a552be917",
-      "captureArtifact": {
-        "name": "studio-frames-46138295401",
-        "retentionDays": 1,
-        "runId": "46138295401"
-      },
-      "result": "FAIL",
-      "frames": 17,
-      "changedFrames": 17,
-      "summary": {
-        "plannedSteps": 1000,
-        "completedSteps": 75,
-        "plannedClicks": 12,
-        "successfulClicks": 5,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 70,
-        "capturedFrames": 17,
-        "abortedEarly": true
-      },
-      "path": "runs/46138295401"
     },
     {
       "runId": "46136513770",
