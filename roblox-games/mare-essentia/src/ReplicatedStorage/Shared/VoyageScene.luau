@@ -616,7 +616,7 @@ function VoyageScene.play(info)
 				local g = Instance.new("TextLabel")
 				g.BackgroundTransparency = 1
 				g.AnchorPoint = Vector2.new(0, 0.5)
-				g.Position = UDim2.new(0, -80, 0.5, 0)
+				g.Position = UDim2.new(0, 4, 0.5, 0)
 				g.Size = UDim2.fromOffset(76, 46)
 				g.Font = Enum.Font.GothamBlack
 				g.TextSize = 28
@@ -637,15 +637,21 @@ function VoyageScene.play(info)
 				guideHint.TextSize = 18
 				guideHint.TextWrapped = true
 				guideHint.TextColor3 = Color3.fromRGB(255, 244, 214)
-				guideHint.Text = "화살표 방향으로 조종\n금빛 고리 가운데 통과"
+				guideHint.Text = ""
 				guideHint.ZIndex = 9
 				guideHint.Parent = gui
-				local guidePadding = Instance.new("UIPadding")
-				guidePadding.PaddingLeft = UDim.new(0, 84)
-				guidePadding.PaddingRight = UDim.new(0, 8)
-				guidePadding.Parent = guideHint
+				local guideText = Instance.new("TextLabel")
+				guideText.BackgroundTransparency = 1
+				guideText.Position = UDim2.fromOffset(84, 0)
+				guideText.Size = UDim2.new(1, -92, 1, 0)
+				guideText.Font = Enum.Font.GothamMedium
+				guideText.TextSize = 18
+				guideText.TextWrapped = true
+				guideText.TextColor3 = guideHint.TextColor3
+				guideText.Text = "화살표 방향으로 조종\n금빛 고리 가운데 통과"
+				guideText.ZIndex = 9
+				guideText.Parent = guideHint
 				g.Parent = guideHint
-				g.ZIndex = 10
 				local guideCorner = Instance.new("UICorner")
 				guideCorner.Parent = guideHint
 				s_guide = { arrow = g, hint = guideHint }
@@ -687,7 +693,7 @@ function VoyageScene.play(info)
 		modeBadge = Instance.new("TextLabel")
 		modeBadge.Name = "SailModeBadge"
 		modeBadge.AnchorPoint = Vector2.new(0.5, 0)
-		modeBadge.Position = UDim2.new(0.5, 0, 1, -84)
+		modeBadge.Position = UDim2.new(0.5, 0, 1, if manual then -60 else -84)
 		modeBadge.Size = if manual then UDim2.new(0.45, 0, 0, 30) else UDim2.fromOffset(230, 30)
 		if manual then
 			local modeLimit = Instance.new("UISizeConstraint")
@@ -746,7 +752,7 @@ function VoyageScene.play(info)
 	local helmShoals, helmCurrents = {}, {}
 	local d0n = Vector3.new(1, 0, 0)
 	local helmMsg, windLabel, speedLabel, distLabel, trimFill, mapFrame, mapShip, mapDest, windArrow, autoBtn
-	local MAP = if camera.ViewportSize.Y < 420 or camera.ViewportSize.X < 420 then 80 else 150
+	local MAP = if camera.ViewportSize.Y < 360 then 64 elseif camera.ViewportSize.Y < 420 or camera.ViewportSize.X < 420 then 80 else 150
 	local function wrapAngle(a)
 		return (a + math.pi) % (math.pi * 2) - math.pi
 	end
@@ -822,8 +828,8 @@ function VoyageScene.play(info)
 		local base = Instance.new("Frame")
 		base.Name = "HelmStick"
 		base.AnchorPoint = Vector2.new(0, 1)
-		base.Position = UDim2.new(0, 26, 1, -70)
-		base.Size = if camera.ViewportSize.Y < 420 then UDim2.fromOffset(88, 88) else UDim2.fromOffset(150, 150)
+		base.Position = UDim2.new(0, 26, 1, if camera.ViewportSize.Y < 360 then -58 else -70)
+		base.Size = if camera.ViewportSize.Y < 360 then UDim2.fromOffset(64, 64) elseif camera.ViewportSize.Y < 420 then UDim2.fromOffset(88, 88) else UDim2.fromOffset(150, 150)
 		base.BackgroundColor3 = Color3.fromRGB(18, 38, 62)
 		base.BackgroundTransparency = 0.4
 		base.BorderSizePixel = 0
@@ -959,7 +965,7 @@ function VoyageScene.play(info)
 		-- 돛 막대 (오른쪽 가운데): 위로 올리면 돛을 펴고 아래로 내리면 접는다
 		local trimBack = Instance.new("Frame")
 		trimBack.AnchorPoint = Vector2.new(1, 1)
-		trimBack.Position = UDim2.new(1, -22, 1, -70)
+		trimBack.Position = UDim2.new(1, -22, 1, if camera.ViewportSize.Y < 360 then -60 else -70)
 		trimBack.Size = UDim2.fromOffset(16, if camera.ViewportSize.Y < 420 then 62 else 150)
 		trimBack.BackgroundColor3 = Color3.fromRGB(18, 38, 62)
 		trimBack.BackgroundTransparency = 0.35
@@ -974,7 +980,7 @@ function VoyageScene.play(info)
 		trimFill.BorderSizePixel = 0
 		trimFill.ZIndex = 9
 		trimFill.Parent = trimBack
-		local trimTag = mkLabel(UDim2.fromOffset(40, 16), UDim2.new(1, -14, 1, if camera.ViewportSize.Y < 420 then -148 else -238), "돛", Vector2.new(1, 0))
+		local trimTag = mkLabel(UDim2.fromOffset(40, 16), UDim2.new(1, -14, 1, if camera.ViewportSize.Y < 420 then -58 else -238), "돛", Vector2.new(1, 0))
 		trimTag.TextSize = 13
 		-- 자동 항해 전환 버튼
 		autoBtn = Instance.new("TextButton")
@@ -1779,7 +1785,7 @@ function VoyageScene.play(info)
 					local k = math.min(math.max(0, cx - 84) / math.max(1, math.abs(dx)), math.max(0, cy - 24) / math.max(1, math.abs(dy)))
 					-- 상단 안내 및 하단 조종 영역을 피하고 화살표 방향은 원래 투영값을 유지한다.
 					local minY = math.min(cy, 152)
-					local maxY = math.max(minY, vp.Y - 148)
+					local maxY = math.max(minY, vp.Y - 168)
 					edgeArrow.Position = UDim2.fromOffset(cx + dx * k, math.clamp(cy + dy * k, minY, maxY))
 					local arrow = if math.abs(dx) > math.abs(dy) then (if dx > 0 then "▶" else "◀") else (if dy > 0 then "▼" else "▲")
 					edgeArrow.Text = arrow .. " " .. tostring(info.toName or "목적지") .. string.format(" · %d일", leftDays)
