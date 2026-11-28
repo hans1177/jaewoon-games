@@ -1357,6 +1357,7 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 		for _, it in items do
 			if it.desc then cellH = math.max(cellH, 366)
 			elseif it.portrait then cellH = math.max(cellH, 342) end
+			if it.affinity ~= nil then cellH = math.max(cellH, 386) end
 		end
 	end
 	local grid = Instance.new("Frame")
@@ -1410,16 +1411,33 @@ function H.tileGrid(items, parent, cellW, cellH, quick)
 			local sb = mkLabel(tile, it.sub, 17, INK_SOFT, false)
 			sb.AutomaticSize = Enum.AutomaticSize.None
 			sb.Position = if quick then UDim2.fromOffset(82, 42) else UDim2.fromOffset(4, textY + 28)
-			sb.Size = if quick then UDim2.new(1, -90, 0, 54) else UDim2.new(1, -8, 0, 40)
+			sb.Size = if quick then UDim2.new(1, -90, 0, if it.affinity ~= nil then 44 else 54) else UDim2.new(1, -8, 0, 40)
 			sb.TextSize = if quick then 14 else 17
 			sb.TextWrapped = true
 			sb.TextXAlignment = Enum.TextXAlignment.Center
 			sb.TextTruncate = Enum.TextTruncate.AtEnd
 		end
+		if it.affinity ~= nil then
+			local track = Instance.new("Frame")
+			track.Name = "CompanionAffinityTrack"
+			track.BackgroundColor3 = Color3.fromRGB(177, 151, 111)
+			track.BorderSizePixel = 0
+			track.Position = if quick then UDim2.fromOffset(82, 92) else UDim2.fromOffset(12, textY + 70)
+			track.Size = if quick then UDim2.new(1, -94, 0, 8) else UDim2.new(1, -24, 0, 8)
+			track.Parent = tile
+			corner(track, 4)
+			local fill = Instance.new("Frame")
+			fill.Name = "CompanionAffinityFill"
+			fill.Size = UDim2.fromScale(math.clamp(it.affinity / 100, 0, 1), 1)
+			fill.BackgroundColor3 = Color3.fromRGB(77, 135, 91)
+			fill.BorderSizePixel = 0
+			fill.Parent = track
+			corner(fill, 4)
+		end
 		if it.desc then
 			local ds = mkLabel(tile, it.desc, 16, INK, false)
 			ds.AutomaticSize = Enum.AutomaticSize.None
-			ds.Position = UDim2.fromOffset(8, textY + 69)
+			ds.Position = UDim2.fromOffset(8, textY + (if it.affinity ~= nil then 85 else 69))
 			ds.Size = UDim2.new(1, -16, 0, 58)
 			ds.TextWrapped = true
 			ds.TextYAlignment = Enum.TextYAlignment.Top
@@ -6696,19 +6714,29 @@ function RENDERERS.recruit()
 		{ "배치 가능", tostring(math.max(0, (view.companions.max or 0) - joined)) .. "자리", tone = "key" },
 		{ "보유 코인", H.commas(view.player.coins), tone = "key" },
 	})
-	add(function() return mkHeader(content, string.format("주점 동료 · 영입 가능 %d명 (자리 %d칸)", open, view.companions.max or 0)) end)
+	local selected = nil
+	for _, c in list do if c.id == H.recruitDetailId then selected = c; break end end
+	if not selected then H.recruitDetailId = nil end
+	if selected then
+		add(function()
+			return mkButton(content, "동료 목록", COLORS.leather, UDim2.new(1, -6, 0, 44), function()
+				H.recruitDetailId = nil; render()
+			end, true)
+		end)
+	end
+	add(function() return mkHeader(content, if selected then "동료 상세" else "주점 동료") end)
 	if #list == 0 then
 		add(function() return mkLabel(content, "이 항구의 주점에는 영입할 동료가 없어요.", 14, COLORS.muted, true) end)
 	end
 	add(function()
 		local tiles = {}
-		for _, c in list do
+		for _, c in (if selected then { selected } else list) do
 			local sub = if c.joined then string.format("합류 중 · 호감도 %d", c.affinity)
 				else string.format("영입 %d코인 · 호감도 %d", c.fee, c.affinity)
 			local desc = if c.blocked and not c.joined then c.blocked else c.summary
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
-			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = desc, icon = "status" }
+			local tile: any = { title = string.format("[%s] %s", c.role, c.name), sub = sub, desc = if selected then desc else nil, icon = "status", affinity = c.affinity }
 			if portrait then
 				tile.portrait = { atlas = portrait.atlas, offset = portrait.offset }
 			elseif scholarId and SCHOLAR_SKETCH and AssetIds["Portraits/scholar_" .. scholarId] then
@@ -6716,7 +6744,10 @@ function RENDERERS.recruit()
 			elseif COMPANION_MODEL[c.id] then
 				tile.kind, tile.icon = "People", COMPANION_MODEL[c.id]
 			end
-			if c.joined then
+			if not selected then
+				tile.btn, tile.color = "상세", COLORS.leather
+				tile.onClick = function() H.recruitDetailId = c.id; render() end
+			elseif c.joined then
 				tile.btn, tile.color = "대화", COLORS.blue
 				tile.onClick = function() call("Talk", { companionId = c.id }) end
 				tile.btn2 = { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
@@ -6726,7 +6757,7 @@ function RENDERERS.recruit()
 			end
 			table.insert(tiles, tile)
 		end
-		return H.tileGrid(tiles, content, 190, 210)
+		return H.tileGrid(tiles, content, 190, 210, not selected)
 	end)
 end
 
@@ -6796,7 +6827,17 @@ function RENDERERS.crew()
 			return mkRow(content, st.name .. " · " .. seatText, st.summary, btns, 60)
 		end)
 	end
-	add(function() return mkHeader(content, "동료") end)
+	local selected = nil
+	for _, c in view.companions.list do if c.id == H.crewDetailId then selected = c; break end end
+	if not selected then H.crewDetailId = nil end
+	add(function() return mkHeader(content, if selected then "동료 상세" else "동료") end)
+	if selected then
+		add(function()
+			return mkButton(content, "동료 목록", COLORS.leather, UDim2.new(1, -6, 0, 44), function()
+				H.crewDetailId = nil; render()
+			end, true)
+		end)
+	end
 	if view.talk then
 		add(function()
 			-- 실제 동료 대화에 기존 등록 초상화를 연결한다. 호감도·대화·저장은 그대로 둔다.
@@ -6832,13 +6873,13 @@ function RENDERERS.crew()
 	end
 	add(function()
 		local tiles = {}
-		for _, c in view.companions.list do
+		for _, c in (if selected then { selected } else view.companions.list) do
 			local tier = ({ "낯선 사이", "믿는 사이", "오랜 벗" })[c.tier]
 			local tile: any = {
 				title = c.name .. (if c.joined then " (합류)" else ""),
 				sub = string.format("호감도 %d · %s", c.affinity, tier),
-				desc = string.format("%s · 어울리는 자리 %s%s", c.summary, c.bestSeat, if c.blocked and not c.joined then " · " .. c.blocked else ""),
-				icon = "status",
+				desc = if selected then string.format("%s · 어울리는 자리 %s%s", c.summary, c.bestSeat, if c.blocked and not c.joined then " · " .. c.blocked else "") else nil,
+				icon = "status", affinity = c.affinity,
 			}
 			local scholarId = string.match(c.id, "^c_(.+)$")
 			local portrait = COMPANION_PORTRAIT[c.id]
@@ -6849,7 +6890,10 @@ function RENDERERS.crew()
 			elseif COMPANION_MODEL[c.id] then
 				tile.kind, tile.icon = "People", COMPANION_MODEL[c.id]
 			end
-			if c.joined then
+			if not selected then
+				tile.btn, tile.color = "상세", COLORS.leather
+				tile.onClick = function() H.crewDetailId = c.id; render() end
+			elseif c.joined then
 				tile.btn, tile.color = "대화", COLORS.blue
 				tile.onClick = function() call("Talk", { companionId = c.id }) end
 				tile.btn2 = { text = "작별", color = COLORS.red, onClick = function() call("Dismiss", { companionId = c.id }) end }
@@ -6859,7 +6903,7 @@ function RENDERERS.crew()
 			end
 			table.insert(tiles, tile)
 		end
-		return H.tileGrid(tiles, content, 190, 210)
+		return H.tileGrid(tiles, content, 190, 210, not selected)
 	end)
 end
 
