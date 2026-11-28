@@ -144,10 +144,16 @@ function TF.rival(Ports, Regions, regionId: string, day: number)
 end
 
 -- 7. 희귀 화물
-function TF.rareLot(Ports, Regions, portId: string, day: number)
+function TF.rareLot(Ports, Regions, portId: string, day: number, state: any?)
 	local window = math.floor(day / TF.RARE_WINDOW)
 	local key = portId .. ":" .. window
-	if hash(key) % 100 >= TF.RARE_CHANCE then return nil end
+	local secret = hash(key) % 100 >= TF.RARE_CHANCE
+	if secret then
+		local h = state and state.haggle
+		local deal = h and h.portId == portId and h.deal
+		local permit = state and state.stats and state.stats.permits and state.stats.permits[portId] == true
+		if not permit or not deal or deal.mode ~= "secret" or deal.rareWindow ~= window then return nil end
+	end
 	local port = Ports.Ports[portId]
 	if not port then return nil end
 	local here = Regions.of(port).id
@@ -159,9 +165,35 @@ function TF.rareLot(Ports, Regions, portId: string, day: number)
 	table.sort(goods)
 	if #goods == 0 then return nil end
 	local goodId = goods[hash(key .. ":g") % #goods + 1]
+	local list = portList(Ports)
+	local originId = nil
+	if secret then
+		-- 기존 정기 입고는 변경하지 않는다. 비밀 입고만 같은 해역의 실제 산지와 해외 수요를 연결한다.
+		local origins, demand = {}, {}
+		for _, id in list do
+			local p = Ports.Ports[id]
+			if Regions.of(p).id == here then
+				if id ~= portId then
+					for _, g in p.produces or {} do
+						if not origins[g] then origins[g] = {} end
+						table.insert(origins[g], id)
+					end
+				end
+			else
+				for _, g in p.demands or {} do demand[g] = true end
+			end
+		end
+		local regional = {}
+		for _, g in goods do
+			if origins[g] and demand[g] then table.insert(regional, g) end
+		end
+		if #regional == 0 then return nil end
+		goodId = regional[hash(key .. ":regional") % #regional + 1]
+		local sources = origins[goodId]
+		originId = sources[hash(key .. ":origin") % #sources + 1]
+	end
 	-- 다른 해역에서 그 상품을 원하는 항구 최대 3곳
 	local targets = {}
-	local list = portList(Ports)
 	local start = hash(key .. ":t") % #list
 	for i = 0, #list - 1 do
 		local id = list[(start + i) % #list + 1]
@@ -173,7 +205,7 @@ function TF.rareLot(Ports, Regions, portId: string, day: number)
 	end
 	if #targets == 0 then return nil end
 	return {
-		key = key, goodId = goodId, qty = TF.RARE_QTY, targets = targets,
+		key = key, goodId = goodId, qty = TF.RARE_QTY, targets = targets, secret = secret, originId = originId,
 		unitPrice = math.floor(Ports.Goods[goodId].basePrice * TF.RARE_PRICE + 0.5),
 		untilDay = (window + 1) * TF.RARE_WINDOW - 1,
 	}
@@ -304,12 +336,13 @@ function TF.view(state, Ports, Regions)
 		local p, g = string.match(k, "^(.-)|(.+)$")
 		if p == portId and d >= day then table.insert(out.crazes, { good = goodName(g), left = d - day }) end
 	end
-	local lot = TF.rareLot(Ports, Regions, portId, day)
+	local lot = TF.rareLot(Ports, Regions, portId, day, state)
 	if lot then
 		local names = {}
 		for _, id in lot.targets do table.insert(names, portName(id)) end
 		out.lot = { goodId = lot.goodId, good = goodName(lot.goodId), qty = lot.qty, unitPrice = lot.unitPrice,
-			total = lot.unitPrice * lot.qty, targets = names, untilIn = lot.untilDay - day, bought = t.lots[lot.key] == true }
+			total = lot.unitPrice * lot.qty, targets = names, untilIn = lot.untilDay - day, bought = t.lots[lot.key] == true, secret = lot.secret,
+			origin = if lot.originId then portName(lot.originId) else nil }
 	end
 	for g, r in t.rare do
 		if r.qty > 0 and day <= r.untilDay then

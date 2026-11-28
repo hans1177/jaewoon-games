@@ -5341,6 +5341,104 @@ local function testHaggleGames()
 			end)())
 		end
 	end
+	for _, mode in { "negotiation", "auction", "appraisal", "weigh", "secret", "bulk", "contract", "inspection", "rush", "forecast", "barter", "antique" } do
+		local st: any = newState()
+		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
+		local coins = st.coins
+		local owned = st.cargo[goodId]
+		local started = act(st, "HaggleStart", { goodId = goodId, game = mode })
+		local pending = st.haggle.pending
+		local trade = pending.trade
+		check("교역 협상 시작: " .. mode, started and trade ~= nil and #trade.rounds >= 2)
+		local shown: any = S.View.build(st, ctx).haggle.pending.trade
+		check("정답·점수 비공개: " .. mode, shown.answer == nil and shown.rounds == nil and shown.correct == nil)
+		if mode == "appraisal" or mode == "inspection" then
+			check("상품별 검수 장부와 정상 견본 선택: " .. mode, type(shown.evidence) == "string" and #trade.rounds[1].options == 3 and trade.rounds[2].evidence ~= nil)
+		elseif mode == "weigh" then
+			local row = trade.rounds[2]
+			check("저울 보정 장부와 서로 다른 선택지", row.evidence ~= nil and row.options[1] ~= row.options[2] and row.options[1] ~= row.options[3] and row.options[2] ~= row.options[3])
+		end
+		check("잘못된 협상 차례 거절: " .. mode, not act(st, "HagglePlay", { goodId = goodId, round = 99, pick = 1 }))
+		for i, row in trade.rounds do
+			check("교역 단계 응답: " .. mode, act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }))
+			if i < #trade.rounds then
+				if trade.auction then
+					local nextRow = trade.rounds[i + 1]
+					check("경쟁 상인 응답 입찰과 가격 범위: " .. mode, nextRow.rivalPct <= row.rivalPct and nextRow.rivalPct >= 5 and nextRow.bids[nextRow.answer] < nextRow.rivalPct)
+				elseif mode == "negotiation" then
+					check("성향 협상 긍정 표정", trade.mood == "smile" and type(trade.feedback) == "string")
+				end
+			end
+		end
+		local expectedPct = if trade.auction then trade.rounds[#trade.rounds].bids[trade.rounds[#trade.rounds].answer] else 12
+		check("교역 협상 할인 및 거래 불변: " .. mode, math.abs(st.haggle.deal.mult - (1 - expectedPct / 100)) < 0.00001 and st.coins == coins and st.cargo[goodId] == owned)
+		check("교역 협상 재시도 차단: " .. mode, not act(st, "HaggleStart", { goodId = goodId, game = mode }))
+		if mode == "contract" then
+			st.coins = 10000
+			local amountBefore = st.cargo[goodId] or 0
+			check("실제 계약 구매", act(st, "Buy", { goodId = goodId, amount = 1, haggleConfirm = true }))
+			check("계약 결제 재전송 차단", not act(st, "Buy", { goodId = goodId, amount = 1, haggleConfirm = true }) and st.cargo[goodId] == amountBefore + 1)
+		end
+	end
+	-- 숨은 희귀 화물은 동일 주기/저장 키, 길드 허가와 서버 협상으로만 해금한다.
+	do
+		local st: any = newState("england")
+		local tf = D.TradeFun
+		local dayFound, offer = nil, nil
+		st.stats.permits = { [st.portId] = true }
+		for day = 0, 240, tf.RARE_WINDOW do
+			st.day = day
+			st.haggle = { portId = st.portId, tried = {}, deal = { mode = "secret", rareWindow = math.floor(day / tf.RARE_WINDOW) } }
+			local candidate = tf.rareLot(D.Ports, D.Regions, st.portId, day, st)
+			if candidate and candidate.secret then dayFound, offer = day, candidate; break end
+		end
+		check("숨은 희귀 화물 후보 존재", offer ~= nil)
+		if offer then
+			st.haggle = nil
+			st.coins = 10000000
+			st.stats.permits[st.portId] = nil
+			local goodId = "wool"
+			check("비밀 협상 없는 숨은 화물 거절", not act(st, "BuyRareLot", {}))
+			st.stats.permits[st.portId] = true
+			act(st, "HaggleStart", { goodId = goodId, game = "secret" })
+			local trade = st.haggle.pending.trade
+			for i, row in trade.rounds do act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }) end
+			local shown = S.View.build(st, ctx).tradeFun.lot
+			check("완벽 비밀 협상 희귀 화물 표시", shown and shown.secret and shown.goodId == offer.goodId)
+			local origin = D.Ports.Ports[offer.originId]
+			check("비밀 화물 실제 지역 산지 연결", origin ~= nil and offer.originId ~= st.portId and D.Regions.of(origin).id == D.Regions.of(D.Ports.Ports[st.portId]).id and table.find(origin.produces, offer.goodId) ~= nil and shown.origin == origin.name)
+			for _, target in offer.targets do
+				local destination = D.Ports.Ports[target]
+				check("비밀 화물 해외 수요 연결", D.Regions.of(destination).id ~= D.Regions.of(origin).id and table.find(destination.demands, offer.goodId) ~= nil)
+			end
+			st.stats.permits[st.portId] = nil
+			check("길드 허가 없는 숨은 화물 거절", not act(st, "BuyRareLot", {}))
+			st.stats.permits[st.portId] = true
+			local before = st.cargo[offer.goodId] or 0
+			check("숨은 희귀 화물 실제 구매", act(st, "BuyRareLot", {}) and st.cargo[offer.goodId] == before + offer.qty)
+			check("숨은 희귀 화물 중복 구매 차단", not act(st, "BuyRareLot", {}))
+		end
+	end
+	-- 실제 물물교환은 서버에서 기존 판매/구매를 한 요청으로 확정하고 미검증 제안을 거절한다.
+	do
+		local st: any = newState()
+		st.coins = 10000
+		st.cargo.coal, st.basis.coal = 2, 20
+		local goodId = "wool"
+		check("계약 없는 교환 거절", not act(st, "Buy", { goodId = goodId, amount = 1, exchange = true }))
+		check("계약 없는 교환 화물 보존", st.cargo.coal == 2)
+		act(st, "HaggleStart", { goodId = goodId, game = "barter" })
+		local trade = st.haggle.pending.trade
+		for i, row in trade.rounds do act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }) end
+		local offer = st.haggle.deal.exchange
+		if offer then
+			local before = st.cargo[offer.goodId]
+			local bought = st.cargo[goodId] or 0
+			check("실제 물물교환 계약 확정", act(st, "Buy", { goodId = goodId, amount = 1, exchange = true }))
+			check("실물 교환 양쪽 화물 변경", st.cargo[offer.goodId] == before - offer.amount and st.cargo[goodId] == bought + 1)
+			check("실물 교환 재정산 차단", not act(st, "Buy", { goodId = goodId, amount = 1, exchange = true }))
+		end
+	end
 	local st = newState()
 	local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
 	act(st, "HaggleStart", { goodId = goodId, game = "face" })

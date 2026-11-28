@@ -149,10 +149,17 @@ return function(D, S)
 			local intel = S.Harbor.intel(state)
 			local merchant = state.specialty == "merchant" or state.subSpecialty == "merchant"
 			view.haggle = {
+				region = D.Regions.of(port).id,
 				auto = intel >= 1 or merchant,
 				source = if merchant then "상인 전문" elseif intel >= 1 then "승선 동료 장사 감각" else "관련 능력 없음",
 				tried = if h and h.portId == port.id then h.tried or {} else {},
-				deal = h and h.portId == port.id and h.deal and { goodId = h.deal.goodId, pct = math.floor((1 - h.deal.mult) * 100 + 0.5) } or nil,
+				deal = h and h.portId == port.id and h.deal and { goodId = h.deal.goodId, pct = math.floor((1 - h.deal.mult) * 100 + 0.5), mode = h.deal.mode,
+					exchange = (function()
+						local exchange = h.deal.exchange
+						if not exchange or (state.cargo[exchange.goodId] or 0) < exchange.amount then return nil end
+						return { name = D.Ports.Goods[exchange.goodId].name, amount = exchange.amount,
+							value = S.Trade.saleQuote(state, exchange.goodId, exchange.amount, ctx).revenue }
+					end)() } or nil,
 				-- [흥정 미니게임] 진행 중인 문제(정답은 보내지 않음: 동전 진짜 번호·퀴즈 답·저울 판정은 서버만)
 				pending = (function()
 					local pend = h and h.portId == port.id and h.pending
@@ -166,7 +173,14 @@ return function(D, S)
 							for i = 1, pend.count do l[i] = if i == pend.real then "real" else tells[(i + #pend.goodId) % 3 + 1] end
 							return l
 						end)(),
-						question = pend.quiz and pend.quiz.question, options = pend.quiz and pend.quiz.options }
+						question = pend.quiz and pend.quiz.question, options = pend.quiz and pend.quiz.options,
+						trade = if pend.trade and pend.trade.rounds[pend.trade.round] then {
+							title = pend.trade.title, persona = pend.trade.persona, support = pend.trade.support, auction = pend.trade.auction, deadline = pend.trade.deadline, feedback = pend.trade.feedback, mood = pend.trade.mood,
+							round = pend.trade.round, total = #pend.trade.rounds,
+							question = pend.trade.rounds[pend.trade.round].question,
+							evidence = pend.trade.rounds[pend.trade.round].evidence,
+							options = pend.trade.rounds[pend.trade.round].options,
+						} else nil }
 				end)(),
 			}
 		end

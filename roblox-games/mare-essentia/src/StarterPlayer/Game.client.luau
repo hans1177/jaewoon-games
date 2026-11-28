@@ -6377,6 +6377,7 @@ function RENDERERS.harbor()
 				local lot = tf.lot
 				local sub = string.format("%d개 · 개당 %d코인 (총 %d) · %d일 남음\n%s 중 한 곳에 팔면 2.2배, 다른 곳은 손해",
 					lot.qty, lot.unitPrice, lot.total, lot.untilIn, table.concat(lot.targets, "·"))
+				if lot.origin then sub = "비밀 화물 · 산지 " .. lot.origin .. "\n" .. sub end
 				local buttons = {}
 				if not lot.bought then
 					table.insert(buttons, { text = "통째로 사기", color = COLORS.gold, onClick = function() call("BuyRareLot", {}) end })
@@ -8022,7 +8023,7 @@ local function openTradeHall()
 			alert.AutomaticSize = Enum.AutomaticSize.None
 			alert.TextWrapped = true
 			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
-			local hg = mkButton(desk, if sel.lock then "잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "흥정 게임", COLORS.grey, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name) end, not tried and not dealHere and H.openHaggle ~= nil)
+			local hg = mkButton(desk, if sel.lock then "잠김" elseif dealHere then tostring(bargain.deal.pct or 0) .. "% 할인" elseif tried then "흥정 완료" else "흥정 게임", COLORS.grey, UDim2.new(1/3, -8, 0, if shortScreen then 52 else 60), function() H.openHaggle(sel.id, sel.name, qty) end, not tried and not dealHere and H.openHaggle ~= nil)
 			hg.Name = "HaggleGameButton"
 			hg.Position = UDim2.new(1/3, 4, 0, if shortScreen then 84 else 106)
 			hg.TextSize = if narrow then 14 else 16
@@ -12608,7 +12609,9 @@ do
 			say.TextColor3 = INK
 			say.Parent = holder
 		end
-		local sheet = art("ui_haggle_merchant_sheet")
+		local region = view and view.haggle and view.haggle.region
+		local sheet = if region then art("ui_haggle_merchant_" .. region .. "_sheet") else nil
+		sheet = sheet or art("ui_haggle_merchant_sheet")
 		holder.Say.Text = FACE_TEXT[mood] or ""
 		local stageWidth = parent.AbsoluteSize.X
 		holder.Say.Size = UDim2.fromOffset(math.min(300, if stageWidth > 0 then math.max(100, stageWidth - 8) else 260), 32)
@@ -12635,8 +12638,12 @@ do
 				end)
 			end
 		else
-			holder.Image = ""
-			holder.Say.Position = UDim2.new(0.5, 0, 0.5, -13)
+			-- 지역 전용 시트가 등록되기 전에는 유럽의 기존 승인 상인 초상만 사용한다.
+			local portrait = if region == "europe" then AssetIds["Portraits/merchant"] else nil
+			holder.Image = if portrait then "rbxassetid://" .. tostring(portrait) else ""
+			holder.ImageRectSize = Vector2.zero
+			holder.ImageRectOffset = Vector2.zero
+			holder.Say.Position = if portrait then UDim2.new(0.5, 0, 1, 2) else UDim2.new(0.5, 0, 0.5, -13)
 		end
 		-- 표정이 바뀔 때 살짝 들썩
 		if not game:GetService("GuiService").ReducedMotionEnabled then
@@ -12646,7 +12653,7 @@ do
 		end
 	end
 
-	function H.openHaggle(goodId, goodName)
+	function H.openHaggle(goodId, goodName, quantity)
 		local pg = player:FindFirstChildOfClass("PlayerGui")
 		if pg and pg:FindFirstChild("HaggleGame") then return end
 		if H.haggleOpening then return end
@@ -12708,6 +12715,7 @@ do
 		stage.BackgroundTransparency = 1
 		stage.Parent = scroll
 		local finished, selecting = false, false
+		local renderTradeRound
 		local function finish(payload)
 			if finished or not g.Parent then return end
 			finished = true
@@ -12715,9 +12723,123 @@ do
 			local res = H.call("HagglePlay", payload)
 			if not g.Parent then return end
 			local ok = res and res.ok ~= false
+			local nextPending = view and view.haggle and view.haggle.pending
+			if ok and renderTradeRound and nextPending and nextPending.goodId == goodId and nextPending.trade then
+				finished, selecting = false, false
+				renderTradeRound(nextPending.trade)
+				return
+			end
 			local deal = view and view.haggle and view.haggle.deal
 			local pct = if ok and deal and deal.goodId == goodId then tonumber(deal.pct) else nil
 			if ok then Sfx.play("sfx_card_coin", 0.5) end -- 실패 음향은 기존 H.call에서 재생
+			if ok and pct and pend.trade then
+				-- [실제 거래] 협상과 거래 확정을 분리한다. 기존 Buy/BuyRareLot에서 서버가 가격·재고를 재검증한다.
+				stage:ClearAllChildren()
+				stage.Size = UDim2.new(1, -6, 0, 420)
+				scroll.CanvasSize = UDim2.fromOffset(0, 420)
+				scroll.CanvasPosition = Vector2.zero
+				local amount = math.max(1, math.min(20, math.floor(tonumber(quantity) or 1)))
+				local total
+				for _, item in view.goods or {} do
+					if item.id == goodId then total = item.buyTotals and item.buyTotals[amount]; break end
+				end
+				local mood = Instance.new("Frame")
+				mood.Size = UDim2.new(1, 0, 0, 184)
+				mood.BackgroundTransparency = 1
+				mood.Parent = stage
+				merchantFace(mood, "smile")
+				local paper = Instance.new("ImageLabel")
+				paper.Name = "TradeContractPaper"
+				paper.Position = UDim2.fromOffset(4, 184)
+				paper.Size = UDim2.new(1, -8, 0, 62)
+				paper.BackgroundColor3 = PAPER
+				paper.BorderSizePixel = 0
+				paper.Image = art("ui_haggle_contract") or art("ui_parchment") or ""
+				paper.ScaleType = Enum.ScaleType.Stretch
+				paper.Parent = stage
+				corner(paper, 6)
+				local receipt = mkLabel(stage, string.format("거래 조건 합의 · %d%% 할인\n%s %d개 · %s", pct, tostring(goodName), amount, if total then tostring(total) .. "코인" else "서버 재견적"), 16, INK, true)
+				receipt.Position = UDim2.fromOffset(4, 188)
+				receipt.Size = UDim2.new(1, -8, 0, 56)
+				receipt.AutomaticSize = Enum.AutomaticSize.None
+				receipt.TextWrapped = true
+				local settling = false
+				local function confirm(action, args)
+					if settling or not g.Parent then return end
+					settling = true
+					local result = H.call(action, args)
+					if not g.Parent then return end
+					if result and result.ok then
+						Sfx.play("sfx_card_coin", 0.55)
+						stage:ClearAllChildren()
+						scroll.CanvasPosition = Vector2.zero
+						local document = Instance.new("ImageLabel")
+						document.Name = "TradeContractDocument"
+						document.Position = UDim2.fromOffset(4, 4)
+						document.Size = UDim2.new(1, -8, 0, 246)
+						document.BackgroundColor3 = PAPER
+						document.BorderSizePixel = 0
+						document.Image = art("ui_haggle_contract") or art("ui_parchment") or ""
+						document.Parent = stage
+						corner(document, 6)
+						local sealArt = art("ui_haggle_contract_seal")
+						local seal = mkLabel(stage, "계약 체결 완료", 24, INK, true)
+						seal.Name = "TradeContractSeal"
+						seal.Size = UDim2.new(1, 0, 0, 90)
+						seal.Position = UDim2.fromOffset(0, if sealArt then 118 else 24)
+						seal.AutomaticSize = Enum.AutomaticSize.None
+						seal.TextXAlignment = Enum.TextXAlignment.Center
+						local stamp = nil
+						if sealArt then
+							stamp = Instance.new("ImageLabel")
+							stamp.Name = "TradeContractWaxSeal"
+							stamp.AnchorPoint = Vector2.new(0.5, 0.5)
+							stamp.Position = UDim2.new(0.5, 0, 0, 82)
+							stamp.Size = UDim2.fromOffset(116, 116)
+							stamp.BackgroundTransparency = 1
+							stamp.Image = sealArt
+							stamp.ScaleType = Enum.ScaleType.Fit
+							stamp.Parent = stage
+						end
+						if not reduced then
+							local s = Instance.new("UIScale"); s.Scale = 1.3; s.Parent = stamp or seal
+							TS:Create(s, TweenInfo.new(0.24, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+						end
+						local detail = mkLabel(stage, tostring(result.message or "거래 완료"), 14, INK, false)
+						detail.Position = UDim2.fromOffset(8, 250)
+						detail.Size = UDim2.new(1, -16, 0, 100)
+						detail.AutomaticSize = Enum.AutomaticSize.None
+						detail.TextWrapped = true
+						local done = mkButton(stage, "확인", COLORS.gold, UDim2.new(1, -8, 0, 48), function() g:Destroy() end, true)
+						done.Position = UDim2.fromOffset(4, 358)
+						skip.Text = "닫기"
+					else
+						settling = result == nil -- 결과가 불명확하면 동일 창에서 재결제하지 않는다.
+						receipt.Text = tostring(result and result.message or "거래 결과를 확인하지 못했어. 거래 화면에서 다시 확인해.")
+					end
+				end
+				local buy = mkButton(stage, "계약 확정 · 실제 구매", COLORS.gold, UDim2.new(1, -8, 0, 48), function()
+					confirm("Buy", { goodId = goodId, amount = amount, haggleConfirm = true })
+				end, true)
+				buy.Position = UDim2.fromOffset(4, 250)
+				if deal.exchange then
+					local ex = deal.exchange
+					local exchange = mkButton(stage, string.format("%s %d개 교환 · %d코인 공제", ex.name, ex.amount, ex.value), COLORS.green, UDim2.new(1, -8, 0, 48), function()
+						confirm("Buy", { goodId = goodId, amount = amount, exchange = true, haggleConfirm = true })
+					end, true)
+					exchange.Position = UDim2.fromOffset(4, 306)
+					exchange.TextWrapped = true
+				elseif deal.mode == "secret" and view.tradeFun and view.tradeFun.lot and not view.tradeFun.lot.bought then
+					local lot = view.tradeFun.lot
+					local rare = mkButton(stage, string.format("%s %s %d개 · %d코인%s", if lot.secret then "비밀 해금" else "희귀", lot.good, lot.qty, lot.total, if lot.origin then " · " .. lot.origin else ""), COLORS.green, UDim2.new(1, -8, 0, 48), function()
+						confirm("BuyRareLot", { haggleConfirm = true, contractGoodId = goodId, expectedGoodId = lot.goodId, expectedTotal = lot.total })
+					end, true)
+					rare.Position = UDim2.fromOffset(4, 306)
+					rare.TextWrapped = true
+				end
+				skip.Text = "나중에 구매"
+				return
+			end
 			scroll.Visible = false
 			local banner = mkLabel(box, if not res then "결과 확인 불가" elseif ok then "흥정 성공!" else "정가대로…", 26, Color3.fromRGB(255, 239, 202), true)
 			banner.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -12755,7 +12877,95 @@ do
 		hint.AutomaticSize = Enum.AutomaticSize.None
 		hint.TextWrapped = true
 
-		if pend.game == "scale" then
+		if pend.trade then
+			-- [교역 협상] 기존 화면·서버 요청·상품 원본을 재사용한다. 정답/할인은 서버가 정한다.
+			local tradePanel = Instance.new("Frame")
+			tradePanel.Name = "TradeNegotiationRounds"
+			tradePanel.Size = UDim2.new(1, 0, 0, 530)
+			tradePanel.BackgroundTransparency = 1
+			tradePanel.Parent = stage
+			stage.Size = UDim2.new(1, -6, 0, 590)
+			scroll.CanvasSize = UDim2.fromOffset(0, 590)
+			hint.Text = "협상 연습 · 실제 구매는 거래 화면에서 확정"
+			renderTradeRound = function(trade)
+				tradePanel:ClearAllChildren()
+				title.Text = trade.title .. " · " .. tostring(goodName or "")
+				local head = mkLabel(tradePanel, string.format("%s · %d/%d", trade.persona, trade.round, trade.total), 15, INK, true)
+				head.Position = UDim2.fromOffset(0, 0)
+				head.Size = UDim2.new(1, 0, 0, 24)
+				head.AutomaticSize = Enum.AutomaticSize.None
+				local gi = GOOD_ICON[goodId]
+				local artId = AssetIds["Goods/" .. goodId]
+				local top = 30
+				if trade.auction or pend.game == "negotiation" or pend.game == "secret" then
+					local portrait = Instance.new("Frame")
+					portrait.Position = UDim2.fromOffset(0, 26)
+					portrait.Size = UDim2.new(1, 0, 0, 184)
+					portrait.BackgroundTransparency = 1
+					portrait.Parent = tradePanel
+					merchantFace(portrait, trade.mood or (if trade.feedback == "현재 최고 입찰" then "smile" elseif trade.feedback then "frown" else "think"))
+					top = 210
+				elseif not RESTRICTED_CARGO_ICON[goodId] and (gi or artId) then
+					local specimen = if gi then modelIcon(tradePanel, gi[1], gi[2], nil, 144, goodName, gi[4]) else modelIcon(tradePanel, "Goods", goodId, nil, 144, goodName)
+					specimen.Name = "TradeNegotiationSpecimen"
+					specimen.Position = UDim2.new(0.5, -72, 0, 26)
+					top = 174
+				end
+				if trade.evidence then
+					local record = mkLabel(tradePanel, trade.evidence, 14, INK, false)
+					record.Name = "TradeInspectionLedger"
+					record.Position = UDim2.fromOffset(4, top)
+					record.Size = UDim2.new(1, -8, 0, 100)
+					record.AutomaticSize = Enum.AutomaticSize.None
+					record.TextWrapped = true
+					record.BackgroundColor3 = PAPER
+					record.BackgroundTransparency = 0.05
+					corner(record, 6)
+					top += 106
+				end
+				local question = mkLabel(tradePanel, trade.question, 16, INK, true)
+				question.Position = UDim2.fromOffset(0, top)
+				question.Size = UDim2.new(1, 0, 0, 68)
+				question.AutomaticSize = Enum.AutomaticSize.None
+				question.TextWrapped = true
+				for i, option in trade.options do
+					local button = mkButton(tradePanel, option, COLORS.blue, UDim2.new(1, -8, 0, 48), function()
+						if not finished and not selecting then
+							selecting = true
+							finish({ pick = i, round = trade.round })
+						end
+					end, true)
+					button.Position = UDim2.fromOffset(4, top + 72 + (i - 1) * 52)
+					button.TextWrapped = true
+					button.TextSize = 15
+				end
+				local requiredHeight = math.max(590, top + 72 + #trade.options * 52 + 90)
+				tradePanel.Size = UDim2.new(1, 0, 0, requiredHeight - 60)
+				stage.Size = UDim2.new(1, -6, 0, requiredHeight)
+				scroll.CanvasSize = UDim2.fromOffset(0, requiredHeight)
+				hint.Text = (if trade.feedback and not trade.auction then trade.feedback .. "\n" else "") .. (trade.support or (if trade.auction then "경쟁 상인보다 높은 가격으로 입찰해. 마지막 입찰에 성공하면 구매 조건 확정." else "협상 완료 후 실제 계약을 선택해."))
+				if trade.auction and trade.deadline then
+					local clock = mkLabel(tradePanel, "", 14, INK, true)
+					clock.Position = UDim2.fromOffset(4, top + 68 + #trade.options * 52)
+					clock.Size = UDim2.new(1, -8, 0, 32)
+					clock.AutomaticSize = Enum.AutomaticSize.None
+					task.spawn(function()
+						while clock.Parent and g.Parent and not finished and not selecting do
+							local remaining = math.max(0, math.ceil(trade.deadline - workspace:GetServerTimeNow()))
+							clock.Text = string.format("%s · %d초 남음", trade.feedback or "입찰 대기", remaining)
+							if remaining <= 0 then
+								selecting = true
+								finish({ pick = #trade.options, round = trade.round })
+								break
+							end
+							task.wait(0.25)
+						end
+					end)
+				end
+				scroll.CanvasPosition = Vector2.zero
+			end
+			renderTradeRound(pend.trade)
+		elseif pend.game == "scale" then
 			-- 1) 저울 멈추기: 바늘이 왕복, 금색 구간에서 탭
 			hint.Text = "바늘이 금색 칸에 올 때 '지금!'을 눌러. 가운데일수록 많이 깎여."
 			local track = Instance.new("ImageLabel")

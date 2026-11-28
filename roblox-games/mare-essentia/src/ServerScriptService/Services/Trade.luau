@@ -103,6 +103,62 @@ return function(D, S)
 			text = string.format("특산품 · 우호도 %d/%d 또는 투자 %d단계 또는 길드 허가증", rep, SPECIAL_REP, SPECIAL_LEVEL) }
 	end
 
+	-- [판매 견적] 일반 판매와 물물교환이 동일한 시세·관세·상회/희귀 보너스를 사용한다.
+	local function saleQuote(state, goodId, amount, ctx)
+		local rate = sellRateFor(state)
+		local mult = ctx.market:get(state.portId, goodId)
+		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId) * (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1))
+		local revenue = 0
+		for _ = 1, amount do
+			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
+			mult = T.nextStockMult(mult, 1, false)
+		end
+		local TF = D.TradeFun
+		local tariff = math.floor(revenue * tariffRate(state) * (if TF then TF.tariffMult(state) else 1))
+		revenue -= tariff
+		-- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물 보너스
+		local fun = if TF then TF.sellBonus(state, D.Ports, D.Regions, state.portId, goodId, amount, revenue) else nil
+		if fun then revenue = math.max(0, revenue + fun.bonus) end
+		return { revenue = revenue, mult = mult, tariff = tariff, fun = fun, lim = limits(state, goodId) }
+	end
+
+	-- [판매 확정] 양쪽 조건을 먼저 확인한 물물교환에서도 기존 판매 정산만 사용한다.
+	local function settleSale(state, goodId, amount, quote, ctx)
+		local revenue, mult, tariff, fun, lim = quote.revenue, quote.mult, quote.tariff, quote.fun, quote.lim
+		local TF = D.TradeFun
+		local profit = revenue - (state.basis[goodId] or 0) * amount
+		state.coins += revenue
+		S.State.removeCargo(state, goodId, amount)
+		ctx.market:set(state.portId, goodId, mult)
+		if lim then S.Econ.give(state, state.portId, goodId, amount) end
+
+		local msgs = { string.format("%s %d개 판매 (+%d)%s", D.Ports.Goods[goodId].name, amount, revenue, if tariff > 0 then string.format(" · 관세 -%d", tariff) else "") }
+		if fun then
+			for _, line in fun.lines do table.insert(msgs, line) end
+			local up = TF.commitSell(state, fun, profit, goodId, amount)
+			if up then table.insert(msgs, up) end
+		end
+		do
+			local country = D.Ports.Ports[state.portId].country
+			local gain = math.min(3, math.floor(revenue / 150))
+			if gain > 0 then
+				local before = state.rep[country] or 0
+				state.rep[country] = math.min(100, before + gain)
+				if math.floor(state.rep[country] / 25) > math.floor(before / 25) then
+					table.insert(msgs, "이 나라와의 우호도가 올랐다 (관세 우대 확대)")
+				end
+			end
+		end
+		state.harborTrade = state.harborTrade or {}
+		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + (tonumber(amount) or 0)
+		noteBook(state, ctx, goodId)
+		if profit > 0 then
+			S.State.gainXp(state, "trade", math.floor(profit / 8) + 1, msgs)
+			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)
+		end
+		return true, table.concat(msgs, "\n")
+	end
+
 	function handlers.Buy(state, p, ctx)
 		local goodId, amount = p.goodId, parseAmount(p.amount, state)
 		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] or not amount then
@@ -120,7 +176,26 @@ return function(D, S)
 		if lim and amount > lim.supply then
 			return false, if lim.supply <= 0 then "이 항구에 팔 물건이 없어요. 생산될 때까지 기다려 보세요" else string.format("이 항구 재고는 %d개뿐이에요", lim.supply)
 		end
-		if amount > S.State.cargoCapacity(state) - S.State.cargoUsed(state) then
+		-- [실물 교환] 협상으로 발급된 서버 제안만 허용한다. 판매·구매 양쪽을 먼저 검사한다.
+		local exchange, exchangeQuote = nil, nil
+		if p.haggleConfirm == true then
+			local h = state.haggle
+			if not h or h.portId ~= state.portId or not h.deal or h.deal.goodId ~= goodId or not h.deal.mode then
+				return false, "이미 처리됐거나 계약을 찾을 수 없어요"
+			end
+		end
+		if p.exchange == true then
+			local h = state.haggle
+			local deal = h and h.portId == state.portId and h.deal
+			exchange = deal and deal.goodId == goodId and deal.exchange
+			if not exchange or exchange.goodId == goodId or not D.Ports.Goods[exchange.goodId]
+				or (state.cargo[exchange.goodId] or 0) < exchange.amount then return false, "교환 화물이 없거나 계약이 끝났어요" end
+			local sellLimit = limits(state, exchange.goodId)
+			if sellLimit and exchange.amount > sellLimit.absorb then return false, "교환 화물의 매입 여유가 부족해요" end
+			exchangeQuote = saleQuote(state, exchange.goodId, exchange.amount, ctx)
+		end
+		local available = state.coins + (if exchangeQuote then exchangeQuote.revenue else 0)
+		if amount > S.State.cargoCapacity(state) - S.State.cargoUsed(state) + (if exchange then exchange.amount else 0) then
 			return false, "화물칸이 부족해요"
 		end
 		local mult = ctx.market:get(state.portId, goodId)
@@ -135,7 +210,7 @@ return function(D, S)
 		local h = state.haggle
 		local intel = S.Harbor.intel(state)
 		local skilled = intel >= 1 or state.specialty == "merchant" or state.subSpecialty == "merchant"
-		if total > state.coins and (not skilled or math.floor(total * 0.92) > state.coins)
+		if total > available and (not skilled or math.floor(total * 0.92) > available)
 			and not (h and h.portId == state.portId and h.deal and h.deal.goodId == goodId) then
 			return false, "코인이 부족해요"
 		end
@@ -159,8 +234,13 @@ return function(D, S)
 				effect = " · 자동 흥정 실패 (정가)"
 			end
 		end
-		if total > state.coins then
+		if total > available then
 			return false, "코인이 부족해요" .. effect
+		end
+		-- 모든 실패 조건을 지난 뒤에만 기존 판매와 구매를 같은 서버 요청에서 확정한다.
+		if exchangeQuote then
+			local _, receipt = settleSale(state, exchange.goodId, exchange.amount, exchangeQuote, ctx)
+			effect = effect .. "\n물물교환 · " .. receipt
 		end
 		if autoAttempt then
 			if not h or h.portId ~= state.portId then
@@ -187,7 +267,134 @@ return function(D, S)
 	-- [흥정 미니게임 · 2026-11-28 오너 지시] 강제 아님. 물건마다 항구에서 한 번(자동 흥정과 같은 기회).
 	-- 저울 멈추기 · 상인 표정 읽기 · 진짜 동전 고르기 · 산지 퀴즈 중 하나. 판정은 서버가 한다.
 	-- 결과 할인 4~12%(완벽 12%), 실패하면 정가(손해 없음). 동료 장사 감각·우호도가 높으면 쉬워진다.
-	local HAGGLE_GAMES = { "scale", "face", "coin", "quiz" }
+	local HAGGLE_GAMES = { "scale", "face", "coin", "quiz", "negotiation", "auction", "appraisal", "weigh", "secret", "bulk", "contract", "inspection", "rush", "forecast", "barter", "antique" }
+	-- [교역 협상] 실제 거래는 Buy 한 곳에서만 수행한다. 아래는 현재 상품/시세 기반의 가상 제안이며 정답/점수는 서버에만 둔다.
+	local function tradeRounds(state, goodId, game, ctx)
+		local port = D.Ports.Ports[state.portId]
+		local good = D.Ports.Goods[goodId]
+		local rng = ctx.rng
+		local mult = ctx.market:get(state.portId, goodId)
+		local ev = ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId)
+			* (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1)
+		local price = T.getPrice(state.portId, goodId, mult, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
+		local rounds, title = {}, ""
+		local auction = game == "auction" or game == "antique"
+		local function add(question, correct, wrong1, wrong2, evidence)
+			local options = { correct, wrong1, wrong2 }
+			local answer = math.floor(rng() * 3) + 1
+			options[1], options[answer] = options[answer], options[1]
+			table.insert(rounds, { question = question, options = options, answer = answer, evidence = evidence })
+		end
+		local function money(n) return tostring(n) .. "코인" end
+		local role = if table.find(port.produces, goodId) then "산지" elseif table.find(port.demands, goodId) then "수요 항구" else "일반 항구"
+		local persona = ({ "욕심 많은 상인", "신중한 상인", "자존심 강한 상인", "호의적인 상인", "교활한 상인" })[math.floor(rng() * 5) + 1]
+		local n = 2 + math.floor(rng() * 3)
+		local fee = math.max(2, math.floor(price * 0.1))
+		if game == "negotiation" then
+			title = "심리 흥정"
+			local profile = ({
+				["욕심 많은 상인"] = { "창고 물량을 한꺼번에 넘기고 싶어 한다.", "수량별 견적 요청", "품질 보증만 요구", "다음 방문을 약속", "추가 수량 조건의 총액을 확인" },
+				["신중한 상인"] = { "불량품 반환 분쟁을 걱정한다.", "견본과 거래 기록 제시", "장기 거래만 약속", "즉시 대량 주문 제안", "검수와 반품 조건을 문서로 확인" },
+				["자존심 강한 상인"] = { "자신의 공방과 상품 솜씨를 자랑한다.", "상품의 장점부터 인정", "경쟁 상단 가격만 강조", "수량부터 늘리기", "품질의 가치를 인정하며 가격 조율" },
+				["호의적인 상인"] = { "한 번의 이익보다 단골 거래를 바란다.", "다음 항로의 거래 가능성 제시", "일회성 대량 구매 제안", "당장 최저가만 요구", "지킬 수 있는 거래 조건만 약속" },
+				["교활한 상인"] = { "싼 단가를 내세우며 별도 비용은 말하지 않는다.", "수량과 총액을 서면 확인", "단가만 보고 동의", "장기 거래를 먼저 제안", "추가 비용 없는 최종 견적 확인" },
+			})[persona]
+			add("상인의 말을 듣고 거래 방식을 골라.", profile[2], profile[3], profile[4], profile[1])
+			add("상인이 조건을 바꾸려 한다. 무엇을 확인할까?", profile[5], "구두 조건만 믿고 서명", "확인하지 않고 선금 지급", profile[1])
+			add("협상을 끝내기 전에 마지막 확인을 해.", "실제 재고·잔액·계약 총액 확인", "할인율만 확인", "상인 기분에 맞춰 즉시 결제")
+		elseif game == "auction" or game == "antique" then
+			title = if game == "auction" then "경쟁 상인 경매" else "골동품 경매 감정"
+			local rivalName = "경쟁 상인"
+			local rival = D.TradeFun and D.TradeFun.rival(D.Ports, D.Regions, D.Regions.of(port).id, state.day or 0)
+			if rival then rivalName = rival.name end
+			local opening = 13 + math.floor(rng() * 3)
+			local rivalStyle = ({ "신중한 입찰", "적극적인 입찰", "막판 추격" })[math.floor(rng() * 3) + 1]
+			for round = 1, 3 do
+				local step = if rivalStyle == "신중한 입찰" then 1 elseif rivalStyle == "적극적인 입찰" then 3 else (if round == 3 then 3 else 1)
+				local rivalPct = math.max(5, opening - (round - 1) * step)
+				local bids = { 12, 8, 4 }
+				local options = {}
+				local best = nil
+				for i, pct in bids do
+					options[i] = string.format("입찰 %s · %d%% 할인", money(math.max(1, math.floor(price * (1 - pct / 100)))), pct)
+					if not best and pct < rivalPct then best = i end
+				end
+				options[4] = "입찰 포기"
+				table.insert(rounds, { question = string.format("%s의 입찰 · 기준가 %s / 경쟁가 %s (할인 %d%%)", rivalName, money(price), money(math.max(1, math.floor(price * (1 - rivalPct / 100)))), rivalPct),
+					options = options, answer = best or 3, bids = bids, rivalPct = rivalPct, rivalName = rivalName, price = price, evidence = rivalStyle })
+			end
+		elseif game == "appraisal" or game == "inspection" then
+			title = if game == "appraisal" then "상품 감정" else "견본 검사"
+			local kind = good.resourceKind
+			local defect = if kind == "textile" then "올 풀림·얼룩" elseif kind == "spice" or kind == "crops" or kind == "food" then "습기·변질" elseif kind == "gem" or kind == "crafted" or kind == "stone" then "균열·파손" elseif kind == "timber" then "갈라짐·부식" elseif kind == "ore" then "이물질·산화" else "오염·손상"
+			-- 승인 상품 견본은 그대로 두고 서버가 가상 검수 장부를 매번 새로 구성한다.
+			local names = { "가 견본", "나 견본", "다 견본" }
+			local clean = math.floor(rng() * 3) + 1
+			local records, wrong = {}, {}
+			for i, name in names do
+				local bad = if i == clean then 0 else 1 + math.floor(rng() * n)
+				local sealed = i == clean or i == clean % 3 + 1
+				local quantity = if i == clean then n else n + i
+				if i ~= clean then table.insert(wrong, name) end
+				table.insert(records, string.format("%s · %s %d/%d · 봉인 %s", name, defect, bad, quantity, if sealed then "정상" else "훼손"))
+			end
+			add(good.name .. " 중 불량이 없고 봉인이 정상인 견본을 골라.", names[clean], wrong[1], wrong[2], table.concat(records, "\n"))
+			local missing = 1 + math.floor(rng() * 3)
+			local expected = n + missing
+			add("장부와 실제 검수 수량을 비교해 부족분을 골라.", tostring(missing) .. "개", tostring(missing + 1) .. "개", tostring(missing + 2) .. "개", string.format("계약 장부 · %d개\n검수 통과 · %d개\n확인 대상 · %s", expected, n, good.name))
+		elseif game == "weigh" then
+			title = "저울 속임수"
+			local tare = 1 + math.floor(rng() * 3)
+			add(string.format("총 무게 %d근, 빈 포대 %d근. 실제 상품 무게는?", n + tare, tare), tostring(n) .. "근", tostring(n + tare) .. "근", tostring(n + tare + 1) .. "근")
+			local reference = 4 + math.floor(rng() * 5)
+			local errorAmount = 1 + math.floor(rng() * 3)
+			local loaded = n + tare + errorAmount
+			add("기준 추로 확인한 저울 오차까지 빼면 실제 상품 무게는?", tostring(n) .. "근", tostring(n + errorAmount) .. "근", tostring(n + tare + errorAmount) .. "근", string.format("기준 추 %d근 → 표시 %d근\n포장 포함 표시 %d근 · 빈 포대 %d근", reference, reference + errorAmount, loaded, tare))
+		elseif game == "secret" then
+			title = "비밀 거래 협상"
+			add("상인이 희귀 화물의 거래 자격을 확인한다.", "길드 허가와 출처 기록 제시", "허가 없이 넘겨 달라고 요구", "신원을 숨기고 강요")
+			add("별도 화물 제안이 들어왔다. 먼저 확인할 것은?", "공식 허가·재고·가격", "상인의 소문만 믿기", "계약 없이 선금 지급")
+		elseif game == "bulk" then
+			title = "대량 구매 협상"
+			local total, stock = 0, mult
+			for _ = 1, n do
+				total += T.getPrice(state.portId, goodId, stock, ev * S.Knowledge.supplyMult(state, state.portId, goodId))
+				stock = T.nextStockMult(stock, 1, true)
+			end
+			add(string.format("가상 %d개 견적 %d코인. 동일 수량, 운송 조건 동일. 가장 저렴한 제안은?", n, total), money(math.max(1, total - fee)), money(total), money(total + fee))
+			add("대량 구매 전 반드시 확인할 항목은?", "실제 재고·화물칸·잔액", "할인율만 확인", "항구 이름만 확인")
+		elseif game == "contract" then
+			title = "무역 계약"
+			add(string.format("동일 수량 계약: 물품 %d코인. 추가 비용까지 가장 낮은 계약은?", price),
+				money(price) .. " · 추가 비용 없음", money(price) .. " · 수수료 " .. money(fee), money(price + fee) .. " · 추가 비용 없음")
+			add("납기와 수량이 다른 두 계약이 제시됐다.", "실제 재고와 운송 가능 일정에 맞춰 계약", "납기를 확인하지 않고 계약", "빈 계약서에 먼저 서명")
+		elseif game == "rush" then
+			title = "경쟁 구매"
+			add(string.format("가상 경쟁 구매 · 남은 재고 %d개. %d개가 필요하다.", n, n), tostring(n) .. "개 요청", tostring(n+1) .. "개 요청", tostring(n+2) .. "개 요청")
+			add("경쟁 상인이 접근한다. 잔액과 선창이 충분하다면?", "검수한 수량의 견적을 확정", "다른 상인의 화물을 빼앗기", "가격을 확인하지 않고 모두 구매")
+		elseif game == "forecast" then
+			title = "시세 판단"
+			add(good.name .. " · " .. port.name .. " 현재 분류: " .. role .. ". 현재 매입 기준가 " .. money(price) .. ".",
+				role, if role == "산지" then "수요 항구" else "산지", if role == "일반 항구" then "수요 항구" else "일반 항구")
+			add("다른 조건이 동일한 가상 시장에서 공급이 크게 감소하면?", "가격 상승 압력", "가격 하락 압력", "공급과 가격은 무관")
+		elseif game == "barter" then
+			title = "물물교환 협상"
+			add(string.format("가상 교환 기준: 상품 1개 %d코인. 같은 품질의 %d개 가치는?", price, n),
+				money(price * n), money(price * (n + 1)), money(price * (n - 1)))
+			add("교환 제안을 확정하기 전에 확인해야 할 것은?", "보유 수량과 양쪽 교환 가치", "상대 물품의 이름만", "차액을 계산하지 않고 인수")
+		end
+		local support = nil
+		for _, id in state.companions or {} do
+			local companion = D.Specialties.CompanionById[id]
+			local role = companion and companion.role or ""
+			if string.find(role, "회계", 1, true) or string.find(role, "장부", 1, true) then support = companion.name .. " · 총액과 수수료를 확인해."
+			elseif string.find(role, "감정", 1, true) then support = companion.name .. " · 견본과 기록을 대조해."
+			elseif string.find(role, "통역", 1, true) then support = companion.name .. " · 계약 조건을 다시 확인해." end
+			if support then break end
+		end
+		if not support and state.careers.trade.level >= 5 then support = "교역 숙련 · 실제 조건과 총액을 함께 확인해." end
+		return { title = title, persona = persona, rounds = rounds, round = 1, correct = 0, support = support, auction = auction, deadline = if auction then os.time() + 12 else nil }
+	end
 	local function haggleState(state)
 		local h = state.haggle
 		if not h or h.portId ~= state.portId then
@@ -234,7 +441,14 @@ return function(D, S)
 		end
 		local port = D.Ports.Ports[state.portId]
 		local ease = math.clamp(S.Harbor.intel(state) * 0.12 + (state.rep[port.country] or 0) / 100 * 0.15, 0, 0.4)
-		local game = if type(p.game) == "string" and table.find(HAGGLE_GAMES, p.game) then p.game else HAGGLE_GAMES[math.floor(ctx.rng() * #HAGGLE_GAMES) + 1]
+		if h.pending and h.pending.goodId == goodId then return true, "기존 흥정을 이어가요" end
+		local regional = if D.Regions.of(port).id == "europe" then { "auction", "antique" }
+			elseif D.Regions.of(port).id == "indian" then { "barter", "appraisal" }
+			elseif D.Regions.of(port).id == "far_east" then { "inspection", "contract" }
+			else { "rush", "forecast" }
+		local pool = table.clone(HAGGLE_GAMES)
+		for _, mode in regional do table.insert(pool, mode) end
+		local game = if type(p.game) == "string" and table.find(HAGGLE_GAMES, p.game) then p.game else pool[math.floor(ctx.rng() * #pool) + 1]
 		local quiz = if game == "quiz" then quizFor(state, goodId, ctx.rng) else nil
 		if game == "quiz" and not quiz then game = "scale" end
 		local pending = { goodId = goodId, game = game, ease = ease }
@@ -254,8 +468,10 @@ return function(D, S)
 			pending.count = if ease >= 0.2 then 3 else 4
 			pending.real = math.floor(ctx.rng() * pending.count) + 1
 			pending.fakeTell = ({ "edge", "color", "stamp" })[math.floor(ctx.rng() * 3) + 1]
-		else
+		elseif game == "quiz" then
 			pending.quiz = quiz
+		else
+			pending.trade = tradeRounds(state, goodId, game, ctx)
 		end
 		h.pending = pending
 		return true, "흥정을 시작해요"
@@ -267,9 +483,38 @@ return function(D, S)
 		if not pend or pend.goodId ~= p.goodId then
 			return false, "흥정을 먼저 시작해요"
 		end
+		if h.tried[pend.goodId] then h.pending = nil; return false, "이미 흥정한 품목이에요" end
+		local pct = 0
+		if pend.trade then
+			local trade = pend.trade
+			local current = trade.rounds[trade.round]
+			if not current or p.round ~= trade.round or type(p.pick) ~= "number" or p.pick ~= math.floor(p.pick) or p.pick < 1 or p.pick > #current.options then return false, "현재 협상 차례를 확인해요" end
+			if trade.auction then
+				local bid = current.bids[p.pick]
+				trade.bid = if os.time() < trade.deadline and bid and bid < current.rivalPct then bid else 0
+				trade.feedback = if trade.bid > 0 then "현재 최고 입찰" else "경쟁 상인이 앞섰어요"
+			else
+				local accepted = p.pick == current.answer
+				if accepted then trade.correct += 1 end
+				if pend.game == "negotiation" then trade.feedback = if accepted then "상인이 조건을 긍정적으로 검토해요" else "상인이 조건을 다시 확인해 달래요"; trade.mood = if accepted then "smile" else "frown" end
+			end
+			if trade.round < #trade.rounds then
+				trade.round += 1
+				if trade.auction then
+					-- 직전 입찰에 반응해 경쟁 상단의 다음 제안을 조정한다. 기존 4~12% 범위 유지.
+					local nextRow = trade.rounds[trade.round]
+					local response = if trade.bid > 0 then 1 else 0
+					nextRow.rivalPct = math.max(5, math.min(current.rivalPct, nextRow.rivalPct - response))
+					for i, bid in nextRow.bids do if bid < nextRow.rivalPct then nextRow.answer = i; break end end
+					nextRow.question = string.format("%s의 입찰 · 기준가 %d코인 / 경쟁가 %d코인 (할인 %d%%)", nextRow.rivalName, nextRow.price, math.max(1, math.floor(nextRow.price * (1 - nextRow.rivalPct / 100))), nextRow.rivalPct)
+					trade.deadline = os.time() + 12
+				end
+				return true, "다음 협상 조건을 확인해요"
+			end
+			pct = if trade.auction then trade.bid or 0 elseif trade.correct == #trade.rounds then 12 elseif trade.correct > 0 then math.floor(4 + 4 * trade.correct / #trade.rounds) else 0
+		end
 		h.pending = nil
 		h.tried[pend.goodId] = true
-		local pct = 0
 		if pend.game == "scale" then
 			local t = tonumber(p.t) or -1
 			if t >= 0 and t < 30 then
@@ -291,7 +536,21 @@ return function(D, S)
 		pct = math.clamp(pct, 0, 12)
 		local name = D.Ports.Goods[pend.goodId].name
 		if pct > 0 then
-			h.deal = { goodId = pend.goodId, mult = 1 - pct / 100 }
+			h.deal = { goodId = pend.goodId, mult = 1 - pct / 100, mode = pend.game }
+			-- 길드 허가와 완벽한 비밀 협상으로 기존 12일 화물 주기의 숨은 제안을 연다.
+			if pend.game == "secret" and pct == 12 and D.TradeFun and state.stats and state.stats.permits and state.stats.permits[state.portId] == true and not embargoed(state) then
+				h.deal.rareWindow = math.floor((state.day or 0) / D.TradeFun.RARE_WINDOW)
+			end
+			if pend.game == "barter" then
+				-- 보유 화물의 실제 매입 여유가 있는 품목만 제안. 새 저장 키나 화물 생성 없음.
+				local eligible = {}
+				for id, amount in state.cargo do
+					local lim = D.Ports.Goods[id] and limits(state, id)
+					if id ~= pend.goodId and D.Ports.Goods[id] and amount >= 1 and (not lim or lim.absorb >= 1) then table.insert(eligible, id) end
+				end
+				table.sort(eligible)
+				if #eligible > 0 then h.deal.exchange = { goodId = eligible[1], amount = 1 } end
+			end
 			return true, string.format("흥정 성공! %s 다음 구매가 %d%% 싸져요", name, pct)
 		end
 		return false, "상인이 고개를 젓네요. 정가대로 사요 (손해는 없어요)"
@@ -340,60 +599,23 @@ return function(D, S)
 		if lim and amount > lim.absorb then
 			return false, if lim.absorb <= 0 then "이 항구는 이 물건이 넘쳐서 더 사지 않아요. 다른 항구에 팔아 보세요" else string.format("이 항구는 지금 %d개까지만 사줘요", lim.absorb)
 		end
-		local rate = sellRateFor(state)
-		local mult = ctx.market:get(state.portId, goodId)
-		local ev = (ctx.market:eventMult(state.portId, goodId) * S.History.mult(state, state.portId, goodId) * (if S.Econ and S.Econ.marketFactor then S.Econ.marketFactor(state, state.portId, goodId) else 1))
-		local revenue = 0
-		for _ = 1, amount do
-			revenue += T.sellPrice(state.portId, goodId, mult, rate * S.Knowledge.goodsMult(state, goodId), ev)
-			mult = T.nextStockMult(mult, 1, false)
-		end
-		local TF = D.TradeFun
-		local tariff = math.floor(revenue * tariffRate(state) * (if TF then TF.tariffMult(state) else 1))
-		revenue -= tariff
-		-- [교역 재미] 신상품·축제·라이벌·상회 등급·희귀 화물 보너스
-		local fun = if TF then TF.sellBonus(state, D.Ports, D.Regions, state.portId, goodId, amount, revenue) else nil
-		if fun then revenue = math.max(0, revenue + fun.bonus) end
-		local profit = revenue - (state.basis[goodId] or 0) * amount
-		state.coins += revenue
-		S.State.removeCargo(state, goodId, amount)
-		ctx.market:set(state.portId, goodId, mult)
-		if lim then S.Econ.give(state, state.portId, goodId, amount) end
-
-		local msgs = { string.format("%s %d개 판매 (+%d)%s", D.Ports.Goods[goodId].name, amount, revenue, if tariff > 0 then string.format(" · 관세 -%d", tariff) else "") }
-		if fun then
-			for _, line in fun.lines do table.insert(msgs, line) end
-			local up = TF.commitSell(state, fun, profit, goodId, amount)
-			if up then table.insert(msgs, up) end
-		end
-		do
-			local country = D.Ports.Ports[state.portId].country
-			local gain = math.min(3, math.floor(revenue / 150))
-			if gain > 0 then
-				local before = state.rep[country] or 0
-				state.rep[country] = math.min(100, before + gain)
-				if math.floor(state.rep[country] / 25) > math.floor(before / 25) then
-					table.insert(msgs, "이 나라와의 우호도가 올랐다 (관세 우대 확대)")
-				end
-			end
-		end
-		state.harborTrade = state.harborTrade or {}
-		state.harborTrade[state.portId] = (state.harborTrade[state.portId] or 0) + (tonumber(amount) or 0)
-		noteBook(state, ctx, goodId)
-		if profit > 0 then
-			S.State.gainXp(state, "trade", math.floor(profit / 8) + 1, msgs)
-			S.Perk.gainSpec(state, "trade", math.floor(profit / 10) + 1, msgs)
-		end
-		return true, table.concat(msgs, "\n")
+		return settleSale(state, goodId, amount, saleQuote(state, goodId, amount, ctx), ctx)
 	end
 
 	-- [교역 재미 7] 희귀 화물: 이 항구에 뜬 한정 화물을 통째로 산다. 지정 항구에 팔아야 이익.
-	function handlers.BuyRareLot(state, _p, _ctx)
+	function handlers.BuyRareLot(state, p, _ctx)
 		local TF = D.TradeFun
 		if not TF then return false, "지금은 살 수 없어요" end
-		local lot: any = TF.rareLot(D.Ports, D.Regions, state.portId, state.day or 0)
+		local lot: any = TF.rareLot(D.Ports, D.Regions, state.portId, state.day or 0, state)
 		if not lot then return false, "이 항구에는 지금 희귀 화물이 없어요" end
 		if TF.get(state).lots[lot.key] then return false, "이미 산 화물이에요" end
+		if lot.secret and (embargoed(state) or lockOf(state, state.portId, lot.goodId)) then return false, "거래 허가가 필요해요" end
+		if p and p.haggleConfirm == true then
+			local h = state.haggle
+			if not h or h.portId ~= state.portId or not h.deal or h.deal.mode ~= "secret" or h.deal.goodId ~= p.contractGoodId
+				or p.expectedGoodId ~= lot.goodId or p.expectedTotal ~= lot.unitPrice * lot.qty then return false, "희귀 화물 계약이 변경됐어요" end
+			if embargoed(state) or lockOf(state, state.portId, lot.goodId) then return false, "거래 허가가 필요해요" end
+		end
 		if lot.qty > S.State.cargoCapacity(state) - S.State.cargoUsed(state) then return false, "화물칸이 부족해요" end
 		local total: number = math.floor(tonumber(lot.unitPrice * lot.qty) or 0)
 		if total > state.coins then return false, "코인이 부족해요" end
@@ -403,6 +625,7 @@ return function(D, S)
 		state.basis[lot.goodId] = (basis * owned + total) / (owned + lot.qty)
 		state.cargo[lot.goodId] = owned + lot.qty
 		TF.commitRareBuy(state, lot)
+		if lot.secret or (p and p.haggleConfirm == true) then state.haggle.deal = nil end
 		local names = {}
 		for _, id in lot.targets do table.insert(names, D.Ports.Ports[id].name) end
 		return true, string.format("희귀 %s %d개 구매 (-%d)\n%d일 안에 %s 중 한 곳에 팔면 %.1f배!", D.Ports.Goods[lot.goodId].name, lot.qty, total, TF.RARE_KEEP, table.concat(names, "·"), TF.RARE_SELL)
@@ -441,5 +664,5 @@ return function(D, S)
 		return true, string.format("%s %d개를 몰래 팔았다 (+%d, 관세 없음)", D.Ports.Goods[goodId].name, amount, revenue)
 	end
 
-	return { handlers = handlers, sellRateFor = sellRateFor, repBonus = repBonus, tariffRate = tariffRate, lockOf = lockOf }
+	return { handlers = handlers, sellRateFor = sellRateFor, repBonus = repBonus, tariffRate = tariffRate, lockOf = lockOf, saleQuote = saleQuote }
 end
