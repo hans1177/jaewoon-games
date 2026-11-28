@@ -25,6 +25,7 @@
 | **비주얼 전면 재제작 목록·초상화 정리(주인공 15·동료 49·담당자 8)·프롬프트** | `docs/VISUAL_REMAKE_BRIEF.md` |
 | 지상 전투 약점·반격·두목 단계·전투 목표, 특산품 잠금·길드 허가증 (움직임 포함) | `docs/FIELD_COMBAT_BRIEF.md` |
 | 교역 흥정 미니게임 원화·상인 표정 움직임 | `docs/HAGGLE_MINIGAME_BRIEF.md` |
+| 해양 퀘스트 표시·대규모 해전 확장·미구현 해상 그래픽(모델·효과·아이콘) | `docs/NAVAL_QUEST_EXPANSION_BRIEF.md` |
 | 메뉴창 UI 고급화·하단 5버튼·퀘스트 UI 아이콘·프레임 제작 | `docs/MENU_UI_BRIEF.md` (아이콘 시트 칸 번호·파일 이름) |
 | 퀘스트 이야기·인과관계(문제→원인→할 일→결과)·장(章) 쓰기 | `docs/STORY_CAUSALITY.md` + `docs/STORY_QUEST_SYSTEM.md` |
 | 이벤트씬·세계 사건·역사 사건 원화, 카드 습득 연출 | `docs/EVENT_SCENES.md` (없는 원화 목록·파일 이름) |
