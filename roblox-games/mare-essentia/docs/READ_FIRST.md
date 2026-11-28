@@ -21,6 +21,7 @@
 | 배 디자인·질감·등급 기능 | `docs/ships/README.md` + `docs/ships/grades.md` + `docs/ships/<배>.md` |
 | 주민(NPC) 헤어·복장·악세·재질·모션 | `docs/residents/README.md` + `docs/residents/jobs.md` + `docs/residents/<문화권>.md` |
 | 카드배틀 시스템·화면·이펙트·카드 문구·진영 | `docs/card_battle/README.md`(0절 카드 분류 규칙) + 같은 폴더 전부 |
+| 백과사전 시각화·백과사전 수준 해설(875장) | `docs/ENCYCLOPEDIA_BRIEF.md` + `docs/encyclopedia_articles_needed.csv` |
 | **비주얼 전면 재제작 목록·초상화 정리(주인공 15·동료 49·담당자 8)·프롬프트** | `docs/VISUAL_REMAKE_BRIEF.md` |
 | 지상 전투 약점·반격·두목 단계·전투 목표, 특산품 잠금·길드 허가증 (움직임 포함) | `docs/FIELD_COMBAT_BRIEF.md` |
 | 교역 흥정 미니게임 원화·상인 표정 움직임 | `docs/HAGGLE_MINIGAME_BRIEF.md` |
