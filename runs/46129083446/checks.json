@@ -1,28 +1,28 @@
 {
-  "runId": "46119124256",
+  "runId": "46129083446",
   "kind": "deep",
   "portBatch": null,
-  "sourceRevision": "a87bf37c21494599644cd7fe0885339738fa39a2",
+  "sourceRevision": "06434091ab125dda06d6e1f6454b2ce77293d427",
   "result": "FAIL",
   "captureArtifact": {
-    "name": "studio-frames-46119124256",
+    "name": "studio-frames-46129083446",
     "retentionDays": 1,
-    "runId": "46119124256"
+    "runId": "46129083446"
   },
   "failureStage": "STUDIO_EXECUTION",
   "failureSignature": "STUDIO_SCRIPT_REPORTED_ERRORS",
   "summary": {
     "plannedSteps": 1000,
-    "completedSteps": 70,
+    "completedSteps": 75,
     "plannedClicks": 12,
     "successfulClicks": 5,
     "skippedOptionalClicks": 0,
     "plannedFrames": 70,
-    "capturedFrames": 16,
+    "capturedFrames": 17,
     "abortedEarly": true
   },
   "errors": [
-    "step69:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:10: MENU_TAB_MISSING:recruit | text"
+    "step74:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandExecution:54: AssistantCommand:34: FACILITY_DOCK_COUNT=9 | text"
   ],
   "audits": {
     "models": "UNVERIFIED",
@@ -550,42 +550,44 @@
       "step": 69,
       "type": "luau",
       "name": "",
-      "status": "FAIL",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 70,
       "type": "luau",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 71,
       "type": "wait",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 72,
       "type": "luau",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "PASS",
       "screenshots": []
     },
     {
       "step": 73,
       "type": "capture",
       "name": "tab_explore",
-      "status": "NOT_RUN",
-      "screenshots": []
+      "status": "PASS",
+      "screenshots": [
+        "tab_explore-0.jpg"
+      ]
     },
     {
       "step": 74,
       "type": "luau",
       "name": "",
-      "status": "NOT_RUN",
+      "status": "FAIL",
       "screenshots": []
     },
     {
@@ -7067,213 +7069,226 @@
   "screenshotComparison": [
     {
       "name": "c00_start-0.jpg",
-      "sha256": "ea17fa1ade3a2aae7a83f2ac1dbdc38603b3b8966d7af42051dacdf5a6255a4e",
+      "sha256": "63ee469079c7e46cadf1fd27cd04bfafdfab1674ef9cc3655ced9e5021828d8a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "intro_center_early-0.jpg",
-      "sha256": "d8c1605565bfc30091f634b6028abf7440c96d39770fba84a95e59e95999988d",
+      "sha256": "b107ecc56e6f50fbbbabbeefbf64c18f64e025b5bfa1debc3ee7e4c2284eee19",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "intro_center_late-0.jpg",
-      "sha256": "50a25acad33bc4eb812824b1fc40d53a9aa77d82e2e51ad568f3984e7d2e77eb",
+      "sha256": "ea39cf163e50b23cd59959150ecc3b9e2de75c3748fb42e8f66f9155c6b12c7e",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "intro_center_next-0.jpg",
-      "sha256": "544a88939c29a7bfa38f1b3efc24095339fc218557b04a9664c643546d4b87fb",
+      "sha256": "583a53526a6c6ac1189de98188a6d1bcd9d7b27bdfcc9d5791eae83e7819a1ab",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "intro_done-0.jpg",
-      "sha256": "507dfc439156cd941b1babd5c1b69e157c2d12ba14fce194d858ab6aba5d7747",
+      "sha256": "37cf84b8656bca7d188ccc2e5ea999d9ddf7245d84f8b695ae147e7d5b027dd4",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "qa_click_route_to_map-0.jpg",
-      "sha256": "15d1bddfc79dc10f91eeaf93bb9d0124e6193921e3c3f5b927794907c5c7832d",
+      "sha256": "e40d0972a63aeab7c421f82ffff28b5f359dac8d9e90dd2c9950b69c28ef625a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "qa_click_trade_to_harbor-0.jpg",
-      "sha256": "c197a0f9f07afd634fc794565b4bd4892187c6ea06dd5515136bd4c6cd40999c",
+      "sha256": "50cc5970dc5afbc6180675a0da09172642d32f0b777d11f83d7d9fb51a60f076",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "t01-0.jpg",
-      "sha256": "f45e8c7e197e6e16382c6200ad4eec9933cb13355ee8cc483dfaa58b37afe32f",
+      "sha256": "ce9925a6811c1c607199043e2d3f755c83cb9cedc293762ca7d14eaddbc1176a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "t02-0.jpg",
-      "sha256": "7cd94a51da3b1ee0596bbb4c9600b0fc0559e2f0ffb463ae2a8554241295848f",
+      "sha256": "9189094fc42797fa378800fc8e7991e811b6df9b3c8dd318a8c08528fd90ea9e",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "t03-0.jpg",
-      "sha256": "b94294ef4dca3170fec1ac8898c9e8258052d68238a1fac53c78a3928fa224e2",
+      "sha256": "7bd4a891e53966599a4aa79fc3af2c250da6a9828077cc50bccd33fde28f84b5",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
+    },
+    {
+      "name": "tab_explore-0.jpg",
+      "sha256": "6c7df858788bb53b1f2ff48d41ff651a4b317153a711e93117541350bbad5029",
+      "comparison": "CHANGED_BYTES",
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "tab_harbor-0.jpg",
-      "sha256": "a86e3b815fa90fcd4682819145d2b4ead00606d9faa20b69636f90cf83d901f1",
+      "sha256": "778ea63e3410fc5e0e189e7a51d9f004242323f1ae018e7eec572d4a40213c59",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "tab_map-0.jpg",
-      "sha256": "fdf34ddc2065e14c9c86a387e2d37da214471e9fe7626de10c48856c4823df6d",
+      "sha256": "dd5053f980e0abe19e418b916278d2159c79debf914d10bf30681a8d29ed99a8",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "tab_quest-0.jpg",
-      "sha256": "076e323afeaed1870e5d5a445bc148599eeb4088c08108cde1b613140307e1ab",
+      "sha256": "9241e5d4031c91d1eeba07e7561eee8117538dac38538053465c9c852d34759d",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "tab_route-0.jpg",
-      "sha256": "b6a4c7e5e20908ab511a88ae550600200a992afb7904114a47295032685e6b02",
+      "sha256": "d47c82d467a1d250925235e82156397fea5e84c43c1f391c71a18ff463d1ad6a",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "tab_trade-0.jpg",
-      "sha256": "dd233d27e4f55807db0ac9cded1ba9d12eed703a9ac046aea61748c05455ca8e",
+      "sha256": "c84ac741a062a8fd53c2fa5f4762268060b2781e1d8eae54a32554ffea8b612c",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     },
     {
       "name": "tab_yard-0.jpg",
-      "sha256": "9d1d3e0c61b0b7b1e4083c228f706bf991af744cd30f63f6438cc17e6c023a24",
+      "sha256": "bef5f020fc721f5ea7abb1ca826e86dd16e670d0a86dfa70c9d4c57f5b8b660b",
       "comparison": "CHANGED_BYTES",
-      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46119124256"
+      "url": "https://github.com/hans1177/jaewoon-games/actions/runs/46129083446"
     }
   ],
   "screenshotFrameAudit": {
-    "checked": 16,
+    "checked": 17,
     "invalid": 0,
     "images": [
       {
         "name": "c00_start-0.jpg",
-        "bytes": 251326,
+        "bytes": 251374,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_early-0.jpg",
-        "bytes": 145207,
+        "bytes": 145167,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_late-0.jpg",
-        "bytes": 183474,
+        "bytes": 183429,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_center_next-0.jpg",
-        "bytes": 207228,
+        "bytes": 207186,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "intro_done-0.jpg",
-        "bytes": 143428,
+        "bytes": 145609,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "qa_click_route_to_map-0.jpg",
-        "bytes": 163480,
+        "bytes": 163091,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "qa_click_trade_to_harbor-0.jpg",
-        "bytes": 140176,
+        "bytes": 172358,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t01-0.jpg",
-        "bytes": 250708,
+        "bytes": 250699,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t02-0.jpg",
-        "bytes": 195352,
+        "bytes": 195330,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "t03-0.jpg",
-        "bytes": 120446,
+        "bytes": 120697,
+        "width": 1311,
+        "height": 475,
+        "status": "PASS"
+      },
+      {
+        "name": "tab_explore-0.jpg",
+        "bytes": 148610,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_harbor-0.jpg",
-        "bytes": 169837,
+        "bytes": 170668,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_map-0.jpg",
-        "bytes": 163071,
+        "bytes": 163457,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_quest-0.jpg",
-        "bytes": 147941,
+        "bytes": 147753,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_route-0.jpg",
-        "bytes": 169022,
+        "bytes": 168270,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_trade-0.jpg",
-        "bytes": 189449,
+        "bytes": 187908,
         "width": 1311,
         "height": 475,
         "status": "PASS"
       },
       {
         "name": "tab_yard-0.jpg",
-        "bytes": 179885,
+        "bytes": 180276,
         "width": 1311,
         "height": 475,
         "status": "PASS"
@@ -7282,5 +7297,5 @@
     "meaning": "Real JPEG/PNG headers, dimensions and byte lengths only; artistic quality requires visual review"
   },
   "comparisonMeaning": "SHA256 byte equality only; not visual quality evidence",
-  "previousRunId": "46118160911"
+  "previousRunId": "46128285320"
 }
