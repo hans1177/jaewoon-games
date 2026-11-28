@@ -64,8 +64,21 @@ function PlacementOverrides.regionTint(m, portId: string)
 	for i = 1, #portId do h = (h * 31 + string.byte(portId, i)) % 360 end
 	local tone = Color3.fromHSV(h / 360, 0.25, 0.85)
 	for _, d in m:GetDescendants() do
-		if d:IsA("BasePart") and not d:FindFirstChildOfClass("SurfaceAppearance") and not (d:IsA("MeshPart") and d.TextureID ~= "") then
-			d.Color = d.Color:Lerp(tone, 0.12)
+		if d:IsA("BasePart") and d.Transparency < 0.95
+			and not d:FindFirstChildOfClass("SurfaceAppearance") and d.MaterialVariant == ""
+			and not (d:IsA("MeshPart") and d.TextureID ~= "")
+			and d.Material ~= Enum.Material.Glass and d.Material ~= Enum.Material.Metal
+			and d.Material ~= Enum.Material.Neon then
+			-- 원본 특수 메시·데칼·텍스처도 지역색을 덮지 않는다.
+			local textured = false
+			for _, child in d:GetChildren() do
+				if (child:IsA("SpecialMesh") and child.TextureId ~= "")
+					or ((child:IsA("Decal") or child:IsA("Texture")) and child.Texture ~= "") then
+					textured = true
+					break
+				end
+			end
+			if not textured then d.Color = d.Color:Lerp(tone, 0.12) end
 		end
 	end
 	m:SetAttribute("RegionTint", portId)
