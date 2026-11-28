@@ -4957,7 +4957,7 @@ do
 	local sc = D.Quests.ById["q_order_2"]
 	if sc then
 		local hk = D.Quests.Story(sc, nil, nil)
-		check("연속 퀘스트는 장 번호가 붙는다", string.find(hk, "제", 1, true) ~= nil and string.find(hk, "장.", 1, true) ~= nil, hk)
+		check("연속 퀘스트는 정확한 단계 번호가 붙는다", string.sub(hk, 1, #"제2단계. ") == "제2단계. ", hk)
 	end
 	check("납품 사연에 물건과 항구가 들어간다", string.find(h1, "양모", 1, true) ~= nil and string.find(h1, "암스테르담", 1, true) ~= nil)
 end

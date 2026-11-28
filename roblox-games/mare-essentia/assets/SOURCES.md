@@ -2401,7 +2401,7 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 | `cardart/` | ui_fleet_table.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_fleet_table.png |
 | `cardart/` | ui_frame_east_asia.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_frame_east_asia.png |
 | `cardart/` | ea_22.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ea_22.png |
-| `cardart/` | eu_38.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/eu_38.png |
+| `inbox-hold/CardArt/` | eu_38.png | hans1177 (owner) · PROJECT_ORIGINAL_ART · 교체 검수 대기 | dropbox:/Vibe2Transfer/inbox/CardArt/eu_38.png |
 | `cardart/` | ui_ops_vault.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_ops_vault.png |
 | `cardart/` | ui_result_draw.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_result_draw.png |
 | `cardart/` | ui_ops_chart.png | hans1177 (owner) · PROJECT_ORIGINAL_ART | dropbox:/Vibe2Transfer/inbox/CardArt/ui_ops_chart.png |
@@ -2485,3 +2485,5 @@ Roblox 등록은 정식 `owner-mare-essentia-assets.yml`만 사용하며, 자산
 - `Menu/naval_skill`: 기존 승인 SHA-256 `1ac3baa8fc3d21676e62d2699142ac560d6f69f2cfa3f8c8b9069edc5e8616e2`, 복구 Git blob `dc806b5290de8ea971ba18ffb295f4f3175f50b6`.
 - `Menu/naval_fire`: 기존 승인 SHA-256 `831f3e8eb98346071a141a1e46b7ae6418816b1a283135147896a8003481c811`, 복구 Git blob `45175532af019083ef6fed73ab97467a5d4719d0`.
 - `Menu/naval_speed`: 기존 승인 SHA-256 `aecdf9d4f72b6ef98becbf9b04f326b97c861178a88c442397a354d577017e98`, 복구 Git blob `d6035498af7bc71773a81f951a19279e3054ad6e`.
+
+- `CardArt/eu_38`: 기존 승인 SHA-256 `2defeba5784cd9f9bc709248ab4676e060ea20cd3dbd27c34a6f9867906f9da3`, 복구 Git blob `3f946738d14f4d0c1a3a69a2913ed851f3a6f64a` (동일 이전 정상 커밋). 신규 원본 및 라이선스 검수 보류.

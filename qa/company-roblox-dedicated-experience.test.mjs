@@ -2824,7 +2824,8 @@ test('Mare naval battle uses three approved original circular HUD images without
   assert.match(naval,/if sk\.id == "fire" then "Menu\/naval_fire" else "Menu\/naval_skill"/);
   assert.match(naval,/speedBtn\.Activated:Connect\(function\(\)/);
   assert.match(naval,/throttle = if throttle >= 1 then 0\.45 elseif throttle > 0\.4 then 0 else 1/);
-  assert.match(naval,/b\.Interactable = ready and phase == "duel" and not opts\.cardOnly and not opts\.card/);
+  assert.match(naval,/local interactable = ready and phase == "duel" and not opts\.cardOnly and not opts\.card/);
+  assert.match(naval,/if b\.Interactable ~= interactable then b\.Interactable = interactable end/);
   assert.match(naval,/if now < skillReady\[sk\.id\] or opts\.cardOnly/);
   assert.match(naval,/local art = b:FindFirstChild\("NavalButtonArtwork"\)/);
 });
