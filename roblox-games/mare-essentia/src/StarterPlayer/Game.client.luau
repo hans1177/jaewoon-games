@@ -14730,6 +14730,24 @@ do
 			hero.Image = artOf(current)
 			hero.ScaleType = Enum.ScaleType.Fit
 			hero.Parent = plate
+			-- 기존 승인 24프레임 시트만 사용한다. 숨긴 도판은 프레임 갱신을 멈춘다.
+			if current.combatArt and current.motionSheet then
+				hero.Image = "rbxassetid://" .. tostring(current.motionSheet)
+				hero.ImageRectSize = Vector2.new(256, 256)
+				hero.ImageRectOffset = Vector2.zero
+				if not game:GetService("GuiService").ReducedMotionEnabled then
+					task.spawn(function()
+						local frame = 0
+						while hero.Parent and hero:IsDescendantOf(game) do
+							if plate.Visible and leaf.Visible then
+								hero.ImageRectOffset = Vector2.new((frame % 6) * 256, math.floor(frame / 6) * 256)
+								frame = (frame + 1) % 24
+							end
+							task.wait(0.15)
+						end
+					end)
+				end
+			end
 			if hero.Image == "" then
 				local missing = mkLabel(hero, "도판 미등록", 16, SOFTT, false)
 				missing.Size = UDim2.fromScale(1, 1)
@@ -14928,6 +14946,14 @@ do
 					b.AutoButtonColor = false
 					b.ScaleType = Enum.ScaleType.Fit
 					b.Parent = grid
+					if card.id == current.id then
+						local edge = Instance.new("UIStroke")
+						edge.Name = "SelectedPlateGold"
+						edge.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+						edge.Color = Color3.fromRGB(177, 128, 44)
+						edge.Thickness = 2.5
+						edge.Parent = b
+					end
 					local nm = mkLabel(b, card.name, 13, INKD, true)
 					nm.Font = Enum.Font.Garamond
 					nm.AnchorPoint = Vector2.new(0, 1)
@@ -15181,7 +15207,7 @@ function RENDERERS.encyclopedia()
 				Relic = 4, Geography = 5, terrain = 5, Navigation = 6, Weather = 7,
 				Medicine = 8, Chemistry = 8, Astronomy = 9, Physics = 9, Art = 10, Culture = 10,
 				Language = 11, Philosophy = 11, Myth = 12, Mystery = 12, Religion = 12,
-				Goods = 13, Law = 13, Politics = 13, Shipbuilding = 14, ArtGallery = 14, Lost = 15, all = 15 }
+				Goods = 13, Law = 13, Politics = 13, Shipbuilding = 14, ArtGallery = 10, Lost = 15, all = 15 }
 			for i, g in groups do
 				local col = (i - 1) % columns
 				local row = math.floor((i - 1) / columns)
@@ -15320,6 +15346,23 @@ function RENDERERS.encyclopedia()
 	local article = articles[current.id]
 	if H.dexClean ~= false then
 		H.galleryReadingCard = nil
+		local saved = H.encyclopediaBookmarkId and byId[H.encyclopediaBookmarkId]
+		if saved and saved.id ~= current.id then
+			add(function()
+				local jump = mkButton(content, "책갈피 · " .. saved.name, COLORS.leather, UDim2.new(1, -6, 0, 44), function()
+					H.encyclopediaCategoryId = "all"
+					H.encyclopediaSearchText = ""
+					H.encyclopediaTargetId = saved.id
+					H.dexPlateIndex = false
+					H.dexAppendixScroll = nil
+					Sfx.play("sfx_book_turn", 0.3)
+					render()
+				end, true)
+				jump.Name = "EncyclopediaBookmarkJump"
+				jump.TextSize = 15
+				return jump
+			end)
+		end
 		H.renderDex(found, current, article, category, cx, function(i)
 			if i ~= H.encyclopediaPage then H.dexTurnDirection = if i > H.encyclopediaPage then 1 else -1 end
 			H.encyclopediaPage = i
