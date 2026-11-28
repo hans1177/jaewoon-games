@@ -2561,33 +2561,29 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 			-- 원인: 수입 원본(FBX)은 기준점(뼈대 루트)이 -90도 누워 있고 몸 메시는 원래 똑바로 서 있다.
 			-- 예전 코드는 기준점을 똑바로 세워(lookAt) 몸을 90도 넘어뜨렸다. 이제 원본 기울기를 그대로 두고
 			-- 세로축(월드 Y)으로만 돌린다. 기준점이 이미 똑바른 GLB(코끼리·고양이 등)는 결과가 예전과 같다.
-			-- [세워진 FBX 눕히기] 실측: 뼈 있는 FBX(소·말·돼지·개)는 원본 그대로도 몸길이 축이 위(Y)로 서 있다.
-			-- 몸 높이가 길이의 1.2배를 넘으면, 좁은 가로축(몸 폭)을 중심으로 90도 눕힌다.
-			-- 그 뒤 다리 뼈가 몸 중심보다 위에 있으면 뒤집힌 것이므로 180도 돌린다. 뼈 없는 GLB는 건드리지 않는다.
+			-- [가축 몸 바로 세우기 · 2026-11-29 Studio 진단(46198040186)]
+			-- 소 몸 메시 자체는 정상 축(로컬 Y=높이 4.1, Z=몸길이 7.3)인데 메시 부품의 회전이 (90,0,50)이라
+			-- 몸길이 축이 하늘을 향했다. 모델 상자(뼈대 포함)로 판단하면 틀리므로, 가장 큰 몸 메시의 위쪽 축을
+			-- 월드 위(Y)에 맞추도록 몸 중심 기준으로 한 번 돌린다. 이미 바른 모델은 각도 0이라 변화 없음.
 			do
-				local bones = {}
-				for _, node in m:GetDescendants() do
-					if node:IsA("Bone") then table.insert(bones, node) end
+				local body, best = nil, 0
+				for _, part in m:GetDescendants() do
+					if part:IsA("BasePart") and part.Transparency < 0.98 then
+						local vol = part.Size.X * part.Size.Y * part.Size.Z
+						if vol > best then body, best = part, vol end
+					end
 				end
-				local c0, sz0 = m:GetBoundingBox()
-				if #bones > 0 and sz0.Y > math.max(sz0.X, sz0.Z) * 1.2 then
-					local axis = if sz0.X < sz0.Z then Vector3.xAxis else Vector3.zAxis
-					local cp = c0.Position
-					m:PivotTo(CFrame.new(cp) * CFrame.fromAxisAngle(axis, -math.pi / 2) * CFrame.new(-cp) * m:GetPivot())
-					local legY, legN = 0, 0
-					for _, b in bones do
-						local nm = string.lower(b.Name)
-						if nm:find("leg", 1, true) or nm:find("foot", 1, true) or nm:find("hoof", 1, true) then
-							legY += b.WorldPosition.Y
-							legN += 1
-						end
+				if body then
+					local up = body.CFrame.UpVector
+					local dot = math.clamp(up:Dot(Vector3.yAxis), -1, 1)
+					if dot < 0.995 then
+						local axis = up:Cross(Vector3.yAxis)
+						axis = if axis.Magnitude < 1e-4 then body.CFrame.RightVector else axis.Unit
+						local angle = math.acos(dot)
+						local c = body.Position
+						m:PivotTo(CFrame.new(c) * CFrame.fromAxisAngle(axis, angle) * CFrame.new(-c) * m:GetPivot())
+						m:SetAttribute("AnimalTiltFix", math.floor(math.deg(angle) + 0.5))
 					end
-					local c1 = m:GetBoundingBox().Position
-					local flipped = legN > 0 and legY / legN > c1.Y
-					if flipped then
-						m:PivotTo(CFrame.new(c1) * CFrame.fromAxisAngle(axis, math.pi) * CFrame.new(-c1) * m:GetPivot())
-					end
-					m:SetAttribute("AnimalTiltFix", if flipped then "flip" else "lay")
 				end
 			end
 			local origin = m:GetPivot()
