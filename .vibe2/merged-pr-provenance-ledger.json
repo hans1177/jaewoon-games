@@ -386956,11 +386956,164 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_841cd7eee2488194c31d5c99",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15782",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "a64c5eaf151cfb4e575f224235518527272f6ca4",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15782,
+        "baseBranch": "main",
+        "headBranch": "feat/mare-boss-cards-briefs",
+        "baseSha": "a64c5eaf151cfb4e575f224235518527272f6ca4",
+        "headSha": "d4f61170067a36418353f7d4df5ca3454e37dfed",
+        "mergeCommitSha": "b3d2ecaf8288e4c75e17e93a5dd78f4c58972afe",
+        "mergedAt": "2026-11-28T10:35:30Z",
+        "authorLogin": "hans1177",
+        "titleHash": "563da80fb58109f1c74cdd14f1d2f8e194f511c4aa3143d682bf06cc52d2e38b",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/mare-boss-cards-briefs",
+        "candidateSha": "d4f61170067a36418353f7d4df5ca3454e37dfed"
+      },
+      "changeStats": {
+        "changedFileCount": 26,
+        "codingRelevantFileCount": 13,
+        "addedLineCount": 1291,
+        "deletedLineCount": 433,
+        "changedFiles": [
+          "START_HERE.md",
+          "qa/mare-boss-cards-map.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-village-resident-spec.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/docs/BOSS_BRIEF.md",
+          "roblox-games/mare-essentia/docs/BRIEF_MAP.md",
+          "roblox-games/mare-essentia/docs/FIELD_COMBAT_BRIEF.md",
+          "roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/VILLAGE_LAYOUT_SPEC.md",
+          "roblox-games/mare-essentia/docs/card_battle/MOBILE_GRADE_BRIEF.md",
+          "roblox-games/mare-essentia/docs/card_battle/README.md",
+          "roblox-games/mare-essentia/docs/residents/OUTFIT_SPEC.md",
+          "roblox-games/mare-essentia/docs/residents/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ActionCombat.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Bosses.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "tools/devloop/register_asset.py"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-boss-cards-map.test.mjs",
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-village-resident-spec.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/ActionCombat.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Bosses.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "tools/devloop/register_asset.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15782",
+        "merge-commit:b3d2ecaf8288e4c75e17e93a5dd78f4c58972afe",
+        "base-main:a64c5eaf151cfb4e575f224235518527272f6ca4"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3036
+    "total": 3037
   }
 }
