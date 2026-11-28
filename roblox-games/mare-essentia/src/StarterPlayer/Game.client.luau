@@ -1562,10 +1562,11 @@ headerLabel.TextYAlignment = Enum.TextYAlignment.Top
 headerLabel.TextScaled = true
 headerLabel.TextTruncate = Enum.TextTruncate.AtEnd
 headerLabel.TextSize = 23
-headerLabel.Font = Enum.Font.Antique
+headerLabel.Font = Enum.Font.GothamBold
 headerLabel.TextColor3 = COLORS.ink
 do -- [최상위 local 한도 자동 조절] 이 구간 밖에서 쓰지 않는 변수
 	local mastheadSize = Instance.new("UITextSizeConstraint")
+	mastheadSize.MinTextSize = 15
 	mastheadSize.MaxTextSize = 23
 	mastheadSize.Parent = headerLabel
 end
@@ -1996,6 +1997,27 @@ do
 end
 H.menuStatusLabel.Position = UDim2.new(0.5, 0, 0, 15)
 H.menuStatusLabel.Size = UDim2.fromOffset(330, 34)
+-- [공통 화물 상태] 숫자와 실제 적재율을 같은 현황판에 표시한다.
+do
+  local track = Instance.new("Frame")
+  track.Name = "MenuCargoTrack"
+  track.BackgroundColor3 = Color3.fromRGB(100, 77, 50)
+  track.BorderSizePixel = 0
+  track.Position = UDim2.new(0, 8, 1, -6)
+  track.Size = UDim2.new(1, -16, 0, 3)
+  track.ZIndex = H.menuStatusLabel.ZIndex + 1
+  track.ClipsDescendants = true
+  corner(track, 2)
+  track.Parent = H.menuStatusLabel
+  H.menuCargoFill = Instance.new("Frame")
+  H.menuCargoFill.Name = "MenuCargoFill"
+  H.menuCargoFill.BorderSizePixel = 0
+  H.menuCargoFill.BackgroundColor3 = UI_BRASS
+  H.menuCargoFill.Size = UDim2.fromScale(0, 1)
+  H.menuCargoFill.ZIndex = track.ZIndex + 1
+  corner(H.menuCargoFill, 2)
+  H.menuCargoFill.Parent = track
+end
 -- [최근 메뉴] 기존 직전 탭 기억을 재사용. 모든 시설의 자금·화물 현황 바로 옆에 둔다.
 H.menuRecentButton = mkButton(mainInner, "← 최근 메뉴", COLORS.leather,
 	UDim2.fromOffset(126, 34), function()
@@ -2418,8 +2440,9 @@ function H.layoutBook()
   -- [중복 탭 제거] 단일 기능 시설(조선소)은 같은 이름의 탭을 다시 보여주지 않는다.
   local tabs = tabCount > 1 and tabBar.Visible
   -- [상단 오른쪽 가로 탭] 데스크톱은 한 줄 전체 표시, 작은 폰은 한 줄 가로 스크롤.
-  local compactTabs = not wide
-  local sectionTop = if compactTabs and not facilityDetail then 112 else 68
+  local compactTabs = not wide and (height <= 0 or height >= 430)
+  -- [가로폰] 낮은 화면에서는 아이콘을 글자 옆에 두고 본문 높이를 확보한다.
+  local sectionTop = if not wide and not facilityDetail then 112 else 68
   -- [낮은 가로 화면] 가로폰·작은 창은 탭을 머리줄(제목·자금 오른쪽, X 왼쪽)로 올려 본문 높이를 확보한다.
   local headerTabs, headerTabW = false, 0
   if wide and tabs and height > 0 and height < 600 then
@@ -2443,8 +2466,10 @@ function H.layoutBook()
   local tabGap = if width < 340 then 4 else 6
   local tabList = H.tabStrip:FindFirstChildOfClass("UIListLayout")
   if tabList then tabList.Padding = UDim.new(0, tabGap) end
-  local tabWidth = if compactTabs then math.clamp(math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount)), 86, 154) else 144
-  if headerTabs then tabWidth = math.min(144, headerTabW) end
+  local availableTabs = math.floor((width - 16 - math.max(0, tabCount - 1) * tabGap) / math.max(1, tabCount))
+  -- [가변 폭] 넓은 화면은 6개 탭도 한눈에, 좁은 화면은 글자와 터치 폭을 유지하며 스크롤한다.
+  local tabWidth = math.clamp(availableTabs, if compactTabs then 86 else 104, if compactTabs then 154 else 176)
+  if headerTabs then tabWidth = math.min(176, headerTabW) end
   local allTabsWidth = tabCount * tabWidth + math.max(0, tabCount - 1) * tabGap
   local visibleTabsWidth = math.min(math.max(1, width - 16), allTabsWidth)
   tabBar.Position = UDim2.new(1, -8, 0, sectionTop)
@@ -3670,6 +3695,10 @@ function H.updateHud(p, ship)
 	H.hudShip.Text = string.format("화물 %d/%d · 명성 %d", ship.cargoUsed, ship.cargoCapacity, p.fame)
 	H.hudCoin.Text = tostring(p.coins) .. " 코인"
 	H.menuStatusLabel.Text = H.statusMoneyCargo(p, ship, mainInner.AbsoluteSize.X < 740 or H.headerTabs == true)
+	local cargoRatio = math.clamp((ship.cargoUsed or 0) / math.max(1, ship.cargoCapacity or 0), 0, 1)
+	H.menuCargoFill.Size = UDim2.fromScale(cargoRatio, 1)
+	H.menuCargoFill.BackgroundColor3 = if cargoRatio >= 0.95 then Color3.fromRGB(208, 105, 77)
+		elseif cargoRatio >= 0.75 then UI_BRASS else Color3.fromRGB(119, 173, 119)
 	-- [상황별 표시] 실제 서버 스냅샷의 현재 상태만 사용하고 새 저장 키를 만들지 않는다.
 	local lowPrice = false
 	if (ship.cargoCapacity or 0) > (ship.cargoUsed or 0) then
@@ -16234,7 +16263,7 @@ function H.renderTabs()
 	end
 	for i, id in g.tabs do
 		local selected = currentTab == id
-		local compactTabs = mainInner.AbsoluteSize.X < 740
+		local compactTabs = mainInner.AbsoluteSize.X < 740 and (mainInner.AbsoluteSize.Y <= 0 or mainInner.AbsoluteSize.Y >= 430)
 		local b = mkButton(H.tabStrip, TAB_NAME[id], if selected then COLORS.gold else COLORS.leather, UDim2.fromOffset(H.tabWidth or 144, if compactTabs then 58 else 48), function()
 			-- [시설 탭 정본] 모든 시설은 같은 탭 전환 함수를 사용하며 별도 전체창은 만들지 않는다.
 			openTab(id)
@@ -17966,7 +17995,7 @@ function render()
 				actionText = if safe then "가까운 항구 출항 확인" else "보급 부족 · 항로 확인"
 			else
 				fact = string.format("출항 가능 %d / %d항로", ready, #(view.routes or {}))
-				context = string.format("보급 %d개 · 석탄 %d개 · 해금된 항로 확인", ship.supplies or 0, ship.coal or 0)
+				context = string.format("보급 %d개 · 석탄 %d개", ship.supplies or 0, ship.coal or 0)
 				urgent = ready == 0
 			end
 		elseif currentTab == "recruit" or currentTab == "crew" or currentTab == "status" or currentTab == "yard" then
@@ -17982,7 +18011,7 @@ function render()
 				end
 			end
 			fact = string.format("선체 %d/%d · 동료 %d명", ship.hull or 0, ship.maxHull or 0, joined)
-			context = string.format("적합 직책 %d/%d · 포 %d문 · 선원 %d명\n보급 %d개 · 선체와 적재 조건 확인",
+			context = string.format("적합 직책 %d/%d · 포 %d문 · 선원 %d명\n보급 %d개",
 				matched, filled, ship.cannons or 0, ship.crew or 0, ship.supplies or 0)
 			urgent = (ship.maxHull or 0) > 0 and (ship.hull or 0) < (ship.maxHull or 1) * 0.4
 			actionText = if currentTab == "crew" or currentTab == "status" then "동료 직책 배치"
@@ -18021,7 +18050,7 @@ function render()
 		elseif currentTab == "scholar" or currentTab == "codex" then
 			local cx = view.codex or {}
 			fact = string.format("지식 발견 %d / %d장", cx.found or 0, cx.total or 0)
-			context = string.format("만난 학자 %d명 · 미발견 카드 내용은 공개하지 않음", #(view.scholars or {}))
+			context = string.format("만난 학자 %d명", #(view.scholars or {}))
 			if currentTab == "scholar" then
 				-- [학자의 서재] 보고 화면에서도 연구 효과·해금 조건을 잊지 않게 연결한다.
 				for _, t in (view.tech or {}) do
@@ -18053,7 +18082,7 @@ function render()
 				context = string.format("%s 효과: %s\n해금: %s", candidate.name or "연구", candidate.summary or "연구 효과 확인", reason)
 				urgent = candidate.blocked ~= nil
 			else
-				context = "연구 완료 · 새 기술은 선행 지식을 발견하면 해금돼."
+				context = "연구 완료"
 			end
 			actionText = "연구 효과·조건 확인"
 		end
@@ -18084,7 +18113,7 @@ function render()
 				icon.Position = UDim2.fromOffset(14, 7)
 				icon.ZIndex = banner.ZIndex + 1
 			end
-			local heading = mkLabel(banner, "현재 상태", if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
+			local heading = mkLabel(banner, H.TAB_CAPTION[currentTab] or TAB_NAME[currentTab], if wide then 20 else 18, Color3.fromRGB(255, 222, 144), true)
 			heading.Name = "MenuFocusHeading"
 			heading.Position = UDim2.fromOffset(if tabIcon then 46 else 14, 7)
 			heading.Size = UDim2.new(1, if tabIcon then -60 else -28, 0, 26)
@@ -18109,7 +18138,7 @@ function render()
 				metric.TextWrapped = true
 				metric.TextScaled = true
 				local limit = Instance.new("UITextSizeConstraint")
-				limit.MinTextSize = 11
+				limit.MinTextSize = 13
 				limit.MaxTextSize = 19
 				limit.Parent = metric
 				corner(metric, 5)
