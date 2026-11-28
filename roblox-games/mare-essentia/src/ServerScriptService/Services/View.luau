@@ -166,7 +166,13 @@ return function(D, S)
 							for i = 1, pend.count do l[i] = if i == pend.real then "real" else tells[(i + #pend.goodId) % 3 + 1] end
 							return l
 						end)(),
-						question = pend.quiz and pend.quiz.question, options = pend.quiz and pend.quiz.options }
+						question = pend.quiz and pend.quiz.question, options = pend.quiz and pend.quiz.options,
+						trade = if pend.trade and pend.trade.rounds[pend.trade.round] then {
+							title = pend.trade.title, persona = pend.trade.persona, support = pend.trade.support,
+							round = pend.trade.round, total = #pend.trade.rounds,
+							question = pend.trade.rounds[pend.trade.round].question,
+							options = pend.trade.rounds[pend.trade.round].options,
+						} else nil }
 				end)(),
 			}
 		end

@@ -5341,6 +5341,24 @@ local function testHaggleGames()
 			end)())
 		end
 	end
+	for _, mode in { "negotiation", "auction", "appraisal", "weigh", "secret", "bulk", "contract", "inspection", "rush", "forecast", "barter", "antique" } do
+		local st: any = newState()
+		local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
+		local coins = st.coins
+		local owned = st.cargo[goodId]
+		local started = act(st, "HaggleStart", { goodId = goodId, game = mode })
+		local pending = st.haggle.pending
+		local trade = pending.trade
+		check("교역 협상 시작: " .. mode, started and trade ~= nil and #trade.rounds >= 2)
+		local shown: any = S.View.build(st, ctx).haggle.pending.trade
+		check("정답·점수 비공개: " .. mode, shown.answer == nil and shown.rounds == nil and shown.correct == nil)
+		check("잘못된 협상 차례 거절: " .. mode, not act(st, "HagglePlay", { goodId = goodId, round = 99, pick = 1 }))
+		for i, row in trade.rounds do
+			check("교역 단계 응답: " .. mode, act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }))
+		end
+		check("교역 협상 할인 및 거래 불변: " .. mode, st.haggle.deal.mult == 0.88 and st.coins == coins and st.cargo[goodId] == owned)
+		check("교역 협상 재시도 차단: " .. mode, not act(st, "HaggleStart", { goodId = goodId, game = mode }))
+	end
 	local st = newState()
 	local goodId = (D.Ports.Ports[st.portId].produces or { "wool" })[1]
 	act(st, "HaggleStart", { goodId = goodId, game = "face" })
