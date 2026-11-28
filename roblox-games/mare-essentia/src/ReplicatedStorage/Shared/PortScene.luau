@@ -9413,6 +9413,142 @@ function PortScene.build(info, onFacility)
 		folder:SetAttribute("PropOverlapHidden", hidden)
 	end)
 	folder:SetAttribute("PropOverlapAudit", if propOk then "PASS" else "FAIL:" .. tostring(propError))
+	-- [날씨·계절 땅 표현 · 2026-11-29 오너: "비·눈 땅에 표현, 날씨 계절 표현 다양하게 제대로"]
+	-- 예전엔 날씨가 항구 장면에 전달되지 않았고(info.weather 없음), 지시서 항구의 길 색만 바뀌었다.
+	-- 이제 날짜·위도·항구로 정해지는 날씨(Voyage.weather)와 계절(Voyage.season)을 모든 항구의 땅·길·지붕·나무에 입힌다.
+	-- 색·재질만 바꾸는 화면 효과(새 도형 없음). 저장·경제·충돌 불변.
+	local weatherOk, weatherError = pcall(function()
+		local port = PortData.Ports[info.portId] or {}
+		local lat = tonumber(port.lat) or 0
+		local day = tonumber(info.day) or 0
+		local season = Voyage.season(day, lat) -- 1 겨울 2 봄 3 여름 4 가을
+		local w = if type(info.weather) == "string" and info.weather ~= "" then info.weather else Voyage.weather(day, info.portId).id
+		local cold = math.abs(lat) >= 40
+		local tropical = math.abs(lat) < 23.5
+		local wet = w == "rain" or w == "storm"
+		local snow = (season == 1 and cold and (wet or math.abs(lat) >= 52)) or w == "snow"
+		local look = if snow then "snow" elseif wet then "wet"
+			elseif tropical then (if season == 3 then "monsoon_green" else "dry_bright")
+			elseif season == 4 then "autumn" elseif season == 2 then "spring"
+			elseif season == 3 and math.abs(lat) < 42 then "dry_summer" else "plain"
+		folder:SetAttribute("PortVisualWeather", if snow then "snow" else w)
+		folder:SetAttribute("PortSeason", season)
+		folder:SetAttribute("PortGroundLook", look)
+		if look == "plain" then return end
+		local SNOW, WET, DUST = Color3.fromRGB(236, 240, 246), Color3.fromRGB(58, 62, 66), Color3.fromRGB(206, 176, 130)
+		local AUTUMN = { Color3.fromRGB(196, 112, 44), Color3.fromRGB(214, 160, 52), Color3.fromRGB(150, 70, 40) }
+		local BLOSSOM = Color3.fromRGB(240, 186, 206)
+		local region = REGION[info.portId]
+		local eastAsia = region == "japan" or region == "korea" or region == "china"
+		local ground, roads, roofs, leaves = 0, 0, 0, 0
+		local function greenish(c: Color3)
+			return c.G > c.R * 1.05 and c.G > c.B * 1.05
+		end
+		for _, d in folder:GetDescendants() do
+			if d:IsA("BasePart") and d.Transparency < 0.95 then
+				local name = string.lower(d.Name)
+				local isGround = d.Name == "TownFloor" or d.Name == "Ground" or d.Name == "RuralGround"
+				local isRoad = d:GetAttribute("RoadStrip") == true
+				local model = d:FindFirstAncestorOfClass("Model")
+				local asset = model and model:GetAttribute("ImportedAsset")
+				local lowerAsset = if type(asset) == "string" then string.lower(asset) else ""
+				local plant = string.find(lowerAsset, "tree", 1, true) or string.find(lowerAsset, "bush", 1, true)
+					or string.find(lowerAsset, "plant", 1, true) or string.find(name, "leaf", 1, true)
+					or string.find(name, "foliage", 1, true) or string.find(name, "canopy", 1, true)
+				local roof = string.find(name, "roof", 1, true) ~= nil
+				if model and model:FindFirstChildOfClass("Humanoid") then
+					-- 사람은 옷 규칙(PortVisualWeather)으로 따로 처리
+				elseif isGround then
+					ground += 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.82) d.Material = Enum.Material.Snow
+					elseif look == "wet" then d.Color = d.Color:Lerp(WET, 0.28) d.Reflectance = 0.05
+					elseif look == "dry_summer" or look == "dry_bright" then d.Color = d.Color:Lerp(DUST, 0.22)
+					elseif look == "autumn" and d.Name == "RuralGround" then d.Color = d.Color:Lerp(AUTUMN[2], 0.35)
+					elseif look == "monsoon_green" and d.Name == "RuralGround" then d.Color = d.Color:Lerp(Color3.fromRGB(70, 140, 70), 0.3) end
+				elseif isRoad then
+					roads += 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.45)
+					elseif look == "wet" then d.Color = d.Color:Lerp(WET, 0.32) d.Reflectance = 0.09
+					elseif look == "dry_summer" or look == "dry_bright" then d.Color = d.Color:Lerp(DUST, 0.15) end
+				elseif roof then
+					roofs += 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.7)
+					elseif look == "wet" then d.Color = d.Color:Lerp(WET, 0.18) d.Reflectance = math.max(d.Reflectance, 0.06) end
+				elseif plant and greenish(d.Color) then
+					leaves += 1
+					local pick = (math.floor(d.Position.X * 7 + d.Position.Z * 3) % 3) + 1
+					if look == "snow" then d.Color = d.Color:Lerp(SNOW, 0.55)
+					elseif look == "autumn" then d.Color = d.Color:Lerp(AUTUMN[pick], 0.62)
+					elseif look == "spring" and eastAsia and pick == 1 then d.Color = d.Color:Lerp(BLOSSOM, 0.7)
+					elseif look == "spring" then d.Color = d.Color:Lerp(Color3.fromRGB(120, 190, 90), 0.25)
+					elseif look == "dry_summer" then d.Color = d.Color:Lerp(Color3.fromRGB(120, 120, 60), 0.2)
+					elseif look == "wet" or look == "monsoon_green" then d.Color = d.Color:Lerp(Color3.fromRGB(40, 110, 50), 0.2) end
+				end
+			end
+		end
+		-- [내리는 비·눈 + 계절 입자] 지상전(FieldScene)의 투명 발원점 방식을 그대로 쓴다. 카메라 위를 따라다닌다.
+		-- 휴대폰은 입자 수 절반. 화면 효과일 뿐 판정·저장 없음.
+		local touch = game:GetService("UserInputService").TouchEnabled
+		local driftKind = if look == "autumn" then "낙엽" elseif look == "spring" then (if eastAsia then "꽃잎" else "꽃가루")
+			elseif look == "dry_summer" or look == "dry_bright" then "먼지" elseif look == "monsoon_green" then "수증기" else nil
+		if look == "snow" or look == "wet" or driftKind then
+			local source = part(folder, Vector3.new(90, 0.2, 90), CFrame.new(0, 40, 0), Color3.new(1, 1, 1))
+			source.Name = "PortPrecipitationSource"
+			source.Transparency = 1
+			source.CastShadow = false
+			source.CanCollide, source.CanTouch, source.CanQuery = false, false, false
+			local function emitter(name: string, color: Color3, rate: number, life: NumberRange, speed: NumberRange,
+				accel: Vector3, size: number, texture: string)
+				local e = Instance.new("ParticleEmitter")
+				e.Name = name
+				e.Texture = texture
+				e.Shape = Enum.ParticleEmitterShape.Box
+				e.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+				e.EmissionDirection = Enum.NormalId.Bottom
+				e.Lifetime, e.Speed, e.Acceleration = life, speed, accel
+				e.Size = NumberSequence.new(size)
+				e.Transparency = NumberSequence.new(0.35, 0.85)
+				e.Color = ColorSequence.new(color)
+				e.Rate = if touch then rate * 0.5 else rate
+				e.Parent = source
+				return e
+			end
+			if look == "snow" then
+				emitter("PortSnowfall", Color3.fromRGB(236, 244, 255), 120, NumberRange.new(4, 6), NumberRange.new(3, 6),
+					Vector3.new(1.4, -3.2, 0.8), 0.28, "rbxasset://textures/particles/smoke_main.dds")
+			elseif look == "wet" then
+				emitter("PortRainfall", Color3.fromRGB(176, 208, 236), if w == "storm" then 420 else 260,
+					NumberRange.new(0.7, 1.0), NumberRange.new(55, 70), Vector3.new(4, -20, 1), 0.08,
+					"rbxasset://textures/particles/sparkles_main.dds")
+			end
+			if driftKind then
+				local driftColor = if driftKind == "낙엽" then Color3.fromRGB(200, 116, 52)
+					elseif driftKind == "꽃잎" then Color3.fromRGB(244, 190, 210)
+					elseif driftKind == "꽃가루" then Color3.fromRGB(236, 212, 132)
+					elseif driftKind == "먼지" then Color3.fromRGB(212, 184, 132) else Color3.fromRGB(200, 222, 214)
+				local e = emitter("PortSeasonDrift", driftColor, if driftKind == "먼지" then 14 else 22,
+					NumberRange.new(5, 8), NumberRange.new(1, 3), Vector3.new(2.2, -1.2, 1.1), 0.35,
+					"rbxasset://textures/particles/smoke_main.dds")
+				e.EmissionDirection = Enum.NormalId.Front
+				e.RotSpeed = NumberRange.new(-60, 60)
+			end
+			folder:SetAttribute("PortWeatherParticles", if look == "snow" then "snow" elseif look == "wet" then "rain" else driftKind)
+			local follow
+			follow = RunService.Heartbeat:Connect(function()
+				if not source.Parent or not folder.Parent then
+					follow:Disconnect()
+					return
+				end
+				local cam = workspace.CurrentCamera
+				if cam then source.CFrame = CFrame.new(cam.CFrame.Position + Vector3.new(0, 26, 0)) end
+			end)
+		end
+		folder:SetAttribute("PortWeatherGroundParts", ground)
+		folder:SetAttribute("PortWeatherRoads", roads)
+		folder:SetAttribute("PortWeatherRoofs", roofs)
+		folder:SetAttribute("PortWeatherLeaves", leaves)
+	end)
+	folder:SetAttribute("PortWeatherAudit", if weatherOk then "PASS" else "FAIL:" .. tostring(weatherError))
 	-- [마을 주민·건축물 간섭] 완성된 마을에서 초기 위치와 실제 이동 궤적을 확인한다.
 	-- 이동형·고정형·일과형 모두 생성 직후 한 번만 검사한다(프레임별 공간 질의 금지).
 	local routeOk, routeError = pcall(function()
