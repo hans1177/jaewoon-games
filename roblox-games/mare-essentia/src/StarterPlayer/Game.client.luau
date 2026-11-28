@@ -15760,7 +15760,7 @@ function RENDERERS.quest()
 			end
 			local done, total = math.min(q.progress, q.amount), math.max(1, q.amount)
 			local said = if ex and ex.speaker then string.format("\n%s: \"%s\"", ex.speaker, ex.line) else ""
-			local compact = (if q.chapter then tostring(q.chapter) .. "\n" else "") .. q.summary
+			local compact = (if q.chapter and not string.find(q.summary, tostring(q.chapter), 1, true) then tostring(q.chapter) .. "\n" else "") .. q.summary
 			local row = mkRow(content, q.name, if expanded then strandText(q) .. (if q.problem or q.chapter or q.prevEnding then "" else said) else compact, buttons, 92)
 			local stamp = if q.chapter and H.hasIconArt("chapter") then "chapter" else "quest"
 			if H.hasIconArt(stamp) then withIcon(row, "FacilityArt", stamp, nil, 44) end
