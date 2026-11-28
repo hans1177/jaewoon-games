@@ -83,3 +83,15 @@ test('등록된 청동 안내 원화와 9분할 프레임만 선택적으로 연
   assert.match(home, /b\.Activated:Connect/);
   assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
 });
+
+test('탐험 재개는 완료된 기록 수호 두목만 제거하고 다른 전투와 보상을 유지한다', () => {
+  const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  const resume = field.split('-- [보스전 재개]')[1].split('-- [전투 목표')[0];
+  assert.match(resume, /found > 0 and isBoss and i == enemyCount \+ 1 and targetCard and not isWildlife/);
+  assert.match(resume, /and bossRole ~= "giant" then/);
+  assert.match(resume, /if fm then FM\.destroy\(fm\) end/);
+  assert.match(resume, /table\.remove\(enemies\)/);
+  assert.match(resume, /model:Destroy\(\)/);
+  assert.match(resume, /FieldBossCheckpointRestored", true/);
+  assert.doesNotMatch(resume, /onFinish\(|onCheckpoint\(|grantCard\(|gainXp\(/);
+});
