@@ -381655,11 +381655,160 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_ec653436d6fad6550ac589da",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15701",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "c6ecd21b0622a277ad04480ab69624059c3b2d61",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15701,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-dropbox-original-integrity-20261128",
+        "baseSha": "c6ecd21b0622a277ad04480ab69624059c3b2d61",
+        "headSha": "dcbe493c18a81323f71af1d6677c1d286cc7e870",
+        "mergeCommitSha": "1f91e4d85fcbdd9f4199bd6f43c9e73312ae2e87",
+        "mergedAt": "2026-11-28T05:31:25Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5c87cc897248ef4985165275f04161af875ccd67c96635b3ddc2faea7fc164c8",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-dropbox-original-integrity-20261128",
+        "candidateSha": "dcbe493c18a81323f71af1d6677c1d286cc7e870"
+      },
+      "changeStats": {
+        "changedFileCount": 21,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 256,
+        "deletedLineCount": 115,
+        "changedFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/ea_34.png",
+          "roblox-games/mare-essentia/assets/cardart/ea_34.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_19.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_19.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_20.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_20.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_22.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_22.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_28.png",
+          "roblox-games/mare-essentia/assets/cardart/eu_28.png.license.json",
+          "roblox-games/mare-essentia/assets/dropbox-imported.json",
+          "roblox-games/mare-essentia/docs/assets/dropbox_inbox_report.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/devloop/dropbox_inbox.py"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "roblox-games/mare-essentia/assets/APPROVED_IMAGES.json",
+          "roblox-games/mare-essentia/assets/cardart/ea_34.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_18.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_19.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_20.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_22.png.license.json",
+          "roblox-games/mare-essentia/assets/cardart/eu_28.png.license.json",
+          "roblox-games/mare-essentia/assets/dropbox-imported.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/FieldScene.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/AssetLoader.server.luau",
+          "tools/company-development-roblox-studio-local-play.mjs",
+          "tools/devloop/dropbox_inbox.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15701",
+        "merge-commit:1f91e4d85fcbdd9f4199bd6f43c9e73312ae2e87",
+        "base-main:c6ecd21b0622a277ad04480ab69624059c3b2d61"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3004
+    "total": 3005
   }
 }
