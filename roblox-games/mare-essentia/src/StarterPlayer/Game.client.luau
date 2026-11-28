@@ -6377,6 +6377,7 @@ function RENDERERS.harbor()
 				local lot = tf.lot
 				local sub = string.format("%d개 · 개당 %d코인 (총 %d) · %d일 남음\n%s 중 한 곳에 팔면 2.2배, 다른 곳은 손해",
 					lot.qty, lot.unitPrice, lot.total, lot.untilIn, table.concat(lot.targets, "·"))
+				if lot.origin then sub = "비밀 화물 · 산지 " .. lot.origin .. "\n" .. sub end
 				local buttons = {}
 				if not lot.bought then
 					table.insert(buttons, { text = "통째로 사기", color = COLORS.gold, onClick = function() call("BuyRareLot", {}) end })
@@ -12830,7 +12831,7 @@ do
 					exchange.TextWrapped = true
 				elseif deal.mode == "secret" and view.tradeFun and view.tradeFun.lot and not view.tradeFun.lot.bought then
 					local lot = view.tradeFun.lot
-					local rare = mkButton(stage, string.format("%s %s %d개 · %d코인", if lot.secret then "비밀 해금" else "희귀", lot.good, lot.qty, lot.total), COLORS.green, UDim2.new(1, -8, 0, 48), function()
+					local rare = mkButton(stage, string.format("%s %s %d개 · %d코인%s", if lot.secret then "비밀 해금" else "희귀", lot.good, lot.qty, lot.total, if lot.origin then " · " .. lot.origin else ""), COLORS.green, UDim2.new(1, -8, 0, 48), function()
 						confirm("BuyRareLot", { haggleConfirm = true, contractGoodId = goodId, expectedGoodId = lot.goodId, expectedTotal = lot.total })
 					end, true)
 					rare.Position = UDim2.fromOffset(4, 306)

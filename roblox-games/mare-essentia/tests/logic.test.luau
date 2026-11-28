@@ -5405,6 +5405,12 @@ local function testHaggleGames()
 			for i, row in trade.rounds do act(st, "HagglePlay", { goodId = goodId, round = i, pick = row.answer }) end
 			local shown = S.View.build(st, ctx).tradeFun.lot
 			check("완벽 비밀 협상 희귀 화물 표시", shown and shown.secret and shown.goodId == offer.goodId)
+			local origin = D.Ports.Ports[offer.originId]
+			check("비밀 화물 실제 지역 산지 연결", origin ~= nil and offer.originId ~= st.portId and D.Regions.of(origin).id == D.Regions.of(D.Ports.Ports[st.portId]).id and table.find(origin.produces, offer.goodId) ~= nil and shown.origin == origin.name)
+			for _, target in offer.targets do
+				local destination = D.Ports.Ports[target]
+				check("비밀 화물 해외 수요 연결", D.Regions.of(destination).id ~= D.Regions.of(origin).id and table.find(destination.demands, offer.goodId) ~= nil)
+			end
 			st.stats.permits[st.portId] = nil
 			check("길드 허가 없는 숨은 화물 거절", not act(st, "BuyRareLot", {}))
 			st.stats.permits[st.portId] = true
