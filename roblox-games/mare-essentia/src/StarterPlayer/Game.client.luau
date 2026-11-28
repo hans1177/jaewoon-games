@@ -12334,28 +12334,81 @@ do
 		local body = mkLabel(box, "", 22, Color3.fromRGB(52, 38, 24), false, 3)
 		body.Size = UDim2.new(1, 0, 0, 0)
 		body.Text = tostring(d.ending or "")
-		-- 서버 완료 목록의 실제 기본 지급 수치만 표시한다. 저장 및 보상 지급은 서버의 기존 책임이다.
+		-- [보상 장부] 기존 서버 지급 영수증을 표시한다. 클라이언트는 지급하지 않는다.
 		if d.id then
+			local receipt = d.receipt
 			local career = ({ trade = "교역", adventure = "모험", battle = "전투" })[d.rewardCareer] or "직업"
+			local reduced = game:GetService("GuiService").ReducedMotionEnabled
 			local rewards = {
-				{ "금화", d.rewardCoins, "coin" },
-				{ "명성", d.rewardFame, "fame" },
-				{ career .. " 경험치", d.rewardXp, "growth" },
+				{ "금화", receipt and receipt.coins or d.rewardCoins, "coin" },
+				{ "명성", receipt and receipt.fame or d.rewardFame, "fame" },
+				{ career .. (if receipt then " 경험치" else " 기본 경험치"), receipt and receipt.xp or d.rewardXp, "growth" },
 			}
 			for i, reward in rewards do
 				local amount = tonumber(reward[2])
 				if amount and amount > 0 then
-					local row = mkLabel(box, tostring(reward[1]) .. "  +" .. H.commas(amount), 26, Color3.fromRGB(110, 70, 20), true, 4 + i)
-					row.Size = UDim2.new(1, 0, 0, 0)
-					row.TextXAlignment = Enum.TextXAlignment.Center
-					if not game:GetService("GuiService").ReducedMotionEnabled then
-						local scale = Instance.new("UIScale")
-						scale.Scale = 0.92
-						scale.Parent = row
-						task.delay(i * 0.16, function()
-							if row.Parent then TS:Create(scale, TweenInfo.new(0.25, Enum.EasingStyle.Back), { Scale = 1 }):Play() end
+					local row = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 64), Color3.fromRGB(224, 198, 146))
+					row.Name = "QuestReward_" .. tostring(reward[3])
+					row.LayoutOrder = 4 + i
+					corner(row, 8)
+					local hasArt = H.hasIconArt(reward[3])
+					if hasArt then
+						local icon = modelIcon(row, "FacilityArt", reward[3], COLORS.gold, 44)
+						icon.Position = UDim2.fromOffset(8, 10)
+					end
+					local caption = mkLabel(row, tostring(reward[1]), 18, Color3.fromRGB(100, 65, 30), true)
+					caption.AutomaticSize = Enum.AutomaticSize.None
+					caption.Position = UDim2.fromOffset(if hasArt then 60 else 12, 4)
+					caption.Size = UDim2.new(1, if hasArt then -70 else -24, 0, 24)
+					local value = mkLabel(row, "+" .. H.commas(amount), 28, Color3.fromRGB(80, 48, 12), true)
+					value.Name = "QuestRewardValue"
+					value.AutomaticSize = Enum.AutomaticSize.None
+					value.Position = UDim2.fromOffset(if hasArt then 60 else 12, 28)
+					value.Size = UDim2.new(1, if hasArt then -70 else -24, 0, 32)
+					if not reduced then
+						value.Text = "+0"
+						task.spawn(function()
+							task.wait((i - 1) * 0.22)
+							if not row.Parent then return end
+							Sfx.play(if i == 1 then "sfx_coin" else "sfx_card_coin", 0.3)
+							for step = 1, 16 do
+								if not g.Parent or not row.Parent then return end
+								value.Text = "+" .. H.commas(math.floor(amount * step / 16))
+								task.wait(0.035)
+							end
+							if row.Parent then value.Text = "+" .. H.commas(amount) end
 						end)
 					end
+				end
+			end
+			if receipt and receipt.afterLevel then
+				local raised = receipt.afterLevel > receipt.beforeLevel
+				local growth = mkBox(box, UDim2.new(), UDim2.new(1, 0, 0, 84), Color3.fromRGB(224, 198, 146))
+				growth.Name = "QuestCareerGrowth"
+				growth.LayoutOrder = 8
+				corner(growth, 8)
+				local head = mkLabel(growth, career .. (if raised then string.format(" 레벨 %d → %d", receipt.beforeLevel, receipt.afterLevel) else string.format(" 레벨 %d", receipt.afterLevel)), 24, Color3.fromRGB(96, 57, 15), true)
+				head.AutomaticSize = Enum.AutomaticSize.None
+				head.Position = UDim2.fromOffset(10, 4)
+				head.Size = UDim2.new(1, -20, 0, 30)
+				local track = mkBox(growth, UDim2.fromOffset(10, 40), UDim2.new(1, -20, 0, 16), Color3.fromRGB(109, 83, 53))
+				corner(track, 5)
+				local capped = receipt.afterLevel >= receipt.maxLevel
+				local ratio = if capped then 1 else math.clamp(receipt.afterXp / math.max(1, receipt.afterNextXp), 0, 1)
+				local initial = if raised then 0 else math.clamp(receipt.beforeXp / math.max(1, receipt.beforeNextXp), 0, 1)
+				local fill = mkBox(track, UDim2.new(), UDim2.fromScale(if reduced then ratio else initial, 1), COLORS.green)
+				fill.Name = "QuestCareerFill"
+				corner(fill, 5)
+				local meter = mkLabel(growth, if capped then "최고 레벨" else string.format("%d / %d 경험치", receipt.afterXp, receipt.afterNextXp), 18, Color3.fromRGB(70, 45, 20), true)
+				meter.AutomaticSize = Enum.AutomaticSize.None
+				meter.Position = UDim2.fromOffset(10, 57)
+				meter.Size = UDim2.new(1, -20, 0, 25)
+				if not reduced then
+					task.delay(0.8, function()
+						if not g.Parent or not fill.Parent then return end
+						TS:Create(fill, TweenInfo.new(0.65, Enum.EasingStyle.Quad), { Size = UDim2.fromScale(ratio, 1) }):Play()
+						if raised then Sfx.play("sfx_fanfare", 0.55) end
+					end)
 				end
 			end
 		end
@@ -12404,7 +12457,7 @@ do
 			for _, d in fresh do
 				while player.Parent and (newGameMode or sceneHold or H.sceneBusy or H.questScenesPlaying
 					or pg:FindFirstChild("StoryScene", true) or pg:FindFirstChild("WonderScene", true) or pg:FindFirstChild("CardGain")
-					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult")) do
+					or pg:FindFirstChild("CardFan") or pg:FindFirstChild("QuestResult") or pg:FindFirstChild("QuestTalk") or pg:FindFirstChild("WorldEventScene") or pg:FindFirstChild("IntroDialog")) do
 					task.wait(0.3)
 				end
 				if not player.Parent then return end

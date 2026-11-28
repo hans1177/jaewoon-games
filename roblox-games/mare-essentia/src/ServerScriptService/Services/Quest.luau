@@ -229,9 +229,26 @@ return function(D, S)
 			table.insert(state._scenes, sceneMeta({ kind = "end", name = quest.name, text = ending }, quest))
 			if AUTO_KINDS[quest.kind] then state._autoEventPort = state.portId end
 		end
+		-- [보상 영수증] 지급 전후 직업 수치만 이번 응답에 전달한다. 저장 대상 아님.
+		local receipt = { coins = quest.rewardCoins, fame = quest.rewardFame } :: any
 		if quest.rewardCareer then
+			local before = state.careers[quest.rewardCareer]
+			local beforeLevel, beforeXp = before.level, before.xp
 			S.State.gainXp(state, quest.rewardCareer, quest.rewardXp, msgs)
+			local after = state.careers[quest.rewardCareer]
+			local xp = after.xp - beforeXp
+			for level = beforeLevel, after.level - 1 do
+				xp += D.Careers.xpForNext(level)
+			end
+			receipt.career = quest.rewardCareer
+			receipt.xp = math.max(0, xp)
+			receipt.beforeLevel, receipt.beforeXp = beforeLevel, beforeXp
+			receipt.afterLevel, receipt.afterXp = after.level, after.xp
+			receipt.beforeNextXp, receipt.afterNextXp = D.Careers.xpForNext(beforeLevel), D.Careers.xpForNext(after.level)
+			receipt.maxLevel = D.Careers.MAX_LEVEL
 		end
+		state._questRewards = state._questRewards or {}
+		state._questRewards[quest.id] = receipt
 		if quest.rewardCardId then
 			S.Discovery.grantCard(state, quest.rewardCardId, msgs, { method = "quest", questId = quest.id })
 		end

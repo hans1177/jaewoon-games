@@ -701,6 +701,7 @@ return function(D, S)
 				table.insert(view.quests.done, { id = dq.id, name = dq.name, summary = dq.summary, strand = dq.strand, grade = D.Quests.Grade(dq), ending = ending,
 					chapter = chapterName, chapterEnd = chapterName ~= nil and D.Quests.NextOf[dq.id] == nil, result = dq.result,
 					rewardCoins = dq.rewardCoins, rewardFame = dq.rewardFame, rewardXp = dq.rewardCareer and dq.rewardXp or nil, rewardCareer = dq.rewardCareer,
+					receipt = state._questRewards and state._questRewards[dq.id] or nil,
 					nextName = D.Quests.NextOf[dq.id] and D.Quests.ById[D.Quests.NextOf[dq.id]] and D.Quests.ById[D.Quests.NextOf[dq.id]].name or nil })
 			end
 		end
@@ -1177,6 +1178,7 @@ return function(D, S)
 		view.village = S.Village.view(state)
 		view.scenes = state._scenes -- 이번에 새로 생긴 퀘스트 이야기 장면 (한 번만 보낸다)
 		state._scenes = nil
+		state._questRewards = nil -- 일회성 보상 표시, 저장하지 않는다
 		view.bosses = {}
 		for _, b in D.Bosses.Bosses do
 			local rec = state.bosses[b.id]
