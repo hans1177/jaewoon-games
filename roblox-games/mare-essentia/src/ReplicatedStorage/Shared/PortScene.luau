@@ -9150,9 +9150,35 @@ function PortScene.build(info, onFacility)
 				oldSite.Z + (if oldSite.Z > 0 then shiftZ else -shiftZ))
 		end
 		folder:SetAttribute("CityLandmarkReflowCount", #landmarkSites)
+		-- [안 지은 랜드마크 자리 비우기 · 2026-11-29 Studio 실측: 집 탈락의 70%가 랜드마크 예약]
+		-- 8자리를 늘 예약해 지금 단계·연도·기술로는 짓지 않는 랜드마크 자리까지 집이 못 들어갔다.
+		-- placeLandmarks 와 같은 순서(같은 시드)로 실제 지을 자리만 골라 주택 예약에 쓴다.
+		local activeSites = (function()
+			local year = (info.sim and info.sim.year) or info.year or 1700
+			local adopted = {}
+			for _, node in ipairs((info.sim and info.sim.technology and info.sim.technology.rows) or {}) do
+				if node.status == "adopted" then adopted[node.id] = true end
+			end
+			local order = {}
+			for i = 1, #landmarkSites do order[i] = i end
+			local pr = seeded(info.portId .. "landmarks")
+			for i = #order, 2, -1 do
+				local j = pr:NextInteger(1, i)
+				order[i], order[j] = order[j], order[i]
+			end
+			local list = {}
+			for idx, lm in PortBuildings.Landmarks do
+				local at = landmarkSites[order[idx]]
+				if at and sceneLevel >= lm.minLevel and year >= (lm.since or 0) and (not lm.tech or adopted[lm.tech]) then
+					table.insert(list, at)
+				end
+			end
+			return list
+		end)()
+		folder:SetAttribute("CityLandmarkActiveSites", #activeSites)
 		densify(folder, info, style, rng, walkers,
 			(PortData.Ports[info.portId] and PortData.Ports[info.portId].produces) or {},
-			onFacility, landmarkSites)
+			onFacility, activeSites)
 		placeLandmarks(folder, info, style, rng, onFacility, walkers, landmarkSites)
 	end
 	placeSignature(folder, info)
