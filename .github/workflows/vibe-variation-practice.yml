@@ -156,22 +156,31 @@ jobs:
           # 5분 내 정기/복구 요청 또는 실행 중인 등록이 있으면 건너뛴다. 조회 실패는 실행하지 않는다.
           if mare_runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/owner-mare-essentia-assets.yml/runs?branch=main&per_page=100"); then
             cutoff=$(date -u -d '5 minutes ago' +%s)
-            if jq -e --argjson cutoff "$cutoff" '
-              .workflow_runs | type == "array"
-            ' <<< "$mare_runs" >/dev/null && jq -e --argjson cutoff "$cutoff" '
-              [.workflow_runs[] | select(
+            # 동일 중복 방지 조건을 한 번만 계산하고 실제 차단 실행 번호를 남긴다.
+            if blockers=$(jq -ce --argjson cutoff "$cutoff" '
+              if (.workflow_runs | type) != "array" then error("invalid workflow history")
+              else [.workflow_runs[] | select(
                 .status != "completed" or
                 ((.event == "schedule" or ((.display_title // "") | endswith(" · periodic"))) and
                  ((.created_at | fromdateiso8601) >= $cutoff))
-              )] | length == 0
-            ' <<< "$mare_runs" >/dev/null; then
-              if gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true; then
-                echo "MARE_PERIODIC_RECOVERY_REQUESTED=YES"
+              ) | {id, status, event, created_at, updated_at,
+                   reason: (if .status != "completed" then "ACTIVE" else "RECENT_PERIODIC" end)}]
+              end
+            ' <<< "$mare_runs"); then
+              if jq -e 'length == 0' <<< "$blockers" >/dev/null; then
+                if gh workflow run owner-mare-essentia-assets.yml --repo "$GITHUB_REPOSITORY" --ref main -f scheduled_recovery=true; then
+                  echo "MARE_PERIODIC_RECOVERY_REQUESTED=YES"
+                else
+                  echo "MARE_PERIODIC_RECOVERY_REQUEST_FAILED=RETRY_NEXT_CHAIN"
+                fi
               else
-                echo "MARE_PERIODIC_RECOVERY_REQUEST_FAILED=RETRY_NEXT_CHAIN"
+                echo "MARE_PERIODIC_RECOVERY_SKIP=BUSY_OR_RECENT"
+                jq -c '.[]' <<< "$blockers" | while IFS= read -r row; do
+                  printf 'MARE_PERIODIC_RECOVERY_BLOCKER=%s\n' "$row"
+                done
               fi
             else
-              echo "MARE_PERIODIC_RECOVERY_SKIP=BUSY_RECENT_OR_INVALID"
+              echo "MARE_PERIODIC_RECOVERY_SKIP=HISTORY_UNVERIFIED"
             fi
           else
             echo "MARE_PERIODIC_RECOVERY_SKIP=HISTORY_UNVERIFIED"
