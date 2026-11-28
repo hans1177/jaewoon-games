@@ -34,8 +34,9 @@
 
 1. 위 4종 + `AGENTS.md` + 해당 게임 `READ_FIRST.md`·지시서 읽기
 2. 기존 책임 소스를 직접 고치기 (새 파이프라인·래퍼 금지)
-3. 새 브랜치 → PR (본문에 읽은 main SHA, 미검증 항목)
+3. 새 브랜치 → PR (`.github/pull_request_template.md` 칸 채우기: 읽은 main SHA, 검증 증거, 미검증 항목)
 4. 기존 검사 통과 → 병합 → 배포·화면 확인은 따로 보고
+5. 푸시 전 `python3 tools/devloop/lint_luau.py <게임폴더> --diff origin/main` — 바뀐 Luau 파일 컴파일(R5)까지 잡는다
 
 ## 4. 지시서 찾기 (mare-essentia)
 
