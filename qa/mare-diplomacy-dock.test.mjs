@@ -56,3 +56,18 @@ test('HUD 아이콘은 도형보다 기존 청동 원화 시트를 우선한다'
   }
   assert.match(renderer, /icon\.Name = "MenuArt"/, '기존 메뉴 표시 흐름 유지');
 });
+
+test('책 프레임과 가로 탭 및 인과 카드에 승인 원화만 연결', () => {
+  assert.match(client, /surfaceTexture = if AssetIds\["CardArt\/ui_frame_book"\]/);
+  assert.match(client, /Rect\.new\(64, 64, 448, 448\)/);
+  const tabs = client.split('function H.renderTabs()')[1];
+  assert.match(tabs, /local tabSkins = tabOn ~= nil and tabOff ~= nil/);
+  assert.match(tabs, /grain\.SliceCenter = Rect\.new\(24, 24, 232, 72\)/);
+  assert.match(tabs, /grain\.Image = "rbxassetid:\/\/" \.\. tostring\(if selected then tabOn else tabOff\)/);
+  const cause = client.split('function H.questCauseCard(q)')[1].split('function H.showQuestResult(d)')[0];
+  assert.match(cause, /Instance\.new\(if frameArt then "ImageLabel" else "Frame"\)/);
+  assert.match(cause, /card\.SliceCenter = Rect\.new\(24, 24, 232, 232\)/);
+  assert.match(cause, /\{ "problem", "cause", "todo", "result" \}/);
+  assert.match(cause, /card\.AutomaticSize = Enum\.AutomaticSize\.Y/);
+  assert.match(cause, /openTab\(step\.tab\)/);
+});
