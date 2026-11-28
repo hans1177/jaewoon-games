@@ -6,7 +6,7 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "-- [주민 촬영] 이동하는 실제 주민의 머리 좌표와 방향을 따라간다.\nfor _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end\nlocal RS=game:GetService(\"RunService\")\npcall(function() RS:UnbindFromRenderStep(\"MareShot\") end)\n_G.VAngle=\"front\"\n_G.VRoster=nil\nlocal shotRay=RaycastParams.new()\nshotRay.FilterType=Enum.RaycastFilterType.Exclude\nshotRay.IgnoreWater=true\nRS:BindToRenderStep(\"MareShot\",Enum.RenderPriority.Last.Value+1,function()\n local cam=workspace.CurrentCamera\n local cf=workspace:GetAttribute(\"ShotCF\")\n local fov=if _G.VAngle==\"body\" then 48 else 38\n local m=_G.VTarget\n if m and m.Parent then\n  local h=m:FindFirstChild(\"Head\")\n  if h and h:IsA(\"BasePart\") then\n   local mode=_G.VAngle\n   local p=h.Position\n   local forward=h.CFrame.LookVector\n   local right=h.CFrame.RightVector\n   local distance=math.max(h.Size.X,h.Size.Y,h.Size.Z)\n   local focus=p\n   local offset=forward*distance*4.8\n   if mode==\"body\" then\n    local left,rightFoot=m:FindFirstChild(\"LeftFoot\"),m:FindFirstChild(\"RightFoot\")\n    if left and rightFoot and left:IsA(\"BasePart\") and rightFoot:IsA(\"BasePart\") then\n     local bottom=math.min(left.Position.Y-left.Size.Y*0.5,rightFoot.Position.Y-rightFoot.Size.Y*0.5)\n     local top=p.Y+h.Size.Y*0.5\n     focus=Vector3.new(p.X,(bottom+top)*0.5,p.Z)\n     local flat=Vector3.new(forward.X,0,forward.Z)\n     if flat.Magnitude>0.01 then forward=flat.Unit end\n     offset=forward*math.max(distance*5,(top-bottom)*1.45)\n    else focus=p-Vector3.new(0,distance*0.85,0) offset=forward*distance*9 end\n   elseif mode==\"side\" then offset=right*distance*4.8+Vector3.new(0,distance*0.16,0)\n   elseif mode==\"back\" then offset=-forward*distance*4.8+Vector3.new(0,distance*0.16,0) end\n   -- 촬영 대상 자체를 제외하고 실제 장면 장애물 앞에 카메라를 배치한다.\n   local desired=offset.Magnitude\n   shotRay.FilterDescendantsInstances={m}\n   local hit=workspace:Raycast(focus,offset,shotRay)\n   if hit then\n    local safe=hit.Distance-0.2\n    if safe>distance*0.85 and safe<desired then\n     offset=offset.Unit*safe\n     fov=math.min(75,math.deg(2*math.atan(math.tan(math.rad(fov)*0.5)*desired/safe)))\n    end\n   end\n   cf=CFrame.lookAt(focus+offset,focus)\n  end\n end\n if cf then cam.CameraType=Enum.CameraType.Scriptable cam.CFrame=cf cam.FieldOfView=fov end\nend)\nreturn \"VILLAGER_TRACKED_CAMERA_READY\""
+    "code": "-- [주민 촬영] 이동하는 실제 주민의 머리 좌표와 방향을 따라간다.\nfor _,g in ipairs(game.Players.LocalPlayer.PlayerGui:GetChildren()) do if g:IsA(\"ScreenGui\") then g.Enabled=false end end\nlocal RS=game:GetService(\"RunService\")\npcall(function() RS:UnbindFromRenderStep(\"MareShot\") end)\n_G.VAngle=\"front\"\n_G.VRoster=nil\n_G.VTarget=nil\nworkspace:SetAttribute(\"ShotCF\",nil)\nlocal shotRay=RaycastParams.new()\nshotRay.FilterType=Enum.RaycastFilterType.Exclude\nshotRay.IgnoreWater=true\nlocal function updateShot()\n local cam=workspace.CurrentCamera\n local cf=workspace:GetAttribute(\"ShotCF\")\n local fov=if _G.VAngle==\"body\" then 48 else 38\n local m=_G.VTarget\n if m and m.Parent then\n  local h=m:FindFirstChild(\"Head\")\n  if h and h:IsA(\"BasePart\") then\n   local mode=_G.VAngle\n   local p=h.Position\n   local forward=h.CFrame.LookVector\n   local right=h.CFrame.RightVector\n   local distance=math.max(h.Size.X,h.Size.Y,h.Size.Z)\n   local focus=p\n   local offset=forward*distance*4.8\n   if mode==\"body\" then\n    local left,rightFoot=m:FindFirstChild(\"LeftFoot\"),m:FindFirstChild(\"RightFoot\")\n    if left and rightFoot and left:IsA(\"BasePart\") and rightFoot:IsA(\"BasePart\") then\n     local bottom=math.min(left.Position.Y-left.Size.Y*0.5,rightFoot.Position.Y-rightFoot.Size.Y*0.5)\n     local top=p.Y+h.Size.Y*0.5\n     focus=Vector3.new(p.X,(bottom+top)*0.5,p.Z)\n     local flat=Vector3.new(forward.X,0,forward.Z)\n     if flat.Magnitude>0.01 then forward=flat.Unit end\n     offset=forward*math.max(distance*5,(top-bottom)*1.45)\n    else focus=p-Vector3.new(0,distance*0.85,0) offset=forward*distance*9 end\n   elseif mode==\"side\" then offset=right*distance*4.8+Vector3.new(0,distance*0.16,0)\n   elseif mode==\"back\" then offset=-forward*distance*4.8+Vector3.new(0,distance*0.16,0) end\n   -- 촬영 대상 자체를 제외하고 실제 장면 장애물 앞에 카메라를 배치한다.\n   local desired=offset.Magnitude\n   shotRay.FilterDescendantsInstances={m}\n   local hit=workspace:Raycast(focus,offset,shotRay)\n   if hit then\n    local safe=hit.Distance-0.2\n    if safe>distance*0.85 and safe<desired then\n     offset=offset.Unit*safe\n     fov=math.min(75,math.deg(2*math.atan(math.tan(math.rad(fov)*0.5)*desired/safe)))\n    end\n   end\n   cf=CFrame.lookAt(focus+offset,focus)\n  end\n end\n if cf then\n  cam.CameraType=Enum.CameraType.Scriptable\n  cam.CFrame=cf\n  cam.Focus=CFrame.new(cf.Position+cf.LookVector*8)\n  cam.FieldOfView=fov\n end\nend\n_G.VUpdateShot=updateShot\nRS:BindToRenderStep(\"MareShot\",Enum.RenderPriority.Last.Value+1,updateShot)\nreturn \"VILLAGER_TRACKED_CAMERA_READY\""
   },
   {
     "type": "luau",
@@ -27,6 +27,11 @@
     "ms": 1200
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_1_0"
   },
@@ -40,6 +45,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_1_1"
   },
@@ -51,6 +61,11 @@
   {
     "type": "wait",
     "ms": 700
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -71,6 +86,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_1_2"
   },
@@ -82,6 +102,11 @@
   {
     "type": "wait",
     "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -97,6 +122,11 @@
     "ms": 1200
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_2_0"
   },
@@ -110,6 +140,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_2_1"
   },
@@ -121,6 +156,11 @@
   {
     "type": "wait",
     "ms": 700
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -141,6 +181,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_2_2"
   },
@@ -152,6 +197,11 @@
   {
     "type": "wait",
     "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -167,6 +217,11 @@
     "ms": 1200
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_3_0"
   },
@@ -180,6 +235,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_3_1"
   },
@@ -191,6 +251,11 @@
   {
     "type": "wait",
     "ms": 700
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -211,6 +276,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_3_2"
   },
@@ -222,6 +292,11 @@
   {
     "type": "wait",
     "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -237,6 +312,11 @@
     "ms": 1200
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_4_0"
   },
@@ -250,6 +330,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_4_1"
   },
@@ -261,6 +346,11 @@
   {
     "type": "wait",
     "ms": 700
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -281,6 +371,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_4_2"
   },
@@ -292,6 +387,11 @@
   {
     "type": "wait",
     "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -307,6 +407,11 @@
     "ms": 1200
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_5_0"
   },
@@ -320,6 +425,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_5_1"
   },
@@ -331,6 +441,11 @@
   {
     "type": "wait",
     "ms": 700
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -351,6 +466,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_5_2"
   },
@@ -362,6 +482,11 @@
   {
     "type": "wait",
     "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -377,6 +502,11 @@
     "ms": 1200
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_6_0"
   },
@@ -390,6 +520,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_6_1"
   },
@@ -401,6 +536,11 @@
   {
     "type": "wait",
     "ms": 700
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -421,6 +561,11 @@
     "ms": 900
   },
   {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
+  },
+  {
     "type": "capture",
     "name": "vil_6_2"
   },
@@ -432,6 +577,11 @@
   {
     "type": "wait",
     "ms": 900
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "-- [촬영 직전 실구도 검사] 항구 전경이나 잘린 전신을 주민 사진으로 인정하지 않는다.\nlocal RS=game:GetService(\"RunService\")\nlocal m=assert(_G.VTarget,\"VILLAGER_CAPTURE_TARGET_MISSING\")\nlocal h=assert(m:FindFirstChild(\"Head\"),\"VILLAGER_CAPTURE_HEAD_MISSING\")\nlocal update=assert(_G.VUpdateShot,\"VILLAGER_CAPTURE_CAMERA_MISSING\")\nupdate()\nRS.RenderStepped:Wait()\nRS.RenderStepped:Wait()\nlocal cam=workspace.CurrentCamera\nassert(cam and cam.CameraType==Enum.CameraType.Scriptable,\"VILLAGER_CAPTURE_CAMERA_OVERRIDDEN\")\nlocal vp=cam.ViewportSize\nlocal point,on=cam:WorldToViewportPoint(h.Position)\nlocal headSize=math.max(h.Size.X,h.Size.Y,h.Size.Z)\nlocal maxDistance=if _G.VAngle==\"body\" then headSize*20 else headSize*7\nassert(on and point.Z>0 and (cam.CFrame.Position-h.Position).Magnitude<=maxDistance,\"VILLAGER_CAPTURE_WRONG_TARGET\")\nassert(point.X>=vp.X*0.15 and point.X<=vp.X*0.85 and point.Y>=vp.Y*0.04 and point.Y<=vp.Y*0.90,\"VILLAGER_CAPTURE_HEAD_CLIPPED\")\nif _G.VAngle==\"body\" then\n for _,name in {\"LeftFoot\",\"RightFoot\"} do\n  local foot=assert(m:FindFirstChild(name),\"VILLAGER_CAPTURE_FOOT_MISSING\")\n  local p,visible=cam:WorldToViewportPoint(foot.Position-Vector3.new(0,foot.Size.Y*0.5,0))\n  assert(visible and p.Y>=vp.Y*0.04 and p.Y<=vp.Y*0.96 and p.X>=vp.X*0.04 and p.X<=vp.X*0.96,\"VILLAGER_CAPTURE_BODY_CLIPPED\")\n end\nend\nreturn \"VILLAGER_CAPTURE_FRAME_VERIFIED:\"..tostring(_G.VAngle)"
   },
   {
     "type": "capture",
@@ -450,6 +600,6 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "assert(not _G.VFaceDecal,\"VILLAGER_FACE_RESTORE_LEAK\") _G.VTarget=nil _G.VAngle=nil _G.VRoster=nil game:GetService(\"RunService\"):UnbindFromRenderStep(\"MareShot\") workspace:SetAttribute(\"ShotCF\",nil) return \"VILLAGER_CAMERA_CLEANUP\""
+    "code": "assert(not _G.VFaceDecal,\"VILLAGER_FACE_RESTORE_LEAK\") _G.VTarget=nil _G.VAngle=nil _G.VRoster=nil _G.VUpdateShot=nil game:GetService(\"RunService\"):UnbindFromRenderStep(\"MareShot\") workspace:SetAttribute(\"ShotCF\",nil) return \"VILLAGER_CAMERA_CLEANUP\""
   }
 ]
