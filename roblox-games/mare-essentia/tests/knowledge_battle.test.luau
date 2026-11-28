@@ -82,22 +82,29 @@ do
 	if site and cardId then
 		st.ship.supplies = 10000
 		local H = Registry.handlers
-		check("탐험 구역 저장: 입장", H.FieldPracticeBegin(st, { siteId = site.id }) == true)
-		check("탐험 구역 저장: 단계 건너뛰기 거부", H.FieldCheckpoint(st, { siteId = site.id, stage = 2, observedCardId = cardId }) == false)
-		check("탐험 구역 저장: 1단계", H.FieldCheckpoint(st, { siteId = site.id, stage = 1, observedCardId = cardId }) == true)
-		check("탐험 구역 저장: 재전송 멱등", H.FieldCheckpoint(st, { siteId = site.id, stage = 1, observedCardId = cardId }) == true)
-		check("탐험 구역 저장: 중간 보상 거부", H.Explore(st, { siteId = site.id, fieldCheckpoint = true }, ctx) == false and st.stats.explored == 0)
+		local began, _, runId = H.FieldPracticeBegin(st, { siteId = site.id })
+		check("탐험 구역 저장: 입장", began == true and type(runId) == "number")
+		check("탐험 구역 저장: 단계 건너뛰기 거부", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 2, observedCardId = cardId }) == false)
+		check("탐험 구역 저장: 1단계", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 1, observedCardId = cardId }) == true)
+		check("탐험 구역 저장: 재전송 멱등", H.FieldCheckpoint(st, { siteId = site.id, runId = runId, stage = 1, observedCardId = cardId }) == true)
+		check("탐험 구역 저장: 중간 보상 거부", H.Explore(st, { siteId = site.id, fieldCheckpoint = true, runId = runId }, ctx) == false and st.stats.explored == 0)
 		local loaded = S.State.sanitize(S.State.serialize(st))
 		local cp = loaded and S.Discovery.checkpointOf(loaded, site)
 		check("탐험 구역 저장: 세이브 왕복", cp and cp.stage == 1 and cp.cardId == cardId)
 		if loaded and cp then
 			loaded.ship.supplies = 10000
-			check("탐험 구역 저장: 재입장", H.FieldPracticeBegin(loaded, { siteId = site.id }) == true)
+			local resumed, _, resumedId = H.FieldPracticeBegin(loaded, { siteId = site.id })
+			check("탐험 구역 저장: 재입장", resumed == true and resumedId ~= runId)
+			check("탐험 구역 저장: 이전 장면 단계 거부", H.FieldCheckpoint(loaded, { siteId = site.id, runId = runId, stage = 2, observedCardId = cardId }) == false)
+			check("탐험 구역 저장: 이전 장면 정산 거부", H.FieldPracticeCommit(loaded, { siteId = site.id, runId = runId, hits = {} }) == false)
 			for stage = 2, math.clamp(site.days, 1, 3) do
-				check("탐험 구역 저장: 후속 단계 " .. stage, H.FieldCheckpoint(loaded, { siteId = site.id, stage = stage, observedCardId = cardId }) == true)
+				check("탐험 구역 저장: 후속 단계 " .. stage, H.FieldCheckpoint(loaded, { siteId = site.id, runId = resumedId, stage = stage, observedCardId = cardId }) == true)
 			end
-			check("탐험 구역 저장: 최종 정산", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true }, ctx) == true)
-			check("탐험 구역 저장: 중복 정산 차단", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true }, ctx) == false and loaded.stats.explored == 1)
+			check("탐험 구역 저장: 이전 장면 귀환 거부", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true, runId = runId }, ctx) == false)
+			check("탐험 구역 저장: 숙련 정산", H.FieldPracticeCommit(loaded, { siteId = site.id, runId = resumedId, hits = {} }) == true)
+			check("탐험 구역 저장: 숙련 중복 정산 거부", H.FieldPracticeCommit(loaded, { siteId = site.id, runId = resumedId, hits = {} }) == false)
+			check("탐험 구역 저장: 최종 정산", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true, runId = resumedId }, ctx) == true)
+			check("탐험 구역 저장: 중복 정산 차단", H.Explore(loaded, { siteId = site.id, fieldCheckpoint = true, runId = resumedId }, ctx) == false and loaded.stats.explored == 1)
 		end
 	end
 end

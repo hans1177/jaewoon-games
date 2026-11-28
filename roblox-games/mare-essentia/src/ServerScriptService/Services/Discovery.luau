@@ -6,6 +6,7 @@ return function(D, S)
 	local handlers = {}
 	-- [탐험 숙련] 각 게임 상태별로 진행 중인 한 번의 탐험만 임시로 추적한다.
 	local fieldRuns = setmetatable({}, { __mode = "k" })
+	local nextFieldRunId = 0 -- 서버 세션 내부 식별자. 영구 저장이나 보상 권한으로 사용하지 않는다.
 
 	local RARITY_XP = { Common = 15, Uncommon = 25, Rare = 45, Epic = 80, Legendary = 150 }
 
@@ -189,8 +190,9 @@ return function(D, S)
 		local blocked = siteBlockReason(state, site)
 		if blocked then return false, blocked end
 		local cp = checkpointOf(state, site)
-		fieldRuns[state] = { siteId = site.id, started = os.clock(), stage = if cp then cp.stage else 0, cardId = if cp then cp.cardId else nil }
-		return true, ""
+		nextFieldRunId += 1
+		fieldRuns[state] = { id = nextFieldRunId, siteId = site.id, started = os.clock(), stage = if cp then cp.stage else 0, cardId = if cp then cp.cardId else nil }
+		return true, "", nextFieldRunId
 	end
 
 	-- [구역 통과] 클라이언트 필드의 진행 기록이므로 서버는 실제 이동/전투를 직접 입증하지 못한다.
@@ -198,7 +200,7 @@ return function(D, S)
 	function handlers.FieldCheckpoint(state, p)
 		local run = fieldRuns[state]
 		local site = type(p.siteId) == "string" and findSite(p.siteId)
-		if not run or not site or run.siteId ~= site.id or site.portId ~= state.portId
+		if not run or run.id ~= p.runId or run.committed or not site or run.siteId ~= site.id or site.portId ~= state.portId
 			or siteBlockReason(state, site) then return false, "탐험 기록을 확인할 수 없어요" end
 		local stage, cardId = p.stage, p.observedCardId
 		if type(stage) ~= "number" or stage ~= math.floor(stage) or stage < 1
@@ -222,8 +224,8 @@ return function(D, S)
 	-- 유효 무기·정수·탐험 경과시간·중복 정산 상한을 강제하고 기존 피해/보상 판정엔 연결하지 않는다.
 	function handlers.FieldPracticeCommit(state, p)
 		local run = fieldRuns[state]
-		fieldRuns[state] = nil -- 중복 정산·재전송 차단
-		if not run or type(p.siteId) ~= "string" or p.siteId ~= run.siteId
+		-- 이전 장면의 지연 응답이나 잘못된 요청이 현재 탐험을 폐기하지 못하게 한다.
+		if not run or run.id ~= p.runId or run.committed or type(p.siteId) ~= "string" or p.siteId ~= run.siteId
 			or type(p.hits) ~= "table" then return false, "숙련 정산 요청이 올바르지 않아요" end
 		local limit = math.min(120, math.floor(math.max(0, os.clock() - run.started) / 0.2) + 1)
 		local total, count = 0, 0
@@ -248,6 +250,7 @@ return function(D, S)
 			-- 기록 검증 실패가 기존 무기 숙련 정산까지 막지 않도록 기록만 무시한다.
 			record = nil
 		end
+		run.committed = true -- 현재 탐험에서 한 번만 정산. 최종 귀환까지 식별자는 유지한다.
 		for id, earned in p.hits do
 			state.weaponPractice[id] = math.min(10000, (state.weaponPractice[id] or 0) + earned)
 		end
@@ -270,6 +273,12 @@ return function(D, S)
 		if blocked then return false, blocked end
 
 		local checkpoint = checkpointOf(state, site)
+		if p.fieldCheckpoint == true then
+			local run = fieldRuns[state]
+			if not run or run.id ~= p.runId or run.siteId ~= site.id then
+				return false, "현재 탐험의 귀환 요청이 아니에요"
+			end
+		end
 		if p.fieldCheckpoint == true or checkpoint then
 			if not checkpoint or checkpoint.stage ~= math.clamp(site.days, 1, 3) then
 				return false, "마지막 구역까지 완료해야 귀환 보상을 받을 수 있어요"
@@ -292,6 +301,7 @@ return function(D, S)
 		S.State.advanceDays(state, site.days)
 		state.stats.explored += 1
 		if type(state.stats.fieldCheckpoint) == "table" and state.stats.fieldCheckpoint.siteId == site.id then state.stats.fieldCheckpoint = nil end
+		if fieldRuns[state] and fieldRuns[state].siteId == site.id then fieldRuns[state] = nil end
 
 		local msgs = { string.format("%s 탐험 (%d일)", site.name, site.days) }
 		if ctx.rng() < 0.45 then

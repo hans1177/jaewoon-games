@@ -9453,7 +9453,8 @@ function H.startField(s)
 	end
 	-- [무기 숙련] 기존 서버 탐험 자격을 확인하고 이번 탐험의 정산 시작 시각을 기록한다.
 	local beginResult = call("FieldPracticeBegin", { siteId = s.id })
-	local practiceAllowed = beginResult ~= nil and beginResult.ok == true
+	local fieldRunId = beginResult and beginResult.fieldRunId
+	local practiceAllowed = beginResult ~= nil and beginResult.ok == true and type(fieldRunId) == "number"
 	if not practiceAllowed then
 		inField = false
 		applyView()
@@ -9493,7 +9494,7 @@ function H.startField(s)
 		fieldStory = s.fieldStory, -- 현재 현장 의뢰와 다음 이야기의 정본 연결
 		fieldCheckpoint = s.fieldCheckpoint,
 		onCheckpoint = function(stage, cardId)
-			local response = call("FieldCheckpoint", { siteId = s.id, stage = stage, observedCardId = cardId })
+			local response = call("FieldCheckpoint", { siteId = s.id, stage = stage, observedCardId = cardId, runId = fieldRunId })
 			return response ~= nil and response.ok == true
 		end,
 		nodes = math.clamp(s.days, 1, 3),
@@ -9506,12 +9507,12 @@ function H.startField(s)
 			-- [귀환 저장] 클리어·패배·철수 모두 기존 저장 흐름에 숙련 경험치만 기록한다.
 			-- 기존 Explore 보상은 이 기록과 무관하게 원래 서버 판정으로만 지급한다.
 			if practiceAllowed then
-				call("FieldPracticeCommit", { siteId = s.id, hits = gainedPractice or {},
+				call("FieldPracticeCommit", { siteId = s.id, runId = fieldRunId, hits = gainedPractice or {},
 					record = streakRecord and streakRecord.hits or 0 })
 			end
 			if result == "clear" then
 				-- [현장 관찰] 서버가 기존 탐험지 pool·시대·미발견 상태를 재검증한 뒤 카드 후보를 선택한다.
-				call("Explore", { siteId = s.id, observedCardId = observedCardId, fieldCheckpoint = true })
+				call("Explore", { siteId = s.id, observedCardId = observedCardId, fieldCheckpoint = true, runId = fieldRunId })
 			else
 				message = if result == "defeat" then "산적에게 쫓겨 탐험을 접었어요" else "항구로 돌아왔어요. 마지막으로 접수된 탐험 단계에서 이어갈 수 있어요"
 				messageOk = false

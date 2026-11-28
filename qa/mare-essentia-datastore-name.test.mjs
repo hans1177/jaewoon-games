@@ -293,6 +293,9 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(discovery,/handlers\.FieldPracticeCommit/);
   assert.match(discovery,/fieldRuns\[state\] = nil/);
   assert.match(discovery,/math\.min\(120,/);
+  assert.match(discovery,/run\.id ~= p\.runId/);
+  assert.match(discovery,/run\.committed = true/);
+  assert.match(client,/local fieldRunId = beginResult and beginResult\.fieldRunId/);
   assert.match(client,/call\("FieldPracticeBegin"/);
   assert.match(client,/call\("FieldPracticeCommit"/);
   // 탐험 종료의 기존 3개 반환값을 유지하고, 검증 대상인 연타 기록만 마지막 인자로 추가 전달한다.
@@ -383,7 +386,7 @@ test('2·3연타 막타는 무기별 시각 연출만 재생하고 실제 타격
   assert.match(field,/elseif wpn\.ranged then[\s\S]*?pulseAt\("SHAPE_BURST", hrp\.CFrame/);
   assert.match(field,/elseif family == "bow" then[\s\S]*?Color3\.fromRGB\(165, 231, 165\)/);
   assert.match(field,/-- 추가 공격은 R15 무기 자세와 이펙트뿐이다/);
-  assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId, fieldCheckpoint = true \}\)/);
+  assert.match(client,/call\("Explore", \{ siteId = s\.id, observedCardId = observedCardId, fieldCheckpoint = true, runId = fieldRunId \}\)/);
   assert.match(discovery,/checkpoint\.stage ~= math\.clamp\(site\.days, 1, 3\)/);
   assert.match(discovery,/state\.stats\.fieldCheckpoint = nil/);
   assert.match(field,/local recorded = not opts\.onCheckpoint or opts\.onCheckpoint\(i, recordCard\)/);
