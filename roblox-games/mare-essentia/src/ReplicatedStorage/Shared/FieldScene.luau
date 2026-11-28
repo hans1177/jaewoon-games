@@ -4094,9 +4094,13 @@ function FieldScene.start(opts)
 			-- 서버 응답 전에는 다음 구역을 열지 않는다. 응답 유실 시 같은 단계로 재시도한다.
 			anchor:SetAttribute("FieldCheckpointPending", true)
 			local recordCard = if special then targetCard.id else observedCardId
-			local recorded = not opts.onCheckpoint or opts.onCheckpoint(i, recordCard)
+			local requestOk, recorded = pcall(function()
+				local recorded = not opts.onCheckpoint or opts.onCheckpoint(i, recordCard)
+				return recorded
+			end)
 			if finished or not anchor.Parent then return end
 			anchor:SetAttribute("FieldCheckpointPending", nil)
+			recorded = requestOk and recorded == true
 			if not recorded then say("진행 기록을 연결하지 못했어. 다시 조사해.", 3.5); return end
 			if special then
 				observedCardId = targetCard.id
