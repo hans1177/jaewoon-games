@@ -5195,3 +5195,17 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(yard.includes('math.max(520, left + 120 + 240)'));
  assert.ok(yard.includes('if narrow then -178 else -112'));
 });
+
+ test('교역 목록과 상세는 특산 잠금·실제 세후손익·기준가를 동일하게 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('local function renderYard(page)'));
+ assert.ok(trade.includes('for n = 1, if g.lock then 0 else'));
+ assert.ok(trade.includes('if g.lock or (g.tag and g.tag ~= "") then'));
+ assert.ok(trade.includes('TradeAccessBadge'));
+ assert.ok(trade.includes('elseif sel.lock then "특산품 잠김"'));
+ assert.ok(trade.includes('if average <= 0 then "세계 평균 자료 없음"'));
+ assert.ok(trade.includes('H.tradeProfit(sel, sellQty)'));
+ assert.ok(trade.includes('elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60)'));
+ assert.ok(trade.includes('else "흥정 게임", COLORS.grey'));
+ for(const action of ['Buy','Sell']) assert.ok(trade.includes('call("'+action+'"'));
+});
