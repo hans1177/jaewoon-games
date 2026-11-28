@@ -117,3 +117,26 @@ test('항해·연구 선택과 상세를 분리하고 실제 서버 행동을 �
   assert.match(tech, /not selected\.owned and selected\.blocked == nil and \(selected\.cost or 0\) <= coins/);
   assert.match(tech, /call\("Research", \{ techId = selected\.id \}\)/);
 });
+
+test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', () => {
+  const harbor = game.split('function RENDERERS.harbor()')[1].split('function RENDERERS.recruit()')[0];
+  const crew = game.split('function RENDERERS.crew()')[1].split('function RENDERERS.status()')[0];
+  const captain = game.split('function RENDERERS.status()')[1].split('function intelName')[0];
+  const explore = game.split('function RENDERERS.explore()')[1].split('-- 학자 방문')[0];
+  for (const key of ['HarborFacilityIndex', 'HarborConstructionProgress', 'BankEntry']) assert.ok(harbor.includes(key), key);
+  for (const key of ['Deposit','Withdraw','Borrow','Repay','BuildStage','BuyLicense','BuyInsurance','Audience','Invest','Resupply','Rumor']) assert.ok(harbor.includes('call("' + key + '"'), key);
+  assert.match(harbor, /H\.bankVisitPending then H\.harborPage = "finance"/);
+  for (const key of ['CaptainSectionIndex', 'CaptainFullBody', 'CaptainApprovedPortrait', 'WeaponMasteryStages', 'CareerExperienceMeter','SpecialtyExperienceMeter']) assert.ok(captain.includes(key), key);
+  assert.match(captain, /character:Clone\(\)/);
+  assert.match(captain, /view\.weaponPractice/);
+  assert.match(captain, /view\.fieldStreakBest/);
+  assert.match(captain, /gearDefs\[g\.id\]\.perk/);
+  for (const key of ['ToggleGear','BuyGear','SetSpecialty','SetSubSpecialty']) assert.ok(captain.includes('call("' + key + '"'), key);
+  assert.match(crew, /CrewSectionIndex/);
+  assert.match(crew, /H\.openCabin\(\)/);
+  assert.match(crew, /call\("Station",/);
+  assert.match(explore, /ExploreFilterIndex/);
+  assert.match(explore, /ExploreDifficultyMeter/);
+  assert.match(explore, /enabled = site\.unlocked and site\.left > 0/);
+  assert.match(explore, /H\.startField\(site\)/);
+});
