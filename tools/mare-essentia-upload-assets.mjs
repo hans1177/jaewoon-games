@@ -1864,7 +1864,7 @@ for (const k of Object.keys(cardApprovalDocument.approved || {})) {
   if (!k.startsWith('CardArt/')) continue;
   approvedCardNames.add(k.slice(8) + '.jpg');
   // [역사 이벤트 30프레임] 검수된 기존 등록 해시에 오른 3종 PNG 그림판만 허용.
-  if (k.startsWith('CardArt/ui_') || /^CardArt\/history_(?:open|map|record)$/.test(k)) {
+  if (k.startsWith('CardArt/ui_') || /^CardArt\/history_(?:open|map|record)$/.test(k) || /^CardArt\/fx_button_(?:ring|spark)$/.test(k)) {
     approvedCardNames.add(k.slice(8) + '.png');
   }
 }
@@ -2426,7 +2426,17 @@ for (const item of plan) {
     }
   }
   // [카드배틀 화면] 승인된 새 이미지의 사용 권한을 확인한 뒤에 기존 번호를 교체한다.
-  const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && /^ui_[a-z0-9_]+$/.test(item.name);
+  const buttonFxArt = item.kind === 'CardArt' && /^fx_button_(?:ring|spark)$/.test(item.name);
+  const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && (/^ui_[a-z0-9_]+$/.test(item.name) || buttonFxArt);
+  if (buttonFxArt) {
+    const size = item.name === 'fx_button_ring' ? 512 : 128;
+    if (item.ext !== '.png' || originalBytes.length < 33 || !originalBytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+      || originalBytes.toString('ascii', 12, 16) !== 'IHDR' || originalBytes.readUInt32BE(16) !== size || originalBytes.readUInt32BE(20) !== size
+      || originalBytes[24] !== 8 || originalBytes[25] !== 6) {
+      failures.push(id + ': BUTTON_FX_RGBA_PNG_REQUIRED');
+      continue;
+    }
+  }
   if (item.kind === 'CardArt' && (/^lo_\d{2}$/.test(item.name) || battleUiArt)) {
     const old = registry.assets[id];
     if (battleUiArt && old?.sourceSha256 !== sourceSha256 && approvedImages[id] === sourceSha256
