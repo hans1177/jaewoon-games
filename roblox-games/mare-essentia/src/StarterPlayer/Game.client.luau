@@ -3073,10 +3073,10 @@ dock.ScrollBarThickness = 3
 dock.ScrollBarImageColor3 = Color3.fromRGB(186, 141, 99)
 dock.ScrollingDirection = Enum.ScrollingDirection.Y
 dock.Parent = hudTop
--- [12개 도크] 시설 8 + 도구 4 = 위 6개·아래 6개. 배경 없는 기존 아이콘을 2열 격자로 정렬한다.
+-- [메뉴 도크] 주 메뉴 5개와 보조 도구 4개를 두 줄로 구분한다.
 local dockGrid = Instance.new("UIGridLayout")
 dockGrid.FillDirection = Enum.FillDirection.Horizontal
-dockGrid.FillDirectionMaxCells = 6
+dockGrid.FillDirectionMaxCells = 5
 dockGrid.SortOrder = Enum.SortOrder.LayoutOrder
 dockGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 dockGrid.VerticalAlignment = Enum.VerticalAlignment.Center
@@ -3772,24 +3772,24 @@ do
 	local function layoutBubble()
 		local width = math.max(320, hud.AbsoluteSize.X)
 		local compact = width < 610
-		-- [12개 고정 배열] 8개 시설 + 저널·내 카드·설정·걷기 4개 = 위 6 / 아래 6.
+		-- [5개 주 메뉴 / 4개 도구] 기능 묶음과 보조 도구를 서로 다른 줄에 정렬한다.
 		local GAP = if width < 420 then 4 else 6
-		local CW = math.min(58, math.floor((width - 16 - GAP * 5) / 6))
+		local CW = math.min(64, math.floor((width - 16 - GAP * 4) / 5))
 		local CH = if CW < 54 then 70 else 76
-		local dockW = CW * 6 + GAP * 5
+		local dockW = CW * 5 + GAP * 4
 		local dockH = CH * 2 + GAP
 		dockGrid.CellPadding = UDim2.fromOffset(GAP, GAP)
 		dockGrid.CellSize = UDim2.fromOffset(CW, CH)
-		-- [정렬] 걷기는 2줄 맨 앞(7번째). 시설 1~6 → 1줄, 걷기 → 2줄 첫 칸, 나머지 시설 → 그 뒤, 저널·카드·설정 → 끝.
+		-- [정렬] 주 메뉴 다섯 개는 첫 줄, 걷기·일지·카드·설정은 다음 줄.
 		local sysOrder = { "JournalButton", "DeckButton", "OptionsButton" }
 		for i, d in H.DOCK do
 			local fb = H.dockButtons[d[1]]
-			if fb then fb.LayoutOrder = if i <= 6 then i else i + 1 end
+			if fb then fb.LayoutOrder = i end
 		end
 		local walkBtn = dock:FindFirstChild("ViewToggle") or hudTop:FindFirstChild("ViewToggle")
 		if walkBtn then
 			if walkBtn.Parent ~= dock then walkBtn.Parent = dock end
-			walkBtn.LayoutOrder = 7
+			walkBtn.LayoutOrder = #H.DOCK + 1
 		end
 		for i, name in sysOrder do
 			local b = dock:FindFirstChild(name) or hudTop:FindFirstChild(name)
@@ -11607,11 +11607,13 @@ do
 		add(function()
 			local row = Instance.new("Frame")
 			row.Name = "MenuHomeStrip"
-			row.Size = UDim2.new(1, -6, 0, 64)
+			local compact = content.AbsoluteSize.X > 0 and content.AbsoluteSize.X < 440
+			row.Size = UDim2.new(1, -6, 0, if compact then 180 else 76)
 			row.BackgroundTransparency = 1
 			local grid = Instance.new("UIGridLayout")
-			grid.CellSize = UDim2.new(1 / 3, -6, 1, 0)
-			grid.CellPadding = UDim2.fromOffset(6, 0)
+			grid.CellSize = if compact then UDim2.new(1, 0, 0, 56) else UDim2.new(1 / 3, -4, 1, 0)
+			grid.CellPadding = UDim2.fromOffset(6, if compact then 6 else 0)
+			grid.FillDirectionMaxCells = if compact then 1 else 3
 			grid.SortOrder = Enum.SortOrder.LayoutOrder
 			grid.Parent = row
 			local function cell(order, title, body, color, tab)
@@ -11624,13 +11626,15 @@ do
 				b.Active = tab ~= nil
 				b.Parent = row
 				corner(b, 10)
-				local t = mkLabel(b, title, 13, Color3.fromRGB(255, 236, 196), true)
+				local t = mkLabel(b, title, 14, Color3.fromRGB(255, 236, 196), true)
 				t.Position = UDim2.fromOffset(8, 5)
-				t.Size = UDim2.new(1, -16, 0, 18)
+				t.Size = if compact then UDim2.new(0.36, -12, 1, -10) else UDim2.new(1, -16, 0, 20)
+				t.TextWrapped = true
 				t.AutomaticSize = Enum.AutomaticSize.None
-				local d = mkLabel(b, body, 12, Color3.fromRGB(250, 244, 230), false)
-				d.Position = UDim2.fromOffset(8, 24)
-				d.Size = UDim2.new(1, -16, 0, 36)
+				local d = mkLabel(b, body, 14, Color3.fromRGB(250, 244, 230), false)
+				d.Position = if compact then UDim2.new(0.36, 4, 0, 5) else UDim2.fromOffset(8, 27)
+				d.Size = if compact then UDim2.new(0.64, -12, 1, -10) else UDim2.new(1, -16, 0, 44)
+				d.TextWrapped = true
 				d.AutomaticSize = Enum.AutomaticSize.None
 				d.TextTruncate = Enum.TextTruncate.AtEnd
 				if tab then
