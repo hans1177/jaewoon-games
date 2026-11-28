@@ -2811,7 +2811,8 @@ test('항구와 탐험의 흰 수입 건물은 문화권 지붕·석재·목재 
  assert.match(block,/local textured = \(p:IsA\("MeshPart"\) and p\.TextureID ~= ""\)/);
  assert.match(block,/surfaceHasMaps\(sa\)/);
  assert.match(block,/child:IsA\("SpecialMesh"\) and child\.TextureId ~= ""/);
- assert.match(block,/if architecture and importedWhite/);
+ assert.match(block,/if architecture and \(importedWhite or \(distantHills and high - low <= 0\.14\s+and \(p\.Material == Enum\.Material\.Plastic or p\.Material == Enum\.Material\.SmoothPlastic\)\)\)/);
+ assert.match(block,/local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80/);
  assert.match(block,/local role = p\.Name:lower\(\)/);
  assert.match(block,/if role:find\(key, 1, true\) then name = role; break end/);
  assert.match(port,/local painted = appearance ~= nil or surface\.MaterialVariant ~= ""/);
