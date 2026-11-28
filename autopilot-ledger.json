@@ -154,9 +154,9 @@
       "lastSha": "f823f7a5c8a394f106c692c21f4c9c357055b143"
     },
     "mare-essentia:facilities": {
-      "lastAt": 1795880924578,
+      "lastAt": 1795905681990,
       "pending": true,
-      "lastSha": "6ffaee30a93ad66185a2c2dc4fea7c6d6a449458"
+      "lastSha": "75f30b5f170128818ddc888dacf35706fa52caa4"
     },
     "mare-essentia:ships": {
       "lastAt": 1795854938209,
@@ -180,7 +180,7 @@
   },
   "lastReport": {
     "fantasy-survival": "[{\"plannedSteps\":9,\"completedSteps\":2,\"plannedClicks\":2,\"successfulClicks\":0,\"plannedFrames\":1,\"capturedFrames\":0,\"abortedEarly\":true},1,0,[]]",
-    "mare-essentia": "studio:46191483699:3a4dc92ab102f11ad95f3180539d173c3d5c04a7"
+    "mare-essentia": "studio:46196461744:2b62d003e2e1dbd390cf76bfc4489706bf8ad231"
   },
   "orders": {
     "fantasy-survival:studio-unreachable": {
@@ -298,12 +298,12 @@
       "id": "studio-unreachable",
       "kind": "infra",
       "task": "health",
-      "text": "Studio 점검이 중간에 멈춤: step35:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Tools.ExecuteLuauTool:101: sabuiltin_Assistant.rbxm.Assistant.Packages._Inde",
+      "text": "Studio 점검이 중간에 멈춤: step45:ROBLOX_STUDIO_MCP_TOOL_ERROR:execute_luau:sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.Assis [중간 생략] stant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Util.CommandE",
       "game": "mare-essentia",
       "fingerprint": "mare-essentia:studio-unreachable",
       "firstAt": 1795860213035,
-      "lastAt": 1795894672254,
-      "seen": 12
+      "lastAt": 1795905681989,
+      "seen": 13
     },
     "mare-essentia:card-ui-issues": {
       "id": "card-ui-issues",
@@ -318,7 +318,6 @@
     }
   },
   "history": [
-    "mare-essentia:regions",
     "mare-essentia:town",
     "mare-essentia:combat",
     "mare-essentia:health",
@@ -329,8 +328,9 @@
     "mare-essentia:health",
     "mare-essentia:weapons",
     "mare-essentia:holes",
-    "mare-essentia:town"
+    "mare-essentia:town",
+    "mare-essentia:facilities"
   ],
-  "lastDispatchAt": 1795904641655,
-  "lastDecisionAt": 1795904641655
+  "lastDispatchAt": 1795905681990,
+  "lastDecisionAt": 1795905681990
 }
