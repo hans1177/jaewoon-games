@@ -3997,6 +3997,14 @@ function FieldScene.start(opts)
 			if guardedTransit or extraction then
 				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
+				if folder:GetAttribute("FieldRescueRoute") then
+					local survivor = folder:FindFirstChild("FieldRescueResident")
+					local survivorRoot = survivor and survivor:FindFirstChild("HumanoidRootPart")
+					if not survivorRoot or not survivorRoot:IsA("BasePart") or (survivorRoot.Position - currentRoot.Position).Magnitude > 16 then
+						say(if extraction then "구출한 조사원이 도착할 때까지 기다려." else "고립된 조사원에게 가까이 가.", 3.5)
+						return
+					end
+				end
 				for _, enemy in enemies do
 					if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - currentRoot.Position).Magnitude < 16 then
 						say(if extraction then "추격하는 적과 거리를 벌린 뒤 탈출해." else "경계병을 피해 접근하거나 물리친 뒤 기록을 확보해.", 3.5)
@@ -4025,12 +4033,14 @@ function FieldScene.start(opts)
 			if nextPrompt then
 				nextPrompt.Enabled = true
 				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
-				questHint.Text = if nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
+				questHint.Text = if nextKind == "escape" and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 · 함께 입구까지 이동해"
+					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldRescueRoute") then "고립된 조사원 구출 · 경계 구역으로 이동"
+					elseif nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
 					elseif nextKind == "infiltrate" and folder:GetAttribute("FieldPursuitPending") then "척후병 추적 · 미니맵의 청록색 적을 따라가"
 					elseif nextKind == "infiltrate" then "경계 구역 · 잠입하거나 적을 돌파해"
 					else string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
 			end
-			say(string.format(if extraction then "안전 지점 도착 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
+			say(string.format(if extraction and folder:GetAttribute("FieldRescueRoute") then "조사원 호위 완료 (%d/%d)" elseif guardedTransit and folder:GetAttribute("FieldRescueRoute") then "조사원 구출 (%d/%d)" elseif extraction then "안전 지점 도착 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
 				showCompletion()
@@ -4388,6 +4398,88 @@ function FieldScene.start(opts)
 		end
 	end
 
+	end
+
+	-- [구출·호위] 기존 승인 주민 R15/걷기 모션과 현재 탐험 장면 수명주기를 재사용한다.
+	-- 일부 고위험 발굴지의 가상 현장 사건. 역사적 발견 내용·적 편성·보상은 바꾸지 않는다.
+	do
+		if folder:GetAttribute("FieldEscapeRoute") and not folder:GetAttribute("FieldPursuitRoute") and found < nodeCount
+			and table.find({ "pompeii_ruins", "auto_site_naples_high", "alexandria_library" }, opts.siteId) then
+			local rescueAnchor = folder:FindFirstChild("Discovery2")
+			local rescuePoint = if rescueAnchor and rescueAnchor:IsA("BasePart") then rescueAnchor.Position else folder:GetAttribute("FieldResumeAnchor")
+			local surface = RaycastParams.new()
+			surface.FilterType = Enum.RaycastFilterType.Include
+			surface.FilterDescendantsInstances = { workspace.Terrain, ground }
+			surface.IgnoreWater = false
+			if typeof(rescuePoint) == "Vector3" then
+				local hit = workspace:Raycast(rescuePoint + Vector3.new(0, 100, 0), Vector3.new(0, -140, 0), surface)
+				if hit and hit.Material ~= Enum.Material.Water and hit.Normal.Y >= 0.8 then
+					local ok, resident = pcall(Pose.createR15, folder, hit.Position, 0, Color3.fromRGB(111, 98, 72),
+						Random.new((opts.seed or 7) + 8431), "Mage", 5.6, { motionStyle = "civilian", profession = "scholar", year = opts.year })
+					if finished or not folder.Parent then
+						if ok and resident then resident:Destroy() end
+						return { finish = finish, cancelled = true }
+					end
+					local residentRoot = ok and resident and resident:FindFirstChild("HumanoidRootPart")
+					if residentRoot and residentRoot:IsA("BasePart") then
+						resident.Name = "FieldRescueResident"
+						local pivotHeight = resident:GetPivot().Position.Y - hit.Position.Y
+						folder:SetAttribute("FieldRescueRoute", true)
+						local marker = Instance.new("BillboardGui")
+						marker.Adornee, marker.AlwaysOnTop, marker.MaxDistance = residentRoot, true, 80
+						marker.Size, marker.StudsOffset, marker.Parent = UDim2.fromOffset(160, 24), Vector3.new(0, 4, 0), residentRoot
+						local residentName = label(marker, "고립된 조사원", 14, Color3.fromRGB(129, 232, 206))
+						residentName.Size = UDim2.fromScale(1, 1)
+						if rescueAnchor then
+							local prompt = rescueAnchor:FindFirstChildOfClass("ProximityPrompt")
+							if prompt then prompt.ActionText, prompt.ObjectText = "조사원 구출", "고립된 조사원" end
+						end
+						if found == 1 then questHint.Text = "이어하기 · 고립된 조사원 구출" end
+						if found == 2 then questHint.Text = "이어하기 · 조사원과 함께 입구로 이동" end
+						local obstacle = RaycastParams.new()
+						obstacle.FilterType = Enum.RaycastFilterType.Exclude
+						obstacle.RespectCanCollide, obstacle.IgnoreWater = true, false
+						local elapsed, phase = 0, 0
+						table.insert(conns, RunService.Heartbeat:Connect(function(dt)
+							if finished or not resident.Parent then return end
+							elapsed += dt
+							if elapsed < 0.1 then return end
+							local step = math.min(elapsed, 0.2)
+							elapsed = 0
+							local moving = false
+							if found == 2 then
+								local character = player.Character
+								local leader = character and character:FindFirstChild("HumanoidRootPart")
+								local threatened = false
+								for _, enemy in enemies do
+									if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - residentRoot.Position).Magnitude < 10 then threatened = true; break end
+								end
+								residentName.Text = if threatened then "조사원 · 위험" else "조사원 · 호위 중"
+								if leader and leader:IsA("BasePart") and not threatened then
+									local pivot = resident:GetPivot()
+									local delta = (leader.Position - pivot.Position) * Vector3.new(1, 0, 1)
+									if delta.Magnitude > 5 and delta.Magnitude < 30 then
+										local nextPosition = pivot.Position + delta.Unit * math.min(11 * step, delta.Magnitude - 5)
+										local floor = workspace:Raycast(nextPosition + Vector3.new(0, 12, 0), Vector3.new(0, -24, 0), surface)
+										obstacle.FilterDescendantsInstances = { resident, character }
+										local blocked = workspace:Raycast(pivot.Position, nextPosition - pivot.Position, obstacle)
+										if floor and floor.Material ~= Enum.Material.Water and floor.Normal.Y >= 0.8 and not blocked
+											and math.abs(floor.Position.Y + pivotHeight - pivot.Position.Y) <= 2 then
+											local position = Vector3.new(nextPosition.X, floor.Position.Y + pivotHeight, nextPosition.Z)
+											resident:PivotTo(CFrame.lookAt(position, position + delta.Unit))
+											moving = true
+										end
+									end
+								end
+							end
+							if moving then phase += step * 8 end
+							Pose.walkR15(resident, phase, moving)
+						end))
+					elseif ok and resident then resident:Destroy() end
+				end
+			end
+			if not folder:GetAttribute("FieldRescueRoute") then warn("[MareEssentia] 구출 조사원 배치 불가", opts.siteId) end
+		end
 	end
 
 	-- [탐험 시간·날씨·실물 동물] 이번 현장에만 존재하는 비저장 환경 연출.
@@ -5151,6 +5243,11 @@ function FieldScene.start(opts)
 					-- [희귀 동물/지식 퀘스트] 추적해야 할 흔적은 미니맵에 청록색으로 표시한다.
 					place(ch.Position, Color3.fromRGB(98, 232, 203), 7, true)
 				end
+			end
+			if folder:GetAttribute("FieldRescueRoute") and found >= 1 and found < nodeCount then
+				local resident = folder:FindFirstChild("FieldRescueResident")
+				local root = resident and resident:FindFirstChild("HumanoidRootPart")
+				if root and root:IsA("BasePart") then place(root.Position, Color3.fromRGB(98, 232, 203), 9, true) end
 			end
 			for _, e in enemies do
 				if e.root and e.root.Parent then
