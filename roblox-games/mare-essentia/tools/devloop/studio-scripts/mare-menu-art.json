@@ -29,24 +29,34 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:harbor') return 'tab harbor'"
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:board') return 'tab board'"
   },
   {
     "type": "wait",
     "ms": 3500
-  },
-  {
-    "type": "capture",
-    "name": "menu_harbor"
   },
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:quest') return 'tab quest'"
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:board true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_board',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: board') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: board') return 'MENU_SELECTED board '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_board"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:quest') return 'tab quest'"
   },
   {
     "type": "wait",
     "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:quest true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_quest',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: quest') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: quest') return 'MENU_SELECTED quest '..tostring(b.AbsoluteSize)"
   },
   {
     "type": "capture",
@@ -55,11 +65,250 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:diplomacy') return 'tab diplomacy'"
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:route') return 'tab route'"
   },
   {
     "type": "wait",
     "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:route true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_route',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: route') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: route') return 'MENU_SELECTED route '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_route"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:trade') return 'tab trade'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:trade true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_trade',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: trade') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: trade') return 'MENU_SELECTED trade '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_trade"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:market') return 'tab market'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:market true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_market',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: market') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: market') return 'MENU_SELECTED market '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_market"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:status') return 'tab status'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:status true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_status',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: status') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: status') return 'MENU_SELECTED status '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_status"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:harbor') return 'tab harbor'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:harbor true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_harbor',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: harbor') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: harbor') return 'MENU_SELECTED harbor '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_harbor"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:crew') return 'tab crew'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:crew true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_crew',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: crew') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: crew') return 'MENU_SELECTED crew '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_crew"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:recruit') return 'tab recruit'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:recruit true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_recruit',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: recruit') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: recruit') return 'MENU_SELECTED recruit '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_recruit"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:scholar') return 'tab scholar'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:scholar true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_scholar',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: scholar') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: scholar') return 'MENU_SELECTED scholar '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_scholar"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:yard') return 'tab yard'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:yard true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_yard',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: yard') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: yard') return 'MENU_SELECTED yard '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_yard"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:codex') return 'tab codex'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:codex true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_codex',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: codex') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: codex') return 'MENU_SELECTED codex '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_codex"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:encyclopedia') return 'tab encyclopedia'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:encyclopedia true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_encyclopedia',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: encyclopedia') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: encyclopedia') return 'MENU_SELECTED encyclopedia '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_encyclopedia"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:tech') return 'tab tech'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:tech true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_tech',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: tech') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: tech') return 'MENU_SELECTED tech '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_tech"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:map') return 'tab map'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:map true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_map',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: map') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: map') return 'MENU_SELECTED map '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_map"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:diplomacy') return 'tab diplomacy'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:diplomacy true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_diplomacy',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: diplomacy') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: diplomacy') return 'MENU_SELECTED diplomacy '..tostring(b.AbsoluteSize)"
   },
   {
     "type": "capture",
@@ -68,11 +317,70 @@
   {
     "type": "luau",
     "ctx": "Client",
-    "code": "local g=game.Players.LocalPlayer.PlayerGui:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevCall','Tab:explore') return 'tab explore'"
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:battle') return 'tab battle'"
   },
   {
     "type": "wait",
     "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:battle true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_battle',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: battle') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: battle') return 'MENU_SELECTED battle '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_battle"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:gwent') return 'tab gwent'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:gwent true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_gwent',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: gwent') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: gwent') return 'MENU_SELECTED gwent '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_gwent"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:war') return 'tab war'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:war true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_war',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: war') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: war') return 'MENU_SELECTED war '..tostring(b.AbsoluteSize)"
+  },
+  {
+    "type": "capture",
+    "name": "menu_war"
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local g=pg:FindFirstChild('IntroDialog') if g then g:Destroy() end workspace:SetAttribute('DevResult',nil) workspace:SetAttribute('DevCall','Tab:explore') return 'tab explore'"
+  },
+  {
+    "type": "wait",
+    "ms": 3500
+  },
+  {
+    "type": "luau",
+    "ctx": "Client",
+    "code": "local pg=game.Players.LocalPlayer.PlayerGui local result=tostring(workspace:GetAttribute('DevResult')) assert(string.find(result,'Tab:explore true',1,true)==1,'메뉴 열기 실패: '..result) local b=pg:FindFirstChild('FacilityTab_explore',true) assert(b and b:GetAttribute('SelectedTab')==true,'선택 표시 누락: explore') assert(b.AbsoluteSize.X>=44 and b.AbsoluteSize.Y>=44,'터치 영역 부족: explore') return 'MENU_SELECTED explore '..tostring(b.AbsoluteSize)"
   },
   {
     "type": "capture",
