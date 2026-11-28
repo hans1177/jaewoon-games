@@ -153,6 +153,21 @@ return function(D, S)
 				source = if merchant then "상인 전문" elseif intel >= 1 then "승선 동료 장사 감각" else "관련 능력 없음",
 				tried = if h and h.portId == port.id then h.tried or {} else {},
 				deal = h and h.portId == port.id and h.deal and { goodId = h.deal.goodId, pct = math.floor((1 - h.deal.mult) * 100 + 0.5) } or nil,
+				-- [흥정 미니게임] 진행 중인 문제(정답은 보내지 않음: 동전 진짜 번호·퀴즈 답·저울 판정은 서버만)
+				pending = (function()
+					local pend = h and h.portId == port.id and h.pending
+					if not pend then return nil end
+					return { goodId = pend.goodId, game = pend.game, period = pend.period, center = pend.center, width = pend.width,
+						faces = pend.faces, count = pend.count, looks = (function()
+							-- 동전 생김새(보고 고르는 게 놀이): 진짜 1개 + 가짜는 저마다 다른 흠(테두리 깨짐·색 다름·문양 흐림) — 맨 위 '정품 견본'과 비교
+							if not pend.count then return nil end
+							local l = {}
+							local tells = { "edge", "color", "stamp" }
+							for i = 1, pend.count do l[i] = if i == pend.real then "real" else tells[(i + #pend.goodId) % 3 + 1] end
+							return l
+						end)(),
+						question = pend.quiz and pend.quiz.question, options = pend.quiz and pend.quiz.options }
+				end)(),
 			}
 		end
 		view.goods = {}

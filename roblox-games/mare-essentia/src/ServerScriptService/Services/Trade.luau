@@ -144,6 +144,119 @@ return function(D, S)
 		return true, string.format("%s %d개 구매 (-%d)%s", D.Ports.Goods[goodId].name, amount, total, effect)
 	end
 
+	-- [흥정 미니게임 · 2026-11-28 오너 지시] 강제 아님. 물건마다 항구에서 한 번(자동 흥정과 같은 기회).
+	-- 저울 멈추기 · 상인 표정 읽기 · 진짜 동전 고르기 · 산지 퀴즈 중 하나. 판정은 서버가 한다.
+	-- 결과 할인 4~12%(완벽 12%), 실패하면 정가(손해 없음). 동료 장사 감각·우호도가 높으면 쉬워진다.
+	local HAGGLE_GAMES = { "scale", "face", "coin", "quiz" }
+	local function haggleState(state)
+		local h = state.haggle
+		if not h or h.portId ~= state.portId then
+			h = { portId = state.portId, tried = {} }
+			state.haggle = h
+		end
+		return h
+	end
+	local function quizFor(state, goodId, rng)
+		local yes, no = {}, {}
+		for id, port in D.Ports.Ports do
+			if type(port.produces) == "table" then
+				if table.find(port.produces, goodId) then table.insert(yes, id) else table.insert(no, id) end
+			end
+		end
+		if #yes == 0 or #no < 3 then return nil end
+		table.sort(yes); table.sort(no)
+		local right = yes[math.floor(rng() * #yes) + 1]
+		local options = { right }
+		while #options < 4 do
+			local pick = no[math.floor(rng() * #no) + 1]
+			if not table.find(options, pick) then table.insert(options, pick) end
+		end
+		for i = #options, 2, -1 do
+			local j = math.floor(rng() * i) + 1
+			options[i], options[j] = options[j], options[i]
+		end
+		local names = {}
+		for i, id in options do names[i] = D.Ports.Ports[id].name end
+		return { question = string.format("%s은(는) 어느 항구의 특산품일까?", D.Ports.Goods[goodId].name), options = names, answer = table.find(options, right) }
+	end
+
+	function handlers.HaggleStart(state, p, ctx)
+		local goodId = p.goodId
+		if type(goodId) ~= "string" or not D.Ports.Goods[goodId] then
+			return false, "잘못된 요청"
+		end
+		local h = haggleState(state)
+		if h.tried[goodId] then
+			return false, "이미 흥정해 봤어요. 다음 항구에서 다시 해 봐요"
+		end
+		if h.deal and h.deal.goodId == goodId then
+			return false, "이미 흥정한 값이 있어요. 먼저 사세요"
+		end
+		local port = D.Ports.Ports[state.portId]
+		local ease = math.clamp(S.Harbor.intel(state) * 0.12 + (state.rep[port.country] or 0) / 100 * 0.15, 0, 0.4)
+		local game = if type(p.game) == "string" and table.find(HAGGLE_GAMES, p.game) then p.game else HAGGLE_GAMES[math.floor(ctx.rng() * #HAGGLE_GAMES) + 1]
+		local quiz = if game == "quiz" then quizFor(state, goodId, ctx.rng) else nil
+		if game == "quiz" and not quiz then game = "scale" end
+		local pending = { goodId = goodId, game = game, ease = ease }
+		if game == "scale" then
+			-- 바늘: 0~1 을 왕복(주기 period 초). 금색 구간 중심 center, 반폭 width.
+			pending.period = 1.6 - ease
+			pending.center = 0.3 + ctx.rng() * 0.4
+			pending.width = 0.08 + ease * 0.12
+		elseif game == "face" then
+			-- 상인이 받아 줄 최대 할인(%). 표정 힌트: 제안이 한도보다 3% 이상 낮으면 웃음, 한도 안이면 망설임, 넘으면 찡그림.
+			pending.limit = math.floor(5 + ctx.rng() * 7 + ease * 5)
+			pending.faces = {}
+			for pct = 4, 12 do
+				pending.faces[pct] = if pct <= pending.limit - 3 then "smile" elseif pct <= pending.limit then "think" else "frown"
+			end
+		elseif game == "coin" then
+			pending.count = if ease >= 0.2 then 3 else 4
+			pending.real = math.floor(ctx.rng() * pending.count) + 1
+			pending.fakeTell = ({ "edge", "color", "stamp" })[math.floor(ctx.rng() * 3) + 1]
+		else
+			pending.quiz = quiz
+		end
+		h.pending = pending
+		return true, "흥정을 시작해요"
+	end
+
+	function handlers.HagglePlay(state, p, ctx)
+		local h = state.haggle
+		local pend = h and h.portId == state.portId and h.pending
+		if not pend or pend.goodId ~= p.goodId then
+			return false, "흥정을 먼저 시작해요"
+		end
+		h.pending = nil
+		h.tried[pend.goodId] = true
+		local pct = 0
+		if pend.game == "scale" then
+			local t = tonumber(p.t) or -1
+			if t >= 0 and t < 30 then
+				local phase = (t / pend.period) % 2
+				local pos = if phase < 1 then phase else 2 - phase
+				local off = math.abs(pos - pend.center)
+				if off <= pend.width * 0.25 then pct = 12
+				elseif off <= pend.width * 0.6 then pct = 9
+				elseif off <= pend.width then pct = 6 end
+			end
+		elseif pend.game == "face" then
+			local offer = math.floor(tonumber(p.offer) or 0)
+			if offer >= 4 and offer <= 12 and offer <= pend.limit then pct = offer end
+		elseif pend.game == "coin" then
+			if math.floor(tonumber(p.pick) or 0) == pend.real then pct = 8 + math.floor(pend.ease * 10) end
+		elseif pend.game == "quiz" then
+			if pend.quiz and math.floor(tonumber(p.pick) or 0) == pend.quiz.answer then pct = 10 end
+		end
+		pct = math.clamp(pct, 0, 12)
+		local name = D.Ports.Goods[pend.goodId].name
+		if pct > 0 then
+			h.deal = { goodId = pend.goodId, mult = 1 - pct / 100 }
+			return true, string.format("흥정 성공! %s 다음 구매가 %d%% 싸져요", name, pct)
+		end
+		return false, "상인이 고개를 젓네요. 정가대로 사요 (손해는 없어요)"
+	end
+
 	-- 흥정: 물건마다 항구에서 한 번만 시도할 수 있다. 성공하면 다음 구매가 4~8% 싸진다.
 	-- 동료의 장사 감각(intel)과 그 나라 우호도가 높을수록 잘 통한다.
 	function handlers.Haggle(state, p, ctx)

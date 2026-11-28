@@ -7896,10 +7896,18 @@ local function openTradeHall()
 			local status = if not bargain.auto then "자동 흥정: 관련 능력 없음 · 정가 거래"
 				elseif tried then "자동 흥정: 이번 항구·품목 협상 시도 완료"
 				else "자동 흥정 준비 · " .. tostring(bargain.source or "상인 능력") .. "\n첫 구매 때 4~8% 할인 자동 시도"
-			local alert = mkLabel(right, status, 14, if bargain.auto then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
+			local dealHere = bargain.deal and bargain.deal.goodId == sel.id
+			if dealHere then status = string.format("흥정 성공 · 다음 구매 %d%% 할인 적용", bargain.deal.pct or 0) end
+			local alert = mkLabel(right, status, 14, if bargain.auto or dealHere then Color3.fromRGB(38, 111, 60) else INK_SOFT, true)
 			alert.Position = UDim2.fromOffset(14, infoTop + 390)
-			alert.Size = UDim2.new(1, -28, 0, 58)
+			alert.Size = UDim2.new(1, if tried or dealHere then -28 else -150, 0, 58)
 			alert.AutomaticSize = Enum.AutomaticSize.None
+			-- [흥정 미니게임] 강제 아님: 저울·표정·동전·퀴즈 중 하나로 4~12% 할인(물건마다 항구에서 한 번)
+			if not tried and not dealHere and H.openHaggle then
+				local hg = mkButton(right, "🎲 흥정 게임", COLORS.gold, UDim2.fromOffset(124, 50), function() H.openHaggle(sel.id, sel.name) end, true)
+				hg.Name = "HaggleGameButton"
+				hg.Position = UDim2.new(1, -136, 0, infoTop + 394)
+			end
 			local sm = mkButton(right, "암시장 판매 · 압수 위험", COLORS.red, UDim2.new(1, -24, 0, 44), function() call("Smuggle", { goodId = sel.id, amount = math.min(qty, maxSell) }) end, maxSell > 0)
 			sm.Position = UDim2.fromOffset(12, infoTop + 456)
 			local allB = mkButton(right, "보유분 최대 20개 판매", COLORS.grey, UDim2.new(1, -24, 0, 44), function() call("Sell", { goodId = sel.id, amount = maxSell }) end, maxSell > 0)
@@ -12055,6 +12063,299 @@ do
 			end
 			return card
 		end)
+	end
+end
+
+-- [흥정 미니게임 · 2026-11-28 오너 지시] 강제 아님: 저울 멈추기·상인 표정 읽기·진짜 동전·산지 퀴즈.
+-- 원화(docs/HAGGLE_MINIGAME_BRIEF.md)가 등록되면 그림·움직임을 쓰고, 없으면 같은 자리 UI 로 돈다. 판정은 서버.
+do
+	local TS = game:GetService("TweenService")
+	local RS = game:GetService("RunService")
+	local function art(key) local id = AssetIds["CardArt/" .. key]; return if id then "rbxassetid://" .. tostring(id) else nil end
+	local INK = Color3.fromRGB(52, 38, 24)
+	local PAPER = Color3.fromRGB(246, 234, 206)
+	local GOLD = Color3.fromRGB(214, 170, 82)
+	local FACE_TEXT = { smile = "😊 \"그 정도야 뭐…\"", think = "🤔 \"음… 글쎄요.\"", frown = "😠 \"장난하시오?\"" }
+	local FACE_ROW = { smile = 0, think = 1, frown = 2 }
+
+	-- 상인 얼굴: 시트(4프레임×3표정)가 있으면 눈 깜빡·끄덕 움직임, 없으면 이모지 말풍선
+	local function merchantFace(parent, mood)
+		local holder = parent:FindFirstChild("MerchantFace")
+		if not holder then
+			holder = Instance.new("ImageLabel")
+			holder.Name = "MerchantFace"
+			holder.AnchorPoint = Vector2.new(0.5, 0)
+			holder.Position = UDim2.new(0.5, 0, 0, 6)
+			holder.Size = UDim2.fromOffset(150, 150)
+			holder.BackgroundTransparency = 1
+			holder.ScaleType = Enum.ScaleType.Fit
+			holder.Parent = parent
+			local say = Instance.new("TextLabel")
+			say.Name = "Say"
+			say.AnchorPoint = Vector2.new(0.5, 0)
+			say.Position = UDim2.new(0.5, 0, 1, 2)
+			say.Size = UDim2.fromOffset(300, 26)
+			say.BackgroundTransparency = 1
+			say.Font = Enum.Font.GothamBold
+			say.TextSize = 16
+			say.TextColor3 = INK
+			say.Parent = holder
+		end
+		local sheet = art("ui_haggle_merchant_sheet")
+		holder.Say.Text = FACE_TEXT[mood] or ""
+		if sheet then
+			holder.Image = sheet
+			holder.ImageRectSize = Vector2.new(256, 256)
+			holder:SetAttribute("Row", FACE_ROW[mood] or 1)
+			if not holder:GetAttribute("Animating") then
+				holder:SetAttribute("Animating", true)
+				task.spawn(function()
+					local f = 0
+					while holder.Parent do
+						f = (f + 1) % 4
+						holder.ImageRectOffset = Vector2.new(f * 256, (holder:GetAttribute("Row") or 1) * 256)
+						task.wait(if f == 0 then 1.2 else 0.12) -- 가만히 있다가 깜빡·끄덕
+					end
+				end)
+			end
+		else
+			holder.Image = ""
+			holder.Say.Position = UDim2.new(0.5, 0, 0.5, -13)
+		end
+		-- 표정이 바뀔 때 살짝 들썩
+		if not game:GetService("GuiService").ReducedMotionEnabled then
+			local base = UDim2.new(0.5, 0, 0, 6)
+			holder.Position = base + UDim2.fromOffset(0, -6)
+			TS:Create(holder, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = base }):Play()
+		end
+	end
+
+	function H.openHaggle(goodId, goodName)
+		local r = H.call("HaggleStart", { goodId = goodId })
+		local pend = view and view.haggle and view.haggle.pending
+		if not (r and r.ok ~= false) or not pend or pend.goodId ~= goodId then return end
+		local g = overlayGui("HaggleGame", 80)
+		local dim = Instance.new("Frame")
+		dim.Size = UDim2.fromScale(1, 1)
+		dim.BackgroundColor3 = Color3.new(0, 0, 0)
+		dim.BackgroundTransparency = 0.45
+		dim.BorderSizePixel = 0
+		dim.Parent = g
+		local box = Instance.new("ImageLabel")
+		box.Name = "HaggleBox"
+		box.AnchorPoint = Vector2.new(0.5, 0.5)
+		box.Position = UDim2.fromScale(0.5, 0.5)
+		box.Size = UDim2.fromOffset(460, 460)
+		box.BackgroundColor3 = PAPER
+		box.Image = art("ui_haggle_bg") or ""
+		box.ScaleType = Enum.ScaleType.Crop
+		box.BorderSizePixel = 0
+		box.Parent = g
+		corner(box, 16)
+		local lim = Instance.new("UISizeConstraint")
+		lim.MaxSize = Vector2.new(460, 460)
+		lim.Parent = box
+		local asp = Instance.new("UIAspectRatioConstraint")
+		asp.AspectRatio = 1
+		asp.Parent = box
+		local st = Instance.new("UIStroke")
+		st.Color = GOLD
+		st.Thickness = 3
+		st.Parent = box
+		local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+		if vp.X < 500 then box.Size = UDim2.fromOffset(vp.X - 24, vp.X - 24) end
+		local title = mkLabel(box, "흥정 · " .. tostring(goodName or ""), 18, INK, true)
+		title.Position = UDim2.fromOffset(14, 10)
+		title.Size = UDim2.new(1, -120, 0, 24)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local skip = mkButton(box, "그냥 사기", COLORS.grey, UDim2.fromOffset(96, 34), function() g:Destroy() end, true)
+		skip.Position = UDim2.new(1, -106, 0, 8)
+		local stage = Instance.new("Frame")
+		stage.Name = "Stage"
+		stage.Position = UDim2.fromOffset(12, 44)
+		stage.Size = UDim2.new(1, -24, 1, -56)
+		stage.BackgroundTransparency = 1
+		stage.Parent = box
+		local finished = false
+		local function finish(payload)
+			if finished then return end
+			finished = true
+			payload.goodId = goodId
+			local res = H.call("HagglePlay", payload)
+			local ok = res and res.ok ~= false
+			Sfx.play(if ok then "sfx_card_coin" else "sfx_error", 0.5)
+			local banner = mkLabel(box, if ok then "흥정 성공!" else "정가대로…", 30, if ok then Color3.fromRGB(40, 120, 60) else Color3.fromRGB(150, 60, 50), true)
+			banner.AnchorPoint = Vector2.new(0.5, 0.5)
+			banner.Position = UDim2.fromScale(0.5, 0.5)
+			banner.Size = UDim2.new(1, 0, 0, 44)
+			banner.AutomaticSize = Enum.AutomaticSize.None
+			banner.TextXAlignment = Enum.TextXAlignment.Center
+			banner.ZIndex = 30
+			if ok and H.cardGainFlair then
+				pcall(H.cardGainFlair, { g = g, frame = box, center = UDim2.fromScale(0.5, 0.5), level = 2, gold = GOLD, tone = Color3.fromRGB(255, 210, 120),
+					w = 260, h = 260, reduced = game:GetService("GuiService").ReducedMotionEnabled, viewport = vp, combat = false, hero = false })
+			end
+			task.delay(1.4, function() if g.Parent then g:Destroy() end end)
+		end
+
+		local hint = mkLabel(stage, "", 14, INK, false)
+		hint.Position = UDim2.new(0, 0, 1, -48)
+		hint.Size = UDim2.new(1, 0, 0, 44)
+		hint.AutomaticSize = Enum.AutomaticSize.None
+		hint.TextWrapped = true
+
+		if pend.game == "scale" then
+			-- 1) 저울 멈추기: 바늘이 왕복, 금색 구간에서 탭
+			hint.Text = "바늘이 금색 칸에 올 때 '지금!'을 눌러. 가운데일수록 많이 깎여."
+			local track = Instance.new("ImageLabel")
+			track.Name = "ScaleTrack"
+			track.Position = UDim2.new(0, 10, 0, 120)
+			track.Size = UDim2.new(1, -20, 0, 40)
+			track.BackgroundColor3 = Color3.fromRGB(120, 92, 60)
+			track.Image = art("ui_haggle_scale") or ""
+			track.ScaleType = Enum.ScaleType.Stretch
+			track.BorderSizePixel = 0
+			track.Parent = stage
+			corner(track, 10)
+			local zone = Instance.new("Frame")
+			zone.Name = "GoldZone"
+			zone.AnchorPoint = Vector2.new(0.5, 0)
+			zone.Position = UDim2.fromScale(pend.center, 0)
+			zone.Size = UDim2.fromScale(pend.width * 2, 1)
+			zone.BackgroundColor3 = Color3.fromRGB(240, 200, 90)
+			zone.BackgroundTransparency = 0.15
+			zone.BorderSizePixel = 0
+			zone.Parent = track
+			local core = zone:Clone()
+			core.Name = "PerfectZone"
+			core.Position = UDim2.fromScale(0.5, 0)
+			core.Size = UDim2.fromScale(0.25, 1)
+			core.BackgroundColor3 = Color3.fromRGB(255, 240, 170)
+			core.BackgroundTransparency = 0
+			core.Parent = zone
+			local needle = Instance.new("ImageLabel")
+			needle.Name = "Needle"
+			needle.AnchorPoint = Vector2.new(0.5, 0.5)
+			needle.Position = UDim2.fromScale(0, 0.5)
+			needle.Size = UDim2.new(0, 8, 1.6, 0)
+			needle.BackgroundColor3 = Color3.fromRGB(60, 30, 20)
+			needle.Image = art("ui_haggle_needle") or ""
+			needle.BorderSizePixel = 0
+			needle.ZIndex = 5
+			needle.Parent = track
+			local t0 = os.clock()
+			local conn
+			conn = RS.RenderStepped:Connect(function()
+				if not needle.Parent or finished then conn:Disconnect() return end
+				local phase = ((os.clock() - t0) / pend.period) % 2
+				needle.Position = UDim2.fromScale(if phase < 1 then phase else 2 - phase, 0.5)
+			end)
+			local go = mkButton(stage, "지금!", COLORS.gold, UDim2.new(1, -20, 0, 56), function()
+				finish({ t = os.clock() - t0 })
+			end, true)
+			go.Position = UDim2.new(0, 10, 0, 200)
+			go.TextSize = 24
+		elseif pend.game == "face" then
+			-- 2) 상인 표정 읽기: 할인을 불러 보고 표정을 본다. 3번 안에 '이걸로 하자'
+			hint.Text = "깎을 만큼 불러 봐. 웃으면 더 불러도 되고, 찡그리면 너무 많이 부른 거야. 3번 안에 정해."
+			local offer, tries = 6, 0
+			merchantFace(stage, "think")
+			local label = mkLabel(stage, "", 22, INK, true)
+			label.Position = UDim2.new(0, 0, 0, 186)
+			label.Size = UDim2.new(1, 0, 0, 30)
+			label.AutomaticSize = Enum.AutomaticSize.None
+			label.TextXAlignment = Enum.TextXAlignment.Center
+			local function show() label.Text = string.format("%d%% 깎아 주세요 (남은 시도 %d)", offer, 3 - tries) end
+			show()
+			local function ask(delta)
+				if finished then return end
+				offer = math.clamp(offer + delta, 4, 12)
+				tries += 1
+				merchantFace(stage, pend.faces and pend.faces[offer] or "think")
+				show()
+				if tries >= 3 then task.delay(0.6, function() finish({ offer = offer }) end) end
+			end
+			local less = mkButton(stage, "− 덜 깎기", COLORS.blue, UDim2.new(0.32, -6, 0, 48), function() ask(-2) end, true)
+			less.Position = UDim2.new(0, 0, 0, 226)
+			local more = mkButton(stage, "+ 더 깎기", COLORS.red, UDim2.new(0.32, -6, 0, 48), function() ask(2) end, true)
+			more.Position = UDim2.new(0.34, 0, 0, 226)
+			local deal = mkButton(stage, "이걸로 하자", COLORS.green, UDim2.new(0.32, 0, 0, 48), function() finish({ offer = offer }) end, true)
+			deal.Position = UDim2.new(0.68, 0, 0, 226)
+		elseif pend.game == "coin" then
+			-- 3) 진짜 동전 고르기: 맨 위 정품 견본과 같은 동전
+			hint.Text = "맨 위 '정품 견본'과 똑같은 동전을 골라. 테두리·색·문양을 잘 봐."
+			local function coin(parent, look, size)
+				local c = Instance.new("ImageButton")
+				c.Size = UDim2.fromOffset(size, size)
+				c.BackgroundColor3 = if look == "color" then Color3.fromRGB(196, 170, 120) else Color3.fromRGB(214, 176, 72)
+				c.AutoButtonColor = true
+				c.Image = art("ui_haggle_coin_" .. look) or ""
+				c.Parent = parent
+				corner(c, 100)
+				if c.Image == "" then
+					local ring = Instance.new("UIStroke")
+					ring.Color = Color3.fromRGB(120, 90, 30)
+					ring.Thickness = if look == "edge" then 1 else 4
+					ring.Parent = c
+					local stamp = Instance.new("TextLabel")
+					stamp.Size = UDim2.fromScale(1, 1)
+					stamp.BackgroundTransparency = 1
+					stamp.Font = Enum.Font.Antique
+					stamp.TextScaled = true
+					stamp.Text = if look == "stamp" then "♛?" else "♛"
+					stamp.TextColor3 = Color3.fromRGB(110, 80, 20)
+					stamp.TextTransparency = if look == "stamp" then 0.55 else 0
+					stamp.Parent = c
+				end
+				return c
+			end
+			local sample = coin(stage, "real", 64)
+			sample.Position = UDim2.new(0.5, -32, 0, 4)
+			sample.Active = false
+			local cap = mkLabel(stage, "정품 견본", 12, INK, true)
+			cap.Position = UDim2.new(0, 0, 0, 70)
+			cap.Size = UDim2.new(1, 0, 0, 16)
+			cap.AutomaticSize = Enum.AutomaticSize.None
+			cap.TextXAlignment = Enum.TextXAlignment.Center
+			local row = Instance.new("Frame")
+			row.Position = UDim2.new(0, 0, 0, 110)
+			row.Size = UDim2.new(1, 0, 0, 96)
+			row.BackgroundTransparency = 1
+			row.Parent = stage
+			local lay = Instance.new("UIListLayout")
+			lay.FillDirection = Enum.FillDirection.Horizontal
+			lay.HorizontalAlignment = Enum.HorizontalAlignment.Center
+			lay.Padding = UDim.new(0, 14)
+			lay.Parent = row
+			for i, look in pend.looks or {} do
+				local c = coin(row, look, 80)
+				c.LayoutOrder = i
+				c.Activated:Connect(function()
+					if finished then return end
+					-- 동전을 뒤집어 보는 움직임
+					TS:Create(c, TweenInfo.new(0.12), { Size = UDim2.fromOffset(6, 80) }):Play()
+					task.delay(0.13, function() TS:Create(c, TweenInfo.new(0.15, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(80, 80) }):Play() end)
+					task.delay(0.35, function() finish({ pick = i }) end)
+				end)
+			end
+		else
+			-- 6) 산지 퀴즈: 정답이면 10% (백과 카드와 연결)
+			hint.Text = "맞히면 상인이 '물건 좀 아시네' 하며 깎아 줘. 백과에서 산지를 미리 봐 두면 쉬워."
+			local q = mkLabel(stage, tostring(pend.question or ""), 18, INK, true)
+			q.Position = UDim2.fromOffset(0, 10)
+			q.Size = UDim2.new(1, 0, 0, 50)
+			q.AutomaticSize = Enum.AutomaticSize.None
+			q.TextWrapped = true
+			for i, name in pend.options or {} do
+				local b = mkButton(stage, string.format("%d. %s", i, name), COLORS.blue, UDim2.new(0.5, -6, 0, 52), function() finish({ pick = i }) end, true)
+				b.Position = UDim2.new(if i % 2 == 1 then 0 else 0.5, if i % 2 == 1 then 0 else 6, 0, 70 + math.floor((i - 1) / 2) * 60)
+			end
+		end
+		local sc = Instance.new("UIScale")
+		sc.Scale = 0.85
+		sc.Parent = box
+		TS:Create(sc, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+		Sfx.play("sfx_card_deal", 0.35)
 	end
 end
 
