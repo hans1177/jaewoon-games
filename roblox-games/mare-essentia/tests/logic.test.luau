@@ -53,7 +53,8 @@ local D = {
 }
 -- [교역 재미] 타입 검사기 한도 때문에 D 표 밖에서 붙인다.
 ;(D :: any).TradeFun = require("./Shared/TradeFun")
-local Registry = require("./Services/Registry")(D)
+-- 서비스 등록 경계에서 이종 모듈 사전의 구조적 타입 확장을 제한한다. 기존 검사와 런타임 값은 유지한다.
+local Registry = require("./Services/Registry")(D :: {[string]: any})
 local S, handlers = Registry.S, Registry.handlers
 
 math.randomseed(987654)
