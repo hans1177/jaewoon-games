@@ -7150,7 +7150,7 @@ local function openTradeHall()
 		local p, ship = view.player, view.ship
 		local width = root.AbsoluteSize.X
 		if width <= 0 and workspace.CurrentCamera then width = workspace.CurrentCamera.ViewportSize.X end
-		local narrow = width < 680
+		local narrow = width < 920
         -- [작은 가로폰] 헤더와 고정 거래판을 줄여 읽을 수 있는 장부 공간을 확보한다.
         local shortScreen = root.AbsoluteSize.Y > 0 and root.AbsoluteSize.Y < 530
 		local showMerchant = width >= 1550
@@ -7160,24 +7160,18 @@ local function openTradeHall()
 		local detailWidth = if narrow then availableW else math.max(270, math.floor(availableW * 0.34))
 		local heroX = inset + listWidth + 4
 		local heroW = math.max(140, availableW - listWidth - detailWidth - 8)
-		local compactList = not narrow
+		local compactList = not narrow or listWidth < 420
 		-- [교역 장부] 목록 24% · 승인 원화·백과 약 42% · 판단 수치·거래 약 34%. 세로는 목록/상세 전환.
-		local headH = if narrow then (if shortScreen then 128 else 146)
-            elseif width < 1160 then (if shortScreen then 94 else 108) else 70
-		-- [낮은 가로 화면] 시설 책 머리줄에 이미 시설·항구 이름이 있어 장부 제목을 숨기고 한 줄로 줄인다.
-		local slimHead = shortScreen and not narrow
-		if slimHead then headH = 48 end
+		-- [교역 머리줄] 공통 머리줄의 시설·항구 이름을 반복하지 않는다.
+		-- 자금·최근 메뉴 한 줄, 실제 거래 결과나 목록 복귀가 있을 때만 두 번째 줄.
+		local backToList = narrow and detailOpen
+		local headH = if backToList or message ~= "" then 100 else 50
 		local menuY = headH + 12
 
 		-- 윗줄: 항구 이름, 코인, 화물칸, 나가기
 		local top = mkBox(root, UDim2.fromOffset(8, 8), UDim2.new(1, -16, 0, headH), COLORS.paper)
 		corner(top, 6)
 		bookMaterial(top, "parchment", 220)
-		local title = mkLabel(top, "교역 장부 · " .. p.portName, if narrow then 15 else 19, INK, true)
-		title.Position = UDim2.fromOffset(12, 7)
-		title.Size = if narrow then UDim2.new(1, -110, 0, 25) else UDim2.new(0.32, 0, 0, 25)
-		title.AutomaticSize = Enum.AutomaticSize.None
-		title.TextTruncate = Enum.TextTruncate.AtEnd
 		-- [교역 상단] 자금과 직전 메뉴를 이웃한 한 줄로 배치하고 거래 안내 중복은 숨긴다.
 		-- [교역소] 자금·화물과 최근 메뉴를 중앙 한 줄에 나란히, 같은 높이로 둔다.
 		local recent = H.recentTab
@@ -7187,12 +7181,7 @@ local function openTradeHall()
 			else math.clamp(math.floor(width * 0.36), 220, 315)
 		local groupWidth = cashWidth + (if showRecent then recentWidth + 8 else 0)
 		local groupX = math.max(8, math.floor((width - 16 - groupWidth) / 2))
-		local rowY = if narrow then (if shortScreen then 52 else 64)
-            elseif width < 1160 then (if shortScreen then 30 else 38) else 32
-		if slimHead then
-			title.Visible = false
-			rowY = 7
-		end
+		local rowY = 4
 		local commonStatus = mkLabel(top, H.statusMoneyCargo(p, ship, narrow), if narrow then 15 else 18, INK, true)
 		commonStatus.Name = "TradeGlobalMoneyCargo"
         -- [교역 자금] 황동 테두리로 상단의 거래 자금을 별도 현판 처리.
@@ -7206,14 +7195,14 @@ local function openTradeHall()
         moneyEdge.Parent = commonStatus
         commonStatus.AnchorPoint = Vector2.zero
 		commonStatus.Position = UDim2.fromOffset(groupX, rowY)
-		commonStatus.Size = UDim2.fromOffset(cashWidth, 34)
+		commonStatus.Size = UDim2.fromOffset(cashWidth, 44)
 		commonStatus.AutomaticSize = Enum.AutomaticSize.None
 		commonStatus.TextTruncate = Enum.TextTruncate.AtEnd
 		commonStatus.TextXAlignment = Enum.TextXAlignment.Center
 		commonStatus.TextYAlignment = Enum.TextYAlignment.Center
 		if showRecent then
 			local recentBtn = mkButton(top, "← " .. groupOf(recent).name, COLORS.leather,
-				UDim2.fromOffset(recentWidth, 34), function()
+				UDim2.fromOffset(recentWidth, 44), function()
 					closeTradeHall()
 					openTab(recent, if recent == "map" then "chart" else nil)
 				end, true)
@@ -7224,19 +7213,11 @@ local function openTradeHall()
 		-- [중복 설명 제거] 조언은 저널에서, 거래 알림은 결과가 있을 때만 보여 준다.
 		local toastLbl = mkLabel(top, message, 15, INK_SOFT, true)
 		toastLbl.Visible = message ~= ""
-		toastLbl.Position = if narrow then UDim2.fromOffset(12, if shortScreen then 94 else 112)
-            elseif width < 1160 then UDim2.fromOffset(12, if shortScreen then 68 else 80)
-            else UDim2.fromOffset(12, 36)
-        toastLbl.Size = if narrow then UDim2.new(1, -30, 0, 22)
-            elseif width < 1160 then UDim2.new(1, -24, 0, 22) else UDim2.new(0.24, -10, 0, 24)
+		toastLbl.Position = UDim2.fromOffset(12, 52)
+		toastLbl.Size = UDim2.new(1, if backToList then -108 else -24, 0, 44)
 		toastLbl.AutomaticSize = Enum.AutomaticSize.None
 		toastLbl.TextWrapped = true
 		toastLbl.TextTruncate = Enum.TextTruncate.AtEnd
-		if slimHead then
-			toastLbl.Position = UDim2.fromOffset(12, 12)
-			toastLbl.Size = UDim2.fromOffset(math.max(60, groupX - 24), 24)
-		end
-		local backToList = narrow and detailOpen
 		local leave = mkButton(top, if backToList then "목록" else "닫기", COLORS.leather, UDim2.fromOffset(78, 44), function()
 			if backToList then
 				detailOpen = false
@@ -7248,7 +7229,7 @@ local function openTradeHall()
 			end
 		end, true)
 		leave.AnchorPoint = Vector2.new(1, 0.5)
-		leave.Position = if narrow then UDim2.new(1, -9, 0, 32) else UDim2.new(1, -9, 0.5, 0)
+		leave.Position = UDim2.new(1, -9, 0, 74)
 		-- [닫기 중복 제거] 시설 책 오른쪽 위 X가 이미 닫기를 맡는다. 좁은 화면의 "목록"만 남긴다.
 		leave.Visible = backToList
 
@@ -8990,7 +8971,7 @@ function openYardHall()
 
 		local nav = mkBox(root, if landscape then UDim2.fromOffset(inset, heroTop) else UDim2.fromOffset(inset, 90),
 			if landscape then UDim2.new(0, navWidth, 1, -heroTop - 8) else UDim2.new(1, -inset - 8, 0, 52), COLORS.leather)
-		for i, entry in { { "정비", "maintenance" }, { "선박 비교", "compare" }, { "지역 설계", "blueprints" } } do
+		for i, entry in { { "정비", "maintenance", "shipyard" }, { "선박 비교", "compare", "yard" }, { "지역 설계", "blueprints", "chart" } } do
 			local selected = page == entry[2]
 			local button = mkButton(nav, entry[1], if selected then COLORS.gold else COLORS.paper,
 				if landscape then UDim2.new(1, -8, 0, 52) else UDim2.new(1 / 3, -6, 0, 46), function()
@@ -9012,7 +8993,23 @@ function openYardHall()
 				activeRule.Parent = button
 			end
 			button.Position = if landscape then UDim2.fromOffset(4, 4 + (i - 1) * 56) else UDim2.new((i - 1) / 3, 4, 0, 3)
-			button.TextSize = 16
+			button.TextSize = 14
+			-- [조선 탭] 공통 청동 원화와 짧은 이름을 같은 줄에 배치한다.
+			local caption = button:FindFirstChild("PrintedCaption")
+			if caption and H.hasIconArt(entry[3]) then
+				local icon = modelIcon(button, "FacilityArt", entry[3], nil, 22, entry[1])
+				icon.Name = "YardTabIcon"
+				icon.Position = UDim2.new(0, 5, 0.5, -11)
+				icon.ZIndex = button.ZIndex + 2
+				caption.Position = UDim2.fromOffset(29, 0)
+				caption.Size = UDim2.new(1, -34, 1, -4)
+				caption.TextWrapped = true
+				caption.TextScaled = true
+				local limit = Instance.new("UITextSizeConstraint")
+				limit.MinTextSize = 13
+				limit.MaxTextSize = 16
+				limit.Parent = caption
+			end
 		end
 		-- [선박 전시장] 기존 등록된 함종에만 적용, 함선 성능·구매 규칙 불변.
 		local preview = nil
