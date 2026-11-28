@@ -3954,6 +3954,13 @@ test('항구 원경 절벽과 언덕은 원본 배율로 목표 폭을 맞추고
   assert.match(importer,/local distantBackdrop = not solid and desiredSize >= 80 and \(kind == "Terrain" or kind == "Castle"\)/);
   assert.match(importer,/not isAnimal and not distantBackdrop and \(ratio < 0\.01 or ratio > 100\)/);
   assert.match(importer,/if isAnimal or distantBackdrop then m:GetScale\(\) \* ratio else ratio/);
+  assert.match(importer,/distantBackdrop and kind == "Terrain" and string\.sub\(asset, 1, 6\) == "cliff-"/);
+  assert.match(importer,/math\.clamp\(desiredSize \* 0\.28, 24, 52\)/);
+  assert.match(importer,/desiredSize = math\.min\(desiredSize, axis \* cliffHeightLimit \/ ext\.Y\)\s+ratio = desiredSize \/ axis/);
+  const cap=(width,height,wanted)=>Math.min(wanted,width*Math.max(24,Math.min(52,wanted*0.28))/height);
+  assert.equal(cap(10,20,200),26);
+  assert.equal(cap(100,10,200),200);
+  assert.ok(cap(20,40,100)*40/20<=28.000001);
   assert.match(importer,/if isAnimal or distantBackdrop then/);
   assert.match(importer,/math\.abs\(actualAxis - desiredSize\) > desiredSize \* 0\.2/);
   for(const name of ['cliff-cornerlarge-stone','cliff-large-stone','cliff-cornerinnerlarge-rock','cliff-diagonal-rock','ground-hills'])
