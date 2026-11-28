@@ -34,6 +34,7 @@
 | 만드는 것 | 정본(먼저) | 더 볼 것 | 드롭박스 | 파일 이름 예 |
 |---|---|---|---|---|
 | **마을 구획·구도·간격(숫자)** | **`VILLAGE_LAYOUT_SPEC.md`** | `PORT_VILLAGE_PROMPTS.md` 2절 | — | — |
+| **문화권 공용 집·노점·광장(한 번에 그 문화권 항구 전부)** | **`ports/CULTURE_SET.md`** ⭐먼저 | `ports/README.md` | `Town` | `wafrica_house_1.glb` |
 | 항구별 건물·상징물·소품 | **`ports/<항구>.md`** | `ports/README.md`(슬롯 이름), `PORT_VILLAGE_PROMPTS.md` | `Town` | `london_house_2.glb` |
 | 문화권 건축 양식·재질 | **`PORT_VILLAGE_PROMPTS.md`** | `RULES.md` 재질 표, `BUILDINGS_BY_REGION.md` | `Town` | `<문화권>_house_1.glb` |
 | 왕궁·관청·궁정 | **`BUILDINGS_BY_REGION.md`** | `ports/<항구>.md` 왕궁 절 | `Castle`·`Town` | 문서 안 |
