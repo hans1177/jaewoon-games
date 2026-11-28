@@ -6291,19 +6291,36 @@ function RENDERERS.harbor()
 	if fac.bank then
 		local b = view.bank
 		section("은행")
+		H.statStrip({
+			{ "예금 잔액", H.commas(b.deposit), tone = "good" },
+			{ "대출 잔액", H.commas(b.loan), tone = if b.loan > 0 then "bad" else "key" },
+			{ "대출 한도", H.commas(b.limit), tone = "key" },
+			{ "예금 이자", string.format("%.2f%%", b.depositRate * 100), tone = "good" },
+			{ "대출 이자", string.format("%.2f%%", b.loanRate * 100), tone = "key" },
+		})
+		local amt = H.bankAmount or 100
 		add(function()
-			return mkLabel(content, string.format("%s (항구 %d단계) — 발전할수록 이자·한도가 좋아져요\n예금 %d (30일 이자 %.2f%%)\n대출 %d / 한도 %d (30일 이자 %.2f%%)", b.name or "은행", b.level or 1, b.deposit, b.depositRate * 100, b.loan, b.limit, b.loanRate * 100), 13, COLORS.text, false)
+			local bar = Instance.new("Frame")
+			bar.Name = "BankAmountSelector"
+			bar.BackgroundTransparency = 1
+			bar.Size = UDim2.new(1, -6, 0, 52)
+			for n, value in { 100, 1000, 10000 } do
+				local button = mkButton(bar, H.commas(value), if amt == value then COLORS.gold else COLORS.leather, UDim2.new(1/3, -4, 0, 48), function()
+					H.bankAmount = value; render()
+				end, true)
+				button.Position = UDim2.new((n - 1)/3, 2, 0, 2)
+			end
+			return bar
 		end)
-		for _, amt in { 100, 1000, 10000 } do
-			add(function()
-				return mkRow(content, string.format("%d 코인", amt), "예금 / 인출 / 대출 / 상환", {
-					{ text = "예금", color = COLORS.green, onClick = function() call("Deposit", { amount = amt }) end },
-					{ text = "인출", color = COLORS.grey, onClick = function() call("Withdraw", { amount = amt }) end },
-					{ text = "대출", color = COLORS.gold, onClick = function() call("Borrow", { amount = amt }) end },
-					{ text = "상환", color = COLORS.blue, onClick = function() call("Repay", { amount = amt }) end },
-				}, 56)
-			end)
-		end
+		add(function()
+			return H.tileGrid({
+				{ icon = "coin", title = "예금", sub = H.commas(amt) .. "코인", btn = "예금", color = COLORS.green, onClick = function() call("Deposit", { amount = amt }) end },
+				{ icon = "coin", title = "인출", sub = H.commas(amt) .. "코인", btn = "인출", color = COLORS.grey, onClick = function() call("Withdraw", { amount = amt }) end },
+				{ icon = "coin", title = "대출", sub = H.commas(amt) .. "코인", btn = "대출", color = COLORS.gold, onClick = function() call("Borrow", { amount = amt }) end },
+				{ icon = "coin", title = "상환", sub = H.commas(amt) .. "코인", btn = "상환", color = COLORS.blue, onClick = function() call("Repay", { amount = amt }) end },
+			}, content)
+		end)
+		add(function() return mkLabel(content, "이자는 30일 기준 · 항구 발전에 따라 한도와 이자가 달라져요.", 15, INK_SOFT, false) end)
 	end
 
 	if view.exchange then
@@ -8178,8 +8195,27 @@ H.tradeHall = openTradeHall
 -- [교역소 서비스 탭] 실제 교역은 기존 장부 탭에서, 게시판·시장 소식·우편은 별도 탭에서 사용한다.
 -- 서버 거래·저장·우편·게시물 처리 로직은 기존 호출을 그대로 유지한다.
 function RENDERERS.market()
-	-- [시설 역할 분리] 상인 길드 계약을 거래소 첫 화면으로 이동한다. 기존 서버 호출 유지.
-	if view.guild and table.find(view.facilities or {}, "guild") then
+	local hasGuild = view.guild and table.find(view.facilities or {}, "guild") ~= nil
+	local page = H.marketPage or (if hasGuild then "guild" else "board")
+	if page == "guild" and not hasGuild then page = "board" end
+	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "MarketSectionIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, if hasGuild then 104 else 52)
+		local sections = if hasGuild then {{ "guild", "길드 계약" }, { "board", "거래 게시판" }, { "post", "내 상품 등록" }, { "mail", "우편" }} else {{ "board", "거래 게시판" }, { "post", "내 상품 등록" }, { "mail", "우편" }}
+		local cols = if hasGuild then 2 else 3
+		for n, spec in sections do
+			local button = mkButton(bar, spec[2], if page == spec[1] then COLORS.gold else COLORS.leather, UDim2.new(1/cols, -4, 0, 48), function()
+				H.marketPage = spec[1]; content.CanvasPosition = Vector2.zero; render()
+			end, true)
+			button.Position = UDim2.new(((n - 1)%cols)/cols, 2, 0, math.floor((n - 1)/cols)*52 + 2)
+			button:SetAttribute("SelectedSection", page == spec[1])
+		end
+		return bar
+	end)
+	-- [시설 역할 분리] 상인 길드 계약을 별도 영역에 표시한다. 기존 서버 호출 유지.
+	if page == "guild" and hasGuild then
 		add(function() return mkHeader(content, "상인 길드 계약") end)
 		local g = view.guild
 		if g.contract then
@@ -8198,34 +8234,38 @@ function RENDERERS.market()
 				}, 56)
 			end)
 		end
+		return
 	end
 
 	-- 거래소 등록 수량은 기존 공통 선택값을 사용한다.
+	if page == "post" then
 	add(function()
 		local frame = Instance.new("Frame")
 		frame.BackgroundTransparency = 1
-		frame.Size = UDim2.new(1, -6, 0, 40)
-		local label = mkLabel(frame, "게시 수량", 14, COLORS.muted, false)
-		label.Size = UDim2.new(0.4, 0, 1, 0)
+		frame.Size = UDim2.new(1, -6, 0, 72)
+		local label = mkLabel(frame, "게시 수량", 16, INK, true)
+		label.Size = UDim2.new(1, -8, 0, 20)
 		label.AutomaticSize = Enum.AutomaticSize.None
 		label.TextYAlignment = Enum.TextYAlignment.Center
 		for i, qty in AMOUNTS do
-			local button = mkButton(frame, tostring(qty), if i == amountIndex then COLORS.gold else COLORS.grey, UDim2.fromOffset(52, 34), function()
+			local button = mkButton(frame, tostring(qty), if i == amountIndex then COLORS.gold else COLORS.grey, UDim2.new(1/#AMOUNTS, -4, 0, 44), function()
 				amountIndex = i
 				render()
 			end, true)
-			button.AnchorPoint = Vector2.new(1, 0.5)
-			button.Position = UDim2.new(1, -6 - (#AMOUNTS - i) * 58, 0.5, 0)
+			button.Position = UDim2.new((i - 1)/#AMOUNTS, 2, 0, 26)
 		end
 		frame.Parent = content
 		return frame
 	end)
-	-- [교역소 부가 정보] 소문과 시장 소식은 즉시 거래할 상품 아래에 정리한다.
+	end
+	-- [교역소 부가 정보] 게시판에서만 소문과 시장 소식을 표시한다.
+	if page == "board" then
 	if view.news and #view.news > 0 then
 		add(function() return mkHeader(content, "시장 소식") end)
 		add(function() return mkLabel(content, table.concat(view.news, "\n"), 16, COLORS.gold, true) end)
 	end
 	addRumorPanel()
+	end
 
 	-- 거래소 게시판: 다른 항해자와 고정가로 사고판다 (수수료 5%)
 	local function mkInput(parent, placeholder, text, width, onChanged)
@@ -8246,6 +8286,7 @@ function RENDERERS.market()
 		box.Parent = parent
 		return box
 	end
+	if page == "board" then
 	add(function() return mkHeader(content, "거래소 게시판 (다른 항해자와 거래)") end)
 	add(function()
 		return mkRow(content, "게시판 보기", "다른 항해자가 올린 물건을 불러와요", {
@@ -8262,33 +8303,39 @@ function RENDERERS.market()
 			return mkRow(content, string.format("%s %d개 · %d코인", name, l.amount, l.price), string.format("판매자 %s", l.sellerName), { btn }, 52)
 		end)
 	end
+	return
+	end
+	if page == "post" then
+	add(function() return mkHeader(content, "보유 상품 등록") end)
 	for _, g in view.goods do
 		if g.owned > 0 then
 			add(function()
 				local frame = Instance.new("Frame")
-				frame.Size = UDim2.new(1, -6, 0, 44)
+				frame.Size = UDim2.new(1, -6, 0, 84)
 				frame.BackgroundColor3 = COLORS.row
 				frame.BorderSizePixel = 0
 				corner(frame, 8)
 				local lbl = mkLabel(frame, string.format("%s (보유 %d)", g.name, g.owned), 14, COLORS.text, true)
-				lbl.Position = UDim2.fromOffset(8, 12)
-				lbl.Size = UDim2.new(0.4, 0, 0, 20)
+				lbl.Position = UDim2.fromOffset(8, 8)
+				lbl.Size = UDim2.new(1, -16, 0, 22)
 				lbl.AutomaticSize = Enum.AutomaticSize.None
 				local qty = math.min(amount(), g.owned)
 				local input = mkInput(frame, "총 가격", tostring(postPrice[g.id] or (g.sell * qty)), 90, function(t) postPrice[g.id] = tonumber(t) end)
-				input.AnchorPoint = Vector2.new(1, 0.5)
-				input.Position = UDim2.new(1, -86, 0.5, 0)
+				input.Size = UDim2.new(0.58, -12, 0, 44)
+				input.Position = UDim2.fromOffset(8, 34)
 				local post = mkButton(frame, "등록", COLORS.gold, UDim2.fromOffset(70, 34), function()
 					call("MarketPost", { goodId = g.id, amount = qty, price = tonumber(input.Text) or 0 })
 				end, true)
-				post.AnchorPoint = Vector2.new(1, 0.5)
-				post.Position = UDim2.new(1, -8, 0.5, 0)
+				post.Size = UDim2.new(0.42, -8, 0, 44)
+				post.Position = UDim2.new(0.58, 0, 0, 34)
 				frame.Parent = content
 				return frame
 			end)
 		end
 	end
 
+	return
+	end
 	-- 우편
 	add(function() return mkHeader(content, "우편 (코인·쪽지 보내기)") end)
 	add(function()
@@ -8300,20 +8347,24 @@ function RENDERERS.market()
 	end)
 	add(function()
 		local frame = Instance.new("Frame")
-		frame.Size = UDim2.new(1, -6, 0, 86)
+		frame.Size = UDim2.new(1, -6, 0, 108)
 		frame.BackgroundColor3 = COLORS.row
 		frame.BorderSizePixel = 0
 		corner(frame, 8)
 		local a = mkInput(frame, "받는 사람 이름", mailDraft.to, 150, function(t) mailDraft.to = t end)
+		a.Size = UDim2.new(0.62, -12, 0, 44)
 		a.Position = UDim2.fromOffset(8, 6)
 		local b = mkInput(frame, "코인", mailDraft.coins, 80, function(t) mailDraft.coins = t end)
-		b.Position = UDim2.fromOffset(166, 6)
+		b.Size = UDim2.new(0.38, -8, 0, 44)
+		b.Position = UDim2.new(0.62, 0, 0, 6)
 		local c = mkInput(frame, "한마디 (60자)", mailDraft.text, 240, function(t) mailDraft.text = t end)
-		c.Position = UDim2.fromOffset(8, 46)
+		c.Size = UDim2.new(0.62, -12, 0, 44)
+		c.Position = UDim2.fromOffset(8, 56)
 		local send = mkButton(frame, "보내기", COLORS.gold, UDim2.fromOffset(80, 34), function()
 			call("MailSend", { to = a.Text, coins = tonumber(b.Text) or 0, text = c.Text })
 		end, true)
-		send.Position = UDim2.fromOffset(256, 46)
+		send.Size = UDim2.new(0.38, -8, 0, 44)
+		send.Position = UDim2.new(0.62, 0, 0, 56)
 		frame.Parent = content
 		return frame
 	end)
@@ -16748,6 +16799,22 @@ function RENDERERS.diplomacy()
 		{ "이 항구", if dp.here and dp.here.power then string.format("%s · %s", dp.here.power, STATUS[dp.here.status] or "") else "-", tone = "key" },
 		{ "큰 전쟁", tostring(#dp.wars) .. "건", tone = if #dp.wars > 0 then "bad" else "good" },
 	})
+	local page = H.diplomacyPage or "relations"
+	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "DiplomacySectionIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 52)
+		for n, spec in {{ "relations", "외교·관계" }, { "world", "세계 정세" }, { "voyagers", "항해자" }} do
+			local button = mkButton(bar, spec[2], if page == spec[1] then COLORS.gold else COLORS.leather, UDim2.new(1/3, -4, 0, 48), function()
+				H.diplomacyPage = spec[1]; content.CanvasPosition = Vector2.zero; render()
+			end, true)
+			button.Position = UDim2.new((n - 1)/3, 2, 0, 2)
+			button:SetAttribute("SelectedSection", page == spec[1])
+		end
+		return bar
+	end)
+	if page == "world" then
 	-- 2) 이 항구 나라: 지도자·군사·연구·문화권·관세 (국가 시뮬 요약)
 	local nat = view.harbor and view.harbor.sim and view.harbor.sim.nation
 	if nat and nat.lines then
@@ -16781,6 +16848,9 @@ function RENDERERS.diplomacy()
 			end)
 		end
 	end
+	return
+	end
+	if page == "relations" then
 	-- 4) 관계·전쟁, 외교 행동(선물·증서·전쟁 개입), 항해자
 	add(function()
 		return mkLabel(content, string.format("🏳 국가 관계 — 우리는 %s%s", dp.power.name, if dp.here and dp.here.power then string.format(" · 이 항구: %s (%s)", dp.here.power, STATUS[dp.here.status] or "") else " · 이 항구: 자유 항구"), 15, COLORS.gold, true)
@@ -16793,13 +16863,12 @@ function RENDERERS.diplomacy()
 			return mkRow(content, (if w.mine then "⚔ [우리 편 연루] " else "⚔ ") .. w.title, string.format("%s 대 %s · %d년까지\n%s", w.a, w.b, w.until_, w.text), {}, 84)
 		end)
 	end
-	add(function()
-		local parts = {}
-		for _, r in dp.rel do
-			table.insert(parts, string.format("%s %s(%d)", r.name, STATUS[r.status] or "", r.rep))
-		end
-		return mkLabel(content, table.concat(parts, "  ·  "), 11, COLORS.muted, false)
-	end)
+	add(function() return mkHeader(content, "국가별 관계") end)
+	for _, r in dp.rel do
+		add(function()
+			return mkRow(content, r.name, string.format("%s · 관계 점수 %d", STATUS[r.status] or "", r.rep), nil, 60)
+		end)
+	end
 	add(function()
 		return mkRow(content, "외교", string.format("선물로 호감을 쌓거나, 통행 증서(%d일)로 적국 항구의 입항세를 면해요.%s", 60, if dp.here and dp.here.passLeft > 0 then string.format(" 증서 %d일 남음", dp.here.passLeft) else ""), {
 			{ text = string.format("선물 %d", dp.giftCost), color = COLORS.green, onClick = function() call("DiploGift", {}) end, enabled = dp.here ~= nil and dp.here.canGift == true },
@@ -16813,9 +16882,9 @@ function RENDERERS.diplomacy()
 			{ text = "용병 500", color = COLORS.gold, onClick = function() call("DiploAid", { kind = "mercenary", amount = 500 }) end, enabled = true },
 		}, 96)
 	end)
-	add(function()
-		return mkLabel(content, "⚓ 이 항구의 항해자", 14, COLORS.gold, true)
-	end)
+	return
+	end
+	add(function() return mkHeader(content, "이 항구의 항해자") end)
 	if #dp.voyagers == 0 then
 		add(function() return mkLabel(content, "지금 이 항구에 머무는 다른 항해자는 없어요.", 12, COLORS.muted, false) end)
 	end
@@ -19501,6 +19570,7 @@ openTab = function(tabId, mapPage, facility)
 	-- [시설 방문 표시] 출입 건물명은 실행 중 화면에만 사용한다. 저장 구조 변경 없음.
 	H.visitFacility = origin
 	H.bankVisitPending = origin == "은행"
+	if origin == "상인 길드" then H.marketPage = "guild" end
 	-- [교역 장부→서재] 선택한 상품의 분류는 백과 상태 변수 선언 이후,
 	-- 기존 탭 전환 함수에서만 지정한다. 별도 화면·저장 키를 생성하지 않는다.
 	if tabId == "codex" and H.galleryBookOpenRequested then

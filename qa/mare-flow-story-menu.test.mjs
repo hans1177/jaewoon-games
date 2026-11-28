@@ -225,3 +225,15 @@ test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순�
  assert.ok(battle.includes('view.lastBattle.log'));
  assert.ok(battle.includes('H.battleMenuPage = spec[1]'));
 });
+
+ test('외교·시장·은행 메뉴 분리와 기존 서버 행동 보존',()=>{
+ const market=game.split('function RENDERERS.market()')[1].split('function RENDERERS.route()')[0];
+ const diplo=game.split('function RENDERERS.diplomacy()')[1].split('function RENDERERS.map()')[0];
+ assert.ok(market.includes('MarketSectionIndex'));
+ for(const action of ['MarketList','MarketPost','MarketBuy','MarketCancel','MailInbox','MailClaim','MailSend','AcceptContract','TurnInContract','AbandonContract']) assert.ok(market.includes('call("'+action+'"'));
+ assert.ok(market.includes('UDim2.new(0.62, -12, 0, 44)'));
+ assert.ok(diplo.includes('DiplomacySectionIndex'));
+ for(const action of ['DiploGift','DiploPass','DiploAid','VoyagerMeet']) assert.ok(diplo.includes('call("'+action+'"'));
+ assert.ok(game.includes('BankAmountSelector'));
+ for(const action of ['Deposit','Withdraw','Borrow','Repay']) assert.ok(game.includes('call("'+action+'", { amount = amt })'));
+});
