@@ -390623,11 +390623,157 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_8c3181b6ff2387378ac2007f",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15856",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "86cfc32ad495e1d72e42e5a23f4af3290121a554",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15856,
+        "baseBranch": "main",
+        "headBranch": "feat/vibe-visual-report",
+        "baseSha": "86cfc32ad495e1d72e42e5a23f4af3290121a554",
+        "headSha": "09ed27a18514f198a80544c117a8b66952277c94",
+        "mergeCommitSha": "f8af6027635b454212134e080b693dbaeaadb781",
+        "mergedAt": "2026-11-28T17:30:36Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5b4ab92094387306928a64ae1d25346f06460e8856db26086419f7b2c50986d5",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "feat/vibe-visual-report",
+        "candidateSha": "09ed27a18514f198a80544c117a8b66952277c94"
+      },
+      "changeStats": {
+        "changedFileCount": 18,
+        "codingRelevantFileCount": 14,
+        "addedLineCount": 586,
+        "deletedLineCount": 91,
+        "changedFiles": [
+          "AGENTS.md",
+          "qa/mare-haggle-minigame.test.mjs",
+          "qa/mare-nation-link.test.mjs",
+          "qa/vibe-studio-report.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/SOURCES.md",
+          "roblox-games/mare-essentia/assets/animals/cat_v2.glb",
+          "roblox-games/mare-essentia/assets/animals/cat_v2.glb.license.json",
+          "roblox-games/mare-essentia/docs/VILLAGE_LAYOUT_SPEC.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Econ.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Trade.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Village.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio_shots.py",
+          "tools/devloop/studio_report.py"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-haggle-minigame.test.mjs",
+          "qa/mare-nation-link.test.mjs",
+          "qa/vibe-studio-report.test.mjs",
+          "roblox-games/mare-essentia/assets-registered.json",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/animals/cat_v2.glb.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/AssetIds.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Econ.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Trade.luau",
+          "roblox-games/mare-essentia/src/ServerScriptService/Services/Village.luau",
+          "roblox-games/mare-essentia/tests/logic.test.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio_shots.py",
+          "tools/devloop/studio_report.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15856",
+        "merge-commit:f8af6027635b454212134e080b693dbaeaadb781",
+        "base-main:86cfc32ad495e1d72e42e5a23f4af3290121a554"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3064
+    "total": 3065
   }
 }
