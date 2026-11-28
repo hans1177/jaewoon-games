@@ -46,6 +46,7 @@
 8. HUD·아이콘·버튼 효과는 `roblox-games/mare-essentia/docs/READ_FIRST.md` 3절(청동 원화 시트만, 반짝이 금지, 맥동만, 해상·지상 동일)
 9. `roblox-games/mare-essentia/docs/discoveries/README.md` + `MISSING.md` — 백과 실물(식물·동물·광물·유물·유적)의 지상 탐험 외형·대표 모양·부족 모델
 10. `roblox-games/mare-essentia/docs/discoveries/ANIMAL_RIG_MOTION.md` — 동물 표준 뼈대·애니메이션 이름·리액션 규칙·몬스터 재사용(변형 층)
+11. `roblox-games/mare-essentia/docs/AUTO_PLACEMENT.md` + `auto_placement_needed.csv` — 항구·지상·해전·항해 자동 배치 슬롯과 만들 파일 이름 전체 목록(드롭박스 자동 인입과 연결)
 
 작업 후 `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함)와 Studio 촬영 확인 전에는 완료로 보고하지 않는다.
 

@@ -10,6 +10,7 @@
 | `docs/RULES.md` | 에셋 출처, 원본 가공 허용, 오너 제작 원화, 코드 한도(Game.client 최상위 local 추가 금지) |
 | `docs/CODE_MAP.md` | 코드 위치 지도 |
 | `docs/DESIGN.md` | 게임 전체 설계 |
+| `docs/AUTO_PLACEMENT.md` + `docs/auto_placement_needed.csv` | **자동 배치 필요 자산 목록.** 항구·지상 탐험·해전·항해·백과 실물마다 만들 정확한 파일 이름. 이름만 맞추면 드롭박스 → 자동 등록 → 자동 배치 |
 | `docs/ASSET_MANAGEMENT.md` | **자산 등록·관리. 256색(팔레트·감색) 원화·UI 등록 절대 금지**, 규격·체크리스트 |
 
 ## 2. 작업 종류별 필독

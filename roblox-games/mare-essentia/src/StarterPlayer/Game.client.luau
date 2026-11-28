@@ -4716,6 +4716,7 @@ local function sail(portId)
 			path = SeaRoutes.path(fromId, portId, PortData.Ports),
 			fromName = from,
 			toName = view.player.portName,
+			fromId = fromId, toId = portId, -- [자동 배치] 해역 배경 슬롯(voyage_/sea_<해역>_*)
 			makeShip = PortScene.makeShip,
 			place = PortScene.placeModel,
 			escorts = math.min(3, (view.fleet and view.fleet.escorts or 0) + (view.fleet and view.fleet.ships and #view.fleet.ships or 0)),

@@ -1360,6 +1360,27 @@ function VoyageScene.play(info)
 		banner2.Size = UDim2.new(0, 280, 0, 26)
 		banner2.TextSize = 19
 	end
+	-- [자동 배치 · 해역 배경] 목적지(없으면 출발지) 해역의 Naval/voyage_<해역>_near|mid|far 모델을 양옆에 띄운다.
+	-- 항해 전용 모델이 없으면 같은 해역의 해전 배경(Naval/sea_<해역>_*)을 다시 쓴다. 둘 다 없으면 아무것도 안 놓는다.
+	do
+		local okSea, SeaAreas = pcall(function() return require(script.Parent:WaitForChild("SeaAreas", 3)) end)
+		local okIds, Ids = pcall(function() return require(script.Parent:WaitForChild("AssetIds", 3)) end)
+		local sea = okSea and (SeaAreas.seaOf(info.toId) or SeaAreas.seaOf(info.fromId)) or nil
+		local placed = 0
+		if sea and okIds then
+			for i, band in { { "near", 10, 70, 0.30 }, { "mid", 48, -190, 0.50 }, { "far", 160, 430, 0.70 } } do
+				local name = "voyage_" .. sea .. "_" .. band[1]
+				if not Ids["Naval/" .. name] then name = "sea_" .. sea .. "_" .. band[1] end
+				local rec = Ids["Naval/" .. name] and addProp("Naval", name, band[2], band[3], band[4], (i - 2) * 0.6, -1, band[1])
+				if rec then
+					rec.always, rec.loop = true, 300 + i * 520
+					placed += 1
+				end
+			end
+		end
+		folder:SetAttribute("VoyageSeaArea", sea or "")
+		folder:SetAttribute("VoyageAutoSlotCount", placed)
+	end
 	if ev.kind == "dolphins" then
 		addSpray(18, 0.46, 16, 40, 3)
 		addSpray(-22, 0.5, 18, 40, 3)
@@ -2110,6 +2131,13 @@ function VoyageScene.play(info)
 			local fwd = Vector3.new(math.cos(yaw), 0, -math.sin(yaw))
 			local near = ek > -0.25 and ek < 1.25
 			for _, pr in props do
+				if pr.always then
+					-- [해역 배경] 항해 내내 앞에서 다가와 옆으로 지나가고, 지나가면 다시 앞에서 나타난다.
+					local front = ((pr.loop - k * total * 0.35) % 1700) - 520
+					local p = pos + fwd * front + right * pr.side
+					pr.m:PivotTo(CFrame.new(p.X, pr.y, p.Z) * CFrame.Angles(0, yaw + pr.yaw, 0))
+					continue
+				end
 				local target = pr.follow or pr
 				local front = (EVENT_AT + EVENT_LEN / 2 - k) * total * target.along
 				local p = pos + fwd * front + right * target.side
