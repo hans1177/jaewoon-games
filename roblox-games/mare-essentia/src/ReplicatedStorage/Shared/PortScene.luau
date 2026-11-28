@@ -4274,6 +4274,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- [주거 구획] 항구·대로 측면·주거 행·칸 번호 조합으로 재진입 시 같은 필지 키를 쓴다.
 	local residentialDecorationPlaced = false
 	local homeRejectRoad, homeRejectStreet, homeRejectReserved = 0, 0, 0
+	local homeRejectSize, homePreLoose, homeRejectBody = 0, 0, 0
 	local houseSpots = {}
 	local function fillRow(z, t, xStart, side, laneIndex, rowIndex)
 		local x = xStart
@@ -4329,15 +4330,19 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				local half = math.max(sz * 0.62, projectedHalf)
 				-- [기존 필지 내 재배치] 중앙 자리만 사전 검사하면 옆자리 2.4칸이 비어도 주택이 사라진다.
 				-- 전체 모델을 복제하기 전에 가까운 5곳의 기존 예약 경계부터 가볍게 검사한다.
-				local canFitPlot = false
-				if projectedHalf <= rowClearance then
+				-- [집 사전검사 완화 · 2026-11-29 Studio 181곳 실측: 후보 51채 중 5채만 지어짐, 뒤 단계 탈락은 2~3채뿐]
+				-- 예전 사전검사는 지붕까지 넣은 큰 반경으로 길·예약지를 봐서 대부분을 여기서 버렸다(뒤의 '길 사이 밀어 넣기'까지 못 감).
+				-- 이제 크기만 보고 통과시키고, 실제 외곽을 잰 뒤 단계(길 사이 밀어 넣기·큰길·예약지)가 최종 판정한다.
+				local canFitPlot = projectedHalf <= rowClearance
+				if not canFitPlot then
+					homeRejectSize += 1
+				else
+					local strict = false
 					for _, shift in homeShifts do
 						local at = pos + Vector3.new(shift.X, 0, shift.Z * side)
-						if not onStreet(at.X, half) and not reserved(at.X, at.Z, half) then
-							canFitPlot = true
-							break
-						end
+						if not onStreet(at.X, half) and not reserved(at.X, at.Z, half) then strict = true break end
 					end
+					if not strict then homePreLoose += 1 end
 				end
 				if canFitPlot then
 					local fl = P.fl0 + math.floor(t * P.flGrow + 0.5) + (if lvl >= 4 then 1 else 0) - (if lvl <= 1 then 1 else 0)
@@ -4354,6 +4359,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 					local staged = Instance.new("Model")
 					staged.Name = "PortScene"
 					local body = house(staged, pos, ww, dd, fl, style, rng)
+					if not body then homeRejectBody += 1 end
 					if body then
 						-- [구시가지 회백색 풍화·신시가지 회칠] PBR 및 원본 텍스처는 유지.
 						for _, surface in staged:GetDescendants() do
@@ -4811,6 +4817,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	folder:SetAttribute("CityHousingCulture", key)
 	folder:SetAttribute("CityHousingCandidates", homeCandidates)
 	folder:SetAttribute("CityHousingRejectRoad", homeRejectRoad)
+	folder:SetAttribute("CityHousingRejectSize", homeRejectSize)
+	folder:SetAttribute("CityHousingPreLoose", homePreLoose)
+	folder:SetAttribute("CityHousingRejectBody", homeRejectBody)
 	folder:SetAttribute("CityHousingRejectStreet", homeRejectStreet)
 	folder:SetAttribute("CityHousingRejectReserved", homeRejectReserved)
 	folder:SetAttribute("CityHousingPlaced", homePlaced)
