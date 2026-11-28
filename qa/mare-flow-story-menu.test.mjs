@@ -27,7 +27,7 @@ test('다음 할 일 띠·건물 표시·메뉴 첫 줄', () => {
 test('인과 카드·결과·장 완료·지난 이야기', () => {
   for (const f of ['questCauseCard', 'showQuestResult', 'checkQuestResults', 'showRecap']) assert.match(game, new RegExp(`function H\\.${f}\\(`));
   assert.match(view, /chapterEnd = chapterName ~= nil and D\.Quests\.NextOf\[dq\.id\] == nil/);
-  assert.match(view, /prevEnding = q\.after/);
+  assert.match(view, /prevEnding = previous and select\(2, S\.Quest\.storyOf\(previous\)\)/);
   assert.match(questSvc, /quest\.afterPrologue and not state\.quests\.done\["pr_"/);
 });
 test('제1장: 교역 → 탐험 → 해전 → 선택 → 결과', () => {
@@ -57,4 +57,13 @@ test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 
   const qty = trade.split('local function setQuantity(value)')[1].split('local function quantityButton')[0];
   assert.match(qty, /refreshReceipt\(\)/);
   assert.doesNotMatch(qty, /build\(\)/);
+});
+
+test('제2~4장 분기 결말이 다음 장의 기존 퀘스트에 연결된다', () => {
+  for (let n = 2; n <= 4; n++) {
+    assert.ok(ch.includes('afterAny = { "ch' + (n-1) + '_5a", "ch' + (n-1) + '_5b" }'));
+    for (const suffix of ['1','2','3','4','5a','5b']) assert.ok(ch.includes('id = "ch'+n+'_'+suffix+'"'));
+  }
+  assert.match(questSvc, /if quest\.afterAny then/);
+  assert.match(questSvc, /if quest\.chapter and not a and countActive\(state\) < MAX_ACTIVE then/);
 });
