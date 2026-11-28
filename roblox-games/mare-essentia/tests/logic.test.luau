@@ -2216,6 +2216,17 @@ do
 	local st = newState()
 	local b1 = D.Bounties.board(st.portId, st.day, D.Ports.Goods, (function() local t = {} for id in D.Ports.Goods do table.insert(t, id) end table.sort(t) return t end)())
 	check("board has 3", #b1 == 3 and b1[3].kind == "hunt")
+	local linked = true
+	for _, b in S.Harbor.boardHere(st) do
+		linked = linked and b.story ~= "" and b.ending ~= "" and D.Cards.ById[b.loreCardId] ~= nil
+	end
+	check("주간 의뢰: 지역 사연과 실제 지식카드", linked)
+	local eventRecords, eventLinks = 0, true
+	for _, record in D.Voyage.EventRecords do
+		eventRecords += 1
+		eventLinks = eventLinks and D.Cards.ById[record.cardId] ~= nil and record.title ~= ""
+	end
+	check("해상 사건 33종 백과 연결", eventLinks and eventRecords == 33)
 	local deliver = b1[1]
 	check("accept bounty", act(st, "AcceptBounty", { bountyId = deliver.id }))
 	check("no double accept", not act(st, "AcceptBounty", { bountyId = deliver.id }))
