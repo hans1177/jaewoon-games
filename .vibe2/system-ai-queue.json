@@ -157961,7 +157961,7 @@
     },
     {
       "id": "marketing-seed-roblox-roleplay-life-avat-brookhaven-rp-pre-release-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -157995,7 +157995,7 @@
       "failureSignature": null,
       "failureClass": "RESERVATION_OR_LOCK_CONTENTION",
       "handoffCount": 16,
-      "previousReservationId": "system-ai:46188041884:1",
+      "previousReservationId": "system-ai:46191100840:1",
       "blastRadius": null,
       "knownGoodRevision": null,
       "repairRisk": 1,
@@ -158003,12 +158003,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": "system-ai:46191100840:1",
-      "reservedAt": "2026-11-28T21:27:25.455Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": null,
+      "blocker": "system-ai-verification-failed",
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -158760,7 +158760,16 @@
         "actions-run:46187056720",
         "system-ai-handoff-to-reservation:system-ai:46188041884:1",
         "actions-run:46188041884",
-        "system-ai-handoff-to-reservation:system-ai:46191100840:1"
+        "system-ai-handoff-to-reservation:system-ai:46191100840:1",
+        "actions-run:46191100840",
+        "external-ai-raw-output-sha256:73a5b45a4a674ddf5b242391929f3fccfdf5d453af4b205f07129c63ef83c9a8",
+        "system-ai-critic-verdict:REVISE",
+        "system-ai-critic-decision-sha256:1c63b5fe24098ea0d3e0a3af61392b26b52d859bba3f1c5341e62bf73114a3d7",
+        "system-ai-applied-answer-sha256:2a46e91dd915880f1db9d75c566619633ae4087d8a596fefbd8fffc494294597",
+        "system-ai-critic-weak-point:The proposed JSON file contains unescaped newline characters inside string literals within the 'organicDiscovery' array, which causes JSON parsing to fail.",
+        "repair-strategy-fingerprint:b71c74f306926593b7540c649264faf9ef5f7e9ab0bd1e6af3d7b4e17337fd98",
+        "failed-strategy-fingerprint:b71c74f306926593b7540c649264faf9ef5f7e9ab0bd1e6af3d7b4e17337fd98",
+        "model-output-sha256:73a5b45a4a674ddf5b242391929f3fccfdf5d453af4b205f07129c63ef83c9a8"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1890,
@@ -158775,7 +158784,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-28T21:27:25.455Z"
+      "updatedAt": "2026-11-28T21:35:08.984Z"
     },
     {
       "id": "marketing-seed-roblox-simulator-tycoon-i-adopt-me-pre-release-v1",
