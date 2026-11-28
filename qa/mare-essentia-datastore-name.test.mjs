@@ -5024,3 +5024,11 @@ test('선장 현황 및 진행 일지는 문자 그림 대신 등록 아이콘�
  assert.match(source,/math\.clamp\(done \/ total, 0, 1\)/);
  assert.doesNotMatch(source,/string\.rep\("▰", filled\)/);
 });
+
+test('전체 메뉴 탭은 승인 청동 아이콘과 짧은 한글 이름으로 선택 상태를 구별한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const caps=source.slice(source.indexOf('H.TAB_CAPTION = {'),source.indexOf('function H.renderTabs()'));
+ for(const id of ['route','map','diplomacy','trade','market','harbor','board','quest','explore','battle','war','gwent','status','yard','crew','recruit','tech','scholar','codex','encyclopedia']) assert.ok(caps.includes(id+' ='),id);
+ assert.match(source,/caption\.Text = H\.TAB_CAPTION\[id\] or TAB_NAME\[id\]/);
+ assert.match(source,/if caption then caption\.TextColor3 = b\.TextColor3 end/);
+});
