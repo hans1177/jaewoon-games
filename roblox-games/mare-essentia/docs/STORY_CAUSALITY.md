@@ -48,3 +48,11 @@
 - **완료 장면**: "당신 덕분에 — (result)" + 결말. 장 마지막이면 "제N장 완료!" 축하.
 - **접속 때 '지난 이야기'** 한 번.
 - 메뉴 첫 줄 **지금 할 일 / 추천 / 보상 받기**, 처음 해 보는 기능은 **3단계 그림 안내**, 해전에서 지면 **진 이유 + 다음 할 일**.
+
+## 5. 지역별 이야기 원전 및 창작 원칙 (오너 후속 지시)
+
+- 북해: 스코틀랜드 북부 섬의 셀키 전승. 포스 만의 실종 사건과 인물은 창작. 참고: https://blog.historicenvironment.scot/2024/09/orkney-folktales-the-outrun/
+- 지중해: 1291년 무라노 화로 이전의 역사, 장인 비법을 둘러싼 창작 추리극. 참고: https://www.ngv.vic.gov.au/essay/portrait-of-venice-majestic-murano/
+- 인도양: 말라바르 후추·계절풍 교역의 역사와 고전 항해담 신밧드의 로크. 해적·표식·대결은 창작. 참고: https://sejarah-nusantara.anri.go.id/hartakarun/category/14/ 및 https://blogs.loc.gov/international-collections/2017/08/the-seven-voyages-of-sindbad-the-sailor/
+- 동아시아: 1641년 데지마 네덜란드 상관 이전과 일본 해양 전승 후나유레이. 위조 선단과 사건은 창작. 참고: https://nagasakidejima.jp/english/history/ 및 https://yokai.jp/en/yokai/funayurei
+- 후속 지역도 실제 역사·신화·민담·공개 저작물의 고전 문학·창작 미스터리·드라마적 갈등 중 적합한 소재를 지역 고유의 인물·단서·반전·선택으로 변주한다. 현대 소설·드라마의 고유 인물, 대사, 장면, 독특한 설정을 복제하지 않는다. 확인된 역사와 전승, 창작 사건을 구분하고 기존 퀘스트 조건·보상·저장·카드·전투의 실제 동작과 맞는 이야기만 표시한다.
