@@ -5190,10 +5190,12 @@ local function playEpilogue(msg, opts)
 			FieldOfView = 37,
 		}):Play()
 	end
+	local vp = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(800, 600)
+	local portraitLayout = vp.X < 560
 	if opts.hero then
-		local hp = heroPortrait(root, opts.hero, 150, 190)
-		hp.AnchorPoint = Vector2.new(0, 0.5)
-		hp.Position = UDim2.new(0, 28, 0.5, 0)
+		local hp = heroPortrait(root, opts.hero, if portraitLayout then 90 else 150, if portraitLayout then 114 else 190)
+		hp.AnchorPoint = Vector2.new(if portraitLayout then 0.5 else 0, 0.5)
+		hp.Position = if portraitLayout then UDim2.fromScale(0.5, 0.20) else UDim2.new(0, 20, 0.5, 0)
 		hp.ZIndex = 9
 	end
 	-- 위아래 검은 띠 (영화 같은 화면 비율)
@@ -5205,9 +5207,15 @@ local function playEpilogue(msg, opts)
 	local function say(text, y, size, color, hold)
 		local l = mkLabel(root, text, size, color, true)
 		l.AutomaticSize = Enum.AutomaticSize.None
-		l.Size = UDim2.new(if opts.hero then 0.62 else 0.8, 0, 0, size * 3)
-		l.AnchorPoint = Vector2.new(0.5, 0)
-		l.Position = UDim2.fromScale(if opts.hero then 0.6 else 0.5, y)
+		l.Size = UDim2.new(if opts.hero and not portraitLayout then 0.68 else 0.92, 0, if opts.hero and portraitLayout then 0.42 else 0.55, 0)
+		l.AnchorPoint = Vector2.new(0.5, 0.5)
+		l.Position = UDim2.fromScale(if opts.hero and not portraitLayout then 0.63 else 0.5, if opts.hero and portraitLayout then 0.52 else 0.48)
+		l.TextYAlignment = Enum.TextYAlignment.Center
+		l.TextScaled = true
+		local textLimit = Instance.new("UITextSizeConstraint")
+		textLimit.MinTextSize = 18
+		textLimit.MaxTextSize = math.max(22, size)
+		textLimit.Parent = l
 		l.TextXAlignment = Enum.TextXAlignment.Center
 		l.TextTransparency = 1
 		l.ZIndex = 8
@@ -5220,36 +5228,33 @@ local function playEpilogue(msg, opts)
 		TweenService:Create(l, TweenInfo.new(1.2), { TextTransparency = 0 }):Play()
 		TweenService:Create(st, TweenInfo.new(1.2), { Transparency = 0.3 }):Play()
 		task.wait(hold or 3)
-		return l
+		TweenService:Create(l, TweenInfo.new(0.4), { TextTransparency = 1 }):Play()
+		task.wait(0.4)
+		l:Destroy()
 	end
 	-- 검은 화면에서 서서히 실제 범선 연출이 드러난다.
 	TweenService:Create(shade, TweenInfo.new(2.5), { BackgroundTransparency = 0.45 }):Play()
 	task.wait(1.5)
 	if opts.lines then
 		say(opts.title or "프롤로그", 0.16, 28, Color3.fromRGB(240, 200, 120), 2.5)
-		for i, line in opts.lines do
-			local l = say(line, 0.3, 19, COLORS.text, 3.8)
-			if i < #opts.lines then
-				TweenService:Create(l, TweenInfo.new(0.8), { TextTransparency = 1 }):Play()
-				task.wait(0.8)
-				l:Destroy()
-			end
+		for _, line in opts.lines do
+			say(line, 0.3, 24, COLORS.text, 3.8)
 		end
 	else
 		local p = view and view.player
 		say("에필로그", 0.2, 30, Color3.fromRGB(240, 200, 120), 2.5)
-		say(tostring(msg or ""), 0.32, 18, COLORS.text, 4.5)
+		say(tostring(msg or ""), 0.32, 24, COLORS.text, 4.5)
 		if p then
-			say(string.format("항해 %d일 · 명성 %d · 보유 코인 %d", p.day or 0, math.floor(p.fame or 0), math.floor(p.coins or 0)), 0.5, 16, Color3.fromRGB(190, 200, 215), 3.5)
+			say(string.format("항해 %d일 · 명성 %d · 보유 코인 %d", p.day or 0, math.floor(p.fame or 0), math.floor(p.coins or 0)), 0.5, 22, Color3.fromRGB(190, 200, 215), 3.5)
 		end
-		say("그러나 바다는 끝나지 않는다.\n당신의 항해는 계속된다.", 0.62, 18, Color3.fromRGB(240, 200, 120), 2.5)
+		say("그러나 바다는 끝나지 않는다.\n당신의 항해는 계속된다.", 0.62, 24, Color3.fromRGB(240, 200, 120), 2.5)
 	end
 	local finished = false
 	local b = mkButton(root, opts.button or "계속 항해하기", COLORS.gold, UDim2.fromOffset(200, 48), function() finished = true end, true)
-	b.AnchorPoint = Vector2.new(0.5, 0)
-	b.Position = UDim2.fromScale(0.5, 0.78)
+	b.AnchorPoint = Vector2.new(0.5, 1)
+	b.Position = UDim2.new(0.5, 0, 1, -16)
 	b.ZIndex = 9
-	b.TextSize = 17
+	b.TextSize = 22
 	local t0 = os.clock()
 	while not finished and os.clock() - t0 < 120 do
 		task.wait(0.2)
@@ -12696,36 +12701,49 @@ do
 		local box = Instance.new("Frame")
 		box.AnchorPoint = Vector2.new(0.5, 0.5)
 		box.Position = UDim2.fromScale(0.5, 0.5)
-		box.Size = UDim2.new(0, 460, 0, 0)
-		box.AutomaticSize = Enum.AutomaticSize.Y
+		box.Size = UDim2.new(1, -24, 1, -24)
 		box.BackgroundColor3 = Color3.fromRGB(44, 30, 28)
 		box.BorderSizePixel = 0
 		box.Parent = g
 		corner(box, 14)
 		local lim = Instance.new("UISizeConstraint")
-		lim.MaxSize = Vector2.new(460, 520)
+		lim.MaxSize = Vector2.new(600, 520)
 		lim.Parent = box
+		local scroll = Instance.new("ScrollingFrame")
+		scroll.Name = "DefeatReasons"
+		scroll.Size = UDim2.new(1, 0, 1, -68)
+		scroll.BackgroundTransparency = 1
+		scroll.BorderSizePixel = 0
+		scroll.CanvasSize = UDim2.fromOffset(0, 0)
+		scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		scroll.ScrollingDirection = Enum.ScrollingDirection.Y
+		scroll.ScrollBarThickness = 5
+		scroll.Parent = box
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14), UDim.new(0, 16), UDim.new(0, 16)
-		pad.Parent = box
+		pad.Parent = scroll
 		local list = Instance.new("UIListLayout")
 		list.Padding = UDim.new(0, 8)
 		list.SortOrder = Enum.SortOrder.LayoutOrder
-		list.Parent = box
-		local head = mkLabel(box, "다음엔 이길 수 있어 — 진 이유", 19, Color3.fromRGB(255, 190, 170), true, 0)
+		list.Parent = scroll
+		local head = mkLabel(scroll, "패배 원인과 재도전", 24, Color3.fromRGB(255, 190, 170), true, 0)
 		head.Size = UDim2.new(1, 0, 0, 0)
 		for i, r in reasons do
 			if i > 3 then break end
-			local line = mkLabel(box, "• " .. r[1], 14, Color3.fromRGB(245, 230, 214), false, i * 2 - 1)
+			local line = mkLabel(scroll, "• " .. r[1], 20, Color3.fromRGB(245, 230, 214), false, i * 2 - 1)
 			line.Size = UDim2.new(1, 0, 0, 0)
-			local go = mkButton(box, "→ " .. r[2], COLORS.green, UDim2.new(1, 0, 0, 44), function()
+			local go = mkButton(scroll, "→ " .. r[2], COLORS.green, UDim2.new(1, 0, 0, 54), function()
 				g:Destroy()
 				openTab(r[3])
 			end, true)
 			go.LayoutOrder = i * 2
+			go.TextSize = 18
+			go.TextWrapped = true
 		end
-		local close = mkButton(box, "닫기", COLORS.grey, UDim2.new(1, 0, 0, 40), function() g:Destroy() end, true)
-		close.LayoutOrder = 99
+		local close = mkButton(box, "닫기", COLORS.grey, UDim2.new(1, -32, 0, 48), function() g:Destroy() end, true)
+		close.AnchorPoint = Vector2.new(0.5, 1)
+		close.Position = UDim2.new(0.5, 0, 1, -10)
+		close.TextSize = 20
 	end
 
 	-- 선장 현황 맨 위: 선체·선원·보급·화물을 막대 그림으로
@@ -17757,7 +17775,7 @@ function H.playWonderScene(cardId)
 	-- 큰 액자를 94% 화면에 곧장 확대하면 가로로 짧은 휴대폰에서 상하가 잘리고 터치 글씨와 겹친다.
 	local frame = Instance.new("Frame")
 	frame.AnchorPoint = Vector2.new(0.5, 0.5)
-	frame.Position = UDim2.fromScale(0.5, 0.5)
+	frame.Position = UDim2.new(0.5, 0, 0.5, -12)
 	frame.Size = UDim2.fromOffset(0, 0)
 	frame.BackgroundColor3 = Color3.fromRGB(236, 222, 190)
 	frame.BackgroundTransparency = 0
@@ -17767,7 +17785,7 @@ function H.playWonderScene(cardId)
 	local function fitWonderArt()
 		local screen = root.AbsoluteSize
 		if screen.X <= 0 or screen.Y <= 0 then return end
-		local height = math.max(1, math.min(screen.X * 0.94 * 9 / 16, screen.Y - 180))
+		local height = math.max(1, math.min(screen.X * 0.94 * 9 / 16, screen.Y - 218))
 		frame.Size = UDim2.fromOffset(math.floor(height * 16 / 9), math.floor(height))
 	end
 	local artResize = root:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWonderArt)
@@ -17830,12 +17848,17 @@ function H.playWonderScene(cardId)
 	local cap = Instance.new("TextLabel")
 	cap.AnchorPoint = Vector2.new(0.5, 1)
 	cap.Position = UDim2.new(0.5, 0, 1, -8)
-	cap.Size = UDim2.new(0.9, 0, 0, 74)
+	cap.Size = UDim2.new(0.94, 0, 0, 104)
 	cap.BackgroundTransparency = 1
 	cap.TextColor3 = Color3.fromRGB(246, 232, 200)
 	cap.TextStrokeTransparency = 1
 	cap.Font = Enum.Font.Gotham
-	cap.TextSize = 17
+	cap.TextSize = 22
+	cap.TextScaled = true
+	local captionLimit = Instance.new("UITextSizeConstraint")
+	captionLimit.MinTextSize = 18
+	captionLimit.MaxTextSize = 24
+	captionLimit.Parent = cap
 	cap.TextWrapped = true
 	cap.Text = ""
 	cap.ZIndex = 110
@@ -17853,7 +17876,7 @@ function H.playWonderScene(cardId)
 	-- [긴 유적 이름] 세로 화면에서도 제목이 액자를 벗어나지 않게 글자만 화면 너비에 맞춘다.
 	ttl.TextScaled = true
 	local titleLimit = Instance.new("UITextSizeConstraint")
-	titleLimit.MinTextSize = 14
+	titleLimit.MinTextSize = 18
 	titleLimit.MaxTextSize = 28
 	titleLimit.Parent = ttl
 	ttl.Text = sc.title
@@ -17862,11 +17885,11 @@ function H.playWonderScene(cardId)
 	local hint = Instance.new("TextLabel")
 	hint.AnchorPoint = Vector2.new(1, 0)
 	hint.Position = UDim2.new(1, -12, 0, 8)
-	hint.Size = UDim2.fromOffset(140, 20)
+	hint.Size = UDim2.fromOffset(240, 24)
 	hint.BackgroundTransparency = 1
 	hint.TextColor3 = Color3.fromRGB(180, 168, 140)
 	hint.Font = Enum.Font.Gotham
-	hint.TextSize = 12
+	hint.TextSize = 18
 	hint.TextXAlignment = Enum.TextXAlignment.Right
 	hint.Text = "화면을 누르면 건너뛰기"
 	hint.ZIndex = 110
@@ -19852,17 +19875,20 @@ end
 		if spec.sting then
 			Sfx.play(spec.sting, 0.55)
 		end
-		local win = Instance.new("Frame")
+		local win = Instance.new("ScrollingFrame")
 		win.Name = "IntroWindow"
 		local narration = spec.speaker == "이야기"
 		-- [시작 프롤로그] 이야기·길드·동료·화가 장면 모두 화면 중앙을 기준으로 배치한다.
 		local viewport = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1280, 720)
-		local introBodySize = if viewport.X < 520 then 20 else 24
+		local introBodySize = if viewport.X < 520 then 22 else 24
 		local introTitleSize = if viewport.X < 520 then 22 else 26
 		win.AnchorPoint = Vector2.new(0.5, 0.5)
 		win.Position = UDim2.fromScale(0.5, 0.5)
-		win.Size = UDim2.new(0.9, 0, 0, 0)
-		win.AutomaticSize = Enum.AutomaticSize.Y
+		win.Size = UDim2.new(0.94, 0, 0.88, 0)
+		win.CanvasSize = UDim2.fromOffset(0, 0)
+		win.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		win.ScrollingDirection = Enum.ScrollingDirection.Y
+		win.ScrollBarThickness = 5
 		win.BackgroundColor3 = COLORS.cover
 		win.BorderSizePixel = 0
 		win.Parent = layer
@@ -19874,7 +19900,7 @@ end
 		wst.Parent = win
 		local lim = Instance.new("UISizeConstraint")
 		lim.MaxSize = Vector2.new(700, 700)
-		lim.MinSize = Vector2.new(280, 120)
+		lim.MinSize = Vector2.new(0, 0)
 		lim.Parent = win
 		local pad = Instance.new("UIPadding")
 		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 14), UDim.new(0, 14), UDim.new(0, 16), UDim.new(0, 16)
@@ -20010,7 +20036,7 @@ end
 		local box
 		if spec.input then
 			box = Instance.new("TextBox")
-			box.Size = UDim2.new(1, 0, 0, 40)
+			box.Size = UDim2.new(1, 0, 0, 48)
 			box.BackgroundColor3 = COLORS.coverRaised
 			box.BorderSizePixel = 0
 			box.TextColor3 = COLORS.text
@@ -20059,9 +20085,9 @@ end
 			end
 			grid.Parent = win
 		end
-		local note = mkLabel(win, "", 13, Color3.fromRGB(240, 150, 120), false, 4)
+		local note = mkLabel(win, "", 18, Color3.fromRGB(240, 150, 120), false, 4)
 		local submit
-		local go = mkButton(win, spec.button or "확인", COLORS.gold, UDim2.new(1, 0, 0, 42), function() submit() end, true)
+		local go = mkButton(win, spec.button or "확인", COLORS.gold, UDim2.new(1, 0, 0, 52), function() submit() end, true)
 		function submit()
 			local value = nil
 			if box then
@@ -20102,6 +20128,7 @@ end
 			end
 		end
 		go.LayoutOrder = 5
+		go.TextSize = 22
 		if workspace:GetAttribute("QAAutoIntro") then
 			-- Studio 자동 점검: 클릭 좌표가 어긋나도 안내 대화가 스스로 넘어가게 한다
 			task.spawn(function()
@@ -20222,20 +20249,24 @@ end
 			pcall(Sfx.music, prevMusic or nil)
 			portraitKey = nil
 		end
-		local skip = mkButton(layer, "넘기기", COLORS.leather, UDim2.fromOffset(92, 44), closeReveal)
+		local confirmed = false
+		local ready = false
+		local skip = mkButton(layer, "넘기기", COLORS.leather, UDim2.fromOffset(116, 48), function()
+			if ready then confirmed = true else closeReveal() end
+		end, true)
+		skip.TextSize = 20
 		skip.AnchorPoint = Vector2.new(1, 0)
 		skip.Position = UDim2.new(1, -18, 0, 54)
 		skip.ZIndex = 12
-		task.delay(9, closeReveal)
 		pcall(Sfx.music, "music_story_palace")
 		Sfx.play("sfx_book_turn", 0.7)
 		local camera = workspace.CurrentCamera
 		local viewHeight = if camera then camera.ViewportSize.Y else 600
-		local pictureHeight = math.clamp(math.floor(viewHeight * 0.64), 136, 328)
+		local pictureHeight = math.max(48, math.min(328, math.floor(viewHeight * 0.60), viewHeight - 144))
 		local pictureWidth = math.floor(pictureHeight * 268 / 328)
 		local frame = Instance.new("Frame")
 		frame.AnchorPoint = Vector2.new(0.5, 0.5)
-		frame.Position = UDim2.fromScale(0.5, 0.46)
+		frame.Position = UDim2.fromScale(0.5, 0.40)
 		frame.Size = UDim2.fromOffset(0, 0)
 		frame.BackgroundColor3 = Color3.fromRGB(224, 198, 153)
 		frame.BorderSizePixel = 0
@@ -20267,7 +20298,7 @@ end
 		local big = portraitImg(canvas, value, pictureWidth - 18, pictureHeight - 18, true)
 		local cap = mkLabel(layer, "", 24, COLORS.paper, true)
 		cap.AnchorPoint = Vector2.new(0.5, 0)
-		cap.Position = UDim2.new(0.5, 0, 0.46, pictureHeight / 2 + 12)
+		cap.Position = UDim2.new(0.5, 0, 0.40, pictureHeight / 2 + 6)
 		cap.Size = UDim2.new(0.84, 0, 0, 42)
 		cap.AutomaticSize = Enum.AutomaticSize.None
 		cap.TextXAlignment = Enum.TextXAlignment.Center
@@ -20299,8 +20330,15 @@ end
 		Sfx.play("sfx_fanfare", 0.6)
 		Sfx.play("sfx_bell", 0.5)
 		cap.Text = name
-		task.wait(2.2)
-		if closed then return end
+		ready = true
+		skip.Text = "확인"
+		skip.AnchorPoint = Vector2.new(0.5, 1)
+		skip.Position = UDim2.new(0.5, 0, 1, -12)
+		skip.Size = UDim2.fromOffset(200, 48)
+		if workspace:GetAttribute("QAAutoIntro") then confirmed = true end
+		while not confirmed and not closed and layer.Parent do task.wait(0.15) end
+		if closed or not layer.Parent then return end
+		skip.Visible = false
 		-- 종이 초상이 작아져 선장실 초상 자리로 이동한다
 		cap.Text = "초상이 선장 칸에 올랐다"
 		Sfx.play("sfx_ship_cabin_door", 0.6)
