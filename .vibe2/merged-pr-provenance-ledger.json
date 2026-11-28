@@ -386811,11 +386811,156 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_72141cbd0b6b18e760b5d8ef",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15779",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "21af60330c16d8340bd312c8524a9e47fbe4575c",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15779,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-material-intake-proof-20261128",
+        "baseSha": "21af60330c16d8340bd312c8524a9e47fbe4575c",
+        "headSha": "1b2c135c5d7e35dc36835a8c9679971b8cb06524",
+        "mergeCommitSha": "bf64a240eef001072df192fa0e4065e98c1930b5",
+        "mergedAt": "2026-11-28T10:32:03Z",
+        "authorLogin": "hans1177",
+        "titleHash": "f7c774e1e5606a5d684d3b036221174a1cc329a0d1c3fafced36a98dfa3c03c3",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-material-intake-proof-20261128",
+        "candidateSha": "1b2c135c5d7e35dc36835a8c9679971b8cb06524"
+      },
+      "changeStats": {
+        "changedFileCount": 19,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 647,
+        "deletedLineCount": 209,
+        "changedFiles": [
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-menu-compact-text.test.mjs",
+          "qa/mare-village-resident-spec.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/docs/PORT_VILLAGE_PROMPTS.md",
+          "roblox-games/mare-essentia/docs/READ_FIRST.md",
+          "roblox-games/mare-essentia/docs/VILLAGE_LAYOUT_SPEC.md",
+          "roblox-games/mare-essentia/docs/residents/OUTFIT_SPEC.md",
+          "roblox-games/mare-essentia/docs/residents/README.md",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-dex-clean.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-flow-menu.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menu-compact.json",
+          "tools/devloop/register_asset.py"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-dropbox-inbox.test.mjs",
+          "qa/mare-menu-compact-text.test.mjs",
+          "qa/mare-village-resident-spec.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/assets/inbox-hold/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/assets/materials/mat_wall_plaster_beige_bc.png.license.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Pose.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-dex-clean.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-flow-menu.json",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-menu-compact.json",
+          "tools/devloop/register_asset.py"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15779",
+        "merge-commit:bf64a240eef001072df192fa0e4065e98c1930b5",
+        "base-main:21af60330c16d8340bd312c8524a9e47fbe4575c"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3035
+    "total": 3036
   }
 }
