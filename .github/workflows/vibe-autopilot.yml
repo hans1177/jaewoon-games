@@ -47,7 +47,31 @@ jobs:
           set -uo pipefail
           mkdir -p build/reports
           for g in mare-essentia; do
-            gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-autopilot-report" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=${g}-studio-frames" --jq .content 2>/dev/null | base64 -d > "build/reports/${g}.json" 2>/dev/null || rm -f "build/reports/${g}.json"
+            # [증거 선택] 두 보고서의 검사표를 동일 커밋에서 읽고 최신 실행만 선택한다.
+            best=0
+            rm -f "build/reports/${g}.json"
+            for branch in "${g}-autopilot-report" "${g}-studio-frames"; do
+              pin=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/$branch" --jq .object.sha 2>/dev/null) || continue
+              [[ "$pin" =~ ^[a-f0-9]{40}$ ]] || continue
+              gh api "repos/${GITHUB_REPOSITORY}/contents/report.json?ref=$pin" --jq .content 2>/dev/null | base64 -d > build/report-candidate.json || continue
+              gh api "repos/${GITHUB_REPOSITORY}/contents/checks.json?ref=$pin" --jq .content 2>/dev/null | base64 -d > build/checks-candidate.json || continue
+              revision=$(jq -er '.sourceRevision | select(test("^[a-f0-9]{40}$"))' build/report-candidate.json) || continue
+              run_id=$(jq -er --arg revision "$revision" 'select(.sourceRevision == $revision) | (.runId | tostring) | select(test("^[1-9][0-9]{4,14}$"))' build/checks-candidate.json) || continue
+              (( run_id > best )) || continue
+              # 격리 후보나 현재 실행 기준보다 미래인 소스는 메인 게임 학습에 사용하지 않는다.
+              if [[ "$revision" != "$GITHUB_SHA" ]]; then
+                ancestry=$(gh api "repos/${GITHUB_REPOSITORY}/compare/${revision}...${GITHUB_SHA}" --jq .status 2>/dev/null) || continue
+                [[ "$ancestry" == "ahead" || "$ancestry" == "identical" ]] || continue
+              fi
+              jq -e --arg run "$run_id" --slurpfile checks build/checks-candidate.json '
+                select((.log | type) == "array" and (.errors | type) == "array") |
+                . + {autopilotEvidence: {runId: $run, kind: $checks[0].kind, result: $checks[0].result, scriptPath: $checks[0].scriptPath, scriptSha256: $checks[0].scriptSha256}}
+              ' build/report-candidate.json > build/report-selected.json || continue
+              mv build/report-selected.json "build/reports/${g}.json"
+              best=$run_id
+            done
+            echo "AUTOPILOT_REPORT_RUN=$best game=$g"
+            rm -f build/report-candidate.json build/checks-candidate.json build/report-selected.json
           done
           gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-ledger.json 2>/dev/null || rm -f build/autopilot-ledger.json
           # [중복 방지] 독립 신호만 10분 내 판단 기록이 있으면 생략한다.

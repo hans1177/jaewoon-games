@@ -197,7 +197,7 @@ test('해결이 안 된 병합은 NOT_RESOLVED 로 라벨하고, 실패가 쌓�
   let { playbook, key } = addCandidate(emptyPlaybook(), { order, parsed: { summary: 's', edits: [edit] }, provider: 'fake', now });
   playbook.entries[key].state = 'proven'; playbook.entries[key].successes = 0;
   const ledger = { ...emptyBrainLedger(), merged: [{ at: now - 7 * 3600000, fp: order.fingerprint, pbKey: key }, { at: now - 8 * 3600000, fp: order.fingerprint, pbKey: key }] };
-  const lab = labelOutcomes({ ledger, playbook, orders: [order], now });
+  const lab = labelOutcomes({ ledger, playbook, orders: [{ ...order, lastAt: now - 60000 }], now });
   assert.deepEqual(lab.ledger.merged.map(m => m.label), ['NOT_RESOLVED', 'NOT_RESOLVED']);
   assert.equal(lab.playbook.entries[key].failures, 2);
   assert.equal(lab.playbook.entries[key].state, 'bad');
@@ -577,4 +577,51 @@ test('Mare voyage weather and story survey use existing scenes without choosing 
   assert.match(workflow,/VOYAGE_SURVEY_WEATHER_NOT_RENDERED/);
   assert.match(workflow,/STORY_SURVEY_RUNTIME_COUNT/);
   assert.match(workflow,/STORY_SURVEY_CLOSED_NO_CHOICE/);
+});
+
+test('병합 후 실제 재검사 기록이 없으면 시간이 지나도 실패 학습하지 않는다', () => {
+  const now = Date.now(), at = now - 8 * 3600000;
+  const ledger = { ...emptyBrainLedger(), merged: [{ at, fp: order.fingerprint, provider: 'fake', kind: 'error' }] };
+  const playbook = emptyPlaybook();
+  for (const orders of [[], [{...order, lastAt: at - 1}], [{...order, resolvedAt: at - 1}]]) {
+    const result = labelOutcomes({ledger, playbook, orders, now});
+    assert.equal(result.changed, 0);
+    assert.equal(result.ledger.merged[0].label, undefined);
+  }
+  const found = labelOutcomes({ledger, playbook, orders:[{...order,lastAt:at+1}],now});
+  assert.equal(found.ledger.merged[0].label,'NOT_RESOLVED');
+  const fixed = labelOutcomes({ledger,playbook,orders:[{...order,resolvedAt:at+1}],now});
+  assert.equal(fixed.ledger.merged[0].label,'RESOLVED');
+});
+test('자동 수정기는 한 원장의 열린 작업과 해결 기록을 분리해서 사용한다', () => {
+  const workflow = fs.readFileSync('.github/workflows/vibe-brain.yml','utf8');
+  const brain = fs.readFileSync('tools/vibe-brain.mjs','utf8');
+  assert.ok(workflow.includes('contents/autopilot-ledger.json?ref=vibe-gym-data'));
+  assert.ok(workflow.includes('[.orders[] | select(.resolvedAt | not)]'));
+  assert.ok(workflow.includes('--autopilot-ledger build/autopilot-ledger.json'));
+  assert.ok(brain.includes('labelOutcomes({ ledger, playbook, orders: evidenceOrders })'));
+});
+
+test('visual repair preserves source scenario and reuses canonical Studio dispatch after merge',()=>{
+  const brain=fs.readFileSync('tools/vibe-brain.mjs','utf8');
+  const workflow=fs.readFileSync('.github/workflows/vibe-brain.yml','utf8');
+  const dispatch=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(brain.includes('path: checks.scriptPath, sha256: checks.scriptSha256'));
+  assert.ok(brain.includes('!checks.portBatch'));
+  assert.ok(workflow.includes('STUDIO_RETEST='));
+  assert.ok(dispatch.includes('.merge_commit_sha == $sha'));
+  assert.ok(dispatch.includes('.head.repo.full_name == $repo'));
+  assert.ok(dispatch.includes('"$current_hash" == "$retest_hash"'));
+  assert.ok(dispatch.includes('script="$retest_path"'));
+  assert.ok(dispatch.includes('STUDIO_RELEASE_REGRESSION=FULL'));
+  assert.equal((dispatch.match(/gh workflow run devloop-studio\.yml/g)||[]).length,1);
+});
+
+test('exact Studio retest hashes an inert local file and validates archived original checks',()=>{
+  const dispatch=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(dispatch.includes('base64 --decode "$retest_file.b64" > "$retest_file"'));
+  assert.ok(dispatch.includes('sha256sum "$retest_file"'));
+  assert.ok(dispatch.includes('contents/runs/$retest_run/checks.json?ref=mare-essentia-studio-frames'));
+  assert.ok(dispatch.includes('.scriptPath == $path and .scriptSha256 == $hash'));
+  assert.ok(dispatch.includes('STUDIO_EXACT_RETEST_UNVERIFIED=ORIGINAL_EVIDENCE_MISSING'));
 });

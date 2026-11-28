@@ -9,7 +9,7 @@ const readText=(file)=>fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n');
 // [시설 탭 최초 배치 회귀] 모바일 첫 렌더와 화면 크기 갱신이 같은 배치 규칙을 사용한다.
 test('시설 탭 아이콘과 글자는 첫 생성부터 모바일 규격으로 배치된다',()=>{
   const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -13, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -13\)/);
+  assert.match(game,/icon\.Position = if compactTabs then UDim2\.new\(0\.5, -16, 0, 3\) else UDim2\.new\(0, 7, 0\.5, -16\)/);
   assert.match(game,/caption\.TextXAlignment = if compactTabs then Enum\.TextXAlignment\.Center else Enum\.TextXAlignment\.Left/);
   assert.match(game,/textLimit\.MaxTextSize = if compactTabs then 14 else 17/);
 });
@@ -186,9 +186,9 @@ test('모든 시설 아이콘 탭을 오른쪽 상단에 배치하고 왼쪽 본
   assert.match(source,/tabBar\.AnchorPoint = Vector2\.new\(1, 0\)/);
   assert.match(source,/H\.tabStrip\.Name = "FacilityTabStrip"/);
   assert.match(source,/H\.tabStrip\.ScrollingDirection = Enum\.ScrollingDirection\.X/);
-  assert.match(layout,/local sectionTop = if compactTabs and not facilityDetail then 120 else 68/);
+  assert.match(layout,/local sectionTop = if not wide and not facilityDetail then 112 else 68/);
   assert.match(layout,/tabBar\.Position = UDim2\.new\(1, -8, 0, sectionTop\)/);
-  assert.match(layout,/local bodyTop = sectionTop \+ \(if tabs then tabHeight \+ 12 else 0\)/);
+  assert.match(layout,/local bodyTop = if headerTabs then 68 else sectionTop \+ \(if tabs then tabHeight \+ 8 else 0\)/);
   assert.match(layout,/H\.tabWidth = tabWidth/);
   assert.match(layout,/H\.tabStrip\.CanvasSize = UDim2\.fromOffset\(allTabsWidth, 0\)/);
   assert.match(source,/local tabLayout = Instance\.new\("UIListLayout"\)/);
@@ -2216,7 +2216,12 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/local biped = species == "chicken" or species == "duck"/);
  assert.match(port,/local requiredLegs = if biped then 2 else 4/);
  assert.match(field,/local requiredLegs = if biped then 2 else 4/);
- assert.match(port,/local canWalk = legCount == requiredLegs/);
+ assert.match(port,/local canWalk = facingKnown and legCount == requiredLegs/);
+ assert.match(port,/local d = w\.travelD or 0/);
+ assert.match(port,/local delta = targetD - d/);
+ assert.match(port,/local alignment = if math\.abs\(turn\) < 0\.12 then 1 else 0/);
+ assert.match(port,/local destination = w\.base\.Position \+ w\.forward \* d/);
+ assert.match(port,/CFrame\.Angles\(0, w\.hd, 0\) \* w\.base\.Rotation/);
  assert.match(field,/local canWalk = facingKnown and legCount == requiredLegs/);
  assert.match(port,/pivot \* CFrame.new\(limb.legHinge\) \* limb.pose \* CFrame.new\(-limb.legHinge\) \* limb.base/);
  assert.match(field,/pitch = if limb.legChild then 0 else math.sin\(a.step \+ limb.phase\)/);
@@ -3612,7 +3617,12 @@ test('대항해시대 교역 원화·백과·선박 전시장과 공통 버튼 �
   assert.match(source,/if bookCard then bookCard\.id else "search:" \.\. shipName/,'해당 선박 기록이 없으면 선박명 검색');
   assert.match(source,/string\.sub\(target, 1, 7\) == "search:"/,'서재 검색과 정확한 백과 장 분기');
   assert.match(source,/H\.codexSearchTerm = string\.sub\(target, 8\)/,'기존 지식 검색 기능 재사용');
-  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 300 else 340\)/,'낮은 화면은 원화보다 본문 우선');
+  assert.match(source,/local showArt = gallery and bodyH >= \(if wide then 340 else 360\)/,'실행 버튼 높이를 제외한 본문이 충분할 때만 원화 표시');
+  assert.match(source,/local bodyH = height - bodyTop - dockH/);
+  assert.doesNotMatch(source,/local posterW =/);
+  assert.match(source,/H\.galleryCard\.Visible = true\s+H\.galleryImage\.ImageTransparency = 1/);
+  assert.match(source,/H\.menuActionButton\.Parent = H\.menuActionDock/);
+  assert.match(source,/nav = 2, tradeg = 0, adventure = 4, growth = 6, records = 7/);
   // [선택 대상과 원화] 실제 항로/국가/항구를 눌러도 기존 출항·외교·저장 흐름은 분리한다.
   assert.match(source,/H\.gallerySelection = nil -- \[시설 변경\]/,'시설 변경 시 이전 선택 정리');
   assert.match(source,/H\.gallerySearchTerm or/,'백과 링크에 선택 대상 검색어 전달');
@@ -3673,7 +3683,7 @@ test('무료 AI 디자인 리뷰가 교역품 실촬영을 우선 전송한다',
 // [시설 아이콘 회귀] 최초 생성과 반응형 갱신은 같은 모바일·데스크톱 좌표를 사용한다.
 test('항구 시설 아이콘은 최초 생성과 반응형 배치에서 같은 탭 내부 여백을 유지한다',()=>{
   const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
-  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -13, 0, 3) else UDim2.new(0, 7, 0.5, -13)';
+  const expected='icon.Position = if compactTabs then UDim2.new(0.5, -16, 0, 3) else UDim2.new(0, 7, 0.5, -16)';
   assert.equal(source.split(expected).length-1,2);
 });
 
@@ -4977,7 +4987,7 @@ test('광장 가장자리 장식과 시장 가판대의 보행 간섭을 검사�
  assert.match(scene,/originalStall.Name = "CityMarketStall"/);
  assert.match(scene,/extra.Name = "CityMarketStall"/);
  assert.match(scene,/hit:FindFirstAncestor\("CityMarketStall"\)/);
- assert.match(scene,/\(hit.CanCollide or visualMarket\)/);
+ assert.match(scene,/\(hit.CanCollide or visualMarket or visualSolid\)/);
 });
 
  
@@ -5000,4 +5010,246 @@ test('항구 주민 최초 발바닥과 이동 지면 높이를 분리하여 보
  const target=(floor,baseline,old)=>Math.abs(floor-baseline)<=1.25?floor-baseline:old;
  assert.ok(Math.abs(target(0.42,0.17,0)-0.25)<1e-9);
  assert.equal(target(8,0.17,0.25),0.25);
+});
+
+// [메뉴 실수치 시각화] 가격·적재·보급은 원본 서버 수치만 사용한다.
+test('교역과 항해의 승인 아이콘 및 실제 수치 막대 유지',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ for(const key of ['TradeIndexPriceMeter','TradeBuyMeter','TradeSellMeter','TradeCargoMeter','RouteSupplyMeter','RouteCoalMeter']) assert.ok(source.includes(key),key);
+ assert.match(source,/math\.clamp\(ship\.cargoUsed \/ math\.max\(1, ship\.cargoCapacity\), 0, 1\)/);
+ assert.match(source,/local priceMax = math\.max\(1, unitBuy, sel\.sell\)/);
+ assert.match(source,/math\.clamp\(data\[3\] \/ math\.max\(1, data\[2\]\), 0, 1\)/);
+ assert.match(source,/Create\(H\.galleryBackdrop,/);
+});
+
+test('선장 현황 및 진행 일지는 문자 그림 대신 등록 아이콘과 실제 진행 막대를 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ assert.match(source,/icon\.Name = "StatusMetricArt"/);
+ assert.match(source,/meter\.Name = "QuestProgressMeter"/);
+ assert.match(source,/math\.clamp\(done \/ total, 0, 1\)/);
+ assert.doesNotMatch(source,/string\.rep\("▰", filled\)/);
+});
+
+test('전체 메뉴 탭은 승인 청동 아이콘과 짧은 한글 이름으로 선택 상태를 구별한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const caps=source.slice(source.indexOf('H.TAB_CAPTION = {'),source.indexOf('function H.renderTabs()'));
+ for(const id of ['route','map','diplomacy','trade','market','harbor','board','quest','explore','battle','war','gwent','status','yard','crew','recruit','tech','scholar','codex','encyclopedia']) assert.ok(caps.includes(id+' ='),id);
+ assert.match(source,/caption\.Text = H\.TAB_CAPTION\[id\] or TAB_NAME\[id\]/);
+ assert.match(source,/if caption then caption\.TextColor3 = b\.TextColor3 end/);
+});
+
+test('공통 안내는 묶음 첫 화면에만 두고 초보 안내는 승인 원화로 보여 준다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ assert.match(source,/currentTab == grp\.tabs\[1\] or currentTab == "market"/);
+ assert.match(source,/icon\.Name = "CoachStepArt"/);
+ assert.ok(!source.includes('실제 진행 상태와 조건을 아래에서 확인해.'));
+});
+
+test('메뉴 글꼴과 실제 화물 막대 및 화면 비율별 탭 폭을 검증한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const layout=source.slice(source.indexOf('function H.layoutBook()'),source.indexOf('mainInner:GetPropertyChangedSignal("AbsoluteSize"):Connect(H.layoutBook)'));
+  assert.match(source,/headerLabel\.Font = Enum\.Font\.GothamBold/);
+  assert.match(source,/mastheadSize\.MinTextSize = 15/);
+  assert.match(layout,/local compactTabs = not wide and \(height <= 0 or height >= 430\)/);
+  assert.match(layout,/math\.clamp\(availableTabs, if compactTabs then 86 else 104, if compactTabs then 154 else 176\)/);
+  for (const [width,height,count] of [[320,600,6],[390,700,3],[740,390,6],[832,384,6],[1024,768,6]]) {
+    const compact=width<740&&height>=430, gap=width<340?4:6;
+    const available=Math.floor((width-16-(count-1)*gap)/count);
+    const tab=Math.max(compact?86:104,Math.min(compact?154:176,available));
+    assert.ok(tab>=86);
+    if(width>=740) assert.ok(count*tab+(count-1)*gap<=width-16);
+  }
+  assert.match(source,/H\.menuCargoFill\.Size = UDim2\.fromScale\(cargoRatio, 1\)/);
+  assert.doesNotMatch(source,/보급 %d개 · 석탄 %d개 · 해금된 항로 확인/);
+});
+
+test('청동 원화와 프레임의 최초·재선택 상태를 같은 기준으로 표시한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const tabs=source.slice(source.indexOf('function H.renderTabs()'),source.indexOf('-- 모든 시설 창 오른쪽 위 모서리의 × 닫기 버튼'));
+  const buttons=source.slice(source.indexOf('local function mkButton('),source.indexOf('local function mkRow('));
+  assert.equal((tabs.match(/rim\.Transparency = if selected then 0\.12 else 0\.55/g)||[]).length,2);
+  assert.equal((tabs.match(/grain\.ImageTransparency = if selected then 0\.55 else 0\.58/g)||[]).length,2);
+  assert.match(buttons,/if grain and parent ~= H\.tabStrip then/);
+  assert.match(buttons,/bookMaterial\(b, if parent == H\.tabStrip or back then "leather" else "parchment", 148\)/);
+  assert.match(buttons,/bevel\.Visible = not buttonArt/);
+  assert.match(source,/badgeStroke\.Transparency = if selected then 0\.20 else 0\.55/);
+  assert.match(source,/elseif art:GetAttribute\("FacilityArtKey"\) then Color3\.new\(1, 1, 1\)/);
+});
+
+test('교역·조선의 상세 메뉴는 중복 머리줄을 줄이고 승인 청동 탭을 재사용한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('function openYardHall()'));
+  const yard=source.slice(source.indexOf('function openYardHall()'));
+  assert.match(trade,/local narrow = width < 920/);
+  assert.match(trade,/local headH = if backToList or message ~= "" then 100 else 50/);
+  assert.doesNotMatch(trade,/local title = mkLabel\(top, "교역 장부 · "/);
+  assert.match(trade,/commonStatus\.Size = UDim2\.fromOffset\(cashWidth, 44\)/);
+  assert.match(trade,/local compactList = not narrow or listWidth < 420/);
+  assert.match(trade,/leave\.Visible = backToList/);
+  assert.match(yard,/modelIcon\(button, "FacilityArt", entry\[3\], nil, 22, entry\[1\]\)/);
+  assert.match(yard,/icon\.Name = "YardTabIcon"/);
+  assert.match(yard,/limit\.MinTextSize = 13/);
+});
+
+
+test('항해 목록과 상세 및 일지 구획은 기존 행동과 실제 진행 수치를 보존한다', () => {
+  const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const route=source.slice(source.indexOf('function RENDERERS.route()'),source.indexOf('local openYardHall'));
+  const quest=source.slice(source.indexOf('function RENDERERS.quest()'),source.indexOf('-- 주점의 지식 카드 배틀'));
+  assert.match(route,/local sorted = if selected then \{ selected \} else table\.clone\(view\.routes\)/);
+  assert.match(route,/H\.routeDetailId = r\.id/);
+  assert.match(route,/H\.routeDetailId = nil; render\(\)/);
+  assert.match(route,/confirmSail\(r\)/);
+  assert.match(route,/call\("WaitDay", \{\}\)/);
+  assert.match(route,/if r\.locked then/);
+  for(const section of ['active','auto','field','done']) assert.ok(quest.includes('section == "'+section+'"'));
+  assert.match(quest,/if expanded and H\.questCauseCard then H\.questCauseCard\(q\) end/);
+  for(const action of ['TurnIn','StoryChoose']) assert.ok(quest.includes('call("'+action+'"'));
+  assert.match(quest,/H\.devCards\.duel\(q\.id\)/);
+  assert.match(quest,/openTab\("war"\)/);
+  assert.match(quest,/math\.clamp\(done \/ total, 0, 1\)/);
+});
+
+
+test('백과사전은 원화와 해설 양면 및 세로폰 단면 책 구조를 사용한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ for(const name of ['EncyclopediaLeaves','EncyclopediaPlate','DexHero','DexPage','EncyclopediaPageFooter','DexGrid']) assert.ok(dex.includes(name),name);
+ assert.match(dex,/hero\.ScaleType = Enum\.ScaleType\.Fit/);
+ assert.match(dex,/plate\.Visible = wide or not reading/);
+ assert.match(dex,/page\.Visible = reading/);
+ assert.match(dex,/math\.min\(block \+ 11, #found\)/);
+ assert.match(dex,/call\("SetEncyclopediaBookmark", \{ id = current\.id \}\)/);
+ for(const name of ['encyFacts','encyMap','encyTimeline','encySize','encyRelated','encyCollection']) assert.ok(dex.includes('H.'+name));
+ assert.doesNotMatch(dex,/DexHeroBackdrop|DexExpanded|Enum\.ScaleType\.Crop/);
+});
+
+
+test('백과 필사본의 삽화 여백을 보존하고 모바일은 해상도 독립 단면을 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ assert.match(dex,/AssetIds\["CardArt\/ency_bg_book"\]/);
+ assert.match(dex,/art\.Size = UDim2\.new\(2, 0, 1, -55\)/);
+ assert.match(dex,/art\.Position = UDim2\.fromScale\(if H\.dexReading then -1 else 0, 0\)/);
+ assert.match(dex,/leaf\.Position = UDim2\.new\(if wide then 0\.15 elseif H\.dexReading then 0\.08 else 0\.27/);
+ assert.match(dex,/leaf\.Size = UDim2\.new\(if wide then 0\.70 else 0\.65/);
+ // 단면 좌우는 원본 책의 바깥쪽 장식 여백을 각각 남긴다.
+ for (const [left,width,outerSide] of [[0.15,0.70,"both"],[0.08,0.65,"right"],[0.27,0.65,"left"]]) {
+   assert.ok(left >= 0.08 && left + width <= 0.93);
+   if(outerSide === "left" || outerSide === "both") assert.ok(left >= 0.15);
+   if(outerSide === "right" || outerSide === "both") assert.ok(1-left-width >= 0.149);
+ }
+ assert.match(dex,/plate\.BackgroundTransparency = if bookId then 1 else 0/);
+ assert.match(dex,/page\.BackgroundTransparency = if bookId then 1 else 0/);
+ assert.match(dex,/hero\.ScaleType = Enum\.ScaleType\.Fit/);
+});
+
+
+test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출은 모션 감소를 존중한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ assert.match(source,/AssetIds\["CardArt\/ency_tab_sheet"\]/);
+ assert.match(source,/holder\.ClipsDescendants = true/);
+ assert.match(source,/art\.Position = UDim2\.fromScale\(-\(cell % 4\), -math\.floor\(cell \/ 4\)\)/);
+ assert.match(dex,/direction and not H\.dexPlateIndex and not game:GetService\("GuiService"\)\.ReducedMotionEnabled/);
+ assert.match(dex,/H\.dexTurnDirection = nil/);
+ assert.match(dex,/if wide then 0\.15 elseif H\.dexReading then 0\.08 else 0\.27/);
+ assert.match(dex,/fade\.Completed:Once\(function\(\) fold:Destroy\(\) end\)/);
+});
+
+ test('고서 본문은 전체 해설 검색과 사실 구분·발견 기록·관련 사료를 보존한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ const related=source.slice(source.indexOf('function H.encyRelated('),source.indexOf('function H.encyCollection('));
+ assert.ok(dex.includes('상세 해설 원고 준비 중'));
+ for(const key of ['fiction','legend','hypothesis','unreviewed']) assert.ok(dex.includes('"' + key + '"'));
+ for(const key of ['person','site','quest','event']) assert.ok(dex.includes('first.'+key));
+ assert.ok(dex.includes('관련 장소·상품·사료'));
+ assert.ok(dex.includes('H.showCardDetail(current)'));
+ assert.ok(dex.includes('current.credit'));
+ assert.ok(source.includes('{ "topic", "latin", "summary", "looks", "details", "context", "history", "trivia" }'));
+ assert.ok(source.includes('for _, fact in article.facts or {} do'));
+ assert.ok(related.includes('H.encyclopediaSearchText = ""'));
+ assert.ok(related.includes('Enum.ScaleType.Fit'));
+});
+
+ test('성장 동료 목록은 실제 호감도 막대와 선택 상세에서만 행동을 제공한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const grid=source.slice(source.indexOf('function H.tileGrid('),source.indexOf('local function mkHeader('));
+ assert.ok(grid.includes('CompanionAffinityFill'));
+ assert.ok(grid.includes('math.clamp(it.affinity / 100, 0, 1)'));
+ for(const [name,next,id] of [['recruit','crew','recruitDetailId'],['crew','status','crewDetailId']]){
+   const section=source.slice(source.indexOf('function RENDERERS.'+name+'()'),source.indexOf('function RENDERERS.'+next+'()'));
+   assert.ok(section.includes('H.'+id+' = c.id; render()'));
+   assert.ok(section.includes('H.'+id+' = nil; render()'));
+   assert.ok(section.includes('affinity = c.affinity'));
+   assert.ok(section.includes('if not selected then'));
+   for(const action of ['Recruit','Talk','Dismiss']) assert.ok(section.includes('call("'+action+'"'));
+   assert.ok(section.includes('H.tileGrid(tiles, content, 190, 210, not selected)'));
+ }
+});
+
+ test('조선소는 선택 선박 한 척의 상세 비교만 만들고 나머지는 가벼운 목록으로 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const yard=source.slice(source.indexOf('local function renderYard(page)'),source.indexOf('function openYardHall()'));
+ assert.ok(yard.includes('for _, s in (if previewShip then { previewShip } else {}) do'));
+ assert.ok(yard.includes('YardShipChoice_'));
+ assert.ok(yard.includes('H.shipPreviewId = s.id'));
+ assert.ok(yard.includes('call("BuyShip", { shipId = s.id })'));
+ assert.ok(yard.includes('s.canCarry and s.netCost <= view.player.coins'));
+ assert.ok(yard.includes('math.max(520, left + 120 + 240)'));
+ assert.ok(yard.includes('if narrow then -178 else -112'));
+});
+
+ test('교역 목록과 상세는 특산 잠금·실제 세후손익·기준가를 동일하게 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const trade=source.slice(source.indexOf('local function openTradeHall()'),source.indexOf('local function renderYard(page)'));
+ assert.ok(trade.includes('for n = 1, if g.lock then 0 else'));
+ assert.ok(trade.includes('if g.lock or (g.tag and g.tag ~= "") then'));
+ assert.ok(trade.includes('TradeAccessBadge'));
+ assert.ok(trade.includes('elseif sel.lock then "특산품 잠김"'));
+ assert.ok(trade.includes('if average <= 0 then "세계 평균 자료 없음"'));
+ assert.ok(trade.includes('H.tradeProfit(sel, sellQty)'));
+ assert.ok(trade.includes('elseif profit and profit > 0 then Color3.fromRGB(38, 111, 60)'));
+ assert.ok(trade.includes('else "흥정 게임", COLORS.grey'));
+ for(const action of ['Buy','Sell']) assert.ok(trade.includes('call("'+action+'"'));
+});
+
+ test('항해 상세 해도는 기존 승인 세계지도와 정규 항로를 사용한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const route=source.slice(source.indexOf('function RENDERERS.route()'),source.indexOf('local openYardHall'));
+ for(const name of ['RouteMiniChart','RouteMiniChartMap','RouteWaypoint','RouteOrigin','RouteDestination']) assert.ok(route.includes(name));
+ assert.ok(route.includes('SeaRoutes.path(view.player.portId, selected.id, PortData.Ports)'));
+ assert.ok(route.includes('AssetIds["CardArt/event_chart_world"]'));
+ assert.ok(route.includes('(b[2] - a[2] + 180) % 360 - 180'));
+ assert.ok(route.includes('not selected.locked'));
+ assert.ok(route.includes('confirmSail(r)'));
+ assert.ok(route.includes('if H.hasIconArt(key) then'));
+});
+
+ test('퀘스트 상세는 기존 화자와 승인 초상 및 장별 목표를 연결한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const quest=source.slice(source.indexOf('function RENDERERS.quest()'),source.indexOf('-- 주점의 지식 카드 배틀'));
+ const cause=source.slice(source.indexOf('function H.questCauseCard(q)'),source.indexOf('function H.showQuestResult'));
+ assert.ok(quest.includes('if q.chapter and H.hasIconArt("chapter")'));
+ assert.ok(quest.includes('if H.hasIconArt("reward") then'));
+ assert.ok(cause.includes('QuestSpeakerPortrait'));
+ assert.ok(cause.includes('H.portraitFor(portraitTalk, true)'));
+ assert.ok(cause.includes('member.name == talk.name'));
+ assert.ok(cause.includes('local values = { q.problem, q.cause, doText, q.result }'));
+ assert.ok(source.includes('return H.portraitFor({ key = "keeper:tavern" }, true)'));
+ assert.ok(source.includes('if exact then return nil end'));
+});
+
+ test('고서 기록 메뉴는 등록 원화 움직임과 기존 저장 책갈피를 보존한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ assert.ok(dex.includes('current.combatArt and current.motionSheet'));
+ assert.ok(dex.includes('frame = (frame + 1) % 24'));
+ assert.ok(dex.includes('if plate.Visible and leaf.Visible then'));
+ assert.ok(dex.includes('ReducedMotionEnabled'));
+ assert.ok(dex.includes('SelectedPlateGold'));
+ assert.ok(source.includes('EncyclopediaBookmarkJump'));
+ assert.ok(source.includes('H.encyclopediaTargetId = saved.id'));
+ assert.ok(source.includes('ArtGallery = 10'));
 });
