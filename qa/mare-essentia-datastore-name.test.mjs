@@ -4780,6 +4780,17 @@ test('Mare naval boarding transition and async crew creation respect scene lifet
   assert.ok(board.indexOf('conns[coroutine.running()] = nil')<board.indexOf('startBoarding(opts.card'));
 });
 
+test('Mare card AI loop respects the scene and current turn after waiting',()=>{
+  const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
+  const cards=naval.slice(naval.indexOf('local function startBoarding('),naval.indexOf('-- 적 포탄 낙하 경고'));
+  const loop=cards.slice(cards.indexOf('cardAiThread = task.spawn(function()'));
+  for(const token of ['task.wait(1.0)','guard < 400 and os.clock() < deadline','if opts.enemyName == "연습전" then math.huge else os.clock() + 600','task.wait(0.9)','task.wait(0.5)','task.wait(0.1)','if playing or m.turn ~= "foe" or m.over then continue end','if not auto or playing or m.turn ~= "me" or m.over then continue end','BC.ai(m, "foe")','BC.ai(m, "me")','mine(ok, msg, res, act, playedCard)','flair += m.wins.me * 40','task.wait(1.8)','onEnd(m, actions)']) assert.ok(loop.includes(token),token);
+  assert.ok(loop.includes('while not m.over and not finished and g.Parent'));
+  assert.ok(cards.includes('cardAiThread ~= coroutine.running() and coroutine.status(cardAiThread) ~= "dead"'));
+  assert.ok(cards.includes('task.cancel(cardAiThread)'));
+  assert.match(loop,/cardAiThread = nil\s+g:Destroy\(\)\s+boardingOn = false\s+onEnd\(m, actions\)/);
+});
+
 test('Mare naval tracking reuses trajectory appearance and skips unchanged coordinates',()=>{
   const naval=read('ReplicatedStorage/Shared/NavalBattle.luau');
   const tracking=naval.slice(naval.indexOf('-- [해전 사거리 레이더]'),naval.indexOf('-- [선체 숫자 선명도]'));
