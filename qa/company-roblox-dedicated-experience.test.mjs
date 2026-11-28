@@ -1484,7 +1484,9 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/if not finished and found >= nodeCount then completePopup\.Visible = true end/);
   assert.match(field,/completeBtn\.Activated:Connect\(function\(\)\s*if not finished and found >= nodeCount then finish\("clear"\) end/);
   assert.match(field,/FieldExitReason/);
-  assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
+  assert.match(field,/local function castEffect\(sk, name, ch, hp0, supportRole\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
+  assert.match(field,/castEffect\(sk, card\.name, ch, hp0\)/);
+  assert.match(field,/castEffect\(id, member\.name, ctx\.ch, ctx\.root, member\.role\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
   // [자동 5타 강타] 수동 스킬 버튼이 아닌 기본 공격·회피 전용 입력과 자동 강타 경로를 검사한다.
   assert.match(field,/pl\.autoHeavyFire == pl\.autoNormalHits/);
@@ -1499,8 +1501,9 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/attackBtn\.Position\.X\.Offset - 146/);
   assert.match(field,/local dodgeIcon = if AssetIds\["Menu\/field_dodge"\] then addIcon\(b, "Menu\/field_dodge"\)/);
   assert.doesNotMatch(field,/slotPos\("heavy"\), skillSize/);
-  assert.match(field,/local observedCardId = nil/);
-  assert.ok(field.indexOf('local observedCardId = nil')<field.indexOf('local function finish(result)'));
+  assert.match(field,/local observedCardId = if found > 0 then opts\.fieldCheckpoint\.cardId else nil/);
+  assert.ok(field.indexOf('local observedCardId = if found > 0') < field.indexOf('local function finish(result)'));
+  assert.match(field,/local recorded = not opts\.onCheckpoint or opts\.onCheckpoint\(i, recordCard\)/);
   assert.match(field,/pcall\(opts\.onFinish, result, observedCardId, earnedPractice, fieldStreakResult\)/);
   assert.match(field,/for _, id in \(opts\.observableCards or \{\}\) do/);
   assert.match(field,/local targetCard = if #availableCards > 0 then KnowledgeCards\.ById/);
