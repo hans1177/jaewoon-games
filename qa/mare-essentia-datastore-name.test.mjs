@@ -406,7 +406,7 @@ test('탐험 공격·회피 두 메달은 실제 터치와 무기별 5타 자동
   assert.match(field,/if timer and timer\.Visible then timer\.Visible = false end/);
   assert.match(field,/local shadeAlpha = 0\.24 \+ \(1 - fraction\) \* 0\.68\s+if shade\.BackgroundTransparency ~= shadeAlpha then shade\.BackgroundTransparency = shadeAlpha end/);
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
-  assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  assert.match(field,/pl\.autoHeavyFire == pl\.autoNormalHits/);
   // [빠른 연타] 0.14초 지연된 이전 평타도 명중 당시 새 입력 여부와 관계없이 충전해야 한다.
   assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
   assert.match(field,/local autoHeavyReady = basicAttack == true/);
@@ -910,7 +910,7 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
   assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
   // [무기별 10연타] 연속 입력 1~10은 원래 공격당 피해 1회씩이며 추가 연출은 비타격이다.
   assert.match(field,/if moveId == "rush" then\s*-- \[연속 공격 10박자\]/);
-  assert.match(field,/basicBeat = if pressedAt - swingBridge\.basicAt <= 1\.1 then swingBridge\.basicBeat % 10 \+ 1 else 1/);
+  assert.match(field,/basicBeat = if pressedAt - swingBridge\.basicAt <= 1\.1 then swingBridge\.basicBeat % maxBeat \+ 1 else 1/);
   assert.match(field,/local nextStage = math\.clamp\(math\.floor\(stage or 1\), 1, 10\)/);
   assert.match(motion,/local stage = math\.clamp\(math\.floor\(idx\), 1, 10\)/);
   assert.match(motion,/local action = if stances and stances\[stage\] then stances\[stage\]/);
@@ -967,7 +967,7 @@ test('근접·원거리 10단 전신 모션과 마무리 이펙트는 기존 피
   assert.match(field,/if visualMobile then 2 else 6/);
   assert.match(field,/if not mobile and \(dodgeStyle == "warrior" or dodgeStyle == "gunner" or dodgeStyle == "navigator"\)/);
   assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
-  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/if chanceNow > 0 and hitAt - \(pl\.lastAutoSkillAt or -100\) >= 4 and comboRng:NextNumber\(\) < chanceNow then/);
   // [5타 강타 시네마] 기존 10박자/숙련 추가 동작이 강타와 겹치지 않는다.
   assert.match(field,/local function comboCinema\(n: number, isRecord: boolean, autoHeavy: boolean\?\)/);
   assert.match(field,/if moveId == "heavy" then[\s\S]{0,250}chainMotionSerial \+= 1/);
@@ -998,7 +998,7 @@ test('탐험 0.4초 회피 6종 및 무기별 10타 공중 검무 유지',()=>{
   assert.match(field,/local agile = not crossbow and not longGun/);
   for(const i of [4,5,6,7,8,9]) assert.ok(field.includes('slashIdx == '+i),'10연타 곡예 단계 누락: '+i);
   assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
-  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/if chanceNow > 0 and hitAt - \(pl\.lastAutoSkillAt or -100\) >= 4 and comboRng:NextNumber\(\) < chanceNow then/);
   assert.match(field,/hrp\.CFrame = hrp\.CFrame \+ look\.Unit \* 14/);
   assert.match(field,/pl\.matrixDodgeUntil = now \+ \(mv\.invuln or 0\.35\)/);
 });
@@ -1028,7 +1028,7 @@ test('탐험 무기별 검광·창끝·중량 충격파·활석궁총 타격 시
       assert.ok(!region.includes(forbidden),'연출이 전투 판정을 건드림: '+forbidden);
     }
   }
-  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/if chanceNow > 0 and hitAt - \(pl\.lastAutoSkillAt or -100\) >= 4 and comboRng:NextNumber\(\) < chanceNow then/);
   assert.match(field,/task\.delay\(if kind == "slash" then 0\.14/);
   assert.match(field,/startSwing\("dash", 0\.4\)/);
 });
@@ -1071,7 +1071,7 @@ test('탐험 무기별 실물 메시 축·피격 부위 절삭 관통 둔격 이
     assert.ok(!effect.includes(forbidden),'효과에서 전투 판정 또는 임의 파츠 생성: '+forbidden);
   }
   assert.match(effect,/count = if visualMobile then 2 elseif heavy then 6 else 3/);
-  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/if chanceNow > 0 and hitAt - \(pl\.lastAutoSkillAt or -100\) >= 4 and comboRng:NextNumber\(\) < chanceNow then/);
 });
 
 // [쓰시마식 검술 1~10타 단계별 전신 연계] 실제 피해 판정·회피·저장 권한과 분리한다.
@@ -1093,7 +1093,7 @@ test('탐험 단계별 검술 발놀림과 골반 회전의 부드러운 전환 
   assert.match(field,/elseif kind == "slash" and beat >= 2 then\s+dur = math\.clamp\(dur, 0\.33, 0\.44\)/);
   assert.match(field,/task\.delay\(if kind == "slash" then 0\.14/);
   assert.match(field,/if basicAttack == true then[\s\S]*?pl\.autoNormalHits = \(pl\.autoNormalHits or 0\) \+ 1/);
-  assert.match(field,/if pl\.autoNormalHits % 5 == 0 then/);
+  assert.match(field,/if chanceNow > 0 and hitAt - \(pl\.lastAutoSkillAt or -100\) >= 4 and comboRng:NextNumber\(\) < chanceNow then/);
   assert.match(field,/pl\.matrixDodgeUntil = now \+ \(mv\.invuln or 0\.35\)/);
   assert.match(field,/local featureList = landforms/);
 });
@@ -1326,7 +1326,7 @@ test('탐험 1~10타·회피 전환은 실제 배율이 적용된 R15 자세를 
     const eased = t * t * (3 - 2 * t);
     assert.ok(eased >= 0 && eased <= 1);
   }
-  assert.match(field, /pl\.autoNormalHits % 5 == 0/);
+  assert.match(field, /pl\.autoHeavyFire == pl\.autoNormalHits/);
   assert.match(field, /if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
 });
 
@@ -1366,7 +1366,7 @@ test('무기별 정밀 R15 동작은 타격 전후 영점 복귀와 기존 전�
   assert.match(field,/elseif swingKind and swingCombo and \(wpn\.family == "dagger" or wpn\.family == "fist"\) then 1\.12/);
   assert.match(field,/elseif swingKind and swingCombo and \(wpn\.family == "axe" or wpn\.family == "blunt"\) then 0\.96/);
   assert.match(field,/elseif swingKind and swingCombo and wpn\.family == "spear" then 1\.06 else nil/);
-  assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  assert.match(field,/pl\.autoHeavyFire == pl\.autoNormalHits/);
   assert.match(field,/if rank > 1 and comboNow - lastMasteryComboAt >= 7/);
 });
 

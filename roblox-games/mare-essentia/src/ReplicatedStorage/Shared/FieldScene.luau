@@ -5110,7 +5110,8 @@ function FieldScene.start(opts)
 		autoHitPips[i] = pip
 	end
 	local function refreshAutoHitPips()
-		local charged = (pl.autoNormalHits or 0) % 5
+		-- [숙련 표시] 5칸 = 무기 숙련 1~5단(채운 칸 = 지금 단계). 스킬 자동 발동은 2단부터 확률.
+		local charged = math.clamp(pl.masteryRank or 1, 1, 5)
 		for i, pip in autoHitPips do
 			pip.BackgroundColor3 = if i <= charged then Color3.fromRGB(255, 233, 151) else Color3.fromRGB(91, 45, 35)
 			pip.BackgroundTransparency = if i <= charged then 0 else 0.15
@@ -5153,6 +5154,8 @@ function FieldScene.start(opts)
 	weaponRankLabel.ZIndex = attackBtn.ZIndex + 3
 	do -- [Luau 지역변수 한도] 시작 숙련 표시값 초기화 지역화
 		local initialPractice = weaponPractice[wpn.id]
+		pl.masteryRank = initialPractice and initialPractice.rank or 1
+		refreshAutoHitPips()
 		weaponRankLabel.Text = string.format("무기 숙련 %d단", initialPractice and initialPractice.rank or 1)
 		attackBtn:SetAttribute("WeaponMasteryRank", initialPractice and initialPractice.rank or 1)
 		attackBtn:SetAttribute("WeaponMasteryExperience", initialPractice and initialPractice.xp or 0)
@@ -7361,7 +7364,18 @@ function FieldScene.start(opts)
 				-- 다음 공격이 먼저 입력돼도 0.14초 지연된 이전 평타의 명중은 정확하게 1회 기록한다.
 				if basicAttack == true then
 					pl.autoNormalHits = (pl.autoNormalHits or 0) + 1
-					if pl.autoNormalHits % 5 == 0 then
+					-- [오너 지시 2026-11-28] 스킬은 처음부터 안 됨: 무기 숙련(경험치) 2단부터 열리고, 명중할 때 확률로 자동 발동.
+					-- 2단 8% · 3단 11% · 4단 14% · 5단 17%, 최소 4초 간격. 4단부터 적 2명 이상 가까우면 회전 베기도 확률 발동.
+					local rankNow = pl.masteryRank or 1
+					local chanceNow = if rankNow >= 5 then 0.17 elseif rankNow == 4 then 0.14 elseif rankNow == 3 then 0.11 elseif rankNow == 2 then 0.08 else 0
+					if chanceNow > 0 and hitAt - (pl.lastAutoSkillAt or -100) >= 4 and comboRng:NextNumber() < chanceNow then
+						pl.lastAutoSkillAt = hitAt
+						pl.autoHeavyFire = pl.autoNormalHits
+						local near = 0
+						for _, o in enemies do
+							if not o.ac.dead and (o.root.Position - hrpPos).Magnitude < 14 then near += 1 end
+						end
+						pl.autoSkillKind = if rankNow >= 4 and near >= 2 and comboRng:NextNumber() < 0.5 then "sweep" else "heavy"
 						local owner = player.Character
 						if owner then owner:SetAttribute("FieldAutoSkillPending", pl.autoNormalHits) end
 					end
@@ -7399,11 +7413,11 @@ function FieldScene.start(opts)
 				end
 				-- [스킬 축하 충돌 방지] 5번째 명중에 발동할 자동 강타는 실제 성공 후 한 번만 축하한다.
 				local autoHeavyReady = basicAttack == true
-					and (pl.autoNormalHits or 0) > 0 and pl.autoNormalHits % 5 == 0
+					and (pl.autoNormalHits or 0) > 0 and pl.autoHeavyFire == pl.autoNormalHits
 					and (pl.cd.heavy or -100) <= hitAt and pl.hp > 0
 				if autoHeavyReady then
 					pl.autoHeavyRecord = isRecord -- 저장되지 않는 장면 임시 표시. 25타 등 최고 기록 축하를 자동 강타까지 전달.
-					showCombo(string.format("%d연타 · 필살 준비!", streakN), false, Color3.fromRGB(255, 226, 156))
+					showCombo(string.format("숙련 %d단 · %s 발동!", pl.masteryRank or 2, if pl.autoSkillKind == "sweep" then "회전 베기" else "강타"), false, Color3.fromRGB(255, 226, 156))
 				elseif streakN % 5 == 0 then
 					comboCinema(streakN, isRecord)
 				elseif miracle and not isRecord then
@@ -7416,7 +7430,7 @@ function FieldScene.start(opts)
 					elseif basicHit and streakN == 3 then
 						screenFlash(accent, if visualMobile then 0.965 else 0.935)
 						trailsOn(player.Character, { "RightHand", "RightLowerArm", "LeftHand" }, accent, 0.17, 0.25)
-					elseif basicHit and (pl.autoNormalHits or 0) % 5 == 4 then
+					elseif false then
 						local rim = attackBtn:FindFirstChildOfClass("UIStroke")
 						if rim then
 							TweenService:Create(rim, TweenInfo.new(0.12), { Color = Color3.fromRGB(255, 236, 143), Thickness = 5 }):Play()
@@ -7428,8 +7442,8 @@ function FieldScene.start(opts)
 							end)
 						end
 					end
-					showCombo(if basicHit and (pl.autoNormalHits or 0) % 5 == 4
-						then string.format("%d연타 · 강타 준비!", streakN)
+					showCombo(if false
+						then ""
 						else string.format("%d연타 · %s%s", streakN, grade, if isRecord then " · 역대 신기록!" else ""), isRecord, accent)
 					if isRecord then sfx("sfx_card_ring", 0.52, 1.24) end
 				end
@@ -8359,7 +8373,9 @@ function FieldScene.start(opts)
 		if moveId == "rush" then
 			-- [연속 공격 10박자] 1회 입력당 피해 판정은 기존 1회. 무기별 전신 포즈만 10단 순환.
 			local pressedAt = os.clock()
-			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % 10 + 1 else 1
+			-- [오너 지시 2026-11-28] 연속 공격은 처음부터 안 됨: 숙련 1단 단타(2자세 번갈아), 2단 3 · 3단 5 · 4단 7 · 5단 10박자
+			local maxBeat = ({ 2, 3, 5, 7, 10 })[math.clamp(pl.masteryRank or 1, 1, 5)]
+			basicBeat = if pressedAt - swingBridge.basicAt <= 1.1 then swingBridge.basicBeat % maxBeat + 1 else 1
 			swingBridge.basicBeat, swingBridge.basicAt = basicBeat, pressedAt
 		end
 		startSwing(kind, if kind == "spin" then 0.6 elseif kind == "heavy" then 0.7 else 0.4, basicBeat)
@@ -8843,6 +8859,7 @@ function FieldScene.start(opts)
 				local rank = practiceRank(practice.xp)
 				local promoted = rank > practice.rank
 				practice.rank = rank
+				pl.masteryRank = rank
 				weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 				attackBtn:SetAttribute("WeaponMasteryRank", rank)
 				attackBtn:SetAttribute("WeaponMasteryExperience", practice.xp)
@@ -8870,7 +8887,8 @@ function FieldScene.start(opts)
 						elseif comboRng:NextNumber() < math.clamp(threeHitBase + threeHitBias, 0, 0.5) then 3 else 2
 				end
 				if promoted then
-					showCombo(string.format("%s 숙련 %d단!", wpn.name, rank))
+					showCombo(string.format("%s 숙련 %d단! · %s", wpn.name, rank,
+						if rank == 2 then "연속 공격 3박자·강타 자동 발동 열림" elseif rank == 3 then "연속 5박자" elseif rank == 4 then "연속 7박자·회전 베기 열림" else "연속 10박자·발동 확률 최고"))
 					sfx("sfx_coin", 0.55, 1.3)
 				end
 				if chain > 1 then
@@ -9372,6 +9390,8 @@ function FieldScene.start(opts)
 			table.clear(swingBridge.last)
 			local practice = weaponPractice[wpn.id]
 			local rank = practice and practice.rank or 1
+			pl.masteryRank = rank
+			refreshAutoHitPips()
 			weaponRankLabel.Text = string.format("무기 숙련 %d단", rank)
 			attackBtn:SetAttribute("WeaponMasteryRank", rank)
 			attackBtn:SetAttribute("WeaponMasteryExperience", practice and practice.xp or 0)
@@ -9609,11 +9629,17 @@ function FieldScene.start(opts)
 					-- 위 strikeEnemy에서는 이 경우 5타 일반 축하를 생략해 화면·카메라·효과음 중복을 막는다.
 					local record = pl.autoHeavyRecord == true
 					pl.autoHeavyRecord = nil
+					local autoKind = pl.autoSkillKind or "heavy"
+					if autoKind == "sweep" and (pl.cd.sweep or -100) > os.clock() then autoKind = "heavy" end
+					local swept = autoKind == "sweep" and useMove("sweep")
+					if swept then comboCinema(streakN, record, true) end
+					if not swept then
 					if useMove("heavy") then
 						comboCinema(streakN, record, true)
 					else
 						-- 중간에 시전 조건이 바뀌었으면 기존 5타 축하는 복원한다.
 						comboCinema(streakN, record)
+					end
 					end
 				end
 			end

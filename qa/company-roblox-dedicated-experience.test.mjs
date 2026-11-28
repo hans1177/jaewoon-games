@@ -1485,7 +1485,7 @@ test('Mare field skill cannot accidentally complete exploration and region cards
   assert.match(field,/local function castEffect\(sk, name, ch, hp0\)\s*-- .*?\n\s*local now = os\.clock\(\)/);
   assert.match(field,/pl\.buffUntil = now \+ 8/);
   // [자동 5타 강타] 수동 스킬 버튼이 아닌 기본 공격·회피 전용 입력과 자동 강타 경로를 검사한다.
-  assert.match(field,/pl\.autoNormalHits % 5 == 0/);
+  assert.match(field,/pl\.autoHeavyFire == pl\.autoNormalHits/);
   assert.match(field,/ch:GetAttribute\("FieldAutoSkillPending"\)/);
   assert.match(field,/mark == pl\.autoNormalHits/);
   assert.match(field,/equipped\.heavy, equipped\.sweep = true, false/);
