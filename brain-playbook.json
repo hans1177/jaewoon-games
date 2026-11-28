@@ -339,6 +339,29 @@
       "successes": 0,
       "failures": 0,
       "at": 1795905756038
+    },
+    "ui:ui-missing:화면에 없는 ui 글자: 퀘스트, 백과#0812a78a9b": {
+      "sig": "ui:ui-missing:화면에 없는 ui 글자: 퀘스트, 백과",
+      "kind": "ui",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "search": "{ id = \"quest\", name = \"진행 일지\" },",
+          "replace": "-- { id = \"quest\", name = \"진행 일지\" },"
+        },
+        {
+          "file": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "search": "{ id = \"codex\", name = \"지식 카드\" },",
+          "replace": "-- { id = \"codex\", name = \"지식 카드\" },"
+        }
+      ],
+      "summary": "UI 탭에 존재하지 않는 퀘스트와 백과 항목을 비활성화했습니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795906685017
     }
   }
 }
