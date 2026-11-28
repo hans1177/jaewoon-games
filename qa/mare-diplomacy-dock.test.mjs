@@ -5,9 +5,9 @@ import fs from 'node:fs';
 const client = fs.readFileSync('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau', 'utf8');
 
 test('외교는 기존 승인 손그림 서신 원화를 사용하고 알현 3D 모델은 유지한다', () => {
-  assert.match(client, /\{ name = "항만청", keeper = "항만 관리관", tabs = \{ "route", "map" \} \}/, '항만청에서 외교 분리');
-  assert.match(client, /\{ name = "외교", keeper = "외교관", tabs = \{ "diplomacy" \} \}/, '외교 그룹 유지');
-  assert.match(client, /\{ "diplomacy", "외교", "diplomacy" \}/, '외교 버튼 보존');
+  // [2026-11-28 메뉴 5묶음] 외교는 '항해' 묶음 탭. 건물(시설) 이름·초상은 H.FACILITY_GROUPS 에 보존.
+  assert.match(client, /\{ name = "항해", keeper = "항만 관리관", tabs = \{ "route", "map", "diplomacy" \} \}/, '외교는 항해 묶음');
+  assert.match(client, /\{ name = "외교", keeper = "외교관", tabs = \{ "diplomacy" \} \}/, '외교 시설 이름 보존');
   assert.match(client, /H\.diplomacyIconAtlas = AssetIds\["CardArt\/ui_reserve_icons_2"\]/, '외교용 기존 승인 손그림 서신 원화');
   assert.match(client, /diplomacy = 5, close = 15/, '외교 원화의 올바른 칸 선택');
   assert.match(client, /modelIcon\(button, "FacilityArt", key, nil, artSize, label\)/, '시설 아이콘 렌더러와 동일 화풍');
@@ -20,7 +20,7 @@ test('메뉴 12개는 기존 기능을 유지한 채 6개씩 위아래 고정 �
   assert.match(client, /dockGrid\.FillDirectionMaxCells = 6/, '한 줄에 6개');
   assert.match(client, /local dockH = CH \* 2 \+ GAP/, '두 줄 높이');
   assert.match(client, /local sysOrder = \{ "JournalButton", "DeckButton", "OptionsButton" \}/,
-    '시설 8개 + 걷기 + 시스템 3개');
+    '묶음 5개 + 걷기 + 시스템 3개');
   assert.match(client, /walkBtn\.LayoutOrder = 7/, '걷기는 2줄 맨 앞');
   assert.match(client, /b\.LayoutOrder = #H\.DOCK \+ 1 \+ i/, '같은 격자 안에 12개');
   assert.match(client, /CW = math\.min\(58, math\.floor\(\(width - 16 - GAP \* 5\) \/ 6\)\)/,

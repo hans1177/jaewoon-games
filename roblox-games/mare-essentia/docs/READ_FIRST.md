@@ -21,6 +21,7 @@
 | 배 디자인·질감·등급 기능 | `docs/ships/README.md` + `docs/ships/grades.md` + `docs/ships/<배>.md` |
 | 주민(NPC) 헤어·복장·악세·재질·모션 | `docs/residents/README.md` + `docs/residents/jobs.md` + `docs/residents/<문화권>.md` |
 | 카드배틀 시스템·화면·이펙트·카드 문구·진영 | `docs/card_battle/README.md`(0절 카드 분류 규칙) + 같은 폴더 전부 |
+| 퀘스트 이야기·인과관계(문제→원인→할 일→결과)·장(章) 쓰기 | `docs/STORY_CAUSALITY.md` + `docs/STORY_QUEST_SYSTEM.md` |
 | 이벤트씬·세계 사건·역사 사건 원화, 카드 습득 연출 | `docs/EVENT_SCENES.md` (없는 원화 목록·파일 이름) |
 | 카드·지식카드·지도자 원화 | `docs/CARD_ART_PROMPTS.md` + `docs/CARD_BATTLE_HANDOFF.md` + `docs/ASSET_MANAGEMENT.md` |
 | 원화·UI·아이콘 자산 제작·등록·교체 | `docs/ASSET_MANAGEMENT.md` + `docs/assets/legacy_256color.txt`(교체 대상) |
