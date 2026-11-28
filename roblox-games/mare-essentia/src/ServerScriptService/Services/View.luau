@@ -780,7 +780,7 @@ return function(D, S)
 					-- [다음 할 일 안내 · 2026-11-28] 목적지·상품·인과(문제→원인→결과)·장 표시용. 판정·저장은 그대로.
 					portId = q.portId, portName = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or nil,
 					goodId = q.goodId, goodName = q.goodId and D.Ports.Goods[q.goodId] and D.Ports.Goods[q.goodId].name or nil,
-					exploreSite = q.exploreSite, warId = q.warId, leaderId = q.leaderId,
+					exploreSite = q.exploreSite, warId = q.warId, regionId = q.regionId, leaderId = q.leaderId,
 					problem = q.problem or (function()
 						-- 따로 적은 문제가 없으면 사연의 첫 문장을 '왜?'로 쓴다
 						local hook = S.Quest.storyOf(q)
@@ -803,7 +803,7 @@ return function(D, S)
 				if q.kind == "deliver" then
 					shownDeliver += 1
 				end
-				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), progress = S.Quest.progressAny(state, q), amount = q.amount })
+				table.insert(view.quests.available, { id = q.id, name = q.name, summary = q.summary .. (if q.rewardCardId and D.Cards.ById[q.rewardCardId] then " · 지식카드 보상: " .. D.Cards.ById[q.rewardCardId].name else ""), story = (S.Quest.storyOf(q)), strand = q.strand or (if q.companionId then "companion" else nil), grade = D.Quests.Grade(q), rewardCoins = q.rewardCoins, rewardCard = q.rewardCardId and D.Cards.ById[q.rewardCardId] and D.Cards.ById[q.rewardCardId].name or nil, auto = S.Quest.isAuto(q), kind = q.kind, warId = q.warId, regionId = q.regionId, portId = q.portId, portName = q.portId and D.Ports.Ports[q.portId] and D.Ports.Ports[q.portId].name or nil, progress = S.Quest.progressAny(state, q), amount = q.amount })
 			end
 		end
 
