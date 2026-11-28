@@ -2,15 +2,15 @@
   "version": 1,
   "retentionDays": 7,
   "latest": {
-    "runId": "46117627261",
+    "runId": "46118160911",
     "kind": "deep",
     "portBatch": null,
-    "at": "2026-11-28T06:47:41.999Z",
-    "sourceRevision": "1e481f6fb7f4bcc8a5bd9ec256cc9fd42630900b",
+    "at": "2026-11-28T06:56:58.545Z",
+    "sourceRevision": "29af3e88b3c3fd217cb8319480f5d59677dbbf8d",
     "captureArtifact": {
-      "name": "studio-frames-46117627261",
+      "name": "studio-frames-46118160911",
       "retentionDays": 1,
-      "runId": "46117627261"
+      "runId": "46118160911"
     },
     "result": "FAIL",
     "frames": 16,
@@ -25,10 +25,36 @@
       "capturedFrames": 16,
       "abortedEarly": true
     },
-    "path": "runs/46117627261"
+    "path": "runs/46118160911"
   },
-  "lastDeepAt": "2026-11-28T06:47:41.999Z",
+  "lastDeepAt": "2026-11-28T06:56:58.545Z",
   "runs": [
+    {
+      "runId": "46118160911",
+      "kind": "deep",
+      "portBatch": null,
+      "at": "2026-11-28T06:56:58.545Z",
+      "sourceRevision": "29af3e88b3c3fd217cb8319480f5d59677dbbf8d",
+      "captureArtifact": {
+        "name": "studio-frames-46118160911",
+        "retentionDays": 1,
+        "runId": "46118160911"
+      },
+      "result": "FAIL",
+      "frames": 16,
+      "changedFrames": 16,
+      "summary": {
+        "plannedSteps": 1000,
+        "completedSteps": 70,
+        "plannedClicks": 12,
+        "successfulClicks": 5,
+        "skippedOptionalClicks": 0,
+        "plannedFrames": 70,
+        "capturedFrames": 16,
+        "abortedEarly": true
+      },
+      "path": "runs/46118160911"
+    },
     {
       "runId": "46117627261",
       "kind": "deep",
@@ -132,32 +158,6 @@
         "abortedEarly": false
       },
       "path": "runs/46099946540"
-    },
-    {
-      "runId": "46097965884",
-      "kind": "deep",
-      "portBatch": null,
-      "at": "2026-11-28T02:48:42.061Z",
-      "sourceRevision": "84ae9cd6a76cbcb87243567e8e0420caf8a451cb",
-      "captureArtifact": {
-        "name": "studio-frames-46097965884",
-        "retentionDays": 1,
-        "runId": "46097965884"
-      },
-      "result": "PASS",
-      "frames": 70,
-      "changedFrames": 69,
-      "summary": {
-        "plannedSteps": 1000,
-        "completedSteps": 1000,
-        "plannedClicks": 12,
-        "successfulClicks": 12,
-        "skippedOptionalClicks": 0,
-        "plannedFrames": 70,
-        "capturedFrames": 70,
-        "abortedEarly": false
-      },
-      "path": "runs/46097965884"
     },
     {
       "runId": "46094992223",
