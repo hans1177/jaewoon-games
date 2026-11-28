@@ -95,3 +95,23 @@ test('탐험 재개는 완료된 기록 수호 두목만 제거하고 다른 전
   assert.match(resume, /FieldBossCheckpointRestored", true/);
   assert.doesNotMatch(resume, /onFinish\(|onCheckpoint\(|grantCard\(|gainXp\(/);
 });
+
+test('위험 3단계 유적은 깊은 경계 구역과 실제 입구 탈출을 순서대로 저장한다', () => {
+  const field = fs.readFileSync(`${root}/src/ReplicatedStorage/Shared/FieldScene.luau`, 'utf8');
+  const route = field.split('-- [구역 경로]')[1].split('-- [탐험 지역변수 한도]')[0];
+  const checks = [/nodeCount == 3 and \(opts\.danger or 1\) >= 3/,
+    /and not isWildlife/,
+    /if guardedTransit then pos = ORIGIN \+ Vector3\.new\([^]*?-half \+ 40\) end/,
+    /if extraction then pos = ORIGIN \+ Vector3\.new\(0, 0, half - 14\) end/,
+    /elseif not extraction then/,
+    /currentRoot\.Position - anchor\.Position\)\.Magnitude > 16/,
+    /not enemy\.ac\.dead/,
+    /enemy\.root\.Position - currentRoot\.Position\)\.Magnitude < 16/,
+    /opts\.onCheckpoint\(i, recordCard\)/,
+    /if not recorded then/,
+    /if nextKind == "escape"/];
+  for (const check of checks) assert.match(route, check);
+  assert.ok(route.indexOf('if guardedTransit or extraction then') < route.indexOf('opts.onCheckpoint(i, recordCard)'));
+  assert.ok(route.indexOf('if not recorded then') < route.indexOf('found += 1'));
+  assert.doesNotMatch(route, /grantCard\(|gainXp\(|finish\("clear"\)/);
+});
