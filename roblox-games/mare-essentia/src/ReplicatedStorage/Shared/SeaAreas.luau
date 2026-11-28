@@ -1,7 +1,7 @@
 --!nonstrict
 -- SeaAreas.luau · 해역 구분(지시서 docs/battle_backdrops 해역 id)과 항구 → 해역 조회.
 -- 자동 배치 규칙: Naval/sea_<해역>_near|mid|far (해전 배경), Naval/voyage_<해역>_near|mid|far (항해 배경, 없으면 sea_ 를 씀).
--- NavalBattle 의 briefPorts 표와 같은 내용이다(그 표를 바꾸면 여기도 같이 바꾼다).
+-- 해전과 항해가 함께 쓰는 기존 해역 배경 정본. 전투 수치·항해 거리에는 사용하지 않는다.
 local SeaAreas = {}
 
 SeaAreas.PORTS = {
@@ -10,8 +10,8 @@ SeaAreas.PORTS = {
 	channel = "rouen dublin",
 	biscay = "bordeaux la_rochelle",
 	iberian_atlantic = "lisbon porto cadiz casablanca safi agadir",
-	med_west = "seville marseille livorno barcelona valencia algiers tunis tangier palma cagliari ajaccio toulon oran malaga gibraltar cartagena bone",
-	med_east = "naples tripoli palermo valletta ragusa athens istanbul alexandria syracuse thessaloniki candia rhodes famagusta smyrna acre benghazi messina corfu beirut damietta",
+	med_west = "seville marseille livorno barcelona valencia algiers tunis tangier palma cagliari ajaccio toulon oran malaga gibraltar cartagena bone genoa",
+	med_east = "naples tripoli palermo valletta ragusa athens istanbul alexandria syracuse thessaloniki candia rhodes famagusta smyrna acre benghazi messina corfu beirut damietta venice ancona split trieste",
 	red_sea = "mocha jeddah",
 	arabian = "aden muscat bandar_abbas basra",
 	swahili = "mozambique kilwa mombasa zanzibar mogadishu port_louis",
@@ -25,13 +25,13 @@ SeaAreas.PORTS = {
 	japan_sea = "osaka edo hakodate",
 	caribbean = "nassau havana kingston santo_domingo san_juan bridgetown port_of_spain la_guaira cartagena_indias portobelo paramaribo panama",
 	gulf_mexico = "new_orleans veracruz campeche",
-	brazil = "belem recife salvador rio montevideo",
+	brazil = "belem recife salvador rio montevideo buenos_aires",
 	pacific_south_america = "guayaquil callao valparaiso",
 	north_atlantic_america = "halifax st_johns quebec boston new_york philadelphia charleston",
 	west_africa = "praia saint_louis dakar bissau freetown elmina ouidah lagos calabar sao_tome luanda benguela",
-	atlantic_islands = "las_palmas funchal ponta_delgada",
-	south_pacific = "sydney hobart auckland port_moresby suva tahiti",
-	north_pacific = "sitka vancouver",
+	atlantic_islands = "las_palmas funchal ponta_delgada st_helena",
+	south_pacific = "sydney hobart auckland port_moresby suva tahiti perth darwin honolulu guam",
+	north_pacific = "sitka vancouver acapulco san_francisco",
 }
 
 local byPort = {}

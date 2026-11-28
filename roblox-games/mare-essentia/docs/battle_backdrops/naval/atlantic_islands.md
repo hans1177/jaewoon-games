@@ -1,7 +1,7 @@
 # 대서양 섬 (`atlantic_islands`) — 해전 배경
 
 - 지역: `w_africa` · 문화권 기준: 이베리아
-- 이 해역 항구: 라스팔마스(`las_palmas`), 푼샬(`funchal`), 퐁타델가다(`ponta_delgada`)
+- 이 해역 항구: 라스팔마스(`las_palmas`), 푼샬(`funchal`), 퐁타델가다(`ponta_delgada`), 세인트헬레나(`st_helena`)
 
 ## 기본 모습
 

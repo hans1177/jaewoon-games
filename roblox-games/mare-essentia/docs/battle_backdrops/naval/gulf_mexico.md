@@ -1,7 +1,7 @@
 # 멕시코만 (`gulf_mexico`) — 해전 배경
 
 - 지역: `new_world` · 문화권 기준: 스페인·포르투갈 식민지
-- 이 해역 항구: 뉴올리언스(`new_orleans`), 베라크루스(`veracruz`), 캄페체(`campeche`), 아카풀코(`acapulco`), 샌프란시스코(`san_francisco`)
+- 이 해역 항구: 뉴올리언스(`new_orleans`), 베라크루스(`veracruz`), 캄페체(`campeche`)
 
 ## 기본 모습
 

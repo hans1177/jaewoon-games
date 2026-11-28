@@ -1,7 +1,7 @@
 # 브라질 해안 (`brazil`) — 해전 배경
 
 - 지역: `new_world` · 문화권 기준: 스페인·포르투갈 식민지
-- 이 해역 항구: 벨렝(`belem`), 헤시피(`recife`), 살바도르(`salvador`), 리우데자네이루(`rio`), 몬테비데오(`montevideo`)
+- 이 해역 항구: 벨렝(`belem`), 헤시피(`recife`), 살바도르(`salvador`), 리우데자네이루(`rio`), 몬테비데오(`montevideo`), 부에노스아이레스(`buenos_aires`)
 
 ## 기본 모습
 

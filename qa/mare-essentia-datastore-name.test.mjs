@@ -4712,17 +4712,22 @@ test('해역·탐험 지시서 원본은 기존 시각 배치에서 정확한 �
  const root='roblox-games/mare-essentia/';
  const naval=readText(root+'src/ReplicatedStorage/Shared/NavalBattle.luau');
  const field=readText(root+'src/ReplicatedStorage/Shared/FieldScene.luau');
- const map=naval.match(/local briefPorts = \{([\s\S]*?)\n\s*\}/)[1];
- const held=new Set(["acapulco","san_francisco","buenos_aires","st_helena","genoa","venice","ancona","split","trieste","honolulu","guam","perth","darwin"]);
+ const seaAreas=readText(root+'src/ReplicatedStorage/Shared/SeaAreas.luau');
+ const portsSource=readText(root+'src/ReplicatedStorage/Shared/Ports.luau');
+ const map=seaAreas.match(/SeaAreas\.PORTS = \{([\s\S]*?)\n\}/)[1];
  const used=new Set();
  for(const [,sea,ports] of map.matchAll(/([a-z_]+) = "([^"]*)"/g)){
   const brief=readText(root+'docs/battle_backdrops/naval/'+sea+'.md');
   const line=brief.split('\n').find(x=>x.startsWith('- 이 해역 항구:'));
-  const expected=[...line.matchAll(/\x60([a-z0-9_]+)\x60/g)].map(m=>m[1]).filter(p=>!held.has(p));
+  const expected=[...line.matchAll(/\x60([a-z0-9_]+)\x60/g)].map(m=>m[1]);
   assert.deepEqual(ports.split(' ').filter(Boolean),expected);
   for(const p of expected){assert.ok(!used.has(p),p);used.add(p);}
  }
  assert.equal([...map.matchAll(/([a-z_]+) = "/g)].length,27);
+ const portIds=[...portsSource.matchAll(/id\s*=\s*"([a-z0-9_]+)"[^\n]*lat\s*=/g)].map(m=>m[1]);
+ assert.deepEqual([...used].sort(),portIds.sort());
+ assert.match(naval,/local briefSea = SeaAreas\.seaOf\(opts\.portId\)/);
+ assert.ok(!naval.includes('local briefPorts ='));
  for(const token of ['"sea_" .. briefSea .. "_" .. layer[1]','AssetIds["Naval/" .. asset]','AssetIds[kind .. "/" .. spec[1]]','NavalBriefAssetKey','NavalBriefPlaced_','node.CanCollide, node.CanTouch, node.CanQuery = false, false, false'])assert.ok(naval.includes(token),token);
  for(const token of ['local asset = "field_" .. siteId','AssetIds["Terrain/" .. asset]','entry.band, entry.horizon, entry.briefBackdrop = "far", true, true','FieldBriefBackdropPlaced','FieldBriefAssetKey','stageFeature(entry)'])assert.ok(field.includes(token),token);
 });
