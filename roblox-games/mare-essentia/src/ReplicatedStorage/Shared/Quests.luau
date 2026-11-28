@@ -871,7 +871,11 @@ end
 local StoryCardName: { [string]: string } = {}
 local function Story(q: Quest, goodName: string?, portName: string?): (string, string)
 	local related = StoryCardName[q.id]
-	local cardLine = if related then "\n관련 백과: " .. related .. " (참고 기록)" else ""
+	local cardLine = if related then "\n관련 백과: " .. related .. " (참고 기록)." else ""
+	-- 허가증은 일반 납품 결말이 아니라 실제 특산품 거래 해금 결과를 보여 준다.
+	if q.rewardPermit then
+		return (q.story or q.summary) .. cardLine, q.result or "길드 허가증을 획득했다."
+	end
 	local vars = { giver = pick(q.id, GIVERS), good = goodName or "물건", port = portName or "그 항구", n = tostring(q.amount) }
 	local set: { { string } } = STORY_KIND.default
 	if q.kind == "deliver" then
