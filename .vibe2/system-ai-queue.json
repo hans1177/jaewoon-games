@@ -128598,7 +128598,7 @@
     },
     {
       "id": "marketing-territory-war-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -128641,12 +128641,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:46148786042:1",
+      "reservedAt": "2026-11-28T13:22:50.931Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "stale-system-ai-reservation-reclaimed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -129810,14 +129810,15 @@
         "failed-strategy-fingerprint:6906aba5a7eadd4bca3640c4539b1d17d6259ac134002d419d38147bfd96268a",
         "model-output-sha256:4fb89bfbad445c3174b62c622305be13347df2cb6ee37579a6dfb202cf57dff2",
         "system-ai-handoff-to-reservation:system-ai:46143405955:1",
-        "system-ai-handoff-from-reservation:system-ai:46143405955:1"
+        "system-ai-handoff-from-reservation:system-ai:46143405955:1",
+        "system-ai-handoff-to-reservation:system-ai:46148786042:1"
       ],
       "supervisorReviewRequired": true,
-      "impactScore": 352,
+      "impactScore": 452,
       "impactComponents": {
         "severity": 2,
-        "blockedTaskCount": 1,
-        "recurrenceCount": 1,
+        "blockedTaskCount": 3,
+        "recurrenceCount": 3,
         "dependencyCentrality": 0,
         "criticalPathDepth": 0,
         "transitiveBlockedTaskCount": 0,
@@ -129825,7 +129826,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-22T22:30:12.753Z",
-      "updatedAt": "2026-11-28T12:51:02.839Z"
+      "updatedAt": "2026-11-28T13:22:50.931Z"
     },
     {
       "id": "recovery-recovery-37392cc553524768aa02",
@@ -159294,7 +159295,7 @@
     },
     {
       "id": "marketing-seed-roblox-survival-horror-es-doors-pre-release-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "normal",
       "department": "planning-growth-marketing",
       "taskType": "marketing",
@@ -159336,12 +159337,12 @@
       "sourceMutationBaseline": null,
       "retryPolicy": "BOUNDED_RETRY",
       "maxRetries": 3,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:46148786042:1",
+      "reservedAt": "2026-11-28T13:22:50.931Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "department:planning-growth-marketing",
         "phase:PRE_RELEASE",
@@ -159488,7 +159489,8 @@
         "system-ai-impact-score:1834",
         "system-ai-blocked-task-count:39",
         "system-ai-handoff-to-reservation:system-ai:45387647221:1",
-        "actions-run:45387647221"
+        "actions-run:45387647221",
+        "system-ai-handoff-to-reservation:system-ai:46148786042:1"
       ],
       "supervisorReviewRequired": true,
       "impactScore": 1834,
@@ -159503,7 +159505,7 @@
         "repairRisk": 1
       },
       "createdAt": "2026-09-30T04:50:41.834Z",
-      "updatedAt": "2026-11-24T12:00:59.277Z"
+      "updatedAt": "2026-11-28T13:22:50.931Z"
     },
     {
       "id": "marketing-star-frontier-pre-release-v1",
