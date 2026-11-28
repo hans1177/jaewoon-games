@@ -4264,7 +4264,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local oldTownHomes, newTownHomes, nightWindows = 0, 0, 0
 	-- [발전도별 필지] 6/10/14/18/24 필지를 골목 행에 나누어 배치. 경제/저장과 무관한 화면용 수만 제한.
 	local portPlotLimit = if identity then PortIdentity.tier(lvl).plots else math.huge
-	local rowPlotLimit = if identity then math.max(1, math.ceil(portPlotLimit / (4 * pairsN))) else math.huge
+	-- [집을 광장 가까이 모아 짓기 · 2026-11-29 Studio 12각도: 집 14채가 모든 골목에 1~2채씩 흩어져 마을이 텅 비어 보였다]
+	-- 안쪽 골목 4줄이 먼저 채워지도록 줄당 한도를 전체/4 로 올린다. 바깥 골목은 발전해서 집이 늘 때 채워진다.
+	-- 집이 안쪽에 모이면 땅·길도 그 범위로 줄어든다(아래 TownFloor 범위 계산).
+	local rowPlotLimit = if identity then math.max(2, math.ceil(portPlotLimit / 4)) else math.huge
 	if identity then folder:SetAttribute("CityPortPlannedPlots", portPlotLimit) end
 	-- [문화권 주거 발전 입면] 단계별 추가 실물 부재는 각 주택에 한 번만 부착한다.
 	local villageAccents, villageCrowns = 0, 0
