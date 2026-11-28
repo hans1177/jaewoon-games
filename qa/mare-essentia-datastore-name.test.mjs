@@ -403,9 +403,10 @@ test('연타 1단 봉인·무기별 낮은 확률·공용 7초 제한·최대 3�
   assert.match(field,/local lastMasteryComboAt = -100/);
   assert.match(field,/local baseChance = if rank == 2 then 0\.07 elseif rank == 3 then 0\.10/);
   assert.match(field,/rank == 4 then 0\.13 elseif rank >= 5 then math\.min\(0\.24, 0\.16 \+ \(rank - 5\) \* 0\.016\) else 0/);
-  assert.match(field,/xp >= 720 then 10 elseif xp >= 530 then 9 elseif xp >= 380 then 8/);
-  assert.match(field,/xp >= 260 then 7 elseif xp >= 170 then 6 elseif xp >= 100 then 5/);
-  assert.match(field,/xp >= 55 then 4 elseif xp >= 26 then 3 elseif xp >= 8 then 2 else 1/);
+  const mastery = readText('roblox-games/mare-essentia/src/ReplicatedStorage/Shared/Weapons.luau');
+  assert.match(mastery,/Weapons\.MasteryXp = table\.freeze\(\{ 0, 8, 26, 55, 100, 170, 260, 380, 530, 720 \}\)/);
+  assert.match(mastery,/for rank = #Weapons\.MasteryXp, 2, -1 do/);
+  assert.match(field,/local practiceRank = Weapons\.masteryRank/);
   assert.match(field,/local maxBeat = \(\{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 \}\)/);
   assert.match(field,/local weaponChance = if wpn\.family == "dagger" then 0\.02/);
   assert.match(field,/elseif wpn\.id == "crossbow" then -0\.025/);
@@ -5351,4 +5352,23 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(source.includes('EncyclopediaBookmarkJump'));
  assert.ok(source.includes('H.encyclopediaTargetId = saved.id'));
  assert.ok(source.includes('ArtGallery = 10'));
+});
+
+test('선장실·캐릭터창과 전투는 동일한 무기별 숙련 경험치 정본을 사용한다',()=>{
+  const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+  const status=game.split('function RENDERERS.status()')[1].split('if view.village then')[0];
+  const cabin=game.split('function H.openCabin()')[1].split('-- 왼쪽: 큰 배 그림과 능력')[0];
+  for(const section of [status,cabin]){
+    assert.match(section,/view\.weaponPractice/);
+    assert.match(section,/Weapons\.masteryRank\(xp\)/);
+    assert.match(section,/Weapons\.MasteryXp\[rank \+ 1\]/);
+  }
+  assert.match(status,/CharacterWeaponMastery_/);
+  assert.match(status,/필살기 잠김\(8단\)/);
+  assert.match(cabin,/CabinWeaponMastery/);
+  const promotion=field.split('if promoted then')[1].split('if chain > 1 then')[0];
+  assert.match(promotion,/shockRing\(/);
+  assert.match(promotion,/pulseAt\("BUFF_PULSE"/);
+  assert.match(promotion,/sfx_fanfare/);
+  assert.doesNotMatch(promotion,/strikeEnemy\(|damageEnemy\(/);
 });
