@@ -11129,6 +11129,11 @@ do
 		title.TextStrokeTransparency = 0.6
 		title.Text = string.format("카드 %d장 획득!", #batch)
 		title.ZIndex = 15
+		-- [겹침 수정] 뒤 메뉴 글자와 섞이지 않게 어두운 띠 위에 쓴다
+		title.Size = UDim2.new(0, 300, 0, 44)
+		title.BackgroundColor3 = Color3.fromRGB(40, 28, 18)
+		title.BackgroundTransparency = 0.15
+		corner(title, 12)
 		title.Parent = g
 		Sfx.play("sfx_card_deal", 0.4, 1)
 		local n = #batch
