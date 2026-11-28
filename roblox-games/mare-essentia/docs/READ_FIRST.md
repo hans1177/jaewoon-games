@@ -21,6 +21,7 @@
 | 배 디자인·질감·등급 기능 | `docs/ships/README.md` + `docs/ships/grades.md` + `docs/ships/<배>.md` |
 | 주민(NPC) 헤어·복장·악세·재질·모션 | `docs/residents/README.md` + `docs/residents/jobs.md` + `docs/residents/<문화권>.md` |
 | 카드배틀 시스템·화면·이펙트·카드 문구·진영 | `docs/card_battle/README.md`(0절 카드 분류 규칙) + 같은 폴더 전부 |
+| 교역 흥정 미니게임 원화·상인 표정 움직임 | `docs/HAGGLE_MINIGAME_BRIEF.md` |
 | 메뉴창 UI 고급화·하단 5버튼·퀘스트 UI 아이콘·프레임 제작 | `docs/MENU_UI_BRIEF.md` (아이콘 시트 칸 번호·파일 이름) |
 | 퀘스트 이야기·인과관계(문제→원인→할 일→결과)·장(章) 쓰기 | `docs/STORY_CAUSALITY.md` + `docs/STORY_QUEST_SYSTEM.md` |
 | 이벤트씬·세계 사건·역사 사건 원화, 카드 습득 연출 | `docs/EVENT_SCENES.md` (없는 원화 목록·파일 이름) |
