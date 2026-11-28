@@ -2561,6 +2561,35 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 			-- 원인: 수입 원본(FBX)은 기준점(뼈대 루트)이 -90도 누워 있고 몸 메시는 원래 똑바로 서 있다.
 			-- 예전 코드는 기준점을 똑바로 세워(lookAt) 몸을 90도 넘어뜨렸다. 이제 원본 기울기를 그대로 두고
 			-- 세로축(월드 Y)으로만 돌린다. 기준점이 이미 똑바른 GLB(코끼리·고양이 등)는 결과가 예전과 같다.
+			-- [세워진 FBX 눕히기] 실측: 뼈 있는 FBX(소·말·돼지·개)는 원본 그대로도 몸길이 축이 위(Y)로 서 있다.
+			-- 몸 높이가 길이의 1.2배를 넘으면, 좁은 가로축(몸 폭)을 중심으로 90도 눕힌다.
+			-- 그 뒤 다리 뼈가 몸 중심보다 위에 있으면 뒤집힌 것이므로 180도 돌린다. 뼈 없는 GLB는 건드리지 않는다.
+			do
+				local bones = {}
+				for _, node in m:GetDescendants() do
+					if node:IsA("Bone") then table.insert(bones, node) end
+				end
+				local c0, sz0 = m:GetBoundingBox()
+				if #bones > 0 and sz0.Y > math.max(sz0.X, sz0.Z) * 1.2 then
+					local axis = if sz0.X < sz0.Z then Vector3.xAxis else Vector3.zAxis
+					local cp = c0.Position
+					m:PivotTo(CFrame.new(cp) * CFrame.fromAxisAngle(axis, -math.pi / 2) * CFrame.new(-cp) * m:GetPivot())
+					local legY, legN = 0, 0
+					for _, b in bones do
+						local nm = string.lower(b.Name)
+						if nm:find("leg", 1, true) or nm:find("foot", 1, true) or nm:find("hoof", 1, true) then
+							legY += b.WorldPosition.Y
+							legN += 1
+						end
+					end
+					local c1 = m:GetBoundingBox().Position
+					local flipped = legN > 0 and legY / legN > c1.Y
+					if flipped then
+						m:PivotTo(CFrame.new(c1) * CFrame.fromAxisAngle(axis, math.pi) * CFrame.new(-c1) * m:GetPivot())
+					end
+					m:SetAttribute("AnimalTiltFix", if flipped then "flip" else "lay")
+				end
+			end
 			local origin = m:GetPivot()
 			local yaw = rng:NextNumber(-math.pi, math.pi)
 			local center0 = m:GetBoundingBox().Position
