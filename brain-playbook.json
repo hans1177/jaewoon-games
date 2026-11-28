@@ -303,6 +303,24 @@
       "successes": 0,
       "failures": 0,
       "at": 1795903271380
+    },
+    "background:sky-missing:배경 연출 약함: 대기 없음, 하늘 없음#90235b16e8": {
+      "sig": "background:sky-missing:배경 연출 약함: 대기 없음, 하늘 없음",
+      "kind": "background",
+      "game": "mare-essentia",
+      "edits": [
+        {
+          "file": "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "search": "gui.Parent = player:WaitForChild(\"PlayerGui\")",
+          "replace": "gui.Parent = player:WaitForChild(\"PlayerGui\")\n-- 배경 하늘 추가: Lighting에 Sky가 없으면 기본 Sky 생성\nlocal Lighting = game:GetService(\"Lighting\")\nif not Lighting:FindFirstChildOfClass(\"Sky\") then\n    local sky = Instance.new(\"Sky\")\n    sky.Name = \"DefaultSky\"\n    sky.Parent = Lighting\nend"
+        }
+      ],
+      "summary": "클라이언트 시작 시 하늘이 없으면 기본 Sky를 생성하도록 수정했습니다.",
+      "provider": "groq:openai/gpt-oss-120b",
+      "state": "candidate",
+      "successes": 0,
+      "failures": 0,
+      "at": 1795904694019
     }
   }
 }
