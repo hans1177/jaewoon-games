@@ -2251,6 +2251,12 @@ function H.renderFacilityGallery()
   end
   -- [현행 지식] 이미 발견한 카드만 사용하고 주제별 중복 카드를 제거한다.
   local matches, seen = {}, {}
+  -- 시설표의 첫 탭을 파일명으로 사용한다. 같은 시설의 탭은 원화를 공유한다.
+  local facility = H.facilityOf(tab)
+  local stripId = AssetIds["CardArt/ui_strip_" .. facility.tabs[1]]
+  if stripId then
+    table.insert(matches, { image = "rbxassetid://" .. tostring(stripId), poolArt = true })
+  end
   for _, token in H.FACILITY_GALLERY_TOPICS[tab] or {} do
     for _, card in ((view and view.codex and view.codex.cards) or {}) do
       if card.found == true and type(card.image) == "string" and card.image ~= "" and not seen[card.id] then
@@ -2281,7 +2287,7 @@ function H.renderFacilityGallery()
     table.insert(matches, { image = "rbxassetid://" .. tostring(kv[2]), poolArt = true })
   end
   H.galleryMatches = matches
-  if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = math.random(1, #matches) end
+  if H.galleryIndex == nil and #matches > 0 then H.galleryIndex = if stripId then 1 else math.random(1, #matches) end
   H.galleryIndex = if #matches > 0 then math.clamp(H.galleryIndex or 1, 1, #matches) else 1
   local matched = if #matches > 0 then matches[H.galleryIndex] else nil
   -- [선택 원화] 클릭한 국가·항구·항로의 발견 카드/승인 해역도만 우선 전시한다.
@@ -2321,14 +2327,17 @@ function H.renderFacilityGallery()
   -- [가로 사건 원화] 사건 원화는 가로 그림이라 카드 틀에 넣으면 작아진다. 배경 전체를 원화로 쓰고 카드는 숨긴다.
   -- 세로 7:10 지식 카드만 카드 틀에 자르지 않고 띄운다.
   local portraitCard = realCard or ((tab == "codex" or tab == "encyclopedia") and H.galleryReadingCard ~= nil)
-  H.galleryCard.Visible = portraitCard
-  if H.galleryBackdrop then H.galleryBackdrop.ImageTransparency = if portraitCard then 0.35 else 0 end
+  H.galleryPortraitCard = portraitCard
+  H.galleryCard.Visible = H.galleryCleanStrip == true or portraitCard
+  if H.galleryBackdrop then H.galleryBackdrop.ImageTransparency = if H.galleryCleanStrip then 0 elseif portraitCard then 0.35 else 0 end
   if H.galleryImage.Image ~= image then
     -- [전환 성능] 빠른 넘김에서 이전 페이드가 새 그림 밝기를 덮지 않도록 재사용 제어한다.
     if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
     H.galleryImage.Image = image
     if H.galleryBackdrop then H.galleryBackdrop.Image = image end
-    if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
+    if H.galleryCleanStrip then
+      H.galleryImage.ImageTransparency = 1
+    elseif image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
       H.galleryImage.ImageTransparency = 1
       H.galleryArtTween = game:GetService("TweenService"):Create(H.galleryImage,
         TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 })
@@ -2547,6 +2556,9 @@ function H.layoutBook()
   -- [깔끔한 원화 띠 · 2026-11-28 오너: "상단 원화 디자인 구려"] 위 배너는 작은 카드+흐린 배경 대신
   -- 원화 한 장을 선명하게 꽉 채우고 왼쪽만 어둡게 깔아 제목 한 줄·설명 한 줄. 원화 터치(백과 이동)는 그대로.
   local cleanStrip = showArt and not poster
+  H.galleryCleanStrip = cleanStrip
+  H.galleryCard.Visible = cleanStrip or H.galleryPortraitCard == true
+  if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
   H.galleryCard.BackgroundTransparency = if cleanStrip then 1 else 0
   H.galleryImage.ImageTransparency = if cleanStrip then 1 else 0
   do
