@@ -740,6 +740,14 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 		-- [실제 Studio 경고 복구] 원경의 비충돌 절벽·언덕은 수입 원본 단위가 커도/작아도 목표 폭으로 보정한다.
 		-- 181개 항구가 사용하는 기존 Terrain·Castle 원본만 대상으로 하고 일반 시설·배·충돌 모델의 제한은 그대로 둔다.
 		local distantBackdrop = not solid and desiredSize >= 80 and (kind == "Terrain" or kind == "Castle")
+		-- [원경 절벽 실루엣] 폭 기준 확대 시 세로로 긴 절벽 원본이 거대한 회색 벽처럼 보이는 현상 제한.
+		-- 승인 원본의 비율·재질·위치·개수는 유지하며 비충돌 원경 절벽만 균일 축소한다.
+		local cliffHeightLimit = if distantBackdrop and kind == "Terrain" and string.sub(asset, 1, 6) == "cliff-"
+			then math.clamp(desiredSize * 0.28, 24, 52) else nil
+		if cliffHeightLimit and ext.Y > 0.01 then
+			desiredSize = math.min(desiredSize, axis * cliffHeightLimit / ext.Y)
+			ratio = desiredSize / axis
+		end
 		if not isAnimal and not distantBackdrop and (ratio < 0.01 or ratio > 100) then
 			error("비정상적인 모델 배율")
 		end
