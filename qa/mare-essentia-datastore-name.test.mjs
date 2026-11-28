@@ -303,6 +303,16 @@ test('탐험 숙련은 서버 유효 무기·시간 상한·중복 재전송 검
   assert.match(field,/local rank = practiceRank\(practice\.xp\)/);
 });
 
+test('전 세계 구출 호위는 지점별 고정 분기와 안전한 지면을 사용한다',()=>{
+  assert.match(field,/siteChoice = \(siteChoice \* 31 \+ string.byte\(opts.siteId, i\)\) % 997/);
+  assert.match(field,/existingRescue or \(\(theme == "ruins" or theme == "archive" or theme == "fort"\) and siteChoice % 3 == 0\)/);
+  assert.match(field,/not folder:GetAttribute\("FieldPursuitRoute"\) and found < nodeCount/);
+  assert.match(field,/candidate.Material == Enum.Material.Water or candidate.Normal.Y < 0.8/);
+  assert.match(field,/workspace:GetPartBoundsInBox\(CFrame.new\(candidate.Position \+ Vector3.new\(0, 3.5, 0\)\)/);
+  assert.match(field,/if found == 2 then\s+local character = player.Character/);
+  assert.match(field,/Pose.walkR15\(resident, phase, moving\)/);
+});
+
 test('전 세계 거점 탈환은 지형과 위험도로 선택하며 구출과 추격을 보존한다',()=>{
   assert.match(field,/nodeCount >= 2 and found < 2 and \(opts.danger or 1\) >= 3/);
   assert.match(field,/not folder:GetAttribute\("FieldRescueRoute"\) and not folder:GetAttribute\("FieldPursuitRoute"\)/);
