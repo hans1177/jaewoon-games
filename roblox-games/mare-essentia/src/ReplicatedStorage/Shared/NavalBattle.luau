@@ -385,7 +385,7 @@ function NavalBattle.play(opts)
 
 	-- 해전 전용 파도·바람·폭풍 환경음. 포격을 가리지 않도록 배경 음량을 낮춘다.
 	local weather = string.lower(tostring(opts.weatherName or ""))
-	local roughSeas = string.find(weather, "폭풍", 1, true) ~= nil
+	local roughSeas = opts.weatherId == "storm" or string.find(weather, "폭풍", 1, true) ~= nil
 		or string.find(weather, "태풍", 1, true) ~= nil
 		or string.find(weather, "폭우", 1, true) ~= nil
 		or string.find(weather, "storm", 1, true) ~= nil
@@ -502,12 +502,16 @@ function NavalBattle.play(opts)
 		local phase = "day"
 		local mode = if roughSeas then "storm"
 			elseif string.find(weather, "안개", 1, true) or string.find(weather, "fog", 1, true) then "fog"
-			elseif string.find(weather, "비", 1, true) or string.find(weather, "rain", 1, true) then "rain"
+			elseif opts.weatherId == "rain" or string.find(weather, "비", 1, true) or string.find(weather, "rain", 1, true) then "rain"
+			elseif opts.weatherId == "clear" or opts.weatherId == "tail" or opts.weatherId == "head" or opts.weatherId == "calm" then "clear"
 			elseif string.find(weather, "맑", 1, true) or string.find(weather, "clear", 1, true) then "clear"
 			elseif sceneSeed % 3 == 0 then "rain" else "clear"
 		local coastIndex = regions[sceneSeed % #regions + 1]
-		if mode == "fog" and sceneSeed % 3 == 0 then coastIndex = 12 end
-		if roughSeas and sceneSeed % 4 == 0 then coastIndex = 2 end
+		-- 예보가 전달된 실제 플레이에서는 기상만으로 다른 대륙 해안 모델을 고르지 않는다.
+		if not opts.weatherId then
+			if mode == "fog" and sceneSeed % 3 == 0 then coastIndex = 12 end
+			if roughSeas and sceneSeed % 4 == 0 then coastIndex = 2 end
+		end
 		local coast = coasts[coastIndex]
 		-- [해역 지시서] 날씨 테마와 실제 지역 원본을 분리한다.
 		-- 지시서와 지리가 충돌한 항구는 별도 지시서 정정 전까지 기존 경관 유지.
@@ -553,8 +557,15 @@ function NavalBattle.play(opts)
 		-- [해역 고유 정체성] 지중해는 노을, 야간 해역은 달빛, 유령 해역은 해무를 반드시 유지한다.
 		if coast.id == "mediterranean" or coast.id == "gold_coast" then phase = "sunset"
 		elseif coast.id == "moonlight" or coast.id == "ghost" then phase = "night" end
-		if coast.id == "ghost" then mode = "fog"
-		elseif coast.id == "atlantic_storm" or coast.id == "cape" then mode = "storm" end
+		if not opts.weatherId then
+			if coast.id == "ghost" then mode = "fog"
+			elseif coast.id == "atlantic_storm" or coast.id == "cape" then mode = "storm" end
+		end
+		-- 실제 항구에서 출전할 때는 지역 색상과 현재 시각을 분리한다.
+		if type(opts.clockTime) == "number" and opts.clockTime >= 0 and opts.clockTime < 24 then
+			phase = if opts.clockTime < 5 or opts.clockTime >= 20 then "night"
+				elseif opts.clockTime < 8 then "dawn" elseif opts.clockTime < 17 then "day" else "sunset"
+		end
 		if mode == "storm" and not roughSeas then
 			Sfx.ambient({ "sfx_ambience_storm", "sfx_waves" }, 0.55)
 		end
@@ -576,10 +587,12 @@ function NavalBattle.play(opts)
 		folder:SetAttribute("NavalTimePhase", phase)
 		folder:SetAttribute("NavalWeatherMode", mode)
 		local palette = if phase == "night" then Color3.fromRGB(78, 99, 149)
+			elseif phase == "dawn" then Color3.fromRGB(178, 199, 232)
 			elseif phase == "sunset" then Color3.fromRGB(255, 190, 142) else Color3.fromRGB(210, 235, 249)
 		local skyColor = coast.sky:Lerp(palette, if phase == "night" then 0.60 else 0.32)
 		local cloudColor = if mode == "storm" then Color3.fromRGB(70, 78, 99)
 			elseif phase == "night" then Color3.fromRGB(110, 124, 157)
+			elseif phase == "dawn" then Color3.fromRGB(192, 192, 223)
 			elseif phase == "sunset" then Color3.fromRGB(230, 171, 146) else Color3.fromRGB(233, 232, 220)
 		local foamColor = if phase == "night" then Color3.fromRGB(123, 163, 198) else Color3.fromRGB(198, 238, 237)
 		-- [해전 자연광] 가짜 하늘 벽 대신 실제 Roblox 하늘·대기·구름. 원래 월드 설정은 복원한다.
@@ -591,12 +604,14 @@ function NavalBattle.play(opts)
 		}
 		-- [수평선 실루엣] 기존 태양 방향은 유지하고 물가·돛·절벽의 그림자 경계를 부드럽게 한다.
 		lighting.ShadowSoftness = if mode == "storm" or mode == "fog" then 0.48 else 0.30
-		lighting.ClockTime = if phase == "night" then 21.15 elseif phase == "sunset" then 17.45 else 11.8
+		lighting.ClockTime = if type(opts.clockTime) == "number" and opts.clockTime >= 0 and opts.clockTime < 24 then opts.clockTime
+			elseif phase == "night" then 21.15 elseif phase == "sunset" then 17.45 else 11.8
 		lighting.FogColor = skyColor
 		lighting.FogStart = if mode == "fog" then 210 elseif mode == "storm" then 370 else 690
 		lighting.FogEnd = if mode == "fog" then 950 elseif mode == "storm" then 1250 else 1900
 		lighting.OutdoorAmbient = if phase == "night" then Color3.fromRGB(72, 96, 132)
 			elseif mode == "storm" then Color3.fromRGB(101, 117, 130)
+			elseif phase == "dawn" then Color3.fromRGB(121, 144, 177)
 			else Color3.fromRGB(153, 174, 184)
 		local originalAtmosphere = lighting:FindFirstChildOfClass("Atmosphere")
 		local atmosphere = originalAtmosphere or Instance.new("Atmosphere")
@@ -645,6 +660,7 @@ function NavalBattle.play(opts)
 		local colorGrade = Instance.new("ColorCorrectionEffect")
 		colorGrade.Name = "NavalBattleEnvironmentGrade"
 		colorGrade.TintColor = if phase == "night" then Color3.fromRGB(162, 181, 219)
+			elseif phase == "dawn" then Color3.fromRGB(205, 219, 245)
 			elseif phase == "sunset" then Color3.fromRGB(255, 220, 188) else Color3.fromRGB(241, 249, 255)
 		colorGrade.Brightness = if phase == "night" then -0.12 elseif phase == "sunset" then 0.015 else 0.025
 		colorGrade.Contrast = if mode == "storm" then 0.09 else 0.035
@@ -718,8 +734,8 @@ function NavalBattle.play(opts)
 		end
 		folder:SetAttribute("NavalCoastFoamSources", coastFoamCount)
 		local weatherNodes = {}
-		if mode == "rain" or mode == "storm" or coast.id == "north_sea" or coast.id == "arctic" then
-			local snowfall = coast.id == "north_sea" or coast.id == "arctic"
+		if mode == "rain" or mode == "storm" or (not opts.weatherId and (coast.id == "north_sea" or coast.id == "arctic")) then
+			local snowfall = coast.id == "arctic" or (not opts.weatherId and coast.id == "north_sea")
 			-- [기상 입자] 등록된 엔진 기본 입자만 사용. 터치 기기에서는 발생률 제한.
 			for i = 1, (if MOBILE_VFX then 2 else 4) do
 				local source = Instance.new("Attachment")
