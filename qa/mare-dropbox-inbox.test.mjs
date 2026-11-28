@@ -112,3 +112,25 @@ test('기존 실패가 있으면 승인된 카드배틀 화면 교체의 반복 
   assert.ok(review.includes('continue'));
   assert.ok(uploader.includes('ency_(?:bg_book|tab_sheet|map_world|scale_people)'));
 });
+
+test('시설 가로 원화는 지정 규격과 시각 승인 해시를 검사한다', () => {
+  assert.ok(py.includes('trade|route|diplomacy|yard|board|battle|scholar|status'));
+  assert.ok(py.includes('(w, h) != (2400, 800)'));
+  assert.ok(py.includes('시설 가로 원화는 빈 영역 없이 완성된 불투명 그림 필수'));
+  const gate = py.split('if kind == "CardArt" and FACILITY_STRIP.fullmatch(fn):')[1].split('# 대륙 원화')[0];
+  assert.ok(gate.includes('approved_doc.get("approved", {}).get(card) != digest'));
+  assert.ok(gate.includes('status="pending_review"'));
+  assert.ok(gate.includes('continue'));
+  assert.ok(py.includes('fn != "ency_tab_sheet.png" and not FACILITY_STRIP.fullmatch(fn)'));
+  assert.ok(py.includes('review.get("sourceSha256") != digest'));
+});
+
+test('전투 버튼 효과 원본은 투명 PNG로 유지한다', () => {
+  assert.ok(py.includes('"fx_button_ring.png": (512, 512)'));
+  assert.ok(py.includes('"fx_button_spark.png": (128, 128)'));
+  assert.ok(py.includes('fn not in ("fx_button_ring.png", "fx_button_spark.png")'));
+  const upload = fs.readFileSync('tools/mare-essentia-upload-assets.mjs', 'utf8');
+  assert.ok(upload.includes('BUTTON_FX_RGBA_PNG_REQUIRED'));
+  assert.ok(upload.includes('originalBytes[25] !== 6'));
+  assert.ok(upload.includes('approvedImages[id] !== sourceSha256'));
+});

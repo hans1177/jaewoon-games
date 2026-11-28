@@ -27,6 +27,7 @@ IMAGE_KINDS = {"CardArt", "Icons", "Portraits", "Goods", "Materials"}
 MODEL_KINDS = {"Animals", "Terrain", "Relics", "Town", "Castle", "Naval", "People", "Monsters", "Interior", "Cargo"}
 NAME = re.compile(r"^[a-z0-9][a-z0-9_\-]{1,60}\.(png|jpg|jpeg|glb)$")
 CONTINENT = re.compile(r"^(eu|ea|me|nw|af|sa)_(0[1-9]|[1-4][0-9])\.png$")
+FACILITY_STRIP = re.compile(r"^ui_strip_(trade|route|diplomacy|yard|board|battle|scholar|status)\.png$")
 MAX_MODEL = 20 * 1024 * 1024
 MAX_IMAGE = 25 * 1024 * 1024
 
@@ -133,6 +134,15 @@ def check_image(kind, fn, raw, tmp):
         return None, why
     im = Image.open(io.BytesIO(raw))
     w, h = im.size
+    # 시설 전용 원화는 지정 규격·풀컬러·불투명 원본만 허용한다.
+    if kind == "CardArt" and fn.startswith("ui_strip_"):
+        if not FACILITY_STRIP.fullmatch(fn) or (w, h) != (2400, 800):
+            return None, "시설 원화는 지정 파일명 및 2400×800 PNG 필수"
+        if len(raw) < 33 or raw[24] != 8 or raw[25] not in (2, 6) or im.mode not in ("RGB", "RGBA"):
+            return None, "시설 원화는 8비트 RGB/RGBA PNG 원본만 허용"
+        if im.mode == "RGBA" and im.getchannel("A").getextrema()[0] != 255:
+            return None, "시설 가로 원화는 빈 영역 없이 완성된 불투명 그림 필수"
+        return (fn, raw), None
     # 백과사전 지시서: 정확한 네 파일의 PNG 원본과 투명 장식을 보존한다.
     encyclopedia_size = {
         "ency_bg_book": (1600, 1000),
@@ -165,6 +175,8 @@ def check_image(kind, fn, raw, tmp):
         "ui_button_green.png": (256, 96),
         "ui_button_grey.png": (256, 96),
         "ui_haggle_needle.png": (64, 256),
+        "fx_button_ring.png": (512, 512),
+        "fx_button_spark.png": (128, 128),
     }.get(fn) if kind == "CardArt" else None
     if ui_size is not None:
         if (w, h) != ui_size:
@@ -181,7 +193,7 @@ def check_image(kind, fn, raw, tmp):
             return None, f"대륙 카드는 세로 7:10, 1049×1499 이상 (지금 {w}×{h})"
         if len(raw) < 33 or raw[24] != 8 or raw[25] not in (2, 6):
             return None, "대륙 카드는 8비트 RGB/RGBA PNG 원본만 허용"
-    elif kind == "CardArt" and fn.endswith(".png") and not fn.startswith("ui_"):
+    elif kind == "CardArt" and fn.endswith(".png") and not fn.startswith("ui_") and fn not in ("fx_button_ring.png", "fx_button_spark.png"):
         # 기존 등록기는 그 밖의 카드 그림을 JPG 로 받는다(대륙 카드·UI 만 PNG)
         buf = io.BytesIO()
         im.convert("RGB").save(buf, "JPEG", quality=92, optimize=True)
@@ -237,7 +249,7 @@ def main():
                 continue
             card = "CardArt/" + os.path.splitext(fn)[0]
             if (approved_doc.get("approved", {}).get(card) != prev.get("sha256")
-                    or (fn != "ency_tab_sheet.png" and approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256"))):
+                    or (fn != "ency_tab_sheet.png" and not FACILITY_STRIP.fullmatch(fn) and approved_doc.get("modelOriginals", {}).get(card, {}).get("sourceSha256") != prev.get("sha256"))):
                 continue
         rec = {"content_hash": e.get("content_hash"), "at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "kind": kind}
         why, result = None, None
@@ -268,6 +280,14 @@ def main():
                 card = "CardArt/ency_tab_sheet"
                 if approved_doc.get("approved", {}).get(card) != digest:
                     rec.update(status="pending_review", file=out_name, sha256=digest, reason="독립 원본 16종 및 최종 합성 시각 검수·승인 대기")
+                    state["files"][path] = rec
+                    log("DROPBOX_INBOX_CARD_REVIEW_PENDING", card)
+                    continue
+            # 시설 원화는 기존 승인표의 정확한 원본 해시를 확인한다.
+            if kind == "CardArt" and FACILITY_STRIP.fullmatch(fn):
+                card = "CardArt/" + os.path.splitext(fn)[0]
+                if approved_doc.get("approved", {}).get(card) != digest:
+                    rec.update(status="pending_review", file=out_name, sha256=digest, reason="시설 원화 시각 검수 및 기존 승인표 확인 대기")
                     state["files"][path] = rec
                     log("DROPBOX_INBOX_CARD_REVIEW_PENDING", card)
                     continue

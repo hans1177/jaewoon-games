@@ -1865,7 +1865,8 @@ for (const k of Object.keys(cardApprovalDocument.approved || {})) {
   approvedCardNames.add(k.slice(8) + '.jpg');
   // [역사 이벤트 30프레임] 검수된 기존 등록 해시에 오른 3종 PNG 그림판만 허용.
   if (k.startsWith('CardArt/ui_') || /^CardArt\/history_(?:open|map|record)$/.test(k)
-      || /^CardArt\/ency_(?:bg_book|tab_sheet|map_world|scale_people)$/.test(k)) {
+      || /^CardArt\/ency_(?:bg_book|tab_sheet|map_world|scale_people)$/.test(k)
+      || /^CardArt\/fx_button_(?:ring|spark)$/.test(k)) {
     approvedCardNames.add(k.slice(8) + '.png');
   }
 }
@@ -2341,7 +2342,7 @@ if (!modelsOnly && !studioRegrantPath) {
 // [카드배틀 화면 교체] 기존 번호의 UI 교체는 다른 자산 검사가 끝난 뒤 처리한다.
 // 이미 실패한 실행에서 어차피 롤백될 교체 업로드를 반복하지 않는다.
 const existingBattleUi = new Set(plan.filter(item => item.kind === 'CardArt' && item.ext === '.png'
-  && /^ui_[a-z0-9_]+$/.test(item.name) && registry.assets[item.kind + '/' + item.name]?.assetId));
+  && /^(?:ui_[a-z0-9_]+|fx_button_(?:ring|spark))$/.test(item.name) && registry.assets[item.kind + '/' + item.name]?.assetId));
 plan.sort((a, b) => Number(existingBattleUi.has(a)) - Number(existingBattleUi.has(b)));
 // [원본 보호] 종류 변경 중 신규 업로드나 Universe 사용 권한 확인이 실패하면 기존 등록 ID를 보존한다.
 const previousTypeAssets = new Map();
@@ -2456,7 +2457,17 @@ for (const item of plan) {
     }
   }
   // [카드배틀 화면] 승인된 새 이미지의 사용 권한을 확인한 뒤에 기존 번호를 교체한다.
-  const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && /^ui_[a-z0-9_]+$/.test(item.name);
+  const buttonFxArt = item.kind === 'CardArt' && /^fx_button_(?:ring|spark)$/.test(item.name);
+  const battleUiArt = item.kind === 'CardArt' && item.ext === '.png' && (/^ui_[a-z0-9_]+$/.test(item.name) || buttonFxArt);
+  if (buttonFxArt) {
+    const size = item.name === 'fx_button_ring' ? 512 : 128;
+    if (item.ext !== '.png' || originalBytes.length < 33 || !originalBytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
+      || originalBytes.toString('ascii', 12, 16) !== 'IHDR' || originalBytes.readUInt32BE(16) !== size || originalBytes.readUInt32BE(20) !== size
+      || originalBytes[24] !== 8 || originalBytes[25] !== 6) {
+      failures.push(id + ': BUTTON_FX_RGBA_PNG_REQUIRED');
+      continue;
+    }
+  }
   if (item.kind === 'CardArt' && !regionalCardArt && (approvedImages[id] || /^lo_\d{2}$/.test(item.name) || battleUiArt)) {
     const old = registry.assets[id];
     if (battleUiArt && old?.sourceSha256 !== sourceSha256 && approvedImages[id] === sourceSha256
