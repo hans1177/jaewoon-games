@@ -2557,40 +2557,19 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key, houseSpots)
 			m:SetAttribute("AnimalSpecies", species)
 			m:SetAttribute("AnimalVisualSize", k and k[1] or 1.35)
 			m:SetAttribute("AnimalCoatIndex", coatIndex)
-			-- 가축은 월드 기준 회전이나 X/Z 축 기울기를 적용하지 않는다. 원본 방향을 제자리에서만 정규화한다.
+			-- [가축 방향 · 2026-11-29 Studio 실측: 소·말·돼지가 엉덩이로 수직으로 서 있음]
+			-- 원인: 수입 원본(FBX)은 기준점(뼈대 루트)이 -90도 누워 있고 몸 메시는 원래 똑바로 서 있다.
+			-- 예전 코드는 기준점을 똑바로 세워(lookAt) 몸을 90도 넘어뜨렸다. 이제 원본 기울기를 그대로 두고
+			-- 세로축(월드 Y)으로만 돌린다. 기준점이 이미 똑바른 GLB(코끼리·고양이 등)는 결과가 예전과 같다.
 			local origin = m:GetPivot()
-			local forward = origin.LookVector
-			local upright = if math.abs(forward.X) + math.abs(forward.Z) > 0.01
-				then CFrame.lookAt(origin.Position, origin.Position + Vector3.new(forward.X, 0, forward.Z))
-				else CFrame.new(origin.Position)
 			local yaw = rng:NextNumber(-math.pi, math.pi)
-			m:PivotTo(upright * CFrame.Angles(0, yaw, 0))
-			-- [세워진 가축 바로잡기 · 2026-11-29 Studio 실측: 소·말이 엉덩이로 서 있음]
-			-- FBX 원본은 기준점(뼈대 루트)이 -90도 누워 있어, 기준점을 똑바로 세우면 몸이 수직으로 선다.
-			-- 다리 뼈·다리 조각의 평균 위치가 몸 중심 아래(-Y)를 향하도록 몸 중심 기준으로 한 번 돌린다.
+			local center0 = m:GetBoundingBox().Position
+			m:PivotTo(CFrame.new(center0) * CFrame.Angles(0, yaw, 0) * CFrame.new(-center0) * origin)
 			do
-				local legSum, legN = Vector3.zero, 0
-				for _, node in m:GetDescendants() do
-					local nm = string.lower(node.Name)
-					if nm:find("leg", 1, true) or nm:find("foot", 1, true) or nm:find("hoof", 1, true) or nm:find("paw", 1, true) then
-						local at = if node:IsA("Bone") then node.WorldPosition elseif node:IsA("BasePart") then node.Position else nil
-						if at then legSum += at; legN += 1 end
-					end
-				end
-				if legN >= 2 then
-					local center = m:GetBoundingBox().Position
-					local down = legSum / legN - center
-					if down.Magnitude > 0.05 then
-						down = down.Unit
-						local dot = down:Dot(-Vector3.yAxis)
-						if dot < 0.7 then
-							local axis = down:Cross(-Vector3.yAxis)
-							axis = if axis.Magnitude < 1e-3 then Vector3.xAxis else axis.Unit
-							local angle = math.acos(math.clamp(dot, -1, 1))
-							m:PivotTo(CFrame.new(center) * CFrame.fromAxisAngle(axis, angle) * CFrame.new(-center) * m:GetPivot())
-							m:SetAttribute("AnimalUprightFixDeg", math.floor(math.deg(angle) + 0.5))
-						end
-					end
+				-- 측정: 몸이 길이보다 높이가 크면(세워짐 의심) 표시만 한다.
+				local _, sz = m:GetBoundingBox()
+				if species ~= "chicken" and species ~= "duck" and sz.Y > math.max(sz.X, sz.Z) * 1.2 then
+					m:SetAttribute("AnimalTallWarning", true)
 				end
 			end
 			-- [회전 후 실측 접지] 수입 모델의 기준점이 몸 중앙에 있어도 회전 후 실제 발바닥이 지면에 남는다.
