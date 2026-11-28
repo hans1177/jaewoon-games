@@ -14486,8 +14486,8 @@ do
 				art.ScaleType = Enum.ScaleType.Stretch
 				-- 단면에서도 같은 원본의 왼쪽/오른쪽 삽화 페이지를 각각 사용한다.
 				if not wide then
-					art.ImageRectSize = Vector2.new(512, 640)
-					art.ImageRectOffset = Vector2.new(if H.dexReading then 512 else 0, 0)
+					art.Size = UDim2.new(2, 0, 1, -55)
+					art.Position = UDim2.fromScale(if H.dexReading then -1 else 0, 0)
 				end
 				art.Parent = root
 			end
