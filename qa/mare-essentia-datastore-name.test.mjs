@@ -2807,7 +2807,7 @@ test('성체 말과 주요 가축의 크기·품종색은 항구와 탐험이 �
  assert.match(read('ReplicatedStorage/Shared/DiscoveryStage.luau'),/Color3\.fromRGB\(table\.unpack\(coats\[1\]\)\)/,'탐험 동물 품종색(발견물 연출)');
  assert.match(field,/if not textured and not detail then/);
  assert.match(read('ReplicatedStorage/Shared/DiscoveryStage.luau'),/m:SetAttribute\("ObservedSpecies", card\.id\)/,'관찰 동물 표시(발견물 연출)');
- assert.match(scene,/for k = 1, grazeCount do/);
+ assert.match(scene,/for k = 1, herd do/);
  assert.match(scene,/for i = 1, lay\.pens do/);
  assert.match(scene,/horse:SetAttribute\("ShowcaseOnly", true\)/);
  assert.doesNotMatch(config,/DataStoreService/);

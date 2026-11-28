@@ -2747,10 +2747,24 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 		for i = 1, lay.pens do
 			local c = penAt(i, lay.pens)
 			local sp = if #stock > 0 then stock[(i - 1) % #stock + 1] else nil
-			local halfX = if sp == "pig" then rural.pigHalfX else rural.pastureHalfX
-			local halfZ = if sp == "pig" then rural.pigHalfZ else rural.pastureHalfZ
+			-- [단계별·가축별 방목 · 2026-11-29 오너: "목장 목축업 단계별 방목, 가축별로 다르고, 지역마다 달라야"]
+			-- 1단계 울타리 없는 작은 방목 → 2단계 말뚝 → 3단계 나무 울타리·축사 → 4~5단계 넓은 목장(돌담 문화권은 돌담).
+			-- 땅 색·무리 모양·마릿수 배율이 가축마다 다르다. 경제 가축 수·저장은 그대로(화면만).
+			local stage = math.clamp(lvl, 1, 5)
+			local stageScale = ({ 0.4, 0.55, 0.7, 0.85, 1 })[stage]
+			local halfX = (if sp == "pig" then rural.pigHalfX else rural.pastureHalfX) * stageScale
+			local halfZ = (if sp == "pig" then rural.pigHalfZ else rural.pastureHalfZ) * stageScale
+			local SPECIES_GROUND = {
+				pig = { C(124, 100, 72), Enum.Material.Mud }, sheep = { C(132, 154, 96), Enum.Material.Grass },
+				cow = { C(88, 136, 70), Enum.Material.Grass }, horse = { C(100, 132, 76), Enum.Material.Grass },
+				donkey = { C(158, 140, 98), Enum.Material.Ground }, llama = { C(164, 146, 102), Enum.Material.Ground },
+				elephant = { C(150, 104, 76), Enum.Material.Ground },
+			}
+			local groundLook = SPECIES_GROUND[sp or ""] or { C(105, 139, 82), Enum.Material.Grass }
 			local grass = part(folder, Vector3.new(halfX * 2, 0.12, halfZ * 2), CFrame.new(c.X, 0.26, c.Z),
-				if sp == "pig" then C(139, 118, 88) else C(105, 139, 82), if sp == "pig" then Enum.Material.Ground else Enum.Material.Grass)
+				groundLook[1], groundLook[2])
+			grass:SetAttribute("PastureStage", stage)
+			grass:SetAttribute("PastureSpecies", sp or "none")
 			grass.Name = if sp == "pig" then "PigYard" else "OpenPasture"
 			grass.CanCollide = false
 			-- [실물 지면] 비충돌 잔디·흙 바닥도 동물의 접지 레이캐스트에는 포함한다.
@@ -2762,12 +2776,19 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 			grass:SetAttribute("PlotHalfDepth", halfZ)
 			grass:SetAttribute("EconomicFarmCount", tonumber(farmCount) or -1)
 			-- [울타리 최적화] 26스튜드 단위로 길이별 기존 실물 레일을 확대해 넓은 둘레를 적은 메시로 감싼다.
+			-- 단계별: 1 없음(목동이 지킴) · 2 말뚝 · 3 나무 레일 · 4~5 돌담 문화권은 돌담, 그 외 긴 나무 울타리.
+			local stoneCulture = key == "britain" or key == "nordic" or key == "hanse" or key == "stone"
+				or key == "med" or key == "iberia" or key == "italy"
+			local fenceAsset = if stage <= 1 then nil elseif stage == 2 then "fence_post"
+				elseif stage >= 4 and stoneCulture and AssetIds["Town/kenney_grey_short_wall_01"] then "kenney_grey_short_wall_01"
+				elseif stage >= 4 and AssetIds["Town/fence_straight_long"] then "fence_straight_long" else "fence_rails_long"
+			grass:SetAttribute("PastureFence", fenceAsset or "open")
 			local xSections = math.ceil(halfX * 2 / rural.fenceSegmentMax)
 			local xStep = halfX * 2 / xSections
 			for k = 1, xSections do
 				local x = -halfX + (k - 0.5) * xStep
 				for _, dz in { -halfZ, halfZ } do
-					importedModel(folder, "Town", "fence_rails_long", c + Vector3.new(x, 0, dz), xStep * 0.98, false)
+					if fenceAsset then importedModel(folder, "Town", fenceAsset, c + Vector3.new(x, 0, dz), if fenceAsset == "fence_post" then 2.6 else xStep * 0.98, false) end
 				end
 			end
 			local zSections = math.ceil(halfZ * 2 / rural.fenceSegmentMax)
@@ -2776,19 +2797,37 @@ local function spawnJobs(folder, info, rng, lvl, walkers, key)
 				local z = -halfZ + (k - 0.5) * zStep
 				for _, dx in { -halfX, halfX } do
 					local at = c + Vector3.new(dx, 0, z)
-					local rail = importedModel(folder, "Town", "fence_rails_long", at, zStep * 0.98, false)
-					rotateAround(rail, at, math.pi / 2)
+					local rail = fenceAsset and importedModel(folder, "Town", fenceAsset, at, if fenceAsset == "fence_post" then 2.6 else zStep * 0.98, false)
+					if rail then rotateAround(rail, at, math.pi / 2) end
 				end
 			end
 			-- 사육지 안쪽 급수통은 승인된 Cargo 메시 1개만 쓰고 경제 수량에는 반영하지 않는다.
 			local trough = importedModel(folder, "Cargo", "bucket", c + Vector3.new(halfX - 15, 0, -halfZ + 15), 3.4, false)
 			if trough then trough.Name = "PastureWater_" .. i end
+			-- [단계별 목장 시설] 2단계부터 건초 더미, 3단계부터 축사(소·말·당나귀·양).
+			if sp and stage >= 2 and sp ~= "pig" and AssetIds["Terrain/village-hay"] then
+				importedModel(folder, "Terrain", "village-hay", c + Vector3.new(-halfX + 10, 0, halfZ - 10), 4.5, false)
+				if stage >= 4 then importedModel(folder, "Terrain", "village-hay", c + Vector3.new(-halfX + 17, 0, halfZ - 9), 4.2, false) end
+			end
+			if sp and stage >= 3 and (sp == "cow" or sp == "horse" or sp == "donkey" or sp == "sheep")
+				and AssetIds["Town/village-stable"] then
+				local stable = importedModel(folder, "Town", "village-stable", c + Vector3.new(halfX - 16, 0, halfZ - 14), 15, true)
+				if stable then stable.Name = "PastureStable_" .. sp end
+			end
 			if sp then
+				-- 가축별 무리: 양은 한데 모여 다니고, 말은 둘씩, 소는 넓게 흩어지고, 돼지는 물통 근처.
+				local herdMul = ({ sheep = 1.7, cow = 1.0, horse = 0.7, pig = 1.2, donkey = 0.6, llama = 1.1 })[sp] or 1
+				local herd = math.max(1, math.floor(grazeCount * herdMul * (0.6 + 0.1 * stage) + 0.5))
+				local flockAt = c + Vector3.new(rng:NextNumber(-halfX * 0.3, halfX * 0.3), 0, rng:NextNumber(-halfZ * 0.3, halfZ * 0.3))
 				if sp == "elephant" then
 					animal(sp, c)
 				else
-					for k = 1, grazeCount do
-						local at = c + Vector3.new(rng:NextNumber(-halfX * 0.65, halfX * 0.65), 0, rng:NextNumber(-halfZ * 0.58, halfZ * 0.58))
+					for k = 1, herd do
+						local at = if sp == "sheep" then flockAt + Vector3.new(rng:NextNumber(-9, 9), 0, rng:NextNumber(-7, 7))
+							elseif sp == "pig" then c + Vector3.new(halfX - 15, 0, -halfZ + 15) + Vector3.new(rng:NextNumber(-12, 4), 0, rng:NextNumber(-4, 12))
+							elseif sp == "horse" and k % 2 == 0 then flockAt + Vector3.new(rng:NextNumber(-3, 3), 0, rng:NextNumber(-3, 3))
+							else c + Vector3.new(rng:NextNumber(-halfX * 0.65, halfX * 0.65), 0, rng:NextNumber(-halfZ * 0.58, halfZ * 0.58))
+						if sp == "horse" and k % 2 == 1 then flockAt = at end
 						local n0 = #walkers
 						animal(sp, at)
 						local w = walkers[#walkers]
