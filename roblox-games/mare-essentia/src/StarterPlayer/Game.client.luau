@@ -7707,7 +7707,26 @@ function RENDERERS.route()
 				elseif (r.cargoProfit or 0) > 0 then Color3.fromRGB(47, 122, 58) else UI_BRASS
 		end
 		local stroke = item:FindFirstChildOfClass("UIStroke")
-		if stroke and selected and selected.id == r.id then stroke.Thickness = 3; stroke.Color = UI_BRASS_DARK end
+		if selected and selected.id == r.id then
+			if stroke then stroke.Thickness = 3; stroke.Color = UI_BRASS_DARK end
+			local bookmark = Instance.new("Frame")
+			bookmark.Name = "SelectedBookmark"
+			bookmark.BackgroundColor3 = UI_BRASS_DARK
+			bookmark.BorderSizePixel = 0
+			bookmark.Position = UDim2.fromOffset(2, 8)
+			bookmark.Size = UDim2.new(0, 5, 1, -16)
+			bookmark.Parent = item
+			if H.routeSelectionPulse == r.id then
+				H.routeSelectionPulse = nil
+				local icon = item:FindFirstChild("RowIcon")
+				if icon and not game:GetService("GuiService").ReducedMotionEnabled then
+					local scale = Instance.new("UIScale")
+					scale.Scale = 1.08
+					scale.Parent = icon
+					game:GetService("TweenService"):Create(scale, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				end
+			end
+		end
 		local hit = Instance.new("TextButton")
 		hit.Name = "RouteSelect"
 		hit.Text = ""
@@ -7715,7 +7734,7 @@ function RENDERERS.route()
 		hit.Size = UDim2.fromScale(1, 1)
 		hit.ZIndex = item.ZIndex + 5
 		hit.Parent = item
-		hit.Activated:Connect(function() H.routeListScroll = list.CanvasPosition.Y; H.routeDetailId = r.id; content.CanvasPosition = Vector2.zero; render() end)
+		hit.Activated:Connect(function() H.routeListScroll = list.CanvasPosition.Y; H.routeSelectionPulse = r.id; H.routeDetailId = r.id; content.CanvasPosition = Vector2.zero; render() end)
 	end
 	if selected then
 		local r = selected
@@ -15189,7 +15208,14 @@ function RENDERERS.tech()
 		track.Parent = progressText
 		corner(track, 4)
 		local fill = Instance.new("Frame")
-		fill.Size = UDim2.fromScale(completed / math.max(1, #view.tech), 1)
+		local ratio = completed / math.max(1, #view.tech)
+		local previous = H.lastResearchProgress
+		H.lastResearchProgress = completed
+		local advanced = previous ~= nil and previous < completed and not game:GetService("GuiService").ReducedMotionEnabled
+		fill.Size = UDim2.fromScale(if advanced then previous / math.max(1, #view.tech) else ratio, 1)
+		if advanced then
+			game:GetService("TweenService"):Create(fill, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromScale(ratio, 1) }):Play()
+		end
 		fill.BackgroundColor3 = Color3.fromRGB(47, 122, 58)
 		fill.BorderSizePixel = 0
 		fill.Parent = track
@@ -15222,7 +15248,26 @@ function RENDERERS.tech()
 			accent.BackgroundColor3 = if state == "blocked" then COLORS.red elseif ready then UI_BRASS else Color3.fromRGB(47, 122, 58)
 		end
 		local stroke = row:FindFirstChildOfClass("UIStroke")
-		if stroke and selected and selected.id == t.id then stroke.Thickness = 3; stroke.Color = UI_BRASS_DARK end
+		if selected and selected.id == t.id then
+			if stroke then stroke.Thickness = 3; stroke.Color = UI_BRASS_DARK end
+			local bookmark = Instance.new("Frame")
+			bookmark.Name = "SelectedBookmark"
+			bookmark.BackgroundColor3 = UI_BRASS_DARK
+			bookmark.BorderSizePixel = 0
+			bookmark.Position = UDim2.fromOffset(2, 8)
+			bookmark.Size = UDim2.new(0, 5, 1, -16)
+			bookmark.Parent = row
+			if H.techSelectionPulse == t.id then
+				H.techSelectionPulse = nil
+				local icon = row:FindFirstChild("RowIcon")
+				if icon and not game:GetService("GuiService").ReducedMotionEnabled then
+					local scale = Instance.new("UIScale")
+					scale.Scale = 1.08
+					scale.Parent = icon
+					game:GetService("TweenService"):Create(scale, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+				end
+			end
+		end
 		local hit = Instance.new("TextButton")
 		hit.Name = "ResearchSelect"
 		hit.Text = ""
@@ -15230,7 +15275,7 @@ function RENDERERS.tech()
 		hit.Size = UDim2.fromScale(1, 1)
 		hit.ZIndex = row.ZIndex + 5
 		hit.Parent = row
-		hit.Activated:Connect(function() H.techListScroll = list.CanvasPosition.Y; H.techSelectedId = t.id; content.CanvasPosition = Vector2.zero; render() end)
+		hit.Activated:Connect(function() H.techListScroll = list.CanvasPosition.Y; H.techSelectionPulse = t.id; H.techSelectedId = t.id; content.CanvasPosition = Vector2.zero; render() end)
 	end
 	if selected then
 		local t = selected
