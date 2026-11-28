@@ -28,6 +28,11 @@ return function(D, S)
 			waves = { { lvOffset = 0, name = "해협 해적선" }, { lvOffset = 1, name = "무장 정크선" }, { lvOffset = 1, name = "연합 호위함" }, { lvOffset = 2, name = "해적 연합 전열함" }, { lvOffset = 4, name = "해협 총두목선" } } },
 		{ id = "war_pacific", region = "pacific", name = "태평양 원정 함대전", summary = "먼바다에서 적 원정 함대를 맞아 싸우는 5연전", minLevel = 18, coins = 8500, fame = 90, xp = 2600, cooldown = 12,
 			waves = { { lvOffset = 1, name = "원정 정찰함" }, { lvOffset = 2, name = "원정 호위함" }, { lvOffset = 2, name = "원정 보급 전열함" }, { lvOffset = 3, name = "원정 기함" }, { lvOffset = 5, name = "원정 총사령선" } } },
+		-- [장 이야기 전용] 기존 지역 작전과 보상·파도 규칙은 그대로 보존한다.
+		{ id = "war_ch2", region = "europe", portId = "ragusa", questOnly = "ch2_3", name = "유리 항로 봉쇄전", summary = "라구사 앞바다의 원료선 봉쇄 해제", minLevel = 2, coins = 700, fame = 10, xp = 250, cooldown = 6,
+			waves = { { lvOffset = -1, name = "사략 초계선" }, { lvOffset = 0, name = "봉쇄 호위함" }, { lvOffset = 1, name = "사략 기함" } } },
+		{ id = "war_ch4", region = "far_east", portId = "nagasaki", questOnly = "ch4_3", name = "데지마 해협 수비전", summary = "나가사키 앞바다의 위조 선단 격퇴", minLevel = 14, coins = 5600, fame = 60, xp = 1700, cooldown = 10,
+			waves = { { lvOffset = 0, name = "위조 정찰선" }, { lvOffset = 1, name = "무장 정크선" }, { lvOffset = 1, name = "선단 호위함" }, { lvOffset = 2, name = "위조 전열함" }, { lvOffset = 4, name = "위조 선단 기함" } } },
 	}
 	local WAR_BY_ID = {}
 	for _, w in WARS do
@@ -345,6 +350,9 @@ return function(D, S)
 		end
 		if def.questOnly and not state.quests.active[def.questOnly] then
 			return "이야기를 진행해야 열리는 작전이에요"
+		end
+		if def.portId and state.portId ~= def.portId then
+			return "이야기 작전 출전 장소: " .. D.Ports.Ports[def.portId].name
 		end
 		if def.region then
 			local port = D.Ports.Ports[state.portId]
