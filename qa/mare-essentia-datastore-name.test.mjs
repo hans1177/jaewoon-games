@@ -5183,3 +5183,15 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
    assert.ok(section.includes('H.tileGrid(tiles, content, 190, 210, not selected)'));
  }
 });
+
+ test('조선소는 선택 선박 한 척의 상세 비교만 만들고 나머지는 가벼운 목록으로 표시한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const yard=source.slice(source.indexOf('local function renderYard(page)'),source.indexOf('function openYardHall()'));
+ assert.ok(yard.includes('for _, s in (if previewShip then { previewShip } else {}) do'));
+ assert.ok(yard.includes('YardShipChoice_'));
+ assert.ok(yard.includes('H.shipPreviewId = s.id'));
+ assert.ok(yard.includes('call("BuyShip", { shipId = s.id })'));
+ assert.ok(yard.includes('s.canCarry and s.netCost <= view.player.coins'));
+ assert.ok(yard.includes('math.max(520, left + 120 + 240)'));
+ assert.ok(yard.includes('if narrow then -178 else -112'));
+});
