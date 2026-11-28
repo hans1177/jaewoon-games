@@ -16533,12 +16533,9 @@ function RENDERERS.war()
 	H.walletBar("tavern")
 	H.statStrip({
 		{ "선체", string.format("%d/%d", view.ship.hull, view.ship.maxHull), tone = if view.ship.hull < view.ship.maxHull * 0.5 then "bad" else "good" },
-		{ "함대전", if view.war then string.format("%d/%d파도", view.war.wave, view.war.total) else "미진행", tone = "key" },
+		{ "함대전 차수", if view.war then string.format("%d/%d", view.war.wave, view.war.total) else "미진행", tone = "key" },
 		{ "작전 후보", tostring(#(view.wars or {})) .. "개", tone = "key" },
 	})
-	add(function()
-		return mkRow(content, "대규모 해전 의뢰", "전 차수 승리 시 완료 · 차수 사이 선체 회복 없음", nil, 60)
-	end)
 	local w = view.war
 	if w then
 		add(function()
@@ -16547,14 +16544,49 @@ function RENDERERS.war()
 			}, 64)
 		end)
 	end
-	add(function() return mkHeader(content, "작전 의뢰") end)
-	add(function()
-		local tiles = {}
-		for _, c in view.wars do
-			table.insert(tiles, { icon = "cc0_shield", title = c.name, sub = if c.blocked then c.blocked else string.format("%d파도 · %d코인 · Lv.%d", c.waves, c.coins, c.minLevel), btn = "참전", color = COLORS.red, enabled = c.blocked == nil and w == nil, onClick = function() call("WarStart", { id = c.id }) end })
+	local selected
+	for _, c in view.wars or {} do
+		if c.id == H.warDetailId then selected = c; break end
+	end
+	if not selected then H.warDetailId = nil end
+	if selected then
+		local c = selected
+		add(function()
+			return mkButton(content, "← 작전 목록", COLORS.leather, UDim2.new(1, -6, 0, 48), function()
+				H.warDetailId = nil; content.CanvasPosition = Vector2.zero; render()
+			end, true)
+		end)
+		add(function() return mkHeader(content, c.name) end)
+		H.statStrip({
+			{ "전투 차수", tostring(c.waves), tone = "key" },
+			{ "보상 코인", H.commas(c.coins), tone = "good" },
+			{ "최소 레벨", tostring(c.minLevel), tone = "key" },
+		})
+		add(function()
+			local reason = if w then "진행 중인 함대전을 먼저 끝내야 해요." elseif c.blocked then c.blocked else "출격 가능"
+			return mkRow(content, reason, "전 차수 승리 시 완료 · 차수 사이 선체 회복 없음", nil, 78)
+		end)
+		add(function()
+			return mkButton(content, "참전", COLORS.red, UDim2.new(1, -6, 0, 52), function()
+				call("WarStart", { id = c.id })
+			end, c.blocked == nil and w == nil)
+		end)
+	else
+		add(function() return mkHeader(content, "작전 의뢰") end)
+		if #(view.wars or {}) == 0 then
+			add(function() return mkLabel(content, "현재 선택할 작전이 없어요.", 16, INK_SOFT, false) end)
+		else
+			add(function()
+				local tiles = {}
+				for _, c in view.wars or {} do
+					table.insert(tiles, { icon = "cc0_shield", title = c.name, sub = if c.blocked then c.blocked else string.format("%d차수 · Lv.%d", c.waves, c.minLevel), btn = "상세", color = COLORS.leather, onClick = function()
+						H.warDetailId = c.id; content.CanvasPosition = Vector2.zero; render()
+					end })
+				end
+				return H.tileGrid(tiles, content)
+			end)
 		end
-		return H.tileGrid(tiles, content)
-	end)
+	end
 end
 
 function RENDERERS.battle()
@@ -16571,13 +16603,49 @@ function RENDERERS.battle()
 	if not equipped then
 		equipped = table.clone(lo.equipped)
 	end
+	local page = H.battleMenuPage or "sortie"
 	add(function()
+		local bar = Instance.new("Frame")
+		bar.Name = "NavalBattleSectionIndex"
+		bar.BackgroundTransparency = 1
+		bar.Size = UDim2.new(1, -6, 0, 52)
+		local sections = {
+			{ "sortie", "출격" },
+			{ "skills", string.format("자동스킬 %d/%d", #equipped, lo.slots) },
+			{ "log", "전투 기록" },
+		}
+		for n, spec in sections do
+			local button = mkButton(bar, spec[2], if page == spec[1] then COLORS.gold else COLORS.leather,
+				UDim2.new(1/3, -4, 0, 48), function()
+					H.battleMenuPage = spec[1]; content.CanvasPosition = Vector2.zero; render()
+				end, true)
+			button.Position = UDim2.new((n - 1)/3, 2, 0, 2)
+			button:SetAttribute("SelectedSection", page == spec[1])
+		end
+		return bar
+	end)
+	if page == "sortie" then
+		add(function() return mkHeader(content, "출격 대상") end)
+		add(function()
 		local tiles = { { icon = "cc0_sword", title = "사략선 사냥", sub = "해적과 해전 · 1일", btn = "출격", color = COLORS.red, onClick = function() call("Hunt") end } }
 		for _, b in view.bosses do
 			table.insert(tiles, { icon = "battle", title = b.name, sub = if b.blocked then b.blocked else string.format("격파 %d회", b.defeated), btn = "도전", color = COLORS.red, enabled = b.blocked == nil, onClick = function() call("ChallengeBoss", { bossId = b.id }) end })
 		end
 		return H.tileGrid(tiles, content)
-	end)
+		end)
+		return
+	elseif page == "log" then
+		if view.lastBattle then
+			add(function() return mkHeader(content, "최근 해전: " .. view.lastBattle.enemy) end)
+			for _, line in view.lastBattle.log do
+				add(function() return mkLabel(content, line, 15, COLORS.muted, false) end)
+			end
+		else
+			add(function() return mkLabel(content, "아직 전투 기록이 없어요.", 16, INK_SOFT, false) end)
+		end
+		return
+	end
+	add(function() return mkHeader(content, "자동스킬 편성") end)
 	add(function()
 		return mkLabel(content, string.format("자동스킬 슬롯 %d개 · 위에 있을수록 먼저 발동해요 (현재 %d개 선택)", lo.slots, #equipped), 13, COLORS.muted, false)
 	end)
@@ -16622,18 +16690,12 @@ function RENDERERS.battle()
 		end)
 	end
 	add(function()
-		local b = mkButton(content, "자동스킬 저장", COLORS.green, UDim2.new(1, -6, 0, 40), function()
+		local b = mkButton(content, "자동스킬 저장", COLORS.green, UDim2.new(1, -6, 0, 48), function()
 			call("SetLoadout", { skills = equipped })
 		end, true)
 		return b
 	end)
 
-	if view.lastBattle then
-		add(function() return mkHeader(content, "최근 해전: " .. view.lastBattle.enemy) end)
-		for _, line in view.lastBattle.log do
-			add(function() return mkLabel(content, line, 12, COLORS.muted, false) end)
-		end
-	end
 end
 
 H.selectedMapPort = nil

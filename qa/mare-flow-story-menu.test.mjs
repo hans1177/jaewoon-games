@@ -13,7 +13,7 @@ test('메뉴 5묶음·하단 5버튼·건물 이름 보존', () => {
   const all = [...groups.matchAll(/"([a-z]+)"/g)].map(m => m[1]);
   for (const t of ['board','quest','route','trade','market','status','harbor','crew','recruit','scholar','yard','codex','encyclopedia','tech','map','diplomacy','explore','battle','gwent','war']) assert.ok(all.includes(t), t);
   assert.match(game, /H\.FACILITY_GROUPS = \{/);
-  assert.match(game, /H\.pageDetails\.Text = p\.portName/);
+  assert.match(game, /H\.pageDetails\.Text = if #grp\.tabs > 1 and tabName ~= placeName then p\.portName \.\. " · " \.\. tabName else p\.portName/);
   assert.match(game, /\{ "route", "항해", if H\.reserveIconAtlas\[3\] then "nav" else "route" \}/);
   assert.match(game, /\{ "trade", "교역", if H\.reserveIconAtlas\[3\] then "tradeg" else "trade" \}/);
   assert.match(game, /\{ "board", "모험", if H\.reserveIconAtlas\[3\] then "adventure" else "battle" \}/);
@@ -210,4 +210,18 @@ test('선장실 직책판은 실제 직책·적합 후보와 지상 지원 순�
     assert.ok(Math.ceil(6/slots)*112+42>Math.ceil(6/slots)*104+34);
     assert.ok((available-12)/columns-8>=130);
   }
+});
+
+ test('해전 출격·스킬·기록과 함대전 선택 상세는 기존 행동을 유지한다',()=>{
+ const war=game.split('function RENDERERS.war()')[1].split('function RENDERERS.battle()')[0];
+ const battle=game.split('function RENDERERS.battle()')[1].split('H.selectedMapPort = nil')[0];
+ assert.ok(war.includes('H.warDetailId = c.id'));
+ assert.ok(war.includes('c.blocked == nil and w == nil'));
+ assert.ok(war.includes('call("WarStart", { id = c.id })'));
+ assert.ok(war.includes('call("WarNext")'));
+ assert.ok(battle.includes('NavalBattleSectionIndex'));
+ for(const action of ['Hunt','ChallengeBoss','SetLoadout']) assert.ok(battle.includes('call("'+action+'"'));
+ assert.ok(battle.includes('elseif page == "log" then'));
+ assert.ok(battle.includes('view.lastBattle.log'));
+ assert.ok(battle.includes('H.battleMenuPage = spec[1]'));
 });
