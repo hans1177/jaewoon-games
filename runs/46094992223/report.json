@@ -1,5 +1,5 @@
 {
- "sourceRevision": "78382c5d44cd8aafe71a723bcceae7fa8c1ca0e8",
+ "sourceRevision": "4e230827e28598367bcbe1ec07cc322921e4a0d4",
  "log": [
   {
    "step": 1,
@@ -14,7 +14,7 @@
   {
    "step": 4,
    "ctx": "Client",
-   "out": "villagers=86 pick=-660, 2.939530849456787, 4.5\ntext"
+   "out": "villager=1 pick=-660, 2.936232089996338, 4.5\ntext"
   },
   {
    "step": 6,
@@ -24,7 +24,7 @@
   {
    "step": 7,
    "ctx": "Client",
-   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_worker_male hair=hair_buzzed accessory=nil decal=rbxasset://textures/face.png headTexture=https://assetdelivery.roblox.com/v1/asset/?id=111092388570647\ntext"
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_worker_male hair=hair_buzzed accessory=nil decal=rbxasset://textures/face.png headTexture=\ntext"
   },
   {
    "step": 9,
@@ -69,7 +69,7 @@
   {
    "step": 20,
    "ctx": "Client",
-   "out": "villagers=86 pick=-117, 2.9859185218811035, 263\ntext"
+   "out": "villager=2 pick=-114, 2.9859185218811035, -356\ntext"
   },
   {
    "step": 22,
@@ -79,7 +79,7 @@
   {
    "step": 23,
    "ctx": "Client",
-   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_male hair=hair_buzzed accessory=nil decal=rbxasset://textures/face.png headTexture=https://assetdelivery.roblox.com/v1/asset/?id=111092388570647\ntext"
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_official_male hair=hair_simpleparted accessory=cc0_pouch decal=rbxasset://textures/face.png headTexture=\ntext"
   },
   {
    "step": 25,
@@ -124,7 +124,7 @@
   {
    "step": 36,
    "ctx": "Client",
-   "out": "villagers=86 pick=-94, 2.897068500518799, -16.399999618530273\ntext"
+   "out": "villager=3 pick=-85.99999237060547, 2.904529333114624, 21.999998092651367\ntext"
   },
   {
    "step": 38,
@@ -134,7 +134,7 @@
   {
    "step": 39,
    "ctx": "Client",
-   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_male hair=hair_court_curls accessory=nil decal=rbxasset://textures/face.png headTexture=https://assetdelivery.roblox.com/v1/asset/?id=111092388570647\ntext"
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_sailor_female hair=hair_long accessory=acc_sailor_headband decal=rbxasset://textures/face.png headTexture=\ntext"
   },
   {
    "step": 41,
@@ -179,7 +179,7 @@
   {
    "step": 52,
    "ctx": "Client",
-   "out": "villagers=86 pick=-75, 3.3025574684143066, 59.400001525878906\ntext"
+   "out": "villager=4 pick=-68, 3.06727933883667, 40.400001525878906\ntext"
   },
   {
    "step": 54,
@@ -189,7 +189,7 @@
   {
    "step": 55,
    "ctx": "Client",
-   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_sailor_female hair=hair_sailor_ponytail accessory=acc_sailor_headband decal=rbxasset://textures/face.png headTexture=https://assetdelivery.roblox.com/v1/asset/?id=111092388570647\ntext"
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_official_male hair=hair_court_curls accessory=cc0_pouch decal=rbxasset://textures/face.png headTexture=\ntext"
   },
   {
    "step": 57,
@@ -234,7 +234,7 @@
   {
    "step": 68,
    "ctx": "Client",
-   "out": "villagers=86 pick=-57.34490966796875, 3.342534065246582, -3.1633806228637695\ntext"
+   "out": "villager=5 pick=-61.56908416748047, 2.9859185218811035, 73.2833480834961\ntext"
   },
   {
    "step": 70,
@@ -244,7 +244,7 @@
   {
    "step": 71,
    "ctx": "Client",
-   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_male hair=hair_simpleparted accessory=nil decal=rbxasset://textures/face.png headTexture=https://assetdelivery.roblox.com/v1/asset/?id=111092388570647\ntext"
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_male hair=hair_buzzed accessory=nil decal=rbxasset://textures/face.png headTexture=\ntext"
   },
   {
    "step": 73,
@@ -289,7 +289,7 @@
   {
    "step": 84,
    "ctx": "Client",
-   "out": "villagers=86 pick=-22, 2.7191250324249268, 8.600000381469727\ntext"
+   "out": "villager=6 pick=-5.685613632202148, 3.1193299293518066, 21.09432029724121\ntext"
   },
   {
    "step": 86,
@@ -299,7 +299,7 @@
   {
    "step": 87,
    "ctx": "Client",
-   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_female hair=hair_side_braid accessory=acc_pearl_hairpin decal=rbxasset://textures/face.png headTexture=https://assetdelivery.roblox.com/v1/asset/?id=111092388570647\ntext"
+   "out": "VILLAGER_FACE_DIAGNOSTIC profile=citizen_worker_female hair=hair_simpleparted accessory=acc_sailor_headband decal=rbxasset://textures/face.png headTexture=\ntext"
   },
   {
    "step": 89,
@@ -362,92 +362,92 @@
   {
    "step": 0,
    "type": "wait",
-   "elapsedMs": 35010
+   "elapsedMs": 35017
   },
   {
    "step": 1,
    "type": "luau",
-   "elapsedMs": 100
+   "elapsedMs": 176
   },
   {
    "step": 2,
    "type": "luau",
-   "elapsedMs": 12320
+   "elapsedMs": 6927
   },
   {
    "step": 3,
    "type": "wait",
-   "elapsedMs": 9001
+   "elapsedMs": 9000
   },
   {
    "step": 4,
    "type": "luau",
-   "elapsedMs": 275
+   "elapsedMs": 373
   },
   {
    "step": 5,
    "type": "wait",
-   "elapsedMs": 1201
+   "elapsedMs": 1212
   },
   {
    "step": 6,
    "type": "capture",
-   "elapsedMs": 1376
+   "elapsedMs": 1530
   },
   {
    "step": 7,
    "type": "luau",
-   "elapsedMs": 287
+   "elapsedMs": 224
   },
   {
    "step": 8,
    "type": "wait",
-   "elapsedMs": 902
+   "elapsedMs": 911
   },
   {
    "step": 9,
    "type": "capture",
-   "elapsedMs": 1306
+   "elapsedMs": 1367
   },
   {
    "step": 10,
    "type": "luau",
-   "elapsedMs": 402
+   "elapsedMs": 234
   },
   {
    "step": 11,
    "type": "wait",
-   "elapsedMs": 701
+   "elapsedMs": 704
   },
   {
    "step": 12,
    "type": "capture",
-   "elapsedMs": 1046
+   "elapsedMs": 1415
   },
   {
    "step": 13,
    "type": "luau",
-   "elapsedMs": 238
+   "elapsedMs": 236
   },
   {
    "step": 14,
    "type": "luau",
-   "elapsedMs": 235
+   "elapsedMs": 241
   },
   {
    "step": 15,
    "type": "wait",
-   "elapsedMs": 912
+   "elapsedMs": 911
   },
   {
    "step": 16,
    "type": "capture",
-   "elapsedMs": 1120
+   "elapsedMs": 1410
   },
   {
    "step": 17,
    "type": "luau",
-   "elapsedMs": 226
+   "elapsedMs": 247
   },
   {
    "step": 18,
@@ -457,142 +457,142 @@
   {
    "step": 19,
    "type": "capture",
-   "elapsedMs": 906
+   "elapsedMs": 1268
   },
   {
    "step": 20,
    "type": "luau",
-   "elapsedMs": 291
+   "elapsedMs": 245
   },
   {
    "step": 21,
    "type": "wait",
-   "elapsedMs": 1207
+   "elapsedMs": 1204
   },
   {
    "step": 22,
    "type": "capture",
-   "elapsedMs": 843
+   "elapsedMs": 1424
   },
   {
    "step": 23,
    "type": "luau",
-   "elapsedMs": 229
+   "elapsedMs": 237
   },
   {
    "step": 24,
    "type": "wait",
-   "elapsedMs": 914
+   "elapsedMs": 908
   },
   {
    "step": 25,
    "type": "capture",
-   "elapsedMs": 713
+   "elapsedMs": 1215
   },
   {
    "step": 26,
    "type": "luau",
-   "elapsedMs": 236
+   "elapsedMs": 207
   },
   {
    "step": 27,
    "type": "wait",
-   "elapsedMs": 714
+   "elapsedMs": 712
   },
   {
    "step": 28,
    "type": "capture",
-   "elapsedMs": 895
+   "elapsedMs": 977
   },
   {
    "step": 29,
    "type": "luau",
-   "elapsedMs": 255
+   "elapsedMs": 199
   },
   {
    "step": 30,
    "type": "luau",
-   "elapsedMs": 240
+   "elapsedMs": 213
   },
   {
    "step": 31,
    "type": "wait",
-   "elapsedMs": 910
+   "elapsedMs": 907
   },
   {
    "step": 32,
    "type": "capture",
-   "elapsedMs": 836
+   "elapsedMs": 1238
   },
   {
    "step": 33,
    "type": "luau",
-   "elapsedMs": 221
+   "elapsedMs": 195
   },
   {
    "step": 34,
    "type": "wait",
-   "elapsedMs": 910
+   "elapsedMs": 911
   },
   {
    "step": 35,
    "type": "capture",
-   "elapsedMs": 690
+   "elapsedMs": 1267
   },
   {
    "step": 36,
    "type": "luau",
-   "elapsedMs": 164
+   "elapsedMs": 195
   },
   {
    "step": 37,
    "type": "wait",
-   "elapsedMs": 1204
+   "elapsedMs": 1201
   },
   {
    "step": 38,
    "type": "capture",
-   "elapsedMs": 1023
+   "elapsedMs": 1069
   },
   {
    "step": 39,
    "type": "luau",
-   "elapsedMs": 174
+   "elapsedMs": 189
   },
   {
    "step": 40,
    "type": "wait",
-   "elapsedMs": 911
+   "elapsedMs": 910
   },
   {
    "step": 41,
    "type": "capture",
-   "elapsedMs": 744
+   "elapsedMs": 1062
   },
   {
    "step": 42,
    "type": "luau",
-   "elapsedMs": 183
+   "elapsedMs": 191
   },
   {
    "step": 43,
    "type": "wait",
-   "elapsedMs": 702
+   "elapsedMs": 706
   },
   {
    "step": 44,
    "type": "capture",
-   "elapsedMs": 798
+   "elapsedMs": 1045
   },
   {
    "step": 45,
    "type": "luau",
-   "elapsedMs": 163
+   "elapsedMs": 174
   },
   {
    "step": 46,
    "type": "luau",
-   "elapsedMs": 172
+   "elapsedMs": 192
   },
   {
    "step": 47,
@@ -602,172 +602,172 @@
   {
    "step": 48,
    "type": "capture",
-   "elapsedMs": 760
+   "elapsedMs": 915
   },
   {
    "step": 49,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 289
   },
   {
    "step": 50,
    "type": "wait",
-   "elapsedMs": 902
+   "elapsedMs": 912
   },
   {
    "step": 51,
    "type": "capture",
-   "elapsedMs": 953
+   "elapsedMs": 1004
   },
   {
    "step": 52,
    "type": "luau",
-   "elapsedMs": 215
+   "elapsedMs": 172
   },
   {
    "step": 53,
    "type": "wait",
-   "elapsedMs": 1214
+   "elapsedMs": 1200
   },
   {
    "step": 54,
    "type": "capture",
-   "elapsedMs": 939
+   "elapsedMs": 936
   },
   {
    "step": 55,
    "type": "luau",
-   "elapsedMs": 179
+   "elapsedMs": 168
   },
   {
    "step": 56,
    "type": "wait",
-   "elapsedMs": 910
+   "elapsedMs": 911
   },
   {
    "step": 57,
    "type": "capture",
-   "elapsedMs": 950
+   "elapsedMs": 863
   },
   {
    "step": 58,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 304
   },
   {
    "step": 59,
    "type": "wait",
-   "elapsedMs": 709
+   "elapsedMs": 703
   },
   {
    "step": 60,
    "type": "capture",
-   "elapsedMs": 977
+   "elapsedMs": 1143
   },
   {
    "step": 61,
    "type": "luau",
-   "elapsedMs": 178
+   "elapsedMs": 169
   },
   {
    "step": 62,
    "type": "luau",
-   "elapsedMs": 298
+   "elapsedMs": 187
   },
   {
    "step": 63,
    "type": "wait",
-   "elapsedMs": 910
+   "elapsedMs": 914
   },
   {
    "step": 64,
    "type": "capture",
-   "elapsedMs": 1049
+   "elapsedMs": 1063
   },
   {
    "step": 65,
    "type": "luau",
-   "elapsedMs": 177
+   "elapsedMs": 165
   },
   {
    "step": 66,
    "type": "wait",
-   "elapsedMs": 909
+   "elapsedMs": 913
   },
   {
    "step": 67,
    "type": "capture",
-   "elapsedMs": 1174
+   "elapsedMs": 981
   },
   {
    "step": 68,
    "type": "luau",
-   "elapsedMs": 186
+   "elapsedMs": 165
   },
   {
    "step": 69,
    "type": "wait",
-   "elapsedMs": 1203
+   "elapsedMs": 1209
   },
   {
    "step": 70,
    "type": "capture",
-   "elapsedMs": 734
+   "elapsedMs": 857
   },
   {
    "step": 71,
    "type": "luau",
-   "elapsedMs": 191
+   "elapsedMs": 162
   },
   {
    "step": 72,
    "type": "wait",
-   "elapsedMs": 901
+   "elapsedMs": 902
   },
   {
    "step": 73,
    "type": "capture",
-   "elapsedMs": 831
+   "elapsedMs": 900
   },
   {
    "step": 74,
    "type": "luau",
-   "elapsedMs": 160
+   "elapsedMs": 176
   },
   {
    "step": 75,
    "type": "wait",
-   "elapsedMs": 703
+   "elapsedMs": 710
   },
   {
    "step": 76,
    "type": "capture",
-   "elapsedMs": 824
+   "elapsedMs": 1044
   },
   {
    "step": 77,
    "type": "luau",
-   "elapsedMs": 161
+   "elapsedMs": 58
   },
   {
    "step": 78,
    "type": "luau",
-   "elapsedMs": 162
+   "elapsedMs": 268
   },
   {
    "step": 79,
    "type": "wait",
-   "elapsedMs": 915
+   "elapsedMs": 904
   },
   {
    "step": 80,
    "type": "capture",
-   "elapsedMs": 955
+   "elapsedMs": 762
   },
   {
    "step": 81,
    "type": "luau",
-   "elapsedMs": 169
+   "elapsedMs": 84
   },
   {
    "step": 82,
@@ -777,102 +777,102 @@
   {
    "step": 83,
    "type": "capture",
-   "elapsedMs": 986
+   "elapsedMs": 630
   },
   {
    "step": 84,
    "type": "luau",
-   "elapsedMs": 382
+   "elapsedMs": 87
   },
   {
    "step": 85,
    "type": "wait",
-   "elapsedMs": 1213
+   "elapsedMs": 1199
   },
   {
    "step": 86,
    "type": "capture",
-   "elapsedMs": 913
+   "elapsedMs": 831
   },
   {
    "step": 87,
    "type": "luau",
-   "elapsedMs": 275
+   "elapsedMs": 83
   },
   {
    "step": 88,
    "type": "wait",
-   "elapsedMs": 912
+   "elapsedMs": 904
   },
   {
    "step": 89,
    "type": "capture",
-   "elapsedMs": 801
+   "elapsedMs": 846
   },
   {
    "step": 90,
    "type": "luau",
-   "elapsedMs": 182
+   "elapsedMs": 71
   },
   {
    "step": 91,
    "type": "wait",
-   "elapsedMs": 711
+   "elapsedMs": 704
   },
   {
    "step": 92,
    "type": "capture",
-   "elapsedMs": 622
+   "elapsedMs": 765
   },
   {
    "step": 93,
    "type": "luau",
-   "elapsedMs": 61
+   "elapsedMs": 180
   },
   {
    "step": 94,
    "type": "luau",
-   "elapsedMs": 74
+   "elapsedMs": 180
   },
   {
    "step": 95,
    "type": "wait",
-   "elapsedMs": 905
+   "elapsedMs": 904
   },
   {
    "step": 96,
    "type": "capture",
-   "elapsedMs": 743
+   "elapsedMs": 905
   },
   {
    "step": 97,
    "type": "luau",
-   "elapsedMs": 82
+   "elapsedMs": 164
   },
   {
    "step": 98,
    "type": "wait",
-   "elapsedMs": 910
+   "elapsedMs": 901
   },
   {
    "step": 99,
    "type": "capture",
-   "elapsedMs": 598
+   "elapsedMs": 928
   },
   {
    "step": 100,
    "type": "luau",
-   "elapsedMs": 261
+   "elapsedMs": 332
   },
   {
    "step": 101,
    "type": "luau",
-   "elapsedMs": 107
+   "elapsedMs": 198
   },
   {
    "step": 102,
    "type": "luau",
-   "elapsedMs": 79
+   "elapsedMs": 205
   }
  ],
  "consoleCapture": {
