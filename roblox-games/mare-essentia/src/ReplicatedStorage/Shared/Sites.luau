@@ -40,6 +40,7 @@ local Sites: { Site } = {
 	{ id = "genoa_gardens", name = "리구리아 언덕 정원", portId = "genoa", minLevel = 1, days = 1, pool = { "bot_citrus" } },
 	{ id = "venice_arsenal", name = "베네치아 조선소 자료실", portId = "venice", minLevel = 2, days = 1, pool = { "relic_arsenal" } },
 	{ id = "venice_lagoon", name = "베네치아 석호", portId = "venice", minLevel = 1, days = 1, pool = { "zoo_lagoon_birds" } },
+	{ id = "venice_murano", name = "무라노 유리 원료 하역장", portId = "venice", minLevel = 1, days = 1, pool = { "min_quartz", "chem_glass" } },
 	{ id = "livorno_lab", name = "토스카나 실험실", portId = "livorno", minLevel = 2, days = 1, pool = { "zoo_redi_experiment" } },
 	{ id = "vesuvius_slopes", name = "베수비오 기슭", portId = "naples", minLevel = 3, days = 2, pool = { "min_vesuvius" } },
 	{ id = "pompeii_ruins", name = "폼페이 발굴지", portId = "naples", minLevel = 4, days = 3, pool = { "site_pompeii" } },
