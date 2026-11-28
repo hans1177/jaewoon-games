@@ -7994,7 +7994,7 @@ function RENDERERS.route()
 			choose.ZIndex = row.ZIndex + 3
 			choose.Parent = row
 			choose.Activated:Connect(function()
-				selectedPort = r.id
+				H.selectedMapPort = r.id
 				openTab("map", "chart")
 			end)
 			return row
@@ -15685,7 +15685,7 @@ function RENDERERS.battle()
 	end
 end
 
-local selectedPort = nil
+H.selectedMapPort = nil
 H.selectedChart = nil
 H.showChartPicker = false
 H.CHART_REGIONS = {
@@ -15883,7 +15883,7 @@ function RENDERERS.map()
 				add(function()
 					return mkButton(content, label, if key == H.selectedChart then COLORS.gold else COLORS.grey, UDim2.new(1, -6, 0, 44), function()
 						H.selectedChart = key
-						selectedPort = nil
+						H.selectedMapPort = nil
 						H.showChartPicker = false
 						render()
 					end)
@@ -15968,8 +15968,8 @@ function RENDERERS.map()
 				lb.Parent = frame
 			end
 			-- 선택한 항구까지의 항로선 (실제 해안선을 피한 바닷길)
-			if selectedPort and selectedPort ~= view.player.portId then
-				local path = SeaRoutes.path(view.player.portId, selectedPort, PortData.Ports)
+			if H.selectedMapPort and H.selectedMapPort ~= view.player.portId then
+				local path = SeaRoutes.path(view.player.portId, H.selectedMapPort, PortData.Ports)
 				for i = 1, #path - 1 do
 					local a, b = path[i], path[i + 1]
 					local dx = (mapX(b[2]) - mapX(a[2])) * mapW
@@ -16003,9 +16003,9 @@ function RENDERERS.map()
 				local small = worldImg ~= nil
 				dot.Size = UDim2.fromOffset(if isHere then (if small then 12 else 18) else (if small then 8 else 14), if isHere then (if small then 12 else 18) else (if small then 8 else 14))
 				dot.Text = ""
-				dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == selectedPort then COLORS.blue else COLORS.red
+				dot.BackgroundColor3 = if isHere then COLORS.gold elseif id == H.selectedMapPort then COLORS.blue else COLORS.red
 				local isYard, isQuest = pt.shipyard == true, questAt[id] ~= nil
-				if not isHere and id ~= selectedPort then
+				if not isHere and id ~= H.selectedMapPort then
 					if isQuest then
 						dot.BackgroundColor3 = Color3.fromRGB(255, 150, 40)
 					elseif isYard then
@@ -16055,7 +16055,7 @@ function RENDERERS.map()
 				tag.TextXAlignment = Enum.TextXAlignment.Left
 				tag.Parent = dot
 				dot.Activated:Connect(function()
-					selectedPort = id
+					H.selectedMapPort = id
 					render()
 				end)
 			end
@@ -16073,9 +16073,9 @@ function RENDERERS.map()
 		end)
 	end
 	local function addSelectedRoute()
-		if selectedPort and selectedPort ~= view.player.portId then
+		if H.selectedMapPort and H.selectedMapPort ~= view.player.portId then
 			for _, r in view.routes do
-				if r.id == selectedPort then
+				if r.id == H.selectedMapPort then
 					add(function()
 						if r.locked then
 							return mkRow(content, r.name, string.format("%s · 🔒 %s", r.region, r.locked), {
@@ -16092,7 +16092,7 @@ function RENDERERS.map()
 						end
 						return mkRow(content, r.name .. (if r.quest then " 📜의뢰" else "") .. (if r.yard then " 🔧조선소" else ""),
 							string.format("%s · 항해 %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", status), {
-							{ text = "출항 확인", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.red else COLORS.blue, onClick = function() selectedPort = nil; confirmSail(r) end },
+							{ text = "출항 확인", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.red else COLORS.blue, onClick = function() H.selectedMapPort = nil; confirmSail(r) end },
 						}, 82)
 					end)
 				end
@@ -16114,19 +16114,19 @@ function RENDERERS.map()
 		for _, port in ports do
 			add(function()
 				local label = if port.id == view.player.portId then port.name .. " · 현재 항구" else port.name
-				return mkButton(content, label, if port.id == selectedPort then COLORS.blue else COLORS.grey, UDim2.new(1, -6, 0, 44), function()
-					selectedPort = port.id
+				return mkButton(content, label, if port.id == H.selectedMapPort then COLORS.blue else COLORS.grey, UDim2.new(1, -6, 0, 44), function()
+					H.selectedMapPort = port.id
 					render()
 				end)
 			end)
-			if port.id == selectedPort then addSelectedRoute() end
+			if port.id == H.selectedMapPort then addSelectedRoute() end
 		end
 		if #ports == 0 then
 			add(function() return mkLabel(content, "이 해역에는 선택할 항구가 없어요.", 13, COLORS.muted, false) end)
 		end
-	elseif selectedPort then
+	elseif H.selectedMapPort then
 		addSelectedRoute()
-		local chart = H.chartForPort(selectedPort)
+		local chart = H.chartForPort(H.selectedMapPort)
 		if chart and AssetIds["CardArt/event_chart_" .. chart] then
 			add(function()
 				return mkButton(content, "선택한 항구의 해역 확대", COLORS.blue, UDim2.new(1, -6, 0, 44), function()
