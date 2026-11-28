@@ -13705,6 +13705,367 @@ end
 -- [세계 백과사전] 새 저장소·카드 목록을 만들지 않고 기존 발견된 지식과 승인 사진만 책 페이지로 편집한다.
 -- [세계 백과사전 · 양장본] 이미 승인된 삽화와 편집된 자료만 사용한다.
 -- 금지된 외부 그림 자동 수집은 하지 않으며 보상·저장·게임 규칙은 변경하지 않는다.
+-- [백과사전 시각화 · 2026-11-28 오너 지시: 허접 → 도감다운 화면] 한눈에 보기 표·분포 지도·연표·크기 비교·관련 카드·수집률.
+-- 해설 원고(ENCYCLOPEDIA_BRIEF 2절: latin·summary·looks·facts·trivia)가 들어오면 그대로 쓰고, 없으면 있는 정보로만 그린다(지어내지 않음).
+do
+	local INK_C = Color3.fromRGB(52, 38, 24)
+	local SOFT = Color3.fromRGB(110, 90, 66)
+	local GOLD = Color3.fromRGB(196, 150, 60)
+	local function boxed(parent, order, height)
+		local f = Instance.new("Frame")
+		f.Size = UDim2.new(1, -8, 0, height or 0)
+		if not height then f.AutomaticSize = Enum.AutomaticSize.Y end
+		f.BackgroundColor3 = Color3.fromRGB(236, 220, 186)
+		f.BorderSizePixel = 0
+		f.LayoutOrder = order
+		f.Parent = parent
+		corner(f, 6)
+		local st = Instance.new("UIStroke")
+		st.Color = Color3.fromRGB(176, 140, 84)
+		st.Thickness = 1
+		st.Parent = f
+		return f
+	end
+	local function yearsOf(card)
+		local y1 = tonumber(card.fromYear)
+		local era = tostring(card.era or "")
+		local a, b = string.match(era, "(%d%d%d%d?)%D+(%d%d%d%d?)")
+		if a then return tonumber(a), tonumber(b) end
+		local c = string.match(era, "(%d%d%d%d?)")
+		if c then return tonumber(c), tonumber(c) end
+		local cent = tonumber(string.match(era, "(%d+)세기"))
+		if cent then return (cent - 1) * 100, cent * 100 end
+		if y1 then return y1, y1 end
+		return nil, nil
+	end
+
+	-- 머리 장식: 분야 도장 + 희귀도 별 + 학명
+	function H.encyHeader(sheet, order, card, article, category)
+		local row = Instance.new("Frame")
+		row.Name = "EncyHeaderBadges"
+		row.Size = UDim2.new(1, -8, 0, 30)
+		row.BackgroundTransparency = 1
+		row.LayoutOrder = order
+		row.Parent = sheet
+		local stamp = Instance.new("TextLabel")
+		stamp.Size = UDim2.fromOffset(120, 26)
+		stamp.BackgroundColor3 = Color3.fromRGB(table.unpack(category.color or { 122, 89, 48 }))
+		stamp.Font = Enum.Font.GothamBold
+		stamp.TextSize = 13
+		stamp.TextColor3 = Color3.new(1, 1, 1)
+		stamp.Text = tostring(category.name or "")
+		stamp.Parent = row
+		corner(stamp, 6)
+		local stars = ({ Common = 1, Uncommon = 2, Rare = 3, Epic = 4, Legendary = 5 })[card.rarity] or 1
+		local st = Instance.new("TextLabel")
+		st.Position = UDim2.fromOffset(128, 0)
+		st.Size = UDim2.fromOffset(110, 26)
+		st.BackgroundTransparency = 1
+		st.Font = Enum.Font.GothamBlack
+		st.TextSize = 16
+		st.TextXAlignment = Enum.TextXAlignment.Left
+		st.TextColor3 = GOLD
+		st.Text = string.rep("★", stars) .. string.rep("☆", 5 - stars)
+		st.Parent = row
+		if article and article.latin then
+			local lt = Instance.new("TextLabel")
+			lt.Position = UDim2.fromOffset(240, 0)
+			lt.Size = UDim2.new(1, -240, 0, 26)
+			lt.BackgroundTransparency = 1
+			lt.Font = Enum.Font.SourceSansItalic
+			lt.TextSize = 17
+			lt.TextXAlignment = Enum.TextXAlignment.Left
+			lt.TextColor3 = SOFT
+			lt.Text = tostring(article.latin)
+			lt.TextTruncate = Enum.TextTruncate.AtEnd
+			lt.Parent = row
+		end
+	end
+
+	-- 한눈에 보기 표: 원고 facts 우선, 없으면 있는 분류 정보
+	function H.encyFacts(sheet, order, card, article)
+		local rows = {}
+		if article and type(article.facts) == "table" and #article.facts > 0 then
+			for _, r in article.facts do
+				if type(r) == "table" and r[1] and r[2] then table.insert(rows, { tostring(r[1]), tostring(r[2]) }) end
+			end
+		else
+			table.insert(rows, { "분류", tostring(card.kindName or card.topic or "기타") })
+			if card.region then table.insert(rows, { "지역", tostring(card.region) }) end
+			if card.era then table.insert(rows, { "시대", tostring(card.era) }) end
+			table.insert(rows, { "학문", tostring(card.discipline or "미분류") })
+			if card.entityType then table.insert(rows, { "존재 형태", tostring(card.entityType) }) end
+		end
+		if #rows == 0 then return end
+		local box = boxed(sheet, order, nil)
+		box.Name = "EncyAtAGlance"
+		local pad = Instance.new("UIPadding")
+		pad.PaddingTop, pad.PaddingBottom, pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 6), UDim.new(0, 6), UDim.new(0, 8), UDim.new(0, 8)
+		pad.Parent = box
+		local list = Instance.new("UIListLayout")
+		list.SortOrder = Enum.SortOrder.LayoutOrder
+		list.Padding = UDim.new(0, 2)
+		list.Parent = box
+		local head = mkLabel(box, "📋 한눈에 보기", 15, INK_C, true, 0)
+		head.Size = UDim2.new(1, 0, 0, 22)
+		head.AutomaticSize = Enum.AutomaticSize.None
+		for i, r in rows do
+			local line = Instance.new("Frame")
+			line.Size = UDim2.new(1, 0, 0, 0)
+			line.AutomaticSize = Enum.AutomaticSize.Y
+			line.BackgroundColor3 = if i % 2 == 0 then Color3.fromRGB(228, 210, 172) else Color3.fromRGB(242, 228, 198)
+			line.BorderSizePixel = 0
+			line.LayoutOrder = i
+			line.Parent = box
+			local k = mkLabel(line, r[1], 14, SOFT, true)
+			k.Position = UDim2.fromOffset(6, 3)
+			k.Size = UDim2.fromOffset(90, 18)
+			k.AutomaticSize = Enum.AutomaticSize.None
+			local v = mkLabel(line, r[2], 14, INK_C, false)
+			v.Position = UDim2.fromOffset(100, 3)
+			v.Size = UDim2.new(1, -106, 0, 0)
+			v.AutomaticSize = Enum.AutomaticSize.Y
+			v.TextWrapped = true
+			local pad2 = Instance.new("UIPadding")
+			pad2.PaddingBottom = UDim.new(0, 3)
+			pad2.Parent = line
+		end
+	end
+
+	-- 분포 지도: 옛 세계지도 원화(있으면) 위 금색 점, 없으면 경위선 양피지
+	function H.encyMap(sheet, order, card)
+		local pts = card.mapPoints
+		if type(pts) ~= "table" or #pts == 0 then return end
+		local box = boxed(sheet, order, 190)
+		box.Name = "EncyRangeMap"
+		box.ClipsDescendants = true
+		local mapId = AssetIds["CardArt/ency_map_world"]
+		local map = Instance.new("ImageLabel")
+		map.Size = UDim2.fromScale(1, 1)
+		map.BackgroundColor3 = Color3.fromRGB(214, 196, 156)
+		map.Image = if mapId then "rbxassetid://" .. tostring(mapId) else ""
+		map.ScaleType = Enum.ScaleType.Stretch
+		map.Parent = box
+		if not mapId then
+			for i = 1, 5 do
+				local v = Instance.new("Frame")
+				v.Position = UDim2.fromScale(i / 6, 0)
+				v.Size = UDim2.new(0, 1, 1, 0)
+				v.BackgroundColor3 = Color3.fromRGB(176, 150, 106)
+				v.BorderSizePixel = 0
+				v.Parent = map
+			end
+			for i = 1, 3 do
+				local h = Instance.new("Frame")
+				h.Position = UDim2.fromScale(0, i / 4)
+				h.Size = UDim2.new(1, 0, 0, 1)
+				h.BackgroundColor3 = Color3.fromRGB(176, 150, 106)
+				h.BorderSizePixel = 0
+				h.Parent = map
+			end
+		end
+		local title = mkLabel(box, "🗺 분포 · 발견 지도", 14, INK_C, true)
+		title.Position = UDim2.fromOffset(8, 4)
+		title.Size = UDim2.new(1, -16, 0, 18)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		title.ZIndex = 3
+		for _, p in pts do
+			local x, y = (p.lon + 180) / 360, (90 - p.lat) / 180
+			local dot = Instance.new("Frame")
+			dot.AnchorPoint = Vector2.new(0.5, 0.5)
+			dot.Position = UDim2.fromScale(x, y)
+			dot.Size = UDim2.fromOffset(14, 14)
+			dot.BackgroundColor3 = if p.label == "내가 발견" then Color3.fromRGB(70, 150, 90) else Color3.fromRGB(230, 180, 60)
+			dot.BorderSizePixel = 0
+			dot.ZIndex = 4
+			dot.Parent = map
+			corner(dot, 7)
+			local ring = Instance.new("UIStroke")
+			ring.Color = Color3.fromRGB(90, 60, 20)
+			ring.Thickness = 2
+			ring.Parent = dot
+			local tag = mkLabel(map, tostring(p.name) .. " · " .. tostring(p.label), 12, INK_C, true)
+			tag.Position = UDim2.new(x, 10, y, -8)
+			tag.Size = UDim2.fromOffset(160, 16)
+			tag.AutomaticSize = Enum.AutomaticSize.None
+			tag.ZIndex = 4
+		end
+	end
+
+	-- 연표: 1400~1900 막대 위에 이 항목의 시대(범위) + 게임 속 지금
+	function H.encyTimeline(sheet, order, card)
+		local a, b = yearsOf(card)
+		if not a then return end
+		local box = boxed(sheet, order, 70)
+		box.Name = "EncyTimeline"
+		local title = mkLabel(box, "⏳ 연표", 14, INK_C, true)
+		title.Position = UDim2.fromOffset(8, 4)
+		title.Size = UDim2.new(1, -16, 0, 18)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local lo, hi = math.min(a, 1400), math.max(b or a, 1900)
+		local track = Instance.new("Frame")
+		track.Position = UDim2.new(0, 10, 0, 34)
+		track.Size = UDim2.new(1, -20, 0, 8)
+		track.BackgroundColor3 = Color3.fromRGB(196, 176, 136)
+		track.BorderSizePixel = 0
+		track.Parent = box
+		corner(track, 4)
+		local function x(y) return math.clamp((y - lo) / math.max(1, hi - lo), 0, 1) end
+		local span = Instance.new("Frame")
+		span.Position = UDim2.fromScale(x(a), -0.5)
+		span.Size = UDim2.new(math.max(0.012, x(b or a) - x(a)), 0, 2, 0)
+		span.BackgroundColor3 = GOLD
+		span.BorderSizePixel = 0
+		span.Parent = track
+		corner(span, 4)
+		local now = view and view.player and tonumber(view.player.year)
+		if now then
+			local mark = Instance.new("Frame")
+			mark.AnchorPoint = Vector2.new(0.5, 0.5)
+			mark.Position = UDim2.fromScale(x(now), 0.5)
+			mark.Size = UDim2.fromOffset(3, 22)
+			mark.BackgroundColor3 = Color3.fromRGB(150, 50, 40)
+			mark.BorderSizePixel = 0
+			mark.Parent = track
+		end
+		for _, edge in { { lo, 0 }, { hi, 1 } } do
+			local t = mkLabel(box, tostring(edge[1]), 11, SOFT, false)
+			t.Position = UDim2.new(edge[2], if edge[2] == 0 then 10 else -50, 0, 48)
+			t.Size = UDim2.fromOffset(40, 14)
+			t.AutomaticSize = Enum.AutomaticSize.None
+			t.TextXAlignment = if edge[2] == 0 then Enum.TextXAlignment.Left else Enum.TextXAlignment.Right
+		end
+		local label = mkLabel(box, (if b and b ~= a then string.format("%d ~ %d", a, b) else tostring(a)) .. (if now then string.format("   (지금 %d년 — 빨간 선)", now) else ""), 12, INK_C, true)
+		label.Position = UDim2.new(0, 60, 0, 48)
+		label.Size = UDim2.new(1, -120, 0, 14)
+		label.AutomaticSize = Enum.AutomaticSize.None
+		label.TextXAlignment = Enum.TextXAlignment.Center
+	end
+
+	-- 크기 비교: 원고 facts 의 "크기" 숫자(m·cm)가 있을 때만 사람(1.7m)과 비교
+	function H.encySize(sheet, order, article)
+		local text = nil
+		for _, r in (article and article.facts) or {} do
+			if type(r) == "table" and (r[1] == "크기" or r[1] == "몸길이" or r[1] == "높이" or r[1] == "길이") then text = tostring(r[2]) end
+		end
+		if not text then return end
+		local num, unit = string.match(text, "([%d%.]+)%s*(c?m)")
+		local meters = tonumber(num)
+		if not meters then return end
+		if unit == "cm" then meters /= 100 end
+		local box = boxed(sheet, order, 120)
+		box.Name = "EncySizeCompare"
+		local title = mkLabel(box, "📏 크기 비교 (사람 1.7m)", 14, INK_C, true)
+		title.Position = UDim2.fromOffset(8, 4)
+		title.Size = UDim2.new(1, -16, 0, 18)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local maxH = 84
+		local scale = maxH / math.max(1.7, meters)
+		local person = Instance.new("ImageLabel")
+		person.AnchorPoint = Vector2.new(0.5, 1)
+		person.Position = UDim2.new(0.3, 0, 1, -8)
+		person.Size = UDim2.fromOffset(math.max(8, 1.7 * scale * 0.4), math.max(6, 1.7 * scale))
+		person.BackgroundColor3 = Color3.fromRGB(90, 70, 50)
+		person.Image = if AssetIds["CardArt/ency_scale_people"] then "rbxassetid://" .. tostring(AssetIds["CardArt/ency_scale_people"]) else ""
+		person.BackgroundTransparency = if person.Image ~= "" then 1 else 0
+		person.Parent = box
+		local thing = Instance.new("Frame")
+		thing.AnchorPoint = Vector2.new(0.5, 1)
+		thing.Position = UDim2.new(0.65, 0, 1, -8)
+		thing.Size = UDim2.fromOffset(math.max(6, meters * scale * 0.8), math.max(4, meters * scale))
+		thing.BackgroundColor3 = GOLD
+		thing.BorderSizePixel = 0
+		thing.Parent = box
+		corner(thing, 4)
+		local t = mkLabel(box, text, 12, INK_C, true)
+		t.Position = UDim2.new(0.65, 20, 1, -26)
+		t.Size = UDim2.fromOffset(140, 16)
+		t.AutomaticSize = Enum.AutomaticSize.None
+	end
+
+	-- 관련 카드 썸네일 줄(발견한 것은 그림, 못 한 것은 '?') — 누르면 그 장으로
+	function H.encyRelated(sheet, order, card, byIdAll)
+		local rel = {}
+		for _, r in card.relations or {} do
+			if r.cardId then table.insert(rel, r) end
+			if #rel >= 6 then break end
+		end
+		if #rel == 0 then return end
+		local box = boxed(sheet, order, 128)
+		box.Name = "EncyRelatedCards"
+		local title = mkLabel(box, "🔗 함께 보면 좋은 카드", 14, INK_C, true)
+		title.Position = UDim2.fromOffset(8, 4)
+		title.Size = UDim2.new(1, -16, 0, 18)
+		title.AutomaticSize = Enum.AutomaticSize.None
+		local row = Instance.new("Frame")
+		row.Position = UDim2.fromOffset(8, 26)
+		row.Size = UDim2.new(1, -16, 0, 96)
+		row.BackgroundTransparency = 1
+		row.Parent = box
+		local lay = Instance.new("UIListLayout")
+		lay.FillDirection = Enum.FillDirection.Horizontal
+		lay.Padding = UDim.new(0, 6)
+		lay.Parent = row
+		for _, r in rel do
+			local other = byIdAll[r.cardId]
+			local b = Instance.new("ImageButton")
+			b.Size = UDim2.fromOffset(66, 92)
+			b.BackgroundColor3 = if r.found then Color3.fromRGB(240, 226, 196) else Color3.fromRGB(150, 136, 112)
+			b.Image = if r.found and other and type(other.image) == "string" then other.image else ""
+			b.ScaleType = Enum.ScaleType.Crop
+			b.AutoButtonColor = r.found == true
+			b.Parent = row
+			corner(b, 6)
+			local nm = mkLabel(b, if r.found then tostring(r.name) else "?", 11, if r.found then INK_C else Color3.new(1, 1, 1), true)
+			nm.AnchorPoint = Vector2.new(0, 1)
+			nm.Position = UDim2.new(0, 2, 1, -2)
+			nm.Size = UDim2.new(1, -4, 0, 28)
+			nm.AutomaticSize = Enum.AutomaticSize.None
+			nm.TextWrapped = true
+			nm.BackgroundTransparency = 0.25
+			nm.BackgroundColor3 = Color3.fromRGB(246, 234, 206)
+			if r.found then
+				b.Activated:Connect(function()
+					H.encyclopediaTargetId = r.cardId
+					H.encyclopediaCategoryId = "all"
+					render()
+				end)
+			end
+		end
+	end
+
+	-- 분야 수집률 막대
+	function H.encyCollection(sheet, order, card, allCards)
+		local total, got = 0, 0
+		for _, c in allCards or {} do
+			if c.field == card.field then
+				total += 1
+				if c.found then got += 1 end
+			end
+		end
+		if total == 0 then return end
+		local box = boxed(sheet, order, 46)
+		box.Name = "EncyCollectionRate"
+		local t = mkLabel(box, string.format("📚 이 분야 수집 %d / %d (%d%%)", got, total, math.floor(got / total * 100)), 13, INK_C, true)
+		t.Position = UDim2.fromOffset(8, 4)
+		t.Size = UDim2.new(1, -16, 0, 16)
+		t.AutomaticSize = Enum.AutomaticSize.None
+		local track = Instance.new("Frame")
+		track.Position = UDim2.fromOffset(8, 26)
+		track.Size = UDim2.new(1, -16, 0, 10)
+		track.BackgroundColor3 = Color3.fromRGB(196, 176, 136)
+		track.BorderSizePixel = 0
+		track.Parent = box
+		corner(track, 5)
+		local fill = Instance.new("Frame")
+		fill.Size = UDim2.fromScale(got / total, 1)
+		fill.BackgroundColor3 = Color3.fromRGB(70, 140, 90)
+		fill.BorderSizePixel = 0
+		fill.Parent = track
+		corner(fill, 5)
+	end
+end
+
 function RENDERERS.encyclopedia()
 	local cx = view.codex or {}
 	-- [계정별 책갈피] 이전 접속의 서버 저장을 진실값으로 쓴다.
@@ -14013,6 +14374,7 @@ function RENDERERS.encyclopedia()
 		end
 		line(string.format("대항해 지식 대백과  ·  제%03d장 / %d", H.encyclopediaPage, #found), 16, true, INK_SOFT)
 		line(current.name, 25, true, INK)
+		if H.encyHeader and not current.combatArt then H.encyHeader(sheet, order, current, article, category); order += 1 end
 		line(category.name .. " · " .. (current.discipline or "세계 지식")
 			.. (if current.era then " · " .. current.era else ""), 16, true, INK_SOFT)
 		local art = Instance.new("Frame")
@@ -14052,8 +14414,19 @@ function RENDERERS.encyclopedia()
 			elseif current.combatArt and current.motionCandidate then "24프레임 시트 미등록 · 정지 원화 표시"
 			elseif type(current.image) == "string" and current.image ~= "" then "정지 원화 · " .. current.name
 			else "대표 그림 자리 · 추후 등록", 14, false, INK_SOFT)
+		-- [백과 시각화] 한눈에 보기 · 분포 지도 · 연표 · 크기 비교
+		if not current.combatArt then
+			if H.encyFacts then H.encyFacts(sheet, order, current, article); order += 1 end
+			if H.encyMap then H.encyMap(sheet, order, current); order += 1 end
+			if H.encyTimeline then H.encyTimeline(sheet, order, current); order += 1 end
+			if H.encySize then H.encySize(sheet, order, article); order += 1 end
+		end
 		line("Ⅰ. 개요", 19, true)
-		line(current.description or "등록된 개요가 없어.", 17, false)
+		line(if article and article.summary then current.description .. "\n\n" .. article.summary else (current.description or "등록된 개요가 없어."), 17, false)
+		if article and article.looks and article.looks ~= "" then
+			line("생김새·구조", 19, true)
+			line(article.looks, 17, false)
+		end
 		if current.combatArt then
 			line("Ⅱ. 원화 기록", 19, true)
 			line("현재 소장한 해전 카드에 등록된 원화를 보여 주고 있어. 실제 역사적 고증과 게임 속 전투 설정은 구분해서 읽어야 해.", 17, false)
@@ -14074,6 +14447,13 @@ function RENDERERS.encyclopedia()
 			if article.history and article.history ~= "" then
 				line("Ⅳ. 역사 속 이야기", 19, true)
 				line(article.history, 17, false)
+			end
+			if article.trivia and article.trivia ~= "" then
+				line("💡 알고 나면 재미있는 이야기", 19, true)
+				line(article.trivia, 17, false)
+			end
+			if type(article.sources) == "table" and #article.sources > 0 then
+				line("참고 자료: " .. table.concat(article.sources, " · "), 14, false, INK_SOFT)
 			end
 		else
 			-- [전 항목 독서 본문] 장문 원고가 없는 항목도 기존 정규 설명·분야 사료·탐구 경로로 장을 구성한다.
@@ -14130,6 +14510,13 @@ function RENDERERS.encyclopedia()
 		if current.source and current.source ~= "" then
 			line("원본 기록의 발견 경로", 19, true)
 			line(current.source, 16, false)
+		end
+		-- [백과 시각화] 관련 카드 썸네일 · 분야 수집률
+		if not current.combatArt then
+			local allById = {}
+			for _, c in (cx.cards or {}) do allById[c.id] = c end
+			if H.encyRelated then H.encyRelated(sheet, order, current, allById); order += 1 end
+			if H.encyCollection then H.encyCollection(sheet, order, current, cx.cards); order += 1 end
 		end
 		line("내 항해 기록", 19, true)
 		local first = current.provenance

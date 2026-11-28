@@ -1144,7 +1144,7 @@ for _, c in Cards do
 end
 
 -- 백과사전 상세 해설. 위키백과 문서를 참고해 한국어로 직접 요약했다.
-local Articles: { [string]: { topic: string, details: string, context: string, history: string? } } = {
+local Articles: { [string]: { topic: string, details: string, context: string, history: string?, latin: string?, summary: string?, looks: string?, facts: { { string } }?, trivia: string?, sources: { string }? } } = {
 	nav_compass_rose = { topic = "Compass_rose", details = "동서남북에서 출발해 중간 방향을 반복해 나누면 32방위가 된다.", context = "해도와 나침반에서 방향을 읽는 기준으로 썼다. 자북과 진북이 다른 곳에서는 편차를 고려해야 한다.", history = "방위 장미는 중세 후기 해도와 나침반의 발전 속에서 널리 쓰였다. 근세 인쇄 해도에도 이어졌으며 선원은 방위선을 실제 침로와 대조했다." },
 	nav_portolan = { topic = "Portolan_chart", details = "중세 지중해와 흑해를 그린 해도에는 연안 항구 이름과 여러 방향으로 뻗는 선이 촘촘히 들어갔다.", context = "선원은 출발지와 목적지 사이의 방향을 읽는 데 이 선을 이용했다. 바다 쪽에 집중한 구성 덕분에 항구 사이를 오가는 데 특히 유용했다.", history = "13세기 말 무렵부터 지중해에서 포르톨란 해도가 나타났다. 항구 사이의 항해에 초점을 맞춘 자료라 내륙보다 해안과 방향선이 특히 상세했다." },
 	nav_dead_reckoning = { topic = "Dead_reckoning", details = "마지막으로 확인한 위치에서 항해 방향과 속도, 경과 시간을 합쳐 새 위치를 추정한다.", context = "바람과 해류가 배를 옆으로 밀면 오차가 누적되므로, 육지 표지나 천체 관측으로 위치를 다시 맞춘다.", history = "정확한 경도 측정이 어려웠던 시대에 선원은 침로와 항해 시간을 계속 적으며 추정 위치를 유지했다. 후대에 천문 항법이 발달한 뒤에도 관측 사이의 항로 계산에 이용했다." },
