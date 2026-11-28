@@ -3895,6 +3895,10 @@ test('R15 모발 장착은 길이 있는 헤어를 두상 높이에 억지로 �
   assert.ok(pose.includes('crown:SetAttribute("NpcHatCrown", true)'));
   assert.ok(pose.includes('piece:GetAttribute("NpcHatCrown") == true'));
   assert.ok(pose.includes('local featherHat = model:FindFirstChild("R15Asset_acc_feather_hat_Head")'), '실제 깃털모자 슬롯으로 판정');
+  const accessoryCleanup=pose.slice(pose.indexOf('local selectedSlot = "R15Asset_"'),pose.indexOf('if npcOutfit and UserInputService.TouchEnabled and detailLimit == 3 then',pose.indexOf('local selectedSlot = "R15Asset_"')));
+  assert.ok(accessoryCleanup.includes('mesh.Transparency < 0.95') && accessoryCleanup.includes('mesh.LocalTransparencyModifier < 0.95'));
+  assert.ok(accessoryCleanup.indexOf('if selectedVisible then') < accessoryCleanup.indexOf('worn:Destroy()'));
+  assert.match(pose,/if detailAllowed then\s+local wanted = nil\s+for _, spec in specs do/);
   assert.match(pose,/if featherHat then\s+for _, mesh in featherHat:GetDescendants\(\) do\s+if mesh:IsA\("BasePart"\) and mesh.Transparency < 0.95 and mesh.LocalTransparencyModifier < 0.95 then\s+featherVisible = true/, '실물 모자의 가시성 확인 후 중첩을 정리');
   assert.ok(!pose.includes('local fittedUpperReady = false'), '기본복 삭제 조건 제거');
   assert.ok(pose.includes('(assetName == "outfit_boot" or assetName == "outfit_belt")'));
