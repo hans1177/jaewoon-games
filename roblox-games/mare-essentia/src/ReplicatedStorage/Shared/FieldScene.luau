@@ -3838,13 +3838,24 @@ function FieldScene.start(opts)
 			else (if isWildlife then "지역 동물 관찰: " else "지식 단서 조사: ") .. targetCard.name
 	end
 
-	-- [구역 경로] 기존 조사 수·보상은 유지하고 입구에서 깊은 지역으로 이어지는 실제 이동 경로를 구성한다.
-	if found > 0 then questHint.Text = string.format("이어하기 · 구역 %d/%d 완료", found, nodeCount) end
+	-- [구역 경로] 기존 조사 수·보상은 유지한다. 위험 유적/기록 탐험은 잠입·돌파 후 입구까지 탈출한다.
+	folder:SetAttribute("FieldEscapeRoute", nodeCount == 3 and (opts.danger or 1) >= 3 and targetCard ~= nil
+		and not isWildlife and (targetCard.field == "Relic" or targetCard.field == "Site"
+			or targetCard.field == "Mystery" or targetCard.field == "Language" or targetCard.field == "Architecture"))
+	if found > 0 then
+		questHint.Text = if found == 2 and folder:GetAttribute("FieldEscapeRoute") then "이어하기 · 입구 탈출 지점으로 이동"
+			else string.format("이어하기 · 구역 %d/%d 완료", found, nodeCount)
+	end
 	for i = 1, nodeCount do
 		local offset = scatter(30)
 		local pos = ORIGIN + (if nodeCount > 1 then Vector3.new(math.clamp(offset.X, -half * 0.24, half * 0.24), 0,
 			half - 40 - (2 * half - 80) * (i - 1) / (nodeCount - 1)) else offset)
 		local special = i == 1 and targetCard ~= nil
+		local extraction = folder:GetAttribute("FieldEscapeRoute") == true and i == nodeCount
+		local guardedTransit = folder:GetAttribute("FieldEscapeRoute") == true and i == 2
+		-- [실제 이동] 중간 목표는 맵 깊은 곳, 탈출 목표는 기존 입구. 새 모델이나 별도 씬을 생성하지 않는다.
+		if guardedTransit then pos = ORIGIN + Vector3.new(math.clamp(offset.X, -half * 0.24, half * 0.24), 0, -half + 40) end
+		if extraction then pos = ORIGIN + Vector3.new(0, 0, half - 14) end
 		local anchor = part(folder, Vector3.new(3, 3, 3), CFrame.new(pos + Vector3.new(0, 1.5, 0)), Color3.fromRGB(255, 214, 120), Enum.Material.Neon, Enum.PartType.Ball)
 		-- [발견 표시] 조사 판정 크기는 유지하고 네모난 발광 상자만 구형으로 바꾼다.
 		-- [발견물 외형] 금빛 공 표식(기본 도형) 대신 보이지 않는 기준점만 두고, 실물·소품 모델로 보여 준다.
@@ -3853,6 +3864,7 @@ function FieldScene.start(opts)
 		anchor.CanQuery = false
 		anchor.Name = "Discovery" .. i
 		anchor:SetAttribute("FieldRouteStep", i)
+		anchor:SetAttribute("FieldObjectiveKind", if extraction then "escape" elseif guardedTransit then "infiltrate" else "survey")
 		if i <= found then
 			-- [재개 좌표] 서버의 완료 단계만 사용하고 실제 월드 좌표는 현재 맵에서 다시 계산한다.
 			if i == found then folder:SetAttribute("FieldResumeAnchor", pos) end
@@ -3888,7 +3900,7 @@ function FieldScene.start(opts)
 			tag.Position = UDim2.fromOffset(0, if artId then 117 else 45)
 			tag.Size = UDim2.fromOffset(154, 28)
 			tag.TextWrapped = true
-		else
+		elseif not extraction then
 			-- [일반 발견물] 등록 소품 중 하나(상자·항아리·지도·기록장·잔해)로 보여 준다.
 			local props = { { "Naval", "chest", 3.2 }, { "Relics", "pot", 2 }, { "Relics", "map-rolled", 1.8 }, { "Relics", "journal-closed", 1.6 }, { "Terrain", "debris", 3 } }
 			local pick = props[(i - 1) % #props + 1]
@@ -3902,9 +3914,9 @@ function FieldScene.start(opts)
 		light.Brightness = 2
 		light.Parent = anchor
 		local pp = Instance.new("ProximityPrompt")
-		pp.ActionText = if special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
+		pp.ActionText = if extraction then "탈출 확인" elseif guardedTransit then "기록 확보" elseif special then (if isWildlife then "동물 관찰" else "지식 기록") else "조사"
 		pp.KeyboardKeyCode = Enum.KeyCode.T -- 회전 스킬 E와 구분
-		pp.ObjectText = if special then targetCard.name else "발견물"
+		pp.ObjectText = if extraction then "탐험 입구" elseif guardedTransit then "경계 구역" elseif special then targetCard.name else "발견물"
 		pp.HoldDuration = 0.6
 		pp.MaxActivationDistance = 12
 		pp.RequiresLineOfSight = false
@@ -3967,6 +3979,18 @@ function FieldScene.start(opts)
 					end
 				end
 			end
+			-- [잠입·탈출] 실제 캐릭터 이동 및 주변 적 상태를 확인한다. 싸워서 돌파하거나 피해 지나갈 수 있다.
+			-- 클라이언트 전투이므로 서버 전투 입증으로 사용하지 않으며 기존 단계 저장/보상 경로를 유지한다.
+			if guardedTransit or extraction then
+				local currentRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+				if not currentRoot or not currentRoot:IsA("BasePart") or (currentRoot.Position - anchor.Position).Magnitude > 16 then return end
+				for _, enemy in enemies do
+					if not enemy.ac.dead and enemy.root and enemy.root.Parent and (enemy.root.Position - currentRoot.Position).Magnitude < 16 then
+						say(if extraction then "추격하는 적과 거리를 벌린 뒤 탈출해." else "경계병을 피해 접근하거나 물리친 뒤 기록을 확보해.", 3.5)
+						return
+					end
+				end
+			end
 			-- 서버 응답 전에는 다음 구역을 열지 않는다. 응답 유실 시 같은 단계로 재시도한다.
 			anchor:SetAttribute("FieldCheckpointPending", true)
 			local recordCard = if special then targetCard.id else observedCardId
@@ -3987,9 +4011,12 @@ function FieldScene.start(opts)
 			local nextPrompt = nextAnchor and nextAnchor:FindFirstChildOfClass("ProximityPrompt")
 			if nextPrompt then
 				nextPrompt.Enabled = true
-				questHint.Text = string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
+				local nextKind = nextAnchor:GetAttribute("FieldObjectiveKind")
+				questHint.Text = if nextKind == "escape" then "기록 확보 · 입구까지 탈출해"
+					elseif nextKind == "infiltrate" then "경계 구역 · 잠입하거나 적을 돌파해"
+					else string.format("구역 %d/%d 완료 · 금빛 지도 표시를 따라 다음 구역으로", found, nodeCount)
 			end
-			say(string.format(if special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
+			say(string.format(if extraction then "안전 지점 도착 (%d/%d)" elseif guardedTransit then "경계 돌파 · 기록 확보 (%d/%d)" elseif special then "현장 관찰 완료 (%d/%d) · 도감 보상은 귀환 후 판정" else "발견물을 조사했다 (%d/%d)", found, nodeCount))
 			refresh()
 			if found >= nodeCount then
 				showCompletion()
