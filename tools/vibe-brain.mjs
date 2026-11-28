@@ -271,7 +271,7 @@ export function addCandidate(playbook, { order, parsed, provider, now = Date.now
 }
 
 // 병합된 수정이 실제로 문제를 없앴는지 지시서로 확인해 라벨을 붙이고 플레이북을 갱신한다.
-// 지시서가 닫혔으면 RESOLVED(해결 확인 → proven), 6시간이 지나도 열려 있으면 NOT_RESOLVED(실패 → 3번 실패하면 bad).
+// 병합 이후 동일 지문의 실제 검사 결과만 학습한다. 결과 누락·촬영 대기는 미검증 상태로 유지한다.
 export function labelOutcomes({ ledger, playbook, orders, now = Date.now() }) {
   const L = JSON.parse(JSON.stringify(ledger)), P = JSON.parse(JSON.stringify(playbook));
   const byFp = Object.fromEntries((orders || []).map(o => [o.fingerprint, o]));
@@ -280,7 +280,7 @@ export function labelOutcomes({ ledger, playbook, orders, now = Date.now() }) {
     if (m.label) continue;
     const o = byFp[m.fp], entry = P.entries[m.pbKey];
     if (o && o.resolvedAt && o.resolvedAt > m.at) { m.label = 'RESOLVED'; if (entry) { entry.successes++; entry.state = 'proven'; } changed++; }
-    else if ((!o || !o.resolvedAt) && now - m.at > 6 * 3600000) { m.label = 'NOT_RESOLVED'; if (entry) { entry.failures++; if (entry.failures >= 3 || entry.successes === 0 && entry.failures >= 2) entry.state = 'bad'; } changed++; }
+    else if (o && !o.resolvedAt && Number(o.lastAt) > m.at && now - m.at > 6 * 3600000) { m.label = 'NOT_RESOLVED'; if (entry) { entry.failures++; if (entry.failures >= 3 || entry.successes === 0 && entry.failures >= 2) entry.state = 'bad'; } changed++; }
     // [역할별 성공률] 단순 응답·수정 초안은 성공으로 기록하지 않는다.
     if (m.label && m.provider && m.provider !== 'playbook') {
       const role = m.role || (m.kind === 'visual' ? 'VISUAL' : m.kind === 'error' ? 'DEBUG' : m.kind === 'ui' ? 'UI' : 'CODE');
@@ -490,7 +490,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   let playbook = readJson(playbookFile, emptyPlaybook());
   ledger.providers ||= {};
   // 1) 지난번 병합이 문제를 없앴는지 확인해 배운다
-  const lab = labelOutcomes({ ledger, playbook, orders });
+  // [실증 학습] 열린 지시서는 작업 선택용이며, 해결 판정은 전체 원장의 명시적 증거만 사용한다.
+  const evidenceLedger = readJson(arg('autopilot-ledger') || 'build/autopilot-ledger.json', null);
+  const evidenceOrders = evidenceLedger?.orders && typeof evidenceLedger.orders === 'object'
+    ? Object.values(evidenceLedger.orders) : [];
+  const lab = labelOutcomes({ ledger, playbook, orders: evidenceOrders });
   ledger = lab.ledger; playbook = lab.playbook;
   if (lab.changed) console.log(`지난 병합 ${lab.changed}건의 결과를 확인해 플레이북에 반영`);
   // 2) 무료 한도가 남은 모델을 우선순위대로

@@ -102,7 +102,15 @@ jobs:
             fi
             echo "STUDIO_SCREENSHOT_STALE=$frames_branch:$source_sha"
           done
-          gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-orders.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-orders.json 2>/dev/null || echo '[]' > build/autopilot-orders.json
+          # [실증 학습] 한 번 읽은 동일 원장에서 열린 작업과 해결 증거를 함께 가져온다.
+          if gh api "repos/${GITHUB_REPOSITORY}/contents/autopilot-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/autopilot-ledger.json &&
+             jq -e '.orders | type == "object"' build/autopilot-ledger.json >/dev/null; then
+            jq '[.orders[] | select(.resolvedAt | not)]' build/autopilot-ledger.json > build/autopilot-orders.json
+          else
+            rm -f build/autopilot-ledger.json
+            echo '[]' > build/autopilot-orders.json
+            echo 'BRAIN_ORDER_EVIDENCE_UNAVAILABLE'
+          fi
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-ledger.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-ledger.json 2>/dev/null || rm -f build/brain-ledger.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-playbook.json?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-playbook.json 2>/dev/null || rm -f build/brain-playbook.json
           gh api "repos/${GITHUB_REPOSITORY}/contents/brain-dataset.jsonl?ref=vibe-gym-data" --jq .content 2>/dev/null | base64 -d > build/brain-dataset.jsonl 2>/dev/null || rm -f build/brain-dataset.jsonl
@@ -114,7 +122,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_MODELS_TOKEN: ${{ github.token }}
           BRAIN_RETRY_NOW: ${{ github.event.inputs.retry_now || '0' }}
-        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --studio-ref refs/vibe/brain-studio-report --studio-dir build/studio-photos --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
+        run: node tools/vibe-brain.mjs --orders build/autopilot-orders.json --autopilot-ledger build/autopilot-ledger.json --studio-ref refs/vibe/brain-studio-report --studio-dir build/studio-photos --ledger build/brain-ledger.json --playbook build/brain-playbook.json --dataset build/brain-dataset.jsonl --out build/brain-result.json
       - name: Verify the change (syntax and game tests)
         id: verify
         run: |
