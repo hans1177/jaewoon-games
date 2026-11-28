@@ -247,3 +247,24 @@ test('재발 오류는 기존 지문으로 다시 열리고 다른 검사 성공
   apply(clean, 5);
   assert.equal(openOrders(ledger).length, 0);
 });
+
+test('최신 실행만 학습하고 오래된 결과나 실패 검사로 해결 판정을 바꾸지 않는다', () => {
+  const game = 'mare-essentia', fp = game + ':console-errors';
+  const revision = 'a'.repeat(40);
+  const report = (runId, out, result = 'PASS') => ({
+    ...mkReport(out), sourceRevision: revision, autopilotEvidence: {runId, result}
+  });
+  let ledger = emptyLedger();
+  const apply = (r, now) => {
+    ledger = learn({ledger, reports:{[game]:r}, signals:{[game]:parseReport(r)}, now});
+  };
+  apply(report('10002','HEALTH_ERR n=2 first=boom','FAIL'), 1);
+  apply(report('10001','HEALTH_ERR n=0 first='), 2);
+  apply(mkReport('HEALTH_ERR n=0 first='), 3);
+  assert.equal(ledger.orders[fp].resolvedAt, undefined);
+  assert.equal(ledger.lastReport[game], 'studio:10002:' + revision);
+  apply(report('10003','HEALTH_ERR n=0 first=','FAIL'), 4);
+  assert.equal(ledger.orders[fp].resolvedAt, undefined);
+  apply(report('10004','HEALTH_ERR n=0 first='), 5);
+  assert.equal(ledger.orders[fp].resolvedAt, 5);
+});

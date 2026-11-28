@@ -293,13 +293,23 @@ export function decide({ signals, ledger, now = Date.now(), queued = 0, budget =
 }
 
 // ---- 원장 갱신: 지난번에 보낸 점검의 결과를 새 report 로 평가해 학습한다 ------------------------
-export function reportHash(r) { return r ? JSON.stringify([r.summary, (r.errors || []).length, (r.log || []).length, (r.log || []).slice(-1)]) : ''; }
+export function reportHash(r) {
+  if (!r) return '';
+  const runId = String(r.autopilotEvidence?.runId || '');
+  if (/^[1-9]\d{4,14}$/.test(runId) && /^[a-f0-9]{40}$/.test(String(r.sourceRevision || '')))
+    return 'studio:' + runId + ':' + r.sourceRevision;
+  return JSON.stringify([r.summary, (r.errors || []).length, (r.log || []).length, (r.log || []).slice(-1)]);
+}
 
 export function learn({ ledger, reports, signals, now = Date.now() }) {
   const out = JSON.parse(JSON.stringify(ledger));
   for (const game of Object.keys(GAMES)) {
     const h = reportHash(reports[game]);
     if (!h || out.lastReport[game] === h) continue;                 // 새 결과가 아니면 건너뜀
+    const previousRun = /^studio:(\d+):/.exec(out.lastReport[game] || '');
+    const observedRun = /^studio:(\d+):/.exec(h);
+    // 최신 검사를 이미 반영했다면 오래된 보고서나 출처 미확인 보고서로 원장을 되돌리지 않는다.
+    if (previousRun && (!observedRun || Number(observedRun[1]) <= Number(previousRun[1]))) continue;
     out.lastReport[game] = h;
     const pending = Object.entries(out.tasks).filter(([k, r]) => k.startsWith(game + ':') && r.pending).sort((a, b) => b[1].lastAt - a[1].lastAt)[0];
     const s = signals[game];
@@ -317,6 +327,7 @@ export function learn({ ledger, reports, signals, now = Date.now() }) {
     const report = reports[game] || {};
     const summary = report.summary || {};
     const complete = s.ok && !s.aborted && s.captured > 0
+      && (!report.autopilotEvidence || report.autopilotEvidence.result === 'PASS')
       && !(Array.isArray(report.errors) && report.errors.length)
       && !(Number(summary.plannedSteps || 0) > Number(summary.completedSteps || 0))
       && !(Number(summary.plannedFrames || 0) > s.captured)
