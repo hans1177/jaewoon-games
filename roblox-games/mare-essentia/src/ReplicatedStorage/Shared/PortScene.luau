@@ -4718,6 +4718,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		if not isRoyalCity and #placedLots > 0 then
 			local bx0, bz0, bz1 = 0, -40, 40
 			for _, lot in placedLots do
+				-- [빈 땅 줄이기 2 · 2026-11-29 Studio 12각도: 바둑판 길만 깔린 초록 빈 땅이 대부분]
+				-- 외곽 장식(야생·자연 완충) 필지는 땅 크기 계산에서 뺀다. 집·경제·특산 필지만 마을 범위다.
+				if lot.kind == "wild" or lot.kind == "fringe" then continue end
 				local hx = lot.HX or lot.H or 8
 				local hz = lot.HZ or lot.H or 8
 				bx0 = math.min(bx0, lot.X - hx)
@@ -4730,8 +4733,9 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				bz1 = math.max(bz1, at.Z + 24)
 			end
 			-- 지시서 항구는 집 범위까지 더 줄이고, 그 외 항구는 단계 표 크기. 어느 쪽이든 집·시설은 덮는다.
-			local wantLeft = if identity then bx0 - 40 else math.min(planLeft, bx0 - 40)
-			local wantHalfZ = if identity then math.max(-bz0, bz1) + 40 else math.max(planHalfZ, math.max(-bz0, bz1) + 40)
+			-- 모든 항구: 실제 집·시설 범위 + 32, 단계 표 크기를 넘지 않게. (예전: 일반 항구는 단계 표 크기 고정 → 집 14채에 땅 505×736)
+			local wantLeft = math.max(planLeft, bx0 - 32)
+			local wantHalfZ = math.min(planHalfZ, math.max(-bz0, bz1) + 32)
 			local compactLeft = math.max(townLeft, wantLeft)
 			local compactHalfZ = math.min(townHalfZ, wantHalfZ)
 			folder:SetAttribute("CityPlanLevel", lvl)
