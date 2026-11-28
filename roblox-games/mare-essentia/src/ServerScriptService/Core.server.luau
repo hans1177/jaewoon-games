@@ -81,6 +81,8 @@ local START_YEARS = { [1517] = true, [1600] = true, [1625] = true, [1650] = true
 local random = Random.new()
 local market = S.MarketClass.new()
 local ctx = {
+	-- 흥정 시간: 실제 서버 시계는 서버 진입점에서 주입해 서비스의 CLI 검사를 유지한다.
+	now = function() return workspace:GetServerTimeNow() end,
 	rng = function()
 		return random:NextNumber()
 	end,

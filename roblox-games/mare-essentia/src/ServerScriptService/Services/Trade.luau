@@ -3,7 +3,7 @@
 
 return function(D, S)
 	local T = D.TradeMath
-	local handlers = {}
+	local handlers: { [string]: (any, any, any) -> (boolean, string) } = {}
 	local MAX_AMOUNT = 20
 
 	-- 한 번 주문 상한: 교역 경험이 오를수록 커진다 (시뮬이 없으면 20)
@@ -231,7 +231,7 @@ return function(D, S)
 		local games = table.clone(HAGGLE_GAMES)
 		if not quiz then table.remove(games, 2) end -- 생산지 자료 없는 품목에는 정답 없는 문제를 내지 않는다.
 		local game = games[math.floor(ctx.rng() * #games) + 1]
-		local pending = { goodId = goodId, game = game, ease = ease, started = workspace:GetServerTimeNow() }
+		local pending: any = { goodId = goodId, game = game, ease = ease, started = if ctx.now then ctx.now() else os.time() }
 		if game == "coin" then
 			pending.count = if ease >= 0.2 then 3 else 4
 			pending.real = math.floor(ctx.rng() * pending.count) + 1
@@ -301,7 +301,7 @@ return function(D, S)
 		h.pending = nil
 		h.tried[pend.goodId] = true
 		local pct = 0
-		local elapsed = if pend.started then math.max(0, workspace:GetServerTimeNow() - pend.started) else math.huge
+		local elapsed = if pend.started then math.max(0, (if ctx.now then ctx.now() else os.time()) - pend.started) else math.huge
 		local function integer(n, lo, hi)
 			return type(n) == "number" and n >= lo and n <= hi and n == math.floor(n)
 		end

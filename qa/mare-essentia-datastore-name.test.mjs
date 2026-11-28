@@ -5288,7 +5288,9 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(game.includes('occupied[cell]'));
  assert.ok(game.includes('count == 12'));
  assert.ok(game.includes('index == pend.sequence[i]'));
- assert.ok(game.includes('workspace:GetServerTimeNow()'));
+ assert.ok(game.includes('ctx.now()'));
+ const core=readText('roblox-games/mare-essentia/src/ServerScriptService/Core.server.luau');
+ assert.ok(core.includes('now = function() return workspace:GetServerTimeNow() end'));
  for(const kind of ['balance','cargo','memory','coin','quiz']) assert.ok(client.includes('pend.game == "'+kind+'"'));
  assert.ok(view.includes('pieces = pend.pieces'));
  assert.ok(view.includes('sequence = pend.sequence'));
