@@ -12770,10 +12770,13 @@ do
 			go.Position = UDim2.fromOffset(6, 220)
 			refresh()
 		elseif pend.game == "cargo" then
-			hint.Text = "화물 선택 → 칸 터치. 회전·빼기로 빈칸 없이 채워!"
+			hint.Text = "화물을 끌어 놓거나 선택 후 칸 터치. 회전·빼기로 빈칸 없이 채워!"
 			local pieces = pend.pieces or {}
 			local chosen, placed, rotated = 1, {}, {}
 			local cells, buttons = {}, {}
+			local UIS = game:GetService("UserInputService")
+			local drag
+			local cargoArt = { {"Naval", "crate", "상자"}, {"Cargo", "barrel", "술통"}, {"Cargo", "bag", "자루"}, {"Naval", "crate", "상자"}, {"Cargo", "bag", "자루"} }
 			local colors = { Color3.fromRGB(166, 112, 60), Color3.fromRGB(94, 124, 82), Color3.fromRGB(100, 126, 156), Color3.fromRGB(160, 97, 81), Color3.fromRGB(151, 119, 157) }
 			local info = mkLabel(stage, "", 15, INK, true)
 			info.Position = UDim2.fromOffset(0, 25)
@@ -12824,17 +12827,67 @@ do
 				end
 			end
 			for i in pieces do
-				local b = mkButton(stage, "", COLORS.paper, UDim2.new(0.2, -4, 0, 45), function() chosen = i; refresh() end, true)
+				local b = mkButton(stage, "", COLORS.paper, UDim2.new(0.2, -4, 0, 52), function() chosen = i; refresh() end, true)
 				b.Position = UDim2.new((i - 1) / 5, 2, 0, 178)
-				b.TextSize = 13
+				b.TextSize = 12
+				b.TextYAlignment = Enum.TextYAlignment.Bottom
+				local asset = cargoArt[i]
+				local icon = modelIcon(b, asset[1], asset[2], nil, 24, asset[3])
+				icon.Position = UDim2.new(0.5, -12, 0, 0)
+				icon.Active = false
+				b.InputBegan:Connect(function(input)
+					if finished or drag or (input.UserInputType ~= Enum.UserInputType.Touch and input.UserInputType ~= Enum.UserInputType.MouseButton1) then return end
+					chosen = i; refresh()
+					drag = { input = input, start = Vector2.new(input.Position.X, input.Position.Y), id = i }
+					scroll.ScrollingEnabled = false
+				end)
 				buttons[i] = b
 			end
+			local connMove = UIS.InputChanged:Connect(function(input)
+				if not drag or finished or not g.Parent then return end
+				if input ~= drag.input and not (drag.input.UserInputType == Enum.UserInputType.MouseButton1 and input.UserInputType == Enum.UserInputType.MouseMovement) then return end
+				local pos = Vector2.new(input.Position.X, input.Position.Y)
+				if not drag.ghost and (pos - drag.start).Magnitude >= 8 then
+					local ghost = mkLabel(dim, tostring(drag.id) .. "번 화물", 15, INK, true)
+					ghost.Size = UDim2.fromOffset(76, 38)
+					ghost.AnchorPoint = Vector2.new(0.5, 0.5)
+					ghost.AutomaticSize = Enum.AutomaticSize.None
+					ghost.BackgroundColor3 = colors[drag.id]
+					ghost.BackgroundTransparency = 0.15
+					ghost.ZIndex = 60
+					ghost.Active = false
+					ghost.Parent = g
+					drag.ghost = ghost
+				end
+				if drag.ghost then drag.ghost.Position = UDim2.fromOffset(pos.X, pos.Y) end
+			end)
+			local connEnd = UIS.InputEnded:Connect(function(input)
+				if not drag or input ~= drag.input then return end
+				local current = drag
+				drag = nil
+				scroll.ScrollingEnabled = true
+				if not current.ghost then return end
+				current.ghost:Destroy()
+				if finished then return end
+				chosen = current.id
+				local pos = Vector2.new(input.Position.X, input.Position.Y)
+				local sp, ss = scroll.AbsolutePosition, scroll.AbsoluteSize
+				if pos.X < sp.X or pos.X > sp.X + ss.X or pos.Y < sp.Y or pos.Y > sp.Y + ss.Y then return end
+				for index, cell in cells do
+					local cp, cs = cell.AbsolutePosition, cell.AbsoluteSize
+					if pos.X >= cp.X and pos.X <= cp.X + cs.X and pos.Y >= cp.Y and pos.Y <= cp.Y + cs.Y then
+						place((index - 1) % 4 + 1, math.floor((index - 1) / 4) + 1)
+						break
+					end
+				end
+			end)
+			g.Destroying:Connect(function() connMove:Disconnect(); connEnd:Disconnect() end)
 			local rotate = mkButton(stage, "90도 회전", COLORS.gold, UDim2.new(0.33, -4, 0, 44), function()
 				rotated[chosen] = not rotated[chosen]; placed[chosen] = nil; refresh()
 			end, true)
-			rotate.Position = UDim2.new(0, 2, 0, 229)
+			rotate.Position = UDim2.new(0, 2, 0, 234)
 			local remove = mkButton(stage, "빼기", COLORS.grey, UDim2.new(0.33, -4, 0, 44), function() placed[chosen] = nil; refresh() end, true)
-			remove.Position = UDim2.new(0.33, 2, 0, 229)
+			remove.Position = UDim2.new(0.33, 2, 0, 234)
 			local confirm = mkButton(stage, "적재 완료", COLORS.green, UDim2.new(0.34, -4, 0, 44), function()
 				local result = {}
 				for i = 1, #pieces do
@@ -12843,7 +12896,7 @@ do
 				end
 				finish({ placements = result })
 			end, true)
-			confirm.Position = UDim2.new(0.66, 2, 0, 229)
+			confirm.Position = UDim2.new(0.66, 2, 0, 234)
 			refresh()
 		elseif pend.game == "memory" then
 			hint.Text = "3초 동안 순서를 기억하고, 같은 순서로 상품을 눌러!"

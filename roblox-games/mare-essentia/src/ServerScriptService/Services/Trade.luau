@@ -315,7 +315,8 @@ return function(D, S)
 		elseif pend.game == "balance" and elapsed <= pend.duration + 2 then
 			if type(p.weights) == "table" and #p.weights <= #pend.weights then
 				local used, total, valid = {}, 0, true
-				for _, index in p.weights do
+				for i = 1, #p.weights do
+					local index = p.weights[i]
 					if not integer(index, 1, #pend.weights) or used[index] then valid = false; break end
 					used[index] = true
 					total += pend.weights[index]
@@ -349,7 +350,7 @@ return function(D, S)
 					used[index] = true
 					if index == pend.sequence[i] then correct += 1 end
 				end
-				if valid and correct == 5 then pct = math.max(8, timedPct()) elseif valid and correct == 4 then pct = 4 end
+				if valid and correct == 5 then pct = math.max(8, timedPct()) elseif valid and correct >= 3 then pct = 4 end
 			end
 		end
 		pct = math.clamp(pct, 0, 12)
