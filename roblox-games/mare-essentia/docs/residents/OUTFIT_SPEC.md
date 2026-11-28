@@ -69,11 +69,11 @@
 | korea | 저고리 + 바지(대님) + 두루마기 | 짧은 저고리 + 긴 치마 | 상투(갓 아래) | 쪽머리 + 비녀 / 처녀 땋은 머리 + 댕기 | 짚신·가죽신 | #273D61 #385549 #BAB7A8 #74363A |
 | wafrica | 아그바다(넓은 겉옷) | 랩 스커트 + 블라우스 + 겔레 | 짧은 머리 + 쿠피 | 겔레(머리 감싸기) | 가죽 샌들 | #D6A032 #3C6496 #BE3C32 #468250 |
 | pacific | 타파 천 허리 두름 | 타파 천 상의·치마 | 긴 곱슬 + 꽃 | 긴 머리 + 꽃 화관 | 맨발 | #F0ECE0 #D25A46 #3C96AA #ECBE46 |
-| tropic(카리브·열대 혼합) | 리넨 셔츠 + 밀짚모자 | 면 블라우스 + 머리 수건 | 짧은 머리 | 머리 수건 | 맨발·샌들 | #ECE4CC #DE9646 #46A096 #C85A50 |
+| tropic(포트루이 1곳) | 리넨 셔츠 + 밀짚모자 | 면 블라우스 + 머리 수건 | 짧은 머리 | 머리 수건 | 맨발·샌들 | #ECE4CC #DE9646 #46A096 #C85A50 |
 | creole | 리넨 정장 조끼 | 마드라스 체크 드레스 + 티뇽 | 짧은 머리 | 티뇽(머리 감싸기) | 구두 | #F0E2BE #4696AA #DC6E82 #FAD25A |
 | colonial | 짧은 재킷 + 판초 | 블라우스 + 레보소 숄 | 짧은 머리 + 수염 | 두 갈래 땋음 | 가죽 구두 | #DC7850 #ECDCAA #46968C #B0465A |
 
-**먼저 만들 10개(효과 큰 순):** `hair_korea_male`, `hair_korea_female`, `outfit_korea_vest`, `hair_japan_male`, `outfit_japan_vest`, `outfit_ottoman_coat`, `hair_ottoman_male`, `outfit_china_vest`, `hair_china_male`, `outfit_tropic_vest`.
+**먼저 만들 10개(효과 큰 순):** `hair_korea_male`, `hair_korea_female`, `outfit_korea_vest`, `hair_japan_male`, `outfit_japan_vest`, `outfit_ottoman_coat`, `hair_ottoman_male`, `outfit_china_vest`, `hair_china_male`, `outfit_colonial_vest`(항구 19곳으로 가장 많음).
 
 ## 4. 나이·계층 변형
 
