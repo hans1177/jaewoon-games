@@ -526,6 +526,7 @@ local function importedModel(parent, kind, asset, bottomPosition, desiredSize, s
 	local template = group and group:FindFirstChild(asset)
 	if not template or not template:IsA("Model") then return nil end
 	local m = template:Clone()
+	m:SetAttribute("ImportedAsset", tostring(kind) .. "/" .. tostring(asset)) -- [같은 소품 개수 제한] 종류 판별용
 	local distantHills = kind == "Castle" and asset == "ground-hills" and not solid and desiredSize >= 80
 	-- [흰색 건물 수정] 등록된 건물의 텍스처 없는 흰 메시만 지역별 벽·지붕·목재·석조로 복원한다.
 	local architecture = (kind == "Town" and (asset:find("house", 1, true)
@@ -9247,6 +9248,42 @@ function PortScene.build(info, onFacility)
 				end
 			end
 		end
+		-- [같은 소품 개수 제한 · 2026-11-29 오너: "소품도 같은 종류 오브젝트 개수 제한"]
+		-- 같은 원본(ImportedAsset)이 한 항구에 너무 많으면 광장에서 먼 것부터 뺀다.
+		-- 건물(Town·Castle)·사람·동물·배는 대상 아님. 나무·풀 같은 자연물은 넉넉히, 통·상자 등 소품은 6개까지.
+		local CAP_PROP, CAP_NATURE = 6, 14
+		local byAsset = {}
+		for _, child in folder:GetChildren() do
+			local key = child:IsA("Model") and child:GetAttribute("ImportedAsset")
+			if type(key) == "string" then
+				local kind = string.match(key, "^([^/]+)/")
+				if kind ~= "Town" and kind ~= "Castle" and kind ~= "People" and kind ~= "Animals" and kind ~= "Naval"
+					and not child:FindFirstChildOfClass("Humanoid") and not skipName(child.Name) then
+					byAsset[key] = byAsset[key] or {}
+					table.insert(byAsset[key], child)
+				end
+			end
+		end
+		local capped = 0
+		for key, list in byAsset do
+			local lower = string.lower(key)
+			local nature = string.find(lower, "tree", 1, true) or string.find(lower, "bush", 1, true)
+				or string.find(lower, "grass", 1, true) or string.find(lower, "plant", 1, true)
+				or string.find(lower, "rock", 1, true) or string.find(lower, "flower", 1, true)
+			local cap = if nature then CAP_NATURE else CAP_PROP
+			if #list > cap then
+				table.sort(list, function(a, b)
+					local pa, pb = a:GetPivot().Position, b:GetPivot().Position
+					return (pa.X + 6) ^ 2 + pa.Z ^ 2 < (pb.X + 6) ^ 2 + pb.Z ^ 2
+				end)
+				for i = cap + 1, #list do
+					list[i]:SetAttribute("PropCapHidden", key)
+					list[i].Parent = nil
+					capped += 1
+				end
+			end
+		end
+		folder:SetAttribute("PropCapHidden", capped)
 		folder:SetAttribute("PropOverlapChecked", checked)
 		folder:SetAttribute("PropOverlapMoved", moved)
 		folder:SetAttribute("PropOverlapHidden", hidden)
