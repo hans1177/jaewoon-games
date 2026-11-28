@@ -5221,3 +5221,17 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.ok(route.includes('confirmSail(r)'));
  assert.ok(route.includes('if H.hasIconArt(key) then'));
 });
+
+ test('퀘스트 상세는 기존 화자와 승인 초상 및 장별 목표를 연결한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const quest=source.slice(source.indexOf('function RENDERERS.quest()'),source.indexOf('-- 주점의 지식 카드 배틀'));
+ const cause=source.slice(source.indexOf('function H.questCauseCard(q)'),source.indexOf('function H.showQuestResult'));
+ assert.ok(quest.includes('if q.chapter and H.hasIconArt("chapter")'));
+ assert.ok(quest.includes('if H.hasIconArt("reward") then'));
+ assert.ok(cause.includes('QuestSpeakerPortrait'));
+ assert.ok(cause.includes('H.portraitFor(portraitTalk, true)'));
+ assert.ok(cause.includes('member.name == talk.name'));
+ assert.ok(cause.includes('local values = { q.problem, q.cause, doText, q.result }'));
+ assert.ok(source.includes('return H.portraitFor({ key = "keeper:tavern" }, true)'));
+ assert.ok(source.includes('if exact then return nil end'));
+});
