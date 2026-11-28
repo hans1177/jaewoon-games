@@ -14482,8 +14482,13 @@ do
 				art.Name = "EncyclopediaBookArt"
 				art.BackgroundTransparency = 1
 				art.Image = "rbxassetid://" .. tostring(bookId)
-				art.Size = UDim2.fromScale(1, 1)
+				art.Size = UDim2.new(1, 0, 1, -55)
 				art.ScaleType = Enum.ScaleType.Stretch
+				-- 단면에서도 같은 원본의 왼쪽/오른쪽 삽화 페이지를 각각 사용한다.
+				if not wide then
+					art.ImageRectSize = Vector2.new(512, 640)
+					art.ImageRectOffset = Vector2.new(if H.dexReading then 512 else 0, 0)
+				end
 				art.Parent = root
 			end
 			local leaf = Instance.new("Frame")
@@ -14491,6 +14496,11 @@ do
 			leaf.BackgroundTransparency = 1
 			leaf.Position = UDim2.fromOffset(12, 10)
 			leaf.Size = UDim2.new(1, -24, 1, -66)
+			if bookId then
+				-- 바깥쪽 금박 삽화(약 15%)와 중앙 제본선을 가리지 않는다.
+				leaf.Position = UDim2.new(if wide then 0.15 else 0.17, 0, 0.09, 0)
+				leaf.Size = UDim2.new(if wide then 0.70 else 0.73, 0, 0.82, -45)
+			end
 			leaf.Parent = root
 
 			-- 넓은 화면은 양면 책, 세로폰은 도판/해설 한 장씩 넘긴다.
@@ -14498,7 +14508,7 @@ do
 			local plate = Instance.new("Frame")
 			plate.Name = "EncyclopediaPlate"
 			plate.BackgroundColor3 = PAPER
-			plate.BackgroundTransparency = if bookId and wide then 0.18 else 0
+			plate.BackgroundTransparency = if bookId then 1 else 0
 			plate.BorderSizePixel = 0
 			plate.Size = if wide then UDim2.new(0.5, -4, 1, 0) else UDim2.fromScale(1, 1)
 			plate.Visible = wide or not reading
@@ -14509,6 +14519,7 @@ do
 			heading.Size = UDim2.new(1, -20, 0, 24)
 			heading.AutomaticSize = Enum.AutomaticSize.None
 			heading.TextXAlignment = Enum.TextXAlignment.Center
+			heading.TextColor3 = Color3.fromRGB(37, 71, 98)
 			local hero = Instance.new("ImageLabel")
 			hero.Name = "DexHero"
 			hero.Position = UDim2.fromOffset(12, 34)
@@ -14523,7 +14534,7 @@ do
 				missing.AutomaticSize = Enum.AutomaticSize.None
 				missing.TextXAlignment = Enum.TextXAlignment.Center
 			end
-			local title = mkLabel(plate, tostring(current.name), 22, INKD, true)
+			local title = mkLabel(plate, tostring(current.name), 22, Color3.fromRGB(110, 39, 33), true)
 			title.Position = UDim2.new(0, 10, 1, -60)
 			title.Size = UDim2.new(1, -20, 0, 54)
 			title.AutomaticSize = Enum.AutomaticSize.None
@@ -14533,7 +14544,7 @@ do
 			local page = Instance.new("ScrollingFrame")
 			page.Name = "DexPage"
 			page.BackgroundColor3 = PAPER
-			page.BackgroundTransparency = if bookId and wide then 0.18 else 0
+			page.BackgroundTransparency = if bookId then 1 else 0
 			page.BorderSizePixel = 0
 			page.ScrollBarThickness = 4
 			page.AutomaticCanvasSize = Enum.AutomaticSize.Y
@@ -14561,8 +14572,8 @@ do
 				l.TextTruncate = Enum.TextTruncate.None
 				return l
 			end
-			para(tostring(category.name or "세계 지식"), 14, SOFTT, true)
-			para(current.name, 26, INKD, true)
+			para(tostring(category.name or "세계 지식"), 14, Color3.fromRGB(37, 71, 98), true)
+			para(current.name, 26, Color3.fromRGB(110, 39, 33), true)
 			if article and article.latin then para(article.latin, 15, SOFTT, false) end
 			local meta = {}
 			if current.region then table.insert(meta, tostring(current.region)) end
@@ -14570,7 +14581,7 @@ do
 			if #meta > 0 then para(table.concat(meta, " · "), 14, SOFTT, false) end
 			local function section(titleText, value)
 				if not value or value == "" then return end
-				para(titleText, 18, Color3.fromRGB(120, 80, 30), true)
+				para(titleText, 18, Color3.fromRGB(110, 39, 33), true)
 				para(value, 16, INKD, false)
 			end
 			section("개요", if article and article.summary and article.summary ~= "" then article.summary else current.description)
@@ -14614,7 +14625,8 @@ do
 				grid.Parent = root
 				local gl = Instance.new("UIGridLayout")
 				local cols = if wide then 6 else 3
-				local cw = math.max(64, math.floor((W - 48 - (cols - 1) * 6) / cols))
+				local gridW = if bookId then W * (if wide then 0.70 else 0.73) else W - 30
+				local cw = math.max(48, math.floor((gridW - 12 - (cols - 1) * 6) / cols))
 				gl.CellSize = UDim2.fromOffset(cw, math.floor(cw * 1.4) + 26)
 				gl.CellPadding = UDim2.fromOffset(6, 6)
 				gl.SortOrder = Enum.SortOrder.LayoutOrder
