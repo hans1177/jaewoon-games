@@ -616,3 +616,12 @@ test('visual repair preserves source scenario and reuses canonical Studio dispat
   assert.ok(dispatch.includes('STUDIO_RELEASE_REGRESSION=FULL'));
   assert.equal((dispatch.match(/gh workflow run devloop-studio\.yml/g)||[]).length,1);
 });
+
+test('exact Studio retest hashes an inert local file and validates archived original checks',()=>{
+  const dispatch=fs.readFileSync('.github/workflows/studio-autoqa.yml','utf8');
+  assert.ok(dispatch.includes('base64 --decode "$retest_file.b64" > "$retest_file"'));
+  assert.ok(dispatch.includes('sha256sum "$retest_file"'));
+  assert.ok(dispatch.includes('contents/runs/$retest_run/checks.json?ref=mare-essentia-studio-frames'));
+  assert.ok(dispatch.includes('.scriptPath == $path and .scriptSha256 == $hash'));
+  assert.ok(dispatch.includes('STUDIO_EXACT_RETEST_UNVERIFIED=ORIGINAL_EVIDENCE_MISSING'));
+});

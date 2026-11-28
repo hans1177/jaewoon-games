@@ -181,7 +181,23 @@ jobs:
                 if length == 1 then .[0] else empty end' <<< "$prs" 2>/dev/null || true)
             if [[ -n "$retest" && "$head" == "$GITHUB_SHA" ]]; then
               read -r retest_path retest_hash retest_run <<< "${retest#STUDIO_RETEST=}"
-              current_hash=$(gh api "repos/$GITHUB_REPOSITORY/contents/$retest_path?ref=$head" --jq .content 2>/dev/null | base64 -d | sha256sum | cut -d' ' -f1) || current_hash=""
+              # [파일 검증] 다운로드한 바이트는 실행하지 않고 임시 파일의 해시만 계산한다.
+              current_hash=""
+              retest_file=$(mktemp)
+              if gh api "repos/$GITHUB_REPOSITORY/contents/$retest_path?ref=$head" --jq .content > "$retest_file.b64" 2>/dev/null &&
+                 base64 --decode "$retest_file.b64" > "$retest_file"; then
+                current_hash=$(sha256sum "$retest_file" | cut -d' ' -f1)
+              fi
+              rm -f "$retest_file" "$retest_file.b64"
+              # [원본 회차 검증] PR 메모만 믿지 않고 기존 보관 검사표를 대조한다.
+              original=$(gh api "repos/$GITHUB_REPOSITORY/contents/runs/$retest_run/checks.json?ref=mare-essentia-studio-frames" --jq .content 2>/dev/null | base64 -d 2>/dev/null) || original=""
+              if ! jq -e --arg run "$retest_run" --arg path "$retest_path" --arg hash "$retest_hash" '
+                (.runId | tostring) == $run and .scriptPath == $path and .scriptSha256 == $hash and
+                (.portBatch // 0) == 0 and (.sourceRevision | test("^[a-f0-9]{40}$"))
+              ' <<< "$original" >/dev/null 2>&1; then
+                current_hash=""
+                echo 'STUDIO_EXACT_RETEST_UNVERIFIED=ORIGINAL_EVIDENCE_MISSING'
+              fi
               if [[ "$current_hash" == "$retest_hash" ]]; then
                 script="$retest_path"
                 echo "STUDIO_EXACT_RETEST=$retest_run:$script"
