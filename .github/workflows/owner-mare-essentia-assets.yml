@@ -108,9 +108,10 @@ jobs:
 
 
       # [드롭박스 전체 자동 인입 · 2026-11-28 오너 지시] /Vibe2Transfer/inbox/<종류>/<파일> 의 모든 그림·3D 모델을
-      # 자동 검사(이름·형식·크기·256색 금지·중복)만 통과하면 기존 register_asset.py 로 정식 폴더에 넣고 main 에 저장한다.
-      # GITHUB_TOKEN 푸시는 다른 실행을 깨우지 않으므로, 같은 등록기를 수동 실행으로 한 번 더 불러 그림·모델을 모두 등록한다.
-      # 정기·드롭박스 알림 실행에서만 돌고, 그 수동 실행에서는 돌지 않아 반복되지 않는다.
+      # 자동 검사(이름·형식·크기·256색 금지·중복)만 통과하면 기존 register_asset.py 로 정식 폴더에 넣는다.
+      # main 직접 쓰기 금지 규칙: 후보 브랜치 → PR → 기존 3개 검사(gates·qa·discover-and-verify) 통과 후에만 병합.
+      # 다음 정기 실행이 통과한 후보 PR 을 병합하고, 봇 병합은 push 를 일으키지 않으므로 기존 등록기를 main 에서 다시 부른다.
+      # 열린 후보 PR 이 있으면 새로 가져오지 않는다(충돌 방지). 정기·드롭박스 알림 실행에서만 돈다.
       - name: Import all Dropbox inbox assets (auto-checked)
         if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' }}
         continue-on-error: true
@@ -122,25 +123,45 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          # 1) 검사를 통과한 이전 후보 PR 병합 → 등록기 재개
+          open_prs="$(gh api "repos/$repo/pulls?state=open&base=main&per_page=100" --jq '.[] | select(.head.ref | startswith("mare-dropbox-inbox-")) | "\(.number) \(.head.sha)"')"
+          if [[ -n "$open_prs" ]]; then
+            while read -r num sha; do
+              [[ "$num" =~ ^[0-9]+$ && "$sha" =~ ^[a-f0-9]{40}$ ]] || continue
+              states="$(gh api "repos/$repo/commits/$sha/check-runs?per_page=100" --jq '[.check_runs[] | select(.name=="gates" or .name=="qa" or .name=="discover-and-verify") | (.conclusion // .status)] | sort | unique | join(",")')"
+              echo "DROPBOX_INBOX_CANDIDATE $num $states"
+              if [[ "$states" == "success" ]] && [[ "$(gh api "repos/$repo/commits/$sha/check-runs?per_page=100" --jq '[.check_runs[] | select(.name=="gates" or .name=="qa" or .name=="discover-and-verify")] | length')" -ge 3 ]]; then
+                gh api -X PUT "repos/$repo/pulls/$num/merge" -f merge_method=squash -f sha="$sha" --silent
+                gh workflow run owner-mare-essentia-assets.yml --repo "$repo" --ref main
+                echo "DROPBOX_INBOX_MERGED_REGISTRATION_REQUESTED $num"
+              fi
+            done <<< "$open_prs"
+            echo "DROPBOX_INBOX_WAITING_FOR_CANDIDATE"
+            exit 0
+          fi
+          # 2) 새로 들어온 것 가져오기
           python3 -m pip install --disable-pip-version-check --quiet pillow==12.3.0
           python3 tools/devloop/dropbox_inbox.py
           if [[ -z "$(git status --porcelain -- roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets)" ]]; then
             echo "DROPBOX_INBOX_NOTHING_NEW"
             exit 0
           fi
+          branch="mare-dropbox-inbox-${GITHUB_RUN_ID}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -q -b "$branch"
           git add -A roblox-games/mare-essentia/assets roblox-games/mare-essentia/docs/assets
-          git commit -q -m "Mare Essentia: 드롭박스 자동 인입 (검사 통과분 정식 폴더 반영)"
-          for i in 1 2 3 4 5; do
-            if git push -q origin HEAD:main; then break; fi
-            git pull -q --rebase origin main
-            [[ $i == 5 ]] && { echo "DROPBOX_INBOX_PUSH_FAILED"; exit 1; }
-          done
-          if git show --stat HEAD | grep -qE 'assets/(cardart|icons|portraits|goods|materials|animals|terrain|relics|town|castle|naval|people|monsters|interior|cargo)/'; then
-            gh workflow run owner-mare-essentia-assets.yml --ref main
-            echo "DROPBOX_INBOX_REGISTRATION_REQUESTED"
-          fi
+          git commit -q -m "Mare Essentia: 드롭박스 자동 인입 후보 (검사 통과분)"
+          git push -q origin "HEAD:refs/heads/$branch"
+          gh api "repos/$repo/pulls" -f title="Mare Essentia: 드롭박스 자동 인입 후보" -f head="$branch" -f base=main \
+            -f body="드롭박스 /Vibe2Transfer/inbox 자동 검사 통과분. 기존 3개 검사 통과 후 다음 정기 실행이 병합하고 기존 등록기를 다시 부른다." --silent
+          # GITHUB_TOKEN 이 만든 PR 은 검사를 자동 시작하지 않으므로 기존 검사를 후보 브랜치에서 실행한다.
+          gh workflow run devloop-gates.yml --repo "$repo" --ref "$branch"
+          gh workflow run vibe-qa.yml --repo "$repo" --ref "$branch"
+          gh workflow run game-development-sync.yml --repo "$repo" --ref "$branch" -f game_id=mare-essentia
+          git checkout -q -
+          echo "DROPBOX_INBOX_CANDIDATE_OPENED $branch"
 
       # [드롭박스 원화 인입] 검수 완료된 원본만 기존 승인표와 함께 후보 브랜치에 보관한다.
       # 활성 승인·main·기존 Roblox 번호는 직접 바꾸지 않는다. 기존 PR 검사를 통과해야 등록한다.
