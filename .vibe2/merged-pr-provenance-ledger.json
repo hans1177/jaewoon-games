@@ -385405,11 +385405,149 @@
         "automaticPromotionAuthority": false,
         "authorityExpanded": false
       }
+    },
+    {
+      "version": 2,
+      "traceId": "prtrace_4f68057bd3ea7b65c55e591b",
+      "authority": "OBSERVABLE_CODING_TRACE_PROVENANCE_ONLY",
+      "source": "MERGED_PULL_REQUEST_PROVENANCE",
+      "teacherClass": "UNCLASSIFIED_MERGED_PR_AUTHORSHIP",
+      "task": {
+        "taskId": "merged-pr-15750",
+        "workKey": null,
+        "gameId": null,
+        "target": null,
+        "roadmapVersion": null,
+        "baseMainSha": "479be476c8f030f673be7c5209718e2266b03b7a",
+        "variant": "merged-pr",
+        "goal": null
+      },
+      "provenance": {
+        "pullRequestNumber": 15750,
+        "baseBranch": "main",
+        "headBranch": "fix/mare-port-overlap-walkers",
+        "baseSha": "479be476c8f030f673be7c5209718e2266b03b7a",
+        "headSha": "5214cd7d7169ebacf3a6267da2fcf54afd1177e0",
+        "mergeCommitSha": "181f8a36a5af977c1ba1249b1da3a89d33e5ecb6",
+        "mergedAt": "2026-11-28T09:44:41Z",
+        "authorLogin": "hans1177",
+        "titleHash": "5d0d63b20860cd74db90491af897b93601cf85ce6918d7a08c2c478615e820aa",
+        "titleHashAlgorithm": "sha256",
+        "titleStored": false,
+        "prBodyStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawPatchStored": false,
+        "rawSourceStored": false,
+        "authorshipClassification": "BRANCH_CONVENTION_ONLY_NOT_IDENTITY_PROOF"
+      },
+      "decision": {
+        "strategy": null,
+        "responsibilityConfidence": null,
+        "primaryTargets": [],
+        "primarySystems": [],
+        "dependentSystems": [],
+        "contextMode": null,
+        "contextBytes": 0,
+        "failureFingerprint": null,
+        "patchRecipeMode": null,
+        "architectureDriftStatus": null,
+        "architectureDriftRisk": null
+      },
+      "execution": {
+        "generationAttempts": 0,
+        "generationAttemptBudget": 0,
+        "recoveryUsed": false,
+        "candidateBranch": "fix/mare-port-overlap-walkers",
+        "candidateSha": "5214cd7d7169ebacf3a6267da2fcf54afd1177e0"
+      },
+      "changeStats": {
+        "changedFileCount": 12,
+        "codingRelevantFileCount": 12,
+        "addedLineCount": 614,
+        "deletedLineCount": 34,
+        "changedFiles": [
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-event-card-fx.test.mjs",
+          "qa/mare-flow-story-menu.test.mjs",
+          "qa/mare-haggle-minigame.test.mjs",
+          "qa/mare-port-overlap.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PlacementOverrides.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-port-overlap.json"
+        ],
+        "codingRelevantFiles": [
+          "qa/mare-diplomacy-dock.test.mjs",
+          "qa/mare-essentia-datastore-name.test.mjs",
+          "qa/mare-event-card-fx.test.mjs",
+          "qa/mare-flow-story-menu.test.mjs",
+          "qa/mare-haggle-minigame.test.mjs",
+          "qa/mare-port-overlap.test.mjs",
+          "roblox-games/mare-essentia/assets-wanted.json",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/KnowledgeCards.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PlacementOverrides.luau",
+          "roblox-games/mare-essentia/src/ReplicatedStorage/Shared/PortScene.luau",
+          "roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau",
+          "roblox-games/mare-essentia/tools/devloop/studio-scripts/mare-port-overlap.json"
+        ],
+        "rawPatchStored": false,
+        "rawCodeStored": false
+      },
+      "verification": {
+        "workerOutcome": "MERGED_PROVENANCE_ONLY",
+        "blocker": null,
+        "candidateFailureClass": null,
+        "roleResults": {
+          "exploration": "UNKNOWN",
+          "implementation": "UNKNOWN",
+          "test": "UNKNOWN",
+          "performance": "UNKNOWN",
+          "regression": "UNKNOWN",
+          "review": "UNKNOWN"
+        },
+        "incrementalQaPass": false,
+        "performancePass": false,
+        "fullRegressionPass": false,
+        "reviewPass": false,
+        "causalReplayStatus": "NOT_APPLICABLE",
+        "causalReplayExecuted": false,
+        "causalReplayPrepatchReproduced": false,
+        "mergeIsNotCapabilityVerification": true,
+        "freshTaskQaRequiredBeforeReusablePromotion": true
+      },
+      "metrics": {
+        "workerTotalMs": 0,
+        "candidateMs": 0,
+        "qaMs": 0
+      },
+      "evidenceRefs": [
+        "pull-request:15750",
+        "merge-commit:181f8a36a5af977c1ba1249b1da3a89d33e5ecb6",
+        "base-main:479be476c8f030f673be7c5209718e2266b03b7a"
+      ],
+      "capabilityDomains": [],
+      "safety": {
+        "hiddenChainOfThoughtStored": false,
+        "rawModelOutputStored": false,
+        "rawExternalAiOutputStored": false,
+        "rawCodeStored": false,
+        "rawTitleStored": false,
+        "prBodyStored": false,
+        "secretsOrCredentialsStored": false,
+        "reusableBeforeVerification": false,
+        "directProductionAuthority": false,
+        "directMainWriteAuthority": false,
+        "automaticPromotionAuthority": false,
+        "authorityExpanded": false
+      }
     }
   ],
   "stats": {
     "added": 1,
     "refreshed": 0,
-    "total": 3025
+    "total": 3026
   }
 }
