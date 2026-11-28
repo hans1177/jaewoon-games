@@ -3845,6 +3845,10 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local terrainLaneShift = if coastForm == "hill" then 3.5 elseif coastForm == "river" or coastForm == "delta" then -2.5
 		elseif coastForm == "lagoon" or coastForm == "canal" then 2 else 0
 	local laneOffset = districtSeed:NextNumber(-28, 28) + terrainLaneShift + (if reflow then reflow.lane else 0)
+	-- [주택 골목을 광장 쪽으로 · 2026-11-29 Studio 12각도: 시설은 |z|≤58 에 있는데 첫 주택 골목은 z=152 라
+	-- 광장과 집 사이 70~150 띠가 통째로 비어 "광장만 모여 있고 집은 멀리 띄엄띄엄"이었다.
+	-- 첫 골목을 96 으로 당긴다(시설 외곽 52 + 여유). 겹침은 기존 reserved() 가 그대로 막는다.
+	local LANE_BASE = 96
 	if reflow then folder:SetAttribute("CityPortManualReflow", "PORT_MANUAL_REPOSITION_V1") end
 	folder:SetAttribute("CityPortLayoutRevision", "WHOLE_PORT_REPOSITION_V2")
 	folder:SetAttribute("CityPortLaneOffset", laneOffset)
@@ -4409,8 +4413,8 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 							elseif villageLayout == "terrace" then laneIndex * 2 else 0
 						local farBend = if villageLayout == "organic" then (if (laneIndex + 1) % 2 == 0 then -3 else 3)
 							elseif villageLayout == "terrace" then (laneIndex + 1) * 2 else 0
-						local laneNear = 152 + laneOffset + laneIndex * laneL + nearBend
-						local laneFar = 152 + laneOffset + (laneIndex + 1) * laneL + farBend
+						local laneNear = LANE_BASE + laneOffset + laneIndex * laneL + nearBend
+						local laneFar = LANE_BASE + laneOffset + (laneIndex + 1) * laneL + farBend
 						local chosenShift
 						-- 원래 자리에서 시작해 같은 필지 안에서만 조금 이동한다. 다른 건물은 건드리지 않는다.
 						-- [집 배치 실패 수정 · 2026-11-29 오너: "중앙 광장만 모여 있다"] 예전엔 ±2.4만 옮겨 보고 길에 닿으면 포기해
@@ -4658,7 +4662,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			-- [항구 골목] 기존 해안선·필지·도로 중심을 함께 옮겨 보행 동선을 보존한다.
 			local laneBend = if villageLayout == "organic" then (if p % 2 == 0 then -3 else 3)
 				elseif villageLayout == "terrace" then p * 2 else 0
-			local laneZ = 152 + laneOffset + p * laneL + laneBend
+			local laneZ = LANE_BASE + laneOffset + p * laneL + laneBend
 			-- [항구별 물길] 운하 도시 이외에는 수로 대신 보행 골목.
 			local waterLane = if identity then villageLayout == "canal" else P.canal or info.portId == "venice"
 			if waterLane and p % 2 == 1 then
@@ -4690,7 +4694,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				fillRow(side * (laneZ + laneWidth / 2 + 6 + S / 2), t, cityRowStart + rowShift, side, p, 1)
 				local nextBend = if villageLayout == "organic" then (if (p + 1) % 2 == 0 then -3 else 3)
 					elseif villageLayout == "terrace" then (p + 1) * 2 else 0
-				local nextLaneZ = 152 + laneOffset + (p + 1) * laneL + nextBend
+				local nextLaneZ = LANE_BASE + laneOffset + (p + 1) * laneL + nextBend
 				fillRow(side * (nextLaneZ - laneWidth / 2 - 6 - S / 2), t, cityRowStart - rowShift, side, p, 2)
 			end
 		end
@@ -4700,7 +4704,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	local fringeBudget = if wildernessTouch then 7 else 13
 	local outerBend = if villageLayout == "organic" then (if pairsN % 2 == 0 then -3 else 3)
 		elseif villageLayout == "terrace" then pairsN * 2 else 0
-	local outerEdgeZ = 152 + laneOffset + pairsN * laneL + outerBend + laneWidth * 0.5 + 15
+	local outerEdgeZ = LANE_BASE + laneOffset + pairsN * laneL + outerBend + laneWidth * 0.5 + 15
 	-- [발전별 실제 마을 땅] 표준화한 주거·골목·외곽 경계에 맞춰 TownFloor 실물 판의 폭·깊이를 축소한다.
 	-- 왕궁은 이미 커진 실물 본관·별관을 덮을 최소 폭을 보장하고 농촌 바닥은 건드리지 않는다.
 	local townFloor = folder:FindFirstChild("TownFloor")
@@ -4851,7 +4855,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 		folder:SetAttribute("CityHousingSize" .. sizeClass, homeSizeCounts[sizeClass])
 	end
 	for _, sx in streetsOuter do
-		strip(folder, style, sx, 0, laneWidth, 2 * (152 + math.abs(laneOffset) + pairsN * laneL) + 30)
+		strip(folder, style, sx, 0, laneWidth, 2 * (LANE_BASE + math.abs(laneOffset) + pairsN * laneL) + 30)
 	end
 	-- 기존 항구 중심 도로는 유지하고 서쪽 외곽도로로 진입로를 연결한다.
 	strip(folder, style, -212, 0, 9, 320)
@@ -4890,7 +4894,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 			local laneBend = if villageLayout == "organic" then (if laneRow % 2 == 0 then -3 else 3)
 				elseif villageLayout == "terrace" then laneRow * 2 else 0
 			local side = if i % 2 == 0 then 1 else -1
-			local roadAt = Vector3.new(sx, 0.25, side * (152 + laneOffset + laneRow * laneL + laneBend))
+			local roadAt = Vector3.new(sx, 0.25, side * (LANE_BASE + laneOffset + laneRow * laneL + laneBend))
 			local paving = importedModel(folder, pathKind, pathAsset, roadAt,
 				math.min(10, laneWidth * 0.76), false)
 			if paving then
@@ -4919,7 +4923,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 				if lampSpacing == 0 or (i - 1) % lampSpacing == 0 then
 					local side = if i % 2 == 0 then 1 else -1
 					local lampAt = Vector3.new(streetsOuter[i] + laneWidth * 0.36, 0,
-						side * (152 + laneOffset + laneL * 0.5))
+						side * (LANE_BASE + laneOffset + laneL * 0.5))
 					local lamp = importedModel(folder, "Town", lampAsset, lampAt, 5.6, false)
 					if lamp then
 						lamp.Name = "CityRegionalStreetLantern"
@@ -6279,7 +6283,7 @@ local function densify(folder, info, style, rng, walkers, made, onFacility, land
 	-- 7) 외곽: 도시의 실제 발전 구획 바깥으로 성벽과 숲을 이동한다.
 	-- 예전 -204, ±150 고정 성벽이 확장 도로·주택을 가로막던 문제를 직접 수정한다.
 	local wallStep = if lvl >= 4 then 20 else 16
-	local WZ = math.ceil((152 + pairsN * laneL + 55) / wallStep) * wallStep
+	local WZ = math.ceil((LANE_BASE + math.abs(laneOffset) + pairsN * laneL + 55) / wallStep) * wallStep
 	local WX = math.floor(math.min(X_END - 58, if isRoyalCity then -615 else -470) / wallStep) * wallStep
 	local walled = lvl >= 3
 	local wallSize = wallStep + 0.4

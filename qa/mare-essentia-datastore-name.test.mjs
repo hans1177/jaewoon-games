@@ -2724,7 +2724,7 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.match(home,/local signedZ = at\.Z \* side/);
  assert.match(home,/local nearLimit = laneNear \+ laneWidth \* 0\.5 \+ 1\.5[\s\S]*clearRoad = signedZ - measuredHalfZ > nearLimit and signedZ \+ measuredHalfZ < farLimit/);
  assert.match(home,/local farLimit = laneFar - laneWidth \* 0\.5 - 1\.5/);
- assert.match(port,/local nextLaneZ = 152 \+ laneOffset \+ \(p \+ 1\) \* laneL \+ nextBend/);
+ assert.match(port,/local nextLaneZ = LANE_BASE \+ laneOffset \+ \(p \+ 1\) \* laneL \+ nextBend/);
  assert.match(port,/fillRow\(side \* \(nextLaneZ - laneWidth \/ 2 - 6 - S \/ 2\)/);
  const project=(axis,dims)=>axis.reduce((sum,v,i)=>sum+Math.abs(v)*dims[i],0)/2;
  assert.equal(project([1,0,0],[8,6,20]),4);
@@ -2734,7 +2734,7 @@ test('항구별 주택은 지역 비율과 실제 외곽 측정 후 겹침 없�
  assert.equal(fits(-125,-1,10),true);
  assert.equal(fits(160,1,10),false);
  assert.equal(fits(109,1,10),false);
- assert.match(home,/laneNear = 152 \+ laneOffset \+ laneIndex \* laneL/);
+ assert.match(home,/laneNear = LANE_BASE \+ laneOffset \+ laneIndex \* laneL/);
  assert.match(home,/elseif onStreet\(at\.X, measuredHalfX\) then/);
  assert.match(home,/elseif reserved\(at\.X, at\.Z, actualHalfX, actualHalfZ\) then/);
  assert.match(home,/if chosenShift then[\s\S]*?for _, object in staged:GetChildren\(\) do object\.Parent = folder end/);
