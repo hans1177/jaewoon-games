@@ -5151,3 +5151,19 @@ test('중세 백과 분야 도판은 등록 시트만 사용하며 책장 연출
  assert.match(dex,/if wide then 0\.15 elseif H\.dexReading then 0\.08 else 0\.27/);
  assert.match(dex,/fade\.Completed:Once\(function\(\) fold:Destroy\(\) end\)/);
 });
+
+ test('고서 본문은 전체 해설 검색과 사실 구분·발견 기록·관련 사료를 보존한다',()=>{
+ const source=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const dex=source.slice(source.indexOf('function H.renderDex('),source.indexOf('function RENDERERS.encyclopedia()'));
+ const related=source.slice(source.indexOf('function H.encyRelated('),source.indexOf('function H.encyCollection('));
+ assert.ok(dex.includes('상세 해설 원고 준비 중'));
+ for(const key of ['fiction','legend','hypothesis','unreviewed']) assert.ok(dex.includes('"' + key + '"'));
+ for(const key of ['person','site','quest','event']) assert.ok(dex.includes('first.'+key));
+ assert.ok(dex.includes('관련 장소·상품·사료'));
+ assert.ok(dex.includes('H.showCardDetail(current)'));
+ assert.ok(dex.includes('current.credit'));
+ assert.ok(source.includes('{ "topic", "latin", "summary", "looks", "details", "context", "history", "trivia" }'));
+ assert.ok(source.includes('for _, fact in article.facts or {} do'));
+ assert.ok(related.includes('H.encyclopediaSearchText = ""'));
+ assert.ok(related.includes('Enum.ScaleType.Fit'));
+});
