@@ -6405,7 +6405,7 @@ function RENDERERS.crew()
 		local bar = Instance.new("Frame")
 		bar.Name = "CrewSectionIndex"
 		bar.BackgroundTransparency = 1
-		bar.Size = UDim2.new(1, -6, 0, 100)
+		bar.Size = UDim2.new(1, -6, 0, 48)
 		local grid = Instance.new("UIGridLayout")
 		grid.CellPadding = UDim2.fromOffset(4, 4)
 		grid.CellSize = UDim2.new(1/3, -3, 0, 46)
@@ -6602,6 +6602,82 @@ function RENDERERS.status()
 		end
 		return bar
 	end)
+	if page == "captain" or page == "gear" then
+		add(function()
+			local captain = view.captain or {}
+			local card = mkBox(content, UDim2.new(), UDim2.new(1, -6, 0, 214), COLORS.paper)
+			card.Name = "CaptainCharacterCard"
+			local preview = Instance.new("ViewportFrame")
+			preview.Name = "CaptainFullBody"
+			preview.Size = UDim2.new(0.42, -12, 1, -16)
+			preview.Position = UDim2.fromOffset(8, 8)
+			preview.BackgroundColor3 = Color3.fromRGB(76, 59, 44)
+			preview.BorderSizePixel = 0
+			preview.Ambient = Color3.fromRGB(180, 171, 153)
+			preview.LightColor = Color3.fromRGB(255, 240, 213)
+			preview.LightDirection = Vector3.new(-1, -1, -1)
+			preview.Parent = card
+			corner(preview, 8)
+			local character = player.Character
+			local model
+			if character and character.Archivable then
+				local ok, clone = pcall(function() return character:Clone() end)
+				if ok and clone and clone:IsA("Model") then model = clone end
+			end
+			if model then
+				for _, d in model:GetDescendants() do
+					if d:IsA("LuaSourceContainer") or d:IsA("BillboardGui") or d:IsA("SurfaceGui") or d:IsA("Sound") or d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Beam") then
+						d:Destroy()
+					elseif d:IsA("BasePart") then
+						d.Anchored = true
+						d.CanCollide = false
+						d.LocalTransparencyModifier = 0
+					end
+				end
+				local world = Instance.new("WorldModel")
+				world.Parent = preview
+				model.Parent = world
+				model:PivotTo(CFrame.new())
+				local cf, size = model:GetBoundingBox()
+				local cam = Instance.new("Camera")
+				cam.FieldOfView = 34
+				local distance = math.max(5, size.Y * 2.0, size.X * 2.6, size.Z * 2.0)
+				cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(distance * 0.22, size.Y * 0.05, -distance), cf.Position)
+				cam.Parent = preview
+				preview.CurrentCamera = cam
+			else
+				-- 원본 모델을 복제할 수 없는 상태는 승인 선장 초상만 사용한다.
+				preview.Visible = false
+				local atlas, offset, size
+				if H.capPortraitAsset then atlas, offset, size = H.capPortraitAsset(captain.portrait) end
+				if atlas then
+					local portrait = Instance.new("ImageLabel")
+					portrait.Name = "CaptainApprovedPortrait"
+					portrait.Size, portrait.Position = preview.Size, preview.Position
+					portrait.BackgroundTransparency = 1
+					portrait.ScaleType = Enum.ScaleType.Fit
+					portrait.Image = "rbxassetid://" .. tostring(atlas)
+					portrait.ImageRectOffset = offset or Vector2.zero
+					portrait.ImageRectSize = size or Vector2.zero
+					portrait.Parent = card
+				end
+			end
+			local textBox = Instance.new("Frame")
+			textBox.BackgroundTransparency = 1
+			textBox.Position = UDim2.new(0.42, 0, 0, 10)
+			textBox.Size = UDim2.new(0.58, -10, 1, -20)
+			textBox.Parent = card
+			local layout = Instance.new("UIListLayout")
+			layout.Padding = UDim.new(0, 6)
+			layout.Parent = textBox
+			mkLabel(textBox, captain.name or player.DisplayName, 22, INK, true)
+			mkLabel(textBox, p.nation .. " · " .. tostring(p.year) .. "년", 15, INK_SOFT, false)
+			if captain.origin then mkLabel(textBox, captain.origin.name, 15, INK, true) end
+			mkLabel(textBox, "명성 " .. H.commas(p.fame or 0), 16, INK, true)
+			mkLabel(textBox, "최고 연타 " .. tostring(view.fieldStreakBest or 0), 15, INK_SOFT, false)
+			return card
+		end)
+	end
 	if page == "captain" then
 	H.counselRows(1)
 	if H.visualStatus then H.visualStatus() end
@@ -6631,6 +6707,54 @@ function RENDERERS.status()
 	end)
 	end
 	if page == "skills" then
+	add(function() return mkHeader(content, "무기 숙련 · 연속 공격") end)
+	local origin = view.captain and view.captain.origin
+	local primary = Weapons.originWeapon(origin and origin.id, p.year)
+	local secondary = Weapons.originSidearm(origin and origin.id, p.year)
+	local weaponIds = { primary.id }
+	if secondary.id ~= primary.id then table.insert(weaponIds, secondary.id) end
+	local otherIds = {}
+	for id, xp in view.weaponPractice or {} do
+		if type(id) == "string" and type(xp) == "number" and Weapons.get(id).id == id and not table.find(weaponIds, id) then
+			table.insert(otherIds, id)
+		end
+	end
+	table.sort(otherIds)
+	for _, id in otherIds do table.insert(weaponIds, id) end
+	for _, id in weaponIds do
+		add(function()
+			local weapon = Weapons.get(id)
+			local xp = math.max(0, math.floor((view.weaponPractice or {})[id] or 0))
+			-- 현재 메인 필드의 5단계 기준을 그대로 표시한다. 전투 판정에는 사용하지 않는다.
+			local thresholds = { 0, 8, 26, 55, 100 }
+			local rank = 1
+			for i, need in thresholds do if xp >= need then rank = i end end
+			local nextXp = thresholds[rank + 1]
+			local row = mkRow(content, weapon.name .. " · 숙련 " .. rank .. "단", string.format("경험치 %d%s · %s", xp, if nextXp then "/" .. nextXp else " · 최고", weapon.note), nil, 148)
+			row.Name = "WeaponMasteryTree_" .. id
+			if weapon.model then withIcon(row, "Relics", weapon.model, nil, 52) end
+			local box = row:FindFirstChild("RowText")
+			if box then
+				local stages = Instance.new("Frame")
+				stages.Name = "WeaponMasteryStages"
+				stages.Size = UDim2.new(1, -4, 0, 26)
+				stages.BackgroundTransparency = 1
+				stages.Parent = box
+				for i, need in thresholds do
+					local stage = mkLabel(stages, tostring(i), 13, if i <= rank then INK else INK_SOFT, true)
+					stage.AutomaticSize = Enum.AutomaticSize.None
+					stage.TextXAlignment = Enum.TextXAlignment.Center
+					stage.BackgroundTransparency = 0
+					stage.BackgroundColor3 = if i <= rank then Color3.fromRGB(211, 173, 92) else Color3.fromRGB(192, 181, 164)
+					stage.Position = UDim2.new((i - 1) / #thresholds, 1, 0, 0)
+					stage.Size = UDim2.new(1 / #thresholds, -3, 1, 0)
+					corner(stage, 3)
+				end
+				mkLabel(box, if rank == 1 then "기본 공격 · 자동 스킬 잠김" elseif rank < 4 then "자동 강타 해금" else "자동 강타·회전 기술 해금", 13, INK, true)
+			end
+			return row
+		end)
+	end
 	add(function() return mkHeader(content, "직업 성장") end)
 	for _, c in view.careers do
 		add(function()
@@ -6785,7 +6909,16 @@ function RENDERERS.status()
 	end
 	if page == "gear" then
 	local equippedCount = 0
-	for _, g in view.gear.list do if g.equipped then equippedCount += 1 end end
+	local gearDefs = require(Shared:WaitForChild("Gear")).ById
+	local totalPerks = {}
+	for _, g in view.gear.list do
+		if g.equipped then
+			equippedCount += 1
+			for key, value in (gearDefs[g.id] and gearDefs[g.id].perk) or {} do
+				totalPerks[key] = (totalPerks[key] or 0) + value
+			end
+		end
+	end
 	H.statStrip({ { "장착", tostring(equippedCount) .. "/" .. tostring(view.gear.slots), tone = "key" } })
 	add(function() return mkHeader(content, string.format("항해 장비 (장착 최대 %d개)", view.gear.slots)) end)
 	for _, g in view.gear.list do
@@ -6808,6 +6941,21 @@ function RENDERERS.status()
 			local status = if g.equipped then "장착 중" elseif g.owned then "보유" elseif view.player.fame < g.minFame then "명성 잠김" else "구매 가능"
 			local grow = mkRow(content, g.name .. " · " .. status, if expanded then g.summary .. (if not g.owned then string.format(" · 명성 %d 필요", g.minFame) else "") else status,
 				if expanded then { { text = "접기", color = COLORS.grey, onClick = function() H.gearSelectedId = nil; render() end }, btn } else { { text = "상세", color = COLORS.paper, onClick = function() H.gearSelectedId = g.id; render() end } }, 88)
+			if expanded and gearDefs[g.id] then
+				local box = grow:FindFirstChild("RowText")
+				local names = { speedMult = "항해 속도", cannonMult = "포격", sellBonus = "판매 보너스", healMult = "회복·사기 보호" }
+				if box then
+					for key, value in gearDefs[g.id].perk do
+						local before = totalPerks[key] or 0
+						local after = before + (if g.equipped then -value else value)
+						mkLabel(box, string.format("%s  %.1f%% → %.1f%%", names[key] or key, before * 100, after * 100), 14,
+							if after >= before then Color3.fromRGB(47, 122, 58) else COLORS.red, true)
+					end
+					if not g.equipped and equippedCount >= view.gear.slots then
+						mkLabel(box, "장착 자리가 가득 참 · 기존 장비 해제 필요", 13, COLORS.red, true)
+					end
+				end
+			end
 			local accent = grow:FindFirstChild("AccentBar")
 			if accent and accent:IsA("Frame") then accent.BackgroundColor3 = if g.equipped then Color3.fromRGB(47, 122, 58) elseif not g.owned and view.player.fame < g.minFame then COLORS.red else UI_BRASS end
 			local gi = ({
@@ -9223,6 +9371,7 @@ function RENDERERS.explore()
 		for i, item in {{ "전체", "all", "explore" }, { "탐험 가능", "ready", "route" }, { "조건 잠김", "locked", "lock" }, { "조사 완료", "done", "cc0_yes" }} do
 			local button = mkButton(bar, item[1], if filter == item[2] then COLORS.gold else COLORS.paper, UDim2.fromOffset(110, 46), function()
 				H.exploreFilter = item[2]
+				H.exploreSiteId = nil
 				content.CanvasPosition = Vector2.zero
 				render()
 			end, true)
