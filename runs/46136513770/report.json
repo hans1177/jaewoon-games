@@ -1,0 +1,403 @@
+{
+ "sourceRevision": "b3d2ecaf8288e4c75e17e93a5dd78f4c58972afe",
+ "log": [
+  {
+   "step": 1,
+   "ctx": "Client",
+   "out": "bound\ntext"
+  },
+  {
+   "step": 2,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 4,
+   "ctx": "Client",
+   "out": "PORTQA london_L3 npc=80 npcOverlapPairs=0 route=PASS checked=75 relocated=21 blocked=19 prop=PASS propChecked=453 moved=113 hidden=7\ntext"
+  },
+  {
+   "step": 5,
+   "capture": "london_L3_top",
+   "files": 1
+  },
+  {
+   "step": 6,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 8,
+   "capture": "london_L3_street",
+   "files": 1
+  },
+  {
+   "step": 9,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 11,
+   "ctx": "Client",
+   "out": "PORTQA lisbon_L4 npc=87 npcOverlapPairs=0 route=PASS checked=86 relocated=33 blocked=27 prop=PASS propChecked=565 moved=133 hidden=30\ntext"
+  },
+  {
+   "step": 12,
+   "capture": "lisbon_L4_top",
+   "files": 1
+  },
+  {
+   "step": 13,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 15,
+   "capture": "lisbon_L4_street",
+   "files": 1
+  },
+  {
+   "step": 16,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 18,
+   "ctx": "Client",
+   "out": "PORTQA amsterdam_L4 npc=88 npcOverlapPairs=0 route=PASS checked=87 relocated=36 blocked=29 prop=PASS propChecked=559 moved=131 hidden=28\ntext"
+  },
+  {
+   "step": 19,
+   "capture": "amsterdam_L4_top",
+   "files": 1
+  },
+  {
+   "step": 20,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 22,
+   "capture": "amsterdam_L4_street",
+   "files": 1
+  },
+  {
+   "step": 23,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 25,
+   "ctx": "Client",
+   "out": "PORTQA istanbul_L3 npc=79 npcOverlapPairs=0 route=PASS checked=75 relocated=22 blocked=21 prop=PASS propChecked=337 moved=129 hidden=4\ntext"
+  },
+  {
+   "step": 26,
+   "capture": "istanbul_L3_top",
+   "files": 1
+  },
+  {
+   "step": 27,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 29,
+   "capture": "istanbul_L3_street",
+   "files": 1
+  },
+  {
+   "step": 30,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 32,
+   "ctx": "Client",
+   "out": "PORTQA nagasaki_L3 npc=80 npcOverlapPairs=1 route=PASS checked=73 relocated=20 blocked=14 prop=PASS propChecked=312 moved=97 hidden=3\ntext"
+  },
+  {
+   "step": 33,
+   "capture": "nagasaki_L3_top",
+   "files": 1
+  },
+  {
+   "step": 34,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 36,
+   "capture": "nagasaki_L3_street",
+   "files": 1
+  },
+  {
+   "step": 37,
+   "ctx": "Client",
+   "out": "truenil\ntext"
+  },
+  {
+   "step": 39,
+   "ctx": "Client",
+   "out": "PORTQA venice_L4 npc=82 npcOverlapPairs=0 route=PASS checked=87 relocated=31 blocked=32 prop=PASS propChecked=323 moved=127 hidden=28\ntext"
+  },
+  {
+   "step": 40,
+   "capture": "venice_L4_top",
+   "files": 1
+  },
+  {
+   "step": 41,
+   "ctx": "Client",
+   "out": "ok\ntext"
+  },
+  {
+   "step": 43,
+   "capture": "venice_L4_street",
+   "files": 1
+  }
+ ],
+ "errors": [],
+ "stepTimings": [
+  {
+   "step": 0,
+   "type": "wait",
+   "elapsedMs": 35009
+  },
+  {
+   "step": 1,
+   "type": "luau",
+   "elapsedMs": 274
+  },
+  {
+   "step": 2,
+   "type": "luau",
+   "elapsedMs": 10681
+  },
+  {
+   "step": 3,
+   "type": "wait",
+   "elapsedMs": 10005
+  },
+  {
+   "step": 4,
+   "type": "luau",
+   "elapsedMs": 437
+  },
+  {
+   "step": 5,
+   "type": "capture",
+   "elapsedMs": 1140
+  },
+  {
+   "step": 6,
+   "type": "luau",
+   "elapsedMs": 269
+  },
+  {
+   "step": 7,
+   "type": "wait",
+   "elapsedMs": 2511
+  },
+  {
+   "step": 8,
+   "type": "capture",
+   "elapsedMs": 1168
+  },
+  {
+   "step": 9,
+   "type": "luau",
+   "elapsedMs": 9464
+  },
+  {
+   "step": 10,
+   "type": "wait",
+   "elapsedMs": 10002
+  },
+  {
+   "step": 11,
+   "type": "luau",
+   "elapsedMs": 346
+  },
+  {
+   "step": 12,
+   "type": "capture",
+   "elapsedMs": 1508
+  },
+  {
+   "step": 13,
+   "type": "luau",
+   "elapsedMs": 300
+  },
+  {
+   "step": 14,
+   "type": "wait",
+   "elapsedMs": 2500
+  },
+  {
+   "step": 15,
+   "type": "capture",
+   "elapsedMs": 1747
+  },
+  {
+   "step": 16,
+   "type": "luau",
+   "elapsedMs": 13000
+  },
+  {
+   "step": 17,
+   "type": "wait",
+   "elapsedMs": 10011
+  },
+  {
+   "step": 18,
+   "type": "luau",
+   "elapsedMs": 154
+  },
+  {
+   "step": 19,
+   "type": "capture",
+   "elapsedMs": 859
+  },
+  {
+   "step": 20,
+   "type": "luau",
+   "elapsedMs": 155
+  },
+  {
+   "step": 21,
+   "type": "wait",
+   "elapsedMs": 2503
+  },
+  {
+   "step": 22,
+   "type": "capture",
+   "elapsedMs": 1112
+  },
+  {
+   "step": 23,
+   "type": "luau",
+   "elapsedMs": 4362
+  },
+  {
+   "step": 24,
+   "type": "wait",
+   "elapsedMs": 10015
+  },
+  {
+   "step": 25,
+   "type": "luau",
+   "elapsedMs": 149
+  },
+  {
+   "step": 26,
+   "type": "capture",
+   "elapsedMs": 790
+  },
+  {
+   "step": 27,
+   "type": "luau",
+   "elapsedMs": 130
+  },
+  {
+   "step": 28,
+   "type": "wait",
+   "elapsedMs": 2505
+  },
+  {
+   "step": 29,
+   "type": "capture",
+   "elapsedMs": 614
+  },
+  {
+   "step": 30,
+   "type": "luau",
+   "elapsedMs": 2566
+  },
+  {
+   "step": 31,
+   "type": "wait",
+   "elapsedMs": 10008
+  },
+  {
+   "step": 32,
+   "type": "luau",
+   "elapsedMs": 182
+  },
+  {
+   "step": 33,
+   "type": "capture",
+   "elapsedMs": 892
+  },
+  {
+   "step": 34,
+   "type": "luau",
+   "elapsedMs": 195
+  },
+  {
+   "step": 35,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 36,
+   "type": "capture",
+   "elapsedMs": 961
+  },
+  {
+   "step": 37,
+   "type": "luau",
+   "elapsedMs": 6553
+  },
+  {
+   "step": 38,
+   "type": "wait",
+   "elapsedMs": 10001
+  },
+  {
+   "step": 39,
+   "type": "luau",
+   "elapsedMs": 468
+  },
+  {
+   "step": 40,
+   "type": "capture",
+   "elapsedMs": 1429
+  },
+  {
+   "step": 41,
+   "type": "luau",
+   "elapsedMs": 249
+  },
+  {
+   "step": 42,
+   "type": "wait",
+   "elapsedMs": 2504
+  },
+  {
+   "step": 43,
+   "type": "capture",
+   "elapsedMs": 1405
+  }
+ ],
+ "consoleCapture": {
+  "captured": true,
+  "contexts": [
+   "Client",
+   "Server"
+  ],
+  "errorCount": 0,
+  "warningCount": 12,
+  "errors": []
+ },
+ "summary": {
+  "plannedSteps": 44,
+  "completedSteps": 44,
+  "plannedClicks": 0,
+  "successfulClicks": 0,
+  "skippedOptionalClicks": 0,
+  "plannedFrames": 12,
+  "capturedFrames": 12,
+  "abortedEarly": false
+ }
+}
