@@ -14,6 +14,7 @@ on:
       - 'tools/devloop/assets_wanted.py'
       - 'tools/vibe_mesh_audit.py'
       - 'tools/devloop/register_asset.py'
+      - 'tools/devloop/dropbox_inbox.py'
       - 'qa/company-roblox-dedicated-experience.test.mjs'
       - 'tools/mare-essentia-upload-assets.mjs'
       - 'tools/mare-essentia-character-finish.mjs'
@@ -26,7 +27,7 @@ on:
   workflow_run:
     workflows: ['All Games Development Sync', 'Vibe QA', 'Devloop Gates (Mare Essentia)']
     types: [completed]
-    branches: ['mare-dropbox-card-*']
+    branches: ['mare-dropbox-card-*', 'mare-dropbox-inbox-*']
   # [동물 원본] 5분마다 동물·항구·해전·지상전 원본을 기존 절차에서 찾는다.
   schedule:
     - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
@@ -81,7 +82,7 @@ concurrency:
 
 jobs:
   register:
-    if: ${{ (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_repository.full_name == github.repository && startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-card-'))) && (inputs.scheduled_recovery != true || (inputs.studio_regrant != true && inputs.register_v5 != true && inputs.upgrade_cargo_quality != true && inputs.publish_after_register != true)) }}
+    if: ${{ (github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'workflow_dispatch') && github.event.workflow_run.head_repository.full_name == github.repository && (startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-card-') || startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-inbox-')))) && (inputs.scheduled_recovery != true || (inputs.studio_regrant != true && inputs.register_v5 != true && inputs.upgrade_cargo_quality != true && inputs.publish_after_register != true)) }}
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
@@ -125,7 +126,7 @@ jobs:
           permission-pull-requests: write
           permission-actions: write
       - name: Import all Dropbox inbox assets (auto-checked)
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.scheduled_recovery == true) }}
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.scheduled_recovery == true) || (github.event_name == 'workflow_run' && startsWith(github.event.workflow_run.head_branch, 'mare-dropbox-inbox-')) }}
         continue-on-error: true
         env:
           DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
@@ -138,13 +139,19 @@ jobs:
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
           # 1) 검사를 통과한 이전 후보 PR 병합 → 등록기 재개
-          open_prs="$(gh api "repos/$repo/pulls?state=open&base=main&per_page=100" --jq '.[] | select(.head.ref | startswith("mare-dropbox-inbox-")) | "\(.number) \(.head.sha)"')"
+          event_head=""
+          if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then
+            event_head="$(jq -r '.workflow_run.head_sha // empty' "$GITHUB_EVENT_PATH")"
+            [[ "$event_head" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          fi
+          open_prs="$(gh api --paginate "repos/$repo/pulls?state=open&base=main&per_page=100" | jq -r --arg repo "$repo" --arg event_head "$event_head" '.[] | select(.head.repo.full_name == $repo and (.head.ref | test("^mare-dropbox-inbox-[0-9]+$")) and ($event_head == "" or .head.sha == $event_head)) | "\(.number) \(.head.sha)"')"
           if [[ -n "$open_prs" ]]; then
             while read -r num sha; do
               [[ "$num" =~ ^[0-9]+$ && "$sha" =~ ^[a-f0-9]{40}$ ]] || continue
-              states="$(gh api "repos/$repo/commits/$sha/check-runs?per_page=100" --jq '[.check_runs[] | select(.name=="gates" or .name=="qa" or .name=="discover-and-verify") | (.conclusion // .status)] | sort | unique | join(",")')"
+              checks="$(gh api --paginate "repos/$repo/commits/$sha/check-runs?filter=latest&per_page=100" | jq -s '[.[].check_runs[]]')"
+              states="$(jq -r --arg sha "$sha" '[.[] | select(.head_sha == $sha and .app.slug == "github-actions" and (.name == "gates" or .name == "qa" or .name == "discover-and-verify"))] | group_by(.name) | map({name: .[0].name, pass: all(.[]; .status == "completed" and .conclusion == "success")}) | if length == 3 and all(.[]; .pass) then "success" else "pending_or_failed" end' <<< "$checks")"
               echo "DROPBOX_INBOX_CANDIDATE $num $states"
-              if [[ "$states" == "success" ]] && [[ "$(gh api "repos/$repo/commits/$sha/check-runs?per_page=100" --jq '[.check_runs[] | select(.name=="gates" or .name=="qa" or .name=="discover-and-verify")] | length')" -ge 3 ]]; then
+              if [[ "$states" == "success" ]]; then
                 gh api -X PUT "repos/$repo/pulls/$num/merge" -f merge_method=squash -f sha="$sha" --silent
                 gh workflow run owner-mare-essentia-assets.yml --repo "$repo" --ref main
                 echo "DROPBOX_INBOX_MERGED_REGISTRATION_REQUESTED $num"
@@ -153,6 +160,8 @@ jobs:
             echo "DROPBOX_INBOX_WAITING_FOR_CANDIDATE"
             exit 0
           fi
+          # 검사 완료 이벤트는 해당 후보의 병합만 처리하며 새 원본 반입은 정기/알림 실행에 맡긴다.
+          if [[ "$GITHUB_EVENT_NAME" == workflow_run ]]; then exit 0; fi
           # 2) 새로 들어온 것 가져오기. 앱 인증이 없으면 대기열 원본은 건드리지 않는다.
           if [[ -z "$MARE_INBOX_APP_TOKEN" ]]; then
             echo "DROPBOX_INBOX_APP_AUTH_REQUIRED" >&2
