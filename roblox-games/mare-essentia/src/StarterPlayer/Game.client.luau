@@ -2326,11 +2326,17 @@ function H.renderFacilityGallery()
   -- 원본 7:10 카드는 백과에서 자르지 않고 볼 수 있다.
   H.galleryCard.Visible = true
   H.galleryImage.ImageTransparency = 1
-  H.galleryBackdrop.ImageTransparency = 0
   if H.galleryImage.Image ~= image then
+    H.galleryBackdrop.ImageTransparency = 0
     if H.galleryArtTween then H.galleryArtTween:Cancel(); H.galleryArtTween = nil end
     H.galleryImage.Image = image
     H.galleryBackdrop.Image = image
+    if image ~= "" and not game:GetService("GuiService").ReducedMotionEnabled then
+      H.galleryBackdrop.ImageTransparency = 1
+      H.galleryArtTween = game:GetService("TweenService"):Create(H.galleryBackdrop,
+        TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { ImageTransparency = 0 })
+      H.galleryArtTween:Play()
+    end
   end
   H.galleryTitle.Text = if selection then selection.name elseif chartName then chartName elseif realCard then matched.name
     elseif focus then focus[1] else TAB_NAME[tab] or "시설 안내"
@@ -2535,7 +2541,9 @@ function H.layoutBook()
   H.galleryImage.ImageTransparency = 1
   local st = H.galleryCard:FindFirstChildOfClass("UIStroke")
   if st then st.Enabled = false end
-  H.galleryBackdrop.ImageTransparency = 0
+  if not H.galleryArtTween or H.galleryArtTween.PlaybackState ~= Enum.PlaybackState.Playing then
+    H.galleryBackdrop.ImageTransparency = 0
+  end
   if H.galleryShadeGradient then
     H.galleryShadeGradient.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.08), NumberSequenceKeypoint.new(0.5, 0.55), NumberSequenceKeypoint.new(1, 1) })
   end
@@ -7528,6 +7536,30 @@ local function openTradeHall()
 			nm.TextWrapped = true
 			nm.TextTruncate = Enum.TextTruncate.AtEnd
 			nm.AutomaticSize = Enum.AutomaticSize.None
+			-- [상품 시세 시각화] 세계 평균을 중앙 기준선으로 쓰는 실제 가격 차이 막대.
+			if (tonumber(g.avgPrice) or tonumber(g.basePrice) or 0) > 0 then
+				local track = Instance.new("Frame")
+				track.Name = "TradeIndexPriceMeter"
+				track.Position = UDim2.fromOffset(10, 136)
+				track.Size = UDim2.new(1, if g.tag and g.tag ~= "" then -78 else -20, 0, 7)
+				track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+				track.BorderSizePixel = 0
+				track.Parent = row
+				corner(track, 3)
+				local fill = Instance.new("Frame")
+				fill.BackgroundColor3 = if pct > 0.5 then Color3.fromRGB(177, 47, 57) else Color3.fromRGB(35, 107, 177)
+				fill.BorderSizePixel = 0
+				fill.AnchorPoint = Vector2.new(if pct < 0 then 1 else 0, 0)
+				fill.Position = UDim2.fromScale(0.5, 0)
+				fill.Size = UDim2.fromScale(math.min(math.abs(pct) / 100, 0.5), 1)
+				fill.Parent = track
+				local center = Instance.new("Frame")
+				center.BackgroundColor3 = INK
+				center.BorderSizePixel = 0
+				center.Position = UDim2.new(0.5, -1, 0, 0)
+				center.Size = UDim2.new(0, 2, 1, 0)
+				center.Parent = track
+			end
 			local profit = H.tradeProfit(g, 1)
 			local profitText = if profit == nil then "세후손익 미확인"
 				elseif profit >= 0 then "세후 이익 +" .. H.commas(profit) else "세후 손실 -" .. H.commas(-profit)
@@ -7782,16 +7814,34 @@ local function openTradeHall()
 			corner(prices, 7)
 			local buyPrice = mkLabel(prices, "매입가\n" .. H.commas(unitBuy) .. "코인",
 				22, Color3.fromRGB(255, 226, 135), true)
-			buyPrice.Position = UDim2.fromOffset(8, 10)
-			buyPrice.Size = UDim2.new(0.5, -10, 0, 78)
+			buyPrice.Position = UDim2.fromOffset(8, 5)
+			buyPrice.Size = UDim2.new(0.5, -10, 0, 58)
 			buyPrice.AutomaticSize = Enum.AutomaticSize.None
 			buyPrice.TextWrapped = true
 			local sellPrice = mkLabel(prices, "판매가\n" .. H.commas(sel.sell) .. "코인",
 				22, Color3.fromRGB(246, 217, 161), true)
-			sellPrice.Position = UDim2.new(0.5, 4, 0, 10)
-			sellPrice.Size = UDim2.new(0.5, -12, 0, 78)
+			sellPrice.Position = UDim2.new(0.5, 4, 0, 5)
+			sellPrice.Size = UDim2.new(0.5, -12, 0, 58)
 			sellPrice.AutomaticSize = Enum.AutomaticSize.None
 			sellPrice.TextWrapped = true
+			-- [매입·판매 비교] 동일 기준의 막대 길이로 실제 서버 단가를 비교한다.
+			local priceMax = math.max(1, unitBuy, sel.sell)
+			for index, value in { unitBuy, sel.sell } do
+				local track = Instance.new("Frame")
+				track.Name = if index == 1 then "TradeBuyMeter" else "TradeSellMeter"
+				track.Position = UDim2.new((index - 1) * 0.5, 8, 0, 72)
+				track.Size = UDim2.new(0.5, -16, 0, 10)
+				track.BackgroundColor3 = Color3.fromRGB(91, 75, 55)
+				track.BorderSizePixel = 0
+				track.Parent = prices
+				corner(track, 4)
+				local fill = Instance.new("Frame")
+				fill.Size = UDim2.fromScale(math.clamp(value / priceMax, 0, 1), 1)
+				fill.BackgroundColor3 = if index == 1 then UI_BRASS else Color3.fromRGB(112, 161, 123)
+				fill.BorderSizePixel = 0
+				fill.Parent = track
+				corner(fill, 4)
+			end
 			local meanStatus = if diff > 0.5 then string.format("▲ 평균보다 %.1f%% 비쌈", diff)
 				elseif diff < -0.5 then string.format("▼ 평균보다 %.1f%% 저렴", -diff)
 				else "－ 세계 평균과 비슷함"
@@ -7822,9 +7872,23 @@ local function openTradeHall()
 			local inventory = mkLabel(right, string.format("내 보유 %d개 · 구매 가능 %d개\n내 평균 매입가 %s코인\n빈 화물칸 %d · 이번 판매 한도 %d개",
 				sel.owned, maxBuy, basis, free, maxSell), 18, INK, true)
 			inventory.Position = UDim2.fromOffset(12, infoTop + 283)
-			inventory.Size = UDim2.new(1, -24, 0, 92)
+			inventory.Size = UDim2.new(1, -24, 0, 80)
 			inventory.AutomaticSize = Enum.AutomaticSize.None
 			inventory.TextWrapped = true
+			local cargoTrack = Instance.new("Frame")
+			cargoTrack.Name = "TradeCargoMeter"
+			cargoTrack.Position = UDim2.fromOffset(12, infoTop + 369)
+			cargoTrack.Size = UDim2.new(1, -24, 0, 12)
+			cargoTrack.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+			cargoTrack.BorderSizePixel = 0
+			cargoTrack.Parent = right
+			corner(cargoTrack, 4)
+			local cargoFill = Instance.new("Frame")
+			cargoFill.Size = UDim2.fromScale(math.clamp(ship.cargoUsed / math.max(1, ship.cargoCapacity), 0, 1), 1)
+			cargoFill.BackgroundColor3 = if free <= 0 then COLORS.red else UI_BRASS_DARK
+			cargoFill.BorderSizePixel = 0
+			cargoFill.Parent = cargoTrack
+			corner(cargoFill, 4)
 			-- 상세 페이지를 스크롤해도 수량과 거래 버튼은 화면 아래에 남긴다.
 			local desk = mkBox(root, UDim2.new(detail.Position.X.Scale, detail.Position.X.Offset, 1, if shortScreen then -150 else -182),
                 UDim2.new(detail.Size.X.Scale, detail.Size.X.Offset, 0, if shortScreen then 142 else 174), COLORS.leather)
@@ -8164,9 +8228,42 @@ if view.weather then
 				elseif r.cargoProfit > 0 then string.format(" 🟢▲%s", H.commas(r.cargoProfit))
 				elseif r.cargoProfit < 0 then string.format(" 🔴▼%s", H.commas(-r.cargoProfit)) else " ⚪±0"
 			local tags = (if r.yard then " 🔧조선소" else "") .. (if r.quest then " 📜" .. r.quest else "") .. profitTag
-			local row = mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if r.coal > 0 then (" · 석탄 " .. r.coal) else "", warn), {
+			local row = mkRow(content, r.name .. tags, string.format("%s · %d일 · %d km\n필요 보급 %d%s · %s", r.region, r.days, r.distanceKm, r.supplies, if (r.coal or 0) > 0 then (" · 석탄 " .. r.coal) else "", warn), {
 				{ text = if supplyLeft < 0 or coalLeft < 0 then "출항 확인" else "출항", color = if supplyLeft < 0 or coalLeft < 0 then COLORS.gold else COLORS.blue, onClick = function() confirmSail(r) end },
-			}, 56)
+			}, 104)
+			-- [항해 준비 시각화] 현재 보유량 대비 실제 항로 필요량. 부족하면 빨강으로 표시.
+			local textBox = row:FindFirstChild("RowText")
+			if textBox then
+				for index, data in { { "보급", r.supplies, ship.supplies, "harbor" }, { "석탄", r.coal or 0, ship.coal or 0, "yard" } } do
+					if index == 1 or data[2] > 0 then
+						local meter = Instance.new("Frame")
+						meter.Name = if index == 1 then "RouteSupplyMeter" else "RouteCoalMeter"
+						meter.Size = UDim2.new(1, 0, 0, 25)
+						meter.BackgroundTransparency = 1
+						meter.Parent = textBox
+						local icon = modelIcon(meter, "FacilityArt", data[4], nil, 22, data[1])
+						icon.Position = UDim2.fromOffset(0, 1)
+						local label = mkLabel(meter, string.format("%s %d/%d", data[1], data[3], data[2]), 13, INK, true)
+						label.Position = UDim2.fromOffset(26, 0)
+						label.Size = UDim2.new(0.55, -26, 1, 0)
+						label.AutomaticSize = Enum.AutomaticSize.None
+						label.TextTruncate = Enum.TextTruncate.AtEnd
+						local track = Instance.new("Frame")
+						track.Position = UDim2.new(0.55, 0, 0, 8)
+						track.Size = UDim2.new(0.45, -4, 0, 9)
+						track.BackgroundColor3 = Color3.fromRGB(199, 181, 151)
+						track.BorderSizePixel = 0
+						track.Parent = meter
+						corner(track, 3)
+						local fill = Instance.new("Frame")
+						fill.Size = UDim2.fromScale(math.clamp(data[3] / math.max(1, data[2]), 0, 1), 1)
+						fill.BackgroundColor3 = if data[3] < data[2] then COLORS.red else Color3.fromRGB(77, 125, 81)
+						fill.BorderSizePixel = 0
+						fill.Parent = track
+						corner(fill, 3)
+					end
+				end
+			end
 			-- [항로 원화] 목적지 제목을 누르면 승인된 지역 해역도로 바뀐다. 출항 버튼과 겹치지 않는다.
 			local choose = Instance.new("TextButton")
 			choose.Name = "RouteArtwork_" .. tostring(r.id)
