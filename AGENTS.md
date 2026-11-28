@@ -62,6 +62,13 @@
 
 작업 후 `roblox-games/mare-essentia/tests/run.sh` 통과(최상위 local 여유 검사 포함)와 Studio 촬영 확인 전에는 완료로 보고하지 않는다.
 
+## Studio 화면 검증 = 12각도 + 보고서 (바이브 엔진 시각 검수 · 2026-11-29 오너)
+- 오너: "스샷 한 번 찍을 때 많이·자세히. 매번 찔끔 말고." / "검증 안 된 결과 완료 처리 금지."
+- Studio 스크립트에서 장면을 찍을 때는 `roblox-games/mare-essentia/tools/devloop/studio_shots.py` 의 `shot_steps("<항구>")` 로 **장면마다 12각도**(전체 위·비스듬 2·광장 눈높이·큰길·집·항만·목장·가축 옆/앞·주민 가까이·마을 끝)를 한 번에 찍는다. 1~2장만 찍고 끝내지 않는다.
+- 실행이 끝나면 `python3 tools/devloop/studio_report.py <실행번호> [--prev <이전 실행번호>] --out <폴더>` → 장면별 묶음 시트, 이상 화면, **항구끼리 너무 비슷함(같은 각도 유사도 ≥0.93)**, 전/후 비교, 단계 숫자 표가 든 `REPORT.md` 가 나온다.
+- PR 본문 "검증" 칸에 REPORT.md 요약(사진 수·이상·비슷함·핵심 숫자)을 붙인다. 보고서가 없으면 화면 항목은 **미검증**으로 적는다(완료 처리 금지).
+- ChatGPT 협업: REPORT.md 와 시트 PNG 를 그대로 넘기면 같은 기준으로 판단한다(별도 형식 만들지 않음).
+
 ## 한방패치
 
 중앙정책 fixedAutonomousDevelopmentOperatingContract.ownerRequestedVibeOneShotPatch를 따른다.
