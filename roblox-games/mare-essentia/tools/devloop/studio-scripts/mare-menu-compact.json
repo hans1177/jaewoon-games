@@ -1,0 +1,100 @@
+[
+ {
+  "type": "wait",
+  "ms": 35000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "local RS=game:GetService('ReplicatedStorage') local r=RS:WaitForChild('GameAction') local a for i=1,8 do task.wait(0.6) a=r:InvokeServer('State',{}) if a.needsNewGame then task.wait(0.4) a=r:InvokeServer('NewGame',{nationId='england',startYear=1700}) end if a.ok and a.view then break end end task.wait(1.2) workspace:SetAttribute('DevCall','State') return 'NEWGAME ok='..tostring(a and a.ok)"
+ },
+ {
+  "type": "wait",
+  "ms": 4000
+ },
+ {
+  "type": "wait",
+  "ms": 3000
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:board') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT board compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_board"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:quest') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT quest compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_quest"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:harbor') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT harbor compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_harbor"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:explore') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT explore compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_explore"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:tech') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT tech compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_tech"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:battle') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT battle compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_battle"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:status') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT status compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_status"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:market') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT market compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_market"
+ },
+ {
+  "type": "luau",
+  "ctx": "Client",
+  "code": "workspace:SetAttribute('DevCall','Tab:route') task.wait(2.6) local pg=game:GetService('Players').LocalPlayer.PlayerGui local n,long=0,0 for _,d in ipairs(pg:GetDescendants()) do if d:IsA('TextLabel') then if d:GetAttribute('CompactDone') then n+=1 elseif d.Visible and (utf8.len(d.Text) or 0)>64 then long+=1 end end end return 'COMPACT route compacted='..n..' stillLong='..long"
+ },
+ {
+  "type": "capture",
+  "name": "compact_route"
+ }
+]
