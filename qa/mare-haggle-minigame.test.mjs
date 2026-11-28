@@ -25,3 +25,12 @@ test('교역소 버튼·4가지 화면·그냥 사기', () => {
   assert.match(game, /ui_haggle_merchant_sheet/);
   assert.ok(fs.existsSync(`${root}/docs/HAGGLE_MINIGAME_BRIEF.md`));
 });
+
+test('상인 말풍선은 화면 폭에 맞고 동작 줄이기에서 반복을 중단', () => {
+  const face = game.split('local function merchantFace(parent, mood)')[1].split('function H.openHaggle(')[0];
+  assert.match(face, /stageWidth - 8/);
+  assert.match(face, /holder\.Say\.TextWrapped = true/);
+  assert.match(face, /while holder:IsDescendantOf\(game\) and not game:GetService\("GuiService"\)\.ReducedMotionEnabled/);
+  assert.match(face, /holder:SetAttribute\("Animating", false\)/);
+  assert.match(face, /ImageRectSize = Vector2\.new\(256, 256\)/);
+});
