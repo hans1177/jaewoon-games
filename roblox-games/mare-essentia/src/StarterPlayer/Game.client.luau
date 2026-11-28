@@ -4719,6 +4719,17 @@ local function sail(portId)
 			fromName = from,
 			toName = view.player.portName,
 			fromId = fromId, toId = portId, -- [자동 배치] 해역 배경 슬롯(voyage_/sea_<해역>_*)
+			-- [해양 퀘스트 표시 · 2026-11-28] 도착하면 할 일·의뢰 목적지 여부(빛기둥 📜)
+			nextStep = (function()
+				local ok, st = pcall(function() return H.nextStep and H.nextStep() end)
+				return ok and st and st.text or nil
+			end)(),
+			questTarget = (function()
+				for _, q in (view.quests and view.quests.active) or {} do
+					if q.portId == portId then return true end
+				end
+				return false
+			end)(),
 			makeShip = PortScene.makeShip,
 			place = PortScene.placeModel,
 			escorts = math.min(3, (view.fleet and view.fleet.escorts or 0) + (view.fleet and view.fleet.ships and #view.fleet.ships or 0)),
@@ -15399,7 +15410,14 @@ function RENDERERS.map()
 				tag.BackgroundTransparency = 1
 				tag.Position = UDim2.fromOffset(12, -8)
 				tag.Size = UDim2.fromOffset(60, 14)
-				tag.Text = (if isQuest then "📜" elseif isYard and H.mapMark ~= "all" then "🔧" else "") .. pt.name .. (if id == nearYardId then " ⚓가까운 조선소" else "")
+				-- [해양 퀘스트 표시 · 2026-11-28] 길드 허가증 의뢰 중인 항구 🔒, 함대전 의뢰 해역 항구 ⚔
+				local permitHere, warHere = false, false
+				for _, q in (view.quests and view.quests.active) or {} do
+					if q.id == "permit_" .. id then permitHere = true end
+					if q.kind == "war_clear" and q.portId == id then warHere = true end
+				end
+				tag.Text = (if warHere then "⚔" else "") .. (if permitHere then "🔒" else "") .. (if isQuest then "📜" elseif isYard and H.mapMark ~= "all" then "🔧" else "") .. pt.name .. (if id == nearYardId then " ⚓가까운 조선소" else "")
+				tag.Size = UDim2.fromOffset(if permitHere or warHere then 90 else 60, 14)
 				tag.Font = Enum.Font.GothamBold
 				tag.TextSize = 10
 				tag.TextColor3 = Color3.new(1, 1, 1)

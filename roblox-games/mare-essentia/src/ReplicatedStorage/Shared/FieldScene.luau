@@ -542,6 +542,7 @@ local function label(parent, text, size, color)
 	return l
 end
 
+local okButtonFx, ButtonFx = pcall(function() return require(script.Parent:WaitForChild("BattleButtonFx", 5)) end)
 local function btn(parent, text, color, size, pos, anchor)
 	local b = Instance.new("TextButton")
 	b.Text = text
@@ -646,6 +647,8 @@ local function btn(parent, text, color, size, pos, anchor)
 		end
 	end)
 	b.Parent = parent
+	-- [전투 버튼 효과 · 2026-11-28] 누를 때 충격 고리·불꽃·섬광(해상과 같은 모듈)
+	if okButtonFx and ButtonFx then ButtonFx.attach(b) end
 	return b
 end
 
@@ -9740,6 +9743,7 @@ function FieldScene.start(opts)
 					sb.wasCooling = true
 				elseif sb.wasCooling then
 					sb.wasCooling = false
+					if okButtonFx and ButtonFx then ButtonFx.ready(sb.btn, if key == "dodge" then Color3.fromRGB(114, 244, 228) else nil) end
 					local stroke = sb.btn:FindFirstChildOfClass("UIStroke")
 					if stroke then
 						stroke.Color = Color3.fromRGB(255, 247, 164)
