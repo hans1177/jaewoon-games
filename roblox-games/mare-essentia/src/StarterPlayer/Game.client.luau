@@ -650,8 +650,8 @@ H.facilityIconCells = {
 }
 -- [청동 아이콘 통일] 기존 승인 청동 예비 시트(768px, 4×4)에서 도형 대신 쓸 칸.
 -- {시트 번호, 칸}: 1 = ui_reserve_icons(닻·지도·두루마리…), 2 = ui_reserve_icons_2(선원·망원경·육분의…)
-H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"], AssetIds["CardArt/ui_menu_icons_3"] }
-H.reserveIconRowH = { 184, 189, 192 } -- 시트 세로 739/758/768px ÷ 4
+H.reserveIconAtlas = { AssetIds["CardArt/ui_reserve_icons"], AssetIds["CardArt/ui_reserve_icons_2"], AssetIds["CardArt/ui_menu_icons_3"], AssetIds["CardArt/ui_menu_icons_4"] }
+H.reserveIconRowH = { 184, 189, 192, 192 } -- 시트 세로 739/758/768px ÷ 4
 -- [메뉴 5묶음 청동 아이콘 · 2026-11-28] docs/MENU_UI_BRIEF.md 의 768px 4×4 시트(CardArt/ui_menu_icons_3)가 등록되면 자동 사용.
 -- 칸 번호: 0 항해 1 교역 2 모험 3 성장 4 기록 5 다음할일 6 보상 7 추천 8 장도장 9 문제 10 원인 11 할일 12 결과 13 지난이야기 14 처음안내 15 패배조언
 H.MENU_SHEET_CELLS = { nav = 0, tradeg = 1, adventure = 2, growth = 3, records = 4, nextstep = 5, reward = 6, recommend = 7,
@@ -664,6 +664,12 @@ H.reserveIconCells = {
 	diplomacy = { 2, 5 }, quest = { 1, 8 }, recruit = { 2, 0 }, crew = { 2, 0 }, explore = { 2, 4 },
 	harbor = { 1, 0 }, war = { 2, 8 }, scholar = { 2, 14 }, tech = { 2, 6 }, chart = { 1, 2 },
 }
+-- 추가 메뉴 시트는 등록된 경우에만 기존 칸을 교체한다. 미등록 시 원래 예비 시트를 유지.
+if H.reserveIconAtlas[4] then
+	for i, key in { "quest", "shipyard", "lock", "war", "gift", "star", "profit_up", "profit_down", "cargo", "supply", "hull", "crew", "coin", "fame", "map_pin", "close" } do
+		H.reserveIconCells[key] = { 4, i - 1 }
+	end
+end
 function H.hasIconArt(key)
 	local r = H.reserveIconCells[key]
 	if r and H.reserveIconAtlas[r[1]] ~= nil then return true end
@@ -6259,6 +6265,7 @@ function H.walletBar(mode)
 end
 
 function H.statStrip(items)
+	local metricArt = { ["선체"] = "hull", ["화물"] = "cargo", ["화물칸"] = "cargo", ["명성"] = "fame", ["코인"] = "coin", ["보유 코인"] = "coin", ["승조원"] = "crew", ["승선 동료"] = "crew", ["동료"] = "crew", ["조건 잠금"] = "lock", ["잠긴 지점"] = "lock", ["오늘 보상"] = "gift", ["함대전"] = "war" }
 	-- [전체 메뉴 공통 지표] 작은 화면은 2열로 나눠 수치가 잘리지 않게 한다.
 	add(function()
 		local strip = Instance.new("Frame")
@@ -6303,6 +6310,14 @@ function H.statStrip(items)
 			vl.TextColor3 = H.TONE[it.tone or "key"] or INK
 			vl.Text = it[2]
 			vl.Parent = chip
+			local key = metricArt[it[1]]
+			if key and H.reserveIconAtlas[4] and H.hasIconArt(key) then
+				local icon = modelIcon(chip, "FacilityArt", key, nil, 20, it[1])
+				icon.Position = UDim2.fromOffset(6, 3)
+				icon.Active = false
+				lb.Position = UDim2.fromOffset(30, 4)
+				lb.Size = UDim2.new(1, -38, 0, 16)
+			end
 		end
 		local function fitStrip()
 			local width = strip.AbsoluteSize.X
