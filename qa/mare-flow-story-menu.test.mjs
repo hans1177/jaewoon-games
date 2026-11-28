@@ -50,7 +50,8 @@ test('작은 화면은 안내를 세로 배치하고 교역 판단과 실행을 
   assert.match(home, /grid\.FillDirectionMaxCells = if compact then 1 else 3/);
   assert.match(home, /d\.TextWrapped = true/);
   const trade = game.split('local function openTradeHall()')[1].split('H.tradeHall = openTradeHall')[0];
-  assert.match(trade, /local infoTop = 62/);
+  assert.match(trade, /local specimenPx = if shortScreen then 56 else 96/);
+  assert.match(trade, /local infoTop = specimenPx \+ 14/);
   assert.match(trade, /local narrow = width < 640/);
   assert.match(trade, /math\.floor\(availableW \* 0\.43\)/);
   assert.match(trade, /artTap\.Activated:Connect\(openSelectedGoodEncyclopedia\)/);
@@ -81,12 +82,14 @@ test('등록된 청동 안내 원화와 9분할 프레임만 선택적으로 연
 
 test("전면 재구성 메뉴: 가로 기능 레일, 세로 탭, 장식 전시장 제거, 실제 기능 본문 우선", () => {
   const layout = game.split("function H.layoutBook()")[1].split("mainInner:GetPropertyChangedSignal")[0];
-  assert.match(layout, /local rail = tabs and width >= 700 and width > height and not facilityDetail/);
+  assert.match(layout, /local compactLandscape = width >= 600 and width > height and height < 440/);
+  assert.match(layout, /local rail = tabs and \(compactLandscape or \(width >= 700 and width > height and not facilityDetail and currentTab ~= "route" and currentTab ~= "tech"\)\)/);
   assert.match(layout, /local bottomInset = if tabs and not rail then tabH \+ 10 else 6/);
   assert.match(layout, /H\.menuRecentButton\.Visible = not not showRecent/);
   assert.match(layout, /icon\.Size = UDim2\.fromOffset\(32, 32\)/);
   assert.match(layout, /Enum\.ScrollingDirection\.Y else Enum\.ScrollingDirection\.X/);
-  assert.match(layout, /local tabH, gap = 44, 4/);
+  assert.match(layout, /local tabH, gap = if rail and not compactLandscape then 50 else 62, 4/);
+  assert.match(layout, /tabBar\.Position = if rail then UDim2\.fromOffset\(6, headerH \+ 4\) else UDim2\.new\(0, 6, 1, -tabH - 6\)/);
   assert.match(layout, /content\.Size = UDim2\.new\(1, -bodyX - 6, 1, -bodyY - bottomInset\)/);
   assert.doesNotMatch(game, /function H\.renderFacilityGallery|H\.facilityGallery|H\.menuFocusBanner|H\.menuActionDock/);
   const render = game.split("function render()")[1].split("-- [단일 시작 화면]")[0];
@@ -147,7 +150,9 @@ test('항구·선장·동료·탐험 기능별 장부와 실제 상태 연결', 
   assert.match(captain, /fm\.destroy\(rig\)/);
   assert.match(captain, /local reduced = motionSettings\.ReducedMotionEnabled/);
   assert.match(captain, /if rank >= 8 then "필살기 해금/);
-  assert.match(captain, /math\.floor\(\(i - 1\) \/ 5\) \* 28/);
+  assert.match(captain, /local cols = math\.clamp\(math\.floor\(\(width \+ 4\) \/ 48\), 1, 5\)/);
+  assert.match(captain, /local height = math\.ceil\(10 \/ cols\) \* 48 - 4/);
+  assert.match(captain, /grid\.CellSize = UDim2\.new\(1 \/ cols, -4 \* \(cols - 1\) \/ cols, 0, 44\)/);
   assert.match(captain, /view\.fieldStreakBest/);
   assert.match(captain, /gearDefs\[g\.id\]\.perk/);
   for (const key of ['ToggleGear','BuyGear','SetSpecialty','SetSubSpecialty']) assert.ok(captain.includes('call("' + key + '"'), key);
