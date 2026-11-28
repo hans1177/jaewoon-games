@@ -2216,7 +2216,12 @@ test('항구·탐험 가축은 양털·가죽·피부를 구별하고 원본 PBR
  assert.match(port,/local biped = species == "chicken" or species == "duck"/);
  assert.match(port,/local requiredLegs = if biped then 2 else 4/);
  assert.match(field,/local requiredLegs = if biped then 2 else 4/);
- assert.match(port,/local canWalk = legCount == requiredLegs/);
+ assert.match(port,/local canWalk = facingKnown and legCount == requiredLegs/);
+ assert.match(port,/local d = w\.travelD or 0/);
+ assert.match(port,/local delta = targetD - d/);
+ assert.match(port,/local alignment = if math\.abs\(turn\) < 0\.12 then 1 else 0/);
+ assert.match(port,/local destination = w\.base\.Position \+ w\.forward \* d/);
+ assert.match(port,/CFrame\.Angles\(0, w\.hd, 0\) \* w\.base\.Rotation/);
  assert.match(field,/local canWalk = facingKnown and legCount == requiredLegs/);
  assert.match(port,/pivot \* CFrame.new\(limb.legHinge\) \* limb.pose \* CFrame.new\(-limb.legHinge\) \* limb.base/);
  assert.match(field,/pitch = if limb.legChild then 0 else math.sin\(a.step \+ limb.phase\)/);
