@@ -5282,3 +5282,22 @@ test('기능 카드와 상세 카드를 구분하고 실제 수치와 터치 영
  assert.ok(49+42<=152-48-8,'일반 카드 설명과 행동 버튼이 겹치지 않는다');
  assert.ok(92+8<=166-48-8,'동료 호감도와 행동 버튼이 겹치지 않는다');
 });
+
+test('모바일 사건과 의뢰 대사는 스크롤과 명시적 확인으로 읽을 수 있다',()=>{
+ const game=readText('roblox-games/mare-essentia/src/StarterPlayer/Game.client.luau');
+ const talk=game.slice(game.indexOf('function H.storyTalk(lines, onDone)'),game.indexOf('function H.questTalkLines'));
+ const event=game.slice(game.indexOf('function H.showWorldEventScene(a)'),game.indexOf('function H.checkWorldEvents'));
+ assert.ok(talk.includes('TalkTextScroll') && talk.includes('body.AutomaticSize = Enum.AutomaticSize.Y'));
+ assert.ok(talk.includes('body.TextSize = if narrow then 22 else 24'));
+ assert.ok(talk.includes('next.Size = UDim2.fromOffset(156, 48)') && talk.includes('next.Activated:Connect'));
+ assert.ok(talk.includes('bodyScroll.CanvasPosition = Vector2.zero'));
+ assert.ok(event.includes('WorldEventTextScroll') && event.includes('body.TextSize = 24'));
+ assert.ok(event.includes('UDim2.fromOffset(144, 48), close, true'));
+ assert.ok(!event.includes('task.delay(math.clamp((utf8.len(body.Text)'));
+ for(const height of [320,360,384,480,600,800]){
+  const short=height<480;
+  const talkHeight=Math.min(short?218:280,Math.floor(height*(short?0.72:0.48)));
+  assert.ok(talkHeight-80>=120);
+  assert.ok(height*(short?0.70:0.58)-112>=112);
+ }
+});
