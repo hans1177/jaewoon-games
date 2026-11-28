@@ -4307,6 +4307,19 @@ function FieldScene.start(opts)
 		table.insert(enemies, { fm = fm, ac = ac, model = model, root = root, groundOffset = mobGroundOffset, nextGroundAt = 0, hp = ac.hp, maxHp = ac.def.hp, dmg = ac.def.dmg, speed = ac.def.speed, bar = bar, tag = tag, elite = isElite, weapon = weapon, shieldModel = style[5], throwAsset = throwAsset, moveVel = Vector3.zero, lastDodge = -100, dodgeUntil = 0, nextHit = 0, home = pos, boss = isBoss, swingAt = -10, hurtAt = -10, spawnT = os.clock(), motionPhase = rng:NextNumber(), gait = rng:NextNumber(), lastFallAt = -100, knockUntil = 0, riseUntil = 0, guardUntil = 0, parryUntil = 0, nextParryAt = 0, hitVariant = 0, tacticAt = 0, tacticGoal = nil, tacticIntent = "approach", tacticSide = if rng:NextNumber() < 0.5 then -1 else 1,
 			counterReadyAt = 0, counterUntil = 0, nextGuardCounterAt = 0, lastReadBasicAt = -100,
 			playerChain = 0, bossReadUntil = 0, nextBossReadAt = 0 })
+		-- [보스전 재개] 서버에 접수된 첫 관찰은 해당 기록을 지키던 두목의 구역도 완료한 것으로 취급한다.
+		-- 미완료 구역의 두목과 일반 적은 기존 체력/배치로 재시작한다. 정산·경험치·드롭은 지급하지 않는다.
+		-- 기존 난수 소비와 나머지 적 배치를 보존하도록 생성 직후 해당 두목만 정리한다.
+		if found > 0 and isBoss and i == enemyCount + 1 and targetCard and not isWildlife
+			and (targetCard.field == "Relic" or targetCard.field == "Site" or targetCard.field == "Mystery"
+				or targetCard.field == "Mineral" or targetCard.field == "Language" or targetCard.field == "Architecture")
+			and bossRole ~= "giant" then
+			if fm then FM.destroy(fm) end
+			table.remove(enemies)
+			model:Destroy()
+			folder:SetAttribute("FieldBossClueState", "observed")
+			folder:SetAttribute("FieldBossCheckpointRestored", true)
+		end
 	end
 	-- [전투 목표 · 2026-11-28 오너 지시] 매번 다른 목표 하나(속도·무피해·두목 먼저·약점 5번). 별 3개 평가(표시용).
 	do
